@@ -1,0 +1,17 @@
+{
+  "name": "versatiles-stylemaker",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "makestyle": "node bin/mkstyle.js",
+    "makerawstyle": "node bin/mkrawstyle.js",
+  },
+  "author": "yetzt <node@yetzt.me>",
+  "license": "Unlicense",
+  "dependencies": {
+    "color": "^4.2.3",
+    "json-stringify-pretty-compact": "^3.0.0",
+    "minimatch": "^7.4.2"
+  }
+}

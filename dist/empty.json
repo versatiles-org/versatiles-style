@@ -1,0 +1,4228 @@
+{
+	"version": 8,
+	"id": "shortbread-empty",
+	"name": "versatiles-empty",
+	"metadata": {
+		"maputnik:renderer": "mbgljs",
+		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
+	},
+	"glyphs": "https://tiles.versatiles.org/static/assets/fonts/{fontstack}/{range}.pbf",
+	"sprites": "https://tiles.versatiles.org/sprites/sprites",
+	"sources": {
+		"versatiles-shortbread": {
+			"tilejson": "3.0.0",
+			"tiles": ["https://tiles.versatiles.org/tiles/osm/{z}/{y}/{x}"],
+			"type": "vector",
+			"scheme": "xyz",
+			"bounds": [-180, -85.0511287798066, 180, 85.0511287798066],
+			"minzoom": 0,
+			"maxzoom": 14,
+			"maxZoom": 14,
+			"vector_layers": [
+				{
+					"id": "place_labels",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"population": "Number"
+					},
+					"minzoom": 3,
+					"maxzoom": 14
+				},
+				{
+					"id": "boundaries",
+					"fields": {
+						"admin_level": "Number",
+						"coastline": "Boolean",
+						"disputed": "Boolean",
+						"maritime": "Boolean"
+					},
+					"minzoom": 0,
+					"maxzoom": 14
+				},
+				{
+					"id": "boundary_labels",
+					"fields": {
+						"admin_level": "Number",
+						"land_area": "Number",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"name_single": "String",
+						"way_area": "Number"
+					},
+					"minzoom": 2,
+					"maxzoom": 14
+				},
+				{
+					"id": "addresses",
+					"fields": {"housename": "String", "housenumber": "String"},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{
+					"id": "water_lines",
+					"fields": {"bridge": "Boolean", "kind": "String", "tunnel": "Boolean"},
+					"minzoom": 4,
+					"maxzoom": 14
+				},
+				{
+					"id": "water_lines_labels",
+					"fields": {
+						"bridge": "Boolean",
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"tunnel": "Boolean"
+					},
+					"minzoom": 4,
+					"maxzoom": 14
+				},
+				{
+					"id": "dam_lines",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "dam_polygons",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "pier_lines",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "pier_polygons",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "bridges",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "street_polygons",
+					"fields": {
+						"bridge": "Boolean",
+						"kind": "String",
+						"rail": "Boolean",
+						"service": "String",
+						"surface": "String",
+						"tunnel": "Boolean"
+					},
+					"minzoom": 11,
+					"maxzoom": 14
+				},
+				{
+					"id": "streets_polygons_labels",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{
+					"id": "ferries",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String"
+					},
+					"minzoom": 8,
+					"maxzoom": 14
+				},
+				{
+					"id": "streets",
+					"fields": {
+						"bicycle": "String",
+						"bridge": "Boolean",
+						"horse": "String",
+						"kind": "String",
+						"link": "Boolean",
+						"oneway": "Boolean",
+						"oneway_reverse": "Boolean",
+						"rail": "Boolean",
+						"service": "String",
+						"surface": "String",
+						"tracktype": "String",
+						"tunnel": "Boolean"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{
+					"id": "street_labels",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"ref": "String",
+						"ref_cols": "Number",
+						"ref_rows": "Number",
+						"tunnel": "Boolean"
+					},
+					"minzoom": 10,
+					"maxzoom": 14
+				},
+				{
+					"id": "street_labels_points",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"ref": "String"
+					},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "aerialways",
+					"fields": {"kind": "String"},
+					"minzoom": 12,
+					"maxzoom": 14
+				},
+				{
+					"id": "public_transport",
+					"fields": {
+						"iata": "String",
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"station": "String"
+					},
+					"minzoom": 11,
+					"maxzoom": 14
+				},
+				{
+					"id": "buildings",
+					"fields": {
+						"amenity": "String",
+						"dummy": "Number",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{
+					"id": "water_polygons",
+					"fields": {"kind": "String", "way_area": "Number"},
+					"minzoom": 4,
+					"maxzoom": 14
+				},
+				{
+					"id": "ocean",
+					"fields": {"x": "Number", "y": "Number"},
+					"minzoom": 8,
+					"maxzoom": 14
+				},
+				{
+					"id": "water_polygons_labels",
+					"fields": {
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"way_area": "Number"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{"id": "land", "fields": {"kind": "String"}, "minzoom": 7, "maxzoom": 14},
+				{
+					"id": "sites",
+					"fields": {
+						"amenity": "String",
+						"kind": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				},
+				{
+					"id": "pois",
+					"fields": {
+						"amenity": "String",
+						"atm": "Boolean",
+						"cuisine": "String",
+						"denomination": "String",
+						"emergency": "String",
+						"highway": "String",
+						"historic": "String",
+						"information": "String",
+						"leisure": "String",
+						"man_made": "String",
+						"name": "String",
+						"name_de": "String",
+						"name_en": "String",
+						"recycling:clothes": "Boolean",
+						"recycling:glass_bottles": "Boolean",
+						"recycling:paper": "Boolean",
+						"recycling:scrap_metal": "Boolean",
+						"religion": "String",
+						"shop": "String",
+						"sport": "String",
+						"tourism": "String",
+						"tower:type": "String",
+						"vending": "String"
+					},
+					"minzoom": 14,
+					"maxzoom": 14
+				}
+			]
+		}
+	},
+	"layers": [
+		"background",
+		{"type": "background"},
+		{
+			"id": "water-ocean",
+			"type": "fill",
+			"source-layer": "ocean",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "water"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-river",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "river"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-small",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "reservoir", "basin", "dock"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-glacier",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "glacier"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "dam"]],
+			"source-layer": "dam_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "dam"]],
+			"source-layer": "dam_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"source-layer": "pier_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"source-layer": "pier_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-commercial",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "commercial", "retail"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-industrial",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "industrial", "quarry", "railway"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-residential",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "garages", "residential"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-agriculture",
+			"type": "fill",
+			"filter": [
+				"all",
+				[
+					"in",
+					"kind",
+					"brownfield",
+					"farmland",
+					"farmyard",
+					"greenfield",
+					"greenhouse_horticulture",
+					"orchard",
+					"plant_nursery",
+					"vineyard"
+				]
+			],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-rock",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "bare_rock", "scree", "shingle"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-forest",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "forest"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-grass",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "grass", "grassland", "meadow", "wet_meadow"]
+			],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-vegetation",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "heath", "scrub"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-sand",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "beach", "sand"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-wetland",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "bog", "marsh", "string_bog", "swamp"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-waste",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "landfill"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-park",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "park", "village_green"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-garden",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "allotments", "garden"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-burial",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "cemetery", "grave_yard"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-leisure",
+			"type": "fill",
+			"filter": [
+				"all",
+				[
+					"in",
+					"kind",
+					"miniature_golf",
+					"playground",
+					"recreation_ground",
+					"golf_course"
+				]
+			],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-river",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "river"],
+				["!=", "tunnel", true],
+				["!=", "bridge", true]
+			],
+			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-canal",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "canal"],
+				["!=", "tunnel", true],
+				["!=", "bridge", true]
+			],
+			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-stream",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "stream"],
+				["!=", "tunnel", true],
+				["!=", "bridge", true]
+			],
+			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-ditch",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "ditch"],
+				["!=", "tunnel", true],
+				["!=", "bridge", true]
+			],
+			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-dangerarea",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "danger_area"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-sportscenter",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "sports_center"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-university",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "university"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-college",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "college"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-school",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "school"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-hospital",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "hospital"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-prison",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "prison"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-parking",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "parking"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-bicycleparking",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "bicycle_parking"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "site-construction",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "construction"]],
+			"source-layer": "sites",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "runway", "taxiway"]],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-taxiway",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "taxiway"]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-runway",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "runway"]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "building",
+			"type": "fill",
+			"filter": ["all"],
+			"source-layer": "buildings",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-trunk-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-primary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-secondary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-livingstreet:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-cycleway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-path:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-steps:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-footway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-tram:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-funicular:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-monorail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-busguideway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-busway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-trunk",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-trunk-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-primary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-primary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-secondary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-secondary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-livingstreet",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian-zone",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-cycleway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-path",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-steps",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-footway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-rail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-narrowgauge",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-lightrail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-subway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-tram",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-funicular",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-monorail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-busguideway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-busway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-motorway-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-trunk-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-primary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-secondary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "unclassified"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "residential"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "living_street"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "track"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-cycleway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cycleway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-path:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "path"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-steps:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "steps"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-footway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "footway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-tram:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-funicular:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-monorail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-busguideway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-busway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-cablecar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cable_car"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-gondola:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "gondola"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-goods:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "goods"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-chairlift:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "chair_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-draglift:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "drag_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-tbar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "t-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-jbar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "j-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-platter:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "platter"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-ropetow:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rope-tow"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-ferry:outline",
+			"type": "line",
+			"filter": ["all"],
+			"source-layer": "ferries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-motorway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-motorway-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-trunk",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-trunk-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-primary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-primary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-secondary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-secondary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "unclassified"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "residential"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "living_street"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "track"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian-zone",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-cycleway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cycleway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-path",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "path"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-steps",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "steps"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-footway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "footway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-rail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-narrowgauge",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-lightrail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-subway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-tram",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-funicular",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-monorail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-busguideway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-busway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-cablecar",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cable_car"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-gondola",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "gondola"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-goods",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "goods"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-chairlift",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "chair_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-draglift",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "drag_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-tbar",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "t-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-jbar",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "j-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-platter",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "platter"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-ropetow",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rope-tow"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-ferry",
+			"type": "line",
+			"filter": ["all"],
+			"source-layer": "ferries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge",
+			"type": "fill",
+			"filter": ["all"],
+			"source-layer": "bridges",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-trunk-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-primary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-secondary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-livingstreet:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-cycleway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-path:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-steps:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-footway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-tram:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-funicular:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-monorail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busguideway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-trunk",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-trunk-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-primary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-primary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-secondary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-secondary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary-link",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
+				["==", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-livingstreet",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "service"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian-zone",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-cycleway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-path",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-steps",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-footway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-rail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-narrowgauge",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-lightrail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-subway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-tram",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-funicular",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-monorail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busguideway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["!=", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country-disputed:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "disputed", true],
+				["!=", "maritime", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country-maritime:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-state:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 4],
+				["!=", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["!=", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country-disputed",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "disputed", true],
+				["!=", "maritime", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country-maritime",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-state",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 4],
+				["!=", "maritime", true],
+				["!=", "disputed", true],
+				["!=", "coastline", true]
+			],
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-large",
+			"type": "symbol",
+			"filter": ["all", ["==", "admin_level", 2], [">=", "land_area", 2000000]],
+			"text": "{name}",
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-medium",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["<", "land_area", 2000000],
+				[">", "land_area", 1000000]
+			],
+			"text": "{name}",
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-small",
+			"type": "symbol",
+			"filter": ["all", ["==", "admin_level", 2], ["<=", "land_area", 1000000]],
+			"text": "{name}",
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-state",
+			"type": "symbol",
+			"filter": ["all", ["==", "admin_level", 2]],
+			"text": "{name}",
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-capital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "capital"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-statecapital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "state_capital"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-city",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "city"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-town",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "town"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-village",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "village"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-hamlet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "hamlet"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-suburb",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "suburb"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-quarter",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "quarter"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-neighbourhood",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "neighbourhood"]],
+			"text": "{name}",
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-motorway-exit",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "motorway_junction"]],
+			"text": "{ref}",
+			"source-layer": "street_labels_points",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-motorway-shield",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "motorway"]],
+			"text": "{ref}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-trunk",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "trunk"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-primary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "primary"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-secondary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "secondary"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-tertiary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "tertiary"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-unclassified",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "unclassified"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-residential",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "residential"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-livingstreet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "living_street"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-pedestrian",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "pedestrian"]],
+			"text": "{name}",
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-address-housenumber",
+			"type": "symbol",
+			"filter": ["all", ["has", "housenumber"]],
+			"text": "{housenumber}",
+			"source-layer": "addresses",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "marking-oneway",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "oneway", true],
+				[
+					"in",
+					"kind",
+					"trunk",
+					"primary",
+					"secondary",
+					"tertiary",
+					"unclassified",
+					"residential",
+					"living_street"
+				]
+			],
+			"style": {
+				"layout": {
+					"symbol-placement": "line",
+					"symbol-spacing": 75,
+					"icon-rotate": 90,
+					"icon-rotation-alignment": "map"
+				}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "marking-oneway-reverse",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "oneway_reverse", true],
+				[
+					"in",
+					"kind",
+					"trunk",
+					"primary",
+					"secondary",
+					"tertiary",
+					"unclassified",
+					"residential",
+					"living_street"
+				]
+			],
+			"style": {
+				"layout": {
+					"symbol-placement": "line",
+					"symbol-spacing": 75,
+					"icon-rotate": -90,
+					"icon-rotation-alignment": "map"
+				}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "marking-bicylce",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "bicycle", "designated"],
+				["==", "kind", "cycleway"]
+			],
+			"style": {"layout": {"symbol-placement": "line", "symbol-spacing": 50}},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-airport",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "aerodrome"], ["has", "iata"]],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-airfield",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "aerodrome"], ["!has", "iata"]],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-station",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "kind", "station", "halt"],
+				["!in", "station", "light_rail", "subway"]
+			],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-lightrail",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "kind", "station", "halt"],
+				["==", "station", "light_rail"]
+			],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-subway",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "kind", "station", "halt"],
+				["==", "station", "subway"]
+			],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-tram",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "tram_stop"]],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "symbol-transit-bus",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "bus_stop"]],
+			"source-layer": "public_transport",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-police",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "police"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-fire_station",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "fire_station"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-post_box",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "post_box"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-post_office",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "post_office"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-telephone",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "telephone"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-library",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "library"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-townhall",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "townhall"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-courthouse",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "courthouse"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-prison",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "prison"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-embassy",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "embassy"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-community_centre",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "community_centre"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-nursing_home",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "nursing_home"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-arts_centre",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "arts_centre"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-grave_yard",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "grave_yard"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-marketplace",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "marketplace"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-recycling",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "recycling"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-university",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "university"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-school",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "school"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-college",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "college"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-public_building",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "public_building"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-pharmacy",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "pharmacy"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-hospital",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "hospital"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-clinic",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "clinic"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-doctors",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "doctors"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-denitst",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "denitst"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-veterinary",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "veterinary"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-theatre",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "theatre"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-nightclub",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "nightclub"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-cinema",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "cinema"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-restaurant",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "restaurant"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-fast_food",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "fast_food"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-cafe",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "cafe"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-pub",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "pub"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-bar",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "bar"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-foot_court",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "foot_court"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-biergarten",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "biergarten"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-shelter",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "shelter"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-car_rental",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "car_rental"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-car_wash",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "car_wash"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-car_sharing",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "car_sharing"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-bicycle_rental",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "bicycle_rental"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-vending_machine",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "vending_machine"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-bank",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "bank"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-atm",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "atm"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-toilets",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "toilets"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-bench",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "bench"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-drinking_water",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "drinking_water"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-fountain",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "fountain"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-hunting_stand",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "hunting_stand"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-waste_basket",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "waste_basket"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-place_of_worship",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "place_of_worship"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-playground",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "playground"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-amenity-dog_park",
+			"type": "symbol",
+			"filter": ["all", ["==", "amenity", "dog_park"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-sports_centre",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "sports_centre"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-pitch",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "pitch"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-swimming_pool",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "swimming_pool"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-water_park",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "water_park"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-golf_course",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "golf_course"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-stadium",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "stadium"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure-ice_rink",
+			"type": "symbol",
+			"filter": ["all", ["==", "leisure", "ice_rink"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-hotel",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "hotel"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-motel",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "motel"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-bed_and_breakfast",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "bed_and_breakfast"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-guest_house",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "guest_house"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-hostel",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "hostel"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-chalet",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "chalet"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-camp_site",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "camp_site"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-alpine_hut",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "alpine_hut"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-caravan_site",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "caravan_site"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-information",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "information"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-picnic_site",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "picnic_site"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-viewpoint",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "viewpoint"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-zoo",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "zoo"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism-theme_park",
+			"type": "symbol",
+			"filter": ["all", ["==", "tourism", "theme_park"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-supermarket",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "supermarket"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-bakery",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "bakery"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-kiosk",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "kiosk"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-mall",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "mall"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-department_store",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "department_store"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-general",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "general"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-convinience",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "convinience"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-clothes",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "clothes"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-florist",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "florist"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-chemist",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "chemist"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-books",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "books"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-butcher",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "butcher"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-shoes",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "shoes"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-alcohol",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "alcohol"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-beverages",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "beverages"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-optican",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "optican"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-jewelry",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "jewelry"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-gift",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "gift"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-sports",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "sports"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-stationery",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "stationery"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-outdoor",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "outdoor"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-mobile_phone",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "mobile_phone"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-toys",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "toys"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-newsagent",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "newsagent"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-greengrocer",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "greengrocer"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-beauty",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "beauty"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-video",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "video"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-car",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "car"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-bicycle",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "bicycle"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-doityourself",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "doityourself"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-hardware",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "hardware"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-furniture",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "furniture"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-computer",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "computer"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-garden_centre",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "garden_centre"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-hairdresser",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "hairdresser"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-travel_agency",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "travel_agency"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-laundry",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "laundry"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop-dry_cleaning",
+			"type": "symbol",
+			"filter": ["all", ["==", "shop", "dry_cleaning"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-surveillance",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "surveillance"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-tower",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "tower"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-windmill",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "windmill"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-lighthouse",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "lighthouse"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-wastewater_plant",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "wastewater_plant"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-water_well",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "water_well"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-watermill",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "watermill"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made-water_works",
+			"type": "symbol",
+			"filter": ["all", ["==", "man_made", "water_works"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-monument",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "monument"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-memorial",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "memorial"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-artwork",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "artwork"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-castle",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "castle"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-ruins",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "ruins"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-archaelogical_site",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "archaelogical_site"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-wayside_cross",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "wayside_cross"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-wayside_shrine",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "wayside_shrine"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-battlefield",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "battlefield"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic-fort",
+			"type": "symbol",
+			"filter": ["all", ["==", "historic", "fort"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-emergency-phone",
+			"type": "symbol",
+			"filter": ["all", ["==", "emergency", "phone"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-emergency-fire_hydrant",
+			"type": "symbol",
+			"filter": ["all", ["==", "emergency", "fire_hydrant"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-emergency-defibrillator",
+			"type": "symbol",
+			"filter": ["all", ["==", "emergency", "defibrillator"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-highway-emergency_access_point",
+			"type": "symbol",
+			"filter": ["all", ["==", "highway", "emergency_access_point"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-office-diplomatic",
+			"type": "symbol",
+			"filter": ["all", ["==", "office", "diplomatic"]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		}
+	]
+}
