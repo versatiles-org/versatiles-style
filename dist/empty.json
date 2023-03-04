@@ -6,7 +6,7 @@
 		"maputnik:renderer": "mbgljs",
 		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
 	},
-	"glyphs": "https://tiles.versatiles.org/static/assets/fonts/{fontstack}/{range}.pbf",
+	"glyphs": "https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf",
 	"sprites": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
@@ -401,6 +401,47 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "land-waste",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "landfill"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-park",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "park", "village_green", "recreation_ground"]
+			],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-garden",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "allotments", "garden"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-burial",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "cemetery", "grave_yard"]],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-leisure",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "miniature_golf", "playground", "golf_course"]
+			],
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "land-rock",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "bare_rock", "scree", "shingle"]],
@@ -442,51 +483,6 @@
 			"id": "land-wetland",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "bog", "marsh", "string_bog", "swamp"]],
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-waste",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "landfill"]],
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-park",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "park", "village_green"]],
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-garden",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "allotments", "garden"]],
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-burial",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "cemetery", "grave_yard"]],
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-leisure",
-			"type": "fill",
-			"filter": [
-				"all",
-				[
-					"in",
-					"kind",
-					"miniature_golf",
-					"playground",
-					"recreation_ground",
-					"golf_course"
-				]
-			],
 			"source-layer": "land",
 			"source": "versatiles-shortbread"
 		},
@@ -2952,10 +2948,182 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "label-boundary-country-large",
+			"id": "label-address-housenumber",
 			"type": "symbol",
-			"filter": ["all", ["==", "admin_level", 2], [">=", "land_area", 2000000]],
-			"text": "{name}",
+			"filter": ["all", ["has", "housenumber"]],
+			"text": "{housenumber}",
+			"source-layer": "addresses",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-motorway-exit",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "motorway_junction"]],
+			"layout": {"text-field": "{ref}"},
+			"source-layer": "street_labels_points",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-motorway-shield",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "motorway"]],
+			"layout": {"text-field": "{ref}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-pedestrian",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "pedestrian"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-livingstreet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "living_street"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-residential",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "residential"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-unclassified",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "unclassified"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-tertiary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "tertiary"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-secondary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "secondary"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-primary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "primary"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-trunk",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "trunk"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-neighbourhood",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "neighbourhood"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-quarter",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "quarter"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-suburb",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "suburb"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-hamlet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "hamlet"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-village",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "village"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-town",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "town"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-state",
+			"type": "symbol",
+			"filter": ["all", ["in", "admin_level", 4, "4"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-city",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "city"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-statecapital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "state_capital"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-capital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "capital"]],
+			"layout": {"text-field": "{name}"},
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-small",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<=", "way_area", 10000000]
+			],
+			"layout": {"text-field": "{name}"},
 			"source-layer": "boundary_labels",
 			"source": "versatiles-shortbread"
 		},
@@ -2964,188 +3132,24 @@
 			"type": "symbol",
 			"filter": [
 				"all",
-				["==", "admin_level", 2],
-				["<", "land_area", 2000000],
-				[">", "land_area", 1000000]
+				["in", "admin_level", 2, "2"],
+				["<", "way_area", 90000000],
+				[">", "way_area", 10000000]
 			],
-			"text": "{name}",
+			"layout": {"text-field": "{name}"},
 			"source-layer": "boundary_labels",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "label-boundary-country-small",
+			"id": "label-boundary-country-large",
 			"type": "symbol",
-			"filter": ["all", ["==", "admin_level", 2], ["<=", "land_area", 1000000]],
-			"text": "{name}",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				[">=", "way_area", 90000000]
+			],
+			"layout": {"text-field": "{name}"},
 			"source-layer": "boundary_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-boundary-state",
-			"type": "symbol",
-			"filter": ["all", ["==", "admin_level", 2]],
-			"text": "{name}",
-			"source-layer": "boundary_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-capital",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "capital"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-statecapital",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "state_capital"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-city",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "city"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-town",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "town"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-village",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "village"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-hamlet",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "hamlet"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-suburb",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "suburb"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-quarter",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "quarter"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-place-neighbourhood",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "neighbourhood"]],
-			"text": "{name}",
-			"source-layer": "place_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-motorway-exit",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "motorway_junction"]],
-			"text": "{ref}",
-			"source-layer": "street_labels_points",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-motorway-shield",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "motorway"]],
-			"text": "{ref}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-trunk",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "trunk"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-primary",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "primary"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-secondary",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "secondary"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-tertiary",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "tertiary"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-unclassified",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "unclassified"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-residential",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "residential"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-livingstreet",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "living_street"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-street-pedestrian",
-			"type": "symbol",
-			"filter": ["all", ["==", "kind", "pedestrian"]],
-			"text": "{name}",
-			"source-layer": "street_labels",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "label-address-housenumber",
-			"type": "symbol",
-			"filter": ["all", ["has", "housenumber"]],
-			"text": "{housenumber}",
-			"source-layer": "addresses",
 			"source": "versatiles-shortbread"
 		},
 		{
