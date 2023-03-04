@@ -29,17 +29,34 @@ fs.mkdir(destdir, { recursive: true }, function(err){
 			// FIXME prettier
 
 			// apply style
-			const style = stringify({
+			const style = {
 				...template,
 				id: "versatiles-"+styleid,
 				name: "versatiles-"+styleid,
 				layers: decorate(layers, styledef),
-			},{ indent: "\t", maxLength: 80 });
+			}
 
 			// write
-			fs.writeFile(path.resolve(destdir, styleid+".json"), style, function(err){
+			fs.writeFile(path.resolve(destdir, styleid+".json"), stringify(style, { indent: "\t", maxLength: 80 }), function(err){
 				if (err) throw err;
 				console.log("Saved '%s'", styleid);
+
+				// make no label version
+				fs.writeFile(path.resolve(destdir, styleid+".nolabel.json"), stringify({
+					...style,
+					id: style.id+"-nolabel",
+					name: style.name+"-nolabel",
+					layers: style.layers.filter(function(layer){
+						return (layer.id.slice(0,6) !== "label-");
+					}),
+				}, { indent: "\t", maxLength: 80 }), function(err){
+					if (err) throw err;
+					console.log("Saved '%s'", styleid);
+
+					// make no label version
+
+				});
+
 			});
 
 		});
