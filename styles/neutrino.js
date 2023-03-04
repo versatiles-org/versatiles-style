@@ -322,6 +322,20 @@ exports = module.exports = {
 		textTransform: "uppercase",
 		color: color($label).rotate(-50).saturate(1).darken(0.05).hex(),
 	},
+
+	"label-motorway-shield": {
+		color: $label,
+		font: "Noto Sans Regular",
+		textHaloColor: color($label).desaturate(0.5).lighten(0.1).hex(),
+		textHaloWidth: 0.1,
+		textHaloBlur: 1,
+		symbolPlacement: "line",
+		textAnchor: "center",
+		minzoom: 14,
+		size: { 14: 8, 18: 10, 20: 16 },
+	},
+
+
 	"label-street-*": {
 		color: $label,
 		font: "Noto Sans Regular",
