@@ -6,7 +6,7 @@
 		"maputnik:renderer": "mbgljs",
 		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
 	},
-	"glyphs": "https://tiles.versatiles.org/static/assets/fonts/{fontstack}/{range}.pbf",
+	"glyphs": "https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf",
 	"sprites": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
@@ -445,6 +445,58 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "land-waste",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "landfill"]],
+			"paint": {"fill-color": "#f6f0f6"},
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-park",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "park", "village_green", "recreation_ground"]
+			],
+			"paint": {
+				"fill-color": "#DBDFD8",
+				"fill-opacity": {"stops": [[11, 0], [12, 1]]}
+			},
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-garden",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "allotments", "garden"]],
+			"paint": {
+				"fill-color": "#DBDFD8",
+				"fill-opacity": {"stops": [[11, 0], [12, 1]]}
+			},
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-burial",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "cemetery", "grave_yard"]],
+			"paint": {"fill-color": "#f6f0f6"},
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-leisure",
+			"type": "fill",
+			"filter": [
+				"all",
+				["in", "kind", "miniature_golf", "playground", "golf_course"]
+			],
+			"paint": {"fill-color": "#f6f0f6"},
+			"source-layer": "land",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "land-rock",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "bare_rock", "scree", "shingle"]],
@@ -482,7 +534,7 @@
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "heath", "scrub"]],
 			"paint": {
-				"fill-color": "#e7e9e5",
+				"fill-color": "#DBDFD8",
 				"fill-opacity": {"stops": [[11, 0], [12, 1]]}
 			},
 			"source-layer": "land",
@@ -500,62 +552,6 @@
 			"id": "land-wetland",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "bog", "marsh", "string_bog", "swamp"]],
-			"paint": {"fill-color": "#f6f0f6"},
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-waste",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "landfill"]],
-			"paint": {"fill-color": "#f6f0f6"},
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-park",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "park", "village_green"]],
-			"paint": {
-				"fill-color": "#e7e9e5",
-				"fill-opacity": {"stops": [[11, 0], [12, 1]]}
-			},
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-garden",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "allotments", "garden"]],
-			"paint": {
-				"fill-color": "#e7e9e5",
-				"fill-opacity": {"stops": [[11, 0], [12, 1]]}
-			},
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-burial",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "cemetery", "grave_yard"]],
-			"paint": {"fill-color": "#f6f0f6"},
-			"source-layer": "land",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "land-leisure",
-			"type": "fill",
-			"filter": [
-				"all",
-				[
-					"in",
-					"kind",
-					"miniature_golf",
-					"playground",
-					"recreation_ground",
-					"golf_course"
-				]
-			],
 			"paint": {"fill-color": "#f6f0f6"},
 			"source-layer": "land",
 			"source": "versatiles-shortbread"
@@ -2813,6 +2809,441 @@
 			},
 			"layout": {"line-cap": "round", "line-join": "round"},
 			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-pedestrian",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "pedestrian"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-livingstreet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "living_street"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-residential",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "residential"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-unclassified",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "unclassified"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-tertiary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "tertiary"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-secondary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "secondary"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-primary",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "primary"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-street-trunk",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "trunk"]],
+			"layout": {
+				"text-field": "{name}",
+				"symbol-placement": "line",
+				"text-anchor": "center",
+				"text-size": {"stops": [[12, 10], [15, 13]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#D8D1D1",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"min-zoom": 12,
+			"source-layer": "street_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-neighbourhood",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "neighbourhood"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[14, 12]]},
+				"text-font": ["Noto Sans Regular"],
+				"text-transform": "uppercase"
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0C7"
+			},
+			"minzoom": 14,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-quarter",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "quarter"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[13, 13]]},
+				"text-font": ["Noto Sans Regular"],
+				"text-transform": "uppercase"
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0BF"
+			},
+			"minzoom": 13,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-suburb",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "suburb"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[11, 11], [13, 14]]},
+				"text-font": ["Noto Sans Regular"],
+				"text-transform": "uppercase"
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0B7"
+			},
+			"minzoom": 11,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-hamlet",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "hamlet"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[10, 11], [12, 14]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 10,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-village",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "village"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[9, 11], [12, 14]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 9,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-town",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "town"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[8, 11], [12, 14]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 8,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-state",
+			"type": "symbol",
+			"filter": ["all", ["in", "admin_level", 4, "4"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-transform": "uppercase",
+				"text-font": ["Noto Sans Bold"],
+				"text-size": {"stops": [[5, 8], [8, 12]]}
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#D3C2C2"
+			},
+			"minzoom": 5,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-city",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "city"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[7, 11], [10, 14]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 7,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-statecapital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "state_capital"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[6, 11], [10, 15]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 6,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-place-capital",
+			"type": "symbol",
+			"filter": ["all", ["==", "kind", "capital"]],
+			"layout": {
+				"text-field": "{name}",
+				"text-size": {"stops": [[5, 12], [10, 16]]},
+				"text-font": ["Noto Sans Regular"]
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#CEA0AC"
+			},
+			"minzoom": 5,
+			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-small",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<=", "way_area", 10000000]
+			],
+			"layout": {
+				"text-field": "{name}",
+				"text-transform": "uppercase",
+				"text-font": ["Noto Sans Bold"],
+				"text-size": {"stops": [[4, 11], [5, 14]]}
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"minzoom": 4,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-medium",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<", "way_area", 90000000],
+				[">", "way_area", 10000000]
+			],
+			"layout": {
+				"text-field": "{name}",
+				"text-transform": "uppercase",
+				"text-font": ["Noto Sans Bold"],
+				"text-size": {"stops": [[3, 11], [5, 15]]}
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"minzoom": 3,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-large",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				[">=", "way_area", 90000000]
+			],
+			"layout": {
+				"text-field": "{name}",
+				"text-transform": "uppercase",
+				"text-font": ["Noto Sans Bold"],
+				"text-size": {"stops": [[2, 11], [5, 16]]}
+			},
+			"paint": {
+				"text-halo-color": "#FFFFFF",
+				"text-halo-width": 0.1,
+				"text-halo-blur": 1,
+				"text-color": "#cbb7b7"
+			},
+			"minzoom": 2,
+			"source-layer": "boundary_labels",
 			"source": "versatiles-shortbread"
 		}
 	]
