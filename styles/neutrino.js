@@ -64,8 +64,12 @@ exports = module.exports = {
 		color: $wood,
 		opacity: { 7: 0, 8: 1 },
 	},
-	"land-{grass,park,garden,vegetation}": {
+	"land-grass": {
 		color: $grass,
+		opacity: { 11: 0, 12: 1 },
+	},
+	"land-{park,garden,vegetation}": {
+		color: color($grass).darken(0.05).saturate(0.05).hex(),
 		opacity: { 11: 0, 12: 1 },
 	},
 	"land-agriculture": {
