@@ -5,3 +5,4 @@ example.json
 lib/template-germany.json
 assets
 index.html
+bin/watch.js
