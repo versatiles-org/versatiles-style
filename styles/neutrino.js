@@ -93,110 +93,120 @@ exports = module.exports = {
 	},
 	"{tunnel-,bridge-,}street-*": {
 		color: $street,
+		size: 1,
+		lineJoin: "round",
+		lineCap: "round",
 	},
 	"{tunnel-,}street-*:outline": {
 		color: color($street).darken(0.1).hex(),
+		lineJoin: "round",
+		lineCap: "round",
 	},
-	"tunnel-street:outline": {
-		lineDasharray: [ 1, 1 ],
+	"tunnel-street-*": {
+		color: color($street).darken(0.03).hex(),
+	},
+	"tunnel-street-*:outline": {
+		color: color($street).darken(0.13).hex(),
+		lineDasharray: [ 1, 2 ],
 	},
 	"bridge-street-*:outline": {
 		color: color($street).darken(0.15).hex(),
 	},
 	// motorway
 	"{bridge-street,tunnel-street,street}-motorway:outline": {
-		size: { 5: 2, 15: 14 },
+		size: { 5: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 },
 		opacity: { 5: 0, 6: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-motorway": {
-		size: { 5: 1, 15: 10 },
+		size: { 5: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 },
 		opacity: { 5: 0, 6: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-motorway-link:outline": {
-		size: { 5: 2, 15: 9 },
-		opacity: { 5: 0, 6: 1 },
-	},
-	"{bridge-street,tunnel-street,street}-motorway-link": {
-		size: { 5: 1, 15: 7 },
-		opacity: { 5: 0, 6: 1 },
-	},
+
 	// trunk
 	"{bridge-street,tunnel-street,street}-trunk:outline": {
-		size: { 7: 2, 15: 11 },
+		size: { 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 		opacity: { 7: 0, 8: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-trunk": {
-		size: { 7: 1, 15: 9 },
+		size: { 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
 		opacity: { 7: 0, 8: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-trunk-link:outline": {
-		size: { 7: 2, 15: 11 },
-		opacity: { 7: 0, 8: 1 },
-	},
-	"{bridge-street,tunnel-street,street}-trunk-link": {
-		size: { 7: 1, 15: 9 },
-		opacity: { 7: 0, 8: 1 },
-	},
+
 	// primary
 	"{bridge-street,tunnel-street,street}-primary:outline": {
-		size: { 8: 2, 15: 10 },
-		opacity: { 8: 0, 9: 1 },
+		size: { 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
+		opacity: { 7: 0, 8: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-primary": {
-		size: { 8: 1, 15: 8 },
-		opacity: { 8: 0, 9: 1 },
+		size: { 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
+		opacity: { 7: 0, 8: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-primary-link": {
-		size: { 8: 1, 15: 7 },
-		opacity: { 8: 0, 9: 1 },
-	},
+
 	// secondary
 	"{bridge-street,tunnel-street,street}-secondary:outline": {
-		size: { 11: 2, 15: 9 },
+		size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 },
 		opacity: { 11: 0, 12: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-secondary": {
-		size: { 11: 1, 15: 7 },
+		size: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 },
 		opacity: { 11: 0, 12: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-secondary-link:outline": {
-		size: { 11: 2, 15: 8 },
-		opacity: { 11: 0, 12: 1 },
+
+	// links
+	"{bridge-street,tunnel-street,street}-motorway-link:outline": {
+		minzoom: 12,
+		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
+		opacity: { 12: 0, 13: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-secondary-link": {
-		size: { 11: 1, 15: 6 },
-		opacity: { 11: 0, 12: 1 },
+	"{bridge-street,tunnel-street,street}-motorway-link": {
+		minzoom: 12,
+		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
+		opacity: { 12: 0, 13: 1 },
 	},
+
+	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link:outline": {
+		minzoom: 13,
+		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
+		opacity: { 13: 0, 14: 1 },
+	},
+	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link": {
+		minzoom: 13,
+		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
+		opacity: { 13: 0, 14: 1 },
+	},
+
 	// minor streets
 	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}:outline": {
-		size: { 12: 2, 15: 8 },
+		size: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
 		opacity: { 12: 0, 13: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}": {
-		size: { 12: 1, 15: 6 },
+		size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 		opacity: { 12: 0, 13: 1 },
 	},
 	// service and tracks
 	"{bridge-street,tunnel-street,street}-{service,track}:outline": {
-		size: { 14: 2, 15: 6 },
+		size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 },
 		opacity: { 14: 0, 15: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-{service,track}": {
-		size: { 14: 1, 15: 4 },
+		size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 },
 		opacity: { 14: 0, 15: 1 },
 	},
-	// ways
-	"{bridge-way,tunnel-way,way}-*:outline": {
-		size: { 13: 0, 15: 3 },
-		opacity: { 14: 0, 15: 1 },
+	// ways, surface only
+	"way-{footway,path,steps}:outline": {
+		size: { 17: 0, 18: 3 },
+		opacity: { 17: 0, 18: 1 },
+		minzoom: 17,
 		color: color($foot).darken(0.05).hex(),
 	},
-	"{bridge-way,tunnel-way,way}-*": {
-		size: { 13: 0, 15: 2 },
-		opacity: { 14: 0, 15: 1 },
+	"way-{footway,path,steps}": {
+		size: { 17: 0, 18: 2 },
+		opacity: { 17: 0, 18: 1 },
+		minzoom: 17,
 		color: $foot,
 	},
-	"{bridge-street,tunnel-street,street}-pedestrian": {
+	"street-pedestrian": {
 		size: { 13: 1, 15: 3 },
 		opacity: { 13: 0, 14: 1 },
 		color: $foot,
@@ -344,7 +354,7 @@ exports = module.exports = {
 		textHaloBlur: 1,
 		symbolPlacement: "line",
 		textAnchor: "center",
-		minZoom: 12,
+		minzoom: 12,
 		size: { 12: 10, 15: 13 },
 	},
 
