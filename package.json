@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "makestyle": "node bin/mkstyle.js",
-    "makerawstyle": "node bin/mkrawstyle.js",
+    "makerawstyle": "node bin/mkrawstyle.js"
   },
   "author": "yetzt <node@yetzt.me>",
   "license": "Unlicense",
