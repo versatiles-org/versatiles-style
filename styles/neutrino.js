@@ -13,6 +13,7 @@ const $street      = "#ffffff";
 const $boundary    = "#e6ccd8";
 const $foot        = "#fef8ff"; //#e9e5f4";
 const $rail        = "#e8d5e0";
+const $label       = "#cbb7b7"; // "#ffffff";
 
 exports = module.exports = {
 	"background": {
@@ -240,5 +241,126 @@ exports = module.exports = {
 	"tunnel-transport-lightrail": {
 		opacity: { 14: 0, 15: 0.3 },
 	},
+	// labels
+	"label-boundary-*": {
+		color: $label,
+		font: "Noto Sans Bold",
+		textTransform: "uppercase",
+		textHaloColor: color($label).lighten(0.5).hex(),
+		textHaloWidth: 0.1,
+		textHaloBlur: 1,
+	},
+	"label-boundary-country-large": {
+		minzoom: 2,
+		size: { 2: 11, 5: 16 },
+	},
+	"label-boundary-country-medium": {
+		minzoom: 3,
+		size: { 3: 11, 5: 15 },
+	},
+	"label-boundary-country-small": {
+		minzoom: 4,
+		size: { 4: 11, 5: 14 },
+	},
+	"label-boundary-state": {
+		minzoom: 5,
+		color: color($label).lighten(0.05).hex(),
+		size: { 5: 8, 8: 12 },
+	},
+	"label-place-*": {
+		color: color($label).rotate(-15).saturate(1).darken(0.05).hex(),
+		font: "Noto Sans Regular",
+		textHaloColor: color($label).lighten(0.5).hex(),
+		textHaloWidth: 0.1,
+		textHaloBlur: 1,
+		size: 1,
+	},
+	"label-place-capital": {
+		minzoom: 5,
+		size: { 5: 12, 10: 16 },
+	},
+	"label-place-statecapital": {
+		minzoom: 6,
+		size: { 6: 11, 10: 15 },
+	},
+	"label-place-city": {
+		minzoom: 7,
+		size: { 7: 11, 10: 14 },
+	},
+	"label-place-city": {
+		minzoom: 7,
+		size: { 7: 11, 10: 14 },
+	},
+	"label-place-town": {
+		minzoom: 8,
+		size: { 8: 11, 12: 14 },
+	},
+	"label-place-village": {
+		minzoom: 9,
+		size: { 9: 11, 12: 14 },
+	},
+	"label-place-hamlet": {
+		minzoom: 10,
+		size: { 10: 11, 12: 14 },
+	},
+	// all the city things
+	"label-place-suburb": {
+		minzoom: 11,
+		size: { 11: 11, 13: 14 },
+		textTransform: "uppercase",
+		color: color($label).rotate(-30).saturate(1).darken(0.05).hex(),
+	},
+	"label-place-quarter": {
+		minzoom: 13,
+		size: { 13: 13 },
+		textTransform: "uppercase",
+		color: color($label).rotate(-40).saturate(1).darken(0.05).hex(),
+	},
+	"label-place-neighbourhood": {
+		minzoom: 14,
+		size: { 14: 12 },
+		textTransform: "uppercase",
+		color: color($label).rotate(-50).saturate(1).darken(0.05).hex(),
+	},
+	"label-street-*": {
+		color: $label,
+		font: "Noto Sans Regular",
+		textHaloColor: color($label).desaturate(0.5).lighten(0.1).hex(),
+		textHaloWidth: 0.1,
+		textHaloBlur: 1,
+		symbolPlacement: "line",
+		textAnchor: "center",
+		minZoom: 12,
+		size: { 12: 10, 15: 13 },
+	},
 
 };
+
+/*
+{
+  "id": "label-boundary-country-any",
+  "type": "symbol",
+  "filter": [
+	 "all",
+	 ["in", "admin_level", 2, "2"],
+	 ["!has", "land_area"]
+  ],
+  "layout": {
+	 "text-field": "{name}",
+	 "text-font": ["Noto Sans Bold"],
+	 "text-size": {
+		"stops": [[2, 10], [5, 16]]
+	 },
+	 "text-transform": "uppercase",
+	 "text-padding": 3
+  },
+  "paint": {
+	 "text-color": "rgba(203, 183, 183, 1)",
+	 "text-halo-width": 0.1,
+	 "text-halo-blur": 1,
+	 "text-halo-color": "rgba(255, 255, 255, 1)"
+  },
+  "source-layer": "boundary_labels",
+  "source": "versatiles-shortbread"
+}
+*/
