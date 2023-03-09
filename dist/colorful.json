@@ -828,8 +828,7 @@
 			"paint": {
 				"line-color": "#EBB586",
 				"line-dasharray": [1, 0.3],
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -869,8 +868,7 @@
 			"paint": {
 				"line-color": "#EBB586",
 				"line-dasharray": [1, 0.3],
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -900,7 +898,7 @@
 						[20, 144]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -918,8 +916,7 @@
 			"paint": {
 				"line-color": "#EBB586",
 				"line-dasharray": [1, 0.3],
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -1222,8 +1219,7 @@
 			],
 			"paint": {
 				"line-color": "#FFF6D4",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "butt"},
 			"minzoom": 13,
@@ -1261,8 +1257,7 @@
 			],
 			"paint": {
 				"line-color": "#FFF6D4",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "butt"},
 			"minzoom": 13,
@@ -1291,7 +1286,7 @@
 						[20, 140]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "butt"},
 			"source-layer": "streets",
@@ -1308,8 +1303,7 @@
 			],
 			"paint": {
 				"line-color": "#FFF6D4",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "butt"},
 			"minzoom": 13,
@@ -1355,8 +1349,7 @@
 			],
 			"paint": {
 				"line-color": "#FFDDAF",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[12, 0], [13, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "butt"},
 			"minzoom": 12,
@@ -1668,8 +1661,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -1709,8 +1701,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -1740,7 +1731,7 @@
 						[20, 144]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -1758,8 +1749,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2105,8 +2095,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2146,8 +2135,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2177,7 +2165,7 @@
 						[20, 140]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -2195,8 +2183,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2244,8 +2231,7 @@
 			],
 			"paint": {
 				"line-color": "#ffcc88",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[12, 0], [13, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 12,
@@ -2323,7 +2309,7 @@
 			"id": "bridge",
 			"type": "fill",
 			"filter": ["all"],
-			"paint": {"fill-color": "#F8F2EA"},
+			"paint": {"fill-color": "#F6EFE7"},
 			"source-layer": "bridges",
 			"source": "versatiles-shortbread"
 		},
@@ -2508,8 +2494,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"minzoom": 13,
 			"source-layer": "streets",
@@ -2545,8 +2530,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"minzoom": 13,
 			"source-layer": "streets",
@@ -2574,7 +2558,7 @@
 						[20, 144]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -2590,8 +2574,7 @@
 			],
 			"paint": {
 				"line-color": "#e9ac77",
-				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 2], [14, 3], [16, 7], [18, 14], [20, 40]]}
 			},
 			"minzoom": 13,
 			"source-layer": "streets",
@@ -2884,8 +2867,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2923,8 +2905,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -2953,7 +2934,7 @@
 						[20, 140]
 					]
 				},
-				"line-opacity": {"stops": [[7, 0], [8, 1]]}
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -2970,8 +2951,7 @@
 			],
 			"paint": {
 				"line-color": "#ffeeaa",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 13,
@@ -3017,8 +2997,7 @@
 			],
 			"paint": {
 				"line-color": "#ffcc88",
-				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]},
-				"line-opacity": {"stops": [[12, 0], [13, 1]]}
+				"line-width": {"stops": [[12, 1], [14, 2], [16, 5], [18, 12], [20, 38]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"minzoom": 12,
@@ -3102,10 +3081,28 @@
 			"paint": {
 				"line-blur": 1,
 				"line-color": "#FFFFFF",
-				"line-width": {"stops": [[2, 2], [10, 6]]},
-				"line-opacity": {"stops": [[2, 0], [4, 0.3]]}
+				"line-width": {"stops": [[2, 2], [10, 8]]},
+				"line-opacity": {"stops": [[2, 0], [4, 0.75]]}
 			},
 			"layout": {"line-cap": "round", "line-join": "round"},
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "boundary-country-disputed:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "disputed", true],
+				["!=", "maritime", true],
+				["!=", "coastline", true]
+			],
+			"paint": {
+				"line-color": "#FFFFFF",
+				"line-width": {"stops": [[2, 2], [10, 8]]},
+				"line-opacity": {"stops": [[2, 0], [4, 0.75]]}
+			},
 			"source-layer": "boundaries",
 			"source": "versatiles-shortbread"
 		},
@@ -3122,8 +3119,8 @@
 			"paint": {
 				"line-blur": 1,
 				"line-color": "#FFFFFF",
-				"line-width": {"stops": [[7, 3], [10, 5]]},
-				"line-opacity": {"stops": [[7, 0], [8, 0.3]]}
+				"line-width": {"stops": [[7, 3], [10, 4]]},
+				"line-opacity": {"stops": [[7, 0], [8, 0.75]]}
 			},
 			"layout": {"line-cap": "round", "line-join": "round"},
 			"source-layer": "boundaries",
@@ -3149,6 +3146,26 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "boundary-country-disputed",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "admin_level", 2],
+				["==", "disputed", true],
+				["!=", "maritime", true],
+				["!=", "coastline", true]
+			],
+			"paint": {
+				"line-width": {"stops": [[2, 1], [10, 4]]},
+				"line-opacity": {"stops": [[2, 0], [4, 1]]},
+				"line-dasharray": [2, 1],
+				"line-color": "#BEBCCF"
+			},
+			"layout": {"line-cap": "square"},
+			"source-layer": "boundaries",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "boundary-state",
 			"type": "line",
 			"filter": [
@@ -3160,8 +3177,7 @@
 			],
 			"paint": {
 				"line-color": "#B5B5C9",
-				"line-dasharray": [0, 1.5, 1, 1.5],
-				"line-width": {"stops": [[7, 2], [10, 3]]},
+				"line-width": {"stops": [[7, 1], [10, 2]]},
 				"line-opacity": {"stops": [[7, 0], [8, 1]]}
 			},
 			"layout": {"line-cap": "round", "line-join": "round"},
@@ -3481,6 +3497,7 @@
 			"layout": {
 				"text-field": "{name}",
 				"text-transform": "uppercase",
+				"text-anchor": "bottom",
 				"text-font": ["Noto Sans Bold"],
 				"text-size": {"stops": [[5, 8], [8, 12]]}
 			},
@@ -3552,6 +3569,91 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "label-boundary-country-small:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<=", "way_area", 10000000]
+			],
+			"layout": {
+				"text-field": "{name_en}",
+				"text-transform": "uppercase",
+				"text-anchor": "top",
+				"text-offset": [0, 0.2],
+				"text-padding": 0,
+				"text-optional": true,
+				"text-font": ["Noto Sans Regular"],
+				"text-size": {"stops": [[4, 8], [5, 11]]}
+			},
+			"paint": {
+				"text-halo-color": "rgba(255, 255, 255, 0.8)",
+				"text-halo-width": 2,
+				"text-halo-blur": 1,
+				"text-color": "#333344"
+			},
+			"minzoom": 4,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-medium:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<", "way_area", 90000000],
+				[">", "way_area", 10000000]
+			],
+			"layout": {
+				"text-field": "{name_en}",
+				"text-transform": "uppercase",
+				"text-anchor": "top",
+				"text-offset": [0, 0.2],
+				"text-padding": 0,
+				"text-optional": true,
+				"text-font": ["Noto Sans Regular"],
+				"text-size": {"stops": [[3, 8], [5, 12]]}
+			},
+			"paint": {
+				"text-halo-color": "rgba(255, 255, 255, 0.8)",
+				"text-halo-width": 2,
+				"text-halo-blur": 1,
+				"text-color": "#333344"
+			},
+			"minzoom": 3,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-large:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				[">=", "way_area", 90000000]
+			],
+			"layout": {
+				"text-field": "{name_en}",
+				"text-transform": "uppercase",
+				"text-anchor": "top",
+				"text-offset": [0, 0.2],
+				"text-padding": 0,
+				"text-optional": true,
+				"text-font": ["Noto Sans Regular"],
+				"text-size": {"stops": [[2, 8], [5, 13]]}
+			},
+			"paint": {
+				"text-halo-color": "rgba(255, 255, 255, 0.8)",
+				"text-halo-width": 2,
+				"text-halo-blur": 1,
+				"text-color": "#333344"
+			},
+			"minzoom": 2,
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "label-boundary-country-small",
 			"type": "symbol",
 			"filter": [
@@ -3562,6 +3664,7 @@
 			"layout": {
 				"text-field": "{name}",
 				"text-transform": "uppercase",
+				"text-anchor": "bottom",
 				"text-font": ["Noto Sans Bold"],
 				"text-size": {"stops": [[4, 11], [5, 14]]}
 			},
@@ -3587,6 +3690,7 @@
 			"layout": {
 				"text-field": "{name}",
 				"text-transform": "uppercase",
+				"text-anchor": "bottom",
 				"text-font": ["Noto Sans Bold"],
 				"text-size": {"stops": [[3, 11], [5, 15]]}
 			},
@@ -3611,6 +3715,7 @@
 			"layout": {
 				"text-field": "{name}",
 				"text-transform": "uppercase",
+				"text-anchor": "bottom",
 				"text-font": ["Noto Sans Bold"],
 				"text-size": {"stops": [[2, 11], [5, 16]]}
 			},
