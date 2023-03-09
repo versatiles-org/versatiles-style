@@ -13,6 +13,7 @@
 * sprites and patterns, revisit sprites
 * rail tunnels
 * colorful rails
+* waterway width
 
 ### styles
 
