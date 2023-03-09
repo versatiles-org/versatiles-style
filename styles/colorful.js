@@ -28,6 +28,7 @@ const $labelHalo      = "#ffffffcc";
 const $agriculture    = "#f8eeee"; // ←
 const $site           = "#ebe8e6";
 const $rail           = "#b1bbc4";
+const $cycle          = "#eff9ff";
 
 
 exports = module.exports = {
@@ -169,35 +170,44 @@ exports = module.exports = {
 	"bridge": {
 		color: color($land).darken(0.02).hex(),
 		fillAntialias: true,
-	},
-	"bridge:outline": {
-		color: "#C0AFA744", //FIXME
-		fillAntialias: true,
-		fillTranslate: [0, 2],
+		opacity: 0.8,
 	},
 
 	// street
 
-	"{tunnel-,bridge-,}street-*": {
-		color: $street,
-		size: 1,
-		lineJoin: "round",
-		lineCap: "round",
-	},
-	"{tunnel-,}street-*:outline": {
+	// colors and joins
+	"{tunnel-,bridge-,}street-*:outline": {
 		color: $streetbg,
 		lineJoin: "round",
-		lineCap: "round",
 	},
-	"tunnel-street-*": {
-		color: color($street).darken(0.03).hex(),
+	"{tunnel-,bridge-,}street-*": {
+		color: $street,
+		lineJoin: "round",
 	},
 	"tunnel-street-*:outline": {
 		color: color($street).darken(0.13).hex(),
 	},
+	"tunnel-street-*": {
+		color: color($street).darken(0.03).hex(),
+	},
 	"bridge-street-*:outline": {
 		color: color($street).darken(0.15).hex(),
 	},
+
+	// line caps
+	"{tunnel-,}{street,way}-*": {
+		lineCap: "round",
+	},
+	"{tunnel-,}{street,way}-*:outline": {
+		lineCap: "round",
+	},
+	"bridge-{street,way}-*": {
+		lineCap: "butt",
+	},
+	"bridge-{street,way}-*:outline": {
+		lineCap: "butt",
+	},
+
 
 	// special color: motorway
 	"{bridge-,}street-motorway{-link,}:outline": {
@@ -296,14 +306,15 @@ exports = module.exports = {
 	},
 
 	// minor streets
-	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}:outline": {
+	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*:outline": {
 		size: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
 		opacity: { 12: 0, 13: 1 },
 	},
-	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}": {
+	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*": {
 		size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 		opacity: { 12: 0, 13: 1 },
 	},
+
 	// service and tracks
 	"{bridge-street,tunnel-street,street}-{service,track}:outline": {
 		size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 },
@@ -313,35 +324,53 @@ exports = module.exports = {
 		size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 },
 		opacity: { 14: 0, 15: 1 },
 	},
+
+
 	// ways, surface only
-	"{bridge-,}way-{footway,path,steps}:outline": {
+	"{bridge-,tunnel-,}way-*:outline": {
 		size: { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
 		minzoom: 15,
+	},
+	"{bridge-,tunnel-,}way-*": {
+		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
+		minzoom: 15,
+	},
+
+	// foot
+	"{bridge-,}way-{footway,path,steps}:outline": {
 		color: color($foot).darken(0.1).hex(),
-		lineCap: "round",
-		lineJoin: "round",
 	},
 	"{bridge-,}way-{footway,path,steps}": {
-		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
-		minzoom: 15,
 		color: color($foot).lighten(0.02).hex(),
-		lineCap: "round",
-		lineJoin: "round",
 	},
 	"tunnel-way-{footway,path,steps}:outline": {
-		size: { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
-		minzoom: 15,
 		color: color($foot).darken(0.1).desaturate(0.5).hex(),
-		lineCap: "round",
-		lineJoin: "round",
 	},
 	"tunnel-way-{footway,path,steps}": {
-		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
-		minzoom: 15,
 		color: color($foot).darken(0.02).desaturate(0.5).hex(),
 		lineDasharray: [ 1, 0.2 ],
+	},
+
+	// cycleway
+	"{bridge-,}way-cycleway:outline": {
+		color: color($cycle).darken(0.1).hex(),
+	},
+	"{bridge-,}way-cycleway": {
+		color: $cycle,
+	},
+	"tunnel-way-cycleway:outline": {
+		color: color($cycle).darken(0.1).desaturate(0.5).hex(),
+	},
+	"tunnel-way-cycleway": {
+		color: color($cycle).darken(0.02).desaturate(0.5).hex(),
+		lineDasharray: [ 1, 0.2 ],
+	},
+
+	// cycle streets
+	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle": {
 		lineCap: "butt",
-		lineJoin: "round",
+
+		color: $cycle,
 	},
 
 	"street-pedestrian": {
