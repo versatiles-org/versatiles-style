@@ -124,7 +124,7 @@ exports = module.exports = {
 		fillTranslate: [ -2, -2 ],
 	},
 	"bridge": {
-		color: color($land).darken(0.01).hex(),
+		color: color($land).darken(0.02).hex(),
 	},
 	"{tunnel-,bridge-,}street-*": {
 		color: $street,
