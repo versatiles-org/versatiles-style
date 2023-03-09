@@ -17,6 +17,7 @@ const $trunkbg        = "#e9ac77"; // make different?
 const $buildingbg     = "#dfdbd7";
 const $building       = "#f2eae2";
 const $boundary       = "#B5B5C9";
+const $disputed       = "#BEBCCF";
 const $residential    = "#EAE6E133";
 const $commercial     = "#F2CACA44";
 const $industrial     = "#FFF4C255";
@@ -44,23 +45,27 @@ exports = module.exports = {
 		lineCap: "round",
 		lineJoin: "round",
 	},
-	"boundary-country:outline": {
-		size: { 2: 2, 10: 6, },
-		opacity: { 2: 0, 4: 0.3 },
+	"boundary-country{-disputed,}:outline": {
+		size: { 2: 2, 10: 8, },
+		opacity: { 2: 0, 4: 0.75 },
 		color: color($land).lighten(0.05).hex(),
 	},
-	"boundary-country": {
+	"boundary-country{-disputed,}": {
 		size: { 2: 1, 10: 4, },
 		opacity: { 2: 0, 4: 1 },
 	},
+	"boundary-country-disputed": {
+		color: $disputed,
+		lineDasharray: [ 2, 1 ],
+		lineCap: "square",
+	},
 	"boundary-state:outline": {
-		size: { 7: 3, 10: 5, },
-		opacity: { 7: 0, 8: 0.3 },
+		size: { 7: 3, 10: 4, },
+		opacity: { 7: 0, 8: 0.75 },
 	},
 	"boundary-state": {
-		size: { 7: 2, 10: 3, },
+		size: { 7: 1, 10: 2, },
 		opacity: { 7: 0, 8: 1 },
-		lineDasharray: [0, 1.5, 1, 1.5],
 	},
 	"water-*": {
 		color: $water,
