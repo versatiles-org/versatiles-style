@@ -129,7 +129,7 @@ exports = module.exports = {
 	// site
 
 	"site-{bicycleparking,parking}": {
-		color: $site,
+		color: $site, // FIXME
 	},
 
 	// building
