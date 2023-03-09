@@ -200,14 +200,14 @@ exports = module.exports = {
 		opacity: { 7: 0, 8: 1 },
 	},
 
-	// primary
+	// primary, z8+
 	"{bridge-street,tunnel-street,street}-primary:outline": {
 		size: { 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
-		opacity: { 7: 0, 8: 1 },
+		opacity: { 8: 0, 9: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-primary": {
 		size: { 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
-		opacity: { 7: 0, 8: 1 },
+		opacity: { 8: 0, 9: 1 },
 	},
 
 	// secondary
