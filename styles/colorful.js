@@ -31,9 +31,14 @@ const $rail           = "#e8d5e0";
 
 
 exports = module.exports = {
+	// background
+
 	"background": {
 		color: $land,
 	},
+
+	// boundary
+
 	"boundary-{country,state}:outline": {
 		color: color($land).lighten(0.1).hex(),
 		lineBlur: 1,
@@ -67,8 +72,13 @@ exports = module.exports = {
 		size: { 7: 1, 10: 2, },
 		opacity: { 7: 0, 8: 1 },
 	},
+
+	// water
+
 	"water-*": {
 		color: $water,
+		lineCap: "round",
+		lineJoin: "round",
 	},
 	"water-area": {
 		opacity: { 4: 0, 6: 1 },
@@ -116,9 +126,14 @@ exports = module.exports = {
 		opacity: { 10: 0, 11: 1 },
 	},
 
+	// site
+
 	"site-{bicycleparking,parking}": {
 		color: $site,
 	},
+
+	// building
+
 	"building:outline": {
 		color: $buildingbg,
 		opacity: { 14: 0, 15: 1 },
@@ -128,9 +143,15 @@ exports = module.exports = {
 		opacity: { 14: 0, 15: 1 },
 		fillTranslate: [ -2, -2 ],
 	},
+
+	// bridge
+
 	"bridge": {
 		color: color($land).darken(0.02).hex(),
 	},
+
+	// street
+
 	"{tunnel-,bridge-,}street-*": {
 		color: $street,
 		size: 1,
@@ -342,7 +363,9 @@ exports = module.exports = {
 	"tunnel-transport-lightrail": {
 		opacity: { 14: 0, 15: 0.3 },
 	},
+
 	// labels
+
 	"label-boundary-*": {
 		color: $label,
 		font: "Noto Sans Bold",
@@ -471,32 +494,3 @@ exports = module.exports = {
 	},
 
 };
-
-/*
-{
-  "id": "label-boundary-country-any",
-  "type": "symbol",
-  "filter": [
-	 "all",
-	 ["in", "admin_level", 2, "2"],
-	 ["!has", "land_area"]
-  ],
-  "layout": {
-	 "text-field": "{name}",
-	 "text-font": ["Noto Sans Bold"],
-	 "text-size": {
-		"stops": [[2, 10], [5, 16]]
-	 },
-	 "text-transform": "uppercase",
-	 "text-padding": 3
-  },
-  "paint": {
-	 "text-color": "rgba(203, 183, 183, 1)",
-	 "text-halo-width": 0.1,
-	 "text-halo-blur": 1,
-	 "text-halo-color": "rgba(255, 255, 255, 1)"
-  },
-  "source-layer": "boundary_labels",
-  "source": "versatiles-shortbread"
-}
-*/
