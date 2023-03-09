@@ -345,6 +345,7 @@ exports = module.exports = {
 		textHaloColor: $labelHalo,
 		textHaloWidth: 2,
 		textHaloBlur: 1,
+		textAnchor: "bottom",
 	},
 	"label-boundary-country-large": {
 		minzoom: 2,
@@ -358,6 +359,32 @@ exports = module.exports = {
 		minzoom: 4,
 		size: { 4: 11, 5: 14 },
 	},
+
+	"label-boundary-*:en": {
+		color: $label,
+		font: "Noto Sans Regular",
+		textTransform: "uppercase",
+		textHaloColor: $labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		textAnchor: "top",
+		textOffset: [0, 0.2],
+		textPadding: 0,
+		textOptional: true,
+	},
+	"label-boundary-country-large:en": {
+		minzoom: 2,
+		size: { 2: 8, 5: 13 },
+	},
+	"label-boundary-country-medium:en": {
+		minzoom: 3,
+		size: { 3: 8, 5: 12 },
+	},
+	"label-boundary-country-small:en": {
+		minzoom: 4,
+		size: { 4: 8, 5: 11 },
+	},
+
 	"label-boundary-state": {
 		minzoom: 5,
 		color: color($label).lighten(0.05).hex(),
