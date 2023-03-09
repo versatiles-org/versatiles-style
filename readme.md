@@ -13,3 +13,9 @@ make map styles programatically
 layers in `lib/layers.js`
 template in `lib/template.json`
 decoration in `lib/decorate.js`
+
+## styles
+
+* [colorful](https://tiles.versatiles.org/colorful.html) - a bright full featured map
+* [neutrino](https://tiles.versatiles.org/neutrino.html) - a light basemap
+* [eclipse](https://tiles.versatiles.org/eclipse.html) - a dark basemap
