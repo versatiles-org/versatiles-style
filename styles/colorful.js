@@ -90,6 +90,26 @@ exports = module.exports = {
 		color: $land,
 		opacity: { 12: 0, 13: 1 },
 	},
+
+	"water-river": {
+		lineWidth: { 9: 1, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
+		opacity: { 9: 0, 10: 1 },
+	},
+	"water-canal": {
+		lineWidth: { 9: 1, 10: 2, 15: 4, 17: 8, 18: 17, 20: 50 },
+		opacity: { 9: 0, 10: 1 },
+	},
+	"water-stream": {
+		lineWidth: { 13: 1, 15: 2, 17: 6, 18: 12, 20: 30 },
+		opacity: { 13: 0, 14: 1 },
+	},
+	"water-ditch": {
+		lineWidth: { 14: 1, 17: 4, 18: 8, 20: 20 },
+		opacity: { 14: 0, 15: 1 },
+	},
+
+	// land
+
 	"land-*": {
 		color: $land,
 	},
