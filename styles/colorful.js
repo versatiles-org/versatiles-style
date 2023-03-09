@@ -2,10 +2,10 @@
 
 const color = require("color");
 
-const $land           = "#F9F4EE";
-const $water          = "#BEDDF3";
+const $land           = "#f9f4ee";
+const $water          = "#beddf3";
 const $glacier        = "#ffffff";
-const $wood           = "#66AA44";
+const $wood           = "#66aa44";
 const $grass          = "#d8e8c8";
 const $park           = "#d9d9a5";
 const $street         = "#ffffff";
@@ -16,12 +16,12 @@ const $trunk          = "#ffeeaa";
 const $trunkbg        = "#e9ac77"; // make different?
 const $buildingbg     = "#dfdbd7";
 const $building       = "#f2eae2";
-const $boundary       = "#B5B5C9";
-const $disputed       = "#BEBCCF";
-const $residential    = "#EAE6E133";
-const $commercial     = "#F2CACA44";
-const $industrial     = "#FFF4C255";
-const $foot           = "#FBEBFF";
+const $boundary       = "#b5b5c9";
+const $disputed       = "#bebccf";
+const $residential    = "#eae6e133";
+const $commercial     = "#f2caca44";
+const $industrial     = "#fff4c255";
+const $foot           = "#fbebff";
 const $label          = "#333344";
 const $labelHalo      = "#ffffffcc";
 
