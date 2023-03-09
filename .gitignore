@@ -6,3 +6,4 @@ lib/template-germany.json
 assets
 index.html
 bin/watch.js
+bin/deploy.sh
