@@ -224,23 +224,23 @@ exports = module.exports = {
 	"{bridge-street,tunnel-street,street}-motorway-link:outline": {
 		minzoom: 12,
 		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
-		opacity: { 12: 0, 13: 1 },
+//		opacity: { 12: 0, 13: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-motorway-link": {
 		minzoom: 12,
 		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
-		opacity: { 12: 0, 13: 1 },
+//		opacity: { 12: 0, 13: 1 },
 	},
 
 	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link:outline": {
 		minzoom: 13,
 		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
-		opacity: { 13: 0, 14: 1 },
+//		opacity: { 13: 0, 14: 1 },
 	},
 	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link": {
 		minzoom: 13,
 		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
-		opacity: { 13: 0, 14: 1 },
+//		opacity: { 13: 0, 14: 1 },
 	},
 
 	// minor streets
