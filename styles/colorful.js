@@ -27,7 +27,7 @@ const $labelHalo      = "#ffffffcc";
 
 const $agriculture    = "#f8eeee"; // ←
 const $site           = "#ebe8e6";
-const $rail           = "#e8d5e0";
+const $rail           = "#b1bbc4";
 
 
 exports = module.exports = {
@@ -353,13 +353,14 @@ exports = module.exports = {
 		color: color($foot).lighten(0.02).hex(),
 		opacity: { 14: 0, 15: 1 },
 	},
+
 	// rail
-	"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": {
+	"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": { // HERE
 		color: $rail,
 		size: { 8: 1, 12: 1, 15: 3 },
 	},
 	"{tunnel-,bridge-,}transport-{rail,lightrail}": {
-		color: color($rail).lighten(0.1).hex(),
+		color: color($rail).lighten(0.25).hex(),
 		size: { 8: 1, 12: 1, 15: 2 },
 		lineDasharray: [ 2, 2 ],
 	},
