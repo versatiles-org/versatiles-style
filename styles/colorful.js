@@ -148,6 +148,12 @@ exports = module.exports = {
 
 	"bridge": {
 		color: color($land).darken(0.02).hex(),
+		fillAntialias: true,
+	},
+	"bridge:outline": {
+		color: "#C0AFA744", //FIXME
+		fillAntialias: true,
+		fillTranslate: [0, 2],
 	},
 
 	// street
