@@ -369,7 +369,7 @@ exports = module.exports = {
 		color: $foot,
 	},
 	"street-pedestrian-zone": {
-		color: color($foot).lighten(0.02).hex(),
+		color: color($foot).lighten(0.02).hex()+"C0", // make 75% opaque
 		opacity: { 14: 0, 15: 1 },
 	},
 
