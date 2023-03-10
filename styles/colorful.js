@@ -407,6 +407,14 @@ exports = module.exports = {
 	},
 	"tunnel-transport-lightrail": {
 		opacity: { 14: 0, 15: 0.3 },
+
+	// ferry
+	"transport-ferry": {
+		minzoom: 10,
+		color: color($water).darken(0.1).hex(),
+		size: { 10: 1, 13: 2, 14: 3, 16: 4, 17: 6 },
+		opacity: { 10: 0, 11: 1 },
+		lineDasharray: [ 1, 1 ],
 	},
 
 	// labels
