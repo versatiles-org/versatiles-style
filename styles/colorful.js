@@ -260,7 +260,6 @@ exports = module.exports = {
 		lineCap: "butt",
 	},
 
-
 	// special color: motorway
 	"{bridge-,}street-motorway{-link,}:outline": {
 		color: $motorwaybg,
@@ -371,7 +370,6 @@ exports = module.exports = {
 		size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 },
 		opacity: { 14: 0, 15: 1 },
 	},
-
 
 	// ways, surface only
 	"{bridge-,tunnel-,}way-*:outline": {
