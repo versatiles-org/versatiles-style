@@ -28,6 +28,7 @@ const $labelHalo      = "#ffffffcc";
 const $agriculture    = "#f8eeee"; // ←
 const $site           = "#ebe8e6";
 const $rail           = "#b1bbc4";
+const $subway         = "#a6b8c7";
 const $cycle          = "#eff9ff";
 
 
@@ -373,15 +374,38 @@ exports = module.exports = {
 	},
 
 	// rail
-	"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": { // HERE
+	"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": {
 		color: $rail,
-		size: { 8: 1, 12: 1, 15: 3 },
+		size: { 8: 1, 13: 1, 15: 3, 16: 4, 18: 8, 19: 11, 20: 14 },
 	},
 	"{tunnel-,bridge-,}transport-{rail,lightrail}": {
 		color: color($rail).lighten(0.25).hex(),
-		size: { 8: 1, 12: 1, 15: 2 },
+		size: { 8: 1, 13: 1, 15: 2, 16: 3, 18: 6, 19: 8, 20: 10 },
 		lineDasharray: [ 2, 2 ],
 	},
+	// subway
+	"{tunnel-,bridge-,}transport-subway:outline": {
+		color: $subway,
+		size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 },
+	},
+	"{tunnel-,bridge-,}transport-subway": {
+		color: color($subway).lighten(0.25).hex(),
+		size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
+		lineDasharray: [ 2, 2 ],
+	},
+
+	"{tunnel-,bridge-,}transport-{tram,narrowgauge,funicular,monorail}:outline": {
+		minzoom: 15,
+		color: $rail,
+		size: { 15: 0, 16: 5, 18: 7, 20: 20 },
+		lineDasharray: [ 0.1, 0.5 ],
+	},
+	"{tunnel-,bridge-,}transport-{tram,narrowgauge,funicular,monorail}": {
+		minzoom: 13,
+		size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 },
+		color: $rail,
+	},
+
 	// bridge
 	"{bridge-,}transport-rail:outline": {
 		opacity: { 8: 0, 9: 1 },
@@ -389,10 +413,10 @@ exports = module.exports = {
 	"{bridge-,}transport-rail": {
 		opacity: { 14: 0, 15: 1 },
 	},
-	"{bridge-,}transport-lightrail:outline": {
+	"{bridge-,}transport-{lightrail,subway}:outline": {
 		opacity: { 11: 0, 12: 1 },
 	},
-	"{bridge-,}transport-lightrail": {
+	"{bridge-,}transport-{lightrail,subway}": {
 		opacity: { 14: 0, 15: 1 },
 	},
 	// tunnel
@@ -402,11 +426,12 @@ exports = module.exports = {
 	"tunnel-transport-rail": {
 		opacity: { 14: 0, 15: 0.3 },
 	},
-	"tunnel-transport-lightrail:outline": {
-		opacity: { 11: 0, 12: 0.3 },
+	"tunnel-transport-{lightrail,subway}:outline": {
+		opacity: { 11: 0, 12: 0.5 },
 	},
-	"tunnel-transport-lightrail": {
-		opacity: { 14: 0, 15: 0.3 },
+	"tunnel-transport-{lightrail,subway}": {
+		opacity: { 14: 0, 15: 1 },
+	},
 
 	// ferry
 	"transport-ferry": {
