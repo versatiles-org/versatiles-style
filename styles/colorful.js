@@ -181,7 +181,7 @@ exports = module.exports = {
 		color: $danger,
 		fillOutlineColor: $danger,
 		opacity: 0.3,
-		icon: "pattern-dark-hatched-thick-12",
+		icon: "pattern-dark-warning-12",
 	},
 	"site-hospital": {
 		color: $hospital,
@@ -189,7 +189,7 @@ exports = module.exports = {
 	},
 	"site-prison": {
 		color: $prison,
-		icon: "pattern-dark-diamonds-12",
+		icon: "pattern-dark-striped-12",
 		opacity: 0.1,
 	},
 	"site-construction": {
