@@ -7,7 +7,7 @@
 		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
 	},
 	"glyphs": "https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf",
-	"sprites": "https://tiles.versatiles.org/sprites/sprites",
+	"sprite": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
 			"tilejson": "3.0.0",
