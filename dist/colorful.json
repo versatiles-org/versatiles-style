@@ -724,6 +724,92 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "airport-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "runway", "taxiway"]],
+			"paint": {"fill-color": "#cfcdca", "fill-opacity": 0.1},
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-taxiway:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "taxiway"]],
+			"paint": {
+				"line-color": "#cfcdca",
+				"line-width": {
+					"stops": [[13, 0], [14, 2], [15, 10], [16, 14], [18, 20], [20, 40]]
+				}
+			},
+			"layout": {"line-join": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-runway:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "runway"]],
+			"paint": {
+				"line-color": "#cfcdca",
+				"line-width": {
+					"stops": [
+						[11, 0],
+						[12, 6],
+						[13, 9],
+						[14, 16],
+						[15, 24],
+						[16, 40],
+						[17, 100],
+						[18, 160],
+						[20, 300]
+					]
+				}
+			},
+			"layout": {"line-join": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-taxiway",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "taxiway"]],
+			"paint": {
+				"line-color": "#ffffff",
+				"line-width": {
+					"stops": [[13, 0], [14, 1], [15, 8], [16, 12], [18, 18], [20, 36]]
+				},
+				"line-opacity": {"stops": [[13, 0], [14, 1]]}
+			},
+			"layout": {"line-join": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-runway",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "runway"]],
+			"paint": {
+				"line-color": "#ffffff",
+				"line-width": {
+					"stops": [
+						[11, 0],
+						[12, 5],
+						[13, 8],
+						[14, 14],
+						[15, 22],
+						[16, 38],
+						[17, 98],
+						[18, 158],
+						[20, 298]
+					]
+				},
+				"line-opacity": {"stops": [[11, 0], [12, 1]]}
+			},
+			"layout": {"line-join": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "building:outline",
 			"type": "fill",
 			"filter": ["all"],
