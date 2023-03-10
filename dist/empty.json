@@ -7,7 +7,7 @@
 		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
 	},
 	"glyphs": "https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf",
-	"sprites": "https://tiles.versatiles.org/sprites/sprites",
+	"sprite": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
 			"tilejson": "3.0.0",
@@ -294,8 +294,7 @@
 		}
 	},
 	"layers": [
-		"background",
-		{"type": "background"},
+		{"id": "background", "type": "background"},
 		{
 			"id": "water-ocean",
 			"type": "fill",
@@ -305,14 +304,14 @@
 		{
 			"id": "water-area",
 			"type": "fill",
-			"filter": ["all", ["in", "kind", "water"]],
+			"filter": ["all", ["==", "kind", "water"]],
 			"source-layer": "water_polygons",
 			"source": "versatiles-shortbread"
 		},
 		{
 			"id": "water-area-river",
 			"type": "fill",
-			"filter": ["all", ["in", "kind", "river"]],
+			"filter": ["all", ["==", "kind", "river"]],
 			"source-layer": "water_polygons",
 			"source": "versatiles-shortbread"
 		},
@@ -324,23 +323,16 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "water-glacier",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "glacier"]],
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "water-dam-area",
 			"type": "fill",
-			"filter": ["all", ["in", "kind", "dam"]],
+			"filter": ["all", ["==", "kind", "dam"]],
 			"source-layer": "dam_polygons",
 			"source": "versatiles-shortbread"
 		},
 		{
 			"id": "water-dam",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "dam"]],
+			"filter": ["all", ["==", "kind", "dam"]],
 			"source-layer": "dam_lines",
 			"source": "versatiles-shortbread"
 		},
@@ -356,6 +348,13 @@
 			"type": "line",
 			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
 			"source-layer": "pier_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "land-glacier",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "glacier"]],
+			"source-layer": "water_polygons",
 			"source": "versatiles-shortbread"
 		},
 		{
@@ -612,17 +611,38 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "airport-taxiway:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "taxiway"]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "airport-runway:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "runway"]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "airport-taxiway",
-			"type": "fill",
+			"type": "line",
 			"filter": ["all", ["==", "kind", "taxiway"]],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
 			"id": "airport-runway",
-			"type": "fill",
+			"type": "line",
 			"filter": ["all", ["==", "kind", "runway"]],
 			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "building:outline",
+			"type": "fill",
+			"filter": ["all"],
+			"source-layer": "buildings",
 			"source": "versatiles-shortbread"
 		},
 		{
@@ -633,23 +653,93 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-motorway:outline",
+			"id": "tunnel-street-pedestrian-zone",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-footway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-steps:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-path:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-cycleway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "track"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
-				["==", "tunnel", true]
+				["==", "kind", "service"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-motorway-link:outline",
+			"id": "tunnel-street-livingstreet:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "residential"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "tertiary"],
 				["==", "link", true],
 				["==", "tunnel", true]
 			],
@@ -657,36 +747,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-trunk:outline",
+			"id": "tunnel-street-secondary-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-trunk-link:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-primary:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
@@ -705,23 +771,23 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-secondary:outline",
+			"id": "tunnel-street-trunk-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-secondary-link:outline",
+			"id": "tunnel-street-motorway-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["==", "tunnel", true]
 			],
@@ -741,7 +807,203 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-tertiary-link:outline",
+			"id": "tunnel-street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-footway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-steps",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-path",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-way-cycleway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "track"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-livingstreet",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "residential"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "tunnel", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-tertiary-link",
 			"type": "line",
 			"filter": [
 				"all",
@@ -753,243 +1015,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-unclassified:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-residential:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-livingstreet:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-service:outline",
+			"id": "tunnel-street-secondary-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
-				["==", "tunnel", true],
-				["!=", "service", "driveway"]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-pedestrian:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-track:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-cycleway:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-path:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-steps:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-footway:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-narrowgauge:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "narrow_gauge"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-subway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-tram:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-funicular:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "funicular"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-monorail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "monorail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-busguideway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "bus_guideway"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-busway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "busway"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-motorway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-motorway-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-trunk",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-trunk-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["==", "link", true],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-primary",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
@@ -1008,23 +1039,23 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-secondary",
+			"id": "tunnel-street-trunk-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-secondary-link",
+			"id": "tunnel-street-motorway-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["==", "tunnel", true]
 			],
@@ -1044,105 +1075,59 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-tertiary-link",
+			"id": "tunnel-street-secondary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "tertiary"],
-				["==", "link", true],
+				["in", "kind", "secondary"],
+				["!=", "link", true],
 				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-unclassified",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-residential",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-livingstreet",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-service",
+			"id": "tunnel-street-primary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
-				["==", "tunnel", true],
-				["!=", "service", "driveway"]
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "tunnel", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-street-pedestrian",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-track",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-street-pedestrian-zone",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
-			"source-layer": "street_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-cycleway",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "cycleway"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-path",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "path"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-steps",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "steps"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-way-footway",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "footway"], ["==", "tunnel", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-rail",
+			"id": "tunnel-street-trunk",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "rail"],
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-motorway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-busway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
 				["!has", "service"],
 				["==", "tunnel", true]
 			],
@@ -1150,11 +1135,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-transport-narrowgauge",
+			"id": "tunnel-transport-busguideway:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "narrow_gauge"],
+				["in", "kind", "bus_guideway"],
 				["!has", "service"],
 				["==", "tunnel", true]
 			],
@@ -1162,55 +1147,7 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-transport-lightrail",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-subway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-tram",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-funicular",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "funicular"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-monorail",
+			"id": "tunnel-transport-monorail:outline",
 			"type": "line",
 			"filter": [
 				"all",
@@ -1222,11 +1159,71 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-transport-busguideway",
+			"id": "tunnel-transport-funicular:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "bus_guideway"],
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-tram:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
 				["!has", "service"],
 				["==", "tunnel", true]
 			],
@@ -1246,12 +1243,119 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-motorway:outline",
+			"id": "tunnel-transport-busguideway",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
+				["in", "kind", "bus_guideway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-monorail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-funicular",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-tram",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-narrowgauge",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-subway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-lightrail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-rail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian-zone",
+			"type": "fill",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-footway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "footway"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1259,11 +1363,120 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-motorway-link:outline",
+			"id": "way-steps:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "steps"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-path:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "path"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-cycleway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cycleway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary-link:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tertiary"],
 				["==", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -1272,38 +1485,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-trunk:outline",
+			"id": "street-secondary-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-trunk-link:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-primary:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1324,12 +1511,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-secondary:outline",
+			"id": "street-trunk-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1337,11 +1524,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-secondary-link:outline",
+			"id": "street-motorway-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -1363,7 +1550,259 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-tertiary-link:outline",
+			"id": "street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-footway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "footway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-steps",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "steps"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-path",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "path"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "way-cycleway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cycleway"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-tertiary-link",
 			"type": "line",
 			"filter": [
 				"all",
@@ -1376,417 +1815,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-unclassified:outline",
+			"id": "street-secondary-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "unclassified"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-residential:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "residential"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-livingstreet:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "living_street"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-service:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true],
-				["!=", "service", "driveway"]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-pedestrian:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "pedestrian"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-track:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "track"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-cycleway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "cycleway"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-path:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "path"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-steps:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "steps"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-footway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "footway"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-narrowgauge:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "narrow_gauge"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-subway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-tram:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-funicular:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "funicular"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-monorail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "monorail"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-busguideway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "bus_guideway"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-busway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "busway"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-cablecar:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "cable_car"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-gondola:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "gondola"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-goods:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "goods"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-chairlift:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "chair_lift"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-draglift:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "drag_lift"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-tbar:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "t-bar"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-jbar:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "j-bar"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-platter:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "platter"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "aerialway-ropetow:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rope-tow"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "aerialways",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-ferry:outline",
-			"type": "line",
-			"filter": ["all"],
-			"source-layer": "ferries",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-motorway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-motorway-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-trunk",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-trunk-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["==", "link", true],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-primary",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1807,12 +1841,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-secondary",
+			"id": "street-trunk-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1820,11 +1854,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-secondary-link",
+			"id": "street-motorway-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -1846,12 +1880,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-tertiary-link",
+			"id": "street-secondary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "tertiary"],
-				["==", "link", true],
+				["in", "kind", "secondary"],
+				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1859,11 +1893,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-unclassified",
+			"id": "street-primary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "unclassified"],
+				["in", "kind", "primary"],
+				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1871,11 +1906,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-residential",
+			"id": "street-trunk",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "residential"],
+				["in", "kind", "trunk"],
+				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1883,11 +1919,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-livingstreet",
+			"id": "street-motorway",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "living_street"],
+				["in", "kind", "motorway"],
+				["!=", "link", true],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1895,108 +1932,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "street-service",
+			"id": "transport-busway:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true],
-				["!=", "service", "driveway"]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-pedestrian",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "pedestrian"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-track",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "track"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "street-pedestrian-zone",
-			"type": "fill",
-			"filter": [
-				"all",
-				["in", "kind", "pedestrian"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "street_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-cycleway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "cycleway"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-path",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "path"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-steps",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "steps"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "way-footway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "footway"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-rail",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
+				["in", "kind", "busway"],
 				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -2005,11 +1945,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-narrowgauge",
+			"id": "transport-busguideway:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "narrow_gauge"],
+				["in", "kind", "bus_guideway"],
 				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -2018,11 +1958,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-lightrail",
+			"id": "transport-monorail:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "light_rail"],
+				["in", "kind", "monorail"],
 				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -2031,33 +1971,7 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-subway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-tram",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-funicular",
+			"id": "transport-funicular:outline",
 			"type": "line",
 			"filter": [
 				"all",
@@ -2070,11 +1984,191 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-monorail",
+			"id": "transport-tram:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "monorail"],
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-ropetow:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rope-tow"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-platter:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "platter"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-jbar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "j-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-tbar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "t-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-draglift:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "drag_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-chairlift:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "chair_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-goods:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "goods"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-gondola:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "gondola"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-cablecar:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cable_car"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-ferry:outline",
+			"type": "line",
+			"filter": ["all"],
+			"source-layer": "ferries",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-busway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
 				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -2096,11 +2190,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-busway",
+			"id": "transport-monorail",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "busway"],
+				["in", "kind", "monorail"],
 				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
@@ -2109,83 +2203,89 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-cablecar",
+			"id": "transport-funicular",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "cable_car"],
+				["in", "kind", "funicular"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-gondola",
+			"id": "transport-tram",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "gondola"],
+				["in", "kind", "tram"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-goods",
+			"id": "transport-narrowgauge",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "goods"],
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-chairlift",
+			"id": "transport-subway",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "chair_lift"],
+				["in", "kind", "subway"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-draglift",
+			"id": "transport-lightrail",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "drag_lift"],
+				["in", "kind", "light_rail"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-tbar",
+			"id": "transport-rail",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "t-bar"],
+				["in", "kind", "rail"],
+				["!has", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
-			"source-layer": "aerialways",
+			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-jbar",
+			"id": "aerialway-ropetow",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "j-bar"],
+				["in", "kind", "rope-tow"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -2205,11 +2305,83 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "aerialway-ropetow",
+			"id": "aerialway-jbar",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "rope-tow"],
+				["in", "kind", "j-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-tbar",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "t-bar"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-draglift",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "drag_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-chairlift",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "chair_lift"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-goods",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "goods"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-gondola",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "gondola"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"source-layer": "aerialways",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "aerialway-cablecar",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "cable_car"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -2231,23 +2403,93 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-motorway:outline",
+			"id": "bridge-street-pedestrian-zone",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "street_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-footway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-steps:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-path:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-cycleway:outline",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "track"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
-				["==", "bridge", true]
+				["==", "kind", "service"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-motorway-link:outline",
+			"id": "bridge-street-livingstreet:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "residential"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified:outline",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "tertiary"],
 				["==", "link", true],
 				["==", "bridge", true]
 			],
@@ -2255,36 +2497,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-trunk:outline",
+			"id": "bridge-street-secondary-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-trunk-link:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-primary:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["==", "bridge", true]
 			],
 			"source-layer": "streets",
@@ -2303,23 +2521,23 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-secondary:outline",
+			"id": "bridge-street-trunk-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["==", "bridge", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-secondary-link:outline",
+			"id": "bridge-street-motorway-link:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["==", "bridge", true]
 			],
@@ -2339,7 +2557,203 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-tertiary-link:outline",
+			"id": "bridge-street-secondary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "secondary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-primary:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-trunk:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-footway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-steps",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-path",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-way-cycleway",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "track"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-livingstreet",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "residential"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "bridge", true]],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-tertiary-link",
 			"type": "line",
 			"filter": [
 				"all",
@@ -2351,243 +2765,12 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-unclassified:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-residential:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-livingstreet:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-service:outline",
+			"id": "bridge-street-secondary-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
-				["==", "bridge", true],
-				["!=", "service", "driveway"]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-pedestrian:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-track:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-cycleway:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-path:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-steps:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-footway:outline",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-narrowgauge:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "narrow_gauge"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-subway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-tram:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-funicular:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "funicular"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-monorail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "monorail"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-busguideway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "bus_guideway"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-busway:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "busway"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-motorway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
-				["!=", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-motorway-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "motorway"],
+				["in", "kind", "secondary"],
 				["==", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-trunk",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["!=", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-trunk-link",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "trunk"],
-				["==", "link", true],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-primary",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "primary"],
-				["!=", "link", true],
 				["==", "bridge", true]
 			],
 			"source-layer": "streets",
@@ -2606,23 +2789,23 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-secondary",
+			"id": "bridge-street-trunk-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
-				["!=", "link", true],
+				["in", "kind", "trunk"],
+				["==", "link", true],
 				["==", "bridge", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-secondary-link",
+			"id": "bridge-street-motorway-link",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "secondary"],
+				["in", "kind", "motorway"],
 				["==", "link", true],
 				["==", "bridge", true]
 			],
@@ -2642,105 +2825,59 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-tertiary-link",
+			"id": "bridge-street-secondary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "tertiary"],
-				["==", "link", true],
+				["in", "kind", "secondary"],
+				["!=", "link", true],
 				["==", "bridge", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-unclassified",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-residential",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-livingstreet",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-service",
+			"id": "bridge-street-primary",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
-				["==", "bridge", true],
-				["!=", "service", "driveway"]
+				["in", "kind", "primary"],
+				["!=", "link", true],
+				["==", "bridge", true]
 			],
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-street-pedestrian",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-track",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-street-pedestrian-zone",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
-			"source-layer": "street_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-cycleway",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "cycleway"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-path",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "path"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-steps",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "steps"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-way-footway",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "footway"], ["==", "bridge", true]],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-rail",
+			"id": "bridge-street-trunk",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "rail"],
+				["in", "kind", "trunk"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-motorway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "motorway"],
+				["!=", "link", true],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
 				["!has", "service"],
 				["==", "bridge", true]
 			],
@@ -2748,11 +2885,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-narrowgauge",
+			"id": "bridge-transport-busguideway:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "narrow_gauge"],
+				["in", "kind", "bus_guideway"],
 				["!has", "service"],
 				["==", "bridge", true]
 			],
@@ -2760,11 +2897,11 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-lightrail",
+			"id": "bridge-transport-monorail:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "light_rail"],
+				["in", "kind", "monorail"],
 				["!has", "service"],
 				["==", "bridge", true]
 			],
@@ -2772,31 +2909,7 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-subway",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "subway"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-tram",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "tram"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-funicular",
+			"id": "bridge-transport-funicular:outline",
 			"type": "line",
 			"filter": [
 				"all",
@@ -2808,11 +2921,71 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-monorail",
+			"id": "bridge-transport-tram:outline",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "monorail"],
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-narrowgauge:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-subway:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-busway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "busway"],
 				["!has", "service"],
 				["==", "bridge", true]
 			],
@@ -2832,11 +3005,83 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-busway",
+			"id": "bridge-transport-monorail",
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "busway"],
+				["in", "kind", "monorail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-funicular",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "funicular"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-tram",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "tram"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-narrowgauge",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "narrow_gauge"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-subway",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "subway"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-lightrail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-rail",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
 				["!has", "service"],
 				["==", "bridge", true]
 			],
@@ -2951,7 +3196,7 @@
 			"id": "label-address-housenumber",
 			"type": "symbol",
 			"filter": ["all", ["has", "housenumber"]],
-			"text": "{housenumber}",
+			"layout": {"text-field": "{housenumber}"},
 			"source-layer": "addresses",
 			"source": "versatiles-shortbread"
 		},
@@ -3113,6 +3358,43 @@
 			"filter": ["all", ["==", "kind", "capital"]],
 			"layout": {"text-field": "{name}"},
 			"source-layer": "place_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-small:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<=", "way_area", 10000000]
+			],
+			"layout": {"text-field": "{name_en}"},
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-medium:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				["<", "way_area", 90000000],
+				[">", "way_area", 10000000]
+			],
+			"layout": {"text-field": "{name_en}"},
+			"source-layer": "boundary_labels",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "label-boundary-country-large:en",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["in", "admin_level", 2, "2"],
+				[">=", "way_area", 90000000]
+			],
+			"layout": {"text-field": "{name_en}"},
+			"source-layer": "boundary_labels",
 			"source": "versatiles-shortbread"
 		},
 		{

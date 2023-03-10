@@ -297,8 +297,7 @@
 		{
 			"id": "background",
 			"type": "background",
-			"paint": {"background-color": "#f9f4ee"},
-			"source": "versatiles-shortbread"
+			"paint": {"background-color": "#f9f4ee"}
 		},
 		{
 			"id": "water-ocean",
@@ -645,7 +644,7 @@
 			"paint": {
 				"fill-outline-color": "#ff0000",
 				"fill-color": "#ff0000",
-				"fill-pattern": "pattern-dark-hatched-thick-12",
+				"fill-pattern": "pattern-dark-warning-12",
 				"fill-opacity": 0.3
 			},
 			"source-layer": "sites",
@@ -689,7 +688,7 @@
 			"filter": ["all", ["in", "kind", "prison"]],
 			"paint": {
 				"fill-color": "#fdf2fc",
-				"fill-pattern": "pattern-dark-diamonds-12",
+				"fill-pattern": "pattern-dark-striped-12",
 				"fill-opacity": 0.1
 			},
 			"source-layer": "sites",

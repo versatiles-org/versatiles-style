@@ -297,8 +297,7 @@
 		{
 			"id": "background",
 			"type": "background",
-			"paint": {"background-color": "#f6f0f6"},
-			"source": "versatiles-shortbread"
+			"paint": {"background-color": "#f6f0f6"}
 		},
 		{
 			"id": "water-ocean",
