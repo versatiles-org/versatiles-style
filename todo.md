@@ -13,8 +13,11 @@
 [x] minor rails
 [x] more sites and landcovers
 [x] airports
+[x] pois
+[x] sprites and patterns, revisit sprites
+[ ] public transport signage
+[ ] road signage
 [ ] service-roads
-[ ] check rail tunnels
+[ ] labels for rivers, islands, place
 [ ] check all layers
-[ ] sprites and patterns, revisit sprites
 [ ] aggregate layers with same filters and style for compression
