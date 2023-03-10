@@ -52,13 +52,12 @@ exports = module.exports = {
 		lineJoin: "round",
 	},
 	"boundary-country{-disputed,}:outline": {
-		size: { 2: 2, 10: 8, },
-		opacity: { 2: 0, 4: 0.75 },
+		size: { 2: 0, 3: 2, 10: 8, },
+		opacity: 0.75,
 		color: color($land).lighten(0.05).hex(),
 	},
 	"boundary-country{-disputed,}": {
-		size: { 2: 1, 10: 4, },
-		opacity: { 2: 0, 4: 1 },
+		size: { 2: 0, 3: 1, 10: 4, },
 	},
 	"boundary-country-disputed": {
 		color: $disputed,
@@ -66,12 +65,11 @@ exports = module.exports = {
 		lineCap: "square",
 	},
 	"boundary-state:outline": {
-		size: { 7: 3, 10: 4, },
-		opacity: { 7: 0, 8: 0.75 },
+		size: { 7: 0, 8: 2, 10: 4, },
+		opacity: 0.75,
 	},
 	"boundary-state": {
-		size: { 7: 1, 10: 2, },
-		opacity: { 7: 0, 8: 1 },
+		size: { 7: 0, 8: 1, 10: 2, },
 	},
 
 	// water
@@ -93,20 +91,16 @@ exports = module.exports = {
 	},
 
 	"water-river": {
-		lineWidth: { 9: 1, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
-		opacity: { 9: 0, 10: 1 },
+		lineWidth: { 9: 0, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
 	},
 	"water-canal": {
-		lineWidth: { 9: 1, 10: 2, 15: 4, 17: 8, 18: 17, 20: 50 },
-		opacity: { 9: 0, 10: 1 },
+		lineWidth: { 9: 0, 10: 2, 15: 4, 17: 8, 18: 17, 20: 50 },
 	},
 	"water-stream": {
-		lineWidth: { 13: 1, 15: 2, 17: 6, 18: 12, 20: 30 },
-		opacity: { 13: 0, 14: 1 },
+		lineWidth: { 13: 0, 14: 1, 15: 2, 17: 6, 18: 12, 20: 30 },
 	},
 	"water-ditch": {
-		lineWidth: { 14: 1, 17: 4, 18: 8, 20: 20 },
-		opacity: { 14: 0, 15: 1 },
+		lineWidth: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
 	},
 
 	// land
@@ -240,36 +234,31 @@ exports = module.exports = {
 		lineCap: "butt",
 	},
 
-
-
 	// motorway
 	"{bridge-street,tunnel-street,street}-motorway:outline": {
-		size: { 5: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 },
-		opacity: { 5: 0, 7: 1 },
+		size: { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 },
 	},
 	"{bridge-street,tunnel-street,street}-motorway": {
-		size: { 5: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 },
-		opacity: { 5: 0, 7: 1 },
+		size: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 },
+		opacity: { 5:0, 6:1 },
 	},
 
 	// trunk
 	"{bridge-street,tunnel-street,street}-trunk:outline": {
-		size: { 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
-		opacity: { 7: 0, 8: 1 },
+		size: { 7: 0, 8: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 	},
 	"{bridge-street,tunnel-street,street}-trunk": {
-		size: { 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
-		opacity: { 7: 0, 8: 1 },
+		size: { 7: 0, 8: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
+		opacity: { 7:0, 8:1 },
 	},
 
 	// primary, z8+
 	"{bridge-street,tunnel-street,street}-primary:outline": {
-		size: { 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
-		opacity: { 8: 0, 9: 1 },
+		size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 	},
 	"{bridge-street,tunnel-street,street}-primary": {
-		size: { 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
-		opacity: { 8: 0, 9: 1 },
+		size: { 8: 0, 9: 2, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
+		opacity: { 8:0, 9:1 },
 	},
 
 	// secondary
