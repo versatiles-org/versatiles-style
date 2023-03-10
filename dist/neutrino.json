@@ -7,7 +7,7 @@
 		"license": "https://creativecommons.org/publicdomain/zero/1.0/"
 	},
 	"glyphs": "https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf",
-	"sprites": "https://tiles.versatiles.org/sprites/sprites",
+	"sprite": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
 			"tilejson": "3.0.0",
@@ -646,7 +646,7 @@
 		{
 			"id": "tunnel-street-track:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "track"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#DEDEDE",
 				"line-dasharray": [1, 2],
@@ -660,7 +660,7 @@
 		{
 			"id": "tunnel-street-pedestrian:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#DEDEDE",
 				"line-dasharray": [1, 2],
@@ -678,7 +678,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["==", "tunnel", true],
 				["!=", "service", "driveway"]
 			],
@@ -695,7 +695,7 @@
 		{
 			"id": "tunnel-street-livingstreet:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "tunnel", true]],
 			"paint": {"line-color": "#DEDEDE", "line-dasharray": [1, 2]},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -704,7 +704,7 @@
 		{
 			"id": "tunnel-street-residential:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "residential"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#DEDEDE",
 				"line-dasharray": [1, 2],
@@ -720,7 +720,7 @@
 		{
 			"id": "tunnel-street-unclassified:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#DEDEDE",
 				"line-dasharray": [1, 2],
@@ -964,43 +964,9 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "tunnel-transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[11, 0], [12, 0.3]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "tunnel-transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["==", "tunnel", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[8, 0], [9, 0.3]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "tunnel-street-track",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "track"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#F7F7F7",
 				"line-width": {"stops": [[14, 1], [16, 3], [18, 16], [19, 44], [20, 88]]},
@@ -1013,7 +979,7 @@
 		{
 			"id": "tunnel-street-pedestrian",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#F7F7F7",
 				"line-width": {
@@ -1030,7 +996,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["==", "tunnel", true],
 				["!=", "service", "driveway"]
 			],
@@ -1046,7 +1012,7 @@
 		{
 			"id": "tunnel-street-livingstreet",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "tunnel", true]],
 			"paint": {"line-color": "#F7F7F7", "line-width": 1},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -1055,7 +1021,7 @@
 		{
 			"id": "tunnel-street-residential",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "residential"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#F7F7F7",
 				"line-width": {
@@ -1070,7 +1036,7 @@
 		{
 			"id": "tunnel-street-unclassified",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "tunnel", true]],
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "tunnel", true]],
 			"paint": {
 				"line-color": "#F7F7F7",
 				"line-width": {
@@ -1078,6 +1044,91 @@
 				},
 				"line-opacity": {"stops": [[12, 0], [13, 1]]}
 			},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["==", "tunnel", true]
+			],
+			"paint": {"line-color": "#F7F7F7", "line-width": 1},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -1303,6 +1354,40 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "tunnel-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[11, 0], [12, 0.3]]}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "tunnel-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "tunnel", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[8, 0], [9, 0.3]]}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "tunnel-transport-lightrail",
 			"type": "line",
 			"filter": [
@@ -1413,7 +1498,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "track"],
+				["==", "kind", "track"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1431,7 +1516,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "pedestrian"],
+				["==", "kind", "pedestrian"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1451,7 +1536,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true],
 				["!=", "service", "driveway"]
@@ -1470,7 +1555,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "living_street"],
+				["==", "kind", "living_street"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1484,7 +1569,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "residential"],
+				["==", "kind", "residential"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1504,7 +1589,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "unclassified"],
+				["==", "kind", "unclassified"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1750,42 +1835,6 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[11, 0], [12, 1]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["!=", "bridge", true],
-				["!=", "tunnel", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[8, 0], [9, 1]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "way-footway",
 			"type": "line",
 			"filter": [
@@ -1844,7 +1893,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "track"],
+				["==", "kind", "track"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1862,7 +1911,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "pedestrian"],
+				["==", "kind", "pedestrian"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1880,7 +1929,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true],
 				["!=", "service", "driveway"]
@@ -1899,7 +1948,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "living_street"],
+				["==", "kind", "living_street"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1913,7 +1962,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "residential"],
+				["==", "kind", "residential"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1933,7 +1982,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "unclassified"],
+				["==", "kind", "unclassified"],
 				["!=", "bridge", true],
 				["!=", "tunnel", true]
 			],
@@ -1944,6 +1993,97 @@
 				},
 				"line-opacity": {"stops": [[12, 0], [13, 1]]}
 			},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true],
+				["!=", "service", "driveway"]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -2179,6 +2319,42 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[11, 0], [12, 1]]}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["!=", "bridge", true],
+				["!=", "tunnel", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "transport-lightrail",
 			"type": "line",
 			"filter": [
@@ -2217,6 +2393,14 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "bridge",
+			"type": "fill",
+			"filter": ["all"],
+			"paint": {"fill-color": "#F4EDF4"},
+			"source-layer": "bridges",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "bridge-street-pedestrian-zone",
 			"type": "fill",
 			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
@@ -2227,7 +2411,7 @@
 		{
 			"id": "bridge-street-track:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "track"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#D9D9D9",
 				"line-width": {"stops": [[14, 2], [16, 4], [18, 18], [19, 48], [20, 96]]},
@@ -2239,7 +2423,7 @@
 		{
 			"id": "bridge-street-pedestrian:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#D9D9D9",
 				"line-width": {
@@ -2255,7 +2439,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["==", "bridge", true],
 				["!=", "service", "driveway"]
 			],
@@ -2270,7 +2454,7 @@
 		{
 			"id": "bridge-street-livingstreet:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "bridge", true]],
 			"paint": {"line-color": "#D9D9D9"},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -2278,7 +2462,7 @@
 		{
 			"id": "bridge-street-residential:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "residential"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#D9D9D9",
 				"line-width": {
@@ -2292,7 +2476,7 @@
 		{
 			"id": "bridge-street-unclassified:outline",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#D9D9D9",
 				"line-width": {
@@ -2514,51 +2698,9 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "bridge-transport-lightrail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "light_rail"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[11, 0], [12, 1]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge-transport-rail:outline",
-			"type": "line",
-			"filter": [
-				"all",
-				["in", "kind", "rail"],
-				["!has", "service"],
-				["==", "bridge", true]
-			],
-			"paint": {
-				"line-color": "#e8d5e0",
-				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
-				"line-opacity": {"stops": [[8, 0], [9, 1]]}
-			},
-			"source-layer": "streets",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "bridge",
-			"type": "fill",
-			"filter": ["all"],
-			"paint": {"fill-color": "#F4EDF4"},
-			"source-layer": "bridges",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "bridge-street-track",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "track"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "track"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#ffffff",
 				"line-width": {"stops": [[14, 1], [16, 3], [18, 16], [19, 44], [20, 88]]},
@@ -2571,7 +2713,7 @@
 		{
 			"id": "bridge-street-pedestrian",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "pedestrian"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "pedestrian"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#ffffff",
 				"line-width": {
@@ -2588,7 +2730,7 @@
 			"type": "line",
 			"filter": [
 				"all",
-				["in", "kind", "service"],
+				["==", "kind", "service"],
 				["==", "bridge", true],
 				["!=", "service", "driveway"]
 			],
@@ -2604,7 +2746,7 @@
 		{
 			"id": "bridge-street-livingstreet",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "living_street"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "living_street"], ["==", "bridge", true]],
 			"paint": {"line-color": "#ffffff", "line-width": 1},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
@@ -2613,7 +2755,7 @@
 		{
 			"id": "bridge-street-residential",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "residential"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "residential"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#ffffff",
 				"line-width": {
@@ -2628,7 +2770,7 @@
 		{
 			"id": "bridge-street-unclassified",
 			"type": "line",
-			"filter": ["all", ["in", "kind", "unclassified"], ["==", "bridge", true]],
+			"filter": ["all", ["==", "kind", "unclassified"], ["==", "bridge", true]],
 			"paint": {
 				"line-color": "#ffffff",
 				"line-width": {
@@ -2636,6 +2778,91 @@
 				},
 				"line-opacity": {"stops": [[12, 0], [13, 1]]}
 			},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-track-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "track"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-pedestrian-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "pedestrian"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-service-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "service"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true],
+				["!=", "service", "driveway"]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-livingstreet-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "living_street"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-residential-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "residential"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
+			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-street-unclassified-bicycle",
+			"type": "line",
+			"filter": [
+				"all",
+				["==", "kind", "unclassified"],
+				["==", "bicycle", "designated"],
+				["==", "bridge", true]
+			],
+			"paint": {"line-color": "#ffffff", "line-width": 1},
 			"layout": {"line-join": "round", "line-cap": "round"},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -2857,6 +3084,40 @@
 				"line-opacity": {"stops": [[5, 0], [6, 1]]}
 			},
 			"layout": {"line-join": "round", "line-cap": "round"},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-lightrail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "light_rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[11, 0], [12, 1]]}
+			},
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "bridge-transport-rail:outline",
+			"type": "line",
+			"filter": [
+				"all",
+				["in", "kind", "rail"],
+				["!has", "service"],
+				["==", "bridge", true]
+			],
+			"paint": {
+				"line-color": "#e8d5e0",
+				"line-width": {"stops": [[8, 1], [12, 1], [15, 3]]},
+				"line-opacity": {"stops": [[8, 0], [9, 1]]}
+			},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
