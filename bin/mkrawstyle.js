@@ -17,12 +17,12 @@ const style = stringify({
 		delete layer.layer;
 		delete layer.icon;
 
-		layer.source = "versatiles-shortbread";
+		if (layer.type !== "background") layer.source = "versatiles-shortbread";
 
 		layers.push({ id, ...layer });
 
 		return layers;
-	}),
+	},[]),
 	id: "shortbread-empty",
 	name: "versatiles-empty",
 },{ indent: "\t", maxLength: 80 });
