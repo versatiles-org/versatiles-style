@@ -26,11 +26,24 @@ const $label          = "#333344";
 const $labelHalo      = "#ffffffcc";
 
 const $agriculture    = "#f8eeee"; // ←
-const $site           = "#ebe8e6";
 const $rail           = "#b1bbc4";
 const $subway         = "#a6b8c7";
 const $cycle          = "#eff9ff";
+const $waste          = "#dbd6bd";
+const $burial         = "#dddbca";
+const $sand           = "#fafaed";
+const $rock           = "#e0e4e5";
+const $leisure        = "#e7edde";
+const $wetland        = "#d3e6db";
 
+const $site           = "#ff00ff"; // "#ebe8e6";
+
+const $danger         = "#ff0000";
+const $prison         = "#fdf2fc";
+const $parking        = "#ebe8e6";
+const $construction   = "#a9a9a9";
+const $education      = "#ffff80"; // 10% opacity
+const $hospital       = "#ff6666"; // 10% opacity
 
 exports = module.exports = {
 	// background
@@ -142,10 +155,55 @@ exports = module.exports = {
 		opacity: { 10: 0, 11: 1 },
 	},
 
+	"land-waste": {
+		color: $waste,
+		opacity: { 10: 0, 11: 1 },
+	},
+	"land-burial": {
+		color: $burial,
+		opacity: { 13: 0, 14: 1 },
+	},
+	"land-leisure": {
+		color: $leisure,
+	},
+	"land-rock": {
+		color: $rock,
+	},
+	"land-sand": {
+		color: $sand,
+	},
+	"land-wetland": {
+		color: $wetland,
+	},
+
 	// site
 
+	"site-dangerarea": {
+		color: $danger,
+		fillOutlineColor: $danger,
+		opacity: 0.3,
+		icon: "pattern-dark-hatched-thick-12",
+	},
+	"site-hospital": {
+		color: $hospital,
+		opacity: 0.1,
+	},
+	"site-prison": {
+		color: $prison,
+		icon: "pattern-dark-diamonds-12",
+		opacity: 0.1,
+	},
+	"site-construction": {
+		color: $construction,
+		icon: "pattern-dark-hatched-thin-12",
+		opacity: 0.1,
+	},
+	"site-{university,college,school}": {
+		color: $education,
+		opacity: 0.1,
+	},
 	"site-{bicycleparking,parking}": {
-		color: $site, // FIXME
+		color: $parking,
 	},
 
 	// building
