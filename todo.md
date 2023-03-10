@@ -8,8 +8,13 @@
 [x] rail colorscheme
 [x] bridge semitransparent
 [x] cycleways and bicycle-roads
-[ ] minor rails, service-roads, check all layers
-[ ] rail tunnels
-[ ] more sites and landcovers
+[x] trams
+[x] rail zooms 17+
+[x] minor rails
+[x] more sites and landcovers
+[ ] airports
+[ ] service-roads
+[ ] check rail tunnels
+[ ] check all layers
 [ ] sprites and patterns, revisit sprites
 [ ] aggregate layers with same filters and style for compression
