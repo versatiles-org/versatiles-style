@@ -128,15 +128,15 @@ exports = module.exports = {
 		opacity: { 10: 0, 11: 1 },
 	},
 
-	"land-{residential}": {
+	"land-residential": {
 		color: $residential,
 		opacity: { 10: 0, 11: 1 },
 	},
-	"land-{commercial}": {
+	"land-commercial": {
 		color: $commercial,
 		opacity: { 10: 0, 11: 1 },
 	},
-	"land-{industrial}": {
+	"land-industrial": {
 		color: $industrial,
 		opacity: { 10: 0, 11: 1 },
 	},
