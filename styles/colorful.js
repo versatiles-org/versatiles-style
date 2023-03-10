@@ -549,4 +549,16 @@ exports = module.exports = {
 		size: { 12: 10, 15: 13 },
 	},
 
+	"label-address-housenumber": {
+		font: "Noto Sans Regular",
+		textHaloColor: color($building).lighten(0.05).hex(),
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		symbolPlacement: "point",
+		textAnchor: "center",
+		minzoom: 17,
+		size: { 17: 8, 19: 10 },
+		color: color($building).darken(0.3).hex(),
+	},
+
 };
