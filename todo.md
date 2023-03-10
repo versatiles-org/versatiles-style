@@ -12,7 +12,7 @@
 [x] rail zooms 17+
 [x] minor rails
 [x] more sites and landcovers
-[ ] airports
+[x] airports
 [ ] service-roads
 [ ] check rail tunnels
 [ ] check all layers

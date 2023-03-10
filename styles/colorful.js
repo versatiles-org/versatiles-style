@@ -217,6 +217,34 @@ exports = module.exports = {
 		fillTranslate: [ -2, -2 ],
 	},
 
+	// airport
+	"airport-area": {
+		color: $streetbg,
+		opacity: 0.1,
+	},
+	"airport-{runway,taxiway}:outline": { // HERE
+		color: $streetbg,
+		lineJoin: "round",
+	},
+	"airport-{runway,taxiway}": {
+		color: $street,
+		lineJoin: "round",
+	},
+	"airport-runway:outline": {
+		size: { 11: 0, 12: 6, 13: 9, 14: 16, 15: 24, 16: 40, 17: 100, 18: 160, 20: 300 },
+	},
+	"airport-runway": {
+		size: { 11: 0, 12: 5, 13: 8, 14: 14, 15: 22, 16: 38, 17: 98, 18: 158, 20: 298 },
+		opacity: { 11:0, 12:1 },
+	},
+	"airport-taxiway:outline": {
+		size: { 13: 0, 14: 2, 15: 10, 16: 14, 18: 20, 20: 40 },
+	},
+	"airport-taxiway": {
+		size: { 13: 0, 14: 1, 15: 8, 16: 12, 18: 18, 20: 36 },
+		opacity: { 13:0, 14:1 },
+	},
+
 	// bridge
 
 	"bridge": {
