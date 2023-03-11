@@ -664,6 +664,14 @@ exports = module.exports = {
 		color: color($building).darken(0.3).hex(),
 	},
 
+	// markings
+
+	"marking-oneway{-reverse,}": {
+		minzoom: 15,
+		icon: "marking-dark-arrow-15",
+		opacity: 0.7,
+	},
+
 	// transit
 	"symbol-*": {
 		iconSize: 1,
