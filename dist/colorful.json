@@ -7126,6 +7126,72 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "marking-oneway",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "oneway", true],
+				[
+					"in",
+					"kind",
+					"trunk",
+					"primary",
+					"secondary",
+					"tertiary",
+					"unclassified",
+					"residential",
+					"living_street"
+				]
+			],
+			"icon": "marking:arrow",
+			"layout": {
+				"symbol-placement": "line",
+				"symbol-spacing": 175,
+				"icon-rotate": 90,
+				"icon-rotation-alignment": "map",
+				"icon-padding": 5,
+				"symbol-avoid-edges": true,
+				"icon-image": "marking-dark-arrow-15"
+			},
+			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
+			"minzoom": 15,
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "marking-oneway-reverse",
+			"type": "symbol",
+			"filter": [
+				"all",
+				["==", "oneway_reverse", true],
+				[
+					"in",
+					"kind",
+					"trunk",
+					"primary",
+					"secondary",
+					"tertiary",
+					"unclassified",
+					"residential",
+					"living_street"
+				]
+			],
+			"icon": "marking:arrow",
+			"layout": {
+				"symbol-placement": "line",
+				"symbol-spacing": 75,
+				"icon-rotate": -90,
+				"icon-rotation-alignment": "map",
+				"icon-padding": 5,
+				"symbol-avoid-edges": true,
+				"icon-image": "marking-dark-arrow-15"
+			},
+			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
+			"minzoom": 15,
+			"source-layer": "streets",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "symbol-transit-bus",
 			"type": "symbol",
 			"filter": ["all", ["==", "kind", "bus_stop"]],
