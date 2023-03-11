@@ -34,9 +34,7 @@ const $sand           = "#fafaed";
 const $rock           = "#e0e4e5";
 const $leisure        = "#e7edde";
 const $wetland        = "#d3e6db";
-
-const $site           = "#ff00ff"; // "#ebe8e6";
-
+const $symbol         = "#66626a";
 const $danger         = "#ff0000";
 const $prison         = "#fdf2fc";
 const $parking        = "#ebe8e6";
@@ -664,6 +662,52 @@ exports = module.exports = {
 		minzoom: 17,
 		size: { 17: 8, 19: 10 },
 		color: color($building).darken(0.3).hex(),
+	},
+
+	// transit
+	"symbol-*": {
+		iconSize: 1,
+		symbolPlacement: "point",
+		iconOpacity: 0.7,
+		iconKeepUpright: true,
+		font: "Noto Sans Regular",
+		text: "{name}",
+		size: 10,
+		color: $symbol,
+		iconAnchor: "bottom",
+		textAnchor: "top",
+		textHaloColor: $labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+
+	},
+	"symbol-transit-airport": {
+		minzoom: 12,
+		icon: "icon-dark-airport-15",
+	},
+	"symbol-transit-airfield": {
+		minzoom: 13,
+		icon: "icon-dark-airfield-15",
+	},
+	"symbol-transit-station": {
+		minzoom: 13,
+		icon: "icon-dark-rail-15",
+	},
+	"symbol-transit-lightrail": {
+		minzoom: 14,
+		icon: "icon-dark-rail-light-15",
+	},
+	"symbol-transit-subway": {
+		minzoom: 14,
+		icon: "icon-dark-rail-metro-15",
+	},
+	"symbol-transit-tram": {
+		minzoom: 15,
+		icon: "transport-dark-tram-15",
+	},
+	"symbol-transit-bus": {
+		minzoom: 16,
+		icon: "icon-dark-bus-15",
 	},
 
 	// pois
