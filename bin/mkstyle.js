@@ -47,7 +47,7 @@ fs.mkdir(destdir, { recursive: true }, function(err){
 					id: style.id+"-nolabel",
 					name: style.name+"-nolabel",
 					layers: style.layers.filter(function(layer){
-						return (layer.id.slice(0,6) !== "label-" && layer.id.slice(0,4) !== "poi-");
+						return (layer.id.slice(0,6) !== "label-" && layer.id.slice(0,4) !== "poi-" && layer.id.slice(0,7) !== "symbol-");
 					}),
 				}, { indent: "\t", maxLength: 80 }), function(err){
 					if (err) throw err;
