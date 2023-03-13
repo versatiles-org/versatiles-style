@@ -4301,188 +4301,141 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-police",
+			"id": "poi-amenity",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "police"]],
-			"icon": "icon:police",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "amenity", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-police-15"
+				"icon-image": "icon-dark-{amenity}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-fire_station",
+			"id": "poi-leisure",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fire_station"]],
-			"icon": "icon:fire-station",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "leisure", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-fire-station-15"
+				"icon-image": "icon-dark-{leisure}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-post_box",
+			"id": "poi-tourism",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "post_box"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
+			"filter": ["all", ["!=", "tourism", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-post_office",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "post_office"]],
-			"icon": "icon:post",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-post-15"
+				"icon-image": "icon-dark-{tourism-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-telephone",
+			"id": "poi-shop",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "telephone"]],
-			"icon": "icon:telephone",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "shop", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-telephone-15"
+				"icon-image": "icon-dark-{shop}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-library",
+			"id": "poi-man_made",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "library"]],
-			"icon": "icon:library",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "man_made", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-library-15"
+				"icon-image": "icon-dark-{man_made}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-townhall",
+			"id": "poi-historic",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "townhall"]],
-			"icon": "icon:town-hall",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "historic", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-town-hall-15"
+				"icon-image": "icon-dark-{historic}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-courthouse",
+			"id": "poi-emergency",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "courthouse"]],
-			"icon": "extra:justice",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
+			"filter": ["all", ["!=", "emergency", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
+			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "extra-dark-justice-15"
+				"icon-image": "icon-dark-{emergency}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-prison",
+			"id": "poi-highway",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "prison"]],
-			"icon": "icon:prison",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-prison-15"
+			"filter": ["all", ["!=", "highway", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-embassy",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "embassy"]],
-			"icon": "icon:embassy",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-embassy-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-community_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "community_centre"]],
-			"icon": "extra:community",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-community-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-nursing_home",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "nursing_home"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true
 			},
@@ -4491,1956 +4444,18 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "poi-amenity-arts_centre",
+			"id": "poi-office",
 			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "arts_centre"]],
-			"icon": "icon:art-gallery",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-art-gallery-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-grave_yard",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "grave_yard"]],
-			"icon": "icon:cemetery",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-cemetery-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-marketplace",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "marketplace"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-recycling",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "recycling"]],
-			"icon": "icon:recycling",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-recycling-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-university",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "university"]],
-			"icon": "icon:college",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-college-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-school",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "school"]],
-			"icon": "icon:school",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-school-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-college",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "college"]],
-			"icon": "icon:college",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-college-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-public_building",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "public_building"]],
-			"icon": "icon:town-hall",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-town-hall-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-pharmacy",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "pharmacy"]],
-			"icon": "icon:pharmacy",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-pharmacy-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-hospital",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "hospital"]],
-			"icon": "icon:hospital",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-hospital-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-clinic",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "clinic"]],
-			"icon": "icon:hospital",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-hospital-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-doctors",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "doctors"]],
-			"icon": "icon:doctor",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-doctor-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-denitst",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "denitst"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-veterinary",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "veterinary"]],
-			"icon": "icon:veterinary",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-veterinary-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-theatre",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "theatre"]],
-			"icon": "icon:theatre",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-theatre-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-nightclub",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "nightclub"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-cinema",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "cinema"]],
-			"icon": "icon:cinema",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-cinema-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-restaurant",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "restaurant"]],
-			"icon": "icon:restaurant",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-restaurant-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-fast_food",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fast_food"]],
-			"icon": "icon:fast-food",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-fast-food-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-cafe",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "cafe"]],
-			"icon": "icon:cafe",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-cafe-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-pub",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "pub"]],
-			"icon": "icon:beer",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-beer-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bar",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bar"]],
-			"icon": "icon:bar",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-bar-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-foot_court",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "foot_court"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-biergarten",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "biergarten"]],
-			"icon": "extra:beergarden",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-beergarden-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-shelter",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "shelter"]],
-			"icon": "icon:shelter",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shelter-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_rental",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_rental"]],
-			"icon": "icon:car-rental",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-car-rental-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_wash",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_wash"]],
-			"icon": "extra:car-wash",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-car-wash-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_sharing",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_sharing"]],
-			"icon": "icon:car-rental",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-car-rental-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bicycle_rental",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bicycle_rental"]],
-			"icon": "icon:bicycle-share",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-bicycle-share-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-vending_machine",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "vending_machine"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bank",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bank"]],
-			"icon": "icon:bank",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-bank-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-atm",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "atm"]],
-			"icon": "extra:atm",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-atm-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-toilets",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "toilets"]],
-			"icon": "icon:toilet",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-toilet-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bench",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bench"]],
-			"icon": "extra:bench",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-bench-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-drinking_water",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "drinking_water"]],
-			"icon": "icon:drinking-water",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-drinking-water-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-fountain",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fountain"]],
-			"icon": "extra:fountain",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-fountain-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-hunting_stand",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "hunting_stand"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-waste_basket",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "waste_basket"]],
-			"icon": "icon:waste-basket",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-waste-basket-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-place_of_worship",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "place_of_worship"]],
-			"icon": "icon:place-of-worship",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-place-of-worship-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-playground",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "playground"]],
-			"icon": "icon:playground",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-playground-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-dog_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "dog_park"]],
-			"icon": "icon:dog-park",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-dog-park-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-sports_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "sports_centre"]],
-			"icon": "icon:fitness-centre",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-fitness-centre-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-pitch",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "pitch"]],
-			"icon": "icon:pitch",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-pitch-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-swimming_pool",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "swimming_pool"]],
-			"icon": "icon:swimming",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-swimming-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-water_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "water_park"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-golf_course",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "golf_course"]],
-			"icon": "icon:golf",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-golf-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-stadium",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "stadium"]],
-			"icon": "icon:stadium",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-stadium-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-ice_rink",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "ice_rink"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-hotel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "hotel"]],
-			"icon": "icon:lodging",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lodging-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-motel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "motel"]],
-			"icon": "icon:lodging",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lodging-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-bed_and_breakfast",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "bed_and_breakfast"]],
-			"icon": "icon:lodging",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lodging-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-guest_house",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "guest_house"]],
-			"icon": "icon:lodging",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lodging-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-hostel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "hostel"]],
-			"icon": "icon:lodging",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lodging-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-chalet",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "chalet"]],
-			"icon": "extra:chalet",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-chalet-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-camp_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "camp_site"]],
-			"icon": "icon:campsite",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-campsite-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-alpine_hut",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "alpine_hut"]],
-			"icon": "extra:chalet",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "extra-dark-chalet-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-caravan_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "caravan_site"]],
-			"icon": "icon:camp-site",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-camp-site-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-information",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "information"]],
-			"icon": "icon:information",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-information-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-picnic_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "picnic_site"]],
-			"icon": "icon:picnic-site",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-picnic-site-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-viewpoint",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "viewpoint"]],
-			"icon": "icon:viewpoint",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-viewpoint-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-zoo",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "zoo"]],
-			"icon": "icon:zoo",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-zoo-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-theme_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "theme_park"]],
-			"icon": "icon:amusement-park",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-amusement-park-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-supermarket",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "supermarket"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-bakery",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "bakery"]],
-			"icon": "icon:bakery",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-bakery-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-kiosk",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "kiosk"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-mall",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "mall"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-department_store",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "department_store"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-general",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "general"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-convinience",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "convinience"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-clothes",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "clothes"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-florist",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "florist"]],
-			"icon": "icon:florist",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-florist-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-chemist",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "chemist"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-books",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "books"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-butcher",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "butcher"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-shoes",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "shoes"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-alcohol",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "alcohol"]],
-			"icon": "icon:alcohol-shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-alcohol-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-beverages",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "beverages"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-optican",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "optican"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-jewelry",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "jewelry"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-gift",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "gift"]],
-			"icon": "icon:gift",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-gift-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-sports",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "sports"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-stationery",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "stationery"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-outdoor",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "outdoor"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-mobile_phone",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "mobile_phone"]],
-			"icon": "icon:mobile-phone",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-mobile-phone-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-toys",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "toys"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-newsagent",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "newsagent"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-greengrocer",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "greengrocer"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-beauty",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "beauty"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-video",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "video"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-car",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "car"]],
-			"icon": "icon:car",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-car-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-bicycle",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "bicycle"]],
-			"icon": "icon:bicycle",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-bicycle-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-doityourself",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "doityourself"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-hardware",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "hardware"]],
-			"icon": "icon:hardware",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-hardware-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-furniture",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "furniture"]],
-			"icon": "icon:furniture",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-furniture-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-computer",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "computer"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-garden_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "garden_centre"]],
-			"icon": "icon:garden-centre",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-garden-centre-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-hairdresser",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "hairdresser"]],
-			"icon": "icon:hairdresser",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-hairdresser-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-travel_agency",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "travel_agency"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-laundry",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "laundry"]],
-			"icon": "icon:laundry",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-laundry-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-dry_cleaning",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "dry_cleaning"]],
-			"icon": "icon:shop",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-shop-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-surveillance",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "surveillance"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-tower",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "tower"]],
-			"icon": "icon:observation-tower",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-observation-tower-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-windmill",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "windmill"]],
-			"icon": "icon:windmill",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-windmill-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-lighthouse",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "lighthouse"]],
-			"icon": "icon:lighthouse",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-lighthouse-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-wastewater_plant",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "wastewater_plant"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-water_well",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "water_well"]],
-			"icon": "icon:drinking-water",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-drinking-water-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-watermill",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "watermill"]],
-			"icon": "icon:watermill",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-watermill-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-water_works",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "water_works"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-monument",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "monument"]],
-			"icon": "icon:monument",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-monument-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-memorial",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "memorial"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-artwork",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "artwork"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-castle",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "castle"]],
-			"icon": "icon:castle",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-castle-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-ruins",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "ruins"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-archaelogical_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "archaelogical_site"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-wayside_cross",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "wayside_cross"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-wayside_shrine",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "wayside_shrine"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-battlefield",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "battlefield"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-fort",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "fort"]],
-			"icon": "icon:historic",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-historic-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-phone",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "phone"]],
-			"icon": "icon:emergency-phone",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-emergency-phone-15"
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-fire_hydrant",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "fire_hydrant"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-defibrillator",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "defibrillator"]],
-			"icon": "icon:defibrillator",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true,
-				"icon-image": "icon-dark-defibrillator-15"
+			"filter": ["all", ["!=", "office", ""]],
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.4]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-highway-emergency_access_point",
-			"type": "symbol",
-			"filter": ["all", ["==", "highway", "emergency_access_point"]],
-			"icon": null,
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
-			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
-				"symbol-placement": "point",
-				"icon-optional": true
-			},
-			"minzoom": 16,
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-office-diplomatic",
-			"type": "symbol",
-			"filter": ["all", ["==", "office", "diplomatic"]],
-			"icon": "icon:embassy",
-			"paint": {"icon-opacity": 0.3, "text-opacity": 0.3},
 			"layout": {
-				"icon-size": {"stops": [[16, 0], [17, 0.73], [18, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-embassy-15"
+				"icon-image": "icon-dark-{office}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
@@ -7204,7 +5219,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[16, 0.5], [18, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7212,7 +5227,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-bus-15"
+				"icon-image": "icon-dark-bus-22"
 			},
 			"minzoom": 16,
 			"source-layer": "public_transport",
@@ -7231,7 +5246,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[15, 0.5], [17, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7239,7 +5254,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "transport-dark-tram-15"
+				"icon-image": "transport-dark-tram-22"
 			},
 			"minzoom": 15,
 			"source-layer": "public_transport",
@@ -7262,7 +5277,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[14, 0.5], [16, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7270,7 +5285,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-rail-metro-15"
+				"icon-image": "icon-dark-rail-metro-22"
 			},
 			"minzoom": 14,
 			"source-layer": "public_transport",
@@ -7293,7 +5308,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[14, 0.5], [16, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7301,7 +5316,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-rail-light-15"
+				"icon-image": "icon-dark-rail-light-22"
 			},
 			"minzoom": 14,
 			"source-layer": "public_transport",
@@ -7324,7 +5339,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[13, 0.5], [15, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7332,7 +5347,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-rail-15"
+				"icon-image": "icon-dark-rail-22"
 			},
 			"minzoom": 13,
 			"source-layer": "public_transport",
@@ -7351,7 +5366,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[13, 0.5], [15, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7359,7 +5374,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-airfield-15"
+				"icon-image": "icon-dark-airfield-22"
 			},
 			"minzoom": 13,
 			"source-layer": "public_transport",
@@ -7378,7 +5393,7 @@
 				"text-color": "#66626a"
 			},
 			"layout": {
-				"icon-size": 1,
+				"icon-size": {"stops": [[12, 0.5], [14, 1]]},
 				"symbol-placement": "point",
 				"icon-keep-upright": true,
 				"icon-anchor": "bottom",
@@ -7386,7 +5401,7 @@
 				"text-size": 10,
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Regular"],
-				"icon-image": "icon-dark-airport-15"
+				"icon-image": "icon-dark-airport-22"
 			},
 			"minzoom": 12,
 			"source-layer": "public_transport",
