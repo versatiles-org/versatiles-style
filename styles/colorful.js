@@ -691,31 +691,38 @@ exports = module.exports = {
 	},
 	"symbol-transit-airport": {
 		minzoom: 12,
-		icon: "icon-dark-airport-15",
+		icon: "icon-dark-airport-22",
+		iconSize: { 12: 0.5, 14: 1 },
 	},
 	"symbol-transit-airfield": {
 		minzoom: 13,
-		icon: "icon-dark-airfield-15",
+		icon: "icon-dark-airfield-22",
+		iconSize: { 13: 0.5, 15: 1 },
 	},
 	"symbol-transit-station": {
 		minzoom: 13,
-		icon: "icon-dark-rail-15",
+		icon: "icon-dark-rail-22",
+		iconSize: { 13: 0.5, 15: 1 },
 	},
 	"symbol-transit-lightrail": {
 		minzoom: 14,
-		icon: "icon-dark-rail-light-15",
+		icon: "icon-dark-rail-light-22",
+		iconSize: { 14: 0.5, 16: 1 },
 	},
 	"symbol-transit-subway": {
 		minzoom: 14,
-		icon: "icon-dark-rail-metro-15",
+		icon: "icon-dark-rail-metro-22",
+		iconSize: { 14: 0.5, 16: 1 },
 	},
 	"symbol-transit-tram": {
 		minzoom: 15,
-		icon: "transport-dark-tram-15",
+		icon: "transport-dark-tram-22",
+		iconSize: { 15: 0.5, 17: 1 },
 	},
 	"symbol-transit-bus": {
 		minzoom: 16,
-		icon: "icon-dark-bus-15",
+		icon: "icon-dark-bus-22",
+		iconSize: { 16: 0.5, 18: 1 },
 	},
 
 	// pois
