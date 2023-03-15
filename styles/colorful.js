@@ -729,7 +729,7 @@ exports = module.exports = {
 	// pois
 	"poi-*": {
 		minzoom: 16,
-		iconSize: { 16: 0.5, 20: 1 },
+		iconSize: { 16: 0.5, 19: 0.5, 20: 1 },
 		opacity: { 16: 0, 17: 0.4 },
 		symbolPlacement: "point",
 		iconOptional: true,
