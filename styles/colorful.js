@@ -217,8 +217,8 @@ exports = module.exports = {
 
 	// airport
 	"airport-area": {
-		color: $streetbg,
-		opacity: 0.1,
+		color: $street,
+		opacity: 0.5,
 	},
 	"airport-{runway,taxiway}:outline": { // HERE
 		color: $streetbg,
@@ -667,9 +667,10 @@ exports = module.exports = {
 	// markings
 
 	"marking-oneway{-reverse,}": {
-		minzoom: 15,
+		minzoom: 16,
 		icon: "marking-dark-arrow-15",
-		opacity: 0.7,
+		opacity: { 16: 0, 17: 0.7 },
+		font: "Noto Sans Regular", // prevent maputnik from freaking out
 	},
 
 	// transit
