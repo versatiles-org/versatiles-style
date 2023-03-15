@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "makestyle": "node bin/mkstyle.js",
-    "makerawstyle": "node bin/mkrawstyle.js"
+    "build": "node bin/mkstyle.js && node bin/mkboilerplate.js",
   },
   "author": "yetzt <node@yetzt.me>",
   "license": "Unlicense",
