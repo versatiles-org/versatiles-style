@@ -726,7 +726,7 @@
 			"id": "airport-area",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "runway", "taxiway"]],
-			"paint": {"fill-color": "#cfcdca", "fill-opacity": 0.1},
+			"paint": {"fill-color": "#ffffff", "fill-opacity": 0.5},
 			"source-layer": "street_polygons",
 			"source": "versatiles-shortbread"
 		},
@@ -4431,7 +4431,6 @@
 					"living_street"
 				]
 			],
-			"icon": "marking:arrow",
 			"layout": {
 				"symbol-placement": "line",
 				"symbol-spacing": 175,
@@ -4439,10 +4438,14 @@
 				"icon-rotation-alignment": "map",
 				"icon-padding": 5,
 				"symbol-avoid-edges": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "marking-dark-arrow-15"
 			},
-			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
-			"minzoom": 15,
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.7]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.7]]}
+			},
+			"minzoom": 16,
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
@@ -4464,7 +4467,6 @@
 					"living_street"
 				]
 			],
-			"icon": "marking:arrow",
 			"layout": {
 				"symbol-placement": "line",
 				"symbol-spacing": 75,
@@ -4472,10 +4474,14 @@
 				"icon-rotation-alignment": "map",
 				"icon-padding": 5,
 				"symbol-avoid-edges": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "marking-dark-arrow-15"
 			},
-			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
-			"minzoom": 15,
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.7]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.7]]}
+			},
+			"minzoom": 16,
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		}

@@ -726,7 +726,7 @@
 			"id": "airport-area",
 			"type": "fill",
 			"filter": ["all", ["in", "kind", "runway", "taxiway"]],
-			"paint": {"fill-color": "#cfcdca", "fill-opacity": 0.1},
+			"paint": {"fill-color": "#ffffff", "fill-opacity": 0.5},
 			"source-layer": "street_polygons",
 			"source": "versatiles-shortbread"
 		},
@@ -4309,9 +4309,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{amenity}-22"
 			},
 			"minzoom": 16,
@@ -4327,9 +4328,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{leisure}-22"
 			},
 			"minzoom": 16,
@@ -4345,10 +4347,11 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
-				"icon-image": "icon-dark-{tourism-22"
+				"text-font": ["Noto Sans Regular"],
+				"icon-image": "icon-dark-{tourism}-22"
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
@@ -4363,9 +4366,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{shop}-22"
 			},
 			"minzoom": 16,
@@ -4381,9 +4385,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{man_made}-22"
 			},
 			"minzoom": 16,
@@ -4399,9 +4404,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{historic}-22"
 			},
 			"minzoom": 16,
@@ -4417,9 +4423,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{emergency}-22"
 			},
 			"minzoom": 16,
@@ -4435,9 +4442,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
-				"icon-optional": true
+				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"]
 			},
 			"minzoom": 16,
 			"source-layer": "pois",
@@ -4452,9 +4460,10 @@
 				"text-opacity": {"stops": [[16, 0], [17, 0.4]]}
 			},
 			"layout": {
-				"icon-size": {"stops": [[16, 0.5], [20, 1]]},
+				"icon-size": {"stops": [[16, 0.5], [19, 0.5], [20, 1]]},
 				"symbol-placement": "point",
 				"icon-optional": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "icon-dark-{office}-22"
 			},
 			"minzoom": 16,
@@ -5158,7 +5167,6 @@
 					"living_street"
 				]
 			],
-			"icon": "marking:arrow",
 			"layout": {
 				"symbol-placement": "line",
 				"symbol-spacing": 175,
@@ -5166,10 +5174,14 @@
 				"icon-rotation-alignment": "map",
 				"icon-padding": 5,
 				"symbol-avoid-edges": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "marking-dark-arrow-15"
 			},
-			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
-			"minzoom": 15,
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.7]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.7]]}
+			},
+			"minzoom": 16,
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
@@ -5191,7 +5203,6 @@
 					"living_street"
 				]
 			],
-			"icon": "marking:arrow",
 			"layout": {
 				"symbol-placement": "line",
 				"symbol-spacing": 75,
@@ -5199,10 +5210,14 @@
 				"icon-rotation-alignment": "map",
 				"icon-padding": 5,
 				"symbol-avoid-edges": true,
+				"text-font": ["Noto Sans Regular"],
 				"icon-image": "marking-dark-arrow-15"
 			},
-			"paint": {"icon-opacity": 0.7, "text-opacity": 0.7},
-			"minzoom": 15,
+			"paint": {
+				"icon-opacity": {"stops": [[16, 0], [17, 0.7]]},
+				"text-opacity": {"stops": [[16, 0], [17, 0.7]]}
+			},
+			"minzoom": 16,
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
 		},
@@ -5210,7 +5225,6 @@
 			"id": "symbol-transit-bus",
 			"type": "symbol",
 			"filter": ["all", ["==", "kind", "bus_stop"]],
-			"icon": "transport:halt",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5237,7 +5251,6 @@
 			"id": "symbol-transit-tram",
 			"type": "symbol",
 			"filter": ["all", ["==", "kind", "tram_stop"]],
-			"icon": "transport:tram",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5268,7 +5281,6 @@
 				["in", "kind", "station", "halt"],
 				["==", "station", "subway"]
 			],
-			"icon": "transport:subway",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5299,7 +5311,6 @@
 				["in", "kind", "station", "halt"],
 				["==", "station", "light_rail"]
 			],
-			"icon": "transport:lightrail",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5330,7 +5341,6 @@
 				["in", "kind", "station", "halt"],
 				["!in", "station", "light_rail", "subway"]
 			],
-			"icon": "transport:train",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5357,7 +5367,6 @@
 			"id": "symbol-transit-airfield",
 			"type": "symbol",
 			"filter": ["all", ["==", "kind", "aerodrome"], ["!has", "iata"]],
-			"icon": "icon:airfield",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",
@@ -5384,7 +5393,6 @@
 			"id": "symbol-transit-airport",
 			"type": "symbol",
 			"filter": ["all", ["==", "kind", "aerodrome"], ["has", "iata"]],
-			"icon": "icon:airport",
 			"paint": {
 				"icon-opacity": 0.7,
 				"text-halo-color": "rgba(255, 255, 255, 0.8)",

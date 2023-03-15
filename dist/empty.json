@@ -3089,6 +3089,69 @@
 			"source": "versatiles-shortbread"
 		},
 		{
+			"id": "poi-amenity",
+			"type": "symbol",
+			"filter": ["all", ["!=", "amenity", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-leisure",
+			"type": "symbol",
+			"filter": ["all", ["!=", "leisure", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-tourism",
+			"type": "symbol",
+			"filter": ["all", ["!=", "tourism", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-shop",
+			"type": "symbol",
+			"filter": ["all", ["!=", "shop", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-man_made",
+			"type": "symbol",
+			"filter": ["all", ["!=", "man_made", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-historic",
+			"type": "symbol",
+			"filter": ["all", ["!=", "historic", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-emergency",
+			"type": "symbol",
+			"filter": ["all", ["!=", "emergency", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-highway",
+			"type": "symbol",
+			"filter": ["all", ["!=", "highway", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "poi-office",
+			"type": "symbol",
+			"filter": ["all", ["!=", "office", ""]],
+			"source-layer": "pois",
+			"source": "versatiles-shortbread"
+		},
+		{
 			"id": "boundary-country:outline",
 			"type": "line",
 			"filter": [
@@ -3452,13 +3515,13 @@
 					"living_street"
 				]
 			],
-			"style": {
-				"layout": {
-					"symbol-placement": "line",
-					"symbol-spacing": 75,
-					"icon-rotate": 90,
-					"icon-rotation-alignment": "map"
-				}
+			"layout": {
+				"symbol-placement": "line",
+				"symbol-spacing": 175,
+				"icon-rotate": 90,
+				"icon-rotation-alignment": "map",
+				"icon-padding": 5,
+				"symbol-avoid-edges": true
 			},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -3481,13 +3544,13 @@
 					"living_street"
 				]
 			],
-			"style": {
-				"layout": {
-					"symbol-placement": "line",
-					"symbol-spacing": 75,
-					"icon-rotate": -90,
-					"icon-rotation-alignment": "map"
-				}
+			"layout": {
+				"symbol-placement": "line",
+				"symbol-spacing": 75,
+				"icon-rotate": -90,
+				"icon-rotation-alignment": "map",
+				"icon-padding": 5,
+				"symbol-avoid-edges": true
 			},
 			"source-layer": "streets",
 			"source": "versatiles-shortbread"
@@ -3505,26 +3568,26 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-airport",
+			"id": "symbol-transit-bus",
 			"type": "symbol",
-			"filter": ["all", ["==", "kind", "aerodrome"], ["has", "iata"]],
+			"filter": ["all", ["==", "kind", "bus_stop"]],
 			"source-layer": "public_transport",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-airfield",
+			"id": "symbol-transit-tram",
 			"type": "symbol",
-			"filter": ["all", ["==", "kind", "aerodrome"], ["!has", "iata"]],
+			"filter": ["all", ["==", "kind", "tram_stop"]],
 			"source-layer": "public_transport",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-station",
+			"id": "symbol-transit-subway",
 			"type": "symbol",
 			"filter": [
 				"all",
 				["in", "kind", "station", "halt"],
-				["!in", "station", "light_rail", "subway"]
+				["==", "station", "subway"]
 			],
 			"source-layer": "public_transport",
 			"source": "versatiles-shortbread"
@@ -3541,973 +3604,28 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-subway",
+			"id": "symbol-transit-station",
 			"type": "symbol",
 			"filter": [
 				"all",
 				["in", "kind", "station", "halt"],
-				["==", "station", "subway"]
+				["!in", "station", "light_rail", "subway"]
 			],
 			"source-layer": "public_transport",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-tram",
+			"id": "symbol-transit-airfield",
 			"type": "symbol",
-			"filter": ["all", ["==", "kind", "tram_stop"]],
+			"filter": ["all", ["==", "kind", "aerodrome"], ["!has", "iata"]],
 			"source-layer": "public_transport",
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "symbol-transit-bus",
+			"id": "symbol-transit-airport",
 			"type": "symbol",
-			"filter": ["all", ["==", "kind", "bus_stop"]],
+			"filter": ["all", ["==", "kind", "aerodrome"], ["has", "iata"]],
 			"source-layer": "public_transport",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-police",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "police"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-fire_station",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fire_station"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-post_box",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "post_box"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-post_office",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "post_office"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-telephone",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "telephone"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-library",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "library"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-townhall",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "townhall"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-courthouse",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "courthouse"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-prison",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "prison"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-embassy",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "embassy"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-community_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "community_centre"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-nursing_home",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "nursing_home"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-arts_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "arts_centre"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-grave_yard",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "grave_yard"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-marketplace",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "marketplace"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-recycling",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "recycling"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-university",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "university"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-school",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "school"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-college",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "college"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-public_building",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "public_building"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-pharmacy",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "pharmacy"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-hospital",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "hospital"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-clinic",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "clinic"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-doctors",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "doctors"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-denitst",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "denitst"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-veterinary",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "veterinary"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-theatre",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "theatre"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-nightclub",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "nightclub"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-cinema",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "cinema"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-restaurant",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "restaurant"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-fast_food",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fast_food"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-cafe",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "cafe"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-pub",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "pub"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bar",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bar"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-foot_court",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "foot_court"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-biergarten",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "biergarten"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-shelter",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "shelter"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_rental",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_rental"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_wash",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_wash"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-car_sharing",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "car_sharing"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bicycle_rental",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bicycle_rental"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-vending_machine",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "vending_machine"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bank",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bank"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-atm",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "atm"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-toilets",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "toilets"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-bench",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "bench"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-drinking_water",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "drinking_water"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-fountain",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "fountain"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-hunting_stand",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "hunting_stand"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-waste_basket",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "waste_basket"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-place_of_worship",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "place_of_worship"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-playground",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "playground"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-amenity-dog_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "amenity", "dog_park"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-sports_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "sports_centre"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-pitch",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "pitch"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-swimming_pool",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "swimming_pool"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-water_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "water_park"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-golf_course",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "golf_course"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-stadium",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "stadium"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-leisure-ice_rink",
-			"type": "symbol",
-			"filter": ["all", ["==", "leisure", "ice_rink"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-hotel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "hotel"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-motel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "motel"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-bed_and_breakfast",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "bed_and_breakfast"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-guest_house",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "guest_house"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-hostel",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "hostel"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-chalet",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "chalet"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-camp_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "camp_site"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-alpine_hut",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "alpine_hut"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-caravan_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "caravan_site"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-information",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "information"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-picnic_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "picnic_site"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-viewpoint",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "viewpoint"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-zoo",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "zoo"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-tourism-theme_park",
-			"type": "symbol",
-			"filter": ["all", ["==", "tourism", "theme_park"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-supermarket",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "supermarket"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-bakery",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "bakery"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-kiosk",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "kiosk"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-mall",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "mall"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-department_store",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "department_store"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-general",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "general"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-convinience",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "convinience"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-clothes",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "clothes"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-florist",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "florist"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-chemist",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "chemist"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-books",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "books"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-butcher",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "butcher"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-shoes",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "shoes"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-alcohol",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "alcohol"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-beverages",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "beverages"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-optican",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "optican"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-jewelry",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "jewelry"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-gift",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "gift"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-sports",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "sports"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-stationery",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "stationery"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-outdoor",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "outdoor"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-mobile_phone",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "mobile_phone"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-toys",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "toys"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-newsagent",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "newsagent"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-greengrocer",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "greengrocer"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-beauty",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "beauty"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-video",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "video"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-car",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "car"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-bicycle",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "bicycle"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-doityourself",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "doityourself"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-hardware",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "hardware"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-furniture",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "furniture"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-computer",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "computer"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-garden_centre",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "garden_centre"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-hairdresser",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "hairdresser"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-travel_agency",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "travel_agency"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-laundry",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "laundry"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-shop-dry_cleaning",
-			"type": "symbol",
-			"filter": ["all", ["==", "shop", "dry_cleaning"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-surveillance",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "surveillance"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-tower",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "tower"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-windmill",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "windmill"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-lighthouse",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "lighthouse"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-wastewater_plant",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "wastewater_plant"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-water_well",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "water_well"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-watermill",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "watermill"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-man_made-water_works",
-			"type": "symbol",
-			"filter": ["all", ["==", "man_made", "water_works"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-monument",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "monument"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-memorial",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "memorial"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-artwork",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "artwork"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-castle",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "castle"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-ruins",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "ruins"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-archaelogical_site",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "archaelogical_site"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-wayside_cross",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "wayside_cross"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-wayside_shrine",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "wayside_shrine"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-battlefield",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "battlefield"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-historic-fort",
-			"type": "symbol",
-			"filter": ["all", ["==", "historic", "fort"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-phone",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "phone"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-fire_hydrant",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "fire_hydrant"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-emergency-defibrillator",
-			"type": "symbol",
-			"filter": ["all", ["==", "emergency", "defibrillator"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-highway-emergency_access_point",
-			"type": "symbol",
-			"filter": ["all", ["==", "highway", "emergency_access_point"]],
-			"source-layer": "pois",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "poi-office-diplomatic",
-			"type": "symbol",
-			"filter": ["all", ["==", "office", "diplomatic"]],
-			"source-layer": "pois",
 			"source": "versatiles-shortbread"
 		}
 	]
