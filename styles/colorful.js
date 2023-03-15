@@ -688,7 +688,7 @@ exports = module.exports = {
 		textHaloColor: $labelHalo,
 		textHaloWidth: 2,
 		textHaloBlur: 1,
-
+		font: "Noto Sans Regular", // prevent maputnik from freaking out
 	},
 	"symbol-transit-airport": {
 		minzoom: 12,
@@ -733,6 +733,7 @@ exports = module.exports = {
 		opacity: { 16: 0, 17: 0.4 },
 		symbolPlacement: "point",
 		iconOptional: true,
+		font: "Noto Sans Regular", // prevent maputnik from freaking out
 	},
 	"poi-amenity": {
 		icon: "icon-dark-{amenity}-22",
