@@ -741,7 +741,7 @@ exports = module.exports = {
 		icon: "icon-dark-{leisure}-22",
 	},
 	"poi-tourism": {
-		icon: "icon-dark-{tourism-22",
+		icon: "icon-dark-{tourism}-22",
 	},
 	"poi-shop": {
 		icon: "icon-dark-{shop}-22",
