@@ -1,21 +1,27 @@
-# versatiles-stylemaker
+# VersaTiles Stylemaker
 
-make map styles programatically
+Programatically generate StyleJSON for Versatiles Styles.
 
-## howto
+[Example: Colorful Style](docs/colorful.png)
 
-1. edit `styles/*`
-2. `node bin/mkstyle`
-3. styles are in `dist/*`
+## Styles
 
-## files
+* [Colorful](https://tiles.versatiles.org/colorful.html) - A colorful, full featured map
+* [Eclipse](https://tiles.versatiles.org/eclipse.html) - A dark basemap
+* [Neutrino](https://tiles.versatiles.org/neutrino.html) - A light basemap
+* Empty - An empty boilerplate style
 
-layers in `lib/layers.js`
-template in `lib/template.json`
-decoration in `lib/decorate.js`
+## Generate Styles
 
-## styles
+`npm run build`
 
-* [colorful](https://tiles.versatiles.org/colorful.html) - a bright full featured map
-* [neutrino](https://tiles.versatiles.org/neutrino.html) - a light basemap
-* [eclipse](https://tiles.versatiles.org/eclipse.html) - a dark basemap
+## Edit Styles
+
+* Style definitions in `styles/*.json`
+* Layer definition in `lib/layers.js`
+* Style template in `lib/template.json`
+
+## Licenses
+
+* Code: [Unlicense](LICENSE.md)
+* Styles: [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
