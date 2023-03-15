@@ -2,7 +2,7 @@
 
 Programatically generate StyleJSON for Versatiles Styles.
 
-[Example: Colorful Style](docs/colorful.png)
+![Example: Colorful Style](docs/colorful.png)
 
 ## Styles
 
