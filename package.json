@@ -1,13 +1,14 @@
 {
+  "private": true,
   "name": "versatiles-stylemaker",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Programatically generate StyleJSON for Versatiles Styles.",
   "main": "index.js",
   "scripts": {
     "build": "node bin/mkstyle.js && node bin/mkboilerplate.js",
     "dist": "node bin/dist.js"
   },
-  "author": "yetzt <node@yetzt.me>",
+  "author": "yetzt <versatiles@yetzt.me>",
   "license": "Unlicense",
   "dependencies": {
     "color": "^4.2.3",
