@@ -31,4 +31,3 @@ fs.writeFile(path.resolve(destdir, styleid+".json"), style, function(err){
 	if (err) throw err;
 	console.log("Saved '%s'", styleid);
 });
-
