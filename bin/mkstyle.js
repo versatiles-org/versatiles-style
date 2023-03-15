@@ -51,9 +51,7 @@ fs.mkdir(destdir, { recursive: true }, function(err){
 					}),
 				}, { indent: "\t", maxLength: 80 }), function(err){
 					if (err) throw err;
-					console.log("Saved '%s'", styleid);
-
-					// make no label version
+					console.log("Saved '%s' (No Labels)", styleid);
 
 				});
 
