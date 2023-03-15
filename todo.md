@@ -15,9 +15,7 @@
 [x] airports
 [x] pois
 [x] sprites and patterns, revisit sprites
-[ ] public transport signage
-[ ] road signage
-[ ] service-roads
-[ ] labels for rivers, islands, place
-[ ] check all layers
-[ ] aggregate layers with same filters and style for compression
+[x] public transport signage
+[x] road signage
+[ ] labels for rivers, islands, places
+[ ] aggregate layers with same filters and style for smaller result
