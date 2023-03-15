@@ -13,10 +13,10 @@ const $streetbg       = "#cfcdca";
 const $motorway       = "#ffcc88";
 const $motorwaybg     = "#e9ac77";
 const $trunk          = "#ffeeaa";
-const $trunkbg        = "#e9ac77"; // make different?
+const $trunkbg        = "#e9ac77";
 const $buildingbg     = "#dfdbd7";
 const $building       = "#f2eae2";
-const $boundary       = "#a6a6c8"; // #b5b5c9";
+const $boundary       = "#a6a6c8";
 const $disputed       = "#bebccf";
 const $residential    = "#eae6e133";
 const $commercial     = "#f7deed40";
@@ -39,18 +39,17 @@ const $danger         = "#ff0000";
 const $prison         = "#fdf2fc";
 const $parking        = "#ebe8e6";
 const $construction   = "#a9a9a9";
-const $education      = "#ffff80"; // 10% opacity
-const $hospital       = "#ff6666"; // 10% opacity
+const $education      = "#ffff80"; // 10% opacity in style
+const $hospital       = "#ff6666"; // 10% opacity in style
 
 exports = module.exports = {
-	// background
 
+	// background
 	"background": {
 		color: $land,
 	},
 
 	// boundary
-
 	"boundary-{country,state}:outline": {
 		color: color($land).lighten(0.1).hex(),
 		lineBlur: 1,
@@ -100,7 +99,6 @@ exports = module.exports = {
 		color: $land,
 		opacity: { 12: 0, 13: 1 },
 	},
-
 	"water-river": {
 		lineWidth: { 9: 0, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
 	},
@@ -138,7 +136,6 @@ exports = module.exports = {
 		color: $agriculture,
 		opacity: { 10: 0, 11: 1 },
 	},
-
 	"land-residential": {
 		color: $residential,
 		opacity: { 10: 0, 11: 1 },
@@ -151,7 +148,6 @@ exports = module.exports = {
 		color: $industrial,
 		opacity: { 10: 0, 11: 1 },
 	},
-
 	"land-waste": {
 		color: $waste,
 		opacity: { 10: 0, 11: 1 },
@@ -209,7 +205,7 @@ exports = module.exports = {
 		color: $buildingbg,
 		opacity: { 14: 0, 15: 1 },
 	},
-	"building": {
+	"building": { // fake 2.5d with translate
 		color: $building,
 		opacity: { 14: 0, 15: 1 },
 		fillTranslate: [ -2, -2 ],
@@ -220,7 +216,7 @@ exports = module.exports = {
 		color: $street,
 		opacity: 0.5,
 	},
-	"airport-{runway,taxiway}:outline": { // HERE
+	"airport-{runway,taxiway}:outline": {
 		color: $streetbg,
 		lineJoin: "round",
 	},
@@ -272,7 +268,7 @@ exports = module.exports = {
 		color: color($street).darken(0.15).hex(),
 	},
 
-	// line caps
+	// streets and ways, line caps
 	"{tunnel-,}{street,way}-*": {
 		lineCap: "round",
 	},
@@ -299,7 +295,6 @@ exports = module.exports = {
 	"{bridge-,}street-{trunk,primary,secondary}{-link,}": {
 		color: $trunk,
 	},
-
 	"tunnel-street-motorway{-link,}:outline": {
 		color: color($motorwaybg).lighten(0.05).hex(),
 		lineDasharray: [1, 0.3],
@@ -335,7 +330,7 @@ exports = module.exports = {
 		opacity: { 7:0, 8:1 },
 	},
 
-	// primary, z8+
+	// primary
 	"{bridge-street,tunnel-street,street}-primary:outline": {
 		size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 	},
@@ -358,23 +353,22 @@ exports = module.exports = {
 	"{bridge-street,tunnel-street,street}-motorway-link:outline": {
 		minzoom: 12,
 		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
-//		opacity: { 12: 0, 13: 1 },
+//		opacity: { 12: 0, 13: 1 }, // no fade-in because those are merged in lower zooms
 	},
 	"{bridge-street,tunnel-street,street}-motorway-link": {
 		minzoom: 12,
 		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
-//		opacity: { 12: 0, 13: 1 },
+//		opacity: { 12: 0, 13: 1 }, // no fade-in because those are merged in lower zooms
 	},
-
 	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link:outline": {
 		minzoom: 13,
 		size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
-//		opacity: { 13: 0, 14: 1 },
+//		opacity: { 13: 0, 14: 1 }, // no fade-in because those are merged in lower zooms
 	},
 	"{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link": {
 		minzoom: 13,
 		size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
-//		opacity: { 13: 0, 14: 1 },
+//		opacity: { 13: 0, 14: 1 }, // no fade-in because those are merged in lower zooms
 	},
 
 	// minor streets
@@ -397,7 +391,7 @@ exports = module.exports = {
 		opacity: { 14: 0, 15: 1 },
 	},
 
-	// ways, surface only
+	// ways
 	"{bridge-,tunnel-,}way-*:outline": {
 		size: { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
 		minzoom: 15,
@@ -437,13 +431,13 @@ exports = module.exports = {
 		lineDasharray: [ 1, 0.2 ],
 	},
 
-	// cycle streets
+	// cycle streets overlay
 	"{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle": {
 		lineCap: "butt",
-
 		color: $cycle,
 	},
 
+	// pedestrian
 	"street-pedestrian": {
 		size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 		opacity: { 13: 0, 14: 1 },
@@ -454,7 +448,7 @@ exports = module.exports = {
 		opacity: { 14: 0, 15: 1 },
 	},
 
-	// rail
+	// rail, lightrail
 	"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": {
 		color: $rail,
 		size: { 8: 1, 13: 1, 15: 3, 16: 4, 18: 8, 19: 11, 20: 14 },
@@ -474,7 +468,7 @@ exports = module.exports = {
 		size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
 		lineDasharray: [ 2, 2 ],
 	},
-
+	// monorail
 	"{tunnel-,bridge-,}transport-{tram,narrowgauge,funicular,monorail}:outline": {
 		minzoom: 15,
 		color: $rail,
@@ -500,6 +494,7 @@ exports = module.exports = {
 	"{bridge-,}transport-{lightrail,subway}": {
 		opacity: { 14: 0, 15: 1 },
 	},
+
 	// tunnel
 	"tunnel-transport-rail:outline": {
 		opacity: { 8: 0, 9: 0.3 },
@@ -524,7 +519,6 @@ exports = module.exports = {
 	},
 
 	// labels
-
 	"label-boundary-*": {
 		color: $label,
 		font: "Noto Sans Bold",
@@ -546,7 +540,6 @@ exports = module.exports = {
 		minzoom: 4,
 		size: { 4: 11, 5: 14 },
 	},
-
 	"label-boundary-*:en": {
 		color: $label,
 		font: "Noto Sans Regular",
@@ -571,7 +564,6 @@ exports = module.exports = {
 		minzoom: 4,
 		size: { 4: 8, 5: 11 },
 	},
-
 	"label-boundary-state": {
 		minzoom: 5,
 		color: color($label).lighten(0.05).hex(),
@@ -627,7 +619,6 @@ exports = module.exports = {
 		textTransform: "uppercase",
 		color: color($label).rotate(-50).saturate(1).darken(0.05).hex(),
 	},
-
 	"label-motorway-shield": {
 		color: "#ffffff",
 		font: "Noto Sans Bold",
@@ -639,7 +630,6 @@ exports = module.exports = {
 		minzoom: 14,
 		size: { 14: 10, 18: 12, 20: 16 },
 	},
-
 	"label-street-*": {
 		color: $label,
 		font: "Noto Sans Regular",
@@ -651,7 +641,6 @@ exports = module.exports = {
 		minzoom: 12,
 		size: { 12: 10, 15: 13 },
 	},
-
 	"label-address-housenumber": {
 		font: "Noto Sans Regular",
 		textHaloColor: color($building).lighten(0.05).hex(),
@@ -672,6 +661,8 @@ exports = module.exports = {
 		opacity: { 16: 0, 17: 0.7 },
 		font: "Noto Sans Regular", // prevent maputnik from freaking out
 	},
+
+	// TODO: bicycle and pedestrian
 
 	// transit
 	"symbol-*": {
@@ -725,6 +716,7 @@ exports = module.exports = {
 		icon: "icon-dark-bus-22",
 		iconSize: { 16: 0.5, 18: 1 },
 	},
+	// TODO: localized symbols? depends on shortbread
 
 	// pois
 	"poi-*": {
@@ -759,6 +751,5 @@ exports = module.exports = {
 	"poi-office": {
 		icon: "icon-dark-{office}-22",
 	},
-
 
 };
