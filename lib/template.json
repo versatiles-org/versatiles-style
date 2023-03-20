@@ -12,7 +12,7 @@
 		"versatiles-shortbread": {
 			"tilejson": "3.0.0",
 			"tiles": [
-				"https://tiles.versatiles.org/tiles/osm/{z}/{y}/{x}"
+				"https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}"
 			],
 			"type": "vector",
 			"scheme": "xyz",
