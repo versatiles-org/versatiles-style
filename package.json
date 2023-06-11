@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "versatiles-stylemaker",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Programatically generate StyleJSON for Versatiles Styles.",
   "main": "index.js",
   "scripts": {
