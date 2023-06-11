@@ -302,55 +302,6 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "water-area",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "water"]],
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-area-river",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "river"]],
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-area-small",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "reservoir", "basin", "dock"]],
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-dam-area",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "dam"]],
-			"source-layer": "dam_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-dam",
-			"type": "line",
-			"filter": ["all", ["==", "kind", "dam"]],
-			"source-layer": "dam_lines",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-pier-area",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
-			"source-layer": "pier_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-pier",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
-			"source-layer": "pier_lines",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "land-glacier",
 			"type": "fill",
 			"filter": ["all", ["==", "kind", "glacier"]],
@@ -531,6 +482,55 @@
 				["!=", "bridge", true]
 			],
 			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "water"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-river",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "river"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-small",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "reservoir", "basin", "dock"]],
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam-area",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "dam"]],
+			"source-layer": "dam_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "dam"]],
+			"source-layer": "dam_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"source-layer": "pier_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"source-layer": "pier_lines",
 			"source": "versatiles-shortbread"
 		},
 		{

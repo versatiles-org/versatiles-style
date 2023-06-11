@@ -307,79 +307,6 @@
 			"source": "versatiles-shortbread"
 		},
 		{
-			"id": "water-area",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "water"]],
-			"paint": {
-				"fill-color": "#beddf3",
-				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
-			},
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-area-river",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "river"]],
-			"paint": {
-				"fill-color": "#beddf3",
-				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
-			},
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-area-small",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "reservoir", "basin", "dock"]],
-			"paint": {
-				"fill-color": "#beddf3",
-				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
-			},
-			"source-layer": "water_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-dam-area",
-			"type": "fill",
-			"filter": ["all", ["==", "kind", "dam"]],
-			"paint": {
-				"fill-color": "#f9f4ee",
-				"fill-opacity": {"stops": [[12, 0], [13, 1]]}
-			},
-			"source-layer": "dam_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-dam",
-			"type": "line",
-			"filter": ["all", ["==", "kind", "dam"]],
-			"paint": {"line-color": "#beddf3"},
-			"layout": {"line-cap": "round", "line-join": "round"},
-			"source-layer": "dam_lines",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-pier-area",
-			"type": "fill",
-			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
-			"paint": {
-				"fill-color": "#f9f4ee",
-				"fill-opacity": {"stops": [[12, 0], [13, 1]]}
-			},
-			"source-layer": "pier_polygons",
-			"source": "versatiles-shortbread"
-		},
-		{
-			"id": "water-pier",
-			"type": "line",
-			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
-			"paint": {"line-color": "#beddf3"},
-			"layout": {"line-cap": "round", "line-join": "round"},
-			"source-layer": "pier_lines",
-			"source": "versatiles-shortbread"
-		},
-		{
 			"id": "land-glacier",
 			"type": "fill",
 			"filter": ["all", ["==", "kind", "glacier"]],
@@ -635,6 +562,79 @@
 			},
 			"layout": {"line-cap": "round", "line-join": "round"},
 			"source-layer": "water_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "water"]],
+			"paint": {
+				"fill-color": "#beddf3",
+				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
+			},
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-river",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "river"]],
+			"paint": {
+				"fill-color": "#beddf3",
+				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
+			},
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-area-small",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "reservoir", "basin", "dock"]],
+			"paint": {
+				"fill-color": "#beddf3",
+				"fill-opacity": {"stops": [[4, 0], [6, 1]]}
+			},
+			"source-layer": "water_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam-area",
+			"type": "fill",
+			"filter": ["all", ["==", "kind", "dam"]],
+			"paint": {
+				"fill-color": "#f9f4ee",
+				"fill-opacity": {"stops": [[12, 0], [13, 1]]}
+			},
+			"source-layer": "dam_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-dam",
+			"type": "line",
+			"filter": ["all", ["==", "kind", "dam"]],
+			"paint": {"line-color": "#beddf3"},
+			"layout": {"line-cap": "round", "line-join": "round"},
+			"source-layer": "dam_lines",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier-area",
+			"type": "fill",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"paint": {
+				"fill-color": "#f9f4ee",
+				"fill-opacity": {"stops": [[12, 0], [13, 1]]}
+			},
+			"source-layer": "pier_polygons",
+			"source": "versatiles-shortbread"
+		},
+		{
+			"id": "water-pier",
+			"type": "line",
+			"filter": ["all", ["in", "kind", "pier", "breakwater", "groyne"]],
+			"paint": {"line-color": "#beddf3"},
+			"layout": {"line-cap": "round", "line-join": "round"},
+			"source-layer": "pier_lines",
 			"source": "versatiles-shortbread"
 		},
 		{
