@@ -10,6 +10,7 @@
 	"sprite": "https://tiles.versatiles.org/sprites/sprites",
 	"sources": {
 		"versatiles-shortbread": {
+			"attribution": "© <a href='http://openstreetmap.org'>OpenStreetMap</a>",
 			"tilejson": "3.0.0",
 			"tiles": [
 				"https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}"
