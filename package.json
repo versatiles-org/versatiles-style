@@ -1,14 +1,14 @@
 {
   "private": true,
-  "name": "versatiles-stylemaker",
-  "version": "0.0.3",
-  "description": "Programatically generate StyleJSON for Versatiles Styles.",
+  "name": "versatiles-style",
+  "version": "1.0.0",
+  "description": "Programatically generate StyleJSON for VersaTiles.",
   "main": "index.js",
   "scripts": {
     "build": "node bin/mkstyle.js && node bin/mkboilerplate.js",
     "dist": "node bin/dist.js"
   },
-  "author": "yetzt <versatiles@yetzt.me>",
+  "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
   "license": "Unlicense",
   "type": "module",
   "dependencies": {
