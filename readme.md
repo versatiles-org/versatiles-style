@@ -1,6 +1,6 @@
-# VersaTiles Stylemaker
+# VersaTiles Styles
 
-Programatically generate StyleJSON for Versatiles Styles.
+Programatically generate StyleJSON for VersaTiles.
 
 ![Example: Colorful Style](docs/colorful.png)
 
