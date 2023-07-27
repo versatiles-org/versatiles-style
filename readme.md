@@ -25,3 +25,8 @@ Programatically generate StyleJSON for VersaTiles.
 
 * Code: [Unlicense](LICENSE.md)
 * Styles: [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+
+## Notes
+
+Pushing to `main` automatically rebuilds and updates `styles.tar.gz` in the latest release.  
+Updating `version` in `package.json` automatically creates a new release.
