@@ -3,12 +3,12 @@ const path = require("path");
 
 const stringify = require("json-stringify-pretty-compact");
 
-const destdir = path.resolve(__dirname,"../dist");
+const destdir = path.resolve(__dirname, "../dist");
 const styleid = "empty";
 
 const style = stringify({
 	...require("../lib/template"),
-	layers: Object.entries(require("../lib/layers")).reduce(function(layers,[id,layer]){
+	layers: Object.entries(require("../lib/layers")).reduce(function (layers, [id, layer]) {
 
 		// id
 
@@ -22,12 +22,12 @@ const style = stringify({
 		layers.push({ id, ...layer });
 
 		return layers;
-	},[]),
+	}, []),
 	id: "shortbread-empty",
 	name: "versatiles-empty",
-},{ indent: "\t", maxLength: 80 });
+}, { indent: "\t", maxLength: 80 });
 
-fs.writeFile(path.resolve(destdir, styleid+".json"), style, function(err){
+fs.writeFile(path.resolve(destdir, styleid + ".json"), style, function (err) {
 	if (err) throw err;
 	console.log("Saved '%s'", styleid);
 });

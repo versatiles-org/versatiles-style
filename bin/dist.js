@@ -6,26 +6,26 @@ const tar = require("tar-stream");
 const srcdir = path.resolve(__dirname, "../dist");
 const dest = path.resolve(__dirname, "../dist/versatiles-styles.tar.gz");
 
-fs.readdir(srcdir, async function(err, files){
+fs.readdir(srcdir, async function (err, files) {
 	if (err) return console.error("Could not read dir '%s': %s", srcdir, err);
 
 	const pack = new tar.pack();
 
-	pack.pipe(zlib.createGzip()).pipe(fs.createWriteStream(dest).on("close", function(){
+	pack.pipe(zlib.createGzip()).pipe(fs.createWriteStream(dest).on("close", function () {
 		console.log("Done.");
 	}));
 
-	const queue = files.filter(function(file){
+	const queue = files.filter(function (file) {
 		return (file.slice(-5) === ".json");
-	}).map(function(file){
-		return function(resolve,reject){
+	}).map(function (file) {
+		return function (resolve, reject) {
 
 			const filepath = path.join(srcdir, file);
 
-			fs.stat(filepath, function(err, stats){
+			fs.stat(filepath, function (err, stats) {
 				if (err) return reject(err);
 
-				const entry = pack.entry({ name: path.join("sprites", file), size: stats.size }, function(err) {
+				const entry = pack.entry({ name: path.join("sprites", file), size: stats.size }, function (err) {
 					console.log("packed %s", file);
 					if (err) return reject(err);
 					resolve();
