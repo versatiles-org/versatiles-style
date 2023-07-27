@@ -1,63 +1,55 @@
 #!/usr/bin/env node
 
-import fs, { readFileSync } from "node:fs";
-import path from "node:path";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import stringify from "json-stringify-pretty-compact";
 import layers from "../lib/layers.js";
 import decorate from "../lib/decorate.js";
-import { fileURLToPath } from "node:url";
+import template from "../lib/template.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const template = readFileSync(path.resolve(__dirname, "../lib/template.json"));
-const srcdir = path.resolve(__dirname, "../styles");
-const destdir = path.resolve(__dirname, "../dist");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const srcdir = resolve(__dirname, "../styles");
+const destdir = resolve(__dirname, "../dist");
 
 // get args --tilejson --glyphs --fonts TODO
 
 // ensure dest dir exists
-fs.mkdir(destdir, { recursive: true }, function (err) {
-	if (err) throw err;
-	// load styles
-	const styles = {};
-	fs.readdir(srcdir, function (err, files) {
-		files.filter(function (file) {
-			return (file.slice(-3) === ".js");
-		}).forEach(function (file) {
-			const styledef = require(path.resolve(srcdir, file));
-			const styleid = file.slice(0, -3);
+mkdirSync(destdir, { recursive: true });
 
-			// FIXME prettier
+// load styles
+const styles = {};
+for (let file of readdirSync(srcdir)) {
+	if (!file.endsWith(".js")) continue;
 
-			// apply style
-			const style = {
-				...template,
-				id: "versatiles-" + styleid,
-				name: "versatiles-" + styleid,
-				layers: decorate(layers, styledef),
-			}
+	const { default: styledef } = await import(resolve(srcdir, file));
+	const styleid = file.slice(0, -3);
 
-			// write
-			fs.writeFile(path.resolve(destdir, styleid + ".json"), stringify(style, { indent: "\t", maxLength: 80 }), function (err) {
-				if (err) throw err;
-				console.log("Saved '%s'", styleid);
+	// FIXME prettier
 
-				// make no label version
-				fs.writeFile(path.resolve(destdir, styleid + ".nolabel.json"), stringify({
-					...style,
-					id: style.id + "-nolabel",
-					name: style.name + "-nolabel",
-					layers: style.layers.filter(function (layer) {
-						return (layer.id.slice(0, 6) !== "label-" && layer.id.slice(0, 4) !== "poi-" && layer.id.slice(0, 7) !== "symbol-");
-					}),
-				}, { indent: "\t", maxLength: 80 }), function (err) {
-					if (err) throw err;
-					console.log("Saved '%s' (No Labels)", styleid);
+	// apply style
+	const style = {
+		...template,
+		id: "versatiles-" + styleid,
+		name: "versatiles-" + styleid,
+		layers: decorate(layers, styledef),
+	}
 
-				});
+	// write
+	writeFileSync(resolve(destdir, styleid + ".json"), stringify(style, { indent: "\t", maxLength: 80 }));
+	console.log("Saved '%s'", styleid);
 
-			});
+	// make no label version
+	writeFileSync(resolve(destdir, styleid + ".nolabel.json"), stringify({
+		...style,
+		id: style.id + "-nolabel",
+		name: style.name + "-nolabel",
+		layers: style.layers.filter(layer =>
+			!layer.id.startsWith("label-") &&
+			!layer.id.startsWith("poi-") &&
+			!layer.id.startsWith("symbol-")
+		),
+	}, { indent: "\t", maxLength: 80 }));
 
-		});
-
-	});
-});
+	console.log("Saved '%s' (No Labels)", styleid);
+};

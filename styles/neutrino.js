@@ -1,6 +1,6 @@
 // colors
 
-const color = require("color");
+import color from "color";
 
 const $land        = "#f6f0f6";
 const $water       = "#cbd2df";
@@ -15,7 +15,7 @@ const $foot        = "#fef8ff"; //#e9e5f4";
 const $rail        = "#e8d5e0";
 const $label       = "#cbb7b7"; // "#ffffff";
 
-exports = module.exports = {
+export default {
 	"background": {
 		color: $land,
 	},

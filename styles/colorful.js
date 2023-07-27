@@ -1,6 +1,6 @@
 // colors
 
-const color = require("color");
+import color from "color";
 
 const $land           = "#f9f4ee";
 const $water          = "#beddf3";
@@ -42,7 +42,7 @@ const $construction   = "#a9a9a9";
 const $education      = "#ffff80"; // 10% opacity in style
 const $hospital       = "#ff6666"; // 10% opacity in style
 
-exports = module.exports = {
+export default {
 
 	// background
 	"background": {

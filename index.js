@@ -1,6 +1,5 @@
 // in case someone wants to use this programmatically
-module.exports = exports = {
-	decorate: require("lib/decorate"),
-	layers: require("lib/layers"),
-	template: require("lib/template.json"),
-};
+
+export { default as decorate } from "lib/decorate.js";
+export { default as layers } from "lib/layers.js";
+export { default as template } from "lib/template.js";

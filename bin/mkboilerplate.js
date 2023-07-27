@@ -1,14 +1,19 @@
-const fs = require("fs");
-const path = require("path");
+import { writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const stringify = require("json-stringify-pretty-compact");
+import stringify from "json-stringify-pretty-compact";
 
-const destdir = path.resolve(__dirname, "../dist");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const destdir = resolve(__dirname, "../dist");
 const styleid = "empty";
 
+import template from "../lib/template.js";
+import layers from "../lib/layers.js";
+
 const style = stringify({
-	...require("../lib/template"),
-	layers: Object.entries(require("../lib/layers")).reduce(function (layers, [id, layer]) {
+	...template,
+	layers: Object.entries(layers).reduce(function (layers, [id, layer]) {
 
 		// id
 
@@ -27,7 +32,5 @@ const style = stringify({
 	name: "versatiles-empty",
 }, { indent: "\t", maxLength: 80 });
 
-fs.writeFile(path.resolve(destdir, styleid + ".json"), style, function (err) {
-	if (err) throw err;
-	console.log("Saved '%s'", styleid);
-});
+writeFileSync(resolve(destdir, styleid + ".json"), style)
+console.log("Saved '%s'", styleid);
