@@ -1,4 +1,4 @@
-# VersaTiles Styles
+# VersaTiles Styles (FKA Stylemaker)
 
 Programatically generate StyleJSON for VersaTiles.
 

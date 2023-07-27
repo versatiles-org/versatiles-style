@@ -14,25 +14,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "get version"
-        run: "echo \"RELEASE_TAG=v$(jq -r '.version' package.json)\" >> $GITHUB_ENV"
+      - run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
+        name: get version
 
       - run: npm install
-      
+
       - run: rm -r dist
+
       - run: npm run build
+        name: build
 
-      - name: tar
-        run: tar -cf styles.tar -C dist .
+      - run: tar -cf styles.tar -C dist .
+        name: tar
 
-      - name: gzip
-        run: gzip -9 styles.tar
+      - run: gzip -9 styles.tar
+        name: gzip
 
-      - name: create release if needed
-        run: gh release create $RELEASE_TAG || true
+      - run: gh release create $RELEASE_TAG || true
+        name: create release if needed
 
-      - name: Add file to release
-        run: gh release upload $RELEASE_TAG styles.tar.gz --clobber
+      - run: gh release upload $RELEASE_TAG styles.tar.gz --clobber
+        name: Add file to release
 
-      - name: Update release
-        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
+      - run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
+        name: Update release
