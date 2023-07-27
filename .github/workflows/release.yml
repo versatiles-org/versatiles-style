@@ -18,11 +18,12 @@ jobs:
         run: "echo \"RELEASE_TAG=v$(jq -r '.version' package.json)\" >> $GITHUB_ENV"
 
       - run: npm install
-
+      
+      - run: rm -r dist
       - run: npm run build
 
       - name: tar
-        run: tar -cf styles.tar -C dist dist/*.json
+        run: tar -cf styles.tar -C dist .
 
       - name: gzip
         run: gzip -9 styles.tar
