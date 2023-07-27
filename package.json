@@ -12,8 +12,8 @@
   "license": "Unlicense",
   "dependencies": {
     "color": "^4.2.3",
-    "json-stringify-pretty-compact": "^3.0.0",
-    "minimatch": "^7.4.2",
-    "tar-stream": "^3.0.0"
+    "json-stringify-pretty-compact": "^4.0.0",
+    "minimatch": "^9.0.3",
+    "tar-stream": "^3.1.6"
   }
 }
