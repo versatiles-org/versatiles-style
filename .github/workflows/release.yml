@@ -18,9 +18,7 @@ jobs:
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - run: npm install
-
       - run: rm -r dist
-
       - run: npm run build
 
       - name: tar
