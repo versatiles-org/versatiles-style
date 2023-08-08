@@ -14,27 +14,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
-        name: get version
+      - name: get version
+        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - run: npm install
 
       - run: rm -r dist
 
       - run: npm run build
-        name: build
-
-      - run: tar -cf styles.tar -C dist .
-        name: tar
-
-      - run: gzip -9 styles.tar
-        name: gzip
-
-      - run: gh release create $RELEASE_TAG || true
-        name: create release if needed
-
-      - run: gh release upload $RELEASE_TAG styles.tar.gz --clobber
-        name: Add file to release
-
-      - run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
-        name: Update release
+        
+      - name: tar
+        run: tar -cf styles.tar -C dist .
+        
+      - name: gzip
+        run: gzip -9 styles.tar
+        
+      - name: create release if needed
+        run: gh release view $RELEASE_TAG && gh release create $RELEASE_TAG
+        
+      - name: upload file to release
+        run: gh release upload $RELEASE_TAG styles.tar.gz --clobber
+        
+      - name: update release
+        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
+        
+      - name: trigger frontend release
+        run: "curl -XPOST -u 'michaelkreil:${{secrets.PAT_TOKEN}}' -H 'Accept: application/vnd.github.everest-preview+json' -H 'Content-Type: application/json' https://api.github.com/repos/versatiles-org/versatiles-frontend/actions/workflows/release.yml/dispatches --data '{\"ref\":\"main\"}'"
