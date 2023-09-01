@@ -11,6 +11,7 @@ Programatically generate StyleJSON for VersaTiles.
 * [Colorful](https://tiles.versatiles.org/colorful.html) - A colorful, full featured map
 * [Eclipse](https://tiles.versatiles.org/eclipse.html) - A dark basemap
 * [Neutrino](https://tiles.versatiles.org/neutrino.html) - A light basemap
+* Graybeard - A gray basemap
 * Empty - An empty boilerplate style
 
 ## Generate Styles
