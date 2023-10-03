@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+'use strict'
+
 const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
@@ -5,14 +8,14 @@ const tar = require("tar-stream");
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirSrc = path.resolve(dirRoot, "dist");
-const dest = path.resolve(dirRoot, "dist/versatiles-styles.tar.gz");
+const filenameDst = path.resolve(dirRoot, "dist/versatiles-styles.tar.gz");
 
 fs.readdir(dirSrc, async function (err, files) {
 	if (err) return console.error("Could not read dir '%s': %s", dirSrc, err);
 
 	const pack = new tar.pack();
 
-	pack.pipe(zlib.createGzip()).pipe(fs.createWriteStream(dest).on("close", function () {
+	pack.pipe(zlib.createGzip()).pipe(fs.createWriteStream(filenameDst).on("close", function () {
 		console.log("Done.");
 	}));
 

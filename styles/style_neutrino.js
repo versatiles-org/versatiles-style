@@ -1,7 +1,8 @@
-// colors
 
 export default class Neutrino extends ShortbreadStyle {
+	get id() { return 'neutrino' }
 	constructor() {
+		super();
 		this
 			.addFont('regular', "Noto Sans Regular")
 			.addFont('bold', "Noto Sans Bold")

@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+'use strict'
+
 import { writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 import stringify from "json-stringify-pretty-compact";
 

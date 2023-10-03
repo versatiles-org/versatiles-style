@@ -1,11 +1,13 @@
 #!/usr/bin/env node
+'use strict'
 
-import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import stringify from "json-stringify-pretty-compact";
 import layers from "../lib/layers.js";
 import decorate from "../lib/decorate.js";
 import template from "../lib/template.js";
+import styles from "../index.js";
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirSrc = resolve(dirRoot, "styles");
@@ -13,16 +15,14 @@ const dirDst = resolve(dirRoot, "dist");
 
 // get args --tilejson --glyphs --fonts TODO
 
-// ensure dest dir exists
+// ensure destination dir exists
+if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
-const styles = {};
-for (let file of readdirSync(dirSrc)) {
-	if (!file.endsWith(".js")) continue;
-
-	const { default: styledef } = await import(resolve(dirSrc, file));
-	const styleid = file.slice(0, -3);
+for (let StyleClass of styles) {
+	let styleGenerator = new StyleClass();
+	const styleId = styleGenerator.id;
 
 	// FIXME prettier
 

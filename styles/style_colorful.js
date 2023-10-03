@@ -1,6 +1,8 @@
 
 export default class Colorful extends ShortbreadStyle {
+	get id() { return 'colorful' }
 	constructor() {
+		super();
 		this
 			.addFont('regular', "Noto Sans Regular")
 			.addFont('bold', "Noto Sans Bold")

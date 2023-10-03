@@ -5,7 +5,7 @@
   "description": "Programatically generate StyleJSON for VersaTiles.",
   "main": "index.js",
   "scripts": {
-    "build": "node bin/mkstyle.js && node bin/mkboilerplate.js",
+    "build": "node bin/make_style.js && node bin/make_boilerplate.js",
     "release": "node bin/release.js"
   },
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",

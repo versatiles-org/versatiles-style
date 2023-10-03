@@ -1,6 +1,8 @@
 
 export default class Graybeard extends ShortbreadStyle {
+	get id() { return 'graybeard' }
 	constructor() {
+		super();
 		this
 			.addFont('regular', "Noto Sans Regular")
 			.addFont('bold', "Noto Sans Bold")

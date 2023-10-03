@@ -1,6 +1,8 @@
 
 export default class Eclipse extends ShortbreadStyle {
+	get id() { return 'eclipse' }
 	constructor() {
+		super();
 		this
 			.addFont('regular', "Noto Sans Regular")
 			.addFont('bold', "Noto Sans Bold")
