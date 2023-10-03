@@ -1,6 +1,9 @@
-// colors
 
-import color from "color";
+export default class Eclipse extends ShortbreadStyle {
+	constructor() {
+		this
+			.addFont('regular', "Noto Sans Regular")
+			.addFont('bold', "Noto Sans Bold")
 
 const $land          = "#0b0a0a";
 const $water         = "#18181b";
@@ -256,7 +259,7 @@ export default {
 	// labels
 	"label-boundary-*": {
 		color: $label,
-		font: "Noto Sans Bold",
+		font: getFont('bold'),
 		textTransform: "uppercase",
 		textHaloColor: $labelhalo,
 		textHaloWidth: 0.1,
@@ -281,7 +284,7 @@ export default {
 	},
 	"label-place-*": {
 		color: color($label).rotate(-15).saturate(0.5).lighten(0.5).hex(),
-		font: "Noto Sans Regular",
+		font: getFont('regular'),
 		textHaloColor: $labelhalo,
 		textHaloWidth: 0.1,
 		textHaloBlur: 1,
@@ -337,7 +340,7 @@ export default {
 
 	"label-motorway-shield": {
 		color: $label,
-		font: "Noto Sans Regular",
+		font: getFont('regular'),
 		textHaloColor: $labelhalo,
 		textHaloWidth: 0.1,
 		textHaloBlur: 1,
@@ -350,7 +353,7 @@ export default {
 
 	"label-street-*": {
 		color: $label,
-		font: "Noto Sans Regular",
+		font: getFont('regular'),
 		textHaloColor: $labelhalo,
 		textHaloWidth: 0.1,
 		textHaloBlur: 1,
