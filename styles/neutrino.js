@@ -20,17 +20,19 @@ export default class Neutrino extends ShortbreadStyle {
 			.addColor('label', "#cbb7b7") // "#ffffff";
 	}
 	generate() {
+		let getColor = this.getColor;
+		let getFont = this.getFont;
 		return {
 			"background": {
-				color: $land,
+				color: getColor('land'),
 			},
 			"boundary-{country,state}": {
-				color: $boundary,
+				color: getColor('boundary'),
 			},
 			"boundary-country:outline": {
 				size: { 2: 2, 10: 6, },
 				opacity: { 2: 0, 4: 0.3 },
-				color: color($land).lighten(0.05).hex(),
+				color: getColor('land', { lighten: 0.05 }),
 				lineBlur: 1,
 			},
 			"boundary-country": {
@@ -40,7 +42,7 @@ export default class Neutrino extends ShortbreadStyle {
 			"boundary-state:outline": {
 				size: { 7: 3, 10: 5, },
 				opacity: { 7: 0, 8: 0.3 },
-				color: color($land).lighten(0.05).hex(),
+				color: getColor('land', { lighten: 0.05 }),
 				lineBlur: 1,
 			},
 			"boundary-state": {
@@ -51,7 +53,7 @@ export default class Neutrino extends ShortbreadStyle {
 				lineJoin: "round",
 			},
 			"water-*": {
-				color: $water,
+				color: getColor('water'),
 			},
 			"water-area": {
 				opacity: { 4: 0, 6: 1 },
@@ -60,62 +62,62 @@ export default class Neutrino extends ShortbreadStyle {
 				opacity: { 4: 0, 6: 1 },
 			},
 			"water-{pier,dam}-area": {
-				color: $land,
+				color: getColor('land'),
 				opacity: { 12: 0, 13: 1 },
 			},
 			"land-*": {
-				color: $land,
+				color: getColor('land'),
 			},
 			"land-forest": {
-				color: $wood,
+				color: getColor('wood'),
 				opacity: { 7: 0, 8: 1 },
 			},
 			"land-grass": {
-				color: $grass,
+				color: getColor('grass'),
 				opacity: { 11: 0, 12: 1 },
 			},
 			"land-{park,garden,vegetation}": {
-				color: color($grass).darken(0.05).saturate(0.05).hex(),
+				color: getColor('grass', { darken: 0.05, saturate: 0.05 }),
 				opacity: { 11: 0, 12: 1 },
 			},
 			"land-agriculture": {
-				color: $agriculture,
+				color: getColor('agriculture'),
 				opacity: { 10: 0, 11: 1 },
 			},
 			"land-{commercial,industrial,residential}": {
-				color: color($land).darken(0.03).hex(),
+				color: getColor('land', { darken: 0.03 }),
 				opacity: { 10: 0, 11: 1 },
 			},
 			"site-{bicycleparking,parking}": {
-				color: $site,
+				color: getColor('site'),
 			},
 			"building": {
-				color: $building,
+				color: getColor('building'),
 				opacity: { 14: 0, 15: 1 },
 			},
 			"bridge": {
-				color: color($land).darken(0.01).hex(),
+				color: getColor('land', { darken: 0.01 }),
 			},
 			"{tunnel-,bridge-,}street-*": {
-				color: $street,
+				color: getColor('street'),
 				size: 1,
 				lineJoin: "round",
 				lineCap: "round",
 			},
 			"{tunnel-,}street-*:outline": {
-				color: color($street).darken(0.1).hex(),
+				color: getColor('street', { darken: 0.1 }),
 				lineJoin: "round",
 				lineCap: "round",
 			},
 			"tunnel-street-*": {
-				color: color($street).darken(0.03).hex(),
+				color: getColor('street', { darken: 0.03 }),
 			},
 			"tunnel-street-*:outline": {
-				color: color($street).darken(0.13).hex(),
+				color: getColor('street', { darken: 0.13 }),
 				lineDasharray: [1, 2],
 			},
 			"bridge-street-*:outline": {
-				color: color($street).darken(0.15).hex(),
+				color: getColor('street', { darken: 0.15 }),
 			},
 			// motorway
 			"{bridge-street,tunnel-street,street}-motorway:outline": {
@@ -203,30 +205,30 @@ export default class Neutrino extends ShortbreadStyle {
 				size: { 17: 0, 18: 3 },
 				opacity: { 17: 0, 18: 1 },
 				minzoom: 17,
-				color: color($foot).darken(0.05).hex(),
+				color: getColor('foot', { darken: 0.05 }),
 			},
 			"way-{footway,path,steps}": {
 				size: { 17: 0, 18: 2 },
 				opacity: { 17: 0, 18: 1 },
 				minzoom: 17,
-				color: $foot,
+				color: getColor('foot'),
 			},
 			"street-pedestrian": {
 				size: { 13: 1, 15: 3 },
 				opacity: { 13: 0, 14: 1 },
-				color: $foot,
+				color: getColor('foot'),
 			},
 			"street-pedestrian-zone": {
-				color: $foot,
+				color: getColor('foot'),
 				opacity: { 14: 0, 15: 1 },
 			},
 			// rail
 			"{tunnel-,bridge-,}transport-{rail,lightrail}:outline": {
-				color: $rail,
+				color: getColor('rail'),
 				size: { 8: 1, 12: 1, 15: 3 },
 			},
 			"{tunnel-,bridge-,}transport-{rail,lightrail}": {
-				color: color($rail).lighten(0.1).hex(),
+				color: getColor('rail', { lighten: 0.1 }),
 				size: { 8: 1, 12: 1, 15: 2 },
 				lineDasharray: [2, 2],
 			},
@@ -258,10 +260,10 @@ export default class Neutrino extends ShortbreadStyle {
 			},
 			// labels
 			"label-boundary-*": {
-				color: $label,
+				color: getColor('label'),
 				font: getFont('bold'),
 				textTransform: "uppercase",
-				textHaloColor: color($label).lighten(0.5).hex(),
+				textHaloColor: getColor('label', { lighten: 0.5 }),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 			},
@@ -279,13 +281,13 @@ export default class Neutrino extends ShortbreadStyle {
 			},
 			"label-boundary-state": {
 				minzoom: 5,
-				color: color($label).lighten(0.05).hex(),
+				color: getColor('label', { lighten: 0.05 }),
 				size: { 5: 8, 8: 12 },
 			},
 			"label-place-*": {
-				color: color($label).rotate(-15).saturate(1).darken(0.05).hex(),
+				color: getColor('label', { rotate: -15, saturate: 1, darken: 0.05 }),
 				font: getFont('regular'),
-				textHaloColor: color($label).lighten(0.5).hex(),
+				textHaloColor: getColor('label', { lighten: 0.5 }),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 				size: 1,
@@ -323,25 +325,25 @@ export default class Neutrino extends ShortbreadStyle {
 				minzoom: 11,
 				size: { 11: 11, 13: 14 },
 				textTransform: "uppercase",
-				color: color($label).rotate(-30).saturate(1).darken(0.05).hex(),
+				color: getColor('label', { rotate: -30, saturate: 1, darken: 0.05 }),
 			},
 			"label-place-quarter": {
 				minzoom: 13,
 				size: { 13: 13 },
 				textTransform: "uppercase",
-				color: color($label).rotate(-40).saturate(1).darken(0.05).hex(),
+				color: getColor('label', { rotate: -40, saturate: 1, darken: 0.05 }),
 			},
 			"label-place-neighbourhood": {
 				minzoom: 14,
 				size: { 14: 12 },
 				textTransform: "uppercase",
-				color: color($label).rotate(-50).saturate(1).darken(0.05).hex(),
+				color: getColor('label', { rotate: -50, saturate: 1, darken: 0.05 }),
 			},
 
 			"label-motorway-shield": {
-				color: $label,
+				color: getColor('label'),
 				font: getFont('regular'),
-				textHaloColor: color($label).desaturate(0.5).lighten(0.1).hex(),
+				textHaloColor: getColor('label', { desaturate: 0.5, lighten: 0.1 }),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 				symbolPlacement: "line",
@@ -352,9 +354,9 @@ export default class Neutrino extends ShortbreadStyle {
 
 
 			"label-street-*": {
-				color: $label,
+				color: getColor('label'),
 				font: getFont('regular'),
-				textHaloColor: color($label).desaturate(0.5).lighten(0.1).hex(),
+				textHaloColor: getColor('label', { desaturate: 0.5, lighten: 0.1 }),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 				symbolPlacement: "line",
