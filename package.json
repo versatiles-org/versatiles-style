@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node bin/mkstyle.js && node bin/mkboilerplate.js",
-    "dist": "node bin/dist.js"
+    "release": "node bin/release.js"
   },
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
   "license": "Unlicense",

@@ -16,7 +16,7 @@ jobs:
 
       - run: npm install
       - run: rm -r dist
-      - run: npm run build
+      - run: npm run release
 
       - name: tar
         run: tar -cf styles.tar -C dist .

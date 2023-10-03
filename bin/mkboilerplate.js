@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url";
 
 import stringify from "json-stringify-pretty-compact";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const destdir = resolve(__dirname, "../dist");
+const dirRoot = new URL('../', import.meta.url).pathname;
+const dirDst = resolve(dirRoot, "dist");
 const styleid = "empty";
 
-import template from "../lib/template.js";
-import layers from "../lib/layers.js";
+import template from "lib/template.js";
+import layers from "lib/layers.js";
 
 const style = stringify({
 	...template,
@@ -32,5 +32,5 @@ const style = stringify({
 	name: "versatiles-empty",
 }, { indent: "\t", maxLength: 80 });
 
-writeFileSync(resolve(destdir, styleid + ".json"), style)
+writeFileSync(resolve(dirDst, styleid + ".json"), style)
 console.log("Saved '%s'", styleid);

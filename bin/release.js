@@ -3,11 +3,12 @@ const path = require("path");
 const zlib = require("zlib");
 const tar = require("tar-stream");
 
-const srcdir = path.resolve(__dirname, "../dist");
-const dest = path.resolve(__dirname, "../dist/versatiles-styles.tar.gz");
+const dirRoot = new URL('../', import.meta.url).pathname;
+const dirSrc = path.resolve(dirRoot, "dist");
+const dest = path.resolve(dirRoot, "dist/versatiles-styles.tar.gz");
 
-fs.readdir(srcdir, async function (err, files) {
-	if (err) return console.error("Could not read dir '%s': %s", srcdir, err);
+fs.readdir(dirSrc, async function (err, files) {
+	if (err) return console.error("Could not read dir '%s': %s", dirSrc, err);
 
 	const pack = new tar.pack();
 
@@ -20,7 +21,7 @@ fs.readdir(srcdir, async function (err, files) {
 	}).map(function (file) {
 		return function (resolve, reject) {
 
-			const filepath = path.join(srcdir, file);
+			const filepath = path.join(dirSrc, file);
 
 			fs.stat(filepath, function (err, stats) {
 				if (err) return reject(err);
