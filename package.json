@@ -1,11 +1,10 @@
 {
   "private": true,
-  "name": "versatiles-style",
-  "version": "1.0.0",
-  "description": "Programatically generate StyleJSON for VersaTiles.",
+  "version": "2.0.0",
+  "description": "Programatically generate StyleJSON for Maplibre.",
   "main": "index.js",
   "scripts": {
-    "build": "node bin/make_style.js && node bin/make_boilerplate.js",
+    "build": "node bin/make_styles.js && node bin/make_boilerplate.js",
     "release": "node bin/release.js"
   },
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",

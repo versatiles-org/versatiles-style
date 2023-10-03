@@ -1,7 +1,5 @@
-// in case someone wants to use this programmatically
 
-//export { default as decorate } from "lib/decorate.js";
-//export { default as layers } from "lib/layers.js";
-//export { default as template } from "lib/template.js";
-
-export * from "./styles/styles.js";
+export { default as Colorful } from './styles/colorful.js';
+//export { default as Eclipse } from './styles/eclipse.js';
+//export { default as Graybeard } from './styles/graybeard.js';
+//export { default as Neutrino } from './styles/neutrino.js';

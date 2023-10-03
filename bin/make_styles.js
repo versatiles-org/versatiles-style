@@ -7,11 +7,10 @@ import stringify from "json-stringify-pretty-compact";
 import layers from "../lib/layers.js";
 import decorate from "../lib/decorate.js";
 import template from "../lib/template.js";
-import styles from "../index.js";
+import * as StylemakerClasses from "../index.js";
 
 const dirRoot = new URL('../', import.meta.url).pathname;
-const dirSrc = resolve(dirRoot, "styles");
-const dirDst = resolve(dirRoot, "dist");
+const dirDst = resolve(dirRoot, 'dist');
 
 // get args --tilejson --glyphs --fonts TODO
 
@@ -20,19 +19,14 @@ if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
-for (let StyleClass of styles) {
-	let styleGenerator = new StyleClass();
+for (let StylemakerClass of Object.values(StylemakerClasses)) {
+	let styleGenerator = new StylemakerClass();
+	console.log(styleGenerator);
 	const styleId = styleGenerator.id;
+	const style = styleGenerator.getStyle();
 
 	// FIXME prettier
 
-	// apply style
-	const style = {
-		...template,
-		id: "versatiles-" + styleid,
-		name: "versatiles-" + styleid,
-		layers: decorate(layers, styledef),
-	}
 
 	// write
 	writeFileSync(resolve(dirDst, styleid + ".json"), stringify(style, { indent: "\t", maxLength: 80 }));
