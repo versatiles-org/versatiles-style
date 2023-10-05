@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 'use strict'
 
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import stringify from "json-stringify-pretty-compact";
-import layers from "../lib/layers.js";
-import decorate from "../lib/decorate.js";
-import template from "../lib/template.js";
-import * as StylemakerClasses from "../index.js";
+import { existsSync, mkdirSync,  rmSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import * as StylemakerClasses from '../index.js';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirDst = resolve(dirRoot, 'dist');
@@ -21,9 +17,10 @@ mkdirSync(dirDst, { recursive: true });
 // load styles
 for (let StylemakerClass of Object.values(StylemakerClasses)) {
 	let styleGenerator = new StylemakerClass();
-	console.log(styleGenerator);
 	const styleId = styleGenerator.id;
-	const style = styleGenerator.getStyle();
+	const options = styleGenerator.getOptions();
+	const style = styleGenerator.build();
+	process.exit();
 
 	// FIXME prettier
 
@@ -32,6 +29,7 @@ for (let StylemakerClass of Object.values(StylemakerClasses)) {
 	writeFileSync(resolve(dirDst, styleid + ".json"), stringify(style, { indent: "\t", maxLength: 80 }));
 	console.log("Saved '%s'", styleid);
 
+	style.set()	
 	// make no label version
 	writeFileSync(resolve(dirDst, styleid + ".nolabel.json"), stringify({
 		...style,

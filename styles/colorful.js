@@ -50,7 +50,7 @@ export default function Colorful() {
 		hospital: '#ff6666', // 10% opacity in style
 	})
 
-	stylemaker.addLayers({
+	stylemaker.addLayerStyles({
 
 		// background
 		'background': {
@@ -321,80 +321,80 @@ export default function Colorful() {
 		},
 
 		// motorway
-		'{bridge-street,tunnel-street,street}-motorway:outline': {
+		'{bridge-,tunnel-,}street-motorway:outline': {
 			size: { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 },
 		},
-		'{bridge-street,tunnel-street,street}-motorway': {
+		'{bridge-,tunnel-,}street-motorway': {
 			size: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 },
 			opacity: { 5: 0, 6: 1 },
 		},
 
 		// trunk
-		'{bridge-street,tunnel-street,street}-trunk:outline': {
+		'{bridge-,tunnel-,}street-trunk:outline': {
 			size: { 7: 0, 8: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 		},
-		'{bridge-street,tunnel-street,street}-trunk': {
+		'{bridge-,tunnel-,}street-trunk': {
 			size: { 7: 0, 8: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
 			opacity: { 7: 0, 8: 1 },
 		},
 
 		// primary
-		'{bridge-street,tunnel-street,street}-primary:outline': {
+		'{bridge-,tunnel-,}street-primary:outline': {
 			size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 },
 		},
-		'{bridge-street,tunnel-street,street}-primary': {
+		'{bridge-,tunnel-,}street-primary': {
 			size: { 8: 0, 9: 2, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 },
 			opacity: { 8: 0, 9: 1 },
 		},
 
 		// secondary
-		'{bridge-street,tunnel-street,street}-secondary:outline': {
+		'{bridge-,tunnel-,}street-secondary:outline': {
 			size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 },
 			opacity: { 11: 0, 12: 1 },
 		},
-		'{bridge-street,tunnel-street,street}-secondary': {
+		'{bridge-,tunnel-,}street-secondary': {
 			size: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 },
 			opacity: { 11: 0, 12: 1 },
 		},
 
 		// links
-		'{bridge-street,tunnel-street,street}-motorway-link:outline': {
+		'{bridge-,tunnel-,}street-motorway-link:outline': {
 			minzoom: 12,
 			size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
 			//		opacity: { 12: 0, 13: 1 }, // no fade-in because those are merged in lower zooms
 		},
-		'{bridge-street,tunnel-street,street}-motorway-link': {
+		'{bridge-,tunnel-,}street-motorway-link': {
 			minzoom: 12,
 			size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
 			//		opacity: { 12: 0, 13: 1 }, // no fade-in because those are merged in lower zooms
 		},
-		'{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link:outline': {
+		'{bridge-,tunnel-,}street-{trunk,primary,secondary}-link:outline': {
 			minzoom: 13,
 			size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 },
 			//		opacity: { 13: 0, 14: 1 }, // no fade-in because those are merged in lower zooms
 		},
-		'{bridge-street,tunnel-street,street}-{trunk,primary,secondary}-link': {
+		'{bridge-,tunnel-,}street-{trunk,primary,secondary}-link': {
 			minzoom: 13,
 			size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 },
 			//		opacity: { 13: 0, 14: 1 }, // no fade-in because those are merged in lower zooms
 		},
 
 		// minor streets
-		'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*:outline': {
+		'{bridge-,tunnel-,}street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*:outline': {
 			size: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
 			opacity: { 12: 0, 13: 1 },
 		},
-		'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*': {
+		'{bridge-,tunnel-,}street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*': {
 			size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 			opacity: { 12: 0, 13: 1 },
 		},
 
 		// service and tracks
-		'{bridge-street,tunnel-street,street}-{service,track}:outline': {
+		'{bridge-,tunnel-,}street-{service,track}:outline': {
 			size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 },
 			opacity: { 14: 0, 15: 1 },
 		},
-		'{bridge-street,tunnel-street,street}-{service,track}': {
+		'{bridge-,tunnel-,}street-{service,track}': {
 			size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 },
 			opacity: { 14: 0, 15: 1 },
 		},
@@ -440,7 +440,7 @@ export default function Colorful() {
 		},
 
 		// cycle streets overlay
-		'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle': {
+		'{bridge-,tunnel-,}street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle': {
 			lineCap: 'butt',
 			color: '$colors.cycle',
 		},
@@ -760,5 +760,5 @@ export default function Colorful() {
 		},
 	})
 
-	return stylemaker.build();
+	return stylemaker.getMaker();
 }

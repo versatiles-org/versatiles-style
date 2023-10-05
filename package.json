@@ -11,9 +11,9 @@
   "license": "Unlicense",
   "type": "module",
   "dependencies": {
+    "@maplibre/maplibre-gl-style-spec": "^19.3.2",
+    "brace-expansion": "^2.0.1",
     "color": "^4.2.3",
-    "json-stringify-pretty-compact": "^4.0.0",
-    "minimatch": "^9.0.3",
     "tar-stream": "^3.1.6"
   }
 }
