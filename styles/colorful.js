@@ -1,6 +1,6 @@
 import Stylemaker from '../lib/stylemaker.js';
 
-function Colorful() {
+export default function Colorful() {
 	const stylemaker = new Stylemaker('colorful');
 
 	stylemaker.addFonts({
