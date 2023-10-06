@@ -8,6 +8,10 @@ export default function Colorful() {
 		bold: 'Noto Sans Bold',
 	})
 
+	stylemaker.addFields({
+		name: { '': 'name', en: 'name_en', de: 'name_de' },
+	})
+
 	stylemaker.addColors({
 		land: '#f9f4ee',
 		water: '#beddf3',
@@ -432,10 +436,10 @@ export default function Colorful() {
 			color: '$colors.cycle',
 		},
 		'tunnel-way-cycleway:outline': {
-			color: '$colors.cycle|darken:0.1|desaturate: 0.5',
+			color: '$colors.cycle|darken:0.1|desaturate:0.5',
 		},
 		'tunnel-way-cycleway': {
-			color: '$colors.cycle|darken:0.02|desaturate: 0.5',
+			color: '$colors.cycle|darken:0.02|desaturate:0.5',
 			lineDasharray: [1, 0.2],
 		},
 
@@ -452,7 +456,7 @@ export default function Colorful() {
 			color: '$colors.foot',
 		},
 		'street-pedestrian-zone': {
-			color: '$colors.foot|lighten:0.02|opacity: 0.75',
+			color: '$colors.foot|lighten:0.02|fade:0.75',
 			opacity: { 14: 0, 15: 1 },
 		},
 
@@ -678,7 +682,7 @@ export default function Colorful() {
 			iconOpacity: 0.7,
 			iconKeepUpright: true,
 			font: '$fonts.regular',
-			text: '{name}',
+			text: '$fields.name',
 			size: 10,
 			color: '$colors.symbol',
 			iconAnchor: 'bottom',
