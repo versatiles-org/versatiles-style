@@ -54,35 +54,35 @@ export default function Colorful() {
 		hospital: '#ff6666', // 10% opacity in style
 	})
 
-	stylemaker.setLayerStyle(({ getColor, getField, getFont }) => ({
+	stylemaker.setLayerStyle(({ colors, fields, fonts }) => ({
 
 		// background
 		'background': {
-			color: getColor('land'),
+			color: colors.land,
 		},
 
 		// boundary
 		'boundary-{country,state}:outline': {
-			color: getColor('land').lighten(0.1),
+			color: colors.land.lighten(0.1),
 			lineBlur: 1,
 			lineCap: 'round',
 			lineJoin: 'round',
 		},
 		'boundary-{country,state}': {
-			color: getColor('boundary'),
+			color: colors.boundary,
 			lineCap: 'round',
 			lineJoin: 'round',
 		},
 		'boundary-country{-disputed,}:outline': {
 			size: { 2: 0, 3: 2, 10: 8, },
 			opacity: 0.75,
-			color: getColor('land').lighten(0.05),
+			color: colors.land.lighten(0.05),
 		},
 		'boundary-country{-disputed,}': {
 			size: { 2: 0, 3: 1, 10: 4, },
 		},
 		'boundary-country-disputed': {
-			color: getColor('disputed'),
+			color: colors.disputed,
 			lineDasharray: [2, 1],
 			lineCap: 'square',
 		},
@@ -97,7 +97,7 @@ export default function Colorful() {
 		// water
 
 		'water-*': {
-			color: getColor('water'),
+			color: colors.water,
 			lineCap: 'round',
 			lineJoin: 'round',
 		},
@@ -108,7 +108,7 @@ export default function Colorful() {
 			opacity: { 4: 0, 6: 1 },
 		},
 		'water-{pier,dam}-area': {
-			color: getColor('land'),
+			color: colors.land,
 			opacity: { 12: 0, 13: 1 },
 		},
 		'water-river': {
@@ -127,113 +127,113 @@ export default function Colorful() {
 		// land
 
 		'land-*': {
-			color: getColor('land'),
+			color: colors.land,
 		},
 		'land-glacier': {
-			color: getColor('glacier'),
+			color: colors.glacier,
 		},
 		'land-forest': {
-			color: getColor('wood'),
+			color: colors.wood,
 			opacity: { 7: 0, 8: 0.1 },
 		},
 		'land-grass': {
-			color: getColor('grass'),
+			color: colors.grass,
 			opacity: { 11: 0, 12: 1 },
 		},
 		'land-{park,garden,vegetation}': {
-			color: getColor('park'),
+			color: colors.park,
 			opacity: { 11: 0, 12: 1 },
 		},
 		'land-agriculture': {
-			color: getColor('agriculture'),
+			color: colors.agriculture,
 			opacity: { 10: 0, 11: 1 },
 		},
 		'land-residential': {
-			color: getColor('residential'),
+			color: colors.residential,
 			opacity: { 10: 0, 11: 1 },
 		},
 		'land-commercial': {
-			color: getColor('commercial'),
+			color: colors.commercial,
 			opacity: { 10: 0, 11: 1 },
 		},
 		'land-industrial': {
-			color: getColor('industrial'),
+			color: colors.industrial,
 			opacity: { 10: 0, 11: 1 },
 		},
 		'land-waste': {
-			color: getColor('waste'),
+			color: colors.waste,
 			opacity: { 10: 0, 11: 1 },
 		},
 		'land-burial': {
-			color: getColor('burial'),
+			color: colors.burial,
 			opacity: { 13: 0, 14: 1 },
 		},
 		'land-leisure': {
-			color: getColor('leisure'),
+			color: colors.leisure,
 		},
 		'land-rock': {
-			color: getColor('rock'),
+			color: colors.rock,
 		},
 		'land-sand': {
-			color: getColor('sand'),
+			color: colors.sand,
 		},
 		'land-wetland': {
-			color: getColor('wetland'),
+			color: colors.wetland,
 		},
 
 		// site
 
 		'site-dangerarea': {
-			color: getColor('danger'),
-			fillOutlineColor: getColor('danger'),
+			color: colors.danger,
+			fillOutlineColor: colors.danger,
 			opacity: 0.3,
 			icon: 'pattern-dark-warning-12',
 		},
 		'site-hospital': {
-			color: getColor('hospital'),
+			color: colors.hospital,
 			opacity: 0.1,
 		},
 		'site-prison': {
-			color: getColor('prison'),
+			color: colors.prison,
 			icon: 'pattern-dark-striped-12',
 			opacity: 0.1,
 		},
 		'site-construction': {
-			color: getColor('construction'),
+			color: colors.construction,
 			icon: 'pattern-dark-hatched-thin-12',
 			opacity: 0.1,
 		},
 		'site-{university,college,school}': {
-			color: getColor('education'),
+			color: colors.education,
 			opacity: 0.1,
 		},
 		'site-{bicycleparking,parking}': {
-			color: getColor('parking'),
+			color: colors.parking,
 		},
 
 		// building
 
 		'building:outline': {
-			color: getColor('buildingbg'),
+			color: colors.buildingbg,
 			opacity: { 14: 0, 15: 1 },
 		},
 		'building': { // fake 2.5d with translate
-			color: getColor('building'),
+			color: colors.building,
 			opacity: { 14: 0, 15: 1 },
 			fillTranslate: [-2, -2],
 		},
 
 		// airport
 		'airport-area': {
-			color: getColor('street'),
+			color: colors.street,
 			opacity: 0.5,
 		},
 		'airport-{runway,taxiway}:outline': {
-			color: getColor('streetbg'),
+			color: colors.streetbg,
 			lineJoin: 'round',
 		},
 		'airport-{runway,taxiway}': {
-			color: getColor('street'),
+			color: colors.street,
 			lineJoin: 'round',
 		},
 		'airport-runway:outline': {
@@ -254,7 +254,7 @@ export default function Colorful() {
 		// bridge
 
 		'bridge': {
-			color: getColor('land').darken(0.02),
+			color: colors.land.darken(0.02),
 			fillAntialias: true,
 			opacity: 0.8,
 		},
@@ -263,21 +263,21 @@ export default function Colorful() {
 
 		// colors and joins
 		'{tunnel-,bridge-,}street-*:outline': {
-			color: getColor('streetbg'),
+			color: colors.streetbg,
 			lineJoin: 'round',
 		},
 		'{tunnel-,bridge-,}street-*': {
-			color: getColor('street'),
+			color: colors.street,
 			lineJoin: 'round',
 		},
 		'tunnel-street-*:outline': {
-			color: getColor('street').darken(0.13),
+			color: colors.street.darken(0.13),
 		},
 		'tunnel-street-*': {
-			color: getColor('street').darken(0.03),
+			color: colors.street.darken(0.03),
 		},
 		'bridge-street-*:outline': {
-			color: getColor('street').darken(0.15),
+			color: colors.street.darken(0.15),
 		},
 
 		// streets and ways, line caps
@@ -296,31 +296,31 @@ export default function Colorful() {
 
 		// special color: motorway
 		'{bridge-,}street-motorway{-link,}:outline': {
-			color: getColor('motorwaybg'),
+			color: colors.motorwaybg,
 		},
 		'{bridge-,}street-motorway{-link,}': {
-			color: getColor('motorway'),
+			color: colors.motorway,
 		},
 		'{bridge-,}street-{trunk,primary,secondary}{-link,}:outline': {
-			color: getColor('trunkbg'),
+			color: colors.trunkbg,
 		},
 		'{bridge-,}street-{trunk,primary,secondary}{-link,}': {
-			color: getColor('trunk'),
+			color: colors.trunk,
 		},
 		'tunnel-street-motorway{-link,}:outline': {
-			color: getColor('motorwaybg').lighten(0.05),
+			color: colors.motorwaybg.lighten(0.05),
 			lineDasharray: [1, 0.3],
 		},
 		'tunnel-street-motorway{-link,}': {
-			color: getColor('motorway').lighten(0.1),
+			color: colors.motorway.lighten(0.1),
 			lineCap: 'butt',
 		},
 		'tunnel-street-{trunk,primary,secondary}{-link,}:outline': {
-			color: getColor('trunkbg').lighten(0.05),
+			color: colors.trunkbg.lighten(0.05),
 			lineDasharray: [1, 0.3],
 		},
 		'tunnel-street-{trunk,primary,secondary}{-link,}': {
-			color: getColor('trunk').lighten(0.1),
+			color: colors.trunk.lighten(0.1),
 			lineCap: 'butt',
 		},
 
@@ -415,82 +415,82 @@ export default function Colorful() {
 
 		// foot
 		'{bridge-,}way-{footway,path,steps}:outline': {
-			color: getColor('foot').darken(0.1),
+			color: colors.foot.darken(0.1),
 		},
 		'{bridge-,}way-{footway,path,steps}': {
-			color: getColor('foot').lighten(0.02),
+			color: colors.foot.lighten(0.02),
 		},
 		'tunnel-way-{footway,path,steps}:outline': {
-			color: getColor('foot').darken(0.1).desaturate(0.5),
+			color: colors.foot.darken(0.1).desaturate(0.5),
 		},
 		'tunnel-way-{footway,path,steps}': {
-			color: getColor('foot').darken(0.02).desaturate(0.5),
+			color: colors.foot.darken(0.02).desaturate(0.5),
 			lineDasharray: [1, 0.2],
 		},
 
 		// cycleway
 		'{bridge-,}way-cycleway:outline': {
-			color: getColor('cycle').darken(0.1),
+			color: colors.cycle.darken(0.1),
 		},
 		'{bridge-,}way-cycleway': {
-			color: getColor('cycle'),
+			color: colors.cycle,
 		},
 		'tunnel-way-cycleway:outline': {
-			color: getColor('cycle').darken(0.1).desaturate(0.5),
+			color: colors.cycle.darken(0.1).desaturate(0.5),
 		},
 		'tunnel-way-cycleway': {
-			color: getColor('cycle').darken(0.02).desaturate(0.5),
+			color: colors.cycle.darken(0.02).desaturate(0.5),
 			lineDasharray: [1, 0.2],
 		},
 
 		// cycle streets overlay
 		'{bridge-,tunnel-,}street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle': {
 			lineCap: 'butt',
-			color: getColor('cycle'),
+			color: colors.cycle,
 		},
 
 		// pedestrian
 		'street-pedestrian': {
 			size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 			opacity: { 13: 0, 14: 1 },
-			color: getColor('foot'),
+			color: colors.foot,
 		},
 		'street-pedestrian-zone': {
-			color: getColor('foot').lighten(0.02).fade(0.75),
+			color: colors.foot.lighten(0.02).fade(0.75),
 			opacity: { 14: 0, 15: 1 },
 		},
 
 		// rail, lightrail
 		'{tunnel-,bridge-,}transport-{rail,lightrail}:outline': {
-			color: getColor('rail'),
+			color: colors.rail,
 			size: { 8: 1, 13: 1, 15: 3, 16: 4, 18: 8, 19: 11, 20: 14 },
 		},
 		'{tunnel-,bridge-,}transport-{rail,lightrail}': {
-			color: getColor('rail').lighten(0.25),
+			color: colors.rail.lighten(0.25),
 			size: { 8: 1, 13: 1, 15: 2, 16: 3, 18: 6, 19: 8, 20: 10 },
 			lineDasharray: [2, 2],
 		},
 		// subway
 		'{tunnel-,bridge-,}transport-subway:outline': {
-			color: getColor('subway'),
+			color: colors.subway,
 			size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 },
 		},
 		'{tunnel-,bridge-,}transport-subway': {
-			color: getColor('subway').lighten(0.25),
+			color: colors.subway.lighten(0.25),
 			size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
 			lineDasharray: [2, 2],
 		},
 		// monorail
 		'{tunnel-,bridge-,}transport-{tram,narrowgauge,funicular,monorail}:outline': {
 			minzoom: 15,
-			color: getColor('rail'),
+			color: colors.rail,
 			size: { 15: 0, 16: 5, 18: 7, 20: 20 },
 			lineDasharray: [0.1, 0.5],
 		},
 		'{tunnel-,bridge-,}transport-{tram,narrowgauge,funicular,monorail}': {
 			minzoom: 13,
 			size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 },
-			color: getColor('rail'),
+			color: colors.rail,
 		},
 
 		// bridge
@@ -524,7 +524,7 @@ export default function Colorful() {
 		// ferry
 		'transport-ferry': {
 			minzoom: 10,
-			color: getColor('water').darken(0.1),
+			color: colors.water.darken(0.1),
 			size: { 10: 1, 13: 2, 14: 3, 16: 4, 17: 6 },
 			opacity: { 10: 0, 11: 1 },
 			lineDasharray: [1, 1],
@@ -532,10 +532,10 @@ export default function Colorful() {
 
 		// labels
 		'label-boundary-*': {
-			color: getColor('label'),
-			font: getFont('bold'),
+			color: colors.label,
+			font: fonts.bold,
 			textTransform: 'uppercase',
-			textHaloColor: getColor('labelHalo'),
+			textHaloColor: colors.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 			textAnchor: 'bottom',
@@ -553,10 +553,10 @@ export default function Colorful() {
 			size: { 4: 11, 5: 14 },
 		},
 		'label-boundary-*:en': {
-			color: getColor('label'),
-			font: getFont('regular'),
+			color: colors.label,
+			font: fonts.regular,
 			textTransform: 'uppercase',
-			textHaloColor: getColor('labelHalo'),
+			textHaloColor: colors.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 			textAnchor: 'top',
@@ -578,13 +578,13 @@ export default function Colorful() {
 		},
 		'label-boundary-state': {
 			minzoom: 5,
-			color: getColor('label').lighten(0.05),
+			color: colors.label.lighten(0.05),
 			size: { 5: 8, 8: 12 },
 		},
 		'label-place-*': {
-			color: getColor('label').rotate(-15).saturate(1).darken(0.05),
-			font: getFont('regular'),
-			textHaloColor: getColor('labelHalo'),
+			color: colors.label.rotate(-15).saturate(1).darken(0.05),
+			font: fonts.regular,
+			textHaloColor: colors.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 		},
@@ -617,24 +617,24 @@ export default function Colorful() {
 			minzoom: 11,
 			size: { 11: 11, 13: 14 },
 			textTransform: 'uppercase',
-			color: getColor('label').rotate(-30).saturate(1).darken(0.05),
+			color: colors.label.rotate(-30).saturate(1).darken(0.05),
 		},
 		'label-place-quarter': {
 			minzoom: 13,
 			size: { 13: 13 },
 			textTransform: 'uppercase',
-			color: getColor('label').rotate(-40).saturate(1).darken(0.05),
+			color: colors.label.rotate(-40).saturate(1).darken(0.05),
 		},
 		'label-place-neighbourhood': {
 			minzoom: 14,
 			size: { 14: 12 },
 			textTransform: 'uppercase',
-			color: getColor('label').rotate(-50).saturate(1).darken(0.05),
+			color: colors.label.rotate(-50).saturate(1).darken(0.05),
 		},
 		'label-motorway-shield': {
 			color: '#ffffff',
-			font: getFont('bold'),
-			textHaloColor: getColor('motorway'),
+			font: fonts.bold,
+			textHaloColor: colors.motorway,
 			textHaloWidth: 0.1,
 			textHaloBlur: 1,
 			symbolPlacement: 'line',
@@ -643,9 +643,9 @@ export default function Colorful() {
 			size: { 14: 10, 18: 12, 20: 16 },
 		},
 		'label-street-*': {
-			color: getColor('label'),
-			font: getFont('regular'),
-			textHaloColor: getColor('labelHalo'),
+			color: colors.label,
+			font: fonts.regular,
+			textHaloColor: colors.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 			symbolPlacement: 'line',
@@ -654,15 +654,15 @@ export default function Colorful() {
 			size: { 12: 10, 15: 13 },
 		},
 		'label-address-housenumber': {
-			font: getFont('regular'),
-			textHaloColor: getColor('building').lighten(0.05),
+			font: fonts.regular,
+			textHaloColor: colors.building.lighten(0.05),
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 			symbolPlacement: 'point',
 			textAnchor: 'center',
 			minzoom: 17,
 			size: { 17: 8, 19: 10 },
-			color: getColor('building').darken(0.3),
+			color: colors.building.darken(0.3),
 		},
 
 		// markings
@@ -670,7 +670,7 @@ export default function Colorful() {
 			minzoom: 16,
 			icon: 'marking-dark-arrow-15',
 			opacity: { 16: 0, 17: 0.7 },
-			font: getFont('regular'),
+			font: fonts.regular,
 		},
 
 		// TODO: bicycle and pedestrian
@@ -681,16 +681,16 @@ export default function Colorful() {
 			symbolPlacement: 'point',
 			iconOpacity: 0.7,
 			iconKeepUpright: true,
-			font: getFont('regular'),
-			text: getField('name'),
+			font: fonts.regular,
+			text: fields.name,
 			size: 10,
-			color: getColor('symbol'),
+			color: colors.symbol,
 			iconAnchor: 'bottom',
 			textAnchor: 'top',
-			textHaloColor: getColor('labelHalo'),
+			textHaloColor: colors.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
-			font: getFont('regular'),
+			font: fonts.regular,
 		},
 		'symbol-transit-airport': {
 			minzoom: 12,
@@ -736,7 +736,7 @@ export default function Colorful() {
 			opacity: { 16: 0, 17: 0.4 },
 			symbolPlacement: 'point',
 			iconOptional: true,
-			font: getFont('regular'),
+			font: fonts.regular,
 		},
 		'poi-amenity': {
 			icon: 'icon-dark-{amenity}-22',
