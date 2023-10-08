@@ -1,4 +1,4 @@
-import Baker from '../lib/shortbread_baker.js';
+import Baker from '../lib/baker.js';
 
 export default function Colorful() {
 	const stylemaker = new Baker('colorful');

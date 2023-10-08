@@ -1,6 +1,6 @@
 // Import necessary modules and files
 import Color from 'color';
-import TEMPLATE from './template.js';
+import STYLE_TEMPLATE from './shortbread_style.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 
@@ -46,7 +46,7 @@ export default class Baker {
 		options = deepMerge(this.#options, options);
 
 		// Deep clone template and update style
-		const style = deepMerge(TEMPLATE, {
+		const style = deepMerge(STYLE_TEMPLATE, {
 			id: this.#id,
 			name: this.#id,
 		});

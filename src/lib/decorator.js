@@ -1,11 +1,18 @@
-import { deepClone } from './utils.js';
+
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import LAYERS from './layers.js';
-import MAPLIBRE_PROPERTIES from './maplibre_properties.js';
+
+import LAYERS from './shortbread_layers.js';
+import MAPLIBRE_PROPERTIES from './shortbread_properties.js';
+
+import { deepClone } from './utils.js';
+
+
 
 const LAYER_IDS = LAYERS.map(l => l.id);
 const LAYER_ID_SET = new Set(LAYER_IDS);
+
+
 
 export function decorate(rules) {
 

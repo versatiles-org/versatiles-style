@@ -1,7 +1,7 @@
 {
-  "private": true,
+  "name": "versatiles-styles",
   "version": "2.0.0",
-  "description": "Programatically generate StyleJSON for Maplibre.",
+  "description": "Programatically generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
     "bake": "node bin/bake_styles.js",
@@ -9,15 +9,19 @@
     "release": "node bin/release.js",
     "rollup": "npx rollup -c rollup.config.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/versatiles-org/versatiles-styles"
+  },
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
-  "license": "Unlicense",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@maplibre/maplibre-gl-style-spec": "^19.3.2",
     "brace-expansion": "^2.0.1",
     "color": "^4.2.3"
   },
   "devDependencies": {
+    "@maplibre/maplibre-gl-style-spec": "^19.3.2",
     "@rollup/plugin-commonjs": "^25.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",

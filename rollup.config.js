@@ -5,7 +5,7 @@ import terser from '@rollup/plugin-terser';
 export default {
 	input: './src/index.js',
 	output: {
-		file: 'dist/shortbread_baker.js',
+		file: 'dist/versatiles-styles.js',
 		format: 'es'
 	},
 	plugins: [
