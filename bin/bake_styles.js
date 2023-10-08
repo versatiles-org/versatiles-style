@@ -3,7 +3,7 @@
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import StyleClasses from '../src/index.js';
+import StyleBakerClasses from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
@@ -16,11 +16,11 @@ if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
-for (let StyleClass of Object.values(StyleClasses)) {
-	let styleGenerator = new StyleClass();
-	const styleId = styleGenerator.id;
-	const options = styleGenerator.getOptions();
-	const style = styleGenerator.build();
+for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
+	let styleBaker = new StyleBakerClass();
+	const styleId = styleBaker.id;
+	const options = styleBaker.getOptions();
+	const style = styleBaker.bake();
 
 	// Validate the style and log errors if any	
 	let errors = validateStyleMin(style);

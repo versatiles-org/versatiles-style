@@ -1,7 +1,7 @@
-import Stylemaker from '../lib/stylemaker.js';
+import Baker from '../lib/shortbread_baker.js';
 
 export default function Colorful() {
-	const stylemaker = new Stylemaker('colorful');
+	const stylemaker = new Baker('colorful');
 
 	stylemaker.addFonts({
 		regular: 'Noto Sans Regular',
@@ -760,5 +760,5 @@ export default function Colorful() {
 		},
 	}))
 
-	return stylemaker.getMaker();
+	return stylemaker.getBaker();
 }

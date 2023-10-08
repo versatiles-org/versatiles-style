@@ -5,7 +5,7 @@ import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 
 // Stylemaker class definition
-export default class Stylemaker {
+export default class Baker {
 	// Private class properties
 	#id
 	#layerStyleGenerator
@@ -41,7 +41,7 @@ export default class Stylemaker {
 	}
 
 	// Method to build the final style
-	build(options) {
+	bake(options) {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
@@ -99,10 +99,10 @@ export default class Stylemaker {
 	}
 
 	// Method to get a 'maker' object with limited API
-	getMaker() {
+	getBaker() {
 		let me = this;
 		return {
-			build: (...args) => me.build(...args),
+			bake: (...args) => me.bake(...args),
 			getOptions: (...args) => me.getOptions(...args),
 		}
 	}
