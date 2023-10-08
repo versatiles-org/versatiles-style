@@ -8,10 +8,6 @@ export default function Colorful() {
 		bold: 'Noto Sans Bold',
 	})
 
-	stylemaker.addFields({
-		name: { '': 'name', en: 'name_en', de: 'name_de' },
-	})
-
 	stylemaker.addColors({
 		land: '#f9f4ee',
 		water: '#beddf3',
@@ -54,7 +50,7 @@ export default function Colorful() {
 		hospital: '#ff6666', // 10% opacity in style
 	})
 
-	stylemaker.setLayerStyle(({ colors, fields, fonts }) => ({
+	stylemaker.setLayerStyle(({ colors, languageSuffix, fonts }) => ({
 
 		// background
 		'background': {
@@ -682,7 +678,7 @@ export default function Colorful() {
 			iconOpacity: 0.7,
 			iconKeepUpright: true,
 			font: fonts.regular,
-			text: fields.name,
+			text: 'name' + languageSuffix,
 			size: 10,
 			color: colors.symbol,
 			iconAnchor: 'bottom',
