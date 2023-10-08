@@ -58,6 +58,8 @@ export default class Stylemaker {
 		style.layers = this.#decorateLayers(options);
 
 		style.layers.forEach(layer => layer.source = options.sourceName);
+
+		return style;
 	}
 
 	// Method to get options
