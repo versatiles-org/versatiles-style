@@ -183,7 +183,7 @@ export default function Colorful() {
 			color: colors.danger,
 			fillOutlineColor: colors.danger,
 			opacity: 0.3,
-			icon: 'pattern-dark-warning-12',
+			image: 'pattern-dark-warning-12',
 		},
 		'site-hospital': {
 			color: colors.hospital,
@@ -191,12 +191,12 @@ export default function Colorful() {
 		},
 		'site-prison': {
 			color: colors.prison,
-			icon: 'pattern-dark-striped-12',
+			image: 'pattern-dark-striped-12',
 			opacity: 0.1,
 		},
 		'site-construction': {
 			color: colors.construction,
-			icon: 'pattern-dark-hatched-thin-12',
+			image: 'pattern-dark-hatched-thin-12',
 			opacity: 0.1,
 		},
 		'site-{university,college,school}': {
@@ -664,7 +664,7 @@ export default function Colorful() {
 		// markings
 		'marking-oneway{-reverse,}': {
 			minzoom: 16,
-			icon: 'marking-dark-arrow-15',
+			image: 'marking-dark-arrow-15',
 			opacity: { 16: 0, 17: 0.7 },
 			font: fonts.regular,
 		},
@@ -678,7 +678,7 @@ export default function Colorful() {
 			iconOpacity: 0.7,
 			iconKeepUpright: true,
 			font: fonts.regular,
-			text: 'name' + languageSuffix,
+			text: `{name${languageSuffix}}`,
 			size: 10,
 			color: colors.symbol,
 			iconAnchor: 'bottom',
@@ -690,37 +690,37 @@ export default function Colorful() {
 		},
 		'symbol-transit-airport': {
 			minzoom: 12,
-			icon: 'icon-dark-airport-22',
+			image: 'icon-dark-airport-22',
 			iconSize: { 12: 0.5, 14: 1 },
 		},
 		'symbol-transit-airfield': {
 			minzoom: 13,
-			icon: 'icon-dark-airfield-22',
+			image: 'icon-dark-airfield-22',
 			iconSize: { 13: 0.5, 15: 1 },
 		},
 		'symbol-transit-station': {
 			minzoom: 13,
-			icon: 'icon-dark-rail-22',
+			image: 'icon-dark-rail-22',
 			iconSize: { 13: 0.5, 15: 1 },
 		},
 		'symbol-transit-lightrail': {
 			minzoom: 14,
-			icon: 'icon-dark-rail-light-22',
+			image: 'icon-dark-rail-light-22',
 			iconSize: { 14: 0.5, 16: 1 },
 		},
 		'symbol-transit-subway': {
 			minzoom: 14,
-			icon: 'icon-dark-rail-metro-22',
+			image: 'icon-dark-rail-metro-22',
 			iconSize: { 14: 0.5, 16: 1 },
 		},
 		'symbol-transit-tram': {
 			minzoom: 15,
-			icon: 'transport-dark-tram-22',
+			image: 'transport-dark-tram-22',
 			iconSize: { 15: 0.5, 17: 1 },
 		},
 		'symbol-transit-bus': {
 			minzoom: 16,
-			icon: 'icon-dark-bus-22',
+			image: 'icon-dark-bus-22',
 			iconSize: { 16: 0.5, 18: 1 },
 		},
 		// TODO: localized symbols? depends on shortbread
@@ -735,28 +735,28 @@ export default function Colorful() {
 			font: fonts.regular,
 		},
 		'poi-amenity': {
-			icon: 'icon-dark-{amenity}-22',
+			image: 'icon-dark-{amenity}-22',
 		},
 		'poi-leisure': {
-			icon: 'icon-dark-{leisure}-22',
+			image: 'icon-dark-{leisure}-22',
 		},
 		'poi-tourism': {
-			icon: 'icon-dark-{tourism}-22',
+			image: 'icon-dark-{tourism}-22',
 		},
 		'poi-shop': {
-			icon: 'icon-dark-{shop}-22',
+			image: 'icon-dark-{shop}-22',
 		},
 		'poi-man_made': {
-			icon: 'icon-dark-{man_made}-22',
+			image: 'icon-dark-{man_made}-22',
 		},
 		'poi-historic': {
-			icon: 'icon-dark-{historic}-22',
+			image: 'icon-dark-{historic}-22',
 		},
 		'poi-emergency': {
-			icon: 'icon-dark-{emergency}-22',
+			image: 'icon-dark-{emergency}-22',
 		},
 		'poi-office': {
-			icon: 'icon-dark-{office}-22',
+			image: 'icon-dark-{office}-22',
 		},
 	}))
 
