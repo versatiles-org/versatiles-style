@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict'
 
-import { existsSync, mkdirSync,  rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as StylemakerClasses from '../index.js';
+import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirDst = resolve(dirRoot, 'dist');
@@ -20,6 +21,11 @@ for (let StylemakerClass of Object.values(StylemakerClasses)) {
 	const styleId = styleGenerator.id;
 	const options = styleGenerator.getOptions();
 	const style = styleGenerator.build();
+
+	// Validate the style and log errors if any	
+	let errors = validateStyleMin(style);
+	if (errors.length > 0) console.log(errors);
+
 	process.exit();
 
 	// FIXME prettier
@@ -29,7 +35,7 @@ for (let StylemakerClass of Object.values(StylemakerClasses)) {
 	writeFileSync(resolve(dirDst, styleid + ".json"), stringify(style, { indent: "\t", maxLength: 80 }));
 	console.log("Saved '%s'", styleid);
 
-	style.set()	
+	style.set()
 	// make no label version
 	writeFileSync(resolve(dirDst, styleid + ".nolabel.json"), stringify({
 		...style,
