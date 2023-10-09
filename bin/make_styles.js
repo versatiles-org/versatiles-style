@@ -19,7 +19,14 @@ for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
 	const styleId = styleBaker.id;
 	const options = styleBaker.getOptions();
 
+	options.language = null;
 	produce(styleId, options);
+
+	options.language = 'en';
+	produce(styleId + '.en', options);
+
+	options.language = 'de';
+	produce(styleId + '.de', options);
 
 	options.hideLabels = true;
 	produce(styleId + '.nolabel', options);
