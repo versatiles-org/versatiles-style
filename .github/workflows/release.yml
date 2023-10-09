@@ -16,6 +16,7 @@ jobs:
 
       - run: npm install
       - run: npm run release
+      - run: cd dist
 
       - name: create release if needed
         run: gh release view $RELEASE_TAG || gh release create $RELEASE_TAG
