@@ -16,10 +16,12 @@ jobs:
 
       - run: npm install
       - run: npm run release
+      - run: ls -lah
       - run: cd dist
+      - run: ls -lah
 
       - name: create release if needed
-        run: gh release view $RELEASE_TAG || gh release create $RELEASE_TAG
+        run: gh release view $RELEASE_TAG || gh release create $RELEASE_TAG --draft --prerelease
 
       - name: upload file to release
         run: gh release upload $RELEASE_TAG *.gz *.js *.json --clobber
