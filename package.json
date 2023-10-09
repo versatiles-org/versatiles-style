@@ -16,7 +16,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "brace-expansion": "^2.0.1",
+    "brace-expansion": "^3.0.0",
     "color": "^4.2.3"
   },
   "files": [
