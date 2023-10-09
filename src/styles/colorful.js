@@ -51,7 +51,7 @@ export default function Colorful() {
 		hospital: '#FF6666', // 10% opacity in style
 	})
 
-	stylemaker.setLayerStyle(({ colors, languageSuffix, fonts }) => ({
+	stylemaker.setLayerStyle(({ colors, fonts }) => ({
 
 		// background
 		'background': {

@@ -1,18 +1,17 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import LAYERS from './shortbread_layers.js';
 import MAPLIBRE_PROPERTIES from './shortbread_properties.js';
 import { deepClone } from './utils.js';
 
 
 
-const LAYER_IDS = LAYERS.map(l => l.id);
-const LAYER_ID_SET = new Set(LAYER_IDS);
 
 
 
-export function decorate(rules) {
+export function decorate(layers, rules) {
+	const layerIds = layers.map(l => l.id);
+	const layerIdSet = new Set(layerIds);
 
 	// Initialize a new map to hold final styles for layers
 	let layerStyles = new Map();
@@ -27,17 +26,17 @@ export function decorate(rules) {
 				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
 			})
 			regExp = new RegExp(`^${regExp}$`, 'i');
-			return LAYER_IDS.filter(layerId => regExp.test(layerId));
+			return layerIds.filter(layerId => regExp.test(layerId));
 		});
 
 		ids.forEach(id => {
-			if (!LAYER_ID_SET.has(id)) return;
+			if (!layerIdSet.has(id)) return;
 			layerStyles.set(id, Object.assign(layerStyles.get(id) || {}, layerStyle));
 		})
 	})
 
 	// Deep clone the original layers and apply styles
-	return deepClone(LAYERS).flatMap(layer => {
+	return layers.flatMap(layer => {
 		// Get the id and style of the layer
 		let layerStyle = layerStyles.get(layer.id);
 

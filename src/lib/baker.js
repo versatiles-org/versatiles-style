@@ -1,6 +1,7 @@
 // Import necessary modules and files
 import Color from 'color';
 import STYLE_TEMPLATE from './shortbread_template.js';
+import getLayers from './shortbread_layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 
@@ -58,7 +59,9 @@ export default class Baker {
 		// Decorate layers
 		style.layers = this.#decorateLayers(options);
 
-		style.layers.forEach(layer => layer.source = options.sourceName);
+		style.layers.forEach(layer => {
+			if (layer.type !== 'background') layer.source = options.sourceName
+		});
 
 		return style;
 	}
@@ -69,9 +72,6 @@ export default class Baker {
 	}
 
 	#getStyleRules(options) {
-		// If a language option is provided, append it as a suffix, otherwise, leave it empty
-		let languageSuffix = options.language ? '_' + options.language : '';
-
 		return this.#layerStyleGenerator({
 			colors: new Proxy({}, {
 				get(t, key, r) {
@@ -87,7 +87,7 @@ export default class Baker {
 					return value
 				}
 			}),
-			languageSuffix
+			languageSuffix: options.language ? '_' + options.language : '',
 		})
 	}
 
@@ -96,7 +96,11 @@ export default class Baker {
 		// Generate layer style rules by invoking the layerStyleGenerator callback
 		let layerStyleRules = this.#getStyleRules(options);
 
-		let layers = decorate(layerStyleRules);
+		let layers = getLayers({
+			languageSuffix: options.language ? '_' + options.language : '',
+		})
+
+		layers = decorate(layers, layerStyleRules);
 
 		if (options.hideLabels) layers = layers.filter(l => l.type !== 'symbol');
 
