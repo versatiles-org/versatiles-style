@@ -24,3 +24,38 @@ export function deepMerge(...sources) {
 	}
 	return target;
 }
+
+export function prettyStyleJSON(data) {
+	return recursive(data);
+
+	function recursive(data, prefix = '', path = '') {
+		let type = typeof data;
+		if ((type === 'object') && Array.isArray(data)) type = 'array';
+
+		if (path.endsWith('.bounds')) return singleLine(data);
+		//if (path.includes('.vector_layers[].')) return singleLine(data);
+		if (path.startsWith('.layers[].filter')) return singleLine(data);
+		if (path.startsWith('.layers[].paint.')) return singleLine(data);
+		if (path.startsWith('.layers[].layout.')) return singleLine(data);
+
+		switch (type) {
+			case 'number':
+			case 'string':
+			case 'boolean':
+				return singleLine(data);
+			case 'object':
+				return '{\n\t' + prefix + Object.entries(data).map(([key, value]) =>
+					'"' + key + '": ' + recursive(value, prefix + '\t', path + '.' + key)
+				).join(',\n\t' + prefix) + '\n' + prefix + '}';
+			case 'array':
+				return '[\n\t' + prefix + data.map(value =>
+					recursive(value, prefix + '\t', path + '[]')
+				).join(',\n\t' + prefix) + '\n' + prefix + ']';
+			default: throw new Error('unknown type: ' + type);
+		}
+	}
+
+	function singleLine(data) {
+		return JSON.stringify(data, null, '\t').replace(/[\t\n]+/g, ' ');
+	}
+}

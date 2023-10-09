@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import StyleBakerClasses from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
+import { prettyStyleJSON } from '../src/lib/utils.js';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirDst = resolve(dirRoot, 'dist');
@@ -33,13 +34,13 @@ for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
 
 	function produce(name, options) {
 		const style = styleBaker.bake(options);
-		
+
 		// Validate the style and log errors if any	
 		let errors = validateStyleMin(style);
 		if (errors.length > 0) console.log(errors);
 
 		// write
-		writeFileSync(resolve(dirDst, name + '.json'), JSON.stringify(style));
+		writeFileSync(resolve(dirDst, name + '.json'), prettyStyleJSON(style));
 		console.log('Saved ' + name);
 	}
 }
