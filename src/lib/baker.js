@@ -1,6 +1,6 @@
 // Import necessary modules and files
 import Color from 'color';
-import STYLE_TEMPLATE from './shortbread_style.js';
+import STYLE_TEMPLATE from './shortbread_template.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 

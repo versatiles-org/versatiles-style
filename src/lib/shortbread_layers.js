@@ -400,7 +400,7 @@ export default [
 			['in', 'admin_level', 2, '2'],
 			['<=', 'way_area', 10000000],
 		],
-		layout: { 'text-field': '{name_en}' },
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'label-boundary-country-medium:en',
@@ -411,7 +411,7 @@ export default [
 			['<', 'way_area', 90000000],
 			['>', 'way_area', 10000000],
 		],
-		layout: { 'text-field': '{name_en}' },
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'label-boundary-country-large:en',
@@ -421,7 +421,7 @@ export default [
 			['in', 'admin_level', 2, '2'],
 			['>=', 'way_area', 90000000],
 		],
-		layout: { 'text-field': '{name_en}' },
+		layout: { 'text-field': '{name}' },
 	},
 
 	{
@@ -492,19 +492,17 @@ export default [
 		}
 	},
 	{
-		id: 'marking-bicylce', // bicycle=designated or kind=cycleway
+		id: 'marking-bicycle', // bicycle=designated or kind=cycleway
 		type: 'symbol',
 		layer: 'streets',
 		filter: ['all',
 			['==', 'bicycle', 'designated'],
 			['==', 'kind', 'cycleway'],
 		],
-		style: {
-			layout: {
-				'symbol-placement': 'line',
-				'symbol-spacing': 50,
-			},
-		},
+		layout: {
+			'symbol-placement': 'line',
+			'symbol-spacing': 50,
+		}
 	},
 
 	// symbol
@@ -514,7 +512,8 @@ export default [
 		layer: 'public_transport',
 		filter: ['all',
 			['==', 'kind', 'bus_stop'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-tram',
@@ -522,7 +521,8 @@ export default [
 		layer: 'public_transport',
 		filter: ['all',
 			['==', 'kind', 'tram_stop'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-subway',
@@ -531,7 +531,8 @@ export default [
 		filter: ['all',
 			['in', 'kind', 'station', 'halt'],
 			['==', 'station', 'subway'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-lightrail',
@@ -540,7 +541,8 @@ export default [
 		filter: ['all',
 			['in', 'kind', 'station', 'halt'],
 			['==', 'station', 'light_rail'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-station',
@@ -549,7 +551,8 @@ export default [
 		filter: ['all',
 			['in', 'kind', 'station', 'halt'],
 			['!in', 'station', 'light_rail', 'subway'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-airfield',
@@ -558,7 +561,8 @@ export default [
 		filter: ['all',
 			['==', 'kind', 'aerodrome'],
 			['!has', 'iata'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	},
 	{
 		id: 'symbol-transit-airport',
@@ -567,7 +571,8 @@ export default [
 		filter: ['all',
 			['==', 'kind', 'aerodrome'],
 			['has', 'iata'],
-		]
+		],
+		layout: { 'text-field': '{name}' },
 	}
 ].map(l => {
 	if (l.layer) {

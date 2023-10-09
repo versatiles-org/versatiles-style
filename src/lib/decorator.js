@@ -1,10 +1,8 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-
 import LAYERS from './shortbread_layers.js';
 import MAPLIBRE_PROPERTIES from './shortbread_properties.js';
-
 import { deepClone } from './utils.js';
 
 
@@ -47,54 +45,60 @@ export function decorate(rules) {
 		if (!layerStyle) return [];
 
 		// Set the layer source to the provided sourceName option
-		layer.layout = {};
-		layer.paint = {};
+		layer.layout ??= {};
+		layer.paint ??= {};
 
 		processStyling(layer, layerStyle);
 
+		if (Object.keys(layer.layout).length === 0) delete layer.layout;
+		if (Object.keys(layer.paint).length === 0) delete layer.paint;
+
 		return [layer];
-	})
+	});
 }
 
 // Function to process each style attribute for the layer
-function processStyling(layer, style) {
+function processStyling(layer, styleRules) {
 
-	Object.entries(style).forEach(([key, value]) => {
+	Object.entries(styleRules).forEach(([ruleKey, ruleValue]) => {
 		// CamelCase to not-camel-case
-		key = key.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
+		ruleKey = ruleKey.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
 
-		let propertyDefs = MAPLIBRE_PROPERTIES.get(key);
-		if (!propertyDefs) throw new Error('unknown key: ' + key);
+		let propertyDefs = MAPLIBRE_PROPERTIES.get(layer.type + '/' + ruleKey);
+		if (!propertyDefs) return;
 
-		let propertyDef = propertyDefs.get(layer.type);
-		if (!propertyDef) return;
+		propertyDefs.forEach(propertyDef => {
+			let key = propertyDef.key;
+			let value = ruleValue;
 
-		key = propertyDef.key;
+			switch (propertyDef.value) {
+				case 'color': value = processExpression(value, processColor); break;
+				case 'fonts': value = processExpression(value, processFont); break;
+				case 'resolvedImage': console.warn('handle resolvedImage'); break;
+				case 'formatted':
+				case 'array':
+				case 'boolean':
+				case 'enum':
+				case 'number': value = processExpression(value); break;
+				default: throw new Error(`unknown type "${propertyDef.type}" for key "${key}"`);
+			}
 
-		switch (propertyDef.value) {
-			case 'color': value = processExpression(value, processColor); break;
-			case 'fonts': value = processExpression(value, processFont); break;
-			case 'resolvedImage': console.warn('handle resolvedImage'); break;
-			case 'formatted':
-			case 'array':
-			case 'boolean':
-			case 'enum':
-			case 'number': value = processExpression(value); break;
-			default: throw new Error(`unknown type "${propertyDef.type}" for key "${key}"`);
-		}
-
-		switch (propertyDef.parent) {
-			case 'layer': layer[key] = value; break;
-			case 'layout': layer.layout[key] = value; break;
-			case 'paint': layer.paint[key] = value; break;
-			default: throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
-		}
+			switch (propertyDef.parent) {
+				case 'layer': layer[key] = value; break;
+				case 'layout': layer.layout[key] = value; break;
+				case 'paint': layer.paint[key] = value; break;
+				default: throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
+			}
+		})
 	})
 }
 
 function processColor(value) {
-	if (value instanceof Color) return value.hex();
-	if (typeof value === 'string') return Color(value).hex();
+	if (typeof value === 'string') value = Color(value);
+	if (value instanceof Color) {
+		value = (value.valpha === 1) ? value.hex() : value.hexa();
+		return value.toLowerCase();
+	}
 	throw new Error(`unknown color type "${typeof value}"`);
 }
 

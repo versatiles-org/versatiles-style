@@ -106,9 +106,10 @@ const propertyLookup = new Map();
 		add(property.key);
 		if (property.short) add(property.short);
 
-		function add(key) {
-			if (!propertyLookup.has(key)) propertyLookup.set(key, new Map());
-			propertyLookup.get(key).set(type, property);
+		function add(propertyKey) {
+			let key = type + '/' + propertyKey;
+			if (!propertyLookup.has(key)) propertyLookup.set(key, []);
+			propertyLookup.get(key).push(property);
 		}
 	});
 })
