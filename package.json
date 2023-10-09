@@ -1,16 +1,16 @@
 {
   "name": "versatiles-styles",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Programatically generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
-    "build_styles": "node bin/make_styles.js",
+    "build": "node bin/make_styles.js",
     "release": "./bin/release.sh",
     "rollup": "npx rollup -c rollup.config.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/versatiles-org/versatiles-styles"
+    "url": "git+https://github.com/versatiles-org/versatiles-styles.git"
   },
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
   "license": "MIT",
