@@ -50,6 +50,8 @@ export default class Baker {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
+		const style = deepClone(STYLE_TEMPLATE);
+
 		// Set source name if not provided
 		options.sourceName ??= Object.keys(style.sources)[0];
 
@@ -59,7 +61,6 @@ export default class Baker {
 		style.layers.forEach(layer => {
 			if (layer.type !== 'background') layer.source = options.sourceName
 		});
-
 
 		style.id = 'versatiles-' + this.#id;
 		style.name = 'versatiles-' + this.#id;

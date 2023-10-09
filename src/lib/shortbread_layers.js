@@ -394,38 +394,6 @@ export default function ({ languageSuffix }) {
 		})),
 
 		{
-			id: 'label-boundary-country-small:en',
-			type: 'symbol',
-			layer: 'boundary_labels',
-			filter: ['all',
-				['in', 'admin_level', 2, '2'],
-				['<=', 'way_area', 10000000],
-			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
-		},
-		{
-			id: 'label-boundary-country-medium:en',
-			type: 'symbol',
-			layer: 'boundary_labels',
-			filter: ['all',
-				['in', 'admin_level', 2, '2'],
-				['<', 'way_area', 90000000],
-				['>', 'way_area', 10000000],
-			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
-		},
-		{
-			id: 'label-boundary-country-large:en',
-			type: 'symbol',
-			layer: 'boundary_labels',
-			filter: ['all',
-				['in', 'admin_level', 2, '2'],
-				['>=', 'way_area', 90000000],
-			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
-		},
-
-		{
 			id: 'label-boundary-country-small',
 			type: 'symbol',
 			layer: 'boundary_labels',

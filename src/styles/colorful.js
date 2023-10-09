@@ -47,8 +47,8 @@ export default function Colorful() {
 		prison: '#FDF2FC',
 		parking: '#EBE8E6',
 		construction: '#A9A9A9',
-		education: '#FFFF80', // 10% opacity in style
-		hospital: '#FF6666', // 10% opacity in style
+		education: '#FFFF80',
+		hospital: '#FF6666',
 	})
 
 	stylemaker.setLayerStyle(({ colors, fonts }) => ({
@@ -530,27 +530,6 @@ export default function Colorful() {
 		// labels
 		'label-boundary-*': {
 			color: colors.label,
-			font: fonts.bold,
-			textTransform: 'uppercase',
-			textHaloColor: colors.labelHalo,
-			textHaloWidth: 2,
-			textHaloBlur: 1,
-			textAnchor: 'bottom',
-		},
-		'label-boundary-country-large': {
-			minzoom: 2,
-			size: { 2: 11, 5: 16 },
-		},
-		'label-boundary-country-medium': {
-			minzoom: 3,
-			size: { 3: 11, 5: 15 },
-		},
-		'label-boundary-country-small': {
-			minzoom: 4,
-			size: { 4: 11, 5: 14 },
-		},
-		'label-boundary-*:en': {
-			color: colors.label,
 			font: fonts.regular,
 			textTransform: 'uppercase',
 			textHaloColor: colors.labelHalo,
@@ -561,15 +540,15 @@ export default function Colorful() {
 			textPadding: 0,
 			textOptional: true,
 		},
-		'label-boundary-country-large:en': {
+		'label-boundary-country-large': {
 			minzoom: 2,
 			size: { 2: 8, 5: 13 },
 		},
-		'label-boundary-country-medium:en': {
+		'label-boundary-country-medium': {
 			minzoom: 3,
 			size: { 3: 8, 5: 12 },
 		},
-		'label-boundary-country-small:en': {
+		'label-boundary-country-small': {
 			minzoom: 4,
 			size: { 4: 8, 5: 11 },
 		},
