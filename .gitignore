@@ -1,6 +1,5 @@
 
 .DS_Store
-.nova
-attic
 dist
 node_modules
+tmp
