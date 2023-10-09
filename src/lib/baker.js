@@ -48,8 +48,8 @@ export default class Baker {
 
 		// Deep clone template and update style
 		const style = deepMerge(STYLE_TEMPLATE, {
-			id: this.#id,
-			name: this.#id,
+			id: 'versatiles-' + this.#id,
+			name: 'versatiles-' + this.#id,
 		});
 
 		// Set source name if not provided

@@ -22,8 +22,8 @@ export function decorate(rules) {
 		// Expand any braces in IDs and filter them through a RegExp if necessary
 		let ids = expandBraces(idDef).flatMap(id => {
 			if (!id.includes('*')) return id;
-			let regExp = id.replace(/[^a-z\-:]/g, c => {
-				if (c === '*') return '[a-z\-]*';
+			let regExp = id.replace(/[^a-z_\-:]/g, c => {
+				if (c === '*') return '[a-z_\-]*';
 				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
 			})
 			regExp = new RegExp(`^${regExp}$`, 'i');
@@ -39,7 +39,7 @@ export function decorate(rules) {
 	// Deep clone the original layers and apply styles
 	return deepClone(LAYERS).flatMap(layer => {
 		// Get the id and style of the layer
-		let layerStyle = Object.assign({}, layerStyles.get(layer.id));
+		let layerStyle = layerStyles.get(layer.id);
 
 		// Don't export layers that have no style
 		if (!layerStyle) return [];
