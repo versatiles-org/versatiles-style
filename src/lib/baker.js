@@ -19,6 +19,7 @@ export default class Baker {
 		// Initialize private properties
 		this.#id = id;
 		this.#options = {
+			hideLabels: false,
 			language: null,
 			colors: {},
 			fonts: {},
@@ -95,13 +96,18 @@ export default class Baker {
 		// Generate layer style rules by invoking the layerStyleGenerator callback
 		let layerStyleRules = this.#getStyleRules(options);
 
-		return decorate(layerStyleRules);
+		let layers = decorate(layerStyleRules);
+
+		if (options.hideLabels) layers = layers.filter(l => l.type !== 'symbol');
+
+		return layers;
 	}
 
 	// Method to get a 'maker' object with limited API
 	getBaker() {
 		let me = this;
 		return {
+			id: this.#id,
 			bake: (...args) => me.bake(...args),
 			getOptions: (...args) => me.getOptions(...args),
 		}

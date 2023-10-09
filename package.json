@@ -4,9 +4,8 @@
   "description": "Programatically generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
-    "bake": "node bin/bake_styles.js",
-    "build": "node bin/bake_styles.js",
-    "release": "node bin/release.js",
+    "build_styles": "node bin/make_styles.js",
+    "release": "npm run build_styles; npm run rollup",
     "rollup": "npx rollup -c rollup.config.js"
   },
   "repository": {
