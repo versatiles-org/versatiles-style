@@ -19,6 +19,9 @@
     "brace-expansion": "^2.0.1",
     "color": "^4.2.3"
   },
+  "files": [
+    "src"
+  ],
   "devDependencies": {
     "@maplibre/maplibre-gl-style-spec": "^19.3.2",
     "@rollup/plugin-commonjs": "^25.0.5",
