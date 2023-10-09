@@ -5,7 +5,7 @@
   "main": "./src/index.js",
   "scripts": {
     "build_styles": "node bin/make_styles.js",
-    "release": "npm run build_styles; npm run rollup",
+    "release": "./bin/release.sh",
     "rollup": "npx rollup -c rollup.config.js"
   },
   "repository": {
@@ -27,7 +27,6 @@
     "@rollup/plugin-commonjs": "^25.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.0.2",
-    "tar-stream": "^3.1.6"
+    "rollup": "^4.0.2"
   }
 }
