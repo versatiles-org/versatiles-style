@@ -21,9 +21,12 @@ export default class Baker {
 		this.#id = id;
 		this.#options = {
 			hideLabels: false,
-			language: null,
+			language: 'de',
 			colors: {},
 			fonts: {},
+			glyphsUrl: false,
+			spriteUrl: false,
+			tilesUrl: false,
 		};
 	}
 
@@ -47,12 +50,6 @@ export default class Baker {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
-		// Deep clone template and update style
-		const style = deepMerge(STYLE_TEMPLATE, {
-			id: 'versatiles-' + this.#id,
-			name: 'versatiles-' + this.#id,
-		});
-
 		// Set source name if not provided
 		options.sourceName ??= Object.keys(style.sources)[0];
 
@@ -62,6 +59,13 @@ export default class Baker {
 		style.layers.forEach(layer => {
 			if (layer.type !== 'background') layer.source = options.sourceName
 		});
+
+
+		style.id = 'versatiles-' + this.#id;
+		style.name = 'versatiles-' + this.#id;
+		if (options.glyphsUrl) style.glyphs = glyphsUrl;
+		if (options.spriteUrl) style.sprite = spriteUrl;
+		if (options.tilesUrl) style.sources[options.sourceName].tiles = tilesUrl;
 
 		return style;
 	}
