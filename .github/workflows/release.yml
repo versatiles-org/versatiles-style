@@ -15,20 +15,13 @@ jobs:
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - run: npm install
-      - run: rm -r dist
       - run: npm run release
-
-      - name: tar
-        run: tar -cf styles.tar -C dist .
-
-      - name: gzip
-        run: gzip -9 styles.tar
 
       - name: create release if needed
         run: gh release view $RELEASE_TAG || gh release create $RELEASE_TAG
 
       - name: upload file to release
-        run: gh release upload $RELEASE_TAG styles.tar.gz --clobber
+        run: gh release upload $RELEASE_TAG *.gz *.js *.json --clobber
 
       - name: update release
         run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
