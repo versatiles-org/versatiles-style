@@ -4,8 +4,8 @@ export default function Colorful() {
 	const stylemaker = new Baker('neutrino');
 
 	stylemaker.addFonts({
-		regular: 'Noto Sans Regular',
-		bold: 'Noto Sans Bold',
+		regular: 'noto_sans_regular',
+		bold: 'noto_sans_bold',
 	})
 
 	stylemaker.addColors({
