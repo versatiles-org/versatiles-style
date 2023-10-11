@@ -73,7 +73,7 @@ function processStyling(layer, styleRules) {
 			switch (propertyDef.value) {
 				case 'color': value = processExpression(value, processColor); break;
 				case 'fonts': value = processExpression(value, processFont); break;
-				case 'resolvedImage': console.warn('handle resolvedImage'); break;
+				case 'resolvedImage':
 				case 'formatted':
 				case 'array':
 				case 'boolean':
@@ -107,14 +107,14 @@ function processFont(value) {
 }
 
 function processExpression(value, cbValue) {
-	cbValue ??= v => v;
 	if (typeof value === 'object') {
+		cbValue ??= v => v;
 		if (value instanceof Color) return cbValue(value);
 		if (!Array.isArray(value)) {
 			return processZoomStops(value, cbValue);
 		}
 	}
-	return cbValue(value);
+	return cbValue ? cbValue(value) : value;
 }
 
 function processZoomStops(obj, cbValue) {
