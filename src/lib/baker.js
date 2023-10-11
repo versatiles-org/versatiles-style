@@ -4,6 +4,7 @@ import STYLE_TEMPLATE from './shortbread_template.js';
 import getLayers from './shortbread_layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
+import { transformColors, getDefaultColorTransformer } from './color_transformer.js';
 
 // Stylemaker class definition
 export default class Baker {
@@ -22,11 +23,12 @@ export default class Baker {
 		this.#options = {
 			hideLabels: false,
 			language: 'de',
-			colors: {},
-			fonts: {},
 			glyphsUrl: false,
 			spriteUrl: false,
 			tilesUrl: false,
+			colors: {},
+			fonts: {},
+			colorTransformer: getDefaultColorTransformer(),
 		};
 	}
 
@@ -46,7 +48,7 @@ export default class Baker {
 	}
 
 	// Method to build the final style
-	bake(options) {
+	#bake(options) {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
@@ -64,15 +66,15 @@ export default class Baker {
 
 		style.id = 'versatiles-' + this.#id;
 		style.name = 'versatiles-' + this.#id;
-		if (options.glyphsUrl) style.glyphs = glyphsUrl;
-		if (options.spriteUrl) style.sprite = spriteUrl;
-		if (options.tilesUrl) style.sources[options.sourceName].tiles = tilesUrl;
+		if (options.glyphsUrl) style.glyphs = options.glyphsUrl;
+		if (options.spriteUrl) style.sprite = options.spriteUrl;
+		if (options.tilesUrl) style.sources[options.sourceName].tiles = options.tilesUrl;
 
 		return style;
 	}
 
 	// Method to get options
-	getOptions() {
+	#getOptions() {
 		return deepClone(this.#options);
 	}
 
@@ -98,6 +100,10 @@ export default class Baker {
 
 	// Private method to decorate layers
 	#decorateLayers(options = {}) {
+		options = deepMerge(this.#options, options);
+
+		transformColors(options.colors, options.colorTransformer);;
+
 		// Generate layer style rules by invoking the layerStyleGenerator callback
 		let layerStyleRules = this.#getStyleRules(options);
 
@@ -117,8 +123,8 @@ export default class Baker {
 		let me = this;
 		return {
 			id: this.#id,
-			bake: (...args) => me.bake(...args),
-			getOptions: (...args) => me.getOptions(...args),
+			bake: (...args) => me.#bake(...args),
+			getOptions: (...args) => me.#getOptions(...args),
 		}
 	}
 }
