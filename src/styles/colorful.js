@@ -49,6 +49,7 @@ export default function Colorful() {
 		construction: '#A9A9A9',
 		education: '#FFFF80',
 		hospital: '#FF6666',
+		poi: '#555555',
 	})
 
 	stylemaker.setLayerStyle(({ colors, fonts }) => ({
@@ -712,30 +713,31 @@ export default function Colorful() {
 			symbolPlacement: 'point',
 			iconOptional: true,
 			font: fonts.regular,
+			color: colors.poi,
 		},
 		'poi-amenity': {
-			image: 'icon-dark-{amenity}-22',
+			image: 'icon-dark-amenity-22',
 		},
 		'poi-leisure': {
-			image: 'icon-dark-{leisure}-22',
+			image: 'icon-dark-leisure-22',
 		},
 		'poi-tourism': {
-			image: 'icon-dark-{tourism}-22',
+			image: 'icon-dark-tourism-22',
 		},
 		'poi-shop': {
-			image: 'icon-dark-{shop}-22',
+			image: 'icon-dark-shop-22',
 		},
 		'poi-man_made': {
-			image: 'icon-dark-{man_made}-22',
+			image: 'icon-dark-man_made-22',
 		},
 		'poi-historic': {
-			image: 'icon-dark-{historic}-22',
+			image: 'icon-dark-historic-22',
 		},
 		'poi-emergency': {
-			image: 'icon-dark-{emergency}-22',
+			image: 'icon-dark-emergency-22',
 		},
 		'poi-office': {
-			image: 'icon-dark-{office}-22',
+			image: 'icon-dark-office-22',
 		},
 	}))
 
