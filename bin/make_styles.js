@@ -10,6 +10,15 @@ import { prettyStyleJSON } from '../src/lib/utils.js';
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirDst = resolve(dirRoot, 'dist');
 
+let baseUrl = process.argv[2];
+if (baseUrl) {
+	baseUrl = baseUrl.trim().replace(/\/+$/, '');
+	if (!/https?:\/\/[-a-zA-Z0-9@:%._\+~#=]+/.test(baseUrl)) {
+		console.error(`base URL is malformed: "${baseUrl}"`);
+		process.exit();
+	}
+}
+
 // ensure destination dir exists
 if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
@@ -19,6 +28,12 @@ for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
 	let styleBaker = new StyleBakerClass();
 	const styleId = styleBaker.id;
 	const options = styleBaker.getOptions();
+
+	if (baseUrl) {
+		options.glyphsUrl = baseUrl + '/assets/fonts/{fontstack}/{range}.pbf';
+		options.spriteUrl = baseUrl + '/assets/sprites/sprites';
+		options.tilesUrl = [baseUrl + '/tiles/osm/{z}/{x}/{y}'];
+	}
 
 	options.language = null;
 	produce(styleId, options);
