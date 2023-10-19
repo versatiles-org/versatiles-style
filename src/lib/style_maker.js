@@ -7,7 +7,7 @@ import { decorate } from './decorator.js';
 import { transformColors, getDefaultColorTransformer } from './color_transformer.js';
 
 // Stylemaker class definition
-export default class Baker {
+export default class StyleMaker {
 	// Private class properties
 	#id
 	#layerStyleGenerator
@@ -48,7 +48,7 @@ export default class Baker {
 	}
 
 	// Method to build the final style
-	#bake(options) {
+	#make(options) {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
@@ -119,13 +119,13 @@ export default class Baker {
 	}
 
 	// Method to get a 'maker' object with limited API
-	getBaker() {
+	finish() {
 		let me = this;
-		let baker = function (...args) { return me.#bake(...args); }
-		Object.assign(baker, {
+		let styleMaker = function (...args) { return me.#make(...args); }
+		Object.assign(styleMaker, {
 			get id() { return me.#id },
 			get options() { return me.#getOptions() }
 		})
-		return baker;
+		return styleMaker;
 	}
 }

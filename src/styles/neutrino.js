@@ -1,13 +1,13 @@
-import Baker from '../lib/baker.js';
+import StyleMaker from '../lib/style_maker.js';
 
-const baker = new Baker('neutrino');
+const styleMaker = new StyleMaker('neutrino');
 
-baker.addFonts({
+styleMaker.addFonts({
 	regular: 'noto_sans_regular',
 	bold: 'noto_sans_bold',
 })
 
-baker.addColors({
+styleMaker.addColors({
 	land: '#f6f0f6',
 	water: '#cbd2df',
 	grass: '#e7e9e5',
@@ -22,7 +22,7 @@ baker.addColors({
 	label: '#cbb7b7',
 })
 
-baker.setLayerStyle(({ colors, fonts }) => ({
+styleMaker.setLayerStyle(({ colors, fonts }) => ({
 	'background': {
 		color: colors.land,
 	},
@@ -367,4 +367,4 @@ baker.setLayerStyle(({ colors, fonts }) => ({
 
 }))
 
-export default baker.getBaker();
+export default styleMaker.finish();

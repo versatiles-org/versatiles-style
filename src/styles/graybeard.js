@@ -1,13 +1,13 @@
-import Baker from '../lib/baker.js';
+import StyleMaker from '../lib/style_maker.js';
 
-const baker = new Baker('graybeard');
+const styleMaker = new StyleMaker('graybeard');
 
-baker.addFonts({
+styleMaker.addFonts({
 	regular: 'noto_sans_regular',
 	bold: 'noto_sans_bold',
 })
 
-baker.addColors({
+styleMaker.addColors({
 	land: '#F2F2F2',
 	water: '#D9D9D9',
 	glacier: '#FFFFFF',
@@ -48,7 +48,7 @@ baker.addColors({
 	hospital: '#E6E6E633',
 })
 
-baker.setLayerStyle(({ colors, fonts }) => ({
+styleMaker.setLayerStyle(({ colors, fonts }) => ({
 
 	// background
 	'background': {
@@ -611,4 +611,4 @@ baker.setLayerStyle(({ colors, fonts }) => ({
 	},
 }))
 
-export default baker.getBaker();
+export default styleMaker.finish();
