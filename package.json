@@ -1,6 +1,6 @@
 {
   "name": "versatiles-styles",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Programatically generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
