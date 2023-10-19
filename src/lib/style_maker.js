@@ -22,7 +22,7 @@ export default class StyleMaker {
 		this.#id = id;
 		this.#options = {
 			hideLabels: false,
-			language: 'de',
+			language: false, // false, 'de' or 'en'
 			glyphsUrl: false,
 			spriteUrl: false,
 			tilesUrl: false,
@@ -68,7 +68,10 @@ export default class StyleMaker {
 		style.name = 'versatiles-' + this.#id;
 		if (options.glyphsUrl) style.glyphs = options.glyphsUrl;
 		if (options.spriteUrl) style.sprite = options.spriteUrl;
-		if (options.tilesUrl) style.sources[options.sourceName].tiles = options.tilesUrl;
+		if (options.tilesUrl) {
+			style.sources[options.sourceName].tiles =
+				Array.isArray(options.tilesUrl) ? options.tilesUrl : [options.tilesUrl];
+		}
 
 		return style;
 	}
