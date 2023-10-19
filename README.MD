@@ -10,14 +10,57 @@ Programatically generates Shortbread StyleJSON for MapLibre.
 * Neutrino - light basemap
 * Graybeard - gray basemap
 
+## Download
+
 You can download the latest StyleJSONs from the [latest release](https://github.com/versatiles-org/versatiles-styles/releases/latest/).
 We provide each style with and without labels, and also in multiple languages.
 
-## Generate Styles
+Be aware that styles already include `tiles.versatiles.org` as source for tiles, fonts (glyphs) and icons (sprites). So you might want to update the URLs in the JSON.
+
+## as Node.js module
+
+Install `versatiles-styles` via NPM:
+```bash
+npm install versatiles-styles
+```
+
+Use it in Node.js:
+```javascript
+import { colorful } from 'versatiles-styles';
+let style = colorful({language:'de'});
+writeFileSync('style.json', JSON.stringify(style));
+```
+
+## in a web browser
+
+Download latest release:
+```bash
+wget "https://github.com/versatiles-org/versatiles-styles/releases/latest/download/versatiles-styles.js"
+```
+
+Use it in:
+```html
+<div id="map"></div>
+<script src="maplibre-gl.js"></script>
+<script src="versatiles-styles.js"></script>
+<script>
+	const baseUrl = new URL('/', window.location.href).href;
+	const map = new maplibregl.Map({
+		container: 'map',
+		style: colorful({
+			glyphsUrl: baseUrl + 'fonts/{fontstack}/{range}.pbf',
+			spriteUrl: baseUrl + 'sprites/sprites',
+			tilesUrl: [baseUrl + 'tiles/{z}/{x}/{y}'],
+		})
+	});
+<script>
+```
+
+## Generate styles
 
 `npm run build`
 
-## Add/edit Styles
+## Add/edit styles
 
 * style definitions in `src/styles/*.js`
 * shortbread layer definition in `src/lib/shortbread_layers.js`
