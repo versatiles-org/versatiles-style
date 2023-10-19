@@ -47,7 +47,7 @@ Use it in:
 	const baseUrl = new URL('/', window.location.href).href;
 	const map = new maplibregl.Map({
 		container: 'map',
-		style: colorful({
+		style: versatiles_styles.colorful({
 			glyphsUrl: baseUrl + 'fonts/{fontstack}/{range}.pbf',
 			spriteUrl: baseUrl + 'sprites/sprites',
 			tilesUrl: [baseUrl + 'tiles/{z}/{x}/{y}'],

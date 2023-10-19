@@ -6,7 +6,8 @@ export default {
 	input: './src/index.js',
 	output: {
 		file: 'dist/versatiles-styles.js',
-		format: 'umd'
+		format: 'umd',
+		name: 'versatiles_styles'
 	},
 	plugins: [
 		commonjs(),
