@@ -55,65 +55,65 @@ export default function ({ languageSuffix }) {
 		{
 			id: 'water-area',
 			type: 'fill', layer: 'water_polygons',
-			filter: ['all', ['==', 'kind', 'water']],
+			filter: ['==', 'kind', 'water'],
 		},
 		{
 			id: 'water-area-river',
 			type: 'fill', layer: 'water_polygons',
-			filter: ['all', ['==', 'kind', 'river']],
+			filter: ['==', 'kind', 'river'],
 		},
 		{
 			id: 'water-area-small',
 			type: 'fill', layer: 'water_polygons',
-			filter: ['all', ['in', 'kind', 'reservoir', 'basin', 'dock']],
+			filter: ['in', 'kind', 'reservoir', 'basin', 'dock'],
 		},
 
 		// dam
-		{ id: 'water-dam-area', type: 'fill', layer: 'dam_polygons', filter: ['all', ['==', 'kind', 'dam']], },
-		{ id: 'water-dam', type: 'line', layer: 'dam_lines', filter: ['all', ['==', 'kind', 'dam']], },
+		{ id: 'water-dam-area', type: 'fill', layer: 'dam_polygons', filter: ['==', 'kind', 'dam'] },
+		{ id: 'water-dam', type: 'line', layer: 'dam_lines', filter: ['==', 'kind', 'dam'] },
 
 		// pier
-		{ id: 'water-pier-area', type: 'fill', layer: 'pier_polygons', filter: ['all', ['in', 'kind', 'pier', 'breakwater', 'groyne']] },
-		{ id: 'water-pier', type: 'line', layer: 'pier_lines', filter: ['all', ['in', 'kind', 'pier', 'breakwater', 'groyne']] },
+		{ id: 'water-pier-area', type: 'fill', layer: 'pier_polygons', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
+		{ id: 'water-pier', type: 'line', layer: 'pier_lines', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
 
 		// site
 		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map(t => ({
 			id: 'site-' + t.replace(/_/g, ''),
 			type: 'fill',
 			layer: 'sites',
-			filter: ['all', ['in', 'kind', t]],
+			filter: ['in', 'kind', t],
 		})),
 
 		// airport
 		{
 			id: 'airport-area',
-			type: 'fill', layer: 'street_polygons', filter: ['all', ['in', 'kind', 'runway', 'taxiway']],
+			type: 'fill', layer: 'street_polygons', filter: ['in', 'kind', 'runway', 'taxiway'],
 		},
 		{
 			id: 'airport-taxiway:outline',
-			type: 'line', layer: 'streets', filter: ['all', ['==', 'kind', 'taxiway']],
+			type: 'line', layer: 'streets', filter: ['==', 'kind', 'taxiway'],
 		},
 		{
 			id: 'airport-runway:outline',
-			type: 'line', layer: 'streets', filter: ['all', ['==', 'kind', 'runway']],
+			type: 'line', layer: 'streets', filter: ['==', 'kind', 'runway'],
 		},
 		{
 			id: 'airport-taxiway',
-			type: 'line', layer: 'streets', filter: ['all', ['==', 'kind', 'taxiway']],
+			type: 'line', layer: 'streets', filter: ['==', 'kind', 'taxiway'],
 		},
 		{
 			id: 'airport-runway',
-			type: 'line', layer: 'streets', filter: ['all', ['==', 'kind', 'runway']],
+			type: 'line', layer: 'streets', filter: ['==', 'kind', 'runway'],
 		},
 
 		// building
 		{
 			id: 'building:outline',
-			type: 'fill', layer: 'buildings', filter: ['all'],
+			type: 'fill', layer: 'buildings',
 		},
 		{
 			id: 'building',
-			type: 'fill', layer: 'buildings', filter: ['all'],
+			type: 'fill', layer: 'buildings',
 		},
 
 		// tunnel-, street-, bridges-bridge
@@ -139,8 +139,7 @@ export default function ({ languageSuffix }) {
 			if (c === 'bridge') results.push({
 				id: 'bridge',
 				type: 'fill',
-				layer: 'bridges',
-				filter: ['all']
+				layer: 'bridges'
 			});
 
 			[':outline', ''].forEach(suffix => {
@@ -263,7 +262,6 @@ export default function ({ languageSuffix }) {
 						id: 'transport-ferry' + suffix,
 						type: 'line',
 						layer: 'ferries',
-						filter: ['all'],
 					});
 				}
 			});
@@ -277,9 +275,7 @@ export default function ({ languageSuffix }) {
 
 			type: 'symbol',
 			layer: 'pois',
-			filter: ['all',
-				['!=', key, ''],
-			],
+			filter: ['!=', key, ''],
 		})),
 
 		// boundary
@@ -335,7 +331,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-address-housenumber',
 			type: 'symbol',
 			layer: 'addresses',
-			filter: ['all', ['has', 'housenumber']],
+			filter: ['has', 'housenumber'],
 			layout: { 'text-field': '{housenumber}' },
 		},
 
@@ -344,7 +340,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-motorway-exit',
 			type: 'symbol',
 			layer: 'street_labels_points', // docs say `streets_labels_points`, but layer is actually called `street_labels_points`
-			filter: ['all', ['==', 'kind', 'motorway_junction']],
+			filter: ['==', 'kind', 'motorway_junction'],
 			layout: { 'text-field': '{ref}' },
 			// FIXME shield
 		},
@@ -352,7 +348,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-motorway-shield',
 			type: 'symbol',
 			layer: 'street_labels',
-			filter: ['all', ['==', 'kind', 'motorway']],
+			filter: ['==', 'kind', 'motorway'],
 			layout: { 'text-field': '{ref}' },
 			// FIXME shield
 		},
@@ -362,7 +358,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-street-' + t.replace(/_/g, ''),
 			type: 'symbol',
 			layer: 'street_labels',
-			filter: ['all', ['==', 'kind', t]],
+			filter: ['==', 'kind', t],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		})),
 
@@ -371,7 +367,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			layer: 'place_labels',
-			filter: ['all', ['==', 'kind', id]],
+			filter: ['==', 'kind', id],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		})),
 
@@ -380,7 +376,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-boundary-state',
 			type: 'symbol',
 			layer: 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 4, '4']],
+			filter: ['in', 'admin_level', 4, '4'],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		},
 
@@ -389,7 +385,7 @@ export default function ({ languageSuffix }) {
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			layer: 'place_labels',
-			filter: ['all', ['==', 'kind', id]],
+			filter: ['==', 'kind', id],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		})),
 
@@ -479,18 +475,14 @@ export default function ({ languageSuffix }) {
 			id: 'symbol-transit-bus',
 			type: 'symbol',
 			layer: 'public_transport',
-			filter: ['all',
-				['==', 'kind', 'bus_stop'],
-			],
+			filter: ['==', 'kind', 'bus_stop'],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		},
 		{
 			id: 'symbol-transit-tram',
 			type: 'symbol',
 			layer: 'public_transport',
-			filter: ['all',
-				['==', 'kind', 'tram_stop'],
-			],
+			filter: ['==', 'kind', 'tram_stop'],
 			layout: { 'text-field': `{name${languageSuffix}}` },
 		},
 		{
