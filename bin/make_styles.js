@@ -3,7 +3,7 @@
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import StyleBakerClasses from '../src/index.js';
+import * as StyleBakerClasses from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from '../src/lib/utils.js';
 
