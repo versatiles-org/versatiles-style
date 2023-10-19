@@ -770,7 +770,7 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 			'vending_machine', 'icon-vendingmachine-22',
 			'veterinary', 'icon-veterinary-22',
 			'waste_basket', 'icon-waste_basket-22',
-			null
+			'UNDEFINED'
 		]
 	},
 	'poi-leisure': {
@@ -803,7 +803,7 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 			//'theme_park', 'icon-theme_park-22',
 			'viewpoint', 'icon-viewpoint-22',
 			'zoo', 'icon-zoo-22',
-			null
+			'UNDEFINED'
 		]
 	},
 	'poi-shop': {
@@ -861,7 +861,7 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 			//'water_works', 'icon-water_works-22',
 			'watermill', 'icon-watermill-22',
 			'windmill', 'icon-windmill-22',
-			null
+			'UNDEFINED'
 		]
 	},
 	'poi-historic': {
@@ -886,23 +886,25 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 			'defibrillator', 'icon-defibrillator-22',
 			'fire_hydrant', 'icon-hydrant-22',
 			'phone', 'icon-emergency_phone-22',
-			null
+			'UNDEFINED'
 		]
 	},
+	/*
 	'poi-highway': {
 		image: ['match',
 			['get', 'highway'],
 			//'emergency_access_point', 'icon-emergency_access_point-22',
-			null
+			'UNDEFINED'
 		]
 	},
 	'poi-office': {
 		image: ['match',
 			['get', 'office'],
 			//'diplomatic', 'icon-diplomatic-22',
-			null
+			'UNDEFINED'
 		]
 	},
+	*/
 }))
 
 export default styleMaker.finish();
