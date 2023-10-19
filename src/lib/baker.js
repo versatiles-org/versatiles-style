@@ -121,10 +121,11 @@ export default class Baker {
 	// Method to get a 'maker' object with limited API
 	getBaker() {
 		let me = this;
-		return {
-			id: this.#id,
-			bake: (...args) => me.#bake(...args),
-			getOptions: (...args) => me.#getOptions(...args),
-		}
+		let baker = function (...args) { return me.#bake(...args); }
+		Object.assign(baker, {
+			get id() { return me.#id },
+			get options() { return me.#getOptions() }
+		})
+		return baker;
 	}
 }

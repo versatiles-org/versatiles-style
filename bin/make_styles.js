@@ -24,10 +24,9 @@ if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
-for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
-	let styleBaker = new StyleBakerClass();
-	const styleId = styleBaker.id;
-	const options = styleBaker.getOptions();
+for (let getStyle of Object.values(StyleBakerClasses)) {
+	const styleId = getStyle.id;
+	const options = getStyle.options;
 
 	if (baseUrl) {
 		options.glyphsUrl = baseUrl + '/assets/fonts/{fontstack}/{range}.pbf';
@@ -48,7 +47,7 @@ for (let StyleBakerClass of Object.values(StyleBakerClasses)) {
 	produce(styleId + '.nolabel', options);
 
 	function produce(name, options) {
-		const style = styleBaker.bake(options);
+		const style = getStyle(options);
 
 		// Validate the style and log errors if any	
 		let errors = validateStyleMin(style);
