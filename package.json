@@ -1,12 +1,13 @@
 {
   "name": "versatiles-styles",
-  "version": "3.2.1",
-  "description": "Programatically generate StyleJSON for MapLibre.",
+  "version": "3.2.2",
+  "description": "Generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
-    "build": "node bin/make_styles.js",
-    "release": "./bin/release.sh",
-    "rollup": "npx rollup -c rollup.config.js"
+    "build-styles": "tcx bin/build_styles.ts",
+    "build-rollup": "npx rollup -c rollup.config.js",
+    "build-package": "tsc",
+    "build": "npm run build-styles && npm run build-rollup && npm run build-package"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "@rollup/plugin-commonjs": "^25.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/color": "^3.0.5",
     "rollup": "^4.0.2"
   }
 }
