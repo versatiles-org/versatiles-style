@@ -2,36 +2,35 @@
 import Color from 'color';
 import expandBraces from 'brace-expansion';
 import MAPLIBRE_PROPERTIES from './shortbread_properties.js';
-import { deepClone } from './utils.js';
+import { ShortbreadLayer } from './shortbread_layers.js';
+import { StyleRule, StyleRules } from './types.js';
+import { deepMerge } from './utils.js';
 
 
 
-
-
-
-export function decorate(layers, rules) {
+export function decorate(layers: ShortbreadLayer[], rules: StyleRules) {
 	const layerIds = layers.map(l => l.id);
 	const layerIdSet = new Set(layerIds);
 
 	// Initialize a new map to hold final styles for layers
-	let layerStyles = new Map();
+	let layerStyles: Map<string, StyleRule> = new Map();
 
 	// Iterate through the generated layer style rules
 	Object.entries(rules).forEach(([idDef, layerStyle]) => {
 		// Expand any braces in IDs and filter them through a RegExp if necessary
 		let ids = expandBraces(idDef).flatMap(id => {
 			if (!id.includes('*')) return id;
-			let regExp = id.replace(/[^a-z_\-:]/g, c => {
+			let regExpString = id.replace(/[^a-z_\-:]/g, c => {
 				if (c === '*') return '[a-z_\-]*';
 				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
 			})
-			regExp = new RegExp(`^${regExp}$`, 'i');
+			let regExp = new RegExp(`^${regExpString}$`, 'i');
 			return layerIds.filter(layerId => regExp.test(layerId));
 		});
 
 		ids.forEach(id => {
 			if (!layerIdSet.has(id)) return;
-			layerStyles.set(id, Object.assign(layerStyles.get(id) || {}, layerStyle));
+			layerStyles.set(id, deepMerge(layerStyles.get(id) || {}, layerStyle));
 		})
 	})
 
@@ -43,23 +42,16 @@ export function decorate(layers, rules) {
 		// Don't export layers that have no style
 		if (!layerStyle) return [];
 
-		// Set the layer source to the provided sourceName option
-		layer.layout ??= {};
-		layer.paint ??= {};
-
 		processStyling(layer, layerStyle);
-
-		if (Object.keys(layer.layout).length === 0) delete layer.layout;
-		if (Object.keys(layer.paint).length === 0) delete layer.paint;
 
 		return [layer];
 	});
 }
 
 // Function to process each style attribute for the layer
-function processStyling(layer, styleRules) {
+function processStyling(layer: ShortbreadLayer, styleRule: StyleRule) {
 
-	Object.entries(styleRules).forEach(([ruleKey, ruleValue]) => {
+	Object.entries(styleRule).forEach(([ruleKey, ruleValue]) => {
 		// CamelCase to not-camel-case
 		ruleKey = ruleKey.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
 
@@ -68,9 +60,9 @@ function processStyling(layer, styleRules) {
 
 		propertyDefs.forEach(propertyDef => {
 			let key = propertyDef.key;
-			let value = ruleValue;
+			let value: any = ruleValue;
 
-			switch (propertyDef.value) {
+			switch (propertyDef.valueType) {
 				case 'color': value = processExpression(value, processColor); break;
 				case 'fonts': value = processExpression(value, processFont); break;
 				case 'resolvedImage':
@@ -79,7 +71,7 @@ function processStyling(layer, styleRules) {
 				case 'boolean':
 				case 'enum':
 				case 'number': value = processExpression(value); break;
-				default: throw new Error(`unknown type "${propertyDef.type}" for key "${key}"`);
+				default: throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
 			}
 
 			switch (propertyDef.parent) {
@@ -92,21 +84,21 @@ function processStyling(layer, styleRules) {
 	})
 }
 
-function processColor(value) {
+function processColor(value: any): string {
 	if (typeof value === 'string') value = Color(value);
 	if (value instanceof Color) {
-		value = (value.valpha === 1) ? value.hex() : value.hexa();
+		value = (value.alpha() === 1) ? value.hex() : value.hexa();
 		return value.toLowerCase();
 	}
 	throw new Error(`unknown color type "${typeof value}"`);
 }
 
-function processFont(value) {
+function processFont(value: any): string[] {
 	if (typeof value === 'string') return [value];
 	throw new Error(`unknown font type "${typeof value}"`);
 }
 
-function processExpression(value, cbValue) {
+function processExpression(value: any, cbValue?: (value: any) => any): any {
 	if (typeof value === 'object') {
 		cbValue ??= v => v;
 		if (value instanceof Color) return cbValue(value);
@@ -117,7 +109,7 @@ function processExpression(value, cbValue) {
 	return cbValue ? cbValue(value) : value;
 }
 
-function processZoomStops(obj, cbValue) {
+function processZoomStops(obj: any, cbValue: (value: any) => any): { stops: any[] } {
 	return {
 		stops: Object.entries(obj)
 			.map(([z, v]) => [parseInt(z, 10), cbValue(v)])

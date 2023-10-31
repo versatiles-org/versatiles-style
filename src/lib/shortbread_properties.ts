@@ -2,6 +2,7 @@
 const propertyLookup: Map<string, ShortbreadProperty[]> = new Map();
 
 type ShortbreadProperty = {
+	key: string,
 	parent: string,
 	valueType: string,
 }
@@ -116,6 +117,7 @@ type ShortbreadProperty = {
 		function add(propertyKey: string): void {
 			let key = type + '/' + propertyKey;
 			const property: ShortbreadProperty = {
+				key: propertyDef.key,
 				parent: propertyDef.parent,
 				valueType: propertyDef.valueType,
 			}
