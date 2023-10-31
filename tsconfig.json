@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"lib": [
-			"es2023"
+			"ESNext"
 		],
 		"module": "nodenext",
 		"moduleResolution": "NodeNext",

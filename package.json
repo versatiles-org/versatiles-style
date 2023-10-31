@@ -7,7 +7,8 @@
     "build-styles": "tcx bin/build_styles.ts",
     "build-rollup": "npx rollup -c rollup.config.js",
     "build-package": "tsc",
-    "build": "npm run build-styles && npm run build-rollup && npm run build-package"
+    "build": "npm run build-styles && npm run build-rollup && npm run build-package",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,10 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/color": "^3.0.5",
-    "rollup": "^4.0.2"
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "eslint": "^8.52.0",
+    "rollup": "^4.0.2",
+    "typescript": "^5.2.2"
   }
 }
