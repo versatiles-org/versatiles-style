@@ -58,7 +58,7 @@ export function transformColors(colors: ColorLookup, flags: TransformColorsFlags
 		if (value < 1e-3) value = 1e-3;
 		if (value > 1e3) value = 1e3;
 		forEachColor(color => {
-			let rgb: number[] = color.rgb().array();
+			const rgb: number[] = color.rgb().array();
 			return ColorWrapper.rgb(
 				Math.pow(rgb[0] / 255, value) * 255,
 				Math.pow(rgb[1] / 255, value) * 255,
@@ -72,7 +72,7 @@ export function transformColors(colors: ColorLookup, flags: TransformColorsFlags
 		if (value < 0) value = 0;
 		if (value > 1e6) value = 1e6;
 		forEachColor(color => {
-			let rgb: number[] = color.rgb().array();
+			const rgb: number[] = color.rgb().array();
 			return ColorWrapper.rgb(
 				(rgb[0] - 127.5) * value + 127.5,
 				(rgb[1] - 127.5) * value + 127.5,
@@ -85,10 +85,10 @@ export function transformColors(colors: ColorLookup, flags: TransformColorsFlags
 	function brightness(value: number): void {
 		if (value < -1e6) value = -1e6;
 		if (value > 1e6) value = 1e6;
-		let a = 1 - Math.abs(value);
-		let b = (value < 0) ? 0 : 255 * value;
+		const a = 1 - Math.abs(value);
+		const b = (value < 0) ? 0 : 255 * value;
 		forEachColor(color => {
-			let rgb: number[] = color.rgb().array();
+			const rgb: number[] = color.rgb().array();
 			return ColorWrapper.rgb(
 				rgb[0] * a + b,
 				rgb[1] * a + b,
@@ -99,15 +99,15 @@ export function transformColors(colors: ColorLookup, flags: TransformColorsFlags
 	}
 
 	function tint(value: number, tintColor: ColorWrapper): void {
-		let tintColorHSV: number[] = tintColor.hsv().array();
+		const tintColorHSV: number[] = tintColor.hsv().array();
 		forEachColor(color => {
-			let rgb0: number[] = color.rgb().array();
+			const rgb0: number[] = color.rgb().array();
 
-			let hsv: number[] = color.hsv().array();
+			const hsv: number[] = color.hsv().array();
 			hsv[0] = tintColorHSV[0];
 			hsv[1] *= tintColorHSV[1];
 			hsv[2] *= tintColorHSV[2];
-			let rgbNew = ColorWrapper.hsv(hsv).rgb().array();
+			const rgbNew = ColorWrapper.hsv(hsv).rgb().array();
 
 			return ColorWrapper.rgb(
 				rgb0[0] * (1 - value) + value * rgbNew[0],
