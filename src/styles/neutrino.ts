@@ -304,10 +304,6 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 		minzoom: 7,
 		size: { 7: 11, 10: 14 },
 	},
-	'label-place-city': {
-		minzoom: 7,
-		size: { 7: 11, 10: 14 },
-	},
 	'label-place-town': {
 		minzoom: 8,
 		size: { 8: 11, 12: 14 },

@@ -2,7 +2,7 @@
 
 export type StyleRules = { [id: string]: StyleRule }
 export type StyleRule = { [id: string]: StyleValue }
-export type StyleValue = object | number | string;
+export type StyleValue = object | number | string | boolean;
 
 
 import { BackgroundLayer, FillLayer, LineLayer, SymbolLayer } from 'mapbox-gl';
@@ -22,9 +22,8 @@ export type StylemakerLayerStyleGeneratorOptions = {
 }
 
 
-export type StylemakerLayerStyleGenerator = (options: StylemakerLayerStyleGeneratorOptions) => StylemakerLayerStyleRules
+export type StylemakerLayerStyleGenerator = (options: StylemakerLayerStyleGeneratorOptions) => StyleRules
 
-export type StylemakerLayerStyleRules = unknown;
 export type StylemakerFunction = (options: StylemakerOptions) => MaplibreStyle
 
 

@@ -1,15 +1,18 @@
 
+export type ShortbreadProperty = {
+	key: string,
+	parent: 'layer' | 'layout' | 'paint',
+	valueType: 'array' | 'boolean' | 'color' | 'enum' | 'filter' | 'fonts' | 'formatted' | 'number' | 'padding' | 'resolvedImage' | 'variableAnchorOffsetCollection',
+}
+
+type ShortbreadPropertyDef = ShortbreadProperty & {
+	types: string,
+	short?: string,
+}
+
 const propertyLookup: Map<string, ShortbreadProperty[]> = new Map();
 
-/*
-type ShortbreadProperty = {
-	key: string,
-	parent: string,
-	valueType: string,
-}
-*/
-
-[
+const propertyList: ShortbreadPropertyDef[] = [
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'filter', valueType: 'filter' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'maxzoom', valueType: 'number' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'minzoom', valueType: 'number' },
@@ -109,7 +112,9 @@ type ShortbreadProperty = {
 	{ parent: 'paint', types: 'symbol', key: 'text-opacity', short: 'opacity', valueType: 'number' },
 	{ parent: 'paint', types: 'symbol', key: 'text-translate-anchor', valueType: 'enum' },
 	{ parent: 'paint', types: 'symbol', key: 'text-translate', valueType: 'array' },
-].forEach(propertyDef => {
+]
+
+propertyList.forEach((propertyDef: ShortbreadPropertyDef) => {
 	const types: string = propertyDef.types;
 
 	types.split(',').forEach((type: string) => {

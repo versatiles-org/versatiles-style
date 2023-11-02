@@ -1,7 +1,7 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import MAPLIBRE_PROPERTIES from './shortbread_properties.js';
+import MAPLIBRE_PROPERTIES, { ShortbreadProperty } from './shortbread_properties.js';
 import { deepMerge } from './utils.js';
 import { MaplibreLayer, StyleRule, StyleRules, StyleValue } from './types.js';
 
@@ -74,13 +74,18 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
 			}
 
 			switch (propertyDef.parent) {
-				case 'layer': layer[key] = value; break;
+				case 'layer':
+					// @ts-ignore
+					layer[key] = value;
+					break;
 				case 'layout':
 					if (!layer.layout) layer.layout = {};
+					// @ts-ignore
 					layer.layout[key] = value;
 					break;
 				case 'paint':
 					if (!layer.paint) layer.paint = {};
+					// @ts-ignore
 					layer.paint[key] = value;
 					break;
 				default: throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);

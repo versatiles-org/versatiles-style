@@ -5,7 +5,7 @@ import getLayers from './shortbread_layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 import { transformColors, getDefaultColorTransformer } from './color_transformer.js';
-import { MaplibreLayer, MaplibreStyle } from './types.js';
+import { MaplibreLayer, MaplibreStyle, StyleRules, StylemakerColorLookup, StylemakerFunction, StylemakerLayerStyleGenerator, StylemakerOptions } from './types.js';
 
 // Stylemaker class definition
 export default class StyleMaker {
@@ -107,7 +107,7 @@ export default class StyleMaker {
 
 		// Generate layer style rules by invoking the layerStyleGenerator callback
 		if (!this.#layerStyleGenerator) throw new Error();
-		const layerStyleRules: StylemakerLayerStyleRules = this.#layerStyleGenerator({
+		const layerStyleRules: StyleRules = this.#layerStyleGenerator({
 			colors: new Proxy({}, {
 				get(t, key,) {
 					if (typeof key !== 'string') throw new Error(`unknown color name: colors.${String(key)}`);

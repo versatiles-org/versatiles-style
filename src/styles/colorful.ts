@@ -665,7 +665,6 @@ styleMaker.setLayerStyle(({ colors, fonts }) => ({
 		textHaloColor: colors.labelHalo,
 		textHaloWidth: 2,
 		textHaloBlur: 1,
-		font: fonts.regular,
 	},
 	'symbol-transit-airport': {
 		minzoom: 12,

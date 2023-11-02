@@ -1,4 +1,4 @@
-import { MaplibreLayer } from './types.js';
+import { MaplibreFilter, MaplibreLayer } from './types.js';
 
 
 export default function (option: { languageSuffix: string }): MaplibreLayer[] {
@@ -124,7 +124,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayer[] => {
 			// filters
-			let filter: ShortbreadFilter, prefix: string;
+			let filter: MaplibreFilter, prefix: string;
 			const results: MaplibreLayer[] = [];
 			switch (c) {
 				case 'tunnel':
