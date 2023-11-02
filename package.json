@@ -4,10 +4,10 @@
   "description": "Generate StyleJSON for MapLibre.",
   "main": "./src/index.js",
   "scripts": {
-    "build-styles": "tcx bin/build_styles.ts",
-    "build-rollup": "npx rollup -c rollup.config.js",
-    "build-package": "tsc",
-    "build": "npm run build-styles && npm run build-rollup && npm run build-package",
+    "build-styles": "tsx bin/build_styles.ts",
+    "build-browser": "rollup -c rollup.config.js",
+    "build-node": "tsc",
+    "build": "npm run build-styles && npm run build-browser && npm run build-node",
     "lint": "eslint ."
   },
   "repository": {
@@ -37,6 +37,7 @@
     "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.52.0",
     "rollup": "^4.0.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   }
 }
