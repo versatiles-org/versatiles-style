@@ -5,22 +5,18 @@ import getLayers from './shortbread_layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 import { transformColors, getDefaultColorTransformer } from './color_transformer.js';
-import { MaplibreLayer, MaplibreStyle, StyleRules, StylemakerColorLookup, StylemakerFunction, StylemakerLayerStyleGenerator, StylemakerOptions } from './types.js';
+import { MaplibreLayer, MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerFontLookup, StylemakerFunction, StylemakerLayerStyleGenerator, StylemakerOptions } from './types.js';
 
 // Stylemaker class definition
 export default class StyleMaker {
 	// Private class properties
-	#id: string
-	#layerStyleGenerator?: StylemakerLayerStyleGenerator
+	#name: string = 'unnamed';
 	#options: StylemakerOptions
 
 	// Constructor
-	constructor(id: string) {
-		// Validate that an id is provided
-		if (!id) throw new Error('every style should have an id');
+	constructor() {
 
 		// Initialize private properties
-		this.#id = id;
 		this.#options = {
 			hideLabels: false,
 			language: false, // false, 'de' or 'en'
@@ -34,28 +30,39 @@ export default class StyleMaker {
 		};
 	}
 
-	// Method to add fonts to options
-	addFonts(obj: { [name: string]: string }) {
-		if (!this.#options.fonts) this.#options.fonts = {};
-		Object.assign(this.#options.fonts, obj);
+
+	get name(): string {
+		return this.#name;
+	}
+	set name(name: string) {
+		this.#name = name;
 	}
 
-	// Method to add colors to options and convert them to HEX
-	addColors(obj: { [name: string]: string | Color }) {
-		const colors: StylemakerColorLookup = this.#options.colors ??= {};
-		Object.entries(obj).forEach(([name, color]) => {
+
+	get fonts(): StylemakerFontLookup {
+		return this.#options.fonts || {}
+	}
+	set fonts(fonts: { [name: string]: string }) {
+		Object.assign(this.#options.fonts ??= {}, fonts);
+	}
+
+
+	get colors(): StylemakerColorLookup {
+		return this.#options.colors || {}
+	}
+	set colors(colors: { [name: string]: string | Color }) {
+		const oldColors: StylemakerColorLookup = this.#options.colors ??= {};
+		Object.entries(colors).forEach(([name, color]) => {
 			if (typeof color === 'string') {
-				colors[name] = Color(color);
+				oldColors[name] = Color(color);
 			} else {
-				colors[name] = color;
+				oldColors[name] = color;
 
 			}
 		})
 	}
-
-	// Method to set layer style generator function
-	setLayerStyle(cb: StylemakerLayerStyleGenerator) {
-		this.#layerStyleGenerator = cb;
+	getStyleRules(options: StyleRulesOptions): StyleRules {
+		throw Error();
 	}
 
 	// Method to build the final style
@@ -75,7 +82,7 @@ export default class StyleMaker {
 			if ('source' in layer) layer.source = options.sourceName
 		});
 
-		style.name = 'versatiles-' + this.#id;
+		style.name = 'versatiles-' + this.#name;
 
 		if (options.glyphsUrl) style.glyphs = resolveUrl(options.glyphsUrl);
 		if (options.spriteUrl) style.sprite = resolveUrl(options.spriteUrl);
@@ -100,36 +107,22 @@ export default class StyleMaker {
 	// Private method to decorate layers
 	#decorateLayers(options: StylemakerOptions = {}): MaplibreLayer[] {
 		options = deepMerge(this.#options, options);
+		options.colors ??= {};
+		options.fonts ??= {};
+		const languageSuffix = options.language ? '_' + options.language : '';
 
 		if (options.colors && options.colorTransformer) {
 			transformColors(options.colors, options.colorTransformer);
 		}
 
 		// Generate layer style rules by invoking the layerStyleGenerator callback
-		if (!this.#layerStyleGenerator) throw new Error();
-		const layerStyleRules: StyleRules = this.#layerStyleGenerator({
-			colors: new Proxy({}, {
-				get(t, key,) {
-					if (typeof key !== 'string') throw new Error(`unknown color name: colors.${String(key)}`);
-					const value: Color | undefined = options.colors?.[key];
-					if (!value) throw new Error(`unknown color name: colors.${key}`);
-					return value;
-				}
-			}),
-			fonts: new Proxy({}, {
-				get(t, key,) {
-					if (typeof key !== 'string') throw new Error(`unknown color name: colors.${String(key)}`);
-					const value: string | undefined = options.fonts?.[key];
-					if (!value) throw new Error(`unknown font name: fonts.${key}`)
-					return value
-				}
-			}),
-			languageSuffix: options.language ? '_' + options.language : '',
+		const layerStyleRules = this.getStyleRules({
+			colors: options.colors,
+			fonts: options.fonts,
+			languageSuffix,
 		});
 
-		let layers = getLayers({
-			languageSuffix: options.language ? '_' + options.language : '',
-		})
+		let layers = getLayers({ languageSuffix })
 
 		layers = decorate(layers, layerStyleRules);
 
@@ -139,11 +132,11 @@ export default class StyleMaker {
 	}
 
 	// Method to get a 'maker' object with limited API
-	finish():StylemakerFunction {
+	getBuilder(): StylemakerFunction {
 		const self = this; // eslint-disable-line
 		const styleMaker = function (options: StylemakerOptions) { return self.#make(options); }
 		Object.assign(styleMaker, {
-			get id() { return self.#id },
+			get id() { return self.#name },
 			get options() { return self.#getOptions() }
 		})
 		return styleMaker;

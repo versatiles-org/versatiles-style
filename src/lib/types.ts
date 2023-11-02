@@ -15,14 +15,14 @@ export type MaplibreLayer = BackgroundLayer | FillLayer | LineLayer | SymbolLaye
 export type MaplibreFilter = any[];
 
 
-export type StylemakerLayerStyleGeneratorOptions = {
+export type StyleRulesOptions = {
 	colors: StylemakerColorLookup,
 	fonts: StylemakerFontLookup,
 	languageSuffix: string,
 }
 
 
-export type StylemakerLayerStyleGenerator = (options: StylemakerLayerStyleGeneratorOptions) => StyleRules
+export type StylemakerLayerStyleGenerator = (options: StyleRulesOptions) => StyleRules
 
 export type StylemakerFunction = (options: StylemakerOptions) => MaplibreStyle
 
