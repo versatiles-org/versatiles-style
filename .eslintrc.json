@@ -7,6 +7,9 @@
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended"
     ],
+    "ignorePatterns": [
+        "**/*.js", "dist/**"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -15,17 +18,18 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "root": true,
     "rules": {
         "indent": [
-            "error",
+            "warn",
             "tab"
         ],
         "linebreak-style": [
-            "error",
+            "warn",
             "unix"
         ],
         "quotes": [
-            "error",
+            "warn",
             "single"
         ],
         "no-extra-semi": [

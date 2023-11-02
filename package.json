@@ -8,7 +8,7 @@
     "build-rollup": "npx rollup -c rollup.config.js",
     "build-package": "tsc",
     "build": "npm run build-styles && npm run build-rollup && npm run build-package",
-    "lint": "eslint"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
