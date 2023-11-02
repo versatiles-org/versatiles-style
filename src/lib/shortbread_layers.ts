@@ -1,114 +1,7 @@
+import { MaplibreLayer } from './types.js';
 
-export type ShortbreadLayer = {
-	id: string,
-	type: 'background' | 'fill' | 'line' | 'symbol',
-	'source-layer'?: string,
-	filter?: ShortbreadFilter,
-	layout?: {
-		'fill-sort-key'?: number,
-		'line-cap'?: any,
-		'line-join'?: any,
-		'line-miter-limit'?: number,
-		'line-round-limit'?: number,
-		'line-sort-key'?: number,
-		'icon-allow-overlap'?: boolean,
-		'icon-anchor'?: any,
-		'icon-ignore-placement'?: boolean,
-		'icon-image'?: any,
-		'icon-keep-upright'?: boolean,
-		'icon-offset'?: any,
-		'icon-optional'?: boolean,
-		'icon-overlap'?: any,
-		'icon-padding'?: any,
-		'icon-pitch-alignment'?: any,
-		'icon-rotate'?: number,
-		'icon-rotation-alignment'?: any,
-		'icon-size'?: number,
-		'icon-text-fit-padding'?: any,
-		'icon-text-fit'?: any,
-		'symbol-avoid-edges'?: boolean,
-		'symbol-placement'?: any,
-		'symbol-sort-key'?: number,
-		'symbol-spacing'?: number,
-		'symbol-z-order'?: any,
-		'text-allow-overlap'?: boolean,
-		'text-anchor'?: any,
-		'text-field'?: any,
-		'text-font'?: any,
-		'text-ignore-placement'?: boolean,
-		'text-justify'?: any,
-		'text-keep-upright'?: boolean,
-		'text-letter-spacing'?: number,
-		'text-line-height'?: number,
-		'text-max-angle'?: number,
-		'text-max-width'?: number,
-		'text-offset'?: any,
-		'text-optional'?: boolean,
-		'text-overlap'?: any,
-		'text-padding'?: number,
-		'text-pitch-alignment'?: any,
-		'text-radial-offset'?: number,
-		'text-rotate'?: number,
-		'text-rotation-alignment'?: any,
-		'text-size'?: number,
-		'text-transform'?: any,
-		'text-variable-anchor-offset'?: any,
-		'text-variable-anchor'?: any,
-		'text-writing-mode'?: any,
-	},
-	paint?: {
-		'background-color'?: ShortbreadColor,
-		'background-opacity'?: number,
-		'background-pattern'?: any,
-		'fill-antialias'?: boolean,
-		'fill-color'?: ShortbreadColor,
-		'fill-extrusion-base'?: number,
-		'fill-extrusion-color'?: ShortbreadColor,
-		'fill-extrusion-height'?: number,
-		'fill-extrusion-opacity'?: number,
-		'fill-extrusion-pattern'?: any,
-		'fill-extrusion-translate-anchor'?: any,
-		'fill-extrusion-translate'?: any,
-		'fill-extrusion-vertical-gradient'?: boolean,
-		'fill-opacity'?: number,
-		'fill-outline-color'?: ShortbreadColor,
-		'fill-pattern'?: any,
-		'fill-translate-anchor'?: any,
-		'fill-translate'?: any,
-		'line-blur'?: number,
-		'line-color'?: ShortbreadColor,
-		'line-dasharray'?: any,
-		'line-gap-width'?: number,
-		'line-gradient'?: ShortbreadColor,
-		'line-offset'?: number,
-		'line-opacity'?: number,
-		'line-pattern'?: any,
-		'line-translate-anchor'?: any,
-		'line-translate'?: any,
-		'line-width'?: number,
-		'icon-color'?: ShortbreadColor,
-		'icon-halo-blur'?: number,
-		'icon-halo-color'?: ShortbreadColor,
-		'icon-halo-width'?: number,
-		'icon-opacity'?: number,
-		'icon-translate-anchor'?: any,
-		'icon-translate'?: any,
-		'text-color'?: ShortbreadColor,
-		'text-halo-blur'?: number,
-		'text-halo-color'?: ShortbreadColor,
-		'text-halo-width'?: number,
-		'text-opacity'?: number,
-		'text-translate-anchor'?: any,
-		'text-translate'?: any,
-	}
-	maxzoom?: number,
-	minzoom?: number,
-}
 
-type ShortbreadFilter = (string | ShortbreadFilter | number | boolean)[]
-type ShortbreadColor = string
-
-export default function (option: { languageSuffix: string }): ShortbreadLayer[] {
+export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 	const { languageSuffix } = option;
 	return [
 
@@ -141,7 +34,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 			{ id: 'vegetation', kinds: ['heath', 'scrub'] },
 			{ id: 'sand', kinds: ['beach', 'sand'] },
 			{ id: 'wetland', kinds: ['bog', 'marsh', 'string_bog', 'swamp'] },
-		].map(({ id, kinds }: { id: string, kinds: string[] }): ShortbreadLayer => ({
+		].map(({ id, kinds }: { id: string, kinds: string[] }): MaplibreLayer => ({
 			id: 'land-' + id,
 			type: 'fill',
 			'source-layer': 'land',
@@ -151,7 +44,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		})),
 
 		// water-lines
-		...['river', 'canal', 'stream', 'ditch'].map((t: string): ShortbreadLayer => ({
+		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayer => ({
 			id: 'water-' + t,
 			type: 'line',
 			'source-layer': 'water_lines',
@@ -189,7 +82,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		{ id: 'water-pier', type: 'line', 'source-layer': 'pier_lines', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
 
 		// site
-		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map((t): ShortbreadLayer => ({
+		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map((t): MaplibreLayer => ({
 			id: 'site-' + t.replace(/_/g, ''),
 			type: 'fill',
 			'source-layer': 'sites',
@@ -229,10 +122,10 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		},
 
 		// tunnel-, street-, bridges-bridge
-		...['tunnel', 'street', 'bridge'].flatMap((c): ShortbreadLayer[] => {
+		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayer[] => {
 			// filters
 			let filter: ShortbreadFilter, prefix: string;
-			const results: ShortbreadLayer[] = [];
+			const results: MaplibreLayer[] = [];
 			switch (c) {
 				case 'tunnel':
 					filter = [['==', 'tunnel', true]];
@@ -383,7 +276,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		}),
 
 		// poi, one layer per type
-		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map((key): ShortbreadLayer => ({
+		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map((key): MaplibreLayer => ({
 			id: 'poi-' + key,
 
 			type: 'symbol',
@@ -392,7 +285,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		})),
 
 		// boundary
-		...[':outline', ''].flatMap((suffix): ShortbreadLayer[] => [
+		...[':outline', ''].flatMap((suffix): MaplibreLayer[] => [
 			{
 				id: 'boundary-country' + suffix,
 				type: 'line',
@@ -467,7 +360,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		},
 
 		// label-street
-		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map((t: string): ShortbreadLayer => ({
+		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map((t: string): MaplibreLayer => ({
 			id: 'label-street-' + t.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'street_labels',
@@ -476,7 +369,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		})),
 
 		// label-place of small places
-		...[ /*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood', 'quarter', 'suburb', 'hamlet', 'village', 'town'].map((id: string): ShortbreadLayer => ({
+		...[ /*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood', 'quarter', 'suburb', 'hamlet', 'village', 'town'].map((id: string): MaplibreLayer => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'place_labels',
@@ -494,7 +387,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		},
 
 		// label-place-* of large places
-		...['city', 'state_capital', 'capital'].map((id: string): ShortbreadLayer => ({
+		...['city', 'state_capital', 'capital'].map((id: string): MaplibreLayer => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'place_labels',
@@ -535,7 +428,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 		},
 
 		// marking
-		<ShortbreadLayer>{
+		<MaplibreLayer>{
 			id: 'marking-oneway', // streets → oneway
 			type: 'symbol',
 			'source-layer': 'streets',
@@ -552,7 +445,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 				'symbol-avoid-edges': true,
 			}
 		},
-		<ShortbreadLayer>{
+		<MaplibreLayer>{
 			id: 'marking-oneway-reverse', // oneway_reverse
 			type: 'symbol',
 			'source-layer': 'streets',
@@ -569,7 +462,7 @@ export default function (option: { languageSuffix: string }): ShortbreadLayer[] 
 				'symbol-avoid-edges': true,
 			}
 		},
-		<ShortbreadLayer>{
+		<MaplibreLayer>{
 			id: 'marking-bicycle', // bicycle=designated or kind=cycleway
 			type: 'symbol',
 			'source-layer': 'streets',

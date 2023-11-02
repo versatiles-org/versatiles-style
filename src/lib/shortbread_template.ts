@@ -1,6 +1,8 @@
+import { MaplibreStyle } from './types.js';
+
 const maxzoom = 14;
 
-export default {
+export default <MaplibreStyle>{
 	version: 8,
 	id: 'versatiles',
 	name: 'versatiles',

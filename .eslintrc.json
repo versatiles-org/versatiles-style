@@ -1,15 +1,17 @@
 {
     "env": {
-        "shared-node-browser": true,
-        "es2021": true
+        "browser": true,
+        "es2023": true
     },
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended"
     ],
     "ignorePatterns": [
-        "**/*.js", "dist/**"
+        "**/*.js",
+        "dist/**"
     ],
+    "lib": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -22,7 +24,10 @@
     "rules": {
         "indent": [
             "warn",
-            "tab"
+            "tab",
+            {
+                "SwitchCase": 1
+            }
         ],
         "linebreak-style": [
             "warn",
@@ -34,6 +39,9 @@
         ],
         "no-extra-semi": [
             "warn"
+        ],
+        "@typescript-eslint/no-explicit-any": [
+            "off"
         ]
     }
 }

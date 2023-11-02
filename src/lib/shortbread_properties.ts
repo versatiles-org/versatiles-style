@@ -1,11 +1,13 @@
 
 const propertyLookup: Map<string, ShortbreadProperty[]> = new Map();
 
+/*
 type ShortbreadProperty = {
 	key: string,
 	parent: string,
 	valueType: string,
 }
+*/
 
 [
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'filter', valueType: 'filter' },
@@ -115,7 +117,7 @@ type ShortbreadProperty = {
 		if (propertyDef.short) add(propertyDef.short);
 
 		function add(propertyKey: string): void {
-			let key = type + '/' + propertyKey;
+			const key = type + '/' + propertyKey;
 			const property: ShortbreadProperty = {
 				key: propertyDef.key,
 				parent: propertyDef.parent,

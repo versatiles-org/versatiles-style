@@ -5,16 +5,17 @@ import getLayers from './shortbread_layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 import { transformColors, getDefaultColorTransformer } from './color_transformer.js';
+import { MaplibreLayer, MaplibreStyle } from './types.js';
 
 // Stylemaker class definition
 export default class StyleMaker {
 	// Private class properties
-	#id
-	#layerStyleGenerator
-	#options
+	#id: string
+	#layerStyleGenerator?: StylemakerLayerStyleGenerator
+	#options: StylemakerOptions
 
 	// Constructor
-	constructor(id) {
+	constructor(id: string) {
 		// Validate that an id is provided
 		if (!id) throw new Error('every style should have an id');
 
@@ -23,9 +24,10 @@ export default class StyleMaker {
 		this.#options = {
 			hideLabels: false,
 			language: false, // false, 'de' or 'en'
-			glyphsUrl: false,
-			spriteUrl: false,
-			tilesUrl: false,
+			baseUrl: undefined, // set me in the browser
+			glyphsUrl: '/assets/fonts/{fontstack}/{range}.pbf',
+			spriteUrl: '/assets/sprites/sprites',
+			tilesUrls: ['/tiles/osm/{z}/{x}/{y}'],
 			colors: {},
 			fonts: {},
 			colorTransformer: getDefaultColorTransformer(),
@@ -33,26 +35,35 @@ export default class StyleMaker {
 	}
 
 	// Method to add fonts to options
-	addFonts(obj) {
+	addFonts(obj: { [name: string]: string }) {
+		if (!this.#options.fonts) this.#options.fonts = {};
 		Object.assign(this.#options.fonts, obj);
 	}
 
 	// Method to add colors to options and convert them to HEX
-	addColors(obj) {
-		Object.assign(this.#options.colors, obj);
+	addColors(obj: { [name: string]: string | Color }) {
+		const colors: StylemakerColorLookup = this.#options.colors ??= {};
+		Object.entries(obj).forEach(([name, color]) => {
+			if (typeof color === 'string') {
+				colors[name] = Color(color);
+			} else {
+				colors[name] = color;
+
+			}
+		})
 	}
 
 	// Method to set layer style generator function
-	setLayerStyle(cb) {
+	setLayerStyle(cb: StylemakerLayerStyleGenerator) {
 		this.#layerStyleGenerator = cb;
 	}
 
 	// Method to build the final style
-	#make(options) {
+	#make(options: StylemakerOptions): MaplibreStyle {
 		// Deep clone options and merge with existing options
 		options = deepMerge(this.#options, options);
 
-		const style = deepClone(STYLE_TEMPLATE);
+		const style: MaplibreStyle = deepClone(STYLE_TEMPLATE);
 
 		// Set source name if not provided
 		options.sourceName ??= Object.keys(style.sources)[0];
@@ -61,54 +72,60 @@ export default class StyleMaker {
 		style.layers = this.#decorateLayers(options);
 
 		style.layers.forEach(layer => {
-			if (layer.type !== 'background') layer.source = options.sourceName
+			if ('source' in layer) layer.source = options.sourceName
 		});
 
-		style.id = 'versatiles-' + this.#id;
 		style.name = 'versatiles-' + this.#id;
-		if (options.glyphsUrl) style.glyphs = options.glyphsUrl;
-		if (options.spriteUrl) style.sprite = options.spriteUrl;
-		if (options.tilesUrl) {
-			style.sources[options.sourceName].tiles =
-				Array.isArray(options.tilesUrl) ? options.tilesUrl : [options.tilesUrl];
+
+		if (options.glyphsUrl) style.glyphs = resolveUrl(options.glyphsUrl);
+		if (options.spriteUrl) style.sprite = resolveUrl(options.spriteUrl);
+		if (options.tilesUrls) {
+			const source = style.sources[options.sourceName];
+			if ('tiles' in source) source.tiles = options.tilesUrls.map(resolveUrl)
 		}
 
 		return style;
+
+		function resolveUrl(url: string): string {
+			if (!options.baseUrl) return url;
+			return (new URL(url, options.baseUrl)).href;
+		}
 	}
 
 	// Method to get options
-	#getOptions() {
+	#getOptions(): StylemakerOptions {
 		return deepClone(this.#options);
 	}
 
-	#getStyleRules(options) {
-		return this.#layerStyleGenerator({
+	// Private method to decorate layers
+	#decorateLayers(options: StylemakerOptions = {}): MaplibreLayer[] {
+		options = deepMerge(this.#options, options);
+
+		if (options.colors && options.colorTransformer) {
+			transformColors(options.colors, options.colorTransformer);
+		}
+
+		// Generate layer style rules by invoking the layerStyleGenerator callback
+		if (!this.#layerStyleGenerator) throw new Error();
+		const layerStyleRules: StylemakerLayerStyleRules = this.#layerStyleGenerator({
 			colors: new Proxy({}, {
-				get(t, key, r) {
-					let value = options.colors[key];
-					if (!value) throw new Error(`unknown color name: colors.${key}`)
-					return Color(value);
+				get(t, key,) {
+					if (typeof key !== 'string') throw new Error(`unknown color name: colors.${String(key)}`);
+					const value: Color | undefined = options.colors?.[key];
+					if (!value) throw new Error(`unknown color name: colors.${key}`);
+					return value;
 				}
 			}),
 			fonts: new Proxy({}, {
-				get(t, key, r) {
-					let value = options.fonts[key];
+				get(t, key,) {
+					if (typeof key !== 'string') throw new Error(`unknown color name: colors.${String(key)}`);
+					const value: string | undefined = options.fonts?.[key];
 					if (!value) throw new Error(`unknown font name: fonts.${key}`)
 					return value
 				}
 			}),
 			languageSuffix: options.language ? '_' + options.language : '',
-		})
-	}
-
-	// Private method to decorate layers
-	#decorateLayers(options = {}) {
-		options = deepMerge(this.#options, options);
-
-		transformColors(options.colors, options.colorTransformer);;
-
-		// Generate layer style rules by invoking the layerStyleGenerator callback
-		let layerStyleRules = this.#getStyleRules(options);
+		});
 
 		let layers = getLayers({
 			languageSuffix: options.language ? '_' + options.language : '',
@@ -122,12 +139,12 @@ export default class StyleMaker {
 	}
 
 	// Method to get a 'maker' object with limited API
-	finish() {
-		let me = this;
-		let styleMaker = function (...args) { return me.#make(...args); }
+	finish():StylemakerFunction {
+		const self = this; // eslint-disable-line
+		const styleMaker = function (options: StylemakerOptions) { return self.#make(options); }
 		Object.assign(styleMaker, {
-			get id() { return me.#id },
-			get options() { return me.#getOptions() }
+			get id() { return self.#id },
+			get options() { return self.#getOptions() }
 		})
 		return styleMaker;
 	}
