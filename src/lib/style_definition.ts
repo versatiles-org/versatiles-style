@@ -109,7 +109,10 @@ export default class StyleDefinition {
 
 		function resolveUrl(url: string): string {
 			if (!configuration.baseUrl) return url;
-			return (new URL(url, configuration.baseUrl)).href;
+			url = (new URL(url, configuration.baseUrl)).href;
+			url = url.replace(/%7B/gi, '{');
+			url = url.replace(/%7D/gi, '}');
+			return url;
 		}
 	}
 
