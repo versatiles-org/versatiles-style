@@ -1,7 +1,7 @@
 // Import necessary modules and files
 import Color from 'color';
-import STYLE_TEMPLATE from './shortbread_template.js';
-import getLayers from './shortbread_layers.js';
+import STYLE_TEMPLATE from './shortbread/template.js';
+import getLayers from './shortbread/layers.js';
 import { deepClone, deepMerge } from './utils.js';
 import { decorate } from './decorator.js';
 import { transformColors, getDefaultColorTransformer } from './color_transformer.js';

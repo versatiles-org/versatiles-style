@@ -1,4 +1,4 @@
-import { MaplibreStyle } from './types.js';
+import { MaplibreStyle } from '../types.js';
 
 const maxzoom = 14;
 

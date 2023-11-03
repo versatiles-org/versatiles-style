@@ -1,7 +1,7 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import MAPLIBRE_PROPERTIES, { ShortbreadProperty } from './shortbread_properties.js';
+import MAPLIBRE_PROPERTIES from './shortbread/properties.js';
 import { deepMerge } from './utils.js';
 import { MaplibreLayer, StyleRule, StyleRules, StyleValue } from './types.js';
 
@@ -57,7 +57,7 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
 		const propertyDefs = MAPLIBRE_PROPERTIES.get(layer.type + '/' + ruleKey);
 		if (!propertyDefs) return;
 
-		propertyDefs.forEach((propertyDef: ShortbreadProperty) => {
+		propertyDefs.forEach(propertyDef => {
 			const key = propertyDef.key;
 			let value: StyleValue = ruleValue;
 

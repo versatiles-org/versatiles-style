@@ -1,4 +1,4 @@
-import { MaplibreFilter, MaplibreLayer } from './types.js';
+import { MaplibreFilter, MaplibreLayer } from '../types.js';
 
 
 export default function (option: { languageSuffix: string }): MaplibreLayer[] {
