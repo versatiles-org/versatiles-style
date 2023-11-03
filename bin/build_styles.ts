@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env npx tsx
 'use strict'
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';

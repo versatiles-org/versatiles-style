@@ -1,5 +1,4 @@
 
-
 import ColorfulClass from './styles/colorful.js';
 import GraybeardClass from './styles/graybeard.js';
 import NeutrinoClass from './styles/neutrino.js';
