@@ -1,26 +1,31 @@
 #!/usr/bin/env npx tsx
 
 import { spawn } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import inquirer from 'inquirer'
 
 process.chdir((new URL('../', import.meta.url)).pathname);
 
-/*
-// check if no git
-await checkThatNoUncommittedChanges();
+info('starting release process');
 
 // lint
+await check('lint', lint());
+
+// check if no git
+//await check('are all changes committed?', checkThatNoUncommittedChanges());
 
 // test
+await check('run tests', test());
+
+// build styles
+await check('build styles', run('npm run build-styles'));
+// build node
+await check('build node version', run('npm run build-node'));
+// build browser
+await check('build browser version', run('npm run build-browser'));
 
 // prepare release notes
 
-// build styles
-// build node
-// build browser
-
-*/
 // handle version
 const new_version = await getVersion()
 
@@ -36,10 +41,19 @@ const new_version = await getVersion()
 // upload styles
 // upload browser.js
 
+async function lint() {
+	if ((await run('npm run lint')).code) throw Error('linting problems')
+}
+async function test() {
+	if ((await run('npm run test')).code) throw Error('testing problems')
+}
+async function checkThatNoUncommittedChanges() {
+	if ((await run('git status --porcelain')).stdout.length < 3) return;
+	throw Error('please commit all changes before releasing');
+}
 async function getVersion() {
 	// get current version
-	const package_json = JSON.parse(readFileSync('./package.json', 'utf8'));
-	const version_package: string = package_json.version;
+	const version_package: string = JSON.parse(readFileSync('./package.json', 'utf8')).version;
 	const version_github: string = await getLatestGitHubTag('versatiles-org/versatiles-styles');
 	if (version_package !== version_github) warn(`versions differ in package.json (${version_package}) and latest GitHub tag (${version_github})`)
 
@@ -62,8 +76,12 @@ async function getVersion() {
 	if (!confirmed) abort();
 
 	// set new version in package.json
+	const package_json = JSON.parse(readFileSync('./package.json', 'utf8'));
+	package_json.version = version_new;
+	writeFileSync('./package.json', JSON.stringify(package_json, null, '  '));
 
 	// rebuild package.json
+	await run('npm i --package-lock-only')
 
 	async function getLatestGitHubTag(repo: string): Promise<string> {
 		const res = await fetch(`https://api.github.com/repos/${repo}/tags`);
@@ -86,10 +104,9 @@ async function getVersion() {
 	}
 }
 
-async function checkThatNoUncommittedChanges() {
-	if ((await run('git status --porcelain')).stdout.length < 3) return;
-	panic('please commit all changes before releasing');
-}
+
+/****************************************************************************/
+
 
 function run(command: string): Promise<{ code: number | null, signal: string | null, stdout: string, stderr: string }> {
 	return new Promise((res, rej) => {
@@ -106,5 +123,16 @@ function run(command: string): Promise<{ code: number | null, signal: string | n
 }
 
 function panic(text: string) { process.stderr.write(`\x1b[1;31m! ERROR: ${text}\x1b[0m\n`); abort(); }
-function warn(text: string) { process.stderr.write(`'\x1b[1;33m! warning: ${text}\x1b[0m\n`); }
+function warn(text: string) { process.stderr.write(`\x1b[1;33m! warning: ${text}\x1b[0m\n`); }
+function info(text: string) { process.stderr.write(`\x1b[0mi ${text}\n`); }
 function abort() { process.stderr.write('\x1b[1;31m! ABORT\x1b[0m\n'); process.exit(); }
+async function check(message: string, promise: Promise<any>) {
+	process.stderr.write(`\x1b[0;90m\u2610 ${message}\x1b[0m`);
+	try {
+		await promise;
+		process.stderr.write(`\r\x1b[0;92m\u2611 ${message}\x1b[0m\n`);
+	} catch (error) {
+		process.stderr.write(`\r\x1b[0;91m\u2610 ${message}\x1b[0m\n`);
+		panic((error as Error).message);
+	}
+}
