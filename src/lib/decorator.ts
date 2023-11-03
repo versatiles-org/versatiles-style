@@ -3,7 +3,7 @@ import Color from 'color';
 import expandBraces from 'brace-expansion';
 import MAPLIBRE_PROPERTIES from './shortbread/properties.js';
 import { deepMerge } from './utils.js';
-import { MaplibreLayer, StyleRule, StyleRules, StyleValue } from './types.js';
+import { MaplibreLayer, StyleRule, StyleRules, StyleRuleValue } from './types.js';
 
 
 
@@ -59,7 +59,7 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
 
 		propertyDefs.forEach(propertyDef => {
 			const key = propertyDef.key;
-			let value: StyleValue = ruleValue;
+			let value: StyleRuleValue = ruleValue;
 
 			switch (propertyDef.valueType) {
 				case 'color': value = processExpression(value, processColor); break;
@@ -94,7 +94,7 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
 	})
 }
 
-function processColor(value: StyleValue): string {
+function processColor(value: StyleRuleValue): string {
 	if (typeof value === 'string') value = Color(value);
 	if (value instanceof Color) {
 		value = (value.alpha() === 1) ? value.hex() : value.hexa();
@@ -103,12 +103,12 @@ function processColor(value: StyleValue): string {
 	throw new Error(`unknown color type "${typeof value}"`);
 }
 
-function processFont(value: StyleValue): string[] {
+function processFont(value: StyleRuleValue): string[] {
 	if (typeof value === 'string') return [value];
 	throw new Error(`unknown font type "${typeof value}"`);
 }
 
-function processExpression(value: StyleValue, cbValue?: (value: StyleValue) => StyleValue): StyleValue {
+function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
 	if (typeof value === 'object') {
 		cbValue ??= v => v;
 		if (value instanceof Color) return cbValue(value);
@@ -119,10 +119,10 @@ function processExpression(value: StyleValue, cbValue?: (value: StyleValue) => S
 	return cbValue ? cbValue(value) : value;
 }
 
-function processZoomStops(obj: object, cbValue: (value: StyleValue) => StyleValue): { stops: StyleValue[] } {
+function processZoomStops(obj: object, cbValue: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
 	return {
 		stops: Object.entries(obj)
-			.map(([z, v]): [number, StyleValue] => [parseInt(z, 10), cbValue(v)])
+			.map(([z, v]): [number, StyleRuleValue] => [parseInt(z, 10), cbValue(v)])
 			.sort((a, b) => a[0] - b[0])
 	}
 }

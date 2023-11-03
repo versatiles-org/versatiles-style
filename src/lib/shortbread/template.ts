@@ -5,7 +5,6 @@ const maxzoom = 14;
 export default function (): MaplibreStyle {
 	return {
 		version: 8,
-		id: 'versatiles',
 		name: 'versatiles',
 		metadata: {
 			'maputnik:renderer': 'mbgljs',
@@ -16,7 +15,6 @@ export default function (): MaplibreStyle {
 		sources: {
 			'versatiles-shortbread': {
 				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-				tilejson: '3.0.0',
 				tiles: [
 					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
 				],

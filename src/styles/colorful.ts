@@ -1,4 +1,4 @@
-import StyleDefinition from '../lib/style_maker.js';
+import StyleDefinition from '../lib/style_definition.js';
 import { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Colorful extends StyleDefinition {

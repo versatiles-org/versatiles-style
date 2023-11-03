@@ -6,6 +6,7 @@ import { decorate } from './decorator.js';
 import { transformColors } from './color_transformer.js';
 import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerFontLookup, StylemakerOptions } from './types.js';
 import { Configuration } from './configuration.js';
+import { StyleMaker } from './style_maker.js';
 
 // Stylemaker class definition
 export default class StyleDefinition {
@@ -100,5 +101,9 @@ export default class StyleDefinition {
 			if (!configuration.baseUrl) return url;
 			return (new URL(url, configuration.baseUrl)).href;
 		}
+	}
+
+	getBuilder(): StyleMaker {
+		return new StyleMaker(this);
 	}
 }

@@ -3,7 +3,7 @@
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import * as StyleBakerClasses from '../src/index.js';
+import * as StyleMakers from '../src/index.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from '../src/lib/utils.js';
 import { MaplibreStyle } from '../src/lib/types.js';
@@ -25,21 +25,21 @@ if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
-for (const getStyle of Object.values(StyleBakerClasses)) {
-	const name = getStyle.name;
-	const options = getStyle.options;
+for (const styleMaker of Object.values(StyleMakers)) {
+	const name = styleMaker.name;
+	const options = styleMaker.defaultOptions;
 
 	options.languageSuffix = '';
-	produce(name, getStyle(options));
+	produce(name, styleMaker.build(options));
 
 	options.languageSuffix = '_en';
-	produce(name + '.en', getStyle(options));
+	produce(name + '.en', styleMaker.build(options));
 
 	options.languageSuffix = '_de';
-	produce(name + '.de', getStyle(options));
+	produce(name + '.de', styleMaker.build(options));
 
 	options.hideLabels = true;
-	produce(name + '.nolabel', getStyle(options));
+	produce(name + '.nolabel', styleMaker.build(options));
 }
 
 function produce(name: string, style: MaplibreStyle) {
