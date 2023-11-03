@@ -19,7 +19,7 @@ export default class StyleMaker {
 		// Initialize private properties
 		this.#options = {
 			hideLabels: false,
-			language: false, // false, 'de' or 'en'
+			language: null, // false, 'de' or 'en'
 			baseUrl: undefined, // set me in the browser
 			glyphsUrl: '/assets/fonts/{fontstack}/{range}.pbf',
 			spriteUrl: '/assets/sprites/sprites',
@@ -134,11 +134,13 @@ export default class StyleMaker {
 	// Method to get a 'maker' object with limited API
 	getBuilder(): StylemakerFunction {
 		const self = this; // eslint-disable-line
-		const styleMaker = function (options: StylemakerOptions) { return self.#make(options); }
-		Object.assign(styleMaker, {
-			get id() { return self.#name },
-			get options() { return self.#getOptions() }
+		const fn = function (options: StylemakerOptions) {
+			return self.#make(options);
+		}
+		Object.defineProperties(fn, {
+			name: { value: self.#name, writable: false },
+			options: { value: self.#getOptions(), writable: false },
 		})
-		return styleMaker;
+		return fn as StylemakerFunction
 	}
 }

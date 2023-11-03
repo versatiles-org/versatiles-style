@@ -4,9 +4,9 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as StyleBakerClasses from '../src/index.js';
-import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
+import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from '../src/lib/utils.js';
-import { StylemakerOptions } from './lib/types.js';
+import { MaplibreStyle } from '../src/lib/types.js';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
 const dirDst = resolve(dirRoot, 'dist');
@@ -26,33 +26,26 @@ mkdirSync(dirDst, { recursive: true });
 
 // load styles
 for (const getStyle of Object.values(StyleBakerClasses)) {
-	const styleId = getStyle.id;
+	const name = getStyle.name;
 	const options = getStyle.options;
 
-	if (baseUrl) {
-		options.glyphsUrl = baseUrl + '/assets/fonts/{fontstack}/{range}.pbf';
-		options.spriteUrl = baseUrl + '/assets/sprites/sprites';
-		options.tilesUrl = [baseUrl + '/tiles/osm/{z}/{x}/{y}'];
-	}
-
 	options.language = null;
-	produce(styleId, options);
+	produce(name, getStyle(options));
 
 	options.language = 'en';
-	produce(styleId + '.en', options);
+	produce(name + '.en', getStyle(options));
 
 	options.language = 'de';
-	produce(styleId + '.de', options);
+	produce(name + '.de', getStyle(options));
 
 	options.hideLabels = true;
-	produce(styleId + '.nolabel', options);
+	produce(name + '.nolabel', getStyle(options));
 }
 
-function produce(name:string, options:StylemakerOptions) {
-	const style = getStyle(options);
+function produce(name: string, style: MaplibreStyle) {
 
 	// Validate the style and log errors if any	
-	const errors = validateStyleMin(style);
+	const errors = validateStyleMin(style as StyleSpecification);
 	if (errors.length > 0) console.log(errors);
 
 	// write

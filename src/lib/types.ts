@@ -24,8 +24,11 @@ export type StyleRulesOptions = {
 
 export type StylemakerLayerStyleGenerator = (options: StyleRulesOptions) => StyleRules
 
-export type StylemakerFunction = (options: StylemakerOptions) => MaplibreStyle
-
+export interface StylemakerFunction {
+	(options: StylemakerOptions): MaplibreStyle;
+	name: string;
+	options: StylemakerOptions;
+}
 
 export type StylemakerOptions = {
 	baseUrl?: string,
@@ -34,7 +37,7 @@ export type StylemakerOptions = {
 	tilesUrls?: string[],
 	sourceName?: string, // e.g. "versatiles-shortbread"
 	hideLabels?: boolean,
-	language?: boolean,
+	language?: null | 'de' | 'en',
 	colors?: StylemakerColorLookup,
 	fonts?: StylemakerFontLookup,
 	colorTransformer?: ColorTransformerFlags,
