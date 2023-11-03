@@ -35,9 +35,8 @@ export type StylemakerOptions = {
 	glyphsUrl?: string,
 	spriteUrl?: string,
 	tilesUrls?: string[],
-	sourceName?: string,
 	hideLabels?: boolean,
-	language?: '' | 'de' | 'en',
+	languageSuffix?: LanguageSuffix,
 	colors?: { [name: string]: string },
 	fonts?: { [name: string]: string },
 	colorTransformer?: {
@@ -48,21 +47,8 @@ export type StylemakerOptions = {
 		contrast?: number,
 		brightness?: number,
 		tint?: number,
-		tintColor?: WrappedColor | string,
+		tintColor?: string,
 	},
-}
-
-export type StylemakerConfiguration = {
-	baseUrl: string,
-	glyphsUrl: string,
-	spriteUrl: string,
-	tilesUrls: string[],
-	sourceName: string,
-	hideLabels: boolean,
-	languageSuffix: '' | '_de' | '_en',
-	colors: StylemakerColorLookup,
-	fonts: StylemakerFontLookup,
-	colorTransformer: ColorTransformerFlags,
 }
 
 export type StylemakerColorLookup = { [name: string]: WrappedColor };
@@ -78,3 +64,5 @@ export type ColorTransformerFlags = {
 	tint: number,
 	tintColor: WrappedColor,
 }
+
+export type LanguageSuffix = '' | '_de' | '_en';

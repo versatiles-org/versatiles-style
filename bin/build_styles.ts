@@ -29,13 +29,13 @@ for (const getStyle of Object.values(StyleBakerClasses)) {
 	const name = getStyle.name;
 	const options = getStyle.options;
 
-	options.language = '';
+	options.languageSuffix = '';
 	produce(name, getStyle(options));
 
-	options.language = 'en';
+	options.languageSuffix = '_en';
 	produce(name + '.en', getStyle(options));
 
-	options.language = 'de';
+	options.languageSuffix = '_de';
 	produce(name + '.de', getStyle(options));
 
 	options.hideLabels = true;
