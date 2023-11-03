@@ -1,8 +1,7 @@
 // Import necessary modules and files
 import Color from 'color';
-import SHORTBREAD_TEMPLATE from './shortbread/template.js';
+import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
-import { deepClone } from './utils.js';
 import { decorate } from './decorator.js';
 import { transformColors } from './color_transformer.js';
 import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerFontLookup, StylemakerOptions } from './types.js';
@@ -61,7 +60,7 @@ export default class StyleDefinition {
 		const configuration = this.#config.buildNew(options);
 
 		// get empty shortbread style
-		const style: MaplibreStyle = deepClone(SHORTBREAD_TEMPLATE);
+		const style: MaplibreStyle = getShortbreadTemplate();
 
 		// transform colors
 		transformColors(configuration.colors, configuration.colorTransformer);

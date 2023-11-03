@@ -2,339 +2,341 @@ import { MaplibreStyle } from '../types.js';
 
 const maxzoom = 14;
 
-export default <MaplibreStyle>{
-	version: 8,
-	id: 'versatiles',
-	name: 'versatiles',
-	metadata: {
-		'maputnik:renderer': 'mbgljs',
-		license: 'https://creativecommons.org/publicdomain/zero/1.0/'
-	},
-	glyphs: 'https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf',
-	sprite: 'https://tiles.versatiles.org/sprites/sprites',
-	sources: {
-		'versatiles-shortbread': {
-			attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-			tilejson: '3.0.0',
-			tiles: [
-				'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
-			],
-			type: 'vector',
-			scheme: 'xyz',
-			bounds: [
-				-180,
-				-85.0511287798066,
-				180,
-				85.0511287798066
-			],
-			minzoom: 0,
-			maxzoom,
-			vector_layers: [
-				{
-					id: 'place_labels',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						population: 'Number'
+export default function (): MaplibreStyle {
+	return {
+		version: 8,
+		id: 'versatiles',
+		name: 'versatiles',
+		metadata: {
+			'maputnik:renderer': 'mbgljs',
+			license: 'https://creativecommons.org/publicdomain/zero/1.0/'
+		},
+		glyphs: 'https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf',
+		sprite: 'https://tiles.versatiles.org/sprites/sprites',
+		sources: {
+			'versatiles-shortbread': {
+				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				tilejson: '3.0.0',
+				tiles: [
+					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
+				],
+				type: 'vector',
+				scheme: 'xyz',
+				bounds: [
+					-180,
+					-85.0511287798066,
+					180,
+					85.0511287798066
+				],
+				minzoom: 0,
+				maxzoom,
+				vector_layers: [
+					{
+						id: 'place_labels',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							population: 'Number'
+						},
+						minzoom: 3,
+						maxzoom
 					},
-					minzoom: 3,
-					maxzoom
-				},
-				{
-					id: 'boundaries',
-					fields: {
-						admin_level: 'Number',
-						coastline: 'Boolean',
-						disputed: 'Boolean',
-						maritime: 'Boolean'
+					{
+						id: 'boundaries',
+						fields: {
+							admin_level: 'Number',
+							coastline: 'Boolean',
+							disputed: 'Boolean',
+							maritime: 'Boolean'
+						},
+						minzoom: 0,
+						maxzoom
 					},
-					minzoom: 0,
-					maxzoom
-				},
-				{
-					id: 'boundary_labels',
-					fields: {
-						admin_level: 'Number',
-						land_area: 'Number',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						name_single: 'String',
-						way_area: 'Number'
+					{
+						id: 'boundary_labels',
+						fields: {
+							admin_level: 'Number',
+							land_area: 'Number',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							name_single: 'String',
+							way_area: 'Number'
+						},
+						minzoom: 2,
+						maxzoom
 					},
-					minzoom: 2,
-					maxzoom
-				},
-				{
-					id: 'addresses',
-					fields: {
-						housename: 'String',
-						housenumber: 'String'
+					{
+						id: 'addresses',
+						fields: {
+							housename: 'String',
+							housenumber: 'String'
+						},
+						minzoom: 14,
+						maxzoom
 					},
-					minzoom: 14,
-					maxzoom
-				},
-				{
-					id: 'water_lines',
-					fields: {
-						bridge: 'Boolean',
-						kind: 'String',
-						tunnel: 'Boolean'
+					{
+						id: 'water_lines',
+						fields: {
+							bridge: 'Boolean',
+							kind: 'String',
+							tunnel: 'Boolean'
+						},
+						minzoom: 4,
+						maxzoom
 					},
-					minzoom: 4,
-					maxzoom
-				},
-				{
-					id: 'water_lines_labels',
-					fields: {
-						bridge: 'Boolean',
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						tunnel: 'Boolean'
+					{
+						id: 'water_lines_labels',
+						fields: {
+							bridge: 'Boolean',
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							tunnel: 'Boolean'
+						},
+						minzoom: 4,
+						maxzoom
 					},
-					minzoom: 4,
-					maxzoom
-				},
-				{
-					id: 'dam_lines',
-					fields: {
-						kind: 'String'
+					{
+						id: 'dam_lines',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'dam_polygons',
-					fields: {
-						kind: 'String'
+					{
+						id: 'dam_polygons',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'pier_lines',
-					fields: {
-						kind: 'String'
+					{
+						id: 'pier_lines',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'pier_polygons',
-					fields: {
-						kind: 'String'
+					{
+						id: 'pier_polygons',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'bridges',
-					fields: {
-						kind: 'String'
+					{
+						id: 'bridges',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'street_polygons',
-					fields: {
-						bridge: 'Boolean',
-						kind: 'String',
-						rail: 'Boolean',
-						service: 'String',
-						surface: 'String',
-						tunnel: 'Boolean'
+					{
+						id: 'street_polygons',
+						fields: {
+							bridge: 'Boolean',
+							kind: 'String',
+							rail: 'Boolean',
+							service: 'String',
+							surface: 'String',
+							tunnel: 'Boolean'
+						},
+						minzoom: 11,
+						maxzoom
 					},
-					minzoom: 11,
-					maxzoom
-				},
-				{
-					id: 'streets_polygons_labels',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String'
+					{
+						id: 'streets_polygons_labels',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String'
+						},
+						minzoom: 14,
+						maxzoom
 					},
-					minzoom: 14,
-					maxzoom
-				},
-				{
-					id: 'ferries',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String'
+					{
+						id: 'ferries',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String'
+						},
+						minzoom: 8,
+						maxzoom
 					},
-					minzoom: 8,
-					maxzoom
-				},
-				{
-					id: 'streets',
-					fields: {
-						bicycle: 'String',
-						bridge: 'Boolean',
-						horse: 'String',
-						kind: 'String',
-						link: 'Boolean',
-						oneway: 'Boolean',
-						oneway_reverse: 'Boolean',
-						rail: 'Boolean',
-						service: 'String',
-						surface: 'String',
-						tracktype: 'String',
-						tunnel: 'Boolean'
+					{
+						id: 'streets',
+						fields: {
+							bicycle: 'String',
+							bridge: 'Boolean',
+							horse: 'String',
+							kind: 'String',
+							link: 'Boolean',
+							oneway: 'Boolean',
+							oneway_reverse: 'Boolean',
+							rail: 'Boolean',
+							service: 'String',
+							surface: 'String',
+							tracktype: 'String',
+							tunnel: 'Boolean'
+						},
+						minzoom: 5,
+						maxzoom
 					},
-					minzoom: 5,
-					maxzoom
-				},
-				{
-					id: 'street_labels',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						ref: 'String',
-						ref_cols: 'Number',
-						ref_rows: 'Number',
-						tunnel: 'Boolean'
+					{
+						id: 'street_labels',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							ref: 'String',
+							ref_cols: 'Number',
+							ref_rows: 'Number',
+							tunnel: 'Boolean'
+						},
+						minzoom: 10,
+						maxzoom
 					},
-					minzoom: 10,
-					maxzoom
-				},
-				{
-					id: 'street_labels_points',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						ref: 'String'
+					{
+						id: 'street_labels_points',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							ref: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'aerialways',
-					fields: {
-						kind: 'String'
+					{
+						id: 'aerialways',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 12,
+						maxzoom
 					},
-					minzoom: 12,
-					maxzoom
-				},
-				{
-					id: 'public_transport',
-					fields: {
-						iata: 'String',
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						station: 'String'
+					{
+						id: 'public_transport',
+						fields: {
+							iata: 'String',
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							station: 'String'
+						},
+						minzoom: 11,
+						maxzoom
 					},
-					minzoom: 11,
-					maxzoom
-				},
-				{
-					id: 'buildings',
-					fields: {
-						amenity: 'String',
-						dummy: 'Number',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String'
+					{
+						id: 'buildings',
+						fields: {
+							amenity: 'String',
+							dummy: 'Number',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String'
+						},
+						minzoom: 14,
+						maxzoom
 					},
-					minzoom: 14,
-					maxzoom
-				},
-				{
-					id: 'water_polygons',
-					fields: {
-						kind: 'String',
-						way_area: 'Number'
+					{
+						id: 'water_polygons',
+						fields: {
+							kind: 'String',
+							way_area: 'Number'
+						},
+						minzoom: 4,
+						maxzoom
 					},
-					minzoom: 4,
-					maxzoom
-				},
-				{
-					id: 'ocean',
-					fields: {
-						x: 'Number',
-						y: 'Number'
+					{
+						id: 'ocean',
+						fields: {
+							x: 'Number',
+							y: 'Number'
+						},
+						minzoom: 0,
+						maxzoom
 					},
-					minzoom: 0,
-					maxzoom
-				},
-				{
-					id: 'water_polygons_labels',
-					fields: {
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						way_area: 'Number'
+					{
+						id: 'water_polygons_labels',
+						fields: {
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							way_area: 'Number'
+						},
+						minzoom: 14,
+						maxzoom
 					},
-					minzoom: 14,
-					maxzoom
-				},
-				{
-					id: 'land',
-					fields: {
-						kind: 'String'
+					{
+						id: 'land',
+						fields: {
+							kind: 'String'
+						},
+						minzoom: 7,
+						maxzoom
 					},
-					minzoom: 7,
-					maxzoom
-				},
-				{
-					id: 'sites',
-					fields: {
-						amenity: 'String',
-						kind: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String'
+					{
+						id: 'sites',
+						fields: {
+							amenity: 'String',
+							kind: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String'
+						},
+						minzoom: 14,
+						maxzoom
 					},
-					minzoom: 14,
-					maxzoom
-				},
-				{
-					id: 'pois',
-					fields: {
-						amenity: 'String',
-						atm: 'Boolean',
-						cuisine: 'String',
-						denomination: 'String',
-						emergency: 'String',
-						highway: 'String',
-						historic: 'String',
-						information: 'String',
-						leisure: 'String',
-						man_made: 'String',
-						name: 'String',
-						name_de: 'String',
-						name_en: 'String',
-						'recycling:clothes': 'Boolean',
-						'recycling:glass_bottles': 'Boolean',
-						'recycling:paper': 'Boolean',
-						'recycling:scrap_metal': 'Boolean',
-						religion: 'String',
-						shop: 'String',
-						sport: 'String',
-						tourism: 'String',
-						'tower:type': 'String',
-						vending: 'String'
-					},
-					minzoom: 14,
-					maxzoom
-				}
-			]
-		}
-	},
-	layers: []
+					{
+						id: 'pois',
+						fields: {
+							amenity: 'String',
+							atm: 'Boolean',
+							cuisine: 'String',
+							denomination: 'String',
+							emergency: 'String',
+							highway: 'String',
+							historic: 'String',
+							information: 'String',
+							leisure: 'String',
+							man_made: 'String',
+							name: 'String',
+							name_de: 'String',
+							name_en: 'String',
+							'recycling:clothes': 'Boolean',
+							'recycling:glass_bottles': 'Boolean',
+							'recycling:paper': 'Boolean',
+							'recycling:scrap_metal': 'Boolean',
+							religion: 'String',
+							shop: 'String',
+							sport: 'String',
+							tourism: 'String',
+							'tower:type': 'String',
+							vending: 'String'
+						},
+						minzoom: 14,
+						maxzoom
+					}
+				]
+			}
+		},
+		layers: []
+	}
 }
