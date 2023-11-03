@@ -1,11 +1,54 @@
+import Color from 'color';
 
 // Utility function to deep clone an object
 export function deepClone<T>(obj: T): T {
-	return JSON.parse(JSON.stringify(obj));
+	const type = typeof obj;
+	if (type !== 'object') {
+		switch (type) {
+			case 'boolean':
+			case 'number':
+			case 'string':
+				return obj;
+		}
+		throw Error(type);
+	}
+
+	if (isSimpleObject(obj)) {
+		// @ts-ignore
+		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, deepClone(value)]))
+	}
+
+	if (obj instanceof Array) {
+		// @ts-ignore
+		return obj.map(e => deepClone(e));
+	}
+
+	if (obj instanceof Color) {
+		// @ts-ignore
+		return Color(obj);
+	}
+
+	console.log('obj', obj);
+	console.log('obj.prototype', Object.getPrototypeOf(obj));
+	throw Error();
 }
 
-export function isObject(item: unknown): boolean {
-	return (typeof item === 'object') && !Array.isArray(item);
+export function isSimpleObject(item: unknown): boolean {
+	return (typeof item === 'object') && !Array.isArray(item) && (Object.keys(Object.getPrototypeOf(item)).length === 0);
+}
+
+export function isBasicType(item: unknown): boolean {
+	switch (typeof item) {
+		case 'boolean':
+		case 'number':
+		case 'string':
+		case 'undefined':
+			return true;
+		case 'object':
+			return false;
+		default:
+			throw Error('unknown type: ' + typeof item)
+	}
 }
 
 export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
@@ -15,9 +58,55 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 		if (typeof source !== 'object') continue;
 		for (const key in source) {
 			if (!Object.hasOwn(source, key)) continue;
+
 			const sourceValue = source[key];
+			if (sourceValue === undefined) continue;
+
+			// *********
+			// overwrite
+			// *********
+			switch (typeof sourceValue) {
+				case 'number':
+				case 'string':
+				case 'boolean':
+					target[key] = sourceValue;
+					continue;
+			}
+
+			if (isBasicType(target[key])) {
+				target[key] = deepClone(sourceValue);
+				continue;
+			}
+
+			if (sourceValue instanceof Color) {
+				// @ts-ignore
+				target[key] = Color(sourceValue);
+				continue;
+			}
+
+			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
+				// @ts-ignore
+				target[key] = deepMerge(target[key], sourceValue);
+				continue
+			}
+
+			// *********
+			// merge
+			// *********
+
+			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
+				// @ts-ignore
+				target[key] = deepMerge(target[key], sourceValue);
+				continue
+			}
+
+			console.log('target[key]:', target[key]);
+			console.log('source[key]:', source[key]);
+			throw Error();
 			const targetValue = target[key];
+
 			if (sourceValue && (typeof sourceValue === 'object')) {
+				console.log({ sourceValue });
 				if (targetValue && (typeof targetValue === 'object')) {
 					target[key] = deepMerge(targetValue, sourceValue);
 				} else {
