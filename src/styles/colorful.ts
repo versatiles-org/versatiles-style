@@ -58,7 +58,6 @@ export default class Colorful extends StyleDefinition {
 	}
 	getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
-		console.log(colors.land);
 		return {
 			// background
 			'background': {
