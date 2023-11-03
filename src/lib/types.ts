@@ -31,7 +31,7 @@ export interface StylemakerFunction {
 }
 
 export type StylemakerOptions = {
-	baseUrl: string,
+	baseUrl?: string,
 	glyphsUrl?: string,
 	spriteUrl?: string,
 	tilesUrls?: string[],

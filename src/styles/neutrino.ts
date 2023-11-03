@@ -1,7 +1,7 @@
-import StyleMaker from '../lib/style_maker.js';
+import StyleDefinition from '../lib/style_maker.js';
 import { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Neutrino extends StyleMaker {
+export default class Neutrino extends StyleDefinition {
 	constructor() {
 		super();
 

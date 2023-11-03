@@ -1,7 +1,7 @@
-import StyleMaker from '../lib/style_maker.js';
+import StyleDefinition from '../lib/style_maker.js';
 import { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Colorful extends StyleMaker {
+export default class Colorful extends StyleDefinition {
 	constructor() {
 		super();
 
