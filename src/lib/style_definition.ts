@@ -84,7 +84,17 @@ export default class StyleDefinition {
 
 		// set source, if needed
 		layers.forEach(layer => {
-			if ('source' in layer) layer.source = this.#sourceName
+			switch (layer.type) {
+				case 'background':
+					delete layer.source;
+					return;
+				case 'fill':
+				case 'line':
+				case 'symbol':
+					layer.source = this.#sourceName;
+					return;
+			}
+			throw Error('unknown layer type')
 		});
 
 		style.layers = layers;
