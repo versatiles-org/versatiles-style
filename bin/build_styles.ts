@@ -29,7 +29,7 @@ for (const getStyle of Object.values(StyleBakerClasses)) {
 	const name = getStyle.name;
 	const options = getStyle.options;
 
-	options.language = null;
+	options.language = '';
 	produce(name, getStyle(options));
 
 	options.language = 'en';

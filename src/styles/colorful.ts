@@ -58,6 +58,7 @@ export default class Colorful extends StyleMaker {
 	}
 	getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
+		console.log(colors.land);
 		return {
 			// background
 			'background': {

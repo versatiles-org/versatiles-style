@@ -31,28 +31,50 @@ export interface StylemakerFunction {
 }
 
 export type StylemakerOptions = {
-	baseUrl?: string,
+	baseUrl: string,
 	glyphsUrl?: string,
 	spriteUrl?: string,
 	tilesUrls?: string[],
-	sourceName?: string, // e.g. "versatiles-shortbread"
+	sourceName?: string,
 	hideLabels?: boolean,
-	language?: null | 'de' | 'en',
-	colors?: StylemakerColorLookup,
-	fonts?: StylemakerFontLookup,
-	colorTransformer?: ColorTransformerFlags,
+	language?: '' | 'de' | 'en',
+	colors?: { [name: string]: string },
+	fonts?: { [name: string]: string },
+	colorTransformer?: {
+		invert?: boolean,
+		rotate?: number,
+		saturate?: number,
+		gamma?: number,
+		contrast?: number,
+		brightness?: number,
+		tint?: number,
+		tintColor?: WrappedColor | string,
+	},
+}
+
+export type StylemakerConfiguration = {
+	baseUrl: string,
+	glyphsUrl: string,
+	spriteUrl: string,
+	tilesUrls: string[],
+	sourceName: string,
+	hideLabels: boolean,
+	languageSuffix: '' | '_de' | '_en',
+	colors: StylemakerColorLookup,
+	fonts: StylemakerFontLookup,
+	colorTransformer: ColorTransformerFlags,
 }
 
 export type StylemakerColorLookup = { [name: string]: WrappedColor };
 export type StylemakerFontLookup = { [name: string]: string }
 
 export type ColorTransformerFlags = {
-	invert?: boolean,
-	rotate?: number,
-	saturate?: number,
-	gamma?: number,
-	contrast?: number,
-	brightness?: number,
-	tint?: number,
-	tintColor?: WrappedColor,
+	invert: boolean,
+	rotate: number,
+	saturate: number,
+	gamma: number,
+	contrast: number,
+	brightness: number,
+	tint: number,
+	tintColor: WrappedColor,
 }
