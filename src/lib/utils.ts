@@ -102,19 +102,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 
 			console.log('target[key]:', target[key]);
 			console.log('source[key]:', source[key]);
-			throw Error();
-			const targetValue = target[key];
-
-			if (sourceValue && (typeof sourceValue === 'object')) {
-				console.log({ sourceValue });
-				if (targetValue && (typeof targetValue === 'object')) {
-					target[key] = deepMerge(targetValue, sourceValue);
-				} else {
-					target[key] = deepClone(sourceValue);
-				}
-			} else {
-				target[key] = deepClone(sourceValue);
-			}
+			throw Error('unpredicted case');
 		}
 	}
 	return target;

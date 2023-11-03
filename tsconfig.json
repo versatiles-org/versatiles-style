@@ -10,11 +10,10 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"outDir": "dist/",
+		"outDir": "js/",
 		"declaration": true,
 	},
 	"include": [
-		"src/**/*.ts",
-		"bin/**/*.ts"
+		"src/**/*.ts"
 	]
 }
