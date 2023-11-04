@@ -9,7 +9,7 @@ import { prettyStyleJSON } from '../src/lib/utils.js';
 import { MaplibreStyle } from '../src/lib/types.js';
 
 const dirRoot = new URL('../', import.meta.url).pathname;
-const dirDst = resolve(dirRoot, 'dist');
+const dirDst = resolve(dirRoot, 'release');
 
 let baseUrl = process.argv[2];
 if (baseUrl) {
