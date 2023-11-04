@@ -4,4 +4,4 @@ dist
 js
 node_modules
 release
-tmp
+test

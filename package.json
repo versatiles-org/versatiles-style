@@ -4,12 +4,14 @@
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "scripts": {
+    "build-browser": "rollup -c=rollup.config.js",
+    "build-node": "tsc -p tsconfig.node.json",
     "build-styles": "tsx bin/build-styles.ts",
-    "build-browser": "rollup -c rollup.config.js",
-    "build-node": "tsc -p ./tsconfig.node.json",
-    "build": "npm run build-styles && npm run build-browser && npm run build-node",
+    "build": "npm run build-browser && npm run build-node && npm run build-styles",
     "lint": "eslint .",
-    "test": "jest"
+    "test-browser": "tsc -p tsconfig.browser.test.json && jest",
+    "test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.node.config.js",
+    "test": "npm run test-browser && npm run test-node"
   },
   "repository": {
     "type": "git",
@@ -42,10 +44,7 @@
     "eslint": "^8.52.0",
     "inquirer": "^9.2.11",
     "jest": "^29.7.0",
-    "jest-ts-webcompat-resolver": "^1.0.0",
     "rollup": "^4.0.2",
-    "ts-jest": "^29.1.1",
-    "tslib": "^2.6.2",
     "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   }
