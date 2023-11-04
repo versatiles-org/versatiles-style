@@ -8,7 +8,12 @@ export default {
 	output: {
 		file: 'dist/versatiles-styles.js',
 		format: 'umd',
+		sourcemap: true,
 		name: 'versatiles_styles'
+	},
+	watch: {
+	  include: ['src/**'],
+	  exclude: ['node_modules/**']
 	},
 	plugins: [
 		typescript({

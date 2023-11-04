@@ -12,6 +12,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "js/",
 		"declaration": true,
+		"allowJs": true
 	},
 	"include": [
 		"src/**/*.ts",

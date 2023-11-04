@@ -111,7 +111,7 @@ function processFont(value: StyleRuleValue): string[] {
 function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
 	if (typeof value === 'object') {
 		cbValue ??= v => v;
-		if (value instanceof Color) return cbValue(value);
+		if (value instanceof Color) return processColor(value);
 		if (!Array.isArray(value)) {
 			return processZoomStops(value, cbValue);
 		}

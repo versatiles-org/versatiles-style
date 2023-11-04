@@ -30,21 +30,28 @@ export default class StyleDefinition {
 	}
 
 
-	get fonts(): StylemakerStringLookup {
-		return deepClone(this.#config.fonts);
-	}
+	//get fonts(): StylemakerStringLookup {
+	//	return deepClone(this.#config.fonts);
+	//}
 	set fonts(fonts: { [name: string]: string }) {
 		this.#config.setFonts(fonts);
 	}
 
 
-	get colors(): StylemakerStringLookup {
-		return deepClone(this.#config.colors);
-	}
+	//get colors(): StylemakerStringLookup {
+	//	return deepClone(this.#config.colors);
+	//}
 	set colors(colors: { [name: string]: string }) {
 		this.#config.setColors(colors);
 	}
 
+	recolor(callback: (color: Color) => Color): void {
+		const colors: StylemakerStringLookup = Object.fromEntries(
+			Object.entries(this.#config.colors)
+				.map(([name, color]) => [name, callback(Color(color)).hexa()])
+		)
+		this.#config.setColors(colors);
+	}
 
 	getOptions(): StylebuilderOptions {
 		return this.#config.getOptions();

@@ -7,6 +7,6 @@ export default class Graybeard extends Colorful {
 
 		this.name = 'graybeard';
 
-		Object.values(this.colors).forEach(color => color.desaturate(1));
+		this.recolor(color => color.desaturate(1));
 	}
 }
