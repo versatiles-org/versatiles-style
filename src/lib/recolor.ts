@@ -86,6 +86,8 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 	}
 
 	function tint(value: number, tintColor: Color): void {
+		if (value < 0) value = 0;
+		if (value > 1) value = 1;
 		const tintColorHSV: number[] = tintColor.hsv().array();
 		forEachColor(color => {
 			const rgb0: number[] = color.rgb().array();
