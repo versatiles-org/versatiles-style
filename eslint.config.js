@@ -3,7 +3,7 @@ import eslint_plugin from '@typescript-eslint/eslint-plugin';
 
 export default [
 	{
-		files: ['src/**/*.ts', 'bin/**/*.ts', '/*.js'],
+		files: ['src/**/*.ts', 'bin/**/*.ts', '*.js'],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'module',
@@ -14,11 +14,11 @@ export default [
 			'@typescript-eslint': eslint_plugin
 		},
 		rules: {
-			'indent': ['warn', 'tab', { 'SwitchCase': 1 }],
-			'linebreak-style': ['warn', 'unix'],
-			'quotes': ['warn', 'single'],
-			'no-extra-semi': ['warn'],
-			'@typescript-eslint/no-explicit-any': ['off']
+			'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+			'linebreak-style': ['error', 'unix'],
+			'quotes': ['error', 'single'],
+			'no-extra-semi': ['error'],
+			'@typescript-eslint/no-explicit-any': ['warn']
 		}
 	}
 ]

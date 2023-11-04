@@ -126,7 +126,7 @@ function panic(text: string) { process.stderr.write(`\x1b[1;31m! ERROR: ${text}\
 function warn(text: string) { process.stderr.write(`\x1b[1;33m! warning: ${text}\x1b[0m\n`); }
 function info(text: string) { process.stderr.write(`\x1b[0mi ${text}\n`); }
 function abort() { process.stderr.write('\x1b[1;31m! ABORT\x1b[0m\n'); process.exit(); }
-async function check(message: string, promise: Promise<any>) {
+async function check(message: string, promise: Promise<void>) {
 	process.stderr.write(`\x1b[0;90m\u2610 ${message}\x1b[0m`);
 	try {
 		await promise;

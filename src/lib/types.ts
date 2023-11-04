@@ -7,7 +7,7 @@ import { Style } from 'mapbox-gl';
 
 export type MaplibreStyle = Style;
 export type MaplibreLayer = BackgroundLayer | FillLayer | LineLayer | SymbolLayer;
-export type MaplibreFilter = any[];
+export type MaplibreFilter = unknown[];
 
 /******************************************************************************/
 
