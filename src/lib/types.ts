@@ -40,7 +40,7 @@ export type StyleRulesOptions = {
 
 export type StylemakerLayerStyleGenerator = (options: StyleRulesOptions) => StyleRules
 
-export type StylemakerOptions = {
+export type StylebuilderOptions = {
 	baseUrl?: string,
 	glyphsUrl?: string,
 	spriteUrl?: string,
@@ -53,8 +53,8 @@ export type StylemakerOptions = {
 }
 
 export interface StylemakerFunction {
-	(options: StylemakerOptions): MaplibreStyle;
+	(options: StylebuilderOptions): MaplibreStyle;
 	name: string;
-	options: StylemakerOptions;
+	options: StylebuilderOptions;
 }
 

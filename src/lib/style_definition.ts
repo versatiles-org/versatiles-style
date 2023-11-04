@@ -4,9 +4,9 @@ import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import { recolor } from './recolor.js';
-import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerOptions, StylemakerStringLookup } from './types.js';
+import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylebuilderOptions, StylemakerStringLookup } from './types.js';
 import { Configuration } from './configuration.js';
-import { StyleMaker } from './style_maker.js';
+import { StyleBuilder } from './style_builder.js';
 import { deepClone } from './utils.js';
 
 // Stylemaker class definition
@@ -46,7 +46,7 @@ export default class StyleDefinition {
 	}
 
 
-	getOptions(): StylemakerOptions {
+	getOptions(): StylebuilderOptions {
 		return this.#config.getOptions();
 	}
 
@@ -57,7 +57,7 @@ export default class StyleDefinition {
 
 
 	// Method to get a 'maker' object with limited API
-	build(options: StylemakerOptions): MaplibreStyle {
+	build(options: StylebuilderOptions): MaplibreStyle {
 		// get configuration
 		const configuration = this.#config.buildNew(options);
 
@@ -122,7 +122,7 @@ export default class StyleDefinition {
 		}
 	}
 
-	getBuilder(): StyleMaker {
-		return new StyleMaker(this);
+	getBuilder(): StyleBuilder {
+		return new StyleBuilder(this);
 	}
 }

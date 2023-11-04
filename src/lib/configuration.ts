@@ -1,5 +1,5 @@
 import Color from 'color';
-import { LanguageSuffix, RecolorOptions, StylemakerOptions, StylemakerStringLookup } from './types.js';
+import { LanguageSuffix, RecolorOptions, StylebuilderOptions, StylemakerStringLookup } from './types.js';
 import { getDefaultRecolorFlags } from './recolor.js';
 import { deepClone } from './utils.js';
 
@@ -68,7 +68,7 @@ export class Configuration {
 		Object.entries(newColors).forEach(([name, color]) => oldColors[name] = color)
 	}
 
-	buildNew(options: StylemakerOptions): Configuration {
+	buildNew(options: StylebuilderOptions): Configuration {
 		const c = this.#config;
 		const o = options;
 
@@ -110,7 +110,7 @@ export class Configuration {
 		})
 	}
 
-	getOptions(): StylemakerOptions {
+	getOptions(): StylebuilderOptions {
 		let c = this.#config;
 		return {
 			baseUrl: c.baseUrl,

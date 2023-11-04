@@ -1,7 +1,7 @@
 import StyleDefinition from './style_definition.js';
-import { MaplibreStyle, StylemakerOptions } from './types.js';
+import { MaplibreStyle, StylebuilderOptions } from './types.js';
 
-export class StyleMaker {
+export class StyleBuilder {
 	#definition: StyleDefinition
 	constructor(definition: StyleDefinition) {
 		this.#definition = definition;
@@ -9,10 +9,10 @@ export class StyleMaker {
 	get name(): string {
 		return this.#definition.name;
 	}
-	get defaultOptions(): StylemakerOptions {
+	get defaultOptions(): StylebuilderOptions {
 		return this.#definition.getOptions();
 	}
-	build(options?: StylemakerOptions): MaplibreStyle {
+	build(options?: StylebuilderOptions): MaplibreStyle {
 		options ??= {};
 		// @ts-ignore
 		options.baseUrl ??= global?.document?.location?.href as string;
