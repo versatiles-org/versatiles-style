@@ -10,7 +10,6 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"outDir": "js/",
 		"declaration": true,
 		"allowJs": true
 	},

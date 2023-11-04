@@ -3,7 +3,11 @@ import eslint_plugin from '@typescript-eslint/eslint-plugin';
 
 export default [
 	{
-		files: ['src/**/*.ts', 'bin/**/*.ts', '*.js'],
+		files: [
+			'src/**/*.ts',
+			'bin/**/*.ts',
+			'*.js'
+		],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'module',
