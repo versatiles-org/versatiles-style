@@ -4,7 +4,7 @@
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "scripts": {
-    "build-styles": "tsx bin/build_styles.ts",
+    "build-styles": "tsx bin/build-styles.ts",
     "build-browser": "rollup -c rollup.config.js",
     "build-node": "tsc -p ./tsconfig.node.json",
     "build": "npm run build-styles && npm run build-browser && npm run build-node",
