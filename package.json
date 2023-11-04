@@ -6,9 +6,10 @@
   "scripts": {
     "build-browser": "rollup -c=rollup.config.js",
     "build-node": "tsc -p tsconfig.node.json",
-    "build-styles": "tsx bin/build-styles.ts",
+    "build-styles": "tsx scripts/build-styles.ts",
     "build": "npm run build-browser && npm run build-node && npm run build-styles",
     "lint": "eslint .",
+    "release": "tsx scripts/release.ts",
     "test-browser": "tsc -p tsconfig.browser.test.json && jest",
     "test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.node.config.js",
     "test": "npm run test-browser && npm run test-node"
