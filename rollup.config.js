@@ -6,22 +6,18 @@ import typescript from '@rollup/plugin-typescript';
 export default {
 	input: 'src/index.ts',
 	output: {
-		file: 'dist/versatiles-styles.js',
+		file: 'release/versatiles-styles.js',
 		format: 'umd',
 		sourcemap: true,
 		name: 'versatiles_styles'
 	},
 	watch: {
-	  include: ['src/**'],
-	  exclude: ['node_modules/**']
+		include: ['src/**'],
+		exclude: ['node_modules/**']
 	},
 	plugins: [
 		typescript({
-			compilerOptions: {
-				module: 'esnext',
-				moduleResolution: 'bundler',
-				declaration: false,
-			}
+			tsconfig: 'tsconfig.browser.json'
 		}),
 		commonjs({ extensions: ['.js', '.ts'] }),
 		nodeResolve(),
