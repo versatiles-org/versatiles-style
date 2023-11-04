@@ -34,6 +34,7 @@
     "@types/brace-expansion": "^1.1.1",
     "@types/color": "^3.0.5",
     "@types/inquirer": "^9.0.6",
+    "@types/jest": "^29.5.7",
     "@types/mapbox-gl": "^2.7.17",
     "@types/node": "^20.8.10",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
@@ -42,6 +43,7 @@
     "inquirer": "^9.2.11",
     "jest": "^29.7.0",
     "rollup": "^4.0.2",
+    "ts-jest": "^29.1.1",
     "tslib": "^2.6.2",
     "tsx": "^3.14.0",
     "typescript": "^5.2.2"

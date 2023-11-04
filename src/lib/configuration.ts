@@ -3,7 +3,7 @@ import { ColorTransformerFlags, LanguageSuffix, StylemakerColorLookup, Stylemake
 import { getDefaultColorTransformer } from './color_transformer.js';
 
 
-type StylemakerConfiguration = {
+export type StylemakerConfiguration = {
 	baseUrl: string,
 	glyphsUrl: string,
 	spriteUrl: string,
