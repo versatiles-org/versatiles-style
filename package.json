@@ -25,7 +25,7 @@
     "color": "^4.2.3"
   },
   "files": [
-    "src"
+    "dist/**/*.js"
   ],
   "devDependencies": {
     "@maplibre/maplibre-gl-style-spec": "^19.3.2",
