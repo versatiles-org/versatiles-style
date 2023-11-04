@@ -1,5 +1,3 @@
-import Color from 'color';
-
 // Utility function to deep clone an object
 export function deepClone<T>(obj: T): T {
 	const type = typeof obj;
@@ -21,11 +19,6 @@ export function deepClone<T>(obj: T): T {
 	if (obj instanceof Array) {
 		// @ts-ignore
 		return obj.map(e => deepClone(e));
-	}
-
-	if (obj instanceof Color) {
-		// @ts-ignore
-		return Color(obj);
 	}
 
 	console.log('obj', obj);
@@ -75,12 +68,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 
 			if (isBasicType(target[key])) {
 				target[key] = deepClone(sourceValue);
-				continue;
-			}
-
-			if (sourceValue instanceof Color) {
-				// @ts-ignore
-				target[key] = Color(sourceValue);
 				continue;
 			}
 
