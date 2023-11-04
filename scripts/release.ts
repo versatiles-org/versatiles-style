@@ -9,25 +9,25 @@ process.chdir((new URL('../', import.meta.url)).pathname);
 info('starting release process');
 
 // lint
-await check('lint', lint());
+await check('lint', run('npm run lint', true));
 
 // check if no git
 //await check('are all changes committed?', checkThatNoUncommittedChanges());
 
 // test
-await check('run tests', test());
+await check('run tests', run('npm run test', true));
 
 // build styles
-await check('build styles', run('npm run build-styles'));
+await check('build styles', run('npm run build-styles', true));
 // build node
-await check('build node version', run('npm run build-node'));
+await check('build node version', run('npm run build-node', true));
 // build browser
-await check('build browser version', run('npm run build-browser'));
-
-// prepare release notes
+await check('build browser version', run('npm run build-browser', true));
 
 // handle version
 const new_version = await getVersion()
+
+// prepare release notes
 
 // npm release
 
@@ -41,12 +41,8 @@ const new_version = await getVersion()
 // upload styles
 // upload browser.js
 
-async function lint() {
-	if ((await run('npm run lint')).code) throw Error('linting problems')
-}
-async function test() {
-	if ((await run('npm run test')).code) throw Error('testing problems')
-}
+/****************************************************************************/
+
 async function checkThatNoUncommittedChanges() {
 	if ((await run('git status --porcelain')).stdout.length < 3) return;
 	throw Error('please commit all changes before releasing');
@@ -108,14 +104,16 @@ async function getVersion() {
 /****************************************************************************/
 
 
-function run(command: string): Promise<{ code: number | null, signal: string | null, stdout: string, stderr: string }> {
+function run(command: string, errorOnCodeZero?: true): Promise<{ code: number | null, signal: string | null, stdout: string, stderr: string }> {
 	return new Promise((res, rej) => {
 		const stdout: Buffer[] = [];
 		const stderr: Buffer[] = [];
 		const cp = spawn('bash', ['-c', command])
 			.on('error', error => rej(error))
 			.on('close', (code, signal) => {
-				res({ code, signal, stdout: Buffer.concat(stdout).toString(), stderr: Buffer.concat(stderr).toString() })
+				const result = { code, signal, stdout: Buffer.concat(stdout).toString(), stderr: Buffer.concat(stderr).toString() };
+				if (errorOnCodeZero && (code !== 0)) return rej(result);
+				res(result)
 			})
 		cp.stdout?.on('data', chunk => stdout.push(chunk));
 		cp.stderr?.on('data', chunk => stderr.push(chunk));
@@ -126,13 +124,13 @@ function panic(text: string) { process.stderr.write(`\x1b[1;31m! ERROR: ${text}\
 function warn(text: string) { process.stderr.write(`\x1b[1;33m! warning: ${text}\x1b[0m\n`); }
 function info(text: string) { process.stderr.write(`\x1b[0mi ${text}\n`); }
 function abort() { process.stderr.write('\x1b[1;31m! ABORT\x1b[0m\n'); process.exit(); }
-async function check(message: string, promise: Promise<void>) {
-	process.stderr.write(`\x1b[0;90m\u2610 ${message}\x1b[0m`);
+async function check(message: string, promise: Promise<unknown>) {
+	process.stderr.write(`\x1b[0;90m\u2B95 ${message}\x1b[0m`);
 	try {
 		await promise;
-		process.stderr.write(`\r\x1b[0;92m\u2611 ${message}\x1b[0m\n`);
+		process.stderr.write(`\r\x1b[0;92m\u2714 ${message}\x1b[0m\n`);
 	} catch (error) {
-		process.stderr.write(`\r\x1b[0;91m\u2610 ${message}\x1b[0m\n`);
+		process.stderr.write(`\r\x1b[0;91m\u2718 ${message}\x1b[0m\n`);
 		panic((error as Error).message);
 	}
 }

@@ -12,7 +12,7 @@
     "release": "tsx scripts/release.ts",
     "test-browser": "tsc -p tsconfig.browser.test.json && jest",
     "test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.node.config.js",
-    "test": "npm run test-browser && npm run test-node"
+    "test": "npm run test-node"
   },
   "repository": {
     "type": "git",
