@@ -1,4 +1,4 @@
-import { getDefaultColorTransformer } from './color_transformer.js';
+import { getDefaultRecolorFlags } from './recolor.js';
 import { Configuration, StylemakerConfiguration } from './configuration.js';
 import Color from 'color';
 
@@ -29,7 +29,7 @@ describe('Configuration', () => {
 			tilesUrls: ['/tiles/custom/{z}/{x}/{y}'],
 			colors: {},
 			fonts: {},
-			colorTransformer: getDefaultColorTransformer(),
+			recolor: getDefaultRecolorFlags(),
 		};
 		const config = new Configuration(customConfig);
 		expect(config.baseUrl).toBe(customConfig.baseUrl);
@@ -45,8 +45,7 @@ describe('Configuration', () => {
 		const colors = config.colors;
 		const fonts = config.fonts;
 
-		expect(colors.primary).toBeInstanceOf(Color);
-		expect(colors.primary.hex()).toBe('#FF0000');
+		expect(colors.primary).toBe('#FF0000');
 		expect(fonts.base).toBe('Arial');
 	});
 

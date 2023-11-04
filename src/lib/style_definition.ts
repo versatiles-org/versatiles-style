@@ -3,10 +3,11 @@ import Color from 'color';
 import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
-import { transformColors } from './color_transformer.js';
-import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerFontLookup, StylemakerOptions } from './types.js';
+import { recolor } from './recolor.js';
+import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerOptions, StylemakerStringLookup } from './types.js';
 import { Configuration } from './configuration.js';
 import { StyleMaker } from './style_maker.js';
+import { deepClone } from './utils.js';
 
 // Stylemaker class definition
 export default class StyleDefinition {
@@ -29,18 +30,18 @@ export default class StyleDefinition {
 	}
 
 
-	get fonts(): StylemakerFontLookup {
-		return this.#config.fonts;
+	get fonts(): StylemakerStringLookup {
+		return deepClone(this.#config.fonts);
 	}
 	set fonts(fonts: { [name: string]: string }) {
 		this.#config.setFonts(fonts);
 	}
 
 
-	get colors(): StylemakerColorLookup {
-		return this.#config.colors;
+	get colors(): StylemakerStringLookup {
+		return deepClone(this.#config.colors);
 	}
-	set colors(colors: { [name: string]: string | Color }) {
+	set colors(colors: { [name: string]: string }) {
 		this.#config.setColors(colors);
 	}
 
@@ -63,12 +64,17 @@ export default class StyleDefinition {
 		// get empty shortbread style
 		const style: MaplibreStyle = getShortbreadTemplate();
 
+		let colors: StylemakerColorLookup = Object.fromEntries(
+			Object.entries(configuration.colors)
+				.map(([name, colorString]) => [name, Color(colorString)])
+		)
+
 		// transform colors
-		transformColors(configuration.colors, configuration.colorTransformer);
+		recolor(colors, configuration.recolor);
 
 		// get layer style rules from child class
 		const layerStyleRules = this.getStyleRules({
-			colors: configuration.colors,
+			colors,
 			fonts: configuration.fonts,
 			languageSuffix: configuration.languageSuffix,
 		});

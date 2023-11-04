@@ -1,7 +1,7 @@
-import WrappedColor from 'color';
-import { ColorTransformerFlags, StylemakerColorLookup } from './types.js';
+import Color from 'color';
+import { RecolorOptions, StylemakerColorLookup } from './types.js';
 
-export function getDefaultColorTransformer(): ColorTransformerFlags {
+export function getDefaultRecolorFlags(): RecolorOptions {
 	return {
 		invert: false,
 		rotate: 0,
@@ -10,22 +10,22 @@ export function getDefaultColorTransformer(): ColorTransformerFlags {
 		contrast: 1,
 		brightness: 0,
 		tint: 0,
-		tintColor: WrappedColor('#F00'),
+		tintColor: '#FF0000',
 	}
 }
 
-export function transformColors(colors: StylemakerColorLookup, flags: ColorTransformerFlags): void {
-	if (!flags) return;
+export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): void {
+	if (!opt) return;
 
-	if (flags.invert) invert();
-	if ((flags.rotate !== undefined) && (flags.rotate !== 0)) rotate(flags.rotate);
-	if ((flags.saturate !== undefined) && (flags.saturate !== 0)) saturate(flags.saturate);
-	if ((flags.gamma !== undefined) && (flags.gamma !== 1)) gamma(flags.gamma);
-	if ((flags.contrast !== undefined) && (flags.contrast !== 1)) contrast(flags.contrast);
-	if ((flags.brightness !== undefined) && (flags.brightness !== 0)) brightness(flags.brightness);
-	if ((flags.tint !== undefined) && (flags.tintColor !== undefined) && (flags.tint !== 0)) tint(flags.tint, flags.tintColor);
+	if (opt.invert) invert();
+	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) rotate(opt.rotate);
+	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) saturate(opt.saturate);
+	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) gamma(opt.gamma);
+	if ((opt.contrast !== undefined) && (opt.contrast !== 1)) contrast(opt.contrast);
+	if ((opt.brightness !== undefined) && (opt.brightness !== 0)) brightness(opt.brightness);
+	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) tint(opt.tint, Color(opt.tintColor));
 
-	function forEachColor(callback: (color: WrappedColor) => WrappedColor): void {
+	function forEachColor(callback: (color: Color) => Color): void {
 		Object.entries(colors).forEach(([k, c]) => colors[k] = callback(c));
 	}
 
@@ -46,7 +46,7 @@ export function transformColors(colors: StylemakerColorLookup, flags: ColorTrans
 		if (value > 1e3) value = 1e3;
 		forEachColor(color => {
 			const rgb: number[] = color.rgb().array();
-			return WrappedColor.rgb(
+			return Color.rgb(
 				Math.pow(rgb[0] / 255, value) * 255,
 				Math.pow(rgb[1] / 255, value) * 255,
 				Math.pow(rgb[2] / 255, value) * 255,
@@ -60,7 +60,7 @@ export function transformColors(colors: StylemakerColorLookup, flags: ColorTrans
 		if (value > 1e6) value = 1e6;
 		forEachColor(color => {
 			const rgb: number[] = color.rgb().array();
-			return WrappedColor.rgb(
+			return Color.rgb(
 				(rgb[0] - 127.5) * value + 127.5,
 				(rgb[1] - 127.5) * value + 127.5,
 				(rgb[2] - 127.5) * value + 127.5,
@@ -76,7 +76,7 @@ export function transformColors(colors: StylemakerColorLookup, flags: ColorTrans
 		const b = (value < 0) ? 0 : 255 * value;
 		forEachColor(color => {
 			const rgb: number[] = color.rgb().array();
-			return WrappedColor.rgb(
+			return Color.rgb(
 				rgb[0] * a + b,
 				rgb[1] * a + b,
 				rgb[2] * a + b,
@@ -85,7 +85,7 @@ export function transformColors(colors: StylemakerColorLookup, flags: ColorTrans
 		})
 	}
 
-	function tint(value: number, tintColor: WrappedColor): void {
+	function tint(value: number, tintColor: Color): void {
 		const tintColorHSV: number[] = tintColor.hsv().array();
 		forEachColor(color => {
 			const rgb0: number[] = color.rgb().array();
@@ -94,9 +94,9 @@ export function transformColors(colors: StylemakerColorLookup, flags: ColorTrans
 			hsv[0] = tintColorHSV[0];
 			hsv[1] *= tintColorHSV[1];
 			hsv[2] *= tintColorHSV[2];
-			const rgbNew = WrappedColor.hsv(hsv).rgb().array();
+			const rgbNew = Color.hsv(hsv).rgb().array();
 
-			return WrappedColor.rgb(
+			return Color.rgb(
 				rgb0[0] * (1 - value) + value * rgbNew[0],
 				rgb0[1] * (1 - value) + value * rgbNew[1],
 				rgb0[2] * (1 - value) + value * rgbNew[2],

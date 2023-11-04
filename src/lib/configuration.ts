@@ -1,7 +1,7 @@
 import Color from 'color';
-import { ColorTransformerFlags, LanguageSuffix, StylemakerColorLookup, StylemakerFontLookup, StylemakerOptions } from './types.js';
-import { getDefaultColorTransformer } from './color_transformer.js';
-
+import { LanguageSuffix, RecolorOptions, StylemakerOptions, StylemakerStringLookup } from './types.js';
+import { getDefaultRecolorFlags } from './recolor.js';
+import { deepClone } from './utils.js';
 
 export type StylemakerConfiguration = {
 	baseUrl: string,
@@ -10,9 +10,9 @@ export type StylemakerConfiguration = {
 	tilesUrls: string[],
 	hideLabels: boolean,
 	languageSuffix: LanguageSuffix,
-	colors: StylemakerColorLookup,
-	fonts: StylemakerFontLookup,
-	colorTransformer: ColorTransformerFlags,
+	colors: StylemakerStringLookup,
+	fonts: StylemakerStringLookup,
+	recolor: RecolorOptions,
 }
 
 
@@ -28,7 +28,7 @@ export class Configuration {
 			tilesUrls: ['/tiles/osm/{z}/{x}/{y}'],
 			colors: {},
 			fonts: {},
-			colorTransformer: getDefaultColorTransformer(),
+			recolor: getDefaultRecolorFlags(),
 		}
 	}
 
@@ -48,30 +48,24 @@ export class Configuration {
 		return this.#config.spriteUrl
 	}
 	get tilesUrls(): string[] {
-		return this.#config.tilesUrls
+		return deepClone(this.#config.tilesUrls)
 	}
-	get fonts(): StylemakerFontLookup {
-		return this.#config.fonts
+	get fonts(): StylemakerStringLookup {
+		return deepClone(this.#config.fonts)
 	}
-	get colors(): StylemakerColorLookup {
-		return this.#config.colors
+	get colors(): StylemakerStringLookup {
+		return deepClone(this.#config.colors)
 	}
-	get colorTransformer(): ColorTransformerFlags {
-		return this.#config.colorTransformer
+	get recolor(): RecolorOptions {
+		return deepClone(this.#config.recolor)
 	}
 
 	setFonts(fonts: { [name: string]: string }) {
 		Object.assign(this.#config.fonts ??= {}, fonts);
 	}
-	setColors(colors: { [name: string]: string | Color }) {
-		const oldColors: StylemakerColorLookup = this.#config.colors ??= {};
-		Object.entries(colors).forEach(([name, color]) => {
-			if (typeof color === 'string') {
-				oldColors[name] = Color(color);
-			} else {
-				oldColors[name] = color;
-			}
-		})
+	setColors(newColors: { [name: string]: string }) {
+		const oldColors: StylemakerStringLookup = this.#config.colors ??= {};
+		Object.entries(newColors).forEach(([name, color]) => oldColors[name] = color)
 	}
 
 	buildNew(options: StylemakerOptions): Configuration {
@@ -84,25 +78,23 @@ export class Configuration {
 			}
 		}
 
-		const colors = Object.fromEntries(Object.entries(c.colors).map(([name, color]) => {
-			if (o.colors?.[name]) color = Color(o.colors[name]);
-			return [name, color];
-		}))
+		const colors = Object.fromEntries(Object.entries(c.colors)
+			.map(([name, color]) => [name, o.colors?.[name] ?? color])
+		)
 
-		const fonts = Object.fromEntries(Object.entries(c.fonts).map(([name, font]) => {
-			if (o.fonts?.[name]) font = o.fonts[name];
-			return [name, font];
-		}))
+		const fonts = Object.fromEntries(Object.entries(c.fonts)
+			.map(([name, font]) => [name, o.fonts?.[name] ?? font])
+		)
 
-		const colorTransformer: ColorTransformerFlags = {
-			invert: o.colorTransformer?.invert ?? c.colorTransformer.invert,
-			rotate: o.colorTransformer?.rotate ?? c.colorTransformer.rotate,
-			saturate: o.colorTransformer?.saturate ?? c.colorTransformer.saturate,
-			gamma: o.colorTransformer?.gamma ?? c.colorTransformer.gamma,
-			contrast: o.colorTransformer?.contrast ?? c.colorTransformer.contrast,
-			brightness: o.colorTransformer?.brightness ?? c.colorTransformer.brightness,
-			tint: o.colorTransformer?.tint ?? c.colorTransformer.tint,
-			tintColor: o.colorTransformer?.tintColor ? Color(o.colorTransformer?.tintColor) : c.colorTransformer.tintColor,
+		const recolor: RecolorOptions = {
+			invert: o.recolor?.invert ?? c.recolor.invert,
+			rotate: o.recolor?.rotate ?? c.recolor.rotate,
+			saturate: o.recolor?.saturate ?? c.recolor.saturate,
+			gamma: o.recolor?.gamma ?? c.recolor.gamma,
+			contrast: o.recolor?.contrast ?? c.recolor.contrast,
+			brightness: o.recolor?.brightness ?? c.recolor.brightness,
+			tint: o.recolor?.tint ?? c.recolor.tint,
+			tintColor: o.recolor?.tintColor ?? c.recolor.tintColor,
 		}
 
 		return new Configuration({
@@ -114,28 +106,12 @@ export class Configuration {
 			languageSuffix: o.languageSuffix ?? c.languageSuffix,
 			colors,
 			fonts,
-			colorTransformer,
+			recolor,
 		})
 	}
 
 	getOptions(): StylemakerOptions {
 		let c = this.#config;
-
-		const colors = Object.fromEntries(Object.entries(c.colors).map(([name, color]) => [name, color.hexa()]))
-		const fonts = Object.fromEntries(Object.entries(c.fonts).map(([name, font]) => [name, String(font)]))
-
-		const ct = c.colorTransformer;
-		const colorTransformer = {
-			invert: ct.invert,
-			rotate: ct.rotate,
-			saturate: ct.saturate,
-			gamma: ct.gamma,
-			contrast: ct.contrast,
-			brightness: ct.brightness,
-			tint: ct.tint,
-			tintColor: ct.tintColor.hexa(),
-		}
-
 		return {
 			baseUrl: c.baseUrl,
 			glyphsUrl: c.glyphsUrl,
@@ -143,12 +119,9 @@ export class Configuration {
 			tilesUrls: c.tilesUrls,
 			hideLabels: c.hideLabels,
 			languageSuffix: c.languageSuffix,
-			colors,
-			fonts,
-			colorTransformer,
+			colors: deepClone(c.colors),
+			fonts: deepClone(c.fonts),
+			recolor: deepClone(c.recolor)
 		}
 	}
-}
-
-export function buildConfiguration(config: StylemakerConfiguration, options: StylemakerOptions) {
 }

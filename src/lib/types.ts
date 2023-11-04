@@ -15,31 +15,30 @@ export type StyleRuleValue = object | number | string | boolean;
 export type StyleRule = { [id: string]: StyleRuleValue }
 export type StyleRules = { [id: string]: StyleRule }
 
-import WrappedColor from 'color';
-export type StylemakerColorLookup = { [name: string]: WrappedColor };
-export type StylemakerFontLookup = { [name: string]: string }
+import Color from 'color';
+export type StylemakerColorLookup = { [name: string]: Color };
+export type StylemakerStringLookup = { [name: string]: string }
 
+export type LanguageSuffix = '' | '_de' | '_en';
 
-export type ColorTransformerFlags = {
-	invert: boolean,
-	rotate: number,
-	saturate: number,
-	gamma: number,
-	contrast: number,
-	brightness: number,
-	tint: number,
-	tintColor: WrappedColor,
+export type RecolorOptions = {
+	invert?: boolean,
+	rotate?: number,
+	saturate?: number,
+	gamma?: number,
+	contrast?: number,
+	brightness?: number,
+	tint?: number,
+	tintColor?: string,
 }
 
 export type StyleRulesOptions = {
 	colors: StylemakerColorLookup,
-	fonts: StylemakerFontLookup,
+	fonts: StylemakerStringLookup,
 	languageSuffix: string,
 }
 
 export type StylemakerLayerStyleGenerator = (options: StyleRulesOptions) => StyleRules
-
-export type LanguageSuffix = '' | '_de' | '_en';
 
 export type StylemakerOptions = {
 	baseUrl?: string,
@@ -50,16 +49,7 @@ export type StylemakerOptions = {
 	languageSuffix?: LanguageSuffix,
 	colors?: { [name: string]: string },
 	fonts?: { [name: string]: string },
-	colorTransformer?: {
-		invert?: boolean,
-		rotate?: number,
-		saturate?: number,
-		gamma?: number,
-		contrast?: number,
-		brightness?: number,
-		tint?: number,
-		tintColor?: string,
-	},
+	recolor?: RecolorOptions,
 }
 
 export interface StylemakerFunction {
