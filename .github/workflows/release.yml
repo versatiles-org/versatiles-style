@@ -38,6 +38,11 @@ jobs:
       - name: get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
+      - run: ls -lah
+
+      - run: ls -lah
+        working-directory: release
+
       - name: upload file to release
         run: gh release upload $RELEASE_TAG *.map *.js *.json --clobber
         working-directory: release
