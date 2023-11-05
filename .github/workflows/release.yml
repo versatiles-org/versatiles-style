@@ -1,5 +1,9 @@
 name: Release
+
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
 
 jobs:
@@ -9,23 +13,34 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
+      - name: Build
+        run: npm run build
 
       - name: get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
-      - run: npm install
-      - run: npm run release
-
-      - name: create release if needed
-        run: gh release view $RELEASE_TAG || gh release create $RELEASE_TAG --draft --prerelease
-
       - name: upload file to release
-        run: gh release upload $RELEASE_TAG *.gz *.js *.json --clobber
-        working-directory: ./dist
+        run: gh release upload $RELEASE_TAG *.map *.js *.json --clobber
+        working-directory: ./release
 
       - name: update release
         run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
-
-#      - name: trigger frontend release
-#        run: 'curl -XPOST -u "michaelkreil:${{secrets.PAT_TOKEN}}" https://api.github.com/repos/versatiles-org/versatiles-frontend/actions/workflows/release.yml/dispatches --data ''{"ref":"main"}'''
