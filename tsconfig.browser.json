@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"module": "esnext",
 		"moduleResolution": "bundler",
-		"declaration": false,
+		"declaration": true,
+		"declarationDir": "./tmp/dts"
 	},
 	"exclude": [
 		"bin/**/*.ts",
