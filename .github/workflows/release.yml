@@ -43,7 +43,7 @@ jobs:
         run: npm run build-browser
 
       - name: Compress script
-        run: tar -cf - versatiles-style.* | gzip -9 > versatiles-style.tar.gz
+        run: tar -cf - versatiles-styles.* | gzip -9 > versatiles-styles.tar.gz
         working-directory: release
 
       - name: Get version
