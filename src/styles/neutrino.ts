@@ -4,10 +4,10 @@ import StyleDefinition from '../lib/style_definition.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Neutrino extends StyleDefinition {
+	public readonly name: string = 'neutrino';
+
 	public constructor() {
 		super();
-
-		this.name = 'neutrino';
 
 		this.fonts = {
 			regular: 'noto_sans_regular',

@@ -4,10 +4,10 @@ import StyleDefinition from '../lib/style_definition.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Colorful extends StyleDefinition {
+	public readonly name: string = 'colorful';
+
 	public constructor() {
 		super();
-
-		this.name = 'colorful';
 
 		this.fonts = {
 			regular: 'noto_sans_regular',

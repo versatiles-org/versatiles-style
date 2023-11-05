@@ -10,25 +10,15 @@ import { StyleBuilder } from './style_builder.js';
 
 // Stylemaker class definition
 export default abstract class StyleDefinition {
-	// Private class properties
-	#name = 'unnamed';
-
 	readonly #sourceName = 'versatiles-shortbread';
 
 	readonly #config: Configuration;
 
+	public abstract readonly name: string;
+
 	// Constructor
 	protected constructor() {
 		this.#config = new Configuration();
-	}
-
-
-	public get name(): string {
-		return this.#name;
-	}
-
-	protected set name(name: string) {
-		this.#name = name;
 	}
 
 	protected set fonts(fonts: Record<string, string>) {
@@ -91,7 +81,7 @@ export default abstract class StyleDefinition {
 		});
 
 		style.layers = layers;
-		style.name = 'versatiles-' + this.#name;
+		style.name = 'versatiles-' + this.name;
 		style.glyphs = resolveUrl(configuration.glyphsUrl);
 		style.sprite = resolveUrl(configuration.spriteUrl);
 
