@@ -77,10 +77,9 @@ if (await check('check github release', run.ok('gh release view v' + nextVersion
 
 
 
-// new github release
-// upload release notes
-// upload styles
-// upload browser.js
+info('Finished');
+
+process.exit(0);
 
 
 
