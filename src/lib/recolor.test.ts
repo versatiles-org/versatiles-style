@@ -1,6 +1,8 @@
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
 import Color from 'color';
-import { StylemakerColorLookup } from './types.js';
+import type { StylemakerColorLookup } from './types.js';
+
+
 
 describe('colorTransformer', () => {
 	describe('getDefaultRecolorFlags', () => {
@@ -32,7 +34,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { invert: true });
 				expect(colors2string(colors)).toBe('0055AA00,FF005555,AAFF00AA,55AAFFFF');
 			});
-		})
+		});
 
 		describe('rotate', () => {
 			it('should rotate colors 120°', () => {
@@ -52,7 +54,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { rotate: 240 });
 				expect(colors2string(colors)).toBe('AA55FF00,FFAA0055,00FF55AA,5500AAFF');
 			});
-		})
+		});
 
 		describe('saturation', () => {
 			it('should remove any saturation', () => {
@@ -78,7 +80,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { saturate: 1.0 });
 				expect(colors2string(colors)).toBe('FFAA0000,00FFD455,2B00FFAA,FF5500FF');
 			});
-		})
+		});
 
 		describe('gamma', () => {
 			it('should decrease gamma', () => {
@@ -92,7 +94,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { gamma: 2 });
 				expect(colors2string(colors)).toBe('FF711C00,00FF7155,1C00FFAA,711C00FF');
 			});
-		})
+		});
 
 		describe('contrast', () => {
 			it('should remove any contrast', () => {
@@ -118,7 +120,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { contrast: Infinity });
 				expect(colors2string(colors)).toBe('FFFF0000,00FFFF55,0000FFAA,FF0000FF');
 			});
-		})
+		});
 
 		describe('contrast', () => {
 			it('should remove any brightness', () => {
@@ -144,7 +146,7 @@ describe('colorTransformer', () => {
 				recolor(colors, { brightness: 1 });
 				expect(colors2string(colors)).toBe('FFFFFF00,FFFFFF55,FFFFFFAA,FFFFFFFF');
 			});
-		})
+		});
 
 		describe('tint', () => {
 			it('should not tint at all', () => {
@@ -188,20 +190,20 @@ describe('colorTransformer', () => {
 				recolor(colors, { tint: 0.5, tintColor: '#00F' });
 				expect(colors2string(colors)).toBe('8055AA00,0080D555,2B00FFAA,552B80FF');
 			});
-		})
+		});
 	});
 });
 
 function string2colors(colorList: string): StylemakerColorLookup {
 	return Object.fromEntries(
 		colorList.split(',')
-			.map((value, index) => ['color' + index, Color('#' + value)])
-	)
+			.map((value, index) => ['color' + index, Color('#' + value)]),
+	);
 }
 
 function colors2string(colors: StylemakerColorLookup): string {
 	const colorArray: string[] = [];
-	for (let i = 0; colors['color' + i]; i++) {
+	for (let i = 0; ('color' + i) in colors; i++) {
 		colorArray.push(colors['color' + i].hexa().slice(1));
 	}
 	return colorArray.join(',');

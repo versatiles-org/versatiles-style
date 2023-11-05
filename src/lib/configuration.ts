@@ -1,75 +1,101 @@
-import Color from 'color';
-import { LanguageSuffix, RecolorOptions, StylebuilderOptions, StylemakerStringLookup } from './types.js';
+import type { LanguageSuffix, RecolorOptions, StyleBuilderOptions, StylemakerStringLookup } from './types.js';
 import { getDefaultRecolorFlags } from './recolor.js';
 import { deepClone } from './utils.js';
 
-export type StylemakerConfiguration = {
-	baseUrl: string,
-	glyphsUrl: string,
-	spriteUrl: string,
-	tilesUrls: string[],
-	hideLabels: boolean,
-	languageSuffix: LanguageSuffix,
-	colors: StylemakerStringLookup,
-	fonts: StylemakerStringLookup,
-	recolor: RecolorOptions,
-}
 
 
 export class Configuration {
-	#config: StylemakerConfiguration
-	constructor(config?: StylemakerConfiguration) {
-		this.#config = config ?? {
-			hideLabels: false,
-			languageSuffix: '',
-			baseUrl: 'https://tiles.versatiles.org', // set me in the browser
-			glyphsUrl: '/assets/fonts/{fontstack}/{range}.pbf',
-			spriteUrl: '/assets/sprites/sprites',
-			tilesUrls: ['/tiles/osm/{z}/{x}/{y}'],
-			colors: {},
-			fonts: {},
-			recolor: getDefaultRecolorFlags(),
+	readonly #baseUrl: string;
+
+	readonly #glyphsUrl: string;
+
+	readonly #spriteUrl: string;
+
+	readonly #tilesUrls: string[];
+
+	readonly #hideLabels: boolean;
+
+	readonly #languageSuffix: LanguageSuffix;
+
+	readonly #colors: StylemakerStringLookup;
+
+	readonly #fonts: StylemakerStringLookup;
+
+	readonly #recolor: RecolorOptions;
+
+	public constructor(config?: StyleBuilderOptions) {
+		this.#hideLabels = config?.hideLabels ?? false;
+		this.#languageSuffix = config?.languageSuffix ?? '';
+		this.#baseUrl = config?.baseUrl ?? 'https://tiles.versatiles.org'; // set me in the browser
+		this.#glyphsUrl = config?.glyphsUrl ?? '/assets/fonts/{fontstack}/{range}.pbf';
+		this.#spriteUrl = config?.spriteUrl ?? '/assets/sprites/sprites';
+		this.#tilesUrls = config?.tilesUrls ?? ['/tiles/osm/{z}/{x}/{y}'];
+		this.#colors = config?.colors ?? {};
+		this.#fonts = config?.fonts ?? {};
+		this.#recolor = config?.recolor ?? getDefaultRecolorFlags();
+	}
+
+	public get hideLabels(): boolean {
+		return this.#hideLabels;
+	}
+
+	public get languageSuffix(): LanguageSuffix {
+		return this.#languageSuffix;
+	}
+
+	public get baseUrl(): string {
+		return this.#baseUrl;
+	}
+
+	public get glyphsUrl(): string {
+		return this.#glyphsUrl;
+	}
+
+	public get spriteUrl(): string {
+		return this.#spriteUrl;
+	}
+
+	public get tilesUrls(): string[] {
+		return deepClone(this.#tilesUrls);
+	}
+
+	public get fonts(): StylemakerStringLookup {
+		return deepClone(this.#fonts);
+	}
+
+	public get colors(): StylemakerStringLookup {
+		return deepClone(this.#colors);
+	}
+
+	public get recolor(): RecolorOptions {
+		return deepClone(this.#recolor);
+	}
+
+	public setFonts(fonts: Record<string, string>): void {
+		Object.assign(this.#fonts, fonts);
+	}
+
+	public setColors(newColors: Record<string, string>): void {
+		for (const [name, color] of Object.entries(newColors)) {
+			this.#colors[name] = color;
 		}
 	}
 
-	get hideLabels(): boolean {
-		return this.#config.hideLabels
-	}
-	get languageSuffix(): LanguageSuffix {
-		return this.#config.languageSuffix
-	}
-	get baseUrl(): string {
-		return this.#config.baseUrl
-	}
-	get glyphsUrl(): string {
-		return this.#config.glyphsUrl
-	}
-	get spriteUrl(): string {
-		return this.#config.spriteUrl
-	}
-	get tilesUrls(): string[] {
-		return deepClone(this.#config.tilesUrls)
-	}
-	get fonts(): StylemakerStringLookup {
-		return deepClone(this.#config.fonts)
-	}
-	get colors(): StylemakerStringLookup {
-		return deepClone(this.#config.colors)
-	}
-	get recolor(): RecolorOptions {
-		return deepClone(this.#config.recolor)
+	public getOptions(): StyleBuilderOptions {
+		return {
+			baseUrl: this.#baseUrl,
+			glyphsUrl: this.#glyphsUrl,
+			spriteUrl: this.#spriteUrl,
+			tilesUrls: this.#tilesUrls,
+			hideLabels: this.#hideLabels,
+			languageSuffix: this.#languageSuffix,
+			colors: deepClone(this.#colors),
+			fonts: deepClone(this.#fonts),
+			recolor: deepClone(this.#recolor),
+		};
 	}
 
-	setFonts(fonts: { [name: string]: string }) {
-		Object.assign(this.#config.fonts ??= {}, fonts);
-	}
-	setColors(newColors: { [name: string]: string }) {
-		const oldColors: StylemakerStringLookup = this.#config.colors ??= {};
-		Object.entries(newColors).forEach(([name, color]) => oldColors[name] = color)
-	}
-
-	buildNew(options: StylebuilderOptions): Configuration {
-		const c = this.#config;
+	public buildNew(options: StyleBuilderOptions): Configuration {
 		const o = options;
 
 		if (typeof o.languageSuffix === 'string') {
@@ -78,50 +104,35 @@ export class Configuration {
 			}
 		}
 
-		const colors = Object.fromEntries(Object.entries(c.colors)
-			.map(([name, color]) => [name, o.colors?.[name] ?? color])
-		)
+		const colors = Object.fromEntries(Object.entries(this.#colors)
+			.map(([name, color]: readonly [string, string]) => [name, o.colors?.[name] ?? color]),
+		);
 
-		const fonts = Object.fromEntries(Object.entries(c.fonts)
-			.map(([name, font]) => [name, o.fonts?.[name] ?? font])
-		)
+		const fonts = Object.fromEntries(Object.entries(this.#fonts)
+			.map(([name, font]: readonly [string, string]) => [name, o.fonts?.[name] ?? font]),
+		);
 
 		const recolor: RecolorOptions = {
-			invert: o.recolor?.invert ?? c.recolor.invert,
-			rotate: o.recolor?.rotate ?? c.recolor.rotate,
-			saturate: o.recolor?.saturate ?? c.recolor.saturate,
-			gamma: o.recolor?.gamma ?? c.recolor.gamma,
-			contrast: o.recolor?.contrast ?? c.recolor.contrast,
-			brightness: o.recolor?.brightness ?? c.recolor.brightness,
-			tint: o.recolor?.tint ?? c.recolor.tint,
-			tintColor: o.recolor?.tintColor ?? c.recolor.tintColor,
-		}
+			invert: o.recolor?.invert ?? this.#recolor.invert,
+			rotate: o.recolor?.rotate ?? this.#recolor.rotate,
+			saturate: o.recolor?.saturate ?? this.#recolor.saturate,
+			gamma: o.recolor?.gamma ?? this.#recolor.gamma,
+			contrast: o.recolor?.contrast ?? this.#recolor.contrast,
+			brightness: o.recolor?.brightness ?? this.#recolor.brightness,
+			tint: o.recolor?.tint ?? this.#recolor.tint,
+			tintColor: o.recolor?.tintColor ?? this.#recolor.tintColor,
+		};
 
 		return new Configuration({
-			baseUrl: o.baseUrl ?? c.baseUrl,
-			glyphsUrl: o.glyphsUrl ?? c.glyphsUrl,
-			spriteUrl: o.spriteUrl ?? c.spriteUrl,
-			tilesUrls: o.tilesUrls ?? c.tilesUrls,
-			hideLabels: o.hideLabels ?? c.hideLabels,
-			languageSuffix: o.languageSuffix ?? c.languageSuffix,
+			baseUrl: o.baseUrl ?? this.#baseUrl,
+			glyphsUrl: o.glyphsUrl ?? this.#glyphsUrl,
+			spriteUrl: o.spriteUrl ?? this.#spriteUrl,
+			tilesUrls: o.tilesUrls ?? this.#tilesUrls,
+			hideLabels: o.hideLabels ?? this.#hideLabels,
+			languageSuffix: o.languageSuffix ?? this.#languageSuffix,
 			colors,
 			fonts,
 			recolor,
-		})
-	}
-
-	getOptions(): StylebuilderOptions {
-		let c = this.#config;
-		return {
-			baseUrl: c.baseUrl,
-			glyphsUrl: c.glyphsUrl,
-			spriteUrl: c.spriteUrl,
-			tilesUrls: c.tilesUrls,
-			hideLabels: c.hideLabels,
-			languageSuffix: c.languageSuffix,
-			colors: deepClone(c.colors),
-			fonts: deepClone(c.fonts),
-			recolor: deepClone(c.recolor)
-		}
+		});
 	}
 }

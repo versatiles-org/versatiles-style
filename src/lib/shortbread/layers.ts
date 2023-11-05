@@ -1,7 +1,8 @@
-import { MaplibreFilter, MaplibreLayer } from '../types.js';
+/* eslint-disable @typescript-eslint/naming-convention */
 
+import type { MaplibreFilter, MaplibreLayer } from '../types.js';
 
-export default function (option: { languageSuffix: string }): MaplibreLayer[] {
+export default function(option: { readonly languageSuffix: string }): MaplibreLayer[] {
 	const { languageSuffix } = option;
 	return [
 
@@ -15,7 +16,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 		{
 			id: 'land-glacier',
 			type: 'fill', 'source-layer': 'water_polygons',
-			filter: ['all', ['==', 'kind', 'glacier']]
+			filter: ['all', ['==', 'kind', 'glacier']],
 		},
 
 		...[
@@ -34,7 +35,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 			{ id: 'vegetation', kinds: ['heath', 'scrub'] },
 			{ id: 'sand', kinds: ['beach', 'sand'] },
 			{ id: 'wetland', kinds: ['bog', 'marsh', 'string_bog', 'swamp'] },
-		].map(({ id, kinds }: { id: string, kinds: string[] }): MaplibreLayer => ({
+		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayer => ({
 			id: 'land-' + id,
 			type: 'fill',
 			'source-layer': 'land',
@@ -52,7 +53,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 				['in', 'kind', t],
 				['!=', 'tunnel', true],
 				['!=', 'bridge', true],
-			]
+			],
 		})),
 
 		// water polygons
@@ -123,7 +124,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayer[] => {
-			// filters
+			// eslint-disable-next-line @typescript-eslint/init-declarations
 			let filter: MaplibreFilter, prefix: string;
 			const results: MaplibreLayer[] = [];
 			switch (c) {
@@ -145,7 +146,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 			if (c === 'bridge') results.push({
 				id: 'bridge',
 				type: 'fill',
-				'source-layer': 'bridges'
+				'source-layer': 'bridges',
 			});
 
 			[':outline', ''].forEach(suffix => {
@@ -329,7 +330,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 					['!=', 'disputed', true],
 					['!=', 'coastline', true],
 				],
-			}
+			},
 		]),
 
 		// label-address
@@ -428,13 +429,13 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 		},
 
 		// marking
-		<MaplibreLayer>{
+		{
 			id: 'marking-oneway', // streets → oneway
 			type: 'symbol',
 			'source-layer': 'streets',
 			filter: ['all',
 				['==', 'oneway', true],
-				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street']
+				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street'],
 			],
 			layout: {
 				'symbol-placement': 'line',
@@ -443,15 +444,15 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 				'icon-rotation-alignment': 'map',
 				'icon-padding': 5,
 				'symbol-avoid-edges': true,
-			}
+			},
 		},
-		<MaplibreLayer>{
+		{
 			id: 'marking-oneway-reverse', // oneway_reverse
 			type: 'symbol',
 			'source-layer': 'streets',
 			filter: ['all',
 				['==', 'oneway_reverse', true],
-				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street']
+				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street'],
 			],
 			layout: {
 				'symbol-placement': 'line',
@@ -460,9 +461,9 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 				'icon-rotation-alignment': 'map',
 				'icon-padding': 5,
 				'symbol-avoid-edges': true,
-			}
+			},
 		},
-		<MaplibreLayer>{
+		{
 			id: 'marking-bicycle', // bicycle=designated or kind=cycleway
 			type: 'symbol',
 			'source-layer': 'streets',
@@ -473,7 +474,7 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 			layout: {
 				'symbol-placement': 'line',
 				'symbol-spacing': 50,
-			}
+			},
 		},
 
 		// symbol
@@ -540,6 +541,6 @@ export default function (option: { languageSuffix: string }): MaplibreLayer[] {
 				['has', 'iata'],
 			],
 			layout: { 'text-field': `{name${languageSuffix}}` },
-		}
+		},
 	];
 }

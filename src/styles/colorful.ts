@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import StyleDefinition from '../lib/style_definition.js';
-import { StyleRules, StyleRulesOptions } from '../lib/types.js';
+import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Colorful extends StyleDefinition {
-	constructor() {
+	public constructor() {
 		super();
 
 		this.name = 'colorful';
@@ -10,7 +12,7 @@ export default class Colorful extends StyleDefinition {
 		this.fonts = {
 			regular: 'noto_sans_regular',
 			bold: 'noto_sans_bold',
-		}
+		};
 
 		this.colors = {
 			land: '#F9F4EE',
@@ -54,9 +56,10 @@ export default class Colorful extends StyleDefinition {
 			education: '#FFFF80',
 			hospital: '#FF6666',
 			poi: '#555555',
-		}
+		};
 	}
-	getStyleRules(options: StyleRulesOptions): StyleRules {
+
+	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			// background
@@ -77,12 +80,12 @@ export default class Colorful extends StyleDefinition {
 				lineJoin: 'round',
 			},
 			'boundary-country{-disputed,}:outline': {
-				size: { 2: 0, 3: 2, 10: 8, },
+				size: { 2: 0, 3: 2, 10: 8 },
 				opacity: 0.75,
 				color: colors.land.lighten(0.05),
 			},
 			'boundary-country{-disputed,}': {
-				size: { 2: 0, 3: 1, 10: 4, },
+				size: { 2: 0, 3: 1, 10: 4 },
 			},
 			'boundary-country-disputed': {
 				color: colors.disputed,
@@ -90,11 +93,11 @@ export default class Colorful extends StyleDefinition {
 				lineCap: 'square',
 			},
 			'boundary-state:outline': {
-				size: { 7: 0, 8: 2, 10: 4, },
+				size: { 7: 0, 8: 2, 10: 4 },
 				opacity: 0.75,
 			},
 			'boundary-state': {
-				size: { 7: 0, 8: 1, 10: 2, },
+				size: { 7: 0, 8: 1, 10: 2 },
 			},
 
 			// water
@@ -775,8 +778,8 @@ export default class Colorful extends StyleDefinition {
 					'vending_machine', 'icon-vendingmachine-22',
 					'veterinary', 'icon-veterinary-22',
 					'waste_basket', 'icon-waste_basket-22',
-					'UNDEFINED'
-				]
+					'UNDEFINED',
+				],
 			},
 			'poi-leisure': {
 				image: ['match',
@@ -788,8 +791,8 @@ export default class Colorful extends StyleDefinition {
 					'stadium', 'icon-stadium-22',
 					'swimming_pool', 'icon-swimming-22',
 					'water_park', 'icon-waterpark-22',
-					'icon-sports-22'
-				]
+					'icon-sports-22',
+				],
 			},
 			'poi-tourism': {
 				image: ['match',
@@ -808,8 +811,8 @@ export default class Colorful extends StyleDefinition {
 					//'theme_park', 'icon-theme_park-22',
 					'viewpoint', 'icon-viewpoint-22',
 					'zoo', 'icon-zoo-22',
-					'UNDEFINED'
-				]
+					'UNDEFINED',
+				],
 			},
 			'poi-shop': {
 				image: ['match',
@@ -852,8 +855,8 @@ export default class Colorful extends StyleDefinition {
 					'toys', 'icon-toys-22',
 					'travel_agency', 'icon-travel_agent-22',
 					'video', 'icon-video-22',
-					'icon-shop-22'
-				]
+					'icon-shop-22',
+				],
 			},
 			'poi-man_made': {
 				image: ['match',
@@ -866,8 +869,8 @@ export default class Colorful extends StyleDefinition {
 					//'water_works', 'icon-water_works-22',
 					'watermill', 'icon-watermill-22',
 					'windmill', 'icon-windmill-22',
-					'UNDEFINED'
-				]
+					'UNDEFINED',
+				],
 			},
 			'poi-historic': {
 				image: ['match',
@@ -882,8 +885,8 @@ export default class Colorful extends StyleDefinition {
 					//'ruins', 'icon-ruins-22',
 					//'wayside_cross', 'icon-wayside_cross-22',
 					'wayside_shrine', 'icon-shrine-22',
-					'icon-historic-22'
-				]
+					'icon-historic-22',
+				],
 			},
 			'poi-emergency': {
 				image: ['match',
@@ -891,9 +894,10 @@ export default class Colorful extends StyleDefinition {
 					'defibrillator', 'icon-defibrillator-22',
 					'fire_hydrant', 'icon-hydrant-22',
 					'phone', 'icon-emergency_phone-22',
-					'UNDEFINED'
-				]
+					'UNDEFINED',
+				],
 			},
+
 			/*
 			'poi-highway': {
 				image: ['match',
@@ -910,6 +914,6 @@ export default class Colorful extends StyleDefinition {
 				]
 			},
 			*/
-		}
+		};
 	}
 }

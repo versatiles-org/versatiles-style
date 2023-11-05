@@ -1,18 +1,18 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import MAPLIBRE_PROPERTIES from './shortbread/properties.js';
+import maplibreProperties from './shortbread/properties.js';
 import { deepMerge } from './utils.js';
-import { MaplibreLayer, StyleRule, StyleRules, StyleRuleValue } from './types.js';
+import type { MaplibreLayer, StyleRule, StyleRules, StyleRuleValue } from './types.js';
 
 
 
-export function decorate(layers: MaplibreLayer[], rules: StyleRules) {
+export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLayer[] {
 	const layerIds = layers.map(l => l.id);
 	const layerIdSet = new Set(layerIds);
 
 	// Initialize a new map to hold final styles for layers
-	const layerStyles: Map<string, StyleRule> = new Map();
+	const layerStyles = new Map<string, StyleRule>();
 
 	// Iterate through the generated layer style rules
 	Object.entries(rules).forEach(([idDef, layerStyle]) => {
@@ -22,16 +22,16 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules) {
 			const regExpString = id.replace(/[^a-z_:-]/g, c => {
 				if (c === '*') return '[a-z_-]*';
 				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
-			})
+			});
 			const regExp = new RegExp(`^${regExpString}$`, 'i');
 			return layerIds.filter(layerId => regExp.test(layerId));
 		});
 
 		ids.forEach(id => {
 			if (!layerIdSet.has(id)) return;
-			layerStyles.set(id, deepMerge(layerStyles.get(id) || {}, layerStyle));
-		})
-	})
+			layerStyles.set(id, deepMerge(layerStyles.get(id) ?? {}, layerStyle));
+		});
+	});
 
 	// Deep clone the original layers and apply styles
 	return layers.flatMap(layer => {
@@ -48,17 +48,17 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules) {
 }
 
 // Function to process each style attribute for the layer
-function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
+function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
 
-	Object.entries(styleRule).forEach(([ruleKey, ruleValue]) => {
+	for (const [ruleKeyCamelCase, ruleValue] of Object.entries(styleRule)) {
 		// CamelCase to not-camel-case
-		ruleKey = ruleKey.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
+		const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
 
-		const propertyDefs = MAPLIBRE_PROPERTIES.get(layer.type + '/' + ruleKey);
-		if (!propertyDefs) return;
+		const propertyDefs = maplibreProperties.get(layer.type + '/' + ruleKey);
+		if (!propertyDefs) continue;
 
 		propertyDefs.forEach(propertyDef => {
-			const key = propertyDef.key;
+			const { key } = propertyDef;
 			let value: StyleRuleValue = ruleValue;
 
 			switch (propertyDef.valueType) {
@@ -75,23 +75,25 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule) {
 
 			switch (propertyDef.parent) {
 				case 'layer':
-					// @ts-ignore
+					// @ts-expect-error: too complex to handle
 					layer[key] = value;
 					break;
 				case 'layout':
 					if (!layer.layout) layer.layout = {};
-					// @ts-ignore
+					// @ts-expect-error: too complex to handle
 					layer.layout[key] = value;
 					break;
 				case 'paint':
 					if (!layer.paint) layer.paint = {};
-					// @ts-ignore
+					// @ts-expect-error: too complex to handle
 					layer.paint[key] = value;
 					break;
-				default: throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
+				default:
+					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+					throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
 			}
-		})
-	})
+		});
+	}
 }
 
 function processColor(value: StyleRuleValue): string {
@@ -110,19 +112,18 @@ function processFont(value: StyleRuleValue): string[] {
 
 function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
 	if (typeof value === 'object') {
-		cbValue ??= v => v;
 		if (value instanceof Color) return processColor(value);
 		if (!Array.isArray(value)) {
-			return processZoomStops(value, cbValue);
+			return processZoomStops(value as Record<string, StyleRuleValue>, cbValue);
 		}
 	}
 	return cbValue ? cbValue(value) : value;
 }
 
-function processZoomStops(obj: object, cbValue: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
+function processZoomStops(obj: Record<string, StyleRuleValue>, cbValue?: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
 	return {
 		stops: Object.entries(obj)
-			.map(([z, v]): [number, StyleRuleValue] => [parseInt(z, 10), cbValue(v)])
-			.sort((a, b) => a[0] - b[0])
-	}
+			.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
+			.sort((a, b) => a[0] - b[0]),
+	};
 }

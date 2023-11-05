@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import StyleDefinition from '../lib/style_definition.js';
-import { StyleRules, StyleRulesOptions } from '../lib/types.js';
+import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Neutrino extends StyleDefinition {
-	constructor() {
+	public constructor() {
 		super();
 
 		this.name = 'neutrino';
@@ -10,7 +12,7 @@ export default class Neutrino extends StyleDefinition {
 		this.fonts = {
 			regular: 'noto_sans_regular',
 			bold: 'noto_sans_bold',
-		}
+		};
 
 		this.colors = {
 			land: '#f6f0f6',
@@ -25,9 +27,10 @@ export default class Neutrino extends StyleDefinition {
 			foot: '#fef8ff',
 			rail: '#e8d5e0',
 			label: '#cbb7b7',
-		}
+		};
 	}
-	getStyleRules(options: StyleRulesOptions): StyleRules {
+
+	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			'background': {
@@ -37,23 +40,23 @@ export default class Neutrino extends StyleDefinition {
 				color: colors.boundary,
 			},
 			'boundary-country:outline': {
-				size: { 2: 2, 10: 6, },
+				size: { 2: 2, 10: 6 },
 				opacity: { 2: 0, 4: 0.3 },
 				color: colors.land.lighten(0.05),
 				lineBlur: 1,
 			},
 			'boundary-country': {
-				size: { 2: 1, 10: 4, },
+				size: { 2: 1, 10: 4 },
 				opacity: { 2: 0, 4: 1 },
 			},
 			'boundary-state:outline': {
-				size: { 7: 3, 10: 5, },
+				size: { 7: 3, 10: 5 },
 				opacity: { 7: 0, 8: 0.3 },
 				color: colors.land.lighten(0.05),
 				lineBlur: 1,
 			},
 			'boundary-state': {
-				size: { 7: 2, 10: 3, },
+				size: { 7: 2, 10: 3 },
 				opacity: { 7: 0, 8: 1 },
 				lineDasharray: [0, 1.5, 1, 1.5],
 				lineCap: 'round',
@@ -366,8 +369,8 @@ export default class Neutrino extends StyleDefinition {
 				textAnchor: 'center',
 				minzoom: 12,
 				size: { 12: 10, 15: 13 },
-			}
+			},
 
-		}
+		};
 	}
 }

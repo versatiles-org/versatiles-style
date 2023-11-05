@@ -1,22 +1,31 @@
-import StyleDefinition from './style_definition.js';
-import { MaplibreStyle, StylebuilderOptions } from './types.js';
+import type StyleDefinition from './style_definition.js';
+import type { MaplibreStyle, StyleBuilderOptions } from './types.js';
 
 export class StyleBuilder {
-	#definition: StyleDefinition
-	constructor(definition: StyleDefinition) {
+	readonly #definition: StyleDefinition;
+
+	public constructor(definition: StyleDefinition) {
 		this.#definition = definition;
 	}
-	get name(): string {
+
+	public get name(): string {
 		return this.#definition.name;
 	}
-	get defaultOptions(): StylebuilderOptions {
+
+	public get defaultOptions(): StyleBuilderOptions {
 		return this.#definition.getOptions();
 	}
-	build(options?: StylebuilderOptions): MaplibreStyle {
+
+	public build(options?: StyleBuilderOptions): MaplibreStyle {
 		options ??= {};
-		// @ts-ignore
-		options.baseUrl ??= global?.document?.location?.href as string;
-		if (!options.baseUrl) throw Error('baseUrl is required, e.g.: style.build({ baseUrl: "https://example.com" });');
+		if (options.baseUrl === undefined) {
+			try {
+				// @ts-expect-error: I'm not sure if I'm in a browser
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				options.baseUrl = document.location.href as string;
+			} catch (e) { }
+		}
+		if (!Boolean(options.baseUrl)) throw Error('baseUrl is required, e.g.: style.build({ baseUrl: "https://example.com" });');
 		return this.#definition.build(options);
 	}
 }

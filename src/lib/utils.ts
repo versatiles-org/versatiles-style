@@ -9,22 +9,22 @@ export function deepClone<T>(obj: T): T {
 			case 'number':
 			case 'string':
 				return obj;
+			default: throw new Error(`Not implemented yet: "${type}" case`);
 		}
-		throw Error(type);
 	}
 
 	if (isSimpleObject(obj)) {
-		// @ts-ignore
-		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, deepClone(value)]))
+		// @ts-expect-error: Too complicated to handle
+		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, deepClone(value)]));
 	}
 
 	if (obj instanceof Array) {
-		// @ts-ignore
-		return obj.map(e => deepClone(e));
+		// @ts-expect-error: Too complicated to handle
+		return obj.map((e: unknown) => deepClone(e));
 	}
 
 	if (obj instanceof Color) {
-		// @ts-ignore
+		// @ts-expect-error: Too complicated to handle
 		return Color(obj);
 	}
 
@@ -34,7 +34,10 @@ export function deepClone<T>(obj: T): T {
 }
 
 export function isSimpleObject(item: unknown): boolean {
-	return (typeof item === 'object') && !Array.isArray(item) && (Object.keys(Object.getPrototypeOf(item)).length === 0);
+	if (typeof item !== 'object') return false;
+	if (Array.isArray(item)) return false;
+	const prototypeKeyCount: number = Object.keys(Object.getPrototypeOf(item) as object).length;
+	return prototypeKeyCount === 0;
 }
 
 export function isBasicType(item: unknown): boolean {
@@ -47,7 +50,7 @@ export function isBasicType(item: unknown): boolean {
 		case 'object':
 			return false;
 		default:
-			throw Error('unknown type: ' + typeof item)
+			throw Error('unknown type: ' + typeof item);
 	}
 }
 
@@ -60,7 +63,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 			if (!Object.hasOwn(source, key)) continue;
 
 			const sourceValue = source[key];
-			if (sourceValue === undefined) continue;
 
 			// *********
 			// overwrite
@@ -71,6 +73,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 				case 'boolean':
 					target[key] = sourceValue;
 					continue;
+				default:
 			}
 
 			if (isBasicType(target[key])) {
@@ -79,15 +82,15 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 			}
 
 			if (sourceValue instanceof Color) {
-				// @ts-ignore
+				// @ts-expect-error: Too complicated to handle
 				target[key] = Color(sourceValue);
 				continue;
 			}
 
 			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				// @ts-ignore
+				// @ts-expect-error: Too complicated to handle
 				target[key] = deepMerge(target[key], sourceValue);
-				continue
+				continue;
 			}
 
 			// *********
@@ -95,9 +98,9 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 			// *********
 
 			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				// @ts-ignore
+				// @ts-expect-error: Too complicated to handle
 				target[key] = deepMerge(target[key], sourceValue);
-				continue
+				continue;
 			}
 
 			console.log('target[key]:', target[key]);
@@ -108,10 +111,10 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 	return target;
 }
 
-export function prettyStyleJSON(data: unknown): string {
-	return recursive(data);
+export function prettyStyleJSON(inputData: unknown): string {
+	return recursive(inputData);
 
-	function recursive(data: unknown, prefix: string = '', path: string = ''): string {
+	function recursive(data: unknown, prefix = '', path = ''): string {
 		if (path.endsWith('.bounds')) return singleLine(data);
 
 		//if (path.includes('.vector_layers[].')) return singleLine(data);
@@ -122,12 +125,12 @@ export function prettyStyleJSON(data: unknown): string {
 		if (typeof data === 'object') {
 			if (Array.isArray(data)) {
 				return '[\n\t' + prefix + data.map((value: unknown) =>
-					recursive(value, prefix + '\t', path + '[]')
+					recursive(value, prefix + '\t', path + '[]'),
 				).join(',\n\t' + prefix) + '\n' + prefix + ']';
 			}
 			if (data) {
 				return '{\n\t' + prefix + Object.entries(data).map(([key, value]) =>
-					'"' + key + '": ' + recursive(value, prefix + '\t', path + '.' + key)
+					'"' + key + '": ' + recursive(value, prefix + '\t', path + '.' + key),
 				).join(',\n\t' + prefix) + '\n' + prefix + '}';
 			}
 		}

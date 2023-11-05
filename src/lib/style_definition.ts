@@ -4,77 +4,57 @@ import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import { recolor } from './recolor.js';
-import { MaplibreStyle, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylebuilderOptions, StylemakerStringLookup } from './types.js';
+import type { MaplibreStyle, StylemakerColorLookup, StyleBuilderOptions, StylemakerStringLookup, StyleRulesOptions, StyleRules } from './types.js';
 import { Configuration } from './configuration.js';
 import { StyleBuilder } from './style_builder.js';
-import { deepClone } from './utils.js';
 
 // Stylemaker class definition
-export default class StyleDefinition {
+export default abstract class StyleDefinition {
 	// Private class properties
-	#name: string = 'unnamed';
-	#sourceName: string = 'versatiles-shortbread';
-	#config: Configuration
+	#name = 'unnamed';
+
+	readonly #sourceName = 'versatiles-shortbread';
+
+	readonly #config: Configuration;
 
 	// Constructor
-	constructor() {
+	protected constructor() {
 		this.#config = new Configuration();
 	}
 
 
-	get name(): string {
+	public get name(): string {
 		return this.#name;
 	}
-	set name(name: string) {
+
+	protected set name(name: string) {
 		this.#name = name;
 	}
 
-
-	//get fonts(): StylemakerStringLookup {
-	//	return deepClone(this.#config.fonts);
-	//}
-	set fonts(fonts: { [name: string]: string }) {
+	protected set fonts(fonts: Record<string, string>) {
 		this.#config.setFonts(fonts);
 	}
 
-
-	//get colors(): StylemakerStringLookup {
-	//	return deepClone(this.#config.colors);
-	//}
-	set colors(colors: { [name: string]: string }) {
+	protected set colors(colors: Record<string, string>) {
 		this.#config.setColors(colors);
 	}
 
-	recolor(callback: (color: Color) => Color): void {
-		const colors: StylemakerStringLookup = Object.fromEntries(
-			Object.entries(this.#config.colors)
-				.map(([name, color]) => [name, callback(Color(color)).hexa()])
-		)
-		this.#config.setColors(colors);
-	}
-
-	getOptions(): StylebuilderOptions {
+	public getOptions(): StyleBuilderOptions {
 		return this.#config.getOptions();
 	}
 
-
-	getStyleRules(options: StyleRulesOptions): StyleRules {
-		throw Error();
-	}
-
-
 	// Method to get a 'maker' object with limited API
-	build(options: StylebuilderOptions): MaplibreStyle {
+	public build(options: StyleBuilderOptions): MaplibreStyle {
 		// get configuration
 		const configuration = this.#config.buildNew(options);
 
 		// get empty shortbread style
 		const style: MaplibreStyle = getShortbreadTemplate();
 
-		let colors: StylemakerColorLookup = Object.fromEntries(
+		const colors: StylemakerColorLookup = Object.fromEntries(
 			Object.entries(configuration.colors)
-				.map(([name, colorString]) => [name, Color(colorString)])
-		)
+				.map(([name, colorString]) => [name, Color(colorString)]),
+		);
 
 		// transform colors
 		recolor(colors, configuration.recolor);
@@ -87,7 +67,7 @@ export default class StyleDefinition {
 		});
 
 		// get shortbread layers
-		let layers = getShortbreadLayers({ languageSuffix: configuration.languageSuffix })
+		let layers = getShortbreadLayers({ languageSuffix: configuration.languageSuffix });
 
 		// apply layer rules
 		layers = decorate(layers, layerStyleRules);
@@ -107,7 +87,7 @@ export default class StyleDefinition {
 					layer.source = this.#sourceName;
 					return;
 			}
-			throw Error('unknown layer type')
+			throw Error('unknown layer type');
 		});
 
 		style.layers = layers;
@@ -116,20 +96,31 @@ export default class StyleDefinition {
 		style.sprite = resolveUrl(configuration.spriteUrl);
 
 		const source = style.sources[this.#sourceName];
-		if ('tiles' in source) source.tiles = configuration.tilesUrls.map(resolveUrl)
+		if ('tiles' in source) source.tiles = configuration.tilesUrls.map(resolveUrl);
 
 		return style;
 
 		function resolveUrl(url: string): string {
 			if (!configuration.baseUrl) return url;
-			url = (new URL(url, configuration.baseUrl)).href;
+			url = new URL(url, configuration.baseUrl).href;
 			url = url.replace(/%7B/gi, '{');
 			url = url.replace(/%7D/gi, '}');
 			return url;
 		}
 	}
 
-	getBuilder(): StyleBuilder {
+	public getBuilder(): StyleBuilder {
 		return new StyleBuilder(this);
 	}
+
+	protected recolor(callback: (color: Color) => Color): void {
+		const colors: StylemakerStringLookup = Object.fromEntries(
+			Object.entries(this.#config.colors)
+				.map(([name, color]) => [name, callback(Color(color)).hexa()]),
+		);
+		this.#config.setColors(colors);
+	}
+
+
+	protected abstract getStyleRules(opt: StyleRulesOptions): StyleRules;
 }

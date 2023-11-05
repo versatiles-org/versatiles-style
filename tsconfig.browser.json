@@ -7,7 +7,7 @@
 		"declarationDir": "./tmp/dts"
 	},
 	"exclude": [
-		"bin/**/*.ts",
+		"scripts/**/*.ts",
 		"**/*.test.ts"
 	]
 }

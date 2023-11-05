@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import Colorful from './colorful.js';
 
 export default class Graybeard extends Colorful {
-	constructor() {
+	public constructor() {
 		super();
 
 		this.name = 'graybeard';

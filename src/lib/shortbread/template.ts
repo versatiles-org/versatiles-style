@@ -1,14 +1,16 @@
-import { MaplibreStyle } from '../types.js';
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import type { MaplibreStyle } from '../types.js';
 
 const maxzoom = 14;
 
-export default function (): MaplibreStyle {
+export default function(): MaplibreStyle {
 	return {
 		version: 8,
 		name: 'versatiles',
 		metadata: {
 			'maputnik:renderer': 'mbgljs',
-			license: 'https://creativecommons.org/publicdomain/zero/1.0/'
+			license: 'https://creativecommons.org/publicdomain/zero/1.0/',
 		},
 		glyphs: 'https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf',
 		sprite: 'https://tiles.versatiles.org/sprites/sprites',
@@ -16,7 +18,7 @@ export default function (): MaplibreStyle {
 			'versatiles-shortbread': {
 				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 				tiles: [
-					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
+					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}',
 				],
 				type: 'vector',
 				scheme: 'xyz',
@@ -24,7 +26,7 @@ export default function (): MaplibreStyle {
 					-180,
 					-85.0511287798066,
 					180,
-					85.0511287798066
+					85.0511287798066,
 				],
 				minzoom: 0,
 				maxzoom,
@@ -36,10 +38,10 @@ export default function (): MaplibreStyle {
 							name: 'String',
 							name_de: 'String',
 							name_en: 'String',
-							population: 'Number'
+							population: 'Number',
 						},
 						minzoom: 3,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'boundaries',
@@ -47,10 +49,10 @@ export default function (): MaplibreStyle {
 							admin_level: 'Number',
 							coastline: 'Boolean',
 							disputed: 'Boolean',
-							maritime: 'Boolean'
+							maritime: 'Boolean',
 						},
 						minzoom: 0,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'boundary_labels',
@@ -61,29 +63,29 @@ export default function (): MaplibreStyle {
 							name_de: 'String',
 							name_en: 'String',
 							name_single: 'String',
-							way_area: 'Number'
+							way_area: 'Number',
 						},
 						minzoom: 2,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'addresses',
 						fields: {
 							housename: 'String',
-							housenumber: 'String'
+							housenumber: 'String',
 						},
 						minzoom: 14,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'water_lines',
 						fields: {
 							bridge: 'Boolean',
 							kind: 'String',
-							tunnel: 'Boolean'
+							tunnel: 'Boolean',
 						},
 						minzoom: 4,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'water_lines_labels',
@@ -93,50 +95,50 @@ export default function (): MaplibreStyle {
 							name: 'String',
 							name_de: 'String',
 							name_en: 'String',
-							tunnel: 'Boolean'
+							tunnel: 'Boolean',
 						},
 						minzoom: 4,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'dam_lines',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'dam_polygons',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'pier_lines',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'pier_polygons',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'bridges',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'street_polygons',
@@ -146,10 +148,10 @@ export default function (): MaplibreStyle {
 							rail: 'Boolean',
 							service: 'String',
 							surface: 'String',
-							tunnel: 'Boolean'
+							tunnel: 'Boolean',
 						},
 						minzoom: 11,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'streets_polygons_labels',
@@ -157,10 +159,10 @@ export default function (): MaplibreStyle {
 							kind: 'String',
 							name: 'String',
 							name_de: 'String',
-							name_en: 'String'
+							name_en: 'String',
 						},
 						minzoom: 14,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'ferries',
@@ -168,10 +170,10 @@ export default function (): MaplibreStyle {
 							kind: 'String',
 							name: 'String',
 							name_de: 'String',
-							name_en: 'String'
+							name_en: 'String',
 						},
 						minzoom: 8,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'streets',
@@ -187,10 +189,10 @@ export default function (): MaplibreStyle {
 							service: 'String',
 							surface: 'String',
 							tracktype: 'String',
-							tunnel: 'Boolean'
+							tunnel: 'Boolean',
 						},
 						minzoom: 5,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'street_labels',
@@ -202,10 +204,10 @@ export default function (): MaplibreStyle {
 							ref: 'String',
 							ref_cols: 'Number',
 							ref_rows: 'Number',
-							tunnel: 'Boolean'
+							tunnel: 'Boolean',
 						},
 						minzoom: 10,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'street_labels_points',
@@ -214,18 +216,18 @@ export default function (): MaplibreStyle {
 							name: 'String',
 							name_de: 'String',
 							name_en: 'String',
-							ref: 'String'
+							ref: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'aerialways',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 12,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'public_transport',
@@ -235,10 +237,10 @@ export default function (): MaplibreStyle {
 							name: 'String',
 							name_de: 'String',
 							name_en: 'String',
-							station: 'String'
+							station: 'String',
 						},
 						minzoom: 11,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'buildings',
@@ -247,28 +249,28 @@ export default function (): MaplibreStyle {
 							dummy: 'Number',
 							name: 'String',
 							name_de: 'String',
-							name_en: 'String'
+							name_en: 'String',
 						},
 						minzoom: 14,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'water_polygons',
 						fields: {
 							kind: 'String',
-							way_area: 'Number'
+							way_area: 'Number',
 						},
 						minzoom: 4,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'ocean',
 						fields: {
 							x: 'Number',
-							y: 'Number'
+							y: 'Number',
 						},
 						minzoom: 0,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'water_polygons_labels',
@@ -277,18 +279,18 @@ export default function (): MaplibreStyle {
 							name: 'String',
 							name_de: 'String',
 							name_en: 'String',
-							way_area: 'Number'
+							way_area: 'Number',
 						},
 						minzoom: 14,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'land',
 						fields: {
-							kind: 'String'
+							kind: 'String',
 						},
 						minzoom: 7,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'sites',
@@ -297,10 +299,10 @@ export default function (): MaplibreStyle {
 							kind: 'String',
 							name: 'String',
 							name_de: 'String',
-							name_en: 'String'
+							name_en: 'String',
 						},
 						minzoom: 14,
-						maxzoom
+						maxzoom,
 					},
 					{
 						id: 'pois',
@@ -327,14 +329,14 @@ export default function (): MaplibreStyle {
 							sport: 'String',
 							tourism: 'String',
 							'tower:type': 'String',
-							vending: 'String'
+							vending: 'String',
 						},
 						minzoom: 14,
-						maxzoom
-					}
-				]
-			}
+						maxzoom,
+					},
+				],
+			},
 		},
-		layers: []
-	}
+		layers: [],
+	};
 }

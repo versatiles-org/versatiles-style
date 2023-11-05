@@ -1,9 +1,9 @@
 
 /******************************************************************************/
 
-import { BackgroundLayer, FillLayer, LineLayer, SymbolLayer } from 'mapbox-gl';
+import type { BackgroundLayer, FillLayer, LineLayer, SymbolLayer } from 'mapbox-gl';
 
-import { Style } from 'mapbox-gl';
+import type { Style } from 'mapbox-gl';
 
 export type MaplibreStyle = Style;
 export type MaplibreLayer = BackgroundLayer | FillLayer | LineLayer | SymbolLayer;
@@ -11,50 +11,48 @@ export type MaplibreFilter = unknown[];
 
 /******************************************************************************/
 
-export type StyleRuleValue = object | number | string | boolean;
-export type StyleRule = { [id: string]: StyleRuleValue }
-export type StyleRules = { [id: string]: StyleRule }
+export type StyleRuleValue = boolean | number | object | string;
+export type StyleRule = Record<string, StyleRuleValue>;
+export type StyleRules = Record<string, StyleRule>;
 
-import Color from 'color';
-export type StylemakerColorLookup = { [name: string]: Color };
-export type StylemakerStringLookup = { [name: string]: string }
+import type Color from 'color';
+export type StylemakerColorLookup = Record<string, Color>;
+export type StylemakerStringLookup = Record<string, string>;
 
-export type LanguageSuffix = '' | '_de' | '_en';
+export type LanguageSuffix = '_de' | '_en' | '';
 
-export type RecolorOptions = {
-	invert?: boolean,
-	rotate?: number,
-	saturate?: number,
-	gamma?: number,
-	contrast?: number,
-	brightness?: number,
-	tint?: number,
-	tintColor?: string,
+export interface RecolorOptions {
+	invert?: boolean;
+	rotate?: number;
+	saturate?: number;
+	gamma?: number;
+	contrast?: number;
+	brightness?: number;
+	tint?: number;
+	tintColor?: string;
 }
 
-export type StyleRulesOptions = {
-	colors: StylemakerColorLookup,
-	fonts: StylemakerStringLookup,
-	languageSuffix: string,
+export interface StyleRulesOptions {
+	colors: StylemakerColorLookup;
+	fonts: StylemakerStringLookup;
+	languageSuffix: string;
 }
 
-export type StylemakerLayerStyleGenerator = (options: StyleRulesOptions) => StyleRules
-
-export type StylebuilderOptions = {
-	baseUrl?: string,
-	glyphsUrl?: string,
-	spriteUrl?: string,
-	tilesUrls?: string[],
-	hideLabels?: boolean,
-	languageSuffix?: LanguageSuffix,
-	colors?: { [name: string]: string },
-	fonts?: { [name: string]: string },
-	recolor?: RecolorOptions,
+export interface StyleBuilderOptions {
+	baseUrl?: string;
+	glyphsUrl?: string;
+	spriteUrl?: string;
+	tilesUrls?: string[];
+	hideLabels?: boolean;
+	languageSuffix?: LanguageSuffix;
+	colors?: Record<string, string>;
+	fonts?: Record<string, string>;
+	recolor?: RecolorOptions;
 }
 
 export interface StylemakerFunction {
-	(options: StylebuilderOptions): MaplibreStyle;
+	(options: StyleBuilderOptions): MaplibreStyle;
 	name: string;
-	options: StylebuilderOptions;
+	options: StyleBuilderOptions;
 }
 

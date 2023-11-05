@@ -1,14 +1,14 @@
-import { run } from './shell';
+import { run } from './shell.js';
 
-export async function getLastGitHubTag(): Promise<{ sha: string, version: string }> {
-	let commits: Commit[] = await getAllCommits();
+export async function getLastGitHubTag(): Promise<{ sha: string; version: string }> {
+	const commits: Commit[] = await getAllCommits();
 
 	const result = commits
 		.map(commit => ({
 			sha: commit.sha,
-			version: commit.tag?.match(/^v(\d+\.\d+\.\d+)$/)?.[1]
+			version: commit.tag?.match(/^v(\d+\.\d+\.\d+)$/)?.[1],
 		}))
-		.find(r => r.version) as { sha: string, version: string } | undefined;
+		.find(r => r.version) as { sha: string; version: string } | undefined;
 
 	if (!result) throw Error();
 
@@ -16,23 +16,23 @@ export async function getLastGitHubTag(): Promise<{ sha: string, version: string
 }
 
 async function getAllCommits(): Promise<Commit[]> {
-	const result: string = await run.stdout(`git log --pretty=format:'⍃%H⍄%s⍄%D⍄'`);
+	const result: string = await run.stdout('git log --pretty=format:\'⍃%H⍄%s⍄%D⍄\'');
 
 	return result
 		.split('⍃')
 		.filter(line => line.length > 2)
 		.map(line => {
-			let obj:string[] = line.split('⍄');
+			const obj: string[] = line.split('⍄');
 			return {
 				sha: obj[0],
 				message: obj[1],
-				tag: obj[2].match(/tag: ([a-z0-9.]+)/)?.[1]
-			}
+				tag: /tag: ([a-z0-9.]+)/.exec(obj[2])?.[1],
+			};
 		});
 }
 
 export async function getCurrentGitHubCommit(): Promise<Commit> {
-	return (await getAllCommits())[0]
+	return (await getAllCommits())[0];
 }
 
 export async function getCommitsBetween(shaLast: string, shaCurrent: string): Promise<Commit[]> {
@@ -47,4 +47,6 @@ export async function getCommitsBetween(shaLast: string, shaCurrent: string): Pr
 	return commits;
 }
 
-export type Commit = { sha: string, message: string, tag?: string };
+export interface Commit {
+	sha: string; message: string; tag?: string; 
+}

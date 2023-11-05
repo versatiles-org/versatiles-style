@@ -1,14 +1,14 @@
 #!/usr/bin/env npx tsx
 
 import { readFileSync, writeFileSync } from 'node:fs';
-import inquirer from 'inquirer'
-import { check, info, panic, warn } from './lib/log';
-import { run } from './lib/shell';
-import { getCommitsBetween, getCurrentGitHubCommit, getLastGitHubTag } from './lib/git';
+import inquirer from 'inquirer';
+import { check, info, panic, warn } from './lib/log.js';
+import { run } from './lib/shell.js';
+import { getCommitsBetween, getCurrentGitHubCommit, getLastGitHubTag } from './lib/git.js';
 
-const BRANCH = 'main'
+const BRANCH = 'main';
 
-process.chdir((new URL('../', import.meta.url)).pathname);
+process.chdir(new URL('../', import.meta.url).pathname);
 
 
 
@@ -28,8 +28,9 @@ await check('git pull', run('git pull -t'));
 
 // get last version
 const { sha: shaLast, version: versionLastGithub } = await check('get last github tag', getLastGitHubTag());
-const versionLastPackage: string = JSON.parse(readFileSync('./package.json', 'utf8')).version;
-if (versionLastPackage !== versionLastGithub) warn(`versions differ in package.json (${versionLastPackage}) and last GitHub tag (${versionLastGithub})`)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+const versionLastPackage: string = JSON.parse(readFileSync('./package.json', 'utf8'))?.version;
+if (versionLastPackage !== versionLastGithub) warn(`versions differ in package.json (${versionLastPackage}) and last GitHub tag (${versionLastGithub})`);
 
 // get current sha
 const { sha: shaCurrent } = await check('get current github commit', getCurrentGitHubCommit());
@@ -66,8 +67,8 @@ await check('git push', run('git push --no-verify --follow-tags'));
 // github release
 const releaseNotesPipe = `echo -e '${releaseNotes.replace(
 	/[^a-z0-9,.?!:_<> -]/gi,
-	c => '\\x' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-)}'`
+	c => '\\x' + ('00' + c.charCodeAt(0).toString(16)).slice(-2),
+)}'`;
 if (await check('check github release', run.ok('gh release view v' + nextVersion))) {
 	await check('edit release', run(`${releaseNotesPipe} | gh release edit "v${nextVersion}" -F -`));
 } else {
@@ -84,25 +85,27 @@ process.exit(0);
 
 /****************************************************************************/
 
-async function checkThatNoUncommittedChanges() {
+async function checkThatNoUncommittedChanges(): Promise<void> {
 	if ((await run('git status --porcelain')).stdout.length < 3) return;
 	throw Error('please commit all changes before releasing');
 }
-async function editVersion(version_package: string): Promise<string> {
+async function editVersion(versionPackage: string): Promise<string> {
 	// ask for new version
-	const version_new: string = (await inquirer.prompt({
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const versionNew: string = (await inquirer.prompt({
 		message: 'What should be the new version?',
-		name: 'version_new',
+		name: 'versionNew',
 		type: 'list',
-		choices: [version_package, bump(2), bump(1), bump(0)],
-		default: 1
-	})).version_new
-	if (!version_new) throw Error();
+		choices: [versionPackage, bump(2), bump(1), bump(0)],
+		default: 1,
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	})).versionNew;
+	if (!versionNew) throw Error();
 
-	return version_new
+	return versionNew;
 
-	function bump(index: 0 | 1 | 2) {
-		const p = version_package.split('.').map(v => parseInt(v, 10));
+	function bump(index: 0 | 1 | 2): { name: string; value: string } {
+		const p = versionPackage.split('.').map(v => parseInt(v, 10));
 		if (p.length !== 3) throw Error();
 		switch (index) {
 			case 0: p[0]++; p[1] = 0; p[2] = 0; break;
@@ -111,21 +114,22 @@ async function editVersion(version_package: string): Promise<string> {
 		}
 		const name = p.map((n, i) => (i == index) ? `\x1b[1m${n}` : `${n}`).join('.') + '\x1b[22m';
 		const value = p.join('.');
-		return { name, value }
+		return { name, value };
 	}
 }
-async function setNextVersion(version: string) {
+async function setNextVersion(version: string): Promise<void> {
 	// set new version in package.json
-	const package_json = JSON.parse(readFileSync('./package.json', 'utf8'));
-	package_json.version = version;
-	writeFileSync('./package.json', JSON.stringify(package_json, null, '  '));
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const packageJSON: { version: string } = JSON.parse(readFileSync('./package.json', 'utf8'));
+	packageJSON.version = version;
+	writeFileSync('./package.json', JSON.stringify(packageJSON, null, '  '));
 
 	// rebuild package.json
-	await run('npm i --package-lock-only')
+	await run('npm i --package-lock-only');
 }
 
-async function getReleaseNotes(version: string, shaLast: string, shaCurrent: string): Promise<string> {
-	const commits = await getCommitsBetween(shaLast, shaCurrent);
+async function getReleaseNotes(version: string, hashLast: string, hashCurrent: string): Promise<string> {
+	const commits = await getCommitsBetween(hashLast, hashCurrent);
 	let notes = commits.reverse()
 		.map(commit => '- ' + commit.message.replace(/\s+/g, ' '))
 		.join('\n');

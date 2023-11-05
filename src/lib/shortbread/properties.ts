@@ -1,18 +1,18 @@
 
-export type ShortbreadProperty = {
-	key: string,
-	parent: 'layer' | 'layout' | 'paint',
-	valueType: 'array' | 'boolean' | 'color' | 'enum' | 'filter' | 'fonts' | 'formatted' | 'number' | 'padding' | 'resolvedImage' | 'variableAnchorOffsetCollection',
+export interface ShortbreadProperty {
+	readonly key: string;
+	readonly parent: 'layer' | 'layout' | 'paint';
+	readonly valueType: 'array' | 'boolean' | 'color' | 'enum' | 'filter' | 'fonts' | 'formatted' | 'number' | 'padding' | 'resolvedImage' | 'variableAnchorOffsetCollection';
 }
 
 type ShortbreadPropertyDef = ShortbreadProperty & {
-	types: string,
-	short?: string,
-}
+	readonly types: string;
+	readonly short?: string;
+};
 
-const propertyLookup: Map<string, ShortbreadProperty[]> = new Map();
+const propertyLookup = new Map<string, ShortbreadProperty[]>();
 
-const propertyList: ShortbreadPropertyDef[] = [
+const propertyDefs: ShortbreadPropertyDef[] = [
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'filter', valueType: 'filter' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'maxzoom', valueType: 'number' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'minzoom', valueType: 'number' },
@@ -112,14 +112,12 @@ const propertyList: ShortbreadPropertyDef[] = [
 	{ parent: 'paint', types: 'symbol', key: 'text-opacity', short: 'opacity', valueType: 'number' },
 	{ parent: 'paint', types: 'symbol', key: 'text-translate-anchor', valueType: 'enum' },
 	{ parent: 'paint', types: 'symbol', key: 'text-translate', valueType: 'array' },
-]
+];
 
-propertyList.forEach((propertyDef: ShortbreadPropertyDef) => {
+propertyDefs.forEach((propertyDef: ShortbreadPropertyDef) => {
 	const types: string = propertyDef.types;
 
 	types.split(',').forEach((type: string) => {
-		add(propertyDef.key);
-		if (propertyDef.short) add(propertyDef.short);
 
 		function add(propertyKey: string): void {
 			const key = type + '/' + propertyKey;
@@ -127,7 +125,7 @@ propertyList.forEach((propertyDef: ShortbreadPropertyDef) => {
 				key: propertyDef.key,
 				parent: propertyDef.parent,
 				valueType: propertyDef.valueType,
-			}
+			};
 			const propertyList: ShortbreadProperty[] | undefined = propertyLookup.get(key);
 			if (propertyList) {
 				propertyList.push(property);
@@ -135,7 +133,10 @@ propertyList.forEach((propertyDef: ShortbreadPropertyDef) => {
 				propertyLookup.set(key, [property]);
 			}
 		}
+
+		add(propertyDef.key);
+		if (propertyDef.short != null) add(propertyDef.short);
 	});
-})
+});
 
 export default propertyLookup;

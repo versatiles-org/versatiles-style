@@ -1,5 +1,5 @@
 import Color from 'color';
-import { RecolorOptions, StylemakerColorLookup } from './types.js';
+import type { RecolorOptions, StylemakerColorLookup } from './types.js';
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {
@@ -11,13 +11,13 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 		brightness: 0,
 		tint: 0,
 		tintColor: '#FF0000',
-	}
+	};
 }
 
-export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): void {
+export function recolor(colors: StylemakerColorLookup, opt?: RecolorOptions): void {
 	if (!opt) return;
 
-	if (opt.invert) invert();
+	if (opt.invert ?? false) invert();
 	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) rotate(opt.rotate);
 	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) saturate(opt.saturate);
 	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) gamma(opt.gamma);
@@ -34,7 +34,7 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 	}
 
 	function rotate(value: number): void {
-		forEachColor(c => c.rotate(value))
+		forEachColor(c => c.rotate(value));
 	}
 
 	function saturate(value: number): void {
@@ -50,7 +50,7 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 				Math.pow(rgb[0] / 255, value) * 255,
 				Math.pow(rgb[1] / 255, value) * 255,
 				Math.pow(rgb[2] / 255, value) * 255,
-				color.alpha()
+				color.alpha(),
 			);
 		});
 	}
@@ -64,9 +64,9 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 				(rgb[0] - 127.5) * value + 127.5,
 				(rgb[1] - 127.5) * value + 127.5,
 				(rgb[2] - 127.5) * value + 127.5,
-				color.alpha()
+				color.alpha(),
 			);
-		})
+		});
 	}
 
 	function brightness(value: number): void {
@@ -80,9 +80,9 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 				rgb[0] * a + b,
 				rgb[1] * a + b,
 				rgb[2] * a + b,
-				color.alpha()
+				color.alpha(),
 			);
-		})
+		});
 	}
 
 	function tint(value: number, tintColor: Color): void {
@@ -93,6 +93,7 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 			const rgb0: number[] = color.rgb().array();
 
 			const hsv: number[] = color.hsv().array();
+			// eslint-disable-next-line @typescript-eslint/prefer-destructuring
 			hsv[0] = tintColorHSV[0];
 			hsv[1] *= tintColorHSV[1];
 			hsv[2] *= tintColorHSV[2];
@@ -103,7 +104,7 @@ export function recolor(colors: StylemakerColorLookup, opt: RecolorOptions): voi
 				rgb0[1] * (1 - value) + value * rgbNew[1],
 				rgb0[2] * (1 - value) + value * rgbNew[2],
 				color.alpha(),
-			)
-		})
+			);
+		});
 	}
 }
