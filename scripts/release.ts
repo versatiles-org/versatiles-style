@@ -122,7 +122,7 @@ async function setNextVersion(version: string): Promise<void> {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const packageJSON: { version: string } = JSON.parse(readFileSync('./package.json', 'utf8'));
 	packageJSON.version = version;
-	writeFileSync('./package.json', JSON.stringify(packageJSON, null, '  '));
+	writeFileSync('./package.json', JSON.stringify(packageJSON, null, '  ') + '\n');
 
 	// rebuild package.json
 	await run('npm i --package-lock-only');
