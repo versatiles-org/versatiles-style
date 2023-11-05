@@ -39,10 +39,6 @@ jobs:
         run: tar -cf - *.json | gzip -9 > styles.tar.gz
         working-directory: release
 
-      - name: Cleanup styles
-        run: rm *.json
-        working-directory: release
-
       - name: Build browser
         run: npm run build-browser
 
@@ -54,7 +50,7 @@ jobs:
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - name: Upload file to release
-        run: gh release upload $RELEASE_TAG *.map *.js *.gz --clobber
+        run: gh release upload $RELEASE_TAG *.js *.gz --clobber
         working-directory: release
 
       - name: Update release
