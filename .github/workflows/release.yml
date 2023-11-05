@@ -40,7 +40,7 @@ jobs:
 
       - name: upload file to release
         run: gh release upload $RELEASE_TAG *.map *.js *.json --clobber
-        working-directory: ./release
+        working-directory: release
 
       - name: update release
         run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false

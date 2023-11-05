@@ -21,7 +21,6 @@ if (baseUrl) {
 }
 
 // ensure destination dir exists
-if (existsSync(dirDst)) rmSync(dirDst, { recursive: true });
 mkdirSync(dirDst, { recursive: true });
 
 // load styles
