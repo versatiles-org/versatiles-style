@@ -6,7 +6,6 @@ import { check, info, panic, warn } from './lib/log';
 import { run } from './lib/shell';
 import { getCommitsBetween, getCurrentGitHubCommit, getLastGitHubTag } from './lib/git';
 
-const REPO = 'versatiles-org/versatiles-styles';
 const BRANCH = 'main'
 
 process.chdir((new URL('../', import.meta.url)).pathname);
@@ -25,10 +24,10 @@ if (branch !== BRANCH) panic(`branch name "${branch}" is not "${BRANCH}"`);
 await check('are all changes committed?', checkThatNoUncommittedChanges());
 
 // git: pull
-await check('git pull', run('git pull'));
+await check('git pull', run('git pull -t'));
 
 // get last version
-const { sha: shaLast, version: versionLastGithub } = await check('get last github tag', getLastGitHubTag(REPO));
+const { sha: shaLast, version: versionLastGithub } = await check('get last github tag', getLastGitHubTag());
 const versionLastPackage: string = JSON.parse(readFileSync('./package.json', 'utf8')).version;
 if (versionLastPackage !== versionLastGithub) warn(`versions differ in package.json (${versionLastPackage}) and last GitHub tag (${versionLastGithub})`)
 
@@ -126,7 +125,7 @@ async function setNextVersion(version: string) {
 }
 
 async function getReleaseNotes(version: string, shaLast: string, shaCurrent: string): Promise<string> {
-	const commits = await getCommitsBetween(REPO, shaLast, shaCurrent);
+	const commits = await getCommitsBetween(shaLast, shaCurrent);
 	let notes = commits.reverse()
 		.map(commit => '- ' + commit.message.replace(/\s+/g, ' '))
 		.join('\n');

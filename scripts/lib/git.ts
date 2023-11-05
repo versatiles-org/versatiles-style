@@ -1,43 +1,50 @@
-import { fetchJSON } from './fetch';
 import { run } from './shell';
 
-export async function getLastGitHubTag(repo: string): Promise<VersionTag> {
-	const result = await fetchJSON(`https://api.github.com/repos/${repo}/tags`) as unknown[];
+export async function getLastGitHubTag(): Promise<{ sha: string, version: string }> {
+	let commits: Commit[] = await getAllCommits();
 
-	const tags = result.map(e => ({
-		// @ts-ignore
-		tag: e.name,
-		// @ts-ignore
-		sha: e.commit.sha,
-		// @ts-ignore
-		version: e.name.match(/^v(\d+\.\d+\.\d+)$/)?.[1]
-	})) as { tag: string, sha: string, version: string | undefined }[];
+	const result = commits
+		.map(commit => ({
+			sha: commit.sha,
+			version: commit.tag?.match(/^v(\d+\.\d+\.\d+)$/)?.[1]
+		}))
+		.find(r => r.version) as { sha: string, version: string } | undefined;
 
-	const tag = tags.find(tag => tag.version !== undefined) as VersionTag | undefined;
+	if (!result) throw Error();
 
-	if (!tag) throw Error();
+	return result;
+}
 
-	return tag;
+async function getAllCommits(): Promise<Commit[]> {
+	const result: string = await run.stdout(`git log --pretty=format:'⍃%H⍄%s⍄%D⍄'`);
+
+	return result
+		.split('⍃')
+		.filter(line => line.length > 2)
+		.map(line => {
+			let obj:string[] = line.split('⍄');
+			return {
+				sha: obj[0],
+				message: obj[1],
+				tag: obj[2].match(/tag: ([a-z0-9.]+)/)?.[1]
+			}
+		});
 }
 
 export async function getCurrentGitHubCommit(): Promise<Commit> {
-	return JSON.parse(await run.stdout(`git log -1 --pretty=format:'{"sha":"%H","message":"%s"}'`))
+	return (await getAllCommits())[0]
 }
 
-export async function getCommitsBetween(repo: string, shaLast: string, shaCurrent: string): Promise<Commit[]> {
-	const result = await fetchJSON(`https://api.github.com/repos/${repo}/commits?sha=${shaCurrent}&per_page=100`) as
-		{ sha: string, commit: { message: string } }[];
+export async function getCommitsBetween(shaLast: string, shaCurrent: string): Promise<Commit[]> {
+	let commits: Commit[] = await getAllCommits();
 
-	let commits = result.map(e => ({
-		sha: e.sha,
-		message: e.commit.message,
-	})) as Commit[];
+	const start = commits.findIndex(commit => commit.sha === shaCurrent);
+	if (start >= 0) commits = commits.slice(start);
 
-	const index = commits.findIndex(commit => commit.sha === shaLast);
-	if (index > 0) commits = commits.slice(0, index);
+	const end = commits.findIndex(commit => commit.sha === shaLast);
+	if (end >= 0) commits = commits.slice(0, end);
 
 	return commits;
 }
 
-export type Commit = { sha: string, message: string };
-export type VersionTag = { tag: string, version: string, sha: string };
+export type Commit = { sha: string, message: string, tag?: string };

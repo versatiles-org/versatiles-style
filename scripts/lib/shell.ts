@@ -16,12 +16,15 @@ export function run(command: string, errorOnCodeZero?: boolean): Promise<{ code:
 		cp.stderr?.on('data', chunk => stderr.push(chunk));
 	})
 }
+
 run.stderr = async function (command: string, errorOnCodeZero?:boolean): Promise<string> {
 	return (await run(command, errorOnCodeZero)).stderr.trim()
 }
+
 run.stdout = async function (command: string, errorOnCodeZero?:boolean): Promise<string> {
 	return (await run(command, errorOnCodeZero)).stdout.trim()
 }
+
 run.ok = async function (command: string): Promise<boolean> {
 	return (await run(command,false)).code === 0
 }
