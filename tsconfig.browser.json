@@ -4,7 +4,7 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"declaration": true,
-		"declarationDir": "./tmp/dts"
+		"declarationDir": ".tmp.d.ts"
 	},
 	"exclude": [
 		"scripts/**/*.ts",

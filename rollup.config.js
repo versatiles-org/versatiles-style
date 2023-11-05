@@ -6,27 +6,23 @@ import dts from 'rollup-plugin-dts';
 
 export default [
 	{
-		input: 'src/index.ts',
+		input: './src/index.ts',
 		output: {
-			file: 'release/versatiles-styles.js',
+			file: './release/versatiles-styles.js',
 			format: 'umd',
 			sourcemap: true,
 			name: 'versatiles_styles'
 		},
-		watch: {
-			include: ['src/**'],
-			exclude: ['node_modules/**']
-		},
 		plugins: [
-			typescript({ tsconfig: 'tsconfig.browser.json' }),
+			typescript({ tsconfig: './tsconfig.browser.json' }),
 			commonjs({ extensions: ['.js', '.ts'] }),
 			nodeResolve(),
 			terser(),
 		]
 	},
 	{
-		input: './release/tmp/dts/index.d.ts',
-		output: [{ file: 'release/versatiles-styles.d.ts', format: 'es' }],
+		input: './release/.tmp.d.ts/index.d.ts',
+		output: [{ file: './release/versatiles-styles.d.ts', format: 'es' }],
 		plugins: [dts()],
 	},
 ]

@@ -16,12 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Cache Node Modules
+      - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
@@ -30,17 +30,32 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+        run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Build styles
+        run: npm run build-styles
 
-      - name: get version
-        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
-
-      - name: upload file to release
-        run: gh release upload $RELEASE_TAG *.map *.js *.json --clobber
+      - name: Compress styles
+        run: tar -cf - *.json | gzip -9 > styles.tar.gz
         working-directory: release
 
-      - name: update release
+      - name: Cleanup styles
+        run: rm *.json
+        working-directory: release
+
+      - name: Build browser
+        run: npm run build-browser
+
+      - name: Compress script
+        run: tar -cf - versatiles-style.* | gzip -9 > versatiles-style.tar.gz
+        working-directory: release
+
+      - name: Get version
+        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
+
+      - name: Upload file to release
+        run: gh release upload $RELEASE_TAG *.map *.js *.gz --clobber
+        working-directory: release
+
+      - name: Update release
         run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
