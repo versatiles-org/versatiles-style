@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import type { VectorSource } from 'mapbox-gl';
 import type { MaplibreStyle } from '../style_builder.js';
 import getTemplate from './template.js';
 
 describe('getTemplate', () => {
-	// eslint-disable-next-line @typescript-eslint/init-declarations
 	const styleTemplate: MaplibreStyle = getTemplate();
 
 	it('returns a style object with the correct version', () => {
@@ -50,7 +51,6 @@ describe('getTemplate', () => {
 		expect(styleTemplate).toBeDefined();
 		expect(styleTemplate.sources).toBeDefined();
 
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const { vector_layers } = styleTemplate.sources['versatiles-shortbread'] as VectorSource;
 
 		expect(typeof vector_layers).toBe('object');
