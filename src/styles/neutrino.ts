@@ -26,10 +26,6 @@ export default class Neutrino extends StyleBuilder {
 		label: '#cbb7b7',
 	};
 
-	public constructor() {
-		super();
-	}
-
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {

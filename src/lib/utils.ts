@@ -8,6 +8,7 @@ export function deepClone<T>(obj: T): T {
 			case 'boolean':
 			case 'number':
 			case 'string':
+			case 'undefined':
 				return obj;
 			default: throw new Error(`Not implemented yet: "${type}" case`);
 		}

@@ -47,7 +47,7 @@ export default abstract class StyleBuilder {
 	public abstract colors: Record<string, string>;
 
 	// Constructor
-	protected constructor() {
+	public constructor() {
 		try {
 			// @ts-expect-error: I'm not sure if I'm in a browser
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
