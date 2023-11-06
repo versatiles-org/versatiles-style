@@ -5,8 +5,8 @@ import { resolve } from 'node:path';
 import * as styleBuilderClasses from '../src/index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import { prettyStyleJSON } from '../src/lib/utils.js';
-import type { MaplibreStyle } from '../src/lib/types.js';
+import { prettyStyleJSON } from './lib/utils.js';
+import type { MaplibreStyle } from '../src/index.js';
 
 
 

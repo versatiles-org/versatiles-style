@@ -1,5 +1,5 @@
 import Color from 'color';
-import type { StylemakerColorLookup } from './types.js';
+import type { StylemakerColorLookup } from './style_builder.js';
 
 export interface RecolorOptions {
 	invert?: boolean;

@@ -1,11 +1,26 @@
 // Import necessary modules and files
 import Color from 'color';
 import getShortbreadTemplate from './shortbread/template.js';
+import type { MaplibreLayer } from './shortbread/layers.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import type { RecolorOptions } from './recolor.js';
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
-import type { MaplibreStyle, StylemakerColorLookup, StylemakerStringLookup, StyleRulesOptions, StyleRules, LanguageSuffix } from './types.js';
+import type { Style } from 'mapbox-gl';
+
+export type MaplibreStyle = Style;
+export type StyleRuleValue = boolean | number | object | string;
+export type StyleRule = Record<string, StyleRuleValue>;
+export type StyleRules = Record<string, StyleRule>;
+export type StylemakerColorLookup = Record<string, Color>;
+export type StylemakerStringLookup = Record<string, string>;
+export type LanguageSuffix = '_de' | '_en' | '';
+export interface StyleRulesOptions {
+	colors: StylemakerColorLookup;
+	fonts: StylemakerStringLookup;
+	languageSuffix: string;
+}
+
 
 // Stylemaker class definition
 export default abstract class StyleBuilder {
@@ -62,7 +77,7 @@ export default abstract class StyleBuilder {
 		});
 
 		// get shortbread layers
-		let layers = getShortbreadLayers({ languageSuffix: this.languageSuffix });
+		let layers: MaplibreLayer[] = getShortbreadLayers({ languageSuffix: this.languageSuffix });
 
 		// apply layer rules
 		layers = decorate(layers, layerStyleRules);
