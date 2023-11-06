@@ -16,7 +16,7 @@ describe('Style Builders', () => {
 
 	Object.entries(builderClasses).forEach(([styleName, builderClass]) => {
 		it(`should create and test an instance of ${styleName}`, () => {
-			const builder = new builderClass();
+			const builder: StyleBuilder = new builderClass();
 			expect(builder).toBeInstanceOf(StyleBuilder);
 			expect(typeof builder.name).toBe('string');
 

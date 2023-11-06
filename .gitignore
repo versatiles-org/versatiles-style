@@ -1,5 +1,6 @@
 
 .DS_Store
+coverage
 dist/**/*.js
 dist/**/*.ts
 node_modules

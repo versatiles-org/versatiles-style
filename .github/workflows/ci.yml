@@ -3,18 +3,16 @@ name: CI
 on:
   push:
     branches:
-      - '*'
+      - "**"
+    tags:
+      - "!**" # Don't run twice on commits with tags
   pull_request:
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
   release:
     name: Lint and test
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,9 +36,15 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Vulnerabilities
+      - name: Check vulnerabilities
         run: npm audit
 
-      - name: Optional Dependencies
+      - name: Run tests
         run: npm run test-node
+
+      - name: Generate test coverage
+        run: npm run test-coverage
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
         

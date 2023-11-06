@@ -3,7 +3,7 @@
 		"lib": [
 			"ESNext"
 		],
-		"module": "nodenext",
+		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"target": "ES2022",
 		"strict": true,
@@ -11,7 +11,7 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
-		"allowJs": true
+		"allowJs": true,
 	},
 	"include": [
 		"src/**/*.ts",
