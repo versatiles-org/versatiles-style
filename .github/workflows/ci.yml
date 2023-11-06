@@ -45,6 +45,7 @@ jobs:
       - name: Generate test coverage
         run: npm run test-coverage
 
-      - name: Upload Coverage
+      - name: Upload coverage
         uses: codecov/codecov-action@v3
-        
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
