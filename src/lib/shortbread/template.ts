@@ -22,6 +22,7 @@ export default function getTemplate(): MaplibreStyle {
 				],
 				type: 'vector',
 				scheme: 'xyz',
+				format: 'pbf',
 				bounds: [
 					-180,
 					-85.0511287798066,
