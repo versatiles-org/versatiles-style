@@ -34,10 +34,13 @@ export function deepClone<T>(obj: T): T {
 }
 
 export function isSimpleObject(item: unknown): boolean {
+	if (item === null) return false;
 	if (typeof item !== 'object') return false;
 	if (Array.isArray(item)) return false;
 	const prototypeKeyCount: number = Object.keys(Object.getPrototypeOf(item) as object).length;
-	return prototypeKeyCount === 0;
+	if (prototypeKeyCount !== 0) return false;
+	if (item.constructor.name !== 'Object') return false;
+	return true;
 }
 
 export function isBasicType(item: unknown): boolean {
