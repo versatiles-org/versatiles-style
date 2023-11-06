@@ -1,8 +1,4 @@
 
-import ColorfulClass from './styles/colorful.js';
-import GraybeardClass from './styles/graybeard.js';
-import NeutrinoClass from './styles/neutrino.js';
-
-export const colorful = new ColorfulClass().getBuilder();
-export const graybeard = new GraybeardClass().getBuilder();
-export const neutrino = new NeutrinoClass().getBuilder();
+export { default as Colorful } from './styles/colorful.js';
+export { default as Graybeard } from './styles/graybeard.js';
+export { default as Neutrino } from './styles/neutrino.js';

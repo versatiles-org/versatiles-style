@@ -1,5 +1,16 @@
 import Color from 'color';
-import type { RecolorOptions, StylemakerColorLookup } from './types.js';
+import type { StylemakerColorLookup } from './types.js';
+
+export interface RecolorOptions {
+	invert?: boolean;
+	rotate?: number;
+	saturate?: number;
+	gamma?: number;
+	contrast?: number;
+	brightness?: number;
+	tint?: number;
+	tintColor?: string;
+}
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {

@@ -2,7 +2,7 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import * as StyleMakers from '../src/index.js';
+import * as styleBuilderClasses from '../src/index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from '../src/lib/utils.js';
@@ -16,21 +16,21 @@ mkdirSync(dirDst, { recursive: true });
 
 
 // load styles
-for (const styleMaker of Object.values(StyleMakers)) {
-	const { name } = styleMaker;
-	const options = styleMaker.defaultOptions;
+for (const styleBuilderClass of Object.values(styleBuilderClasses)) {
+	const styleBuilder = new styleBuilderClass();
+	const { name } = styleBuilder;
 
-	options.languageSuffix = '';
-	produce(name, styleMaker.build(options));
+	styleBuilder.languageSuffix = '';
+	produce(name, styleBuilder.build());
 
-	options.languageSuffix = '_en';
-	produce(name + '.en', styleMaker.build(options));
+	styleBuilder.languageSuffix = '_en';
+	produce(name + '.en', styleBuilder.build());
 
-	options.languageSuffix = '_de';
-	produce(name + '.de', styleMaker.build(options));
+	styleBuilder.languageSuffix = '_de';
+	produce(name + '.de', styleBuilder.build());
 
-	options.hideLabels = true;
-	produce(name + '.nolabel', styleMaker.build(options));
+	styleBuilder.hideLabels = true;
+	produce(name + '.nolabel', styleBuilder.build());
 }
 
 function produce(name: string, style: MaplibreStyle): void {

@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import StyleDefinition from '../lib/style_definition.js';
+import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Neutrino extends StyleDefinition {
+export default class Neutrino extends StyleBuilder {
 	public readonly name: string = 'neutrino';
+
+	public fonts = {
+		regular: 'noto_sans_regular',
+		bold: 'noto_sans_bold',
+	};
+
+	public colors = {
+		land: '#f6f0f6',
+		water: '#cbd2df',
+		grass: '#e7e9e5',
+		wood: '#d9e3d9',
+		agriculture: '#f8eeee',
+		site: '#ebe8e6',
+		building: '#e0d1d9',
+		street: '#ffffff',
+		boundary: '#e6ccd8',
+		foot: '#fef8ff',
+		rail: '#e8d5e0',
+		label: '#cbb7b7',
+	};
 
 	public constructor() {
 		super();
-
-		this.fonts = {
-			regular: 'noto_sans_regular',
-			bold: 'noto_sans_bold',
-		};
-
-		this.colors = {
-			land: '#f6f0f6',
-			water: '#cbd2df',
-			grass: '#e7e9e5',
-			wood: '#d9e3d9',
-			agriculture: '#f8eeee',
-			site: '#ebe8e6',
-			building: '#e0d1d9',
-			street: '#ffffff',
-			boundary: '#e6ccd8',
-			foot: '#fef8ff',
-			rail: '#e8d5e0',
-			label: '#cbb7b7',
-		};
 	}
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {

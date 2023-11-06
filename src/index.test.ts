@@ -1,29 +1,30 @@
-import * as styleBuilders from './index.js';
-import { StyleBuilder } from './lib/style_builder.js';
+import * as builderClasses from './index.js';
+import StyleBuilder from './lib/style_builder.js';
 
 describe('Style Builders', () => {
 	const styleNames = [
-		'colorful',
-		'graybeard',
-		'neutrino',
+		'Colorful',
+		'Graybeard',
+		'Neutrino',
 	];
 
 	it(`should have the correct ${styleNames.length} styles`, () => {
-		const keys1 = Array.from(Object.keys(styleBuilders)).sort();
+		const keys1 = Array.from(Object.keys(builderClasses)).sort();
 		const keys2 = styleNames.sort();
 		expect(keys1).toEqual(keys2);
 	});
 
-	Object.entries(styleBuilders).forEach(([styleName, styleBuilder]) => {
+	Object.entries(builderClasses).forEach(([styleName, builderClass]) => {
 		it(`should create and test an instance of ${styleName}`, () => {
-			expect(styleBuilder).toBeInstanceOf(StyleBuilder);
-			expect(typeof styleBuilder.name).toBe('string');
-			expect(typeof styleBuilder.defaultOptions).toBe('object');
+			const builder = new builderClass();
+			expect(builder).toBeInstanceOf(StyleBuilder);
+			expect(typeof builder.name).toBe('string');
 
-			const style = styleBuilder.build({ baseUrl: 'https://example.org' });
+			builder.baseUrl = 'https://example.org';
+			const style = builder.build();
 			expect(JSON.stringify(style).length).toBeGreaterThan(50000);
 
-			expect(style.name).toBe('versatiles-' + styleName);
+			expect(style.name).toBe('versatiles-' + styleName.toLowerCase());
 			expect(style.glyphs).toBe('https://example.org/assets/fonts/{fontstack}/{range}.pbf');
 			expect(style.sprite).toBe('https://example.org/assets/sprites/sprites');
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');

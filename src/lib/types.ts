@@ -21,38 +21,8 @@ export type StylemakerStringLookup = Record<string, string>;
 
 export type LanguageSuffix = '_de' | '_en' | '';
 
-export interface RecolorOptions {
-	invert?: boolean;
-	rotate?: number;
-	saturate?: number;
-	gamma?: number;
-	contrast?: number;
-	brightness?: number;
-	tint?: number;
-	tintColor?: string;
-}
-
 export interface StyleRulesOptions {
 	colors: StylemakerColorLookup;
 	fonts: StylemakerStringLookup;
 	languageSuffix: string;
 }
-
-export interface StyleBuilderOptions {
-	baseUrl?: string;
-	glyphsUrl?: string;
-	spriteUrl?: string;
-	tilesUrls?: string[];
-	hideLabels?: boolean;
-	languageSuffix?: LanguageSuffix;
-	colors?: Record<string, string>;
-	fonts?: Record<string, string>;
-	recolor?: RecolorOptions;
-}
-
-export interface StylemakerFunction {
-	(options: StyleBuilderOptions): MaplibreStyle;
-	name: string;
-	options: StyleBuilderOptions;
-}
-

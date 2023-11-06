@@ -1,62 +1,62 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import StyleDefinition from '../lib/style_definition.js';
+import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Colorful extends StyleDefinition {
+export default class Colorful extends StyleBuilder {
 	public readonly name: string = 'colorful';
+
+	public fonts = {
+		regular: 'noto_sans_regular',
+		bold: 'noto_sans_bold',
+	};
+
+	public colors = {
+		land: '#F9F4EE',
+		water: '#BEDDF3',
+		glacier: '#FFFFFF',
+		wood: '#66AA44',
+		grass: '#D8E8C8',
+		park: '#D9D9A5',
+		street: '#FFFFFF',
+		streetbg: '#CFCDCA',
+		motorway: '#FFCC88',
+		motorwaybg: '#E9AC77',
+		trunk: '#FFEEAA',
+		trunkbg: '#E9AC77',
+		buildingbg: '#DFDBD7',
+		building: '#F2EAE2',
+		boundary: '#A6A6C8',
+		disputed: '#BEBCCF',
+		residential: '#EAE6E133',
+		commercial: '#F7DEED40',
+		industrial: '#FFF4C255',
+		foot: '#FBEBFF',
+		label: '#333344',
+		labelHalo: '#FFFFFFCC',
+		shield: '#FFFFFF',
+		agriculture: '#F0E7D1',
+		rail: '#B1BBC4',
+		subway: '#A6B8C7',
+		cycle: '#EFF9FF',
+		waste: '#DBD6BD',
+		burial: '#DDDBCA',
+		sand: '#FAFAED',
+		rock: '#E0E4E5',
+		leisure: '#E7EDDE',
+		wetland: '#D3E6DB',
+		symbol: '#66626A',
+		danger: '#FF0000',
+		prison: '#FDF2FC',
+		parking: '#EBE8E6',
+		construction: '#A9A9A9',
+		education: '#FFFF80',
+		hospital: '#FF6666',
+		poi: '#555555',
+	};
 
 	public constructor() {
 		super();
-
-		this.fonts = {
-			regular: 'noto_sans_regular',
-			bold: 'noto_sans_bold',
-		};
-
-		this.colors = {
-			land: '#F9F4EE',
-			water: '#BEDDF3',
-			glacier: '#FFFFFF',
-			wood: '#66AA44',
-			grass: '#D8E8C8',
-			park: '#D9D9A5',
-			street: '#FFFFFF',
-			streetbg: '#CFCDCA',
-			motorway: '#FFCC88',
-			motorwaybg: '#E9AC77',
-			trunk: '#FFEEAA',
-			trunkbg: '#E9AC77',
-			buildingbg: '#DFDBD7',
-			building: '#F2EAE2',
-			boundary: '#A6A6C8',
-			disputed: '#BEBCCF',
-			residential: '#EAE6E133',
-			commercial: '#F7DEED40',
-			industrial: '#FFF4C255',
-			foot: '#FBEBFF',
-			label: '#333344',
-			labelHalo: '#FFFFFFCC',
-			shield: '#FFFFFF',
-			agriculture: '#F0E7D1',
-			rail: '#B1BBC4',
-			subway: '#A6B8C7',
-			cycle: '#EFF9FF',
-			waste: '#DBD6BD',
-			burial: '#DDDBCA',
-			sand: '#FAFAED',
-			rock: '#E0E4E5',
-			leisure: '#E7EDDE',
-			wetland: '#D3E6DB',
-			symbol: '#66626A',
-			danger: '#FF0000',
-			prison: '#FDF2FC',
-			parking: '#EBE8E6',
-			construction: '#A9A9A9',
-			education: '#FFFF80',
-			hospital: '#FF6666',
-			poi: '#555555',
-		};
 	}
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
