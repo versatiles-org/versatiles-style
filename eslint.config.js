@@ -233,7 +233,7 @@ export default [
 			'@typescript-eslint/no-extra-parens': ['error', 'all', { 'conditionalAssign': false, 'nestedBinaryExpressions': false, 'ternaryOperandBinaryExpressions': false }],
 
 			'space-before-function-paren': 'off',
-			'@typescript-eslint/space-before-function-paren': ['error', 'never'],
+			'@typescript-eslint/space-before-function-paren': ['error', { 'anonymous': 'always', 'named': 'never', 'asyncArrow': 'always' }],
 
 			'no-use-before-define': 'off',
 			'@typescript-eslint/no-use-before-define': ['error', { 'functions': false }],

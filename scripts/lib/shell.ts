@@ -20,14 +20,11 @@ export async function run(command: string, errorOnCodeZero?: boolean): Promise<{
 	});
 }
 
-run.stderr = async function(command: string, errorOnCodeZero?: boolean): Promise<string> {
-	return (await run(command, errorOnCodeZero)).stderr.trim();
-};
+run.stderr = async (command: string, errorOnCodeZero?: boolean): Promise<string> =>
+	(await run(command, errorOnCodeZero)).stderr.trim();
 
-run.stdout = async function(command: string, errorOnCodeZero?: boolean): Promise<string> {
-	return (await run(command, errorOnCodeZero)).stdout.trim();
-};
+run.stdout = async (command: string, errorOnCodeZero?: boolean): Promise<string> =>
+	(await run(command, errorOnCodeZero)).stdout.trim();
 
-run.ok = async function(command: string): Promise<boolean> {
-	return (await run(command, false)).code === 0;
-};
+run.ok = async (command: string): Promise<boolean> =>
+	(await run(command, false)).code === 0;
