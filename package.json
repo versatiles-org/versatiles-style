@@ -25,6 +25,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@types/color": "^3.0.5",
+    "@types/mapbox-gl": "^2.7.17",
     "brace-expansion": "^3.0.0",
     "color": "^4.2.3"
   },
@@ -39,10 +41,8 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/brace-expansion": "^1.1.1",
-    "@types/color": "^3.0.5",
     "@types/inquirer": "^9.0.6",
     "@types/jest": "^29.5.7",
-    "@types/mapbox-gl": "^2.7.17",
     "@types/node": "^20.8.10",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
