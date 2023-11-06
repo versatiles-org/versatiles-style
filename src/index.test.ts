@@ -1,3 +1,4 @@
+import { Colorful } from './index.js';
 import * as builderClasses from './index.js';
 import StyleBuilder from './lib/style_builder.js';
 
@@ -33,4 +34,12 @@ describe('Style Builders', () => {
 			expect(style.sources['versatiles-shortbread'].tiles).toEqual(['https://example.org/tiles/osm/{z}/{x}/{y}']);
 		});
 	});
+});
+
+describe('Colorful', () => {
+	const colorful = new Colorful();
+	colorful.baseUrl = 'https://dev.null';
+	colorful.colors.commercial = '#f00';
+	const style = colorful.build();
+	expect(style.glyphs).toBe('https://dev.null/assets/fonts/{fontstack}/{range}.pbf');
 });
