@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayer, FillLayer, LineLayer, SymbolLayer } from 'mapbox-gl';
+import type { LanguageSuffix } from '../style_builder.js';
 
 export type MaplibreLayer = BackgroundLayer | FillLayer | LineLayer | SymbolLayer;
 export type MaplibreFilter = unknown[];
 
-export default function getLayers(option: { readonly languageSuffix: string }): MaplibreLayer[] {
+export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayer[] {
 	const { languageSuffix } = option;
 	return [
 
