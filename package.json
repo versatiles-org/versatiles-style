@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "complete-check": "npm run lint && npm run build && npm run test",
+    "check": "npm run lint && npm run build && npm run test",
     "build": "npm run build-browser && npm run build-node && npm run build-styles",
     "build-browser": "rollup -c=rollup.config.js",
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json",
