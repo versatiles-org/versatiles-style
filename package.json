@@ -1,9 +1,9 @@
 {
-  "name": "versatiles-styles",
+  "name": "@versatiles/style",
   "version": "3.3.4",
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "complete-check": "npm run lint && npm run build && npm run test",
     "build": "npm run build-browser && npm run build-node && npm run build-styles",
