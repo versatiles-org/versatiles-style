@@ -56,7 +56,7 @@ await check('build node version', run('npm run build-node'));
 await check('build browser version', run('npm run build-browser'));
 
 // npm publish
-await check('npm publish', run('npm publish'));
+await check('npm publish', run('npm publish --access public'));
 
 // git push
 await check('git add', run('git add .'));
