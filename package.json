@@ -1,15 +1,15 @@
 {
   "name": "@versatiles/style",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "check": "npm run lint && npm run build && npm run test",
-    "build": "npm run build-browser && npm run build-node && npm run build-style",
+    "build": "npm run build-browser && npm run build-node && npm run build-styles",
     "build-browser": "rollup -c=rollup.config.js",
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json",
-    "build-style": "tsx scripts/build-style.ts",
+    "build-styles": "tsx scripts/build-styles.ts",
     "lint": "eslint .",
     "release": "tsx scripts/release.ts",
     "test": "npm run test-node && npm run test-coverage && npm run test-browser",

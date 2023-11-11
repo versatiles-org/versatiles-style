@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build styles
-        run: npm run build-style
+        run: npm run build-styles
 
       - name: Compress styles
         run: tar -cf - *.json | gzip -9 > styles.tar.gz

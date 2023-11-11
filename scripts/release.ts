@@ -51,7 +51,7 @@ await check('lint', run('npm run lint'));
 await check('run tests', run('npm run test'));
 
 // build
-await check('build styles', run('npm run build-style'));
+await check('build styles', run('npm run build-styles'));
 await check('build node version', run('npm run build-node'));
 await check('build browser version', run('npm run build-browser'));
 
