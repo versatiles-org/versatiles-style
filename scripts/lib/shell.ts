@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 
-export async function run(command: string, errorOnCodeZero?: boolean): Promise<{ code: number | null; signal: string | null; stdout: string; stderr: string }> {
+export async function run(command: string, errorOnCodeNonZero?: boolean): Promise<{ code: number | null; signal: string | null; stdout: string; stderr: string }> {
 	try {
 		return await new Promise((resolve, reject) => {
 			const stdout: Buffer[] = [];
@@ -16,7 +16,7 @@ export async function run(command: string, errorOnCodeZero?: boolean): Promise<{
 						stdout: Buffer.concat(stdout).toString(),
 						stderr: Buffer.concat(stderr).toString(),
 					};
-					if ((errorOnCodeZero ?? true) && (code !== 0)) {
+					if ((errorOnCodeNonZero ?? true) && (code !== 0)) {
 						reject(result);
 					} else {
 						resolve(result);

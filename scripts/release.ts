@@ -60,7 +60,7 @@ await check('npm publish', run('npm publish --access public'));
 
 // git push
 await check('git add', run('git add .'));
-await check('git commit', run(`git commit -m "v${nextVersion}"`));
+await check('git commit', run(`git commit -m "v${nextVersion}"`, false));
 await check('git tag', run(`git tag -f -a "v${nextVersion}" -m "new release: v${nextVersion}"`));
 await check('git push', run('git push --no-verify --follow-tags'));
 
