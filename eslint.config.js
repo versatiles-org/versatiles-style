@@ -3,12 +3,14 @@ import eslint_plugin from '@typescript-eslint/eslint-plugin';
 
 export default [
 	{
-		ignores: ['dist']
+		ignores: [
+			'**/dist/**/*.*',
+			'**/coverage/**/*.*',
+		]
 	},
 	{
 		files: [
-			'src/**/*.ts',
-			'scripts/**/*.ts',
+			'**/src/**/*.ts',
 		],
 		languageOptions: {
 			ecmaVersion: 'latest',
@@ -21,11 +23,15 @@ export default [
 			parser,
 			parserOptions: {
 				sourceType: 'module',
-				project: './tsconfig.json'
+				project: './tsconfig.json',
+				tsconfigRootDir: new URL('./', import.meta.url).pathname,
 			},
 		},
 		plugins: {
-			'@typescript-eslint': eslint_plugin
+			'@typescript-eslint': eslint_plugin,
+		},
+		linterOptions: {
+			reportUnusedDisableDirectives: true,
 		},
 		rules: {
 			// https://github.com/typescript-eslint/typescript-eslint/blob/29c2e688afa7d9b8873d97c3961b65805d87cf2a/packages/eslint-plugin/src/configs/eslint-recommended.ts
@@ -78,8 +84,6 @@ export default [
 			'@typescript-eslint/explicit-module-boundary-types': 'error',
 			'func-call-spacing': 'off',
 			'@typescript-eslint/func-call-spacing': 'error',
-			'init-declarations': 'off',
-			'@typescript-eslint/init-declarations': 'error',
 			'key-spacing': 'off',
 			'@typescript-eslint/key-spacing': 'error',
 			'keyword-spacing': 'off',
@@ -242,6 +246,9 @@ export default [
 
 			'class-methods-use-this': 'off',
 			'@typescript-eslint/class-methods-use-this': 'off',
+
+			'init-declarations': 'off',
+			'@typescript-eslint/init-declarations': 'off',
 		}
 	}
 ]

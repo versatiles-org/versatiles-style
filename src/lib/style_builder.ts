@@ -1,4 +1,3 @@
-// Import necessary modules and files
 import Color from 'color';
 import getShortbreadTemplate from './shortbread/template.js';
 import type { MaplibreLayer } from './shortbread/layers.js';

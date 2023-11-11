@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import Colorful from './colorful.js';
 
 export default class Graybeard extends Colorful {

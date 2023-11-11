@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { decorate } from './decorator.js';
 import Color from 'color';
 import type { MaplibreLayer } from './shortbread/layers.js';

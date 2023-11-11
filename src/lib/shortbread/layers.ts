@@ -128,7 +128,6 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayer[] => {
-			// eslint-disable-next-line @typescript-eslint/init-declarations
 			let filter: MaplibreFilter, prefix: string;
 			const results: MaplibreLayer[] = [];
 			switch (c) {

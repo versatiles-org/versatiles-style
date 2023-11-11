@@ -31,7 +31,6 @@ class MockStyleBuilder extends StyleBuilder {
 }
 
 describe('StyleBuilder', () => {
-	// eslint-disable-next-line @typescript-eslint/init-declarations
 	let builder: MockStyleBuilder;
 
 	beforeEach(() => {
