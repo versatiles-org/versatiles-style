@@ -8,10 +8,10 @@ export default [
 	{
 		input: './src/index.ts',
 		output: {
-			file: './release/versatiles-styles.js',
+			file: './release/versatiles-style.js',
 			format: 'umd',
 			sourcemap: true,
-			name: 'versatiles_styles'
+			name: 'VersaTilesStyle'
 		},
 		plugins: [
 			typescript({ tsconfig: './tsconfig.browser.json' }),
@@ -22,7 +22,7 @@ export default [
 	},
 	{
 		input: './release/.tmp.d.ts/index.d.ts',
-		output: [{ file: './release/versatiles-styles.d.ts', format: 'es' }],
+		output: [{ file: './release/versatiles-style.d.ts', format: 'es' }],
 		plugins: [dts()],
 	},
 ]

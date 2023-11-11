@@ -1,6 +1,6 @@
-# VersaTiles Styles
+# VersaTiles Style
 
-Programatically generates Shortbread StyleJSON for MapLibre.
+Programatically generates StyleJSON for MapLibre.
 
 ![Example: Colorful Style](docs/colorful.png)
 
@@ -12,21 +12,21 @@ Programatically generates Shortbread StyleJSON for MapLibre.
 
 ## Download
 
-You can download the latest StyleJSONs from the [latest release](https://github.com/versatiles-org/versatiles-styles/releases/latest/).
+You can download the latest StyleJSONs from the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/).
 We provide each style with and without labels, and also in multiple languages.
 
 Be aware that styles already include `tiles.versatiles.org` as source for tiles, fonts (glyphs) and icons (sprites). So you might want to update the URLs in the JSON.
 
 ## as Node.js module
 
-Install `versatiles-styles` via NPM:
+Install `versatiles-style` via NPM:
 ```bash
-npm install versatiles-styles
+npm install versatiles-style
 ```
 
 Use it in Node.js:
 ```javascript
-import { colorful } from 'versatiles-styles';
+import { colorful } from 'versatiles-style';
 let style = colorful({language:'de'});
 writeFileSync('style.json', JSON.stringify(style));
 ```
@@ -35,19 +35,19 @@ writeFileSync('style.json', JSON.stringify(style));
 
 Download latest release:
 ```bash
-wget "https://github.com/versatiles-org/versatiles-styles/releases/latest/download/versatiles-styles.js"
+wget "https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.js"
 ```
 
 Use it in:
 ```html
 <div id="map"></div>
 <script src="maplibre-gl.js"></script>
-<script src="versatiles-styles.js"></script>
+<script src="versatiles-style.js"></script>
 <script>
 	const baseUrl = new URL('/', window.location.href).href;
 	const map = new maplibregl.Map({
 		container: 'map',
-		style: versatiles_styles.colorful({
+		style: versatiles_style.colorful({
 			glyphsUrl: baseUrl + 'fonts/{fontstack}/{range}.pbf',
 			spriteUrl: baseUrl + 'sprites/sprites',
 			tilesUrl: [baseUrl + 'tiles/{z}/{x}/{y}'],
@@ -62,7 +62,7 @@ Use it in:
 
 ## Add/edit styles
 
-* style definitions in `src/styles/*.js`
+* style definitions in `src/style/*.js`
 * shortbread layer definition in `src/lib/shortbread_layers.js`
 * style template in `src/lib/shortbread_template.json`
 
