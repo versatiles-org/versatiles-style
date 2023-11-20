@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { VectorSource } from 'mapbox-gl';
-import type { MaplibreStyle } from '../style_builder.js';
 import getTemplate from './template.js';
+import type { MaplibreStyle } from '../types.js';
 
 describe('getTemplate', () => {
 	const styleTemplate: MaplibreStyle = getTemplate();
@@ -28,7 +27,7 @@ describe('getTemplate', () => {
 
 	it('defines sources with required properties', () => {
 		expect(styleTemplate).toHaveProperty('sources');
-		const sources = styleTemplate.sources['versatiles-shortbread'] as VectorSource;
+		const sources = styleTemplate.sources['versatiles-shortbread'];
 		expect(sources).toHaveProperty('type', 'vector');
 		expect(sources).toHaveProperty('scheme', 'xyz');
 		expect(sources).toHaveProperty('format', 'pbf');
@@ -51,11 +50,9 @@ describe('getTemplate', () => {
 		expect(styleTemplate).toBeDefined();
 		expect(styleTemplate.sources).toBeDefined();
 
-		const { vector_layers } = styleTemplate.sources['versatiles-shortbread'] as VectorSource;
+		const { vector_layers } = styleTemplate.sources['versatiles-shortbread'];
 
 		expect(typeof vector_layers).toBe('object');
-
-		if (!vector_layers) return;
 
 		it('contains vector_layers with id and fields', () => {
 			expect(Array.isArray(vector_layers)).toBeTruthy();

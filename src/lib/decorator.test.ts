@@ -1,11 +1,11 @@
 import { decorate } from './decorator.js';
 import Color from 'color';
-import type { MaplibreLayer } from './shortbread/layers.js';
+import type { MaplibreLayer } from './types.js';
 
 describe('decorate function', () => {
 	const mockLayers: MaplibreLayer[] = [
-		{ id: 'layer1', type: 'fill', layout: {}, paint: {} },
-		{ id: 'layer2', type: 'line', layout: {}, paint: {} },
+		{ id: 'layer1', type: 'fill', layout: {}, paint: {}, source: 'versatiles-shortbread' },
+		{ id: 'layer2', type: 'line', layout: {}, paint: {}, source: 'versatiles-shortbread' },
 	];
 
 	const mockRules = {

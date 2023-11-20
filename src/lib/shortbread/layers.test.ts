@@ -1,6 +1,6 @@
-import type { LanguageSuffix } from '../style_builder.js';
+import type { FillLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import getLayers from './layers.js';
-import type { SymbolLayer } from 'mapbox-gl';
+import type { LanguageSuffix } from '../types.js';
 
 describe('layers', () => {
 	it('should return an array of MaplibreLayer', () => {
@@ -18,7 +18,7 @@ describe('layers', () => {
 	it('should handle language suffix correctly', () => {
 		const languageSuffix: LanguageSuffix = '_en';
 		const layers = getLayers({ languageSuffix });
-		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayer;
+		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayerSpecification;
 
 		expect(labelLayer).toBeDefined();
 
@@ -28,10 +28,9 @@ describe('layers', () => {
 	it('should create appropriate filters for land layers', () => {
 		const languageSuffix: LanguageSuffix = '_en';
 		const layers = getLayers({ languageSuffix });
-		const landLayer = layers.find((layer) => layer.id === 'land-agriculture');
+		const landLayer = layers.find((layer) => layer.id === 'land-agriculture') as FillLayerSpecification;
 
 		expect(landLayer).toBeDefined();
-		expect(landLayer?.filter).toEqual(['all', ['in', 'kind', 'brownfield', 'farmland', 'farmyard', 'greenfield', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard']]);
+		expect(landLayer.filter).toEqual(['all', ['in', 'kind', 'brownfield', 'farmland', 'farmyard', 'greenfield', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard']]);
 	});
 });
-

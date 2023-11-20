@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import Color from 'color';
-import type { StyleRules, StyleRulesOptions } from './style_builder.js';
+import type { MaplibreStyle, StyleRules, StyleRulesOptions } from './types.js';
 import StyleBuilder from './style_builder.js';
-import type { Style, VectorSource } from 'mapbox-gl';
 
 // Mock class for abstract class StyleBuilder
 class MockStyleBuilder extends StyleBuilder {
@@ -75,13 +74,12 @@ describe('StyleBuilder', () => {
 
 		it('should resolve urls correctly', () => {
 			builder.baseUrl = 'https://my.base.url/';
-			const style: Style = builder.build();
+			const style: MaplibreStyle = builder.build();
 			expect(style.glyphs).toBe('https://my.base.url/assets/fonts/{fontstack}/{range}.pbf');
 			expect(style.sprite).toBe('https://my.base.url/assets/sprites/sprites');
 
-			const source = style.sources['versatiles-shortbread'] as VectorSource;
+			const source = style.sources['versatiles-shortbread'];
 			expect(source).toHaveProperty('tiles');
-			if (!source.tiles) return;
 			expect(source.tiles[0]).toBe('https://my.base.url/tiles/osm/{z}/{x}/{y}');
 		});
 	});

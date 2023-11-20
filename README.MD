@@ -20,20 +20,6 @@ We provide each style with and without labels, and also in multiple languages.
 
 Be aware that styles already include `tiles.versatiles.org` as source for tiles, fonts (glyphs) and icons (sprites). So you might want to update the URLs in the JSON.
 
-## as Node.js module
-
-Install `versatiles-style` via NPM:
-```bash
-npm install versatiles-style
-```
-
-Use it in Node.js:
-```javascript
-import { colorful } from 'versatiles-style';
-let style = colorful({language:'de'});
-writeFileSync('style.json', JSON.stringify(style));
-```
-
 ## in a web browser
 
 Download latest release:
@@ -58,6 +44,22 @@ Use it in:
 	});
 <script>
 ```
+
+## as Node.js module
+
+Install `versatiles-style` via NPM:
+```bash
+npm install versatiles-style
+```
+
+Use it in Node.js:
+```javascript
+import { colorful } from 'versatiles-style';
+let style = colorful({language:'de'});
+writeFileSync('style.json', JSON.stringify(style));
+```
+
+### Node.js API
 
 ## Generate styles
 

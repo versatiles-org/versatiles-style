@@ -1,6 +1,6 @@
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
 import Color from 'color';
-import type { StylemakerColorLookup } from './style_builder.js';
+import type { StylemakerColorLookup } from './types.js';
 
 
 

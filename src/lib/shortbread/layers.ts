@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { BackgroundLayer, FillLayer, LineLayer, SymbolLayer } from 'mapbox-gl';
-import type { LanguageSuffix } from '../style_builder.js';
+import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { LanguageSuffix, MaplibreLayerDefinition } from '../types.js';
 
-export type MaplibreLayer = BackgroundLayer | FillLayer | LineLayer | SymbolLayer;
-export type MaplibreFilter = unknown[];
-
-export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayer[] {
+export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;
 	return [
 
@@ -39,7 +36,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			{ id: 'vegetation', kinds: ['heath', 'scrub'] },
 			{ id: 'sand', kinds: ['beach', 'sand'] },
 			{ id: 'wetland', kinds: ['bog', 'marsh', 'string_bog', 'swamp'] },
-		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayer => ({
+		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
 			id: 'land-' + id,
 			type: 'fill',
 			'source-layer': 'land',
@@ -49,7 +46,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		})),
 
 		// water-lines
-		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayer => ({
+		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayerDefinition => ({
 			id: 'water-' + t,
 			type: 'line',
 			'source-layer': 'water_lines',
@@ -87,7 +84,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		{ id: 'water-pier', type: 'line', 'source-layer': 'pier_lines', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
 
 		// site
-		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map((t): MaplibreLayer => ({
+		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map((t): MaplibreLayerDefinition => ({
 			id: 'site-' + t.replace(/_/g, ''),
 			type: 'fill',
 			'source-layer': 'sites',
@@ -127,9 +124,9 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		},
 
 		// tunnel-, street-, bridges-bridge
-		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayer[] => {
-			let filter: MaplibreFilter, prefix: string;
-			const results: MaplibreLayer[] = [];
+		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayerDefinition[] => {
+			let filter: ExpressionSpecification[], prefix: string;
+			const results: MaplibreLayerDefinition[] = [];
 			switch (c) {
 				case 'tunnel':
 					filter = [['==', 'tunnel', true]];
@@ -160,8 +157,8 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 					type: 'fill',
 					'source-layer': 'street_polygons',
 					filter: ['all',
-						['==', 'kind', 'pedestrian'],
 						...filter,
+						['==', 'kind', 'pedestrian'],
 					],
 				});
 
@@ -172,13 +169,14 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
-							['in', 'kind', t],
 							...filter,
+							['in', 'kind', t],
 						],
 					});
 				});
 
 				// no links
+				const noDrivewayExpression: ExpressionSpecification = ['!=', 'service', 'driveway'];
 				['track', 'pedestrian', 'service', 'living_street', 'residential', 'unclassified'].forEach(t => {
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
@@ -187,7 +185,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						filter: ['all',
 							['==', 'kind', t],
 							...filter,
-							...(t === 'service') ? [['!=', 'service', 'driveway']] : [], // ignore driveways
+							...(t === 'service') ? [noDrivewayExpression] : [], // ignore driveways
 						],
 					});
 				});
@@ -202,7 +200,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 							['==', 'kind', t],
 							['==', 'bicycle', 'designated'],
 							...filter,
-							...(t === 'service') ? [['!=', 'service', 'driveway']] : [], // ignore driveways
+							...(t === 'service') ? [noDrivewayExpression] : [], // ignore driveways
 						],
 					});
 				});
@@ -214,9 +212,9 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
+							...filter,
 							['in', 'kind', t],
 							['==', 'link', true],
-							...filter,
 						],
 					});
 				});
@@ -228,9 +226,9 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
+							...filter,
 							['in', 'kind', t],
 							['!=', 'link', true],
-							...filter,
 						],
 					});
 				});
@@ -246,9 +244,9 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
-							['in', 'kind', t],
-							['!has', 'service'],
 							...filter,
+							['in', 'kind', t],
+							['!', ['has', 'service']],
 						],
 					});
 				});
@@ -261,8 +259,8 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 							type: 'line',
 							'source-layer': 'aerialways',
 							filter: ['all',
-								['in', 'kind', t],
 								...filter,
+								['in', 'kind', t],
 							],
 						});
 					});
@@ -280,7 +278,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		}),
 
 		// poi, one layer per type
-		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map((key): MaplibreLayer => ({
+		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map((key): MaplibreLayerDefinition => ({
 			id: 'poi-' + key,
 
 			type: 'symbol',
@@ -289,7 +287,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		})),
 
 		// boundary
-		...[':outline', ''].flatMap((suffix): MaplibreLayer[] => [
+		...[':outline', ''].flatMap((suffix): MaplibreLayerDefinition[] => [
 			{
 				id: 'boundary-country' + suffix,
 				type: 'line',
@@ -364,7 +362,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		},
 
 		// label-street
-		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map((t: string): MaplibreLayer => ({
+		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map((t: string): MaplibreLayerDefinition => ({
 			id: 'label-street-' + t.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'street_labels',
@@ -373,7 +371,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		})),
 
 		// label-place of small places
-		...[ /*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood', 'quarter', 'suburb', 'hamlet', 'village', 'town'].map((id: string): MaplibreLayer => ({
+		...[ /*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood', 'quarter', 'suburb', 'hamlet', 'village', 'town'].map((id: string): MaplibreLayerDefinition => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'place_labels',
@@ -391,7 +389,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 		},
 
 		// label-place-* of large places
-		...['city', 'state_capital', 'capital'].map((id: string): MaplibreLayer => ({
+		...['city', 'state_capital', 'capital'].map((id: string): MaplibreLayerDefinition => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
 			'source-layer': 'place_labels',
