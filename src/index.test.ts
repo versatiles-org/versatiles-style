@@ -30,7 +30,6 @@ describe('Style Builders', () => {
 			expect(style.sprite).toBe('https://example.org/assets/sprites/sprites');
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');
 
-			// @ts-expect-error: Still Overwhelmed
 			expect(style.sources['versatiles-shortbread'].tiles).toEqual(['https://example.org/tiles/osm/{z}/{x}/{y}']);
 		});
 	});

@@ -1,5 +1,5 @@
 
-export type { MaplibreStyle } from './lib/style_builder.js';
+export type { MaplibreStyle } from './lib/types.js';
 
 export { default as Colorful } from './style/colorful.js';
 export { default as Graybeard } from './style/graybeard.js';

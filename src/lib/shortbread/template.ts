@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { MaplibreStyle } from '../types.js';
+import type { MaplibreStyleVector } from '../types.js';
 
 const maxzoom = 14;
 
-export default function getTemplate(): MaplibreStyle {
+export default function getTemplate(): MaplibreStyleVector {
 	return {
 		version: 8,
 		name: 'versatiles',
