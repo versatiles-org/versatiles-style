@@ -50,7 +50,7 @@ jobs:
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - name: Upload file to release
-        run: gh release upload $RELEASE_TAG *.js *.gz --clobber
+        run: gh release upload $RELEASE_TAG *.js *.json *.gz --clobber
         working-directory: release
 
       - name: Update release
