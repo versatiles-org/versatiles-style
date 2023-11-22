@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LanguageSuffix, MaplibreLayerDefinition } from '../types.js';
 
 export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
@@ -125,7 +125,8 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayerDefinition[] => {
-			let filter: ExpressionSpecification[], prefix: string;
+			let filter: LegacyFilterSpecification[];
+			let prefix: string;
 			const results: MaplibreLayerDefinition[] = [];
 			switch (c) {
 				case 'tunnel':
@@ -176,7 +177,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				});
 
 				// no links
-				const noDrivewayExpression: ExpressionSpecification = ['!=', 'service', 'driveway'];
+				const noDrivewayExpression: LegacyFilterSpecification = ['!=', 'service', 'driveway'];
 				['track', 'pedestrian', 'service', 'living_street', 'residential', 'unclassified'].forEach(t => {
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
@@ -244,9 +245,9 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
-							...filter,
 							['in', 'kind', t],
-							['!', ['has', 'service']],
+							['!has', 'service'],
+							...filter,
 						],
 					});
 				});

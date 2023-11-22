@@ -3,7 +3,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as styleBuilderClasses from '../src/index.js';
-import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from './lib/utils.js';
 import type { MaplibreStyle } from '../src/index.js';
@@ -36,7 +35,7 @@ for (const styleBuilderClass of Object.values(styleBuilderClasses)) {
 function produce(name: string, style: MaplibreStyle): void {
 
 	// Validate the style and log errors if any	
-	const errors = validateStyleMin(style as StyleSpecification);
+	const errors = validateStyleMin(style);
 	if (errors.length > 0) console.log(errors);
 
 	// write
