@@ -12,7 +12,6 @@
     "build-styles": "tsx scripts/build-styles.ts",
     "doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '### Node.js API'",
     "lint": "eslint --color .",
-    "prepublish": "npm run build && npm run doc",
     "release": "tsx scripts/release.ts",
     "test": "npm run test-node && npm run test-coverage && npm run test-browser",
     "test-browser": "npm run build-browser && echo 'add browser test'",
