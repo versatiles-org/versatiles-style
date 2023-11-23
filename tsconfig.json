@@ -12,6 +12,8 @@
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
 		"allowJs": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
 	},
 	"include": [
 		"src/**/*.ts",

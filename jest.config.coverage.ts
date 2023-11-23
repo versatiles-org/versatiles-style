@@ -1,14 +1,5 @@
-import type { Config } from 'jest';
+import config from './jest.config.typescript.ts';
 
-const config: Config = {
-	testEnvironment: 'node',
-	transform: {
-		'^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.node.json', useESM: true }]
-	},
-	testRegex: 'src/.*\\.test\\.ts',
-	extensionsToTreatAsEsm: ['.ts'],
-	collectCoverage: true,
-	resolver: 'jest-ts-webcompat-resolver',
-}
+config.collectCoverage = true;
 
 export default config;
