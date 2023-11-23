@@ -13,10 +13,11 @@
     "doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '### Node.js API'",
     "lint": "eslint --color .",
     "release": "tsx scripts/release.ts",
-    "test": "npm run test-node && npm run test-coverage && npm run test-browser",
+    "test": "npm run test-typescript && npm run test-node && npm run test-browser",
     "test-browser": "npm run build-browser && echo 'add browser test'",
     "test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.coverage.ts",
     "test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.node.ts",
+    "test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.typescript.ts",
     "upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
   },
   "repository": {
