@@ -31,8 +31,12 @@ export default abstract class StyleBuilder {
 
 	// Constructor
 	public constructor() {
+		try {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			this.baseUrl = document?.location?.href;
+		} catch (e) { }
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		this.baseUrl = document?.location?.href ?? 'https://tiles.versatiles.org';
+		this.baseUrl ??= 'https://tiles.versatiles.org';
 	}
 
 	public build(): MaplibreStyle {
