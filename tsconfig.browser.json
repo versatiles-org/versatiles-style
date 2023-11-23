@@ -4,7 +4,9 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"declaration": true,
-		"declarationDir": ".tmp.d.ts"
+		"declarationDir": ".tmp.d.ts",
+		"noEmit": false,
+		"allowImportingTsExtensions": false,
 	},
 	"exclude": [
 		"scripts/**/*.ts",

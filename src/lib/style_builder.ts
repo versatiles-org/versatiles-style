@@ -32,7 +32,6 @@ export default abstract class StyleBuilder {
 	// Constructor
 	public constructor() {
 		try {
-			// @ts-expect-error: I'm not sure if I'm in a browser
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			this.baseUrl = document.location.href as string;
 		} catch (e) {
