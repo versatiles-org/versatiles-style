@@ -5,7 +5,7 @@ const config: Config = {
 	transform: {
 		'^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.node.json', useESM: true }]
 	},
-	testRegex: 'src/browser.test.ts',
+	testRegex: 'browser_test/browser.test.ts',
 }
 
 export default config;
