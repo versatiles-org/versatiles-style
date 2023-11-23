@@ -5,7 +5,7 @@ import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerS
 import { Colorful } from '../index.js';
 import type { MaplibreStyle, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
 import { isTileJSONSpecification } from './types.js';
-import { RandomColor } from './utils.js';
+import { RandomColor } from './random_color.js';
 
 
 
