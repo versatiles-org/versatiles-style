@@ -5,7 +5,7 @@ import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerS
 import { Colorful } from '../index.js';
 import type { MaplibreStyle, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
 import { isTileJSONSpecification } from './types.js';
-import { RandomColor } from './random_color.js';
+import randomColorGenerator from './random_color.js';
 
 
 
@@ -57,7 +57,7 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 
 	layers.background.push({ 'id': 'background', 'type': 'background', 'paint': { 'background-color': '#fff' } });
 
-	const randomColor = new RandomColor();
+	const randomColor = randomColorGenerator();
 
 	spec.vector_layers.forEach((vector_layer: VectorLayer) => {
 		let luminosity = 'bright', saturation, hue;
@@ -75,7 +75,7 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 			luminosity = 'light';
 		}
 
-		const color = randomColor.randomColor({
+		const color = randomColor({
 			hue,
 			luminosity,
 			saturation,

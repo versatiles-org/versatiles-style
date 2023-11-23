@@ -1,11 +1,11 @@
-import type { RandomColorOptions } from './random_color.js';
-import { RandomColor } from './random_color.js';
+import type { RandomColorFunction, RandomColorOptions } from './random_color.js';
+import randomColorGenerator from './random_color.js';
 
 describe('RandomColor', () => {
-	let randomColor: RandomColor;
+	let randomColor: RandomColorFunction;
 
 	beforeEach(() => {
-		randomColor = new RandomColor();
+		randomColor = randomColorGenerator();
 	});
 
 	test('constructor initializes without errors', () => {
@@ -14,29 +14,29 @@ describe('RandomColor', () => {
 
 	describe('randomColor method', () => {
 		test('returns a valid color string', () => {
-			const color = randomColor.randomColor();
+			const color = randomColor();
 			expect(isValidHSLA(color)).toBeTruthy();
 		});
 
 		test('returns correct color string for some test cases', () => {
-			expect(randomColor.randomColor({ hue: 'red' })).toBe('hsl(343,65%,51%)');
-			expect(randomColor.randomColor({ hue: 120 })).toBe('hsl(120,77%,32%)');
-			expect(randomColor.randomColor({ luminosity: 'dark' })).toBe('hsl(135,96%,31%)');
-			expect(randomColor.randomColor({ saturation: 'strong' })).toBe('hsl(193,100%,24%)');
-			expect(randomColor.randomColor({ opacity: 0.5 })).toBe('hsla(242,55%,42%,0.5)');
-			expect(randomColor.randomColor({ seed: 'testSeed' })).toBe('hsl(185,90%,23%)');
+			expect(randomColor({ hue: 'red' })).toBe('hsl(343,65%,51%)');
+			expect(randomColor({ hue: 120 })).toBe('hsl(120,77%,32%)');
+			expect(randomColor({ luminosity: 'dark' })).toBe('hsl(135,96%,31%)');
+			expect(randomColor({ saturation: 'strong' })).toBe('hsl(193,100%,24%)');
+			expect(randomColor({ opacity: 0.5 })).toBe('hsla(242,55%,42%,0.5)');
+			expect(randomColor({ seed: 'testSeed' })).toBe('hsl(185,90%,23%)');
 		});
 
 		test('consistent color generation with a seed', () => {
 			const options: RandomColorOptions = { seed: 'consistentSeed' };
-			const color1 = randomColor.randomColor(options);
-			const color2 = randomColor.randomColor(options);
+			const color1 = randomColor(options);
+			const color2 = randomColor(options);
 			expect(color1).toBe(color2);
 		});
 
 		test('different color generation without a seed', () => {
-			const color1 = randomColor.randomColor();
-			const color2 = randomColor.randomColor();
+			const color1 = randomColor();
+			const color2 = randomColor();
 			expect(color1).not.toBe(color2);
 		});
 	});
