@@ -1,6 +1,7 @@
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
-import Color from 'color';
-import type { StylemakerColorLookup } from './types.js';
+import type Color from 'color';
+import type { StyleRules, StyleRulesOptions,  StylemakerColors } from './types.js';
+import StyleBuilder from './style_builder.js';
 
 
 
@@ -194,21 +195,35 @@ describe('colorTransformer', () => {
 	});
 });
 
-function string2colors(colorList: string): StylemakerColorLookup {
-	return Object.fromEntries(
-		colorList.split(',')
-			.map((value, index) => ['color' + index, Color('#' + value)]),
-	);
+function colors2string(colors: StylemakerColors<TestStyle>): string {
+	const colorArray: Color[] = [
+		colors.c0,
+		colors.c1,
+		colors.c2,
+		colors.c3,
+	];
+	return colorArray.map(c => c.hexa().slice(1)).join(',');
 }
 
-function colors2string(colors: StylemakerColorLookup): string {
-	const colorArray: string[] = [];
-	for (let i = 0; ('color' + i) in colors; i++) {
-		colorArray.push(colors['color' + i].hexa().slice(1));
+export default class TestStyle extends StyleBuilder<TestStyle> {
+	public readonly name: string = 'teststyle';
+
+	public defaultFonts = {};
+
+	public defaultColors = {
+		c0: '#FFAA5500',
+		c1: '#00FFAA55',
+		c2: '#5500FFAA',
+		c3: '#AA5500FF',
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	protected getStyleRules(_options: StyleRulesOptions<TestStyle>): StyleRules {
+		throw new Error('Method not implemented.');
 	}
-	return colorArray.join(',');
 }
 
-function getDefaultColors(): StylemakerColorLookup {
-	return string2colors('FFAA5500,00FFAA55,5500FFAA,AA5500FF');
+function getDefaultColors(): StylemakerColors<TestStyle> {
+	const style = new TestStyle();
+	return style.colors;
 }

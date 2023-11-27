@@ -3,15 +3,15 @@
 import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Neutrino extends StyleBuilder {
+export default class Neutrino extends StyleBuilder<Neutrino> {
 	public readonly name: string = 'neutrino';
 
-	public fonts = {
+	public defaultFonts = {
 		regular: 'noto_sans_regular',
 		bold: 'noto_sans_bold',
 	};
 
-	public colors = {
+	public defaultColors = {
 		land: '#f6f0f6',
 		water: '#cbd2df',
 		grass: '#e7e9e5',
@@ -26,7 +26,7 @@ export default class Neutrino extends StyleBuilder {
 		label: '#cbb7b7',
 	};
 
-	protected getStyleRules(options: StyleRulesOptions): StyleRules {
+	protected getStyleRules(options: StyleRulesOptions<Neutrino>): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			'background': {

@@ -9,6 +9,7 @@ import type {
 	SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type Color from 'color';
+import type StyleBuilder from './style_builder.ts';
 
 export type TileFormat = 'avif' | 'bin' | 'geojson' | 'jpg' | 'json' | 'pbf' | 'png' | 'svg' | 'topojson' | 'webp';
 
@@ -64,15 +65,24 @@ export type MaplibreStyle = MaplibreStyleRaster | MaplibreStyleVector;
 
 
 export type StyleRuleValue = boolean | number | object | string;
-export type StyleRule = Record<string, StyleRuleValue>;
-export type StyleRules = Record<string, StyleRule>;
-export type StylemakerColorLookup = Record<string, Color>;
-export type StylemakerStringLookup = Record<string, string>;
+export type StyleRule = Record<string, StyleRuleValue | undefined>;
+export type StyleRules = Record<string, StyleRule | undefined>;
+//export type StylemakerColorLookup = Record<string, Color | undefined>;
+//export type StylemakerStringLookup = Record<string, string | undefined>;
 export type LanguageSuffix = '_de' | '_en' | '';
 
-export interface StyleRulesOptions {
-	colors: StylemakerColorLookup;
-	fonts: StylemakerStringLookup;
+export type StylemakerColorKeys<T extends StyleBuilder<T>> = keyof T['defaultColors'];
+export type StylemakerFontKeys<T extends StyleBuilder<T>> = keyof T['defaultFonts'];
+
+export type StylemakerColorStrings<T extends StyleBuilder<T>> = Record<StylemakerColorKeys<T>, string>;
+export type StylemakerFontStrings<T extends StyleBuilder<T>> = Record<StylemakerFontKeys<T>, string>;
+
+export type StylemakerColors<T extends StyleBuilder<T>> = Record<StylemakerColorKeys<T>, Color>;
+export type StylemakerFonts<T extends StyleBuilder<T>> = Record<StylemakerFontKeys<T>, string>;
+
+export interface StyleRulesOptions<T extends StyleBuilder<T>> {
+	colors: StylemakerColors<T>;
+	fonts: StylemakerFontStrings<T>;
 	languageSuffix: string;
 }
 

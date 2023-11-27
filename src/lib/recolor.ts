@@ -1,5 +1,6 @@
 import Color from 'color';
-import type { RecolorOptions, StylemakerColorLookup } from './types.js';
+import type { RecolorOptions, StylemakerColors } from './types.js';
+import type StyleBuilder from './style_builder.ts';
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {
@@ -14,7 +15,7 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 	};
 }
 
-export function recolor(colors: StylemakerColorLookup, opt?: RecolorOptions): void {
+export function recolor<Subclass extends StyleBuilder<Subclass>>(colors: StylemakerColors<Subclass>, opt?: RecolorOptions): void {
 	if (!opt) return;
 
 	if (opt.invert ?? false) invert();
@@ -26,7 +27,7 @@ export function recolor(colors: StylemakerColorLookup, opt?: RecolorOptions): vo
 	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) tint(opt.tint, Color(opt.tintColor));
 
 	function forEachColor(callback: (color: Color) => Color): void {
-		Object.entries(colors).forEach(([k, c]) => colors[k] = callback(c));
+		for (const k in colors) colors[k] = callback(colors[k]);
 	}
 
 	function invert(): void {
