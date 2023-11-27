@@ -106,7 +106,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		if (this.hideLabels) layers = layers.filter(l => l.type !== 'symbol');
 
 		style.layers = layers;
-		style.name = 'versatiles-' + this.name;
+		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(this.baseUrl, this.glyphsUrl);
 		style.sprite = resolveUrl(this.baseUrl, this.spriteUrl);
 
