@@ -4,7 +4,7 @@ import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Neutrino extends StyleBuilder<Neutrino> {
-	public readonly name: string = 'neutrino';
+	public readonly name: string = 'Neutrino';
 
 	public defaultFonts = {
 		regular: 'noto_sans_regular',

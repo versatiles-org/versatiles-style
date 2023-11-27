@@ -4,7 +4,7 @@ import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Colorful extends StyleBuilder<Colorful> {
-	public readonly name: string = 'colorful';
+	public readonly name: string = 'Colorful';
 
 	public defaultFonts = {
 		regular: 'noto_sans_regular',
