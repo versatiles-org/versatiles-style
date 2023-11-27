@@ -17,7 +17,7 @@ describe('Style Builders', () => {
 
 	Object.entries(builderClasses).forEach(([styleName, builderClass]) => {
 		it(`should create and test an instance of ${styleName}`, () => {
-			const builder: StyleBuilder = new builderClass();
+			const builder = new builderClass();
 			expect(builder).toBeInstanceOf(StyleBuilder);
 			expect(typeof builder.name).toBe('string');
 
@@ -38,7 +38,7 @@ describe('Style Builders', () => {
 describe('Colorful', () => {
 	const colorful = new Colorful();
 	colorful.baseUrl = 'https://dev.null';
-	colorful.colors.commercial = '#f00';
+	colorful.defaultColors.commercial = '#f00';
 	const style = colorful.build();
 	expect(style.glyphs).toBe('https://dev.null/assets/fonts/{fontstack}/{range}.pbf');
 });

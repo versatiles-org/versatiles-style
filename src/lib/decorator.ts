@@ -16,6 +16,8 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLa
 
 	// Iterate through the generated layer style rules
 	Object.entries(rules).forEach(([idDef, layerStyle]) => {
+		if (layerStyle == null) return;
+		
 		// Expand any braces in IDs and filter them through a RegExp if necessary
 		const ids = expandBraces(idDef).flatMap(id => {
 			if (!id.includes('*')) return id;
@@ -51,6 +53,8 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLa
 function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
 
 	for (const [ruleKeyCamelCase, ruleValue] of Object.entries(styleRule)) {
+		if (ruleValue == null) continue;
+		
 		// CamelCase to not-camel-case
 		const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
 

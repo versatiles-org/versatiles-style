@@ -3,10 +3,24 @@ import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
-import type { LanguageSuffix, MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle, RecolorOptions, StyleRules, StyleRulesOptions, StylemakerColorLookup, StylemakerStringLookup } from './types.js';
+import type {
+	LanguageSuffix,
+	MaplibreLayer,
+	MaplibreLayerDefinition,
+	MaplibreStyle,
+	RecolorOptions,
+	StyleRules,
+	StyleRulesOptions,
+	StylemakerColorKeys,
+	StylemakerColorStrings,
+	StylemakerColors,
+	StylemakerFontStrings,
+	StylemakerFonts,
+} from './types.js';
+import { deepClone } from './utils.js';
 
 // Stylemaker class definition
-export default abstract class StyleBuilder {
+export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 	public baseUrl: string;
 
 	public glyphsUrl = '/assets/fonts/{fontstack}/{range}.pbf';
@@ -25,9 +39,9 @@ export default abstract class StyleBuilder {
 
 	public abstract readonly name: string;
 
-	public abstract fonts: Record<string, string>;
+	public abstract readonly defaultColors: StylemakerColorStrings<Subclass>;
 
-	public abstract colors: Record<string, string>;
+	public abstract readonly defaultFonts: StylemakerFontStrings<Subclass>;
 
 	// Constructor
 	public constructor() {
@@ -37,26 +51,37 @@ export default abstract class StyleBuilder {
 		} catch (e) { }
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		this.baseUrl ??= 'https://tiles.versatiles.org';
+
+	}
+
+	public get colors(): StylemakerColors<Subclass> {
+		const entriesString = Object.entries(this.defaultColors) as [StylemakerColorKeys<Subclass>, StylemakerColorStrings<Subclass>][];
+		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StylemakerColorKeys<Subclass>, StylemakerColors<Subclass>][];
+		const result = Object.fromEntries(entriesColor) as StylemakerColors<Subclass>;
+		return result;
+	}
+
+	public get fonts(): StylemakerFonts<Subclass> {
+		return deepClone(this.defaultFonts) as StylemakerFonts<Subclass>;
 	}
 
 	public build(): MaplibreStyle {
 		// get empty shortbread style
 		const style: MaplibreStyle = getShortbreadTemplate();
 
-		const colors: StylemakerColorLookup = Object.fromEntries(
-			Object.entries(this.colors)
-				.map(([name, colorString]) => [name, Color(colorString)]),
-		);
+		const { colors } = this;
 
 		// transform colors
 		recolor(colors, this.recolor);
 
-		// get layer style rules from child class
-		const layerStyleRules = this.getStyleRules({
+		const styleRuleOptions: StyleRulesOptions<typeof this> = {
 			colors,
 			fonts: this.fonts,
 			languageSuffix: this.languageSuffix,
-		});
+		};
+
+		// get layer style rules from child class
+		const layerStyleRules = this.getStyleRules(styleRuleOptions);
 
 		// get shortbread layers
 		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ languageSuffix: this.languageSuffix });
@@ -99,13 +124,12 @@ export default abstract class StyleBuilder {
 		}
 	}
 
-	protected resetColors(callback: (color: Color) => Color): void {
-		const colors: StylemakerStringLookup = Object.fromEntries(
-			Object.entries(this.colors)
-				.map(([name, color]) => [name, callback(Color(color)).hexa()]),
-		);
-		this.colors = colors;
+	protected transformDefaultColors(callback: (color: Color) => Color): void {
+		const { colors } = this;
+		for (const key in colors) {
+			this.defaultColors[key] = callback(colors[key]).hexa();
+		}
 	}
 
-	protected abstract getStyleRules(opt: StyleRulesOptions): StyleRules;
+	protected abstract getStyleRules(options: StyleRulesOptions<Subclass>): StyleRules;
 }

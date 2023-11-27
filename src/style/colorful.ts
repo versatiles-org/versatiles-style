@@ -3,15 +3,15 @@
 import StyleBuilder from '../lib/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
-export default class Colorful extends StyleBuilder {
+export default class Colorful extends StyleBuilder<Colorful> {
 	public readonly name: string = 'colorful';
 
-	public fonts = {
+	public defaultFonts = {
 		regular: 'noto_sans_regular',
 		bold: 'noto_sans_bold',
 	};
 
-	public colors = {
+	public defaultColors = {
 		land: '#F9F4EE',
 		water: '#BEDDF3',
 		glacier: '#FFFFFF',
@@ -55,7 +55,7 @@ export default class Colorful extends StyleBuilder {
 		poi: '#555555',
 	};
 
-	protected getStyleRules(options: StyleRulesOptions): StyleRules {
+	protected getStyleRules(options: StyleRulesOptions<Colorful>): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			// background

@@ -4,18 +4,18 @@ import type { MaplibreStyle, StyleRules, StyleRulesOptions } from './types.js';
 import StyleBuilder from './style_builder.js';
 
 // Mock class for abstract class StyleBuilder
-class MockStyleBuilder extends StyleBuilder {
+class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {
 	public readonly name = 'mock';
 
-	public fonts = { regular: 'Arial' };
+	public defaultFonts = { regular: 'Arial' };
 
-	public colors = { primary: '#FF8800' };
+	public defaultColors = { primary: '#FF8800' };
 
 	public negateColors(): void {
-		this.resetColors((color) => color.negate());
+		this.transformDefaultColors(color => color.negate());
 	}
 
-	protected getStyleRules(opt: StyleRulesOptions): StyleRules {
+	protected getStyleRules(opt: StyleRulesOptions<MockStyleBuilder>): StyleRules {
 		for (const color of Object.values(opt.colors)) if (!(color instanceof Color)) throw Error();
 		for (const font of Object.values(opt.fonts)) if (typeof font !== 'string') throw Error();
 
@@ -23,7 +23,7 @@ class MockStyleBuilder extends StyleBuilder {
 			'water-area': {
 				textColor: opt.colors.primary,
 				textSize: 12,
-				textFont: [opt.fonts.Arial],
+				textFont: opt.fonts.regular,
 			},
 		};
 	}
@@ -49,11 +49,11 @@ describe('StyleBuilder', () => {
 		expect(style).toHaveProperty('sprite');
 	});
 
-	it('should reset colors correctly', () => {
-		const initialColor: string = builder.colors.primary;
+	it('should transform colors correctly', () => {
+		const initialColor: string = builder.defaultColors.primary;
 		builder.negateColors();
-		expect(builder.colors.primary).not.toBe(initialColor);
-		expect(builder.colors.primary).toBe(Color(initialColor).negate().hexa());
+		expect(builder.defaultColors.primary).not.toBe(initialColor);
+		expect(builder.defaultColors.primary).toBe(Color(initialColor).negate().hexa());
 	});
 
 	describe('build method', () => {
@@ -64,12 +64,6 @@ describe('StyleBuilder', () => {
 			expect(style).toHaveProperty('name');
 			expect(style).toHaveProperty('glyphs');
 			expect(style).toHaveProperty('sprite');
-		});
-
-		it('should convert color strings to Color instances', () => {
-			builder.build();
-			const colors = Object.values(builder.colors);
-			expect(colors.every((color: unknown) => typeof color === 'string')).toBe(true);
 		});
 
 		it('should resolve urls correctly', () => {
