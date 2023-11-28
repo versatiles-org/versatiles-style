@@ -2,10 +2,11 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import * as styleBuilderClasses from '../src/index.js';
+import { Colorful, Graybeard, Neutrino } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from './lib/utils.js';
 import type { MaplibreStyle } from '../src/index.js';
+import StyleBuilder from '../src/lib/style_builder.ts';
 
 
 
@@ -15,7 +16,11 @@ mkdirSync(dirDst, { recursive: true });
 
 
 // load styles
-for (const styleBuilderClass of Object.values(styleBuilderClasses)) {
+[
+	Colorful,
+	Graybeard,
+	Neutrino,
+].forEach(styleBuilderClass => {
 	const styleBuilder = new styleBuilderClass();
 	const { name } = styleBuilder;
 
@@ -30,7 +35,7 @@ for (const styleBuilderClass of Object.values(styleBuilderClasses)) {
 
 	styleBuilder.hideLabels = true;
 	produce(name + '.nolabel', styleBuilder.build());
-}
+})
 
 function produce(name: string, style: MaplibreStyle): void {
 
