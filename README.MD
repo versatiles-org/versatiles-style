@@ -35,14 +35,12 @@ Use it in:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-	const baseUrl = new URL('/', window.location.href).href;
+	const styleBuilder = new VersaTilesStyle.Colorful();
+  styleBuilder.tilesUrl = ['tiles/{z}/{x}/{y}'];
+
 	const map = new maplibregl.Map({
 		container: 'map',
-		style: versatiles_style.colorful({
-			glyphsUrl: baseUrl + 'fonts/{fontstack}/{range}.pbf',
-			spriteUrl: baseUrl + 'sprites/sprites',
-			tilesUrl: [baseUrl + 'tiles/{z}/{x}/{y}'],
-		})
+		style: styleBuilder.build()
 	});
 <script>
 ```
@@ -58,9 +56,10 @@ npm install versatiles-style
 Use it in Node.js:
 
 ```javascript
-import { colorful } from 'versatiles-style';
-let style = colorful({language:'de'});
-writeFileSync('style.json', JSON.stringify(style));
+import { Colorful } from 'versatiles-style';
+let style = new Colorful();
+style.language = 'de';
+writeFileSync('style.json', JSON.stringify(style.build()));
 ```
 
 # API
