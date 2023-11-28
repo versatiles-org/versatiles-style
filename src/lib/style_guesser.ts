@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { Colorful } from '../index.js';
 import type { MaplibreStyle, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
 import { isTileJSONSpecification } from './types.js';
 import randomColorGenerator from './random_color.js';
+import Colorful from '../style/colorful.js';
 
 
 
@@ -39,10 +39,10 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 }
 
 function getShortbreadStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
-	const builder = new Colorful();
-	builder.hideLabels = true;
-	builder.tilesUrls = spec.tiles;
-	return builder.build();
+	return new Colorful().build({
+		hideLabels: true,
+		tilesUrls: spec.tiles,
+	});
 }
 
 function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {

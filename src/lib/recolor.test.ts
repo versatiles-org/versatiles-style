@@ -225,5 +225,5 @@ export default class TestStyle extends StyleBuilder<TestStyle> {
 
 function getDefaultColors(): StylemakerColors<TestStyle> {
 	const style = new TestStyle();
-	return style.getColors();
+	return style.getColors(style.defaultColors);
 }

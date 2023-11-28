@@ -1,45 +1,35 @@
 
 import type { SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import * as V from '../release/versatiles-style.js';
-import type { LanguageSuffix } from '../src/lib/types.js';
+import type { LanguageSuffix, MaplibreStyle, StylemakerOptions } from '../src/lib/types.js';
+import type Colorful from '../src/style/colorful.js';
+import type StyleBuilder from '../src/lib/style_builder.js';
+import type Graybeard from '../src/style/graybeard.ts';
+import type Neutrino from '../src/style/neutrino.ts';
 
-type Builder = typeof V.Colorful | typeof V.Neutrino;
-type Style = V.Colorful | V.Neutrino;
+type Builder<T extends StyleBuilder<T>> = (options?: StylemakerOptions<T>) => MaplibreStyle;
+type GenericBuilder = Builder<Colorful> | Builder<Graybeard> | Builder<Neutrino>;
 
-interface StyleTestConfig {
-	name: string;
-	builder: Builder;
-	labelLayers?: RegExp;
-}
+test('Colorful', V.colorful, /^label-(street|place|boundary|transit)-/);
+test('Graybeard', V.graybeard, /^label-(street|place|boundary|transit)-/);
+test('Neutrino', V.neutrino);
 
-[
-	{ name: 'Colorful', builder: V.Colorful, labelLayers: /^label-(street|place|boundary|transit)-/ },
-	{ name: 'Graybeard', builder: V.Graybeard, labelLayers: /^label-(street|place|boundary|transit)-/ },
-	{ name: 'Neutrino', builder: V.Neutrino },
-].forEach(config => {
-	test(config);
-});
+function test(name: string, build: GenericBuilder, labelLayers?: RegExp): void {
 
-function test(config: StyleTestConfig): void {
-
-	describe('Style: ' + config.name, () => {
-		let style: Style;
-		beforeEach(() => style = new config.builder());
-
+	describe('Style: ' + name, () => {
 		it('should be buildable', () => {
-			expect(style.build()).toBeTruthy();
+			expect(build()).toBeTruthy();
 		});
 
-		if (config.labelLayers) {
+		if (labelLayers) {
 			it('should use correct language suffix', () => {
-				(['', '_de', '_en'] as LanguageSuffix[]).forEach(langSuffix => {
-					style.languageSuffix = langSuffix;
-					const textLayers = style.build().layers
-						.filter(l => config.labelLayers?.test(l.id))
+				(['', '_de', '_en'] as LanguageSuffix[]).forEach(languageSuffix => {
+					const textLayers = build({ languageSuffix }).layers
+						.filter(l => labelLayers.test(l.id))
 						.filter(l => l.type === 'symbol') as SymbolLayerSpecification[];
 					const layersTextFields = textLayers.map(l => l.layout?.['text-field'] as unknown);
 					expect(layersTextFields)
-						.toMatchObject(layersTextFields.slice().fill(`{name${langSuffix}}`));
+						.toMatchObject(layersTextFields.slice().fill(`{name${languageSuffix}}`));
 				});
 			});
 		}

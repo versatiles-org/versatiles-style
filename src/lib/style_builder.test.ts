@@ -67,8 +67,7 @@ describe('StyleBuilder', () => {
 		});
 
 		it('should resolve urls correctly', () => {
-			builder.baseUrl = 'https://my.base.url/';
-			const style: MaplibreStyle = builder.build();
+			const style: MaplibreStyle = builder.build({ baseUrl: 'https://my.base.url/' });
 			expect(style.glyphs).toBe('https://my.base.url/assets/fonts/{fontstack}/{range}.pbf');
 			expect(style.sprite).toBe('https://my.base.url/assets/sprites/sprites');
 

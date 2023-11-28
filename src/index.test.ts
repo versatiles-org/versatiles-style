@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import * as builderClasses from './index.js';
-import StyleBuilder from './lib/style_builder.js';
+import * as builders from './index.js';
 
 describe('Style Builders', () => {
 	const styles = [
-		{ name: 'Colorful', builderClass: builderClasses.Colorful },
-		{ name: 'Graybeard', builderClass: builderClasses.Graybeard },
-		{ name: 'Neutrino', builderClass: builderClasses.Neutrino },
+		{ name: 'Colorful', builder: builders.colorful },
+		{ name: 'Graybeard', builder: builders.graybeard },
+		{ name: 'Neutrino', builder: builders.neutrino },
 	];
 
-	styles.forEach(({ name, builderClass }) => {
+	styles.forEach(({ name, builder }) => {
 		it(`should create and test an instance of ${name}`, () => {
-			const builder = new builderClass();
-			expect(builder).toBeInstanceOf(StyleBuilder);
-			expect(typeof builder.name).toBe('string');
-			expect(builder.name).toBe(name);
+			expect(typeof builder).toBe('function');
 
-			builder.baseUrl = 'https://example.org';
-			const style = builder.build();
+			const style = builder({ baseUrl: 'https://example.org' });
 			expect(JSON.stringify(style).length).toBeGreaterThan(50000);
 
 			expect(style.name).toBe('versatiles-' + name.toLowerCase());
@@ -31,16 +26,25 @@ describe('Style Builders', () => {
 });
 
 describe('Colorful', () => {
-	const colorful = new builderClasses.Colorful();
-	colorful.baseUrl = 'https://dev.null';
-	colorful.defaultColors.commercial = '#f00';
-	const style = colorful.build();
+	const style = builders.colorful({
+		baseUrl: 'https://dev.null',
+		colors: { commercial: '#f00' },
+	});
 	expect(style.glyphs).toBe('https://dev.null/assets/fonts/{fontstack}/{range}.pbf');
+	const paint = style.layers.find(l => l.id === 'land-commercial')?.paint;
+
+	expect(paint).toBeDefined();
+	if (paint == null) throw Error();
+
+	expect(paint).toHaveProperty('fill-color');
+	if (!('fill-color' in paint)) throw Error();
+
+	expect(paint['fill-color']).toBe('#ff0000');
 });
 
 describe('guessStyle', () => {
 	it('should build raster styles', () => {
-		const style = builderClasses.guessStyle({
+		const style = builders.guessStyle({
 			type: 'raster',
 			tiles: [],
 			format: 'avif',
@@ -54,7 +58,7 @@ describe('guessStyle', () => {
 
 
 	it('should build vector styles', () => {
-		const style = builderClasses.guessStyle({
+		const style = builders.guessStyle({
 			type: 'vector',
 			tiles: [],
 			format: 'pbf',

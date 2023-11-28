@@ -97,6 +97,18 @@ export interface RecolorOptions {
 	tintColor?: string;
 }
 
+export interface StylemakerOptions<T extends StyleBuilder<T>> {
+	baseUrl?: string;
+	glyphsUrl?: string;
+	spriteUrl?: string;
+	tilesUrls?: string[];
+	hideLabels?: boolean;
+	languageSuffix?: LanguageSuffix;
+	colors?: Partial<StylemakerColorStrings<T>>;
+	fonts?: Partial<StylemakerFontStrings<T>>;
+	recolor?: RecolorOptions;
+}
+
 
 
 export function isTileJSONSpecification(obj: unknown): obj is TileJSONSpecification {

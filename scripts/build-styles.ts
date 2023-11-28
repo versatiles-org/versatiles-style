@@ -2,11 +2,10 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { Colorful, Graybeard, Neutrino } from '../src/index.js';
+import { colorful, graybeard, neutrino } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from './lib/utils.js';
-import type { MaplibreStyle } from '../src/index.js';
-import StyleBuilder from '../src/lib/style_builder.ts';
+import type { MaplibreStyle } from '../src/lib/types.js';
 
 
 
@@ -17,24 +16,14 @@ mkdirSync(dirDst, { recursive: true });
 
 // load styles
 [
-	Colorful,
-	Graybeard,
-	Neutrino,
-].forEach(styleBuilderClass => {
-	const styleBuilder = new styleBuilderClass();
-	const { name } = styleBuilder;
-
-	styleBuilder.languageSuffix = '';
-	produce(name, styleBuilder.build());
-
-	styleBuilder.languageSuffix = '_en';
-	produce(name + '.en', styleBuilder.build());
-
-	styleBuilder.languageSuffix = '_de';
-	produce(name + '.de', styleBuilder.build());
-
-	styleBuilder.hideLabels = true;
-	produce(name + '.nolabel', styleBuilder.build());
+	{ name: 'colorful', build: colorful },
+	{ name: 'graybeard', build: graybeard },
+	{ name: 'neutrino', build: neutrino },
+].forEach(({ name, build }) => {
+	produce(name, build({ languageSuffix: '' }));
+	produce(name + '.en', build({ languageSuffix: '_en' }));
+	produce(name + '.de', build({ languageSuffix: '_de' }));
+	produce(name + '.nolabel', build({ hideLabels: true }));
 })
 
 function produce(name: string, style: MaplibreStyle): void {
