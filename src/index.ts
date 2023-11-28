@@ -1,5 +1,5 @@
 
-export type { MaplibreStyle } from './lib/types.js';
+export type { MaplibreStyle, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './lib/types.js';
 
 export { default as guessStyle } from './lib/style_guesser.js';
 

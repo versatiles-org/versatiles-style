@@ -3,6 +3,7 @@ import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
+import { deepClone } from './utils.js';
 import type {
 	LanguageSuffix,
 	MaplibreLayer,
@@ -15,9 +16,7 @@ import type {
 	StylemakerColorStrings,
 	StylemakerColors,
 	StylemakerFontStrings,
-	StylemakerFonts,
 } from './types.js';
-import { deepClone } from './utils.js';
 
 // Stylemaker class definition
 export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
@@ -54,29 +53,25 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 	}
 
-	public get colors(): StylemakerColors<Subclass> {
+	public getColors(): StylemakerColors<Subclass> {
 		const entriesString = Object.entries(this.defaultColors) as [StylemakerColorKeys<Subclass>, StylemakerColorStrings<Subclass>][];
 		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StylemakerColorKeys<Subclass>, StylemakerColors<Subclass>][];
 		const result = Object.fromEntries(entriesColor) as StylemakerColors<Subclass>;
 		return result;
 	}
 
-	public get fonts(): StylemakerFonts<Subclass> {
-		return deepClone(this.defaultFonts) as StylemakerFonts<Subclass>;
-	}
-
 	public build(): MaplibreStyle {
 		// get empty shortbread style
 		const style: MaplibreStyle = getShortbreadTemplate();
 
-		const { colors } = this;
+		const colors = this.getColors();
 
 		// transform colors
 		recolor(colors, this.recolor);
 
 		const styleRuleOptions: StyleRulesOptions<typeof this> = {
 			colors,
-			fonts: this.fonts,
+			fonts: deepClone(this.defaultFonts),
 			languageSuffix: this.languageSuffix,
 		};
 
@@ -125,7 +120,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 	}
 
 	protected transformDefaultColors(callback: (color: Color) => Color): void {
-		const { colors } = this;
+		const colors = this.getColors();
 		for (const key in colors) {
 			this.defaultColors[key] = callback(colors[key]).hexa();
 		}
