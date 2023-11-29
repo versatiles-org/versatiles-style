@@ -125,7 +125,7 @@ interface {
 
 ### Method: `colorful(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/6f93c18/src/index.ts#L4">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/516812e/src/index.ts#L4">\[src]</a></sup>
 
 **Parameters:**
 
@@ -135,7 +135,7 @@ interface {
 
 ### Method: `graybeard(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/6f93c18/src/index.ts#L9">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/516812e/src/index.ts#L9">\[src]</a></sup>
 
 **Parameters:**
 
@@ -145,17 +145,17 @@ interface {
 
 ### Method: `guessStyle(spec)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/6f93c18/src/lib/style_guesser.ts#L12">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/516812e/src/lib/style_guesser.ts#L12">\[src]</a></sup>
 
 **Parameters:**
 
-* <code>spec: [TileJSONSpecification](#type_tilejsonspecification)</code>
+* <code>spec: TileJSONOption</code>
 
 **Returns:** <code>MaplibreStyle</code>
 
 ### Method: `neutrino(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/6f93c18/src/index.ts#L14">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/516812e/src/index.ts#L14">\[src]</a></sup>
 
 **Parameters:**
 
