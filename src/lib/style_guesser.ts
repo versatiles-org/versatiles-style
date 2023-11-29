@@ -2,43 +2,55 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, TileJSONOption, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
+import type { MaplibreStyle, TileJSONOption, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
 import { isTileJSONSpecification } from './types.js';
 import randomColorGenerator from './random_color.js';
 import Colorful from '../style/colorful.js';
 
 
 
-export default function guess(spec: TileJSONOption): MaplibreStyle {
+export default function guess(opt: TileJSONOption): MaplibreStyle {
+
+	const { format } = opt;
+	const tilejsonBasic: TileJSONSpecificationBasic = {
+		tilejson: opt.tilejson ?? '3.0.0',
+		attribution: opt.attribution,
+		tiles: opt.tiles,
+		scheme: opt.scheme,
+		bounds: opt.bounds,
+		center: opt.center,
+		description: opt.description,
+		fillzoom: opt.fillzoom,
+		grids: opt.grids,
+		legend: opt.legend,
+		minzoom: opt.minzoom,
+		maxzoom: opt.maxzoom,
+		name: opt.name,
+		template: opt.template,
+	};
+
+	let k: keyof typeof tilejsonBasic;
+	for (k in tilejsonBasic) {
+		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+		if (tilejsonBasic[k] === undefined) delete tilejsonBasic[k];
+	}
+
 	let tilejson: TileJSONSpecification;
-	const { format } = spec;
 	switch (format) {
 		case 'avif':
 		case 'jpg':
 		case 'png':
 		case 'webp':
-			tilejson = {
-				tilejson: '3.0.0',
-				type: 'raster',
-				...spec,
-				format,
-			};
+			tilejson = { ...tilejsonBasic, type: 'raster', format };
 			break;
 		case 'pbf':
-			const { vector_layers } = spec;
-			if (vector_layers == null) {
+			const { vectorLayers } = opt;
+			if (vectorLayers == null) {
 				throw Error('property vector_layers is required for vector tiles');
 			}
-			tilejson = {
-				tilejson: '3.0.0',
-				type: 'vector',
-				...spec,
-				format,
-				vector_layers,
-			};
+			tilejson = { ...tilejsonBasic, type: 'vector', format, vector_layers: vectorLayers };
 			break;
 	}
-
 
 	if (!isTileJSONSpecification(tilejson)) throw Error();
 
@@ -47,7 +59,7 @@ export default function guess(spec: TileJSONOption): MaplibreStyle {
 			return getImageStyle(tilejson);
 		case 'vector':
 			if (isShortbread(tilejson)) {
-				return getShortbreadStyle(tilejson);
+				return getShortbreadStyle(tilejson, { baseUrl: opt.baseUrl, glyphs: opt.glyphs, sprite: opt.sprite });
 			} else {
 				return getInspectorStyle(tilejson);
 			}
@@ -65,11 +77,15 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 	return shortbreadIds.every(id => layerIds.has(id));
 }
 
-function getShortbreadStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
-	return new Colorful().build({
+function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: string }): MaplibreStyle {
+	const style = new Colorful().build({
 		hideLabels: true,
-		tilesUrls: spec.tiles,
+		tiles: spec.tiles,
+		baseUrl: builderOption.baseUrl,
+		glyphs: builderOption.glyphs,
+		sprite: builderOption.sprite,
 	});
+	return style;
 }
 
 function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {

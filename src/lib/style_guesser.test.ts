@@ -19,11 +19,11 @@ describe('guessStyle', () => {
 	it('should build vector styles', () => {
 		const type = 'vector';
 		const format = 'pbf';
-		const vector_layers: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-		expect(guessStyle({ tiles, format, vector_layers }))
+		const vectorLayers: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
+		expect(guessStyle({ tiles, format, vectorLayers }))
 			.toStrictEqual({
 				version: 8,
-				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers } },
+				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers: vectorLayers } },
 				layers: [
 					{
 						id: 'background',

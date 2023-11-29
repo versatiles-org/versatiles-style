@@ -45,7 +45,7 @@ describe('Colorful', () => {
 
 describe('guessStyle', () => {
 	const tiles = ['https://fancy.map/tiles/{z}/{x}/{y}'];
-	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
+	const vectorLayers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
 	it('should build raster styles', () => {
 		const style = builders.guessStyle({
@@ -63,7 +63,7 @@ describe('guessStyle', () => {
 		const style = builders.guessStyle({
 			tiles,
 			format: 'pbf',
-			vector_layers,
+			vectorLayers,
 		});
 		expect(style).toStrictEqual({
 			layers: [
@@ -72,7 +72,7 @@ describe('guessStyle', () => {
 				{ id: 'vectorSource-hallo-line', filter: ['==', '$type', 'LineString'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'line' },
 				{ id: 'vectorSource-hallo-circle', filter: ['==', '$type', 'Point'], paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 }, source: 'vectorSource', 'source-layer': 'hallo', type: 'circle' },
 			],
-			sources: { vectorSource: { format: 'pbf', tilejson: '3.0.0', tiles, type: 'vector', vector_layers } },
+			sources: { vectorSource: { format: 'pbf', tilejson: '3.0.0', tiles, type: 'vector', vector_layers: vectorLayers } },
 			'version': 8,
 		});
 	});

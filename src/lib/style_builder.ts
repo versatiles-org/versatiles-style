@@ -33,10 +33,10 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.href ?? 'https://tiles.versatiles.org';
-		const glyphsUrl = options.glyphsUrl ?? '/assets/fonts/{fontstack}/{range}.pbf';
+		const glyphs = options.glyphs ?? '/assets/fonts/{fontstack}/{range}.pbf';
 
-		const spriteUrl = options.spriteUrl ?? '/assets/sprites/sprites';
-		const tilesUrls = options.tilesUrls ?? ['/tiles/osm/{z}/{x}/{y}'];
+		const sprite = options.sprite ?? '/assets/sprites/sprites';
+		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
 		const hideLabels = options.hideLabels ?? false;
 		const languageSuffix = options.languageSuffix ?? '';
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
@@ -94,11 +94,11 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		style.layers = layers;
 		style.name = 'versatiles-' + this.name.toLowerCase();
-		style.glyphs = resolveUrl(baseUrl, glyphsUrl);
-		style.sprite = resolveUrl(baseUrl, spriteUrl);
+		style.glyphs = resolveUrl(baseUrl, glyphs);
+		style.sprite = resolveUrl(baseUrl, sprite);
 
 		const source = style.sources[this.#sourceName];
-		if ('tiles' in source) source.tiles = tilesUrls.map(url => resolveUrl(baseUrl, url));
+		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));
 
 		return style;
 

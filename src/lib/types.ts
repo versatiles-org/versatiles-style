@@ -70,8 +70,10 @@ export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecif
 /** Options for creating TileJSON, extending the basic specification with format and optional vector layers. */
 export interface TileJSONOption extends TileJSONSpecificationBasic {
 	format: 'avif' | 'jpg' | 'pbf' | 'png' | 'webp';
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	vector_layers?: VectorLayer[];
+	vectorLayers?: VectorLayer[];
+	baseUrl?: string;
+	glyphs?: string;
+	sprite?: string;
 }
 
 /** Type for Maplibre styles specifically designed for raster sources. */
@@ -159,13 +161,13 @@ export interface StylemakerOptions<T extends StyleBuilder<T>> {
 	baseUrl?: string;
 
 	/** The URL template for loading font glyphs, formatted with `{fontstack}` and `{range}` placeholders. */
-	glyphsUrl?: string;
+	glyphs?: string;
 
 	/** The URL for loading sprite images and metadata. */
-	spriteUrl?: string;
+	sprite?: string;
 
 	/** An array of URL templates for loading map tiles, with `{z}`, `{x}`, and `{y}` placeholders. */
-	tilesUrls?: string[];
+	tiles?: string[];
 
 	/** If true, hides all map labels. */
 	hideLabels?: boolean;
