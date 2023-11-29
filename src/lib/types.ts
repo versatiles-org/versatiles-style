@@ -159,18 +159,19 @@ export function isTileJSONSpecification(obj: unknown): obj is TileJSONSpecificat
 		throw Error('spec.template must be a string if present');
 	}
 
+	if (!Array.isArray(spec.tiles) || spec.tiles.length === 0 || spec.tiles.some(url => typeof url !== 'string')) {
+		throw Error('spec.tiles must be an array of strings');
+	}
+
 	if (spec.type === 'raster') {
 		if (!['avif', 'jpg', 'png', 'webp'].includes(spec.format)) {
 			throw Error('spec.format must be "avif", "jpg", "png", or "webp"');
-		}
-		if (!Array.isArray(spec.tiles) || spec.tiles.some(url => typeof url !== 'string')) {
-			throw Error('spec.tiles must be an array of strings');
 		}
 	} else if (spec.type === 'vector') {
 		if (spec.format !== 'pbf') {
 			throw Error('spec.format must be "pbf"');
 		}
-		if (!Array.isArray(spec.vector_layers) || spec.vector_layers.some(layer => !validateVectorLayer(layer))) {
+		if (!Array.isArray(spec.vector_layers) || spec.vector_layers.length === 0 || spec.vector_layers.some(layer => !validateVectorLayer(layer))) {
 			throw Error('spec.vector_layers must be an array of VectorLayer');
 		}
 	} else {
