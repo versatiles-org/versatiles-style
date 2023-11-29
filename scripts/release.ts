@@ -47,13 +47,16 @@ await check('update version', setNextVersion(nextVersion));
 // lint
 await check('lint', run('npm run lint'));
 
-// test
-await check('run tests', run('npm run test'));
-
 // build
 await check('build styles', run('npm run build-styles'));
 await check('build node version', run('npm run build-node'));
 await check('build browser version', run('npm run build-browser'));
+
+// test
+await check('run tests', run('npm run test'));
+
+// test
+await check('update doc', run('npm run doc'));
 
 // npm publish
 await check('npm publish', run('npm publish --access public'));
