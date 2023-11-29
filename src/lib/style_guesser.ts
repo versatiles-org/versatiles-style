@@ -2,28 +2,55 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
+import type { MaplibreStyle, TileJSONOption, TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
 import { isTileJSONSpecification } from './types.js';
 import randomColorGenerator from './random_color.js';
 import Colorful from '../style/colorful.js';
 
 
 
-export default function guess(spec: TileJSONSpecification): MaplibreStyle {
-	if (!isTileJSONSpecification(spec)) throw Error();
-	spec.tilejson ??= '3.0.0';
-
-	switch (spec.type) {
-		case 'vector':
-			if (isShortbread(spec)) {
-				return getShortbreadStyle(spec);
-			} else {
-				return getInspectorStyle(spec);
+export default function guess(spec: TileJSONOption): MaplibreStyle {
+	let tilejson: TileJSONSpecification;
+	const { format } = spec;
+	switch (format) {
+		case 'avif':
+		case 'jpg':
+		case 'png':
+		case 'webp':
+			tilejson = {
+				tilejson: '3.0.0',
+				type: 'raster',
+				...spec,
+				format,
+			};
+			break;
+		case 'pbf':
+			const { vector_layers } = spec;
+			if (vector_layers == null) {
+				throw Error('property vector_layers is required for vector tiles');
 			}
+			tilejson = {
+				tilejson: '3.0.0',
+				type: 'vector',
+				...spec,
+				format,
+				vector_layers,
+			};
+			break;
+	}
+
+
+	if (!isTileJSONSpecification(tilejson)) throw Error();
+
+	switch (tilejson.type) {
 		case 'raster':
-			return getImageStyle(spec);
-		default:
-			throw Error('spec.type must be: "vector" or "raster"');
+			return getImageStyle(tilejson);
+		case 'vector':
+			if (isShortbread(tilejson)) {
+				return getShortbreadStyle(tilejson);
+			} else {
+				return getInspectorStyle(tilejson);
+			}
 	}
 }
 

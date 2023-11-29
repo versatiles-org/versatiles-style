@@ -25,9 +25,8 @@ export interface VectorLayer {
 	maxzoom?: number;
 }
 
-export interface TileJSONSpecificationRaster {
+export interface TileJSONSpecificationBasic {
 	tilejson?: '3.0.0';
-	type: 'raster';
 	attribution?: string;
 	tiles: string[];
 	scheme?: 'tms' | 'xyz';
@@ -41,17 +40,25 @@ export interface TileJSONSpecificationRaster {
 	maxzoom?: number;
 	name?: string;
 	template?: string;
+}
+
+export interface TileJSONSpecificationRaster extends TileJSONSpecificationBasic {
+	type: 'raster';
 	format: 'avif' | 'jpg' | 'png' | 'webp';
 }
-
-export interface TileJSONSpecificationVector extends Omit<TileJSONSpecificationRaster, 'format' | 'type'> {
+export interface TileJSONSpecificationVector extends TileJSONSpecificationBasic {
+	type: 'vector';
+	format: 'pbf';
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	vector_layers: VectorLayer[];
-	format: 'pbf';
-	type: 'vector';
 }
-
 export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecificationVector;
+
+export interface TileJSONOption extends TileJSONSpecificationBasic {
+	format: 'avif' | 'jpg' | 'pbf' | 'png' | 'webp';
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	vector_layers?: VectorLayer[];
+}
 
 export type MaplibreStyleRaster = Omit<StyleSpecification, 'sources'> & {
 	// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style

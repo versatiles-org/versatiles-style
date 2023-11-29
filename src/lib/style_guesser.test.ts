@@ -8,7 +8,7 @@ describe('guessStyle', () => {
 	it('should build raster styles', () => {
 		const type = 'raster';
 		const format = 'avif';
-		expect(guessStyle({ type, tiles, format }))
+		expect(guessStyle({ tiles, format }))
 			.toStrictEqual({
 				version: 8,
 				sources: { rasterSource: { format, tilejson: '3.0.0', tiles, type } },
@@ -20,7 +20,7 @@ describe('guessStyle', () => {
 		const type = 'vector';
 		const format = 'pbf';
 		const vector_layers: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-		expect(guessStyle({ type, tiles, format, vector_layers }))
+		expect(guessStyle({ tiles, format, vector_layers }))
 			.toStrictEqual({
 				version: 8,
 				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers } },

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as builders from './index.js';
+import type { VectorLayer } from './lib/types.ts';
 
 describe('Style Builders', () => {
 	const styles = [
@@ -43,30 +44,35 @@ describe('Colorful', () => {
 });
 
 describe('guessStyle', () => {
+	const tiles = ['https://fancy.map/tiles/{z}/{x}/{y}'];
+	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
+
 	it('should build raster styles', () => {
 		const style = builders.guessStyle({
-			type: 'raster',
-			tiles: [],
-			format: 'avif',
+			tiles,
+			format: 'png',
 		});
 		expect(style).toStrictEqual({
 			layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
-			sources: { rasterSource: { format: 'avif', tilejson: '3.0.0', tiles: [], type: 'raster' } },
+			sources: { rasterSource: { format: 'png', tilejson: '3.0.0', tiles, type: 'raster' } },
 			version: 8,
 		});
 	});
 
-
 	it('should build vector styles', () => {
 		const style = builders.guessStyle({
-			type: 'vector',
-			tiles: [],
+			tiles,
 			format: 'pbf',
-			vector_layers: [],
+			vector_layers,
 		});
 		expect(style).toStrictEqual({
-			layers: [{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' }],
-			sources: { vectorSource: { format: 'pbf', tilejson: '3.0.0', tiles: [], type: 'vector', 'vector_layers': [] } },
+			layers: [
+				{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' },
+				{ id: 'vectorSource-hallo-fill', filter: ['==', '$type', 'Polygon'], paint: { 'fill-antialias': true, 'fill-color': 'hsla(14,50%,52%,0.6)', 'fill-opacity': 0.3, 'fill-outline-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'fill' },
+				{ id: 'vectorSource-hallo-line', filter: ['==', '$type', 'LineString'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'line' },
+				{ id: 'vectorSource-hallo-circle', filter: ['==', '$type', 'Point'], paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 }, source: 'vectorSource', 'source-layer': 'hallo', type: 'circle' },
+			],
+			sources: { vectorSource: { format: 'pbf', tilejson: '3.0.0', tiles, type: 'vector', vector_layers } },
 			'version': 8,
 		});
 	});
