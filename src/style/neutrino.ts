@@ -12,19 +12,44 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 	};
 
 	public defaultColors = {
+
+		/** Color representing land areas. */
 		land: '#f6f0f6',
+
+		/** Color representing bodies of water such as lakes and rivers. */
 		water: '#cbd2df',
+
+		/** Color for grassy areas and fields. */
 		grass: '#e7e9e5',
+
+		/** Color for wooded or forested areas. */
 		wood: '#d9e3d9',
+
+		/** Color used for agricultural land. */
 		agriculture: '#f8eeee',
+
+		/** Color for site areas such as parks or recreational facilities. */
 		site: '#ebe8e6',
+
+		/** Primary color for buildings. */
 		building: '#e0d1d9',
+
+		/** Color for streets and roads. */
 		street: '#ffffff',
+
+		/** Color used for boundaries, such as national or state lines. */
 		boundary: '#e6ccd8',
+
+		/** Color for footpaths and pedestrian areas. */
 		foot: '#fef8ff',
+
+		/** Color used for railways. */
 		rail: '#e8d5e0',
+
+		/** Primary color used for text labels. */
 		label: '#cbb7b7',
 	};
+
 
 	protected getStyleRules(options: StyleRulesOptions<Neutrino>): StyleRules {
 		const { colors, fonts } = options;

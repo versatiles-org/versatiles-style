@@ -12,46 +12,128 @@ export default class Colorful extends StyleBuilder<Colorful> {
 	};
 
 	public defaultColors = {
+
+		/** Color for land areas on the map. */
 		land: '#F9F4EE',
+
+		/** Color for water bodies like lakes and rivers. */
 		water: '#BEDDF3',
+
+		/** Color for glacier areas, usually shown as white. */
 		glacier: '#FFFFFF',
+
+		/** Color for wooded or forested areas. */
 		wood: '#66AA44',
+
+		/** Color for grasslands or open fields. */
 		grass: '#D8E8C8',
+
+		/** Color for parks and recreational areas. */
 		park: '#D9D9A5',
+
+		/** Color for streets and roads on the map. */
 		street: '#FFFFFF',
+
+		/** Background color for streets. */
 		streetbg: '#CFCDCA',
+
+		/** Color for major highways or motorways. */
 		motorway: '#FFCC88',
+
+		/** Background color for motorways. */
 		motorwaybg: '#E9AC77',
+
+		/** Color for trunk roads. */
 		trunk: '#FFEEAA',
+
+		/** Background color for trunk roads. */
 		trunkbg: '#E9AC77',
+
+		/** Background color for buildings. */
 		buildingbg: '#DFDBD7',
+
+		/** Primary color for buildings. */
 		building: '#F2EAE2',
+
+		/** Color used for boundaries. */
 		boundary: '#A6A6C8',
+
+		/** Color used for disputed boundaries. */
 		disputed: '#BEBCCF',
+
+		/** Color used for residential areas. */
 		residential: '#EAE6E133',
+
+		/** Color used for commercial areas. */
 		commercial: '#F7DEED40',
+
+		/** Color used for industrial areas. */
 		industrial: '#FFF4C255',
+
+		/** Color used for footpaths and pedestrian areas. */
 		foot: '#FBEBFF',
+
+		/** Primary color used for labels. */
 		label: '#333344',
+
+		/** Color used for label halos. */
 		labelHalo: '#FFFFFFCC',
+
+		/** Color used for shields on maps. */
 		shield: '#FFFFFF',
+
+		/** Color used for agriculture areas. */
 		agriculture: '#F0E7D1',
+
+		/** Color used for railways. */
 		rail: '#B1BBC4',
+
+		/** Color used for subways and underground systems. */
 		subway: '#A6B8C7',
+
+		/** Color used for cycle paths. */
 		cycle: '#EFF9FF',
+
+		/** Color used for waste areas. */
 		waste: '#DBD6BD',
+
+		/** Color used for burial and cemetery areas. */
 		burial: '#DDDBCA',
+
+		/** Color used for sand areas like beaches. */
 		sand: '#FAFAED',
+
+		/** Color used for rocky terrain. */
 		rock: '#E0E4E5',
+
+		/** Color used for leisure areas like parks and gardens. */
 		leisure: '#E7EDDE',
+
+		/** Color used for wetland areas like marshes. */
 		wetland: '#D3E6DB',
+
+		/** Color used for various symbols on the map. */
 		symbol: '#66626A',
+
+		/** Color indicating danger or warning areas. */
 		danger: '#FF0000',
+
+		/** Color used for prison areas. */
 		prison: '#FDF2FC',
+
+		/** Color used for parking areas. */
 		parking: '#EBE8E6',
+
+		/** Color used for construction sites. */
 		construction: '#A9A9A9',
+
+		/** Color used for educational facilities. */
 		education: '#FFFF80',
+
+		/** Color used for hospitals and medical facilities. */
 		hospital: '#FF6666',
+
+		/** Color used for points of interest. */
 		poi: '#555555',
 	};
 
