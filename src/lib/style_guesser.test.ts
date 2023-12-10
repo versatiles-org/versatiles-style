@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import getTemplate from './shortbread/template.js';
 import guessStyle from './style_guesser.js';
-import type { VectorLayer } from './types.ts';
+import type { VectorLayer } from './types.js';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
@@ -16,7 +17,7 @@ describe('guessStyle', () => {
 			});
 	});
 
-	it('should build vector styles', () => {
+	it('should build vector inspector styles', () => {
 		const type = 'vector';
 		const format = 'pbf';
 		const vectorLayers: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
@@ -57,5 +58,41 @@ describe('guessStyle', () => {
 					},
 				],
 			});
+	});
+
+	it('should build shortbread vector styles', () => {
+		const type = 'vector';
+		const format = 'pbf';
+		const vectorLayers = getTemplate().sources['versatiles-shortbread'].vector_layers;
+		const style = guessStyle({ tiles, format, vectorLayers, baseUrl: 'http://example.com' });
+
+		expect(style.layers.length).toBe(236);
+		style.layers = [];
+
+		expect(style).toStrictEqual({
+			glyphs: 'http://example.com/assets/fonts/{fontstack}/{range}.pbf',
+			metadata: {
+				license: 'https://creativecommons.org/publicdomain/zero/1.0/',
+				'maputnik:renderer': 'mbgljs',
+			},
+			name: 'versatiles-colorful',
+			sprite: 'http://example.com/assets/sprites/sprites',
+			layers: [],
+			sources: {
+				'versatiles-shortbread': {
+					attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+					bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
+					format,
+					maxzoom: 14,
+					minzoom: 0,
+					scheme: 'xyz',
+					tilejson: '3.0.0',
+					tiles,
+					type,
+					vector_layers: vectorLayers,
+				},
+			},
+			version: 8,
+		});
 	});
 });

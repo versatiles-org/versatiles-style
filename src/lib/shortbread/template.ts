@@ -16,6 +16,7 @@ export default function getTemplate(): MaplibreStyleVector {
 		sprite: 'https://tiles.versatiles.org/sprites/sprites',
 		sources: {
 			'versatiles-shortbread': {
+				tilejson: '3.0.0',
 				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 				tiles: [
 					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}',
