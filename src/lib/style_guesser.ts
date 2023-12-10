@@ -54,16 +54,27 @@ export default function guess(opt: TileJSONOption): MaplibreStyle {
 
 	if (!isTileJSONSpecification(tilejson)) throw Error();
 
+	let style: MaplibreStyle;
 	switch (tilejson.type) {
 		case 'raster':
-			return getImageStyle(tilejson);
+			style = getImageStyle(tilejson);
+			break;
 		case 'vector':
 			if (isShortbread(tilejson)) {
-				return getShortbreadStyle(tilejson, { baseUrl: opt.baseUrl, glyphs: opt.glyphs, sprite: opt.sprite });
+				style = getShortbreadStyle(tilejson, { baseUrl: opt.baseUrl, glyphs: opt.glyphs, sprite: opt.sprite });
 			} else {
-				return getInspectorStyle(tilejson);
+				style = getInspectorStyle(tilejson);
 			}
 	}
+
+	if (opt.minzoom ?? 0) style.zoom ??= opt.minzoom;
+	if (opt.bounds) style.center ??= [
+		(opt.bounds[0] + opt.bounds[2]) / 2,
+		(opt.bounds[1] + opt.bounds[3]) / 2,
+	];
+	if (opt.center) style.center = opt.center;
+
+	return style;
 }
 
 function isShortbread(spec: TileJSONSpecificationVector): boolean {
@@ -78,14 +89,13 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 }
 
 function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: string }): MaplibreStyle {
-	const style = new Colorful().build({
+	return new Colorful().build({
 		hideLabels: true,
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,
 		glyphs: builderOption.glyphs,
 		sprite: builderOption.sprite,
 	});
-	return style;
 }
 
 function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import getTemplate from './shortbread/template.js';
 import guessStyle from './style_guesser.js';
-import type { VectorLayer } from './types.js';
+import type { TileJSONOption, VectorLayer } from './types.js';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
+	const vectorLayersSomething: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
+	const vectorLayersShortbread: VectorLayer[] = getTemplate().sources['versatiles-shortbread'].vector_layers;
 
 	it('should build raster styles', () => {
 		const type = 'raster';
@@ -20,11 +22,10 @@ describe('guessStyle', () => {
 	it('should build vector inspector styles', () => {
 		const type = 'vector';
 		const format = 'pbf';
-		const vectorLayers: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-		expect(guessStyle({ tiles, format, vectorLayers }))
+		expect(guessStyle({ tiles, format, vectorLayers: vectorLayersSomething }))
 			.toStrictEqual({
 				version: 8,
-				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers: vectorLayers } },
+				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers: vectorLayersSomething } },
 				layers: [
 					{
 						id: 'background',
@@ -63,8 +64,7 @@ describe('guessStyle', () => {
 	it('should build shortbread vector styles', () => {
 		const type = 'vector';
 		const format = 'pbf';
-		const vectorLayers = getTemplate().sources['versatiles-shortbread'].vector_layers;
-		const style = guessStyle({ tiles, format, vectorLayers, baseUrl: 'http://example.com' });
+		const style = guessStyle({ tiles, format, vectorLayers: vectorLayersShortbread, baseUrl: 'http://example.com' });
 
 		expect(style.layers.length).toBe(236);
 		style.layers = [];
@@ -89,10 +89,48 @@ describe('guessStyle', () => {
 					tilejson: '3.0.0',
 					tiles,
 					type,
-					vector_layers: vectorLayers,
+					vector_layers: vectorLayersShortbread,
 				},
 			},
 			version: 8,
+		});
+	});
+
+	const cases: { type: string; options: TileJSONOption }[] = [
+		{ type: 'image', options: { tiles, format: 'png' } },
+		{ type: 'inspector', options: { tiles, format: 'pbf', vectorLayers: vectorLayersSomething } },
+		{ type: 'shortbread', options: { tiles, format: 'pbf', vectorLayers: vectorLayersShortbread } },
+	];
+
+	describe('minzoom sets zoom', () => {
+		cases.forEach(({ type, options }) => {
+			it(type, () => {
+				expect(guessStyle({ ...options, minzoom: 5 })).toHaveProperty('zoom', 5);
+			});
+		});
+	});
+
+	describe('bounds sets center', () => {
+		cases.forEach(({ type, options }) => {
+			it(type, () => {
+				expect(guessStyle({ ...options, bounds: [1, 2, 3, 4] })).toHaveProperty('center', [2, 3]);
+			});
+		});
+	});
+
+	describe('center sets center', () => {
+		cases.forEach(({ type, options }) => {
+			it(type, () => {
+				expect(guessStyle({ ...options, center: [12, 34] })).toHaveProperty('center', [12, 34]);
+			});
+		});
+	});
+
+	describe('center overrides bounds', () => {
+		cases.forEach(({ type, options }) => {
+			it(type, () => {
+				expect(guessStyle({ ...options, bounds: [1, 2, 3, 4], center: [12, 34] })).toHaveProperty('center', [12, 34]);
+			});
 		});
 	});
 });
