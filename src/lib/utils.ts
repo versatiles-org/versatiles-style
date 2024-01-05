@@ -114,3 +114,11 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 	}
 	return target;
 }
+
+export function resolveUrl(base: string, url: string): string {
+	if (!Boolean(base)) return url;
+	url = new URL(url, base).href;
+	url = url.replace(/%7B/gi, '{');
+	url = url.replace(/%7D/gi, '}');
+	return url;
+}

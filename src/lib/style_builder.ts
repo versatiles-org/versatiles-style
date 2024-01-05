@@ -3,7 +3,7 @@ import getShortbreadTemplate from './shortbread/template.js';
 import getShortbreadLayers from './shortbread/layers.js';
 import { decorate } from './decorator.js';
 import { getDefaultRecolorFlags, recolor } from './recolor.js';
-import { deepClone } from './utils.js';
+import { deepClone, resolveUrl } from './utils.js';
 import type {
 	MaplibreLayer,
 	MaplibreLayerDefinition,
@@ -101,14 +101,6 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));
 
 		return style;
-
-		function resolveUrl(base: string, url: string): string {
-			if (!Boolean(base)) return url;
-			url = new URL(url, base).href;
-			url = url.replace(/%7B/gi, '{');
-			url = url.replace(/%7D/gi, '}');
-			return url;
-		}
 	}
 
 	public getColors(colors: StylemakerColorStrings<Subclass>): StylemakerColors<Subclass> {
