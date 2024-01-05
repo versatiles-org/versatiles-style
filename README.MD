@@ -125,7 +125,7 @@ interface {
 
 ### Method: `colorful(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/326466c/src/index.ts#L4">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L4">\[src]</a></sup>
 
 **Parameters:**
 
@@ -135,7 +135,7 @@ interface {
 
 ### Method: `graybeard(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/326466c/src/index.ts#L9">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L9">\[src]</a></sup>
 
 **Parameters:**
 
@@ -145,7 +145,7 @@ interface {
 
 ### Method: `guessStyle(opt)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/326466c/src/lib/style_guesser.ts#L12">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/lib/style_guesser.ts#L13">\[src]</a></sup>
 
 **Parameters:**
 
@@ -155,7 +155,7 @@ interface {
 
 ### Method: `neutrino(options)`
 
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/326466c/src/index.ts#L14">\[src]</a></sup>
+<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L14">\[src]</a></sup>
 
 **Parameters:**
 
