@@ -6,6 +6,7 @@ import type { MaplibreStyle, TileJSONOption, TileJSONSpecification, TileJSONSpec
 import { isTileJSONSpecification } from './types.js';
 import randomColorGenerator from './random_color.js';
 import Colorful from '../style/colorful.js';
+import { resolveUrl } from './utils.js';
 
 
 
@@ -28,6 +29,11 @@ export default function guess(opt: TileJSONOption): MaplibreStyle {
 		name: opt.name,
 		template: opt.template,
 	};
+
+	const { baseUrl } = opt;
+	if (typeof baseUrl === 'string') {
+		tilejsonBasic.tiles = tilejsonBasic.tiles.map(url => resolveUrl(baseUrl, url));
+	}
 
 	let k: keyof typeof tilejsonBasic;
 	for (k in tilejsonBasic) {
@@ -61,7 +67,7 @@ export default function guess(opt: TileJSONOption): MaplibreStyle {
 			break;
 		case 'vector':
 			if (isShortbread(tilejson)) {
-				style = getShortbreadStyle(tilejson, { baseUrl: opt.baseUrl, glyphs: opt.glyphs, sprite: opt.sprite });
+				style = getShortbreadStyle(tilejson, opt);
 			} else {
 				style = getInspectorStyle(tilejson);
 			}
