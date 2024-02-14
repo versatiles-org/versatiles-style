@@ -35,12 +35,18 @@ Use it in:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-	const styleBuilder = new VersaTilesStyle.Colorful();
-  styleBuilder.tilesUrl = ['tiles/{z}/{x}/{y}'];
+  const style = VersaTilesStyle.graybeard({
+    tiles: ['https://???.org/tiles/osm/{z}/{x}/{y}'],
+    sprite: 'https://???.org/assets/styles/swr-bright/sprite',
+    glyphs: 'https://???.org/assets/fonts/{fontstack}/{range}.pbf',
+    languageSuffix: '_de',
+    colors: { label: '#222' },
+    recolor: { gamma: 0.5 }
+  });
 
 	const map = new maplibregl.Map({
 		container: 'map',
-		style: styleBuilder.build()
+		style
 	});
 <script>
 ```
