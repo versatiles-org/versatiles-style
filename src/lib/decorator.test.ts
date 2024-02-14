@@ -33,7 +33,7 @@ describe('decorate function', () => {
 				expect(layer.layout).toHaveProperty('visibility', 'none');
 			}
 			if (layer.id === 'layer2') {
-				expect(layer.paint).toHaveProperty('line-color', '#00ff0080');
+				expect(layer.paint).toHaveProperty('line-color', 'rgba(0, 255, 0, 0.5)');
 				expect(layer.layout).toHaveProperty('visibility', 'visible');
 			}
 		});

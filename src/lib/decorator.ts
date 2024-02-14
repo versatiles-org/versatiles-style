@@ -103,7 +103,7 @@ function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
 function processColor(value: StyleRuleValue): string {
 	if (typeof value === 'string') value = Color(value);
 	if (value instanceof Color) {
-		value = (value.alpha() === 1) ? value.hex() : value.hexa();
+		value = (value.alpha() === 1) ? value.hex() : value.string();
 		return value.toLowerCase();
 	}
 	throw new Error(`unknown color type "${typeof value}"`);
