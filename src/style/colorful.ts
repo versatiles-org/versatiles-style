@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import StyleBuilder from '../lib/style_builder.js';
+import StyleBuilder from '../lib/build_style.js';
 import type { StyleRules, StyleRulesOptions } from '../lib/types.js';
 
 export default class Colorful extends StyleBuilder<Colorful> {

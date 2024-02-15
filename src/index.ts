@@ -17,4 +17,4 @@ export const styles = {
 	},
 };
 
-export { default as guessStyle } from './lib/style_guesser.js';
+export { default as guessStyle } from './lib/guess_style.js';

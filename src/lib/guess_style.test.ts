@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import getTemplate from './shortbread/template.js';
-import guessStyle from './style_guesser.js';
+import guessStyle from './guess_style.js';
 import type { TileJSONOption, VectorLayer } from './types.js';
 
 describe('guessStyle', () => {

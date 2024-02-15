@@ -2,7 +2,7 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { colorful, graybeard, neutrino } from '../src/index.js';
+import { styles } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { prettyStyleJSON } from './lib/utils.js';
 import type { MaplibreStyle } from '../src/lib/types.js';
@@ -15,11 +15,7 @@ mkdirSync(dirDst, { recursive: true });
 
 
 // load styles
-[
-	{ name: 'colorful', build: colorful },
-	{ name: 'graybeard', build: graybeard },
-	{ name: 'neutrino', build: neutrino },
-].forEach(({ name, build }) => {
+Object.entries(styles).forEach(([name, build]) => {
 	produce(name, build({ languageSuffix: '' }));
 	produce(name + '.en', build({ languageSuffix: '_en' }));
 	produce(name + '.de', build({ languageSuffix: '_de' }));

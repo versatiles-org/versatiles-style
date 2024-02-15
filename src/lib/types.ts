@@ -9,7 +9,7 @@ import type {
 	SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type Color from 'color';
-import type StyleBuilder from './style_builder.ts';
+import type StyleBuilder from './build_style.ts';
 
 /** Represents the available tile formats. */
 export type TileFormat = 'avif' | 'bin' | 'geojson' | 'jpg' | 'json' | 'pbf' | 'png' | 'svg' | 'topojson' | 'webp';

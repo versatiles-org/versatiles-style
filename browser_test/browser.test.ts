@@ -3,7 +3,7 @@ import type { SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec'
 import { styles } from '../release/versatiles-style.js';
 import type { LanguageSuffix, MaplibreStyle, StylemakerOptions } from '../src/lib/types.js';
 import type Colorful from '../src/style/colorful.js';
-import type StyleBuilder from '../src/lib/style_builder.js';
+import type StyleBuilder from '../src/lib/build_style.js';
 import type Graybeard from '../src/style/graybeard.ts';
 import type Neutrino from '../src/style/neutrino.ts';
 
