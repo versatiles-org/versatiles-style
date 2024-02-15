@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import * as builders from './index.js';
+import { guessStyle, styles } from './index.js';
 import type { VectorLayer } from './lib/types.ts';
 
-describe('Style Builders', () => {
-	const styles = [
-		{ name: 'Colorful', builder: builders.colorful },
-		{ name: 'Graybeard', builder: builders.graybeard },
-		{ name: 'Neutrino', builder: builders.neutrino },
-	];
+describe('styles', () => {
+	it('should be all styles', () => {
+		expect(Array.from(Object.keys(styles)).sort())
+			.toStrictEqual(['colorful', 'graybeard', 'neutrino']);
+	});
 
-	styles.forEach(({ name, builder }) => {
+	Object.entries(styles).forEach(([name, builder]) => {
 		it(`should create and test an instance of ${name}`, () => {
 			expect(typeof builder).toBe('function');
 
 			const style = builder({ baseUrl: 'https://example.org' });
 			expect(JSON.stringify(style).length).toBeGreaterThan(50000);
 
-			expect(style.name).toBe('versatiles-' + name.toLowerCase());
+			expect(style.name).toBe('versatiles-' + name);
 			expect(style.glyphs).toBe('https://example.org/assets/fonts/{fontstack}/{range}.pbf');
 			expect(style.sprite).toBe('https://example.org/assets/sprites/sprites');
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');
@@ -27,7 +26,7 @@ describe('Style Builders', () => {
 });
 
 describe('Colorful', () => {
-	const style = builders.colorful({
+	const style = styles.colorful({
 		baseUrl: 'https://dev.null',
 		colors: { commercial: '#f00' },
 	});
@@ -48,7 +47,7 @@ describe('guessStyle', () => {
 	const vectorLayers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
 	it('should build raster styles', () => {
-		const style = builders.guessStyle({
+		const style = guessStyle({
 			tiles,
 			format: 'png',
 		});
@@ -60,7 +59,7 @@ describe('guessStyle', () => {
 	});
 
 	it('should build vector styles', () => {
-		const style = builders.guessStyle({
+		const style = guessStyle({
 			tiles,
 			format: 'pbf',
 			vectorLayers,

@@ -35,7 +35,7 @@ Use it in:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-  const style = VersaTilesStyle.graybeard({
+  const style = VersaTilesStyle.styles.graybeard({
     tiles: ['https://???.org/tiles/osm/{z}/{x}/{y}'],
     sprite: 'https://???.org/assets/styles/swr-bright/sprite',
     glyphs: 'https://???.org/assets/fonts/{fontstack}/{range}.pbf',
@@ -62,9 +62,10 @@ npm install versatiles-style
 Use it in Node.js:
 
 ```javascript
-import { Colorful } from 'versatiles-style';
-let style = new Colorful();
-style.language = 'de';
+import { styles } from 'versatiles-style';
+let style = styles.colorful({
+  languageSuffix: '_en',
+});
 writeFileSync('style.json', JSON.stringify(style.build()));
 ```
 
