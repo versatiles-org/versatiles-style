@@ -1,9 +1,11 @@
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { styles } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import type { MaplibreStyle } from '../src/lib/types.js';
+import tar from 'tar-stream';
+import { createGzip } from 'node:zlib';
 
 
 
@@ -11,6 +13,8 @@ const dirDst = new URL('../release', import.meta.url).pathname;
 mkdirSync(dirDst, { recursive: true });
 
 
+
+const pack = tar.pack();
 
 // load styles
 Object.entries(styles).forEach(([name, build]) => {
@@ -20,6 +24,12 @@ Object.entries(styles).forEach(([name, build]) => {
 	produce(name + '.nolabel', build({ hideLabels: true }));
 });
 
+pack.finalize();
+pack
+	.pipe(createGzip({ level: 9 }))
+	.pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
+
+
 function produce(name: string, style: MaplibreStyle): void {
 
 	// Validate the style and log errors if any	
@@ -27,7 +37,8 @@ function produce(name: string, style: MaplibreStyle): void {
 	if (errors.length > 0) console.log(errors);
 
 	// write
-	writeFileSync(resolve(dirDst, name + '.json'), prettyStyleJSON(style));
+	//writeFileSync(resolve(dirDst, name + '.json'), prettyStyleJSON(style));
+	pack.entry({ name: name + '.json' }, prettyStyleJSON(style));
 	console.log('Saved ' + name);
 }
 
