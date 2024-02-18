@@ -1,7 +1,7 @@
 
 import { loadIcons } from './lib/icons.js';
 import { Sprite, buildSprite, buildSpriteEntries } from './lib/sprites.js';
-import config from '../config.js';
+import config from './config.js';
 import { calcSDF, renderSDFSprite, scaleSDFSprite } from './lib/sdf.js';
 import { createWriteStream, existsSync, mkdirSync, rmSync } from 'node:fs';
 import tar from 'tar-stream';

@@ -10,7 +10,7 @@ export default [
 	},
 	{
 		files: [
-			'**/browser_test/**/*.ts',
+			'**/scripts/**/*.ts',
 			'**/src/**/*.ts',
 		],
 		languageOptions: {

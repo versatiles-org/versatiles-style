@@ -9,7 +9,6 @@
 		"allowImportingTsExtensions": false,
 	},
 	"exclude": [
-		"scripts/**/*.ts",
 		"**/*.test.ts"
 	]
 }

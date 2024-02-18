@@ -16,8 +16,7 @@
 		"noEmit": true,
 	},
 	"include": [
-		"browser_test/*.ts",
-		"src/**/*.ts",
-		"scripts/**/*.ts"
+		"scripts/**/*.ts",
+		"src/**/*.ts"
 	]
 }

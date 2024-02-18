@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 export default {
 	ratio: {
 		'': 1,
 		'@2x': 2,
 		'@3x': 3,
-		'@4x': 4
+		'@4x': 4,
 	},
 	sets: {
 		icon: {
@@ -115,11 +117,11 @@ export default {
 				'waterpark',
 				'windmill',
 				'zoo',
-			]
+			],
 		},
 		marking: {
 			size: 15,
-			names: ['arrow']
+			names: ['arrow'],
 		},
 		pattern: {
 			size: 12,
@@ -127,7 +129,7 @@ export default {
 				'hatched_thin',
 				'striped',
 				'warning',
-			]
+			],
 		},
 		shield: {
 		},
@@ -138,7 +140,7 @@ export default {
 			names: [
 				'tram',
 				'information',
-			]
+			],
 		},
-	}
-}
+	},
+};
