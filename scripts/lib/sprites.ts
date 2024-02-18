@@ -26,7 +26,7 @@ export function buildSpriteEntries(icons: Icon[], scale: number, padding: number
 			.replace(/(<svg[^>]*height=")([^"]+)/, (all, before: string) => before + height);
 
 		return {
-			name: icon.setName + '-' + icon.iconName,
+			name: icon.name,
 			offset: padding * scale,
 			svg,
 			width: width + 2 * padding * scale,
