@@ -731,7 +731,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			// markings
 			'marking-oneway{-reverse,}': {
 				minzoom: 16,
-				image: 'marking-arrow-15',
+				image: 'marking-arrow',
 				opacity: { 16: 0, 17: 0.7 },
 				font: fonts.regular,
 			},
@@ -770,12 +770,12 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			},
 			'symbol-transit-lightrail': {
 				minzoom: 14,
-				image: 'icon-rail-light',
+				image: 'icon-rail_light',
 				iconSize: { 14: 0.5, 16: 1 },
 			},
 			'symbol-transit-subway': {
 				minzoom: 14,
-				image: 'icon-rail-metro',
+				image: 'icon-rail_metro',
 				iconSize: { 14: 0.5, 16: 1 },
 			},
 			'symbol-transit-tram': {
@@ -839,7 +839,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 					'place_of_worship', 'icon-place_of_worship',
 					'playground', 'icon-playground',
 					'police', 'icon-police',
-					'post_box', 'icon-post_box',
+					'post_box', 'icon-postbox',
 					'post_office', 'icon-post',
 					'prison', 'icon-prison',
 					'pub', 'icon-beer',
