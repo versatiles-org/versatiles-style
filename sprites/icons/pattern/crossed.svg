@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="crossed" width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+<path d="M 12 0 L 0 12 L 0 24 L 24 0 L 12 0 z M 60 0 L 0 60 L 0 72 L 72 0 L 60 0 z M 96 12 L 12 96 L 24 96 L 96 24 L 96 12 z M 96 60 L 60 96 L 72 96 L 96 72 L 96 60 z "/>
+<path d="M 96,12 84,0 H 72 L 96,24 Z M 96,60 36,0 H 24 L 96,72 Z M 84,96 0,12 V 24 L 72,96 Z M 36,96 0,60 v 12 l 24,24 z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="hatched-thick" width="108" height="108" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+<path d="M 0 0 L 0 12 L 12 0 L 0 0 z M 24 0 L 0 24 L 0 48 L 48 0 L 24 0 z M 60 0 L 0 60 L 0 84 L 84 0 L 60 0 z M 96 0 L 0 96 L 0 108 L 12 108 L 108 12 L 108 0 L 96 0 z M 108 24 L 24 108 L 48 108 L 108 48 L 108 24 z M 108 60 L 60 108 L 84 108 L 108 84 L 108 60 z M 108 96 L 96 108 L 108 108 L 108 96 z "/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

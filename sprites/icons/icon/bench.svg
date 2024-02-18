@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="bench" width="150" height="150" viewBox="0 0 39.6875 39.6875" xmlns="http://www.w3.org/2000/svg">
+<path d="m 0,26.458333 h 5.2916666 v -5.291666 c 0,-2.645834 2.6458333,-2.645834 2.6458333,-2.645834 H 31.75 c 0,0 2.645833,0 2.645833,2.645834 v 5.291666 H 39.6875 v -7.9375 c -10e-7,-2.645833 -10e-7,-5.291666 -2.645834,-5.291667 H 2.6458333 C 0,13.229167 0,15.875 0,18.520833 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
