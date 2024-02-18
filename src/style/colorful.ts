@@ -856,7 +856,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 					'vending_machine', 'icon-vendingmachine',
 					'veterinary', 'icon-veterinary',
 					'waste_basket', 'icon-waste_basket',
-					null,
+					'unknown',
 				],
 			},
 			'poi-leisure': {
@@ -889,7 +889,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 					//'theme_park', 'icon-theme_park',
 					'viewpoint', 'icon-viewpoint',
 					'zoo', 'icon-zoo',
-					null,
+					'unknown',
 				],
 			},
 			'poi-shop': {
@@ -947,7 +947,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 					//'water_works', 'icon-water_works',
 					'watermill', 'icon-watermill',
 					'windmill', 'icon-windmill',
-					null,
+					'unknown',
 				],
 			},
 			'poi-historic': {
@@ -972,7 +972,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 					'defibrillator', 'icon-defibrillator',
 					'fire_hydrant', 'icon-hydrant',
 					'phone', 'icon-emergency_phone',
-					null,
+					'unknown',
 				],
 			},
 
@@ -981,14 +981,14 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				image: ['match',
 					['get', 'highway'],
 					//'emergency_access_point', 'icon-emergency_access_point',
-					null
+					'unknown'
 				]
 			},
 			'poi-office': {
 				image: ['match',
 					['get', 'office'],
 					//'diplomatic', 'icon-diplomatic',
-					null
+					'unknown'
 				]
 			},
 			*/
