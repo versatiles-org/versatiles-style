@@ -271,7 +271,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				color: colors.danger,
 				fillOutlineColor: colors.danger,
 				opacity: 0.3,
-				image: 'pattern-warning-12',
+				image: 'pattern-warning',
 			},
 			'site-hospital': {
 				color: colors.hospital,
@@ -279,12 +279,12 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			},
 			'site-prison': {
 				color: colors.prison,
-				image: 'pattern-striped-12',
+				image: 'pattern-striped',
 				opacity: 0.1,
 			},
 			'site-construction': {
 				color: colors.construction,
-				image: 'pattern-hatched-thin-12',
+				image: 'pattern-hatched_thin',
 				opacity: 0.1,
 			},
 			'site-{university,college,school}': {
