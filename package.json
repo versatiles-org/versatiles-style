@@ -19,7 +19,7 @@
     "// test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.coverage.ts",
     "// test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.node.ts",
     "// test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.typescript.ts",
-    "// upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
+    "upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
   },
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
     "@types/tar-stream": "^3.1.3",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
-    "@versatiles/release-tool": "^1.2.1",
+    "@versatiles/release-tool": "^1.2.2",
     "bin-pack": "^1.0.2",
     "eslint": "^8.56.0",
     "inquirer": "^9.2.14",
@@ -59,7 +59,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-ts-webcompat-resolver": "^1.0.0",
     "npm-check-updates": "^16.14.15",
-    "rollup": "^4.11.0",
+    "rollup": "^4.12.0",
     "rollup-plugin-dts": "^6.1.0",
     "sharp": "^0.33.2",
     "tar-stream": "^3.1.7",
