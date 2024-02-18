@@ -29,6 +29,8 @@ export function deepClone<T>(obj: T): T {
 		return Color(obj);
 	}
 
+	if (obj == null) return obj;
+
 	console.log('obj', obj);
 	console.log('obj.prototype', Object.getPrototypeOf(obj));
 	throw Error();
