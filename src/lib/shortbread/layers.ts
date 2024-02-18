@@ -284,7 +284,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 
 			type: 'symbol',
 			'source-layer': 'pois',
-			filter: ['to-boolean', key],
+			filter: ['to-boolean', ['get', key]],
 		})),
 
 		// boundary
