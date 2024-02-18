@@ -1,7 +1,7 @@
 
 import { loadIcons } from './lib/icons.js';
 import { Sprite, buildSprite, buildSpriteEntries } from './lib/sprites.js';
-import config from './config.js';
+import config from './config-sprites.js';
 import { calcSDF, renderSDFSprite, scaleSDFSprite } from './lib/sdf.js';
 import { createWriteStream, existsSync, mkdirSync, rmSync } from 'node:fs';
 import tar from 'tar-stream';
@@ -11,12 +11,13 @@ import { resolve } from 'node:path';
 
 
 const dirTarget = new URL('../release', import.meta.url).pathname;
+const dirTemp = new URL('../release/temp', import.meta.url).pathname;
 const dirIcons = new URL('../icons', import.meta.url).pathname;
 
-if (existsSync(dirTarget)) {
-	rmSync(dirTarget, { recursive: true });
-}
+
+if (existsSync(dirTarget)) rmSync(dirTarget, { recursive: true });
 mkdirSync(dirTarget, { recursive: true });
+mkdirSync(dirTemp, { recursive: true });
 
 const pack = tar.pack();
 
@@ -37,7 +38,7 @@ for (const [suffix, scale] of Object.entries(config.ratio)) {
 	const spriteSdf = scaleSDFSprite(spriteSdfLarge, maxScale / scale);
 	const spriteImage = renderSDFSprite(spriteSdf);
 	const spriteResult = new Sprite(spriteImage, `sprites${suffix}`);
-	await spriteResult.saveToDisk(dirTarget);
+	await spriteResult.saveToDisk(dirTemp);
 	await spriteResult.saveToTar(pack);
 }
 

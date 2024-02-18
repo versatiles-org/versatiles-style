@@ -1,10 +1,8 @@
-'use strict';
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { styles } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import { prettyStyleJSON } from './lib/utils.js';
 import type { MaplibreStyle } from '../src/lib/types.js';
 
 
@@ -20,7 +18,7 @@ Object.entries(styles).forEach(([name, build]) => {
 	produce(name + '.en', build({ languageSuffix: '_en' }));
 	produce(name + '.de', build({ languageSuffix: '_de' }));
 	produce(name + '.nolabel', build({ hideLabels: true }));
-})
+});
 
 function produce(name: string, style: MaplibreStyle): void {
 
