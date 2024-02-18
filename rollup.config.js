@@ -8,7 +8,7 @@ export default [
 	{
 		input: './src/index.ts',
 		output: {
-			file: './release/versatiles-style.js',
+			file: './release/versatiles-style/versatiles-style.js',
 			format: 'umd',
 			sourcemap: true,
 			name: 'VersaTilesStyle'
@@ -21,8 +21,8 @@ export default [
 		]
 	},
 	{
-		input: './release/.tmp.d.ts/index.d.ts',
-		output: [{ file: './release/versatiles-style.d.ts', format: 'es' }],
+		input: './release/versatiles-style/.tmp.d.ts/index.d.ts',
+		output: [{ file: './release/versatiles-style/versatiles-style.d.ts', format: 'es' }],
 		plugins: [dts()],
 	},
 ]
