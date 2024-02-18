@@ -8,6 +8,7 @@ const config: JestConfigWithTsJest = {
 	},
 	testMatch: [
 		'**/src/**/*.test.ts',
+		'**/scripts/**/*.test.ts',
 		'!**/src/**/*.mock.test.ts',
 	],
 	extensionsToTreatAsEsm: ['.ts'],
@@ -17,7 +18,8 @@ const config: JestConfigWithTsJest = {
 	],
 	collectCoverageFrom: [
 		'**/src/**/*.ts',
-		'!**/src/**/*.test.ts',
+		'**/scripts/**/*.ts',
+		'!**/*.test.ts',
 		'!**/node_modules/**',
 		'!jest*.ts',
 	]

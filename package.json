@@ -18,7 +18,7 @@
     "// test-browser": "npm run build-browser && jest -c=jest.config.browser.ts",
     "// test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.coverage.ts",
     "// test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.node.ts",
-    "// test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.typescript.ts",
+    "test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest",
     "upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
   },
   "repository": {
