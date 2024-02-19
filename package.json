@@ -14,7 +14,7 @@
     "// dev": "????",
     "// doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '# API'",
     "lint": "eslint --color .",
-    "// release": "npx vrt release-npm",
+    "release": "npx vrt release-npm",
     "test": "npm run test-typescript",
     "test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest",
