@@ -245,10 +245,13 @@ export class Sprite {
 
 	private async getPng(): Promise<Buffer> {
 		if (this.bufferPng) return this.bufferPng;
+		
 		const pngBuffer = await sharp(this.buffer, { raw: { width: this.width, height: this.height, channels: 4 } })
 			.png({ palette: false })
 			.toBuffer();
+			
 		this.bufferPng = optipng(pngBuffer);
+		
 		return this.bufferPng;
 	}
 
@@ -278,11 +281,19 @@ interface SpriteEntry {
 	pixelRatio: number;
 }
 
-function optipng(bufferIn: Buffer): Buffer {
+export function optipng(bufferIn: Buffer): Buffer {
 	const randomString = Math.random().toString(36).replace(/[^a-z0-9]/g, '');
 	const filename = resolve(tmpdir(), randomString + '.png');
+	
 	writeFileSync(filename, bufferIn);
-	spawnSync('optipng', [filename]);
+	
+	const result = spawnSync('optipng', [filename]);
+
+	if (result.status === 1) {
+		console.log(result.stderr.toString());
+		throw Error();
+	}
+
 	const bufferOut = readFileSync(filename);
 	rmSync(filename);
 	return bufferOut;
