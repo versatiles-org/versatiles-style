@@ -35,12 +35,12 @@ jobs:
 
       - name: Check vulnerabilities
         run: npm audit
-        
-      - name: Build
-        run: npm run build
 
       - name: Lint
         run: npm run lint
+        
+      - name: Build
+        run: npm run build
 
       - name: Run tests
         run: npm run test

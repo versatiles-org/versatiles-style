@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "// check": "npm run build && npm run lint && npm run test",
+    "check": "npm run lint && npm run build && npm run test",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites",
     "build-browser": "rollup -c=rollup.config.js; tar -cf - release/versatiles-style/versatiles-style.* | gzip -9 > release/versatiles-style.tar.gz; rm -rf release/versatiles-style",
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json && chmod +x dist/index.js",
@@ -15,10 +15,8 @@
     "// doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '# API'",
     "lint": "eslint --color .",
     "// release": "npx vrt release-npm",
-    "// test": "npm run test-typescript && npm run test-node && npm run test-browser",
-    "// test-browser": "npm run build-browser && jest -c=jest.config.browser.ts",
-    "// test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.coverage.ts",
-    "// test-node": "npm run build-node && NODE_OPTIONS=--experimental-vm-modules jest -c=jest.config.node.ts",
+    "test": "npm run test-typescript",
+    "test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest",
     "upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
   },
