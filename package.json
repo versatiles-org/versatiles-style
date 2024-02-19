@@ -7,7 +7,7 @@
   "scripts": {
     "check": "npm run lint && npm run build && npm run test",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites",
-    "build-browser": "rollup -c=rollup.config.js; tar -cf - release/versatiles-style/versatiles-style.* | gzip -9 > release/versatiles-style.tar.gz; rm -rf release/versatiles-style",
+    "build-browser": "rollup -c=rollup.config.js; $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz); rm -rf release/versatiles-style",
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json && chmod +x dist/index.js",
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
