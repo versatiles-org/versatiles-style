@@ -1,7 +1,7 @@
 
-import { loadIcons } from './lib/icons.js';
-import { Sprite } from './lib/sprites.js';
-import config from './config-sprites.js';
+import { loadIcons } from './lib/icons.ts';
+import { Sprite } from './lib/sprites.ts';
+import config from './config-sprites.ts';
 import { createWriteStream, mkdirSync } from 'node:fs';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
