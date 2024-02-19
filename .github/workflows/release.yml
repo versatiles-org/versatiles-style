@@ -36,24 +36,13 @@ jobs:
         run: npm run test
 
       - name: Build styles
-        run: npm run build-styles
-
-      - name: Compress styles
-        run: tar -cf - *.json | gzip -9 > styles.tar.gz
-        working-directory: release
-
-      - name: Build browser
-        run: npm run build-browser
-
-      - name: Compress script
-        run: tar -cf - versatiles-style.* | gzip -9 > versatiles-style.tar.gz
-        working-directory: release
+        run: npm run build
 
       - name: Get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - name: Upload file to release
-        run: gh release upload $RELEASE_TAG *.js *.json *.gz --clobber
+        run: gh release upload $RELEASE_TAG *.gz --clobber
         working-directory: release
 
       - name: Update release
