@@ -1,4 +1,6 @@
-import type { MaplibreStyle, StylemakerOptions } from './lib/types.js';
+import type { MaplibreStyle, StylemakerOptions, StyleGuessOptions } from './lib/types.js';
+export type { MaplibreStyle, StylemakerOptions, StyleGuessOptions };
+
 export type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './lib/types.js';
 
 import Colorful from './style/colorful.js';
@@ -17,4 +19,4 @@ export const styles = {
 	},
 };
 
-export { default as guessStyle } from './lib/guess_style.js';
+export { guessStyle } from './lib/guess_style.js';

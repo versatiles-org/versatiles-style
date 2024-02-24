@@ -2,19 +2,18 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, TileJSONOption, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
-import { isTileJSONSpecification } from './types.js';
+import type { MaplibreStyle, StyleGuessOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
+import { isTileJSONSpecification, isVectorLayers } from './types.js';
 import randomColorGenerator from './random_color.js';
 import Colorful from '../style/colorful.js';
 import { resolveUrl } from './utils.js';
 
 
 
-export default function guess(opt: TileJSONOption): MaplibreStyle {
-
+export function guessStyle(opt: StyleGuessOptions): MaplibreStyle {
 	const { format } = opt;
 	const tilejsonBasic: TileJSONSpecificationBasic = {
-		tilejson: opt.tilejson ?? '3.0.0',
+		tilejson: '3.0.0',
 		attribution: opt.attribution,
 		tiles: opt.tiles,
 		scheme: opt.scheme,
@@ -47,14 +46,26 @@ export default function guess(opt: TileJSONOption): MaplibreStyle {
 		case 'jpg':
 		case 'png':
 		case 'webp':
-			tilejson = { ...tilejsonBasic, type: 'raster', format };
+			tilejson = {
+				...tilejsonBasic,
+				type: 'raster',
+				format,
+			};
 			break;
 		case 'pbf':
 			const { vectorLayers } = opt;
 			if (vectorLayers == null) {
 				throw Error('property vector_layers is required for vector tiles');
 			}
-			tilejson = { ...tilejsonBasic, type: 'vector', format, vector_layers: vectorLayers };
+			if (!isVectorLayers(vectorLayers)) {
+				throw Error('property vector_layers must be valid Vector Layers');
+			}
+			tilejson = {
+				...tilejsonBasic,
+				type: 'vector',
+				format,
+				vector_layers: vectorLayers,
+			};
 			break;
 	}
 

@@ -66,12 +66,25 @@ export interface TileJSONSpecificationVector extends TileJSONSpecificationBasic 
 export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecificationVector;
 
 /** Options for creating TileJSON, extending the basic specification with format and optional vector layers. */
-export interface TileJSONOption extends TileJSONSpecificationBasic {
+export interface StyleGuessOptions {
 	format: 'avif' | 'jpg' | 'pbf' | 'png' | 'webp';
-	vectorLayers?: VectorLayer[];
+	tiles: string[];
+	attribution?: string;
 	baseUrl?: string;
+	bounds?: [number, number, number, number];
+	center?: [number, number];
+	description?: string;
+	fillzoom?: number;
 	glyphs?: string;
+	grids?: string[];
+	legend?: string;
+	maxzoom?: number;
+	minzoom?: number;
+	name?: string;
+	scheme?: 'tms' | 'xyz';
 	sprite?: string;
+	template?: string;
+	vectorLayers?: unknown[];
 }
 
 /** Type for Maplibre styles specifically designed for raster sources. */
