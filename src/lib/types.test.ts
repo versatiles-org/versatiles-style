@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isTileJSONSpecification, validateVectorLayer } from './types.ts';
+import { isTileJSONSpecification, isVectorLayer } from './types.ts';
 
 describe('isTileJSONSpecification', () => {
 	it('should return true for a valid TileJSONSpecificationRaster object', () => {
@@ -54,7 +54,7 @@ describe('isTileJSONSpecification', () => {
 	// Additional cases can include testing for invalid 'minzoom' and 'maxzoom' values, incorrect 'format' values for raster and vector types, etc.
 });
 
-describe('validateVectorLayer', () => {
+describe('isVectorLayer', () => {
 	it('should return true for a valid VectorLayer object', () => {
 		const validLayer = {
 			id: 'example-layer',
@@ -63,56 +63,52 @@ describe('validateVectorLayer', () => {
 				property2: 'String',
 			},
 		};
-		expect(validateVectorLayer(validLayer)).toBeTruthy();
+		expect(isVectorLayer(validLayer)).toBe(true);
 	});
 
 	it('should throw an error for an invalid VectorLayer object', () => {
 		const invalidLayer = { id: 'example-layer', fields: { property1: 'InvalidType' } };
-		expect(() => validateVectorLayer(invalidLayer)).toThrow();
-	});
-	describe('validateVectorLayer - Extended Tests', () => {
-		// Test for missing 'id' property
-		it('should throw an error if the id property is missing', () => {
-			const missingIdLayer = {
-				fields: { property1: 'Number' },
-			};
-			expect(() => validateVectorLayer(missingIdLayer)).toThrow('layer.id must be a string');
-		});
-
-		// Test for invalid 'fields' value types
-		it('should throw an error for invalid field value types', () => {
-			const invalidFieldTypeLayer = {
-				id: 'layer2',
-				fields: { property1: 'SomeInvalidType' },
-			};
-			expect(() => validateVectorLayer(invalidFieldTypeLayer)).toThrow();
-		});
-
-		// Test for optional properties like 'description', 'minzoom', and 'maxzoom'
-		it('should return true for valid optional properties', () => {
-			const layerWithOptionalProperties = {
-				id: 'layer3',
-				fields: { property1: 'String' },
-				description: 'Optional description',
-				minzoom: 0,
-				maxzoom: 22,
-			};
-			expect(validateVectorLayer(layerWithOptionalProperties)).toBeTruthy();
-		});
-
-		// Test for invalid 'minzoom' and 'maxzoom' values
-		it('should throw an error for invalid zoom levels', () => {
-			const invalidZoomLayer = {
-				id: 'layer4',
-				fields: { property1: 'Number' },
-				minzoom: -1, // Invalid minzoom
-				maxzoom: 25, // Invalid maxzoom
-			};
-			expect(() => validateVectorLayer(invalidZoomLayer)).toThrow();
-		});
-
-		// Additional cases can include layers with missing or invalid 'fields', and layers with correctly formatted but empty 'fields'.
+		expect(isVectorLayer(invalidLayer)).toBe(false);
 	});
 
+	// Test for missing 'id' property
+	it('should throw an error if the id property is missing', () => {
+		const missingIdLayer = {
+			fields: { property1: 'Number' },
+		};
+		expect(isVectorLayer(missingIdLayer)).toBe(false);
+	});
+
+	// Test for invalid 'fields' value types
+	it('should throw an error for invalid field value types', () => {
+		const invalidFieldTypeLayer = {
+			id: 'layer2',
+			fields: { property1: 'SomeInvalidType' },
+		};
+		expect(isVectorLayer(invalidFieldTypeLayer)).toBe(false);
+	});
+
+	// Test for optional properties like 'description', 'minzoom', and 'maxzoom'
+	it('should return true for valid optional properties', () => {
+		const layerWithOptionalProperties = {
+			id: 'layer3',
+			fields: { property1: 'String' },
+			description: 'Optional description',
+			minzoom: 0,
+			maxzoom: 22,
+		};
+		expect(isVectorLayer(layerWithOptionalProperties)).toBe(true);
+	});
+
+	// Test for invalid 'minzoom' and 'maxzoom' values
+	it('should throw an error for invalid zoom levels', () => {
+		const invalidZoomLayer = {
+			id: 'layer4',
+			fields: { property1: 'Number' },
+			minzoom: -1, // Invalid minzoom
+			maxzoom: 25, // Invalid maxzoom
+		};
+		expect(isVectorLayer(invalidZoomLayer)).toBe(false);
+	});
 });
 
