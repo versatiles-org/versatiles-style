@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-
 import type {
 	BackgroundLayerSpecification,
 	FillLayerSpecification,
@@ -189,67 +187,71 @@ export interface StylemakerOptions<T extends StyleBuilder<T>> {
 * Checks if an object adheres to the TileJSON specification. 
 * Throws errors if the object does not conform to the expected structure or types.
 */
-export function isTileJSONSpecification(obj: unknown): obj is TileJSONSpecification {
-	if (typeof obj !== 'object' || obj === null) {
+export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecification {
+	if (typeof spec !== 'object' || spec === null) {
 		throw Error('spec must be an object');
 	}
 
-	const spec = obj as TileJSONSpecification;
+	const obj = spec as Record<string, unknown>;
 
 	// Common property validation
-	if (typeof spec.tilejson !== 'undefined' && spec.tilejson !== '3.0.0') {
+	if (obj.tilejson !== undefined && obj.tilejson !== '3.0.0') {
 		throw Error('spec.tilejson must be "3.0.0" if present');
 	}
-	if (typeof spec.attribution !== 'undefined' && typeof spec.attribution !== 'string') {
+	if (obj.attribution !== undefined && typeof obj.attribution !== 'string') {
 		throw Error('spec.attribution must be a string if present');
 	}
-	if (typeof spec.scheme !== 'undefined' && !['tms', 'xyz'].includes(spec.scheme)) {
+	if (obj.scheme !== undefined && obj.scheme !== 'xyz' && obj.scheme !== 'tms') {
 		throw Error('spec.scheme must be "tms" or "xyz" if present');
 	}
-	if (typeof spec.bounds !== 'undefined' && (!Array.isArray(spec.bounds) || spec.bounds.length !== 4 || spec.bounds.some(num => typeof num !== 'number'))) {
+	if (obj.bounds !== undefined && (!Array.isArray(obj.bounds) || obj.bounds.length !== 4 || obj.bounds.some(num => typeof num !== 'number'))) {
 		throw Error('spec.bounds must be an array of four numbers if present');
 	}
-	if (typeof spec.center !== 'undefined' && (!Array.isArray(spec.center) || spec.center.length !== 2 || spec.center.some(num => typeof num !== 'number'))) {
+	if (obj.center !== undefined && (!Array.isArray(obj.center) || obj.center.length !== 2 || obj.center.some(num => typeof num !== 'number'))) {
 		throw Error('spec.center must be an array of two numbers if present');
 	}
-	if (typeof spec.description !== 'undefined' && typeof spec.description !== 'string') {
+	if (obj.description !== undefined && typeof obj.description !== 'string') {
 		throw Error('spec.description must be a string if present');
 	}
-	if (typeof spec.fillzoom !== 'undefined' && typeof spec.fillzoom !== 'number') {
+	if (obj.fillzoom !== undefined && typeof obj.fillzoom !== 'number') {
 		throw Error('spec.fillzoom must be a number if present');
 	}
-	if (typeof spec.grids !== 'undefined' && (!Array.isArray(spec.grids) || spec.grids.some(url => typeof url !== 'string'))) {
+	if (obj.grids !== undefined && (!Array.isArray(obj.grids) || obj.grids.some(url => typeof url !== 'string'))) {
 		throw Error('spec.grids must be an array of strings if present');
 	}
-	if (typeof spec.legend !== 'undefined' && typeof spec.legend !== 'string') {
+	if (obj.legend !== undefined && typeof obj.legend !== 'string') {
 		throw Error('spec.legend must be a string if present');
 	}
-	if (typeof spec.minzoom !== 'undefined' && typeof spec.minzoom !== 'number') {
+	if (obj.minzoom !== undefined && typeof obj.minzoom !== 'number') {
 		throw Error('spec.minzoom must be a number if present');
 	}
-	if (typeof spec.maxzoom !== 'undefined' && typeof spec.maxzoom !== 'number') {
+	if (obj.maxzoom !== undefined && typeof obj.maxzoom !== 'number') {
 		throw Error('spec.maxzoom must be a number if present');
 	}
-	if (typeof spec.name !== 'undefined' && typeof spec.name !== 'string') {
+	if (obj.name !== undefined && typeof obj.name !== 'string') {
 		throw Error('spec.name must be a string if present');
 	}
-	if (typeof spec.template !== 'undefined' && typeof spec.template !== 'string') {
+	if (obj.template !== undefined && typeof obj.template !== 'string') {
 		throw Error('spec.template must be a string if present');
 	}
 
-	if (!Array.isArray(spec.tiles) || spec.tiles.length === 0 || spec.tiles.some(url => typeof url !== 'string')) {
+	if (!Array.isArray(obj.tiles) || obj.tiles.length === 0 || obj.tiles.some(url => typeof url !== 'string')) {
 		throw Error('spec.tiles must be an array of strings');
 	}
 
-	if (spec.type === 'raster') {
-		if (!['avif', 'jpg', 'png', 'webp'].includes(spec.format)) {
+	if (typeof obj.format !== 'string') {
+		throw Error('spec.format must be a string');
+	}
+
+	if (obj.type === 'raster') {
+		if (!['avif', 'jpg', 'png', 'webp'].includes(obj.format)) {
 			throw Error('spec.format must be "avif", "jpg", "png", or "webp"');
 		}
-	} else if (spec.type === 'vector') {
-		if (spec.format !== 'pbf') {
+	} else if (obj.type === 'vector') {
+		if (obj.format !== 'pbf') {
 			throw Error('spec.format must be "pbf"');
 		}
-		if (!Array.isArray(spec.vector_layers) || spec.vector_layers.length === 0 || spec.vector_layers.some(layer => !validateVectorLayer(layer))) {
+		if (!isVectorLayers(obj.vector_layers)) {
 			throw Error('spec.vector_layers must be an array of VectorLayer');
 		}
 	} else {
@@ -260,31 +262,32 @@ export function isTileJSONSpecification(obj: unknown): obj is TileJSONSpecificat
 }
 
 /** 
-* Validates if an object conforms to the VectorLayer structure. 
+* Verifies if an object conforms to the VectorLayer structure. 
 * Throws errors for any deviations from the expected structure or types.
 */
-export function validateVectorLayer(obj: unknown): boolean {
-	if (typeof obj !== 'object' || obj === null) {
-		throw Error('layer must be an object');
+export function isVectorLayer(layer: unknown): layer is VectorLayer {
+	if (typeof layer !== 'object' || layer === null) {
+		return false;
 	}
 
-	const layer = obj as VectorLayer;
+	const obj = layer as Record<string, unknown>;
 
-	if (typeof layer.id !== 'string') {
-		throw Error('layer.id must be a string');
-	}
-	if (typeof layer.fields !== 'object' || layer.fields === null || Object.values(layer.fields).some(type => !['Boolean', 'Number', 'String'].includes(type))) {
-		throw Error('layer.fields must be an object with values "Boolean", "Number", or "String"');
-	}
-	if (typeof layer.description !== 'undefined' && typeof layer.description !== 'string') {
-		throw Error('layer.description must be a string if present');
-	}
-	if (typeof layer.minzoom !== 'undefined' && (typeof layer.minzoom !== 'number' || layer.minzoom < 0)) {
-		throw Error('layer.minzoom must be a non-negative number if present');
-	}
-	if (typeof layer.maxzoom !== 'undefined' && (typeof layer.maxzoom !== 'number' || layer.maxzoom < 0)) {
-		throw Error('layer.maxzoom must be a non-negative number if present');
-	}
+	if (typeof obj.id !== 'string') return false;
+
+	if (typeof obj.fields !== 'object' || obj.fields === null) return false;
+	if (Object.values(obj.fields).some(type => !['Boolean', 'Number', 'String'].includes(type as string))) return false;
+
+	if ('description' in obj && typeof obj.description !== 'string') return false;
+
+	if ('minzoom' in obj && (typeof obj.minzoom !== 'number' || obj.minzoom < 0)) return false;
+
+	if ('maxzoom' in obj && (typeof obj.maxzoom !== 'number' || obj.maxzoom < 0)) return false;
 
 	return true;
+}
+
+export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
+	if (!Array.isArray(layers)) return false;
+	if (layers.length === 0) return false;
+	return layers.every(layer => isVectorLayer(layer));
 }
