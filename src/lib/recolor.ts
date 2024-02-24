@@ -1,6 +1,6 @@
 import Color from 'color';
-import type { RecolorOptions, StylemakerColors } from './types.js';
-import type StyleBuilder from './build_style.ts';
+import type { RecolorOptions, StylemakerColors } from './types';
+import type StyleBuilder from './build_style';
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {

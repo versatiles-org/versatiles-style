@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { MaplibreStyleVector } from '../types.js';
+import type { MaplibreStyleVector } from '../types';
 
 const maxzoom = 14;
 

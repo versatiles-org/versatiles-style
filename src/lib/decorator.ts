@@ -1,9 +1,9 @@
 
 import Color from 'color';
 import expandBraces from 'brace-expansion';
-import maplibreProperties from './shortbread/properties.js';
-import { deepMerge } from './utils.js';
-import type { MaplibreLayer, StyleRule, StyleRuleValue, StyleRules } from './types.js';
+import maplibreProperties from './shortbread/properties';
+import { deepMerge } from './utils';
+import type { MaplibreLayer, StyleRule, StyleRuleValue, StyleRules } from './types';
 
 
 

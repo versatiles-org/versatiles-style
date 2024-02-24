@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { guessStyle, styles } from './index.js';
-import type { VectorLayer } from './lib/types.ts';
+import { guessStyle, styles } from './index';
+import type { VectorLayer } from './lib/types';
 
 describe('styles', () => {
 	it('should be all styles', () => {

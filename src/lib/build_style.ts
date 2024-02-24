@@ -1,9 +1,9 @@
 import Color from 'color';
-import getShortbreadTemplate from './shortbread/template.js';
-import getShortbreadLayers from './shortbread/layers.js';
-import { decorate } from './decorator.js';
-import { getDefaultRecolorFlags, recolor } from './recolor.js';
-import { deepClone, resolveUrl } from './utils.js';
+import getShortbreadTemplate from './shortbread/template';
+import getShortbreadLayers from './shortbread/layers';
+import { decorate } from './decorator';
+import { getDefaultRecolorFlags, recolor } from './recolor';
+import { deepClone, resolveUrl } from './utils';
 import type {
 	MaplibreLayer,
 	MaplibreLayerDefinition,
@@ -15,7 +15,7 @@ import type {
 	StylemakerColors,
 	StylemakerFontStrings,
 	StylemakerOptions,
-} from './types.js';
+} from './types';
 
 // Stylemaker class definition
 export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {

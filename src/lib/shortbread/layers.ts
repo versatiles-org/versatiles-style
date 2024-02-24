@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LanguageSuffix, MaplibreLayerDefinition } from '../types.js';
+import type { LanguageSuffix, MaplibreLayerDefinition } from '../types';
 
 export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;

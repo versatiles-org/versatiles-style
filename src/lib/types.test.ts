@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isTileJSONSpecification, isVectorLayer } from './types.ts';
+import { isTileJSONSpecification, isVectorLayer } from './types';
 
 describe('isTileJSONSpecification', () => {
 	it('should return true for a valid TileJSONSpecificationRaster object', () => {

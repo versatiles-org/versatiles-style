@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import getTemplate from './shortbread/template.js';
-import { guessStyle } from './guess_style.js';
-import type { StyleGuessOptions, VectorLayer } from './types.js';
+import getTemplate from './shortbread/template';
+import { guessStyle } from './guess_style';
+import type { StyleGuessOptions, VectorLayer } from './types';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];

@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, StyleGuessOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types.js';
-import { isTileJSONSpecification, isVectorLayers } from './types.js';
-import randomColorGenerator from './random_color.js';
-import Colorful from '../style/colorful.js';
-import { resolveUrl } from './utils.js';
+import type { MaplibreStyle, StyleGuessOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types';
+import { isTileJSONSpecification, isVectorLayers } from './types';
+import randomColorGenerator from './random_color';
+import Colorful from '../style/colorful';
+import { resolveUrl } from './utils';
 
 
 

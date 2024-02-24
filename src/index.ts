@@ -1,11 +1,11 @@
-import type { MaplibreStyle, StylemakerOptions, StyleGuessOptions } from './lib/types.js';
+import type { MaplibreStyle, StylemakerOptions, StyleGuessOptions } from './lib/types';
 export type { MaplibreStyle, StylemakerOptions, StyleGuessOptions };
 
-export type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './lib/types.js';
+export type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './lib/types';
 
-import Colorful from './style/colorful.js';
-import Graybeard from './style/graybeard.js';
-import Neutrino from './style/neutrino.js';
+import Colorful from './style/colorful';
+import Graybeard from './style/graybeard';
+import Neutrino from './style/neutrino';
 
 export const styles = {
 	colorful: function colorful(options?: StylemakerOptions<Colorful>): MaplibreStyle {
@@ -19,4 +19,4 @@ export const styles = {
 	},
 };
 
-export { guessStyle } from './lib/guess_style.js';
+export { guessStyle } from './lib/guess_style';

@@ -1,7 +1,7 @@
-import { getDefaultRecolorFlags, recolor } from './recolor.js';
+import { getDefaultRecolorFlags, recolor } from './recolor';
 import type Color from 'color';
-import type { StyleRules, StyleRulesOptions,  StylemakerColors } from './types.js';
-import StyleBuilder from './build_style.js';
+import type { StyleRules, StyleRulesOptions,  StylemakerColors } from './types';
+import StyleBuilder from './build_style';
 
 
 
