@@ -1,9 +1,9 @@
 
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import type { MaplibreStyle } from '../src/index.js';
 import { styles } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle } from '../src/lib/types.js';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
 
@@ -19,8 +19,8 @@ const pack = tar.pack();
 // load styles
 Object.entries(styles).forEach(([name, build]) => {
 	produce(name, build({ languageSuffix: '' }));
-	produce(name + '.en', build({ languageSuffix: '_en' }));
-	produce(name + '.de', build({ languageSuffix: '_de' }));
+	produce(name + '.en', build({ languageSuffix: 'en' }));
+	produce(name + '.de', build({ languageSuffix: 'de' }));
 	produce(name + '.nolabel', build({ hideLabels: true }));
 });
 

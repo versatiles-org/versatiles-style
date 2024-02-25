@@ -1,13 +1,17 @@
-/* eslint-disable @typescript-eslint/prefer-includes */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { isTileJSONSpecification, type TileJSONSpecification, type TileJSONSpecificationBasic } from '../types/tilejson';
+import { isVectorLayers } from '../types/vector_layer';
+import { resolveUrl } from '../utils';
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, GuessStyleOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer, GuessContainerOptions } from './types';
-import { isTileJSONSpecification, isVectorLayers } from './types';
-import randomColorGenerator from './random_color';
-import Colorful from '../styles/colorful';
-import { resolveUrl } from './utils';
 import type { Container } from '@versatiles/container';
+import type { GuessContainerOptions, GuessStyleOptions } from './types';
+import type { MaplibreStyle } from '../types/maplibre';
+import type { TileJSONSpecificationRaster, TileJSONSpecificationVector } from '../types/tilejson';
+import type { VectorLayer } from '../types/vector_layer';
+import randomColorGenerator from '../random_color';
+import { colorful } from '../../styles';
 
 export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 	const { format } = opt;
@@ -127,7 +131,7 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 }
 
 function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: string }): MaplibreStyle {
-	return new Colorful().build({
+	return colorful({
 		hideLabels: true,
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,
@@ -157,11 +161,11 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 		if (/state|country|place/.test(vector_layer.id)) hue = 'pink';
 		if (/road|highway|transport|streets/.test(vector_layer.id)) hue = 'orange';
 		if (/contour|building/.test(vector_layer.id)) hue = 'monochrome';
-		if (/building/.test(vector_layer.id)) luminosity = 'dark';
+		if (vector_layer.id.includes('building')) luminosity = 'dark';
 		if (/contour|landuse/.test(vector_layer.id)) hue = 'yellow';
 		if (/wood|forest|park|landcover|land/.test(vector_layer.id)) hue = 'green';
 
-		if (/point/.test(vector_layer.id)) {
+		if (vector_layer.id.includes('point')) {
 			saturation = 'strong';
 			luminosity = 'light';
 		}

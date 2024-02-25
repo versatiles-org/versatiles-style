@@ -1,18 +1,20 @@
-import type { MaplibreStyle, StylemakerOptions } from '../lib/types';
-export type { MaplibreStyle, StylemakerOptions };
+import type { StyleBuilderOptions } from '../lib/style_builder/style_builder';
+import type { MaplibreStyle } from '../lib/types/maplibre';
+export type { StyleBuilderOptions, MaplibreStyle };
 
 import Colorful from './colorful';
 import Graybeard from './graybeard';
 import Neutrino from './neutrino';
 
-export const styles = {
-	colorful: function colorful(options?: StylemakerOptions<Colorful>): MaplibreStyle {
-		return new Colorful().build(options);
-	},
-	graybeard: function graybeard(options?: StylemakerOptions<Graybeard>): MaplibreStyle {
-		return new Graybeard().build(options);
-	},
-	neutrino: function neutrino(options?: StylemakerOptions<Neutrino>): MaplibreStyle {
-		return new Neutrino().build(options);
-	},
-};
+export function colorful(options?: StyleBuilderOptions<Colorful>): MaplibreStyle {
+	return new Colorful().build(options);
+}
+
+export function graybeard(options?: StyleBuilderOptions<Graybeard>): MaplibreStyle {
+	return new Graybeard().build(options);
+}
+
+export function neutrino(options?: StyleBuilderOptions<Neutrino>): MaplibreStyle {
+	return new Neutrino().build(options);
+}
+

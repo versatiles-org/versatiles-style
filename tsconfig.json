@@ -18,5 +18,5 @@
 	"include": [
 		"scripts/**/*.ts",
 		"src/**/*.ts"
-	]
+, "src/lib/types.ts.tmp"	]
 }

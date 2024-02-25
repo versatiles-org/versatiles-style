@@ -1,33 +1,59 @@
 import Color from 'color';
-import getShortbreadTemplate from './shortbread/template';
-import getShortbreadLayers from './shortbread/layers';
+import getShortbreadTemplate from '../shortbread/template';
+import getShortbreadLayers from '../shortbread/layers';
 import { decorate } from './decorator';
+import type { RecolorOptions } from './recolor';
 import { getDefaultRecolorFlags, recolor } from './recolor';
-import { deepClone, resolveUrl } from './utils';
-import type {
-	MaplibreLayer,
-	MaplibreLayerDefinition,
-	MaplibreStyle,
-	StyleRules,
-	StyleRulesOptions,
-	StylemakerColorKeys,
-	StylemakerColorStrings,
-	StylemakerColors,
-	StylemakerFontStrings,
-	StylemakerOptions,
-} from './types';
+import { deepClone, resolveUrl } from '../utils';
+import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre';
+import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings } from './types';
+import type { StyleRules, StyleRulesOptions } from './types';
 
-// Stylemaker class definition
+
+/** Represents language suffixes used in map styles. */
+export type LanguageSuffix = '' | 'de' | 'en';
+
+export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
+
+	/** The base URL for loading external resources like tiles, sprites, and fonts. */
+	baseUrl?: string;
+
+	/** The URL template for loading font glyphs, formatted with `{fontstack}` and `{range}` placeholders. */
+	glyphs?: string;
+
+	/** The URL for loading sprite images and metadata. */
+	sprite?: string;
+
+	/** An array of URL templates for loading map tiles, with `{z}`, `{x}`, and `{y}` placeholders. */
+	tiles?: string[];
+
+	/** If true, hides all map labels. */
+	hideLabels?: boolean;
+
+	/** Suffix to append to language-specific resources, such as `"-en"` for English. */
+	languageSuffix?: LanguageSuffix;
+
+	/** An object specifying overrides for default color values, keyed by the color names. */
+	colors?: Partial<StyleBuilderColorStrings<T>>;
+
+	/** An object specifying overrides for default font names, keyed by the font names. */
+	fonts?: Partial<StyleBuilderFontStrings<T>>;
+
+	/** Options for color adjustments and transformations applied to the entire style. */
+	recolor?: RecolorOptions;
+}
+
+// StyleBuilder class definition
 export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 	readonly #sourceName = 'versatiles-shortbread';
 
 	public abstract readonly name: string;
 
-	public abstract readonly defaultColors: StylemakerColorStrings<Subclass>;
+	public abstract readonly defaultColors: StyleBuilderColorStrings<Subclass>;
 
-	public abstract readonly defaultFonts: StylemakerFontStrings<Subclass>;
+	public abstract readonly defaultFonts: StyleBuilderFontStrings<Subclass>;
 
-	public build(options?: StylemakerOptions<Subclass>): MaplibreStyle {
+	public build(options?: StyleBuilderOptions<Subclass>): MaplibreStyle {
 
 		options ??= {};
 
@@ -103,10 +129,10 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		return style;
 	}
 
-	public getColors(colors: StylemakerColorStrings<Subclass>): StylemakerColors<Subclass> {
-		const entriesString = Object.entries(colors) as [StylemakerColorKeys<Subclass>, StylemakerColorStrings<Subclass>][];
-		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StylemakerColorKeys<Subclass>, StylemakerColors<Subclass>][];
-		const result = Object.fromEntries(entriesColor) as StylemakerColors<Subclass>;
+	public getColors(colors: StyleBuilderColorStrings<Subclass>): StyleBuilderColors<Subclass> {
+		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColorStrings<Subclass>][];
+		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColors<Subclass>][];
+		const result = Object.fromEntries(entriesColor) as StyleBuilderColors<Subclass>;
 		return result;
 	}
 

@@ -1,8 +1,8 @@
-import { getDefaultRecolorFlags, recolor } from './recolor';
 import type Color from 'color';
-import type { StyleRules, StyleRulesOptions,  StylemakerColors } from './types';
-import StyleBuilder from './build_style';
-
+import type { StyleBuilderColors } from './types';
+import type { StyleRules, StyleRulesOptions } from './types';
+import { getDefaultRecolorFlags, recolor } from './recolor';
+import StyleBuilder from './style_builder';
 
 
 describe('colorTransformer', () => {
@@ -195,7 +195,7 @@ describe('colorTransformer', () => {
 	});
 });
 
-function colors2string(colors: StylemakerColors<TestStyle>): string {
+function colors2string(colors: StyleBuilderColors<TestStyle>): string {
 	const colorArray: Color[] = [
 		colors.c0,
 		colors.c1,
@@ -223,7 +223,7 @@ export default class TestStyle extends StyleBuilder<TestStyle> {
 	}
 }
 
-function getDefaultColors(): StylemakerColors<TestStyle> {
+function getDefaultColors(): StyleBuilderColors<TestStyle> {
 	const style = new TestStyle();
 	return style.getColors(style.defaultColors);
 }

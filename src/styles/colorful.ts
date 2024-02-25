@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import StyleBuilder from '../lib/build_style';
-import type { StyleRules, StyleRulesOptions } from '../lib/types';
+import StyleBuilder from '../lib/style_builder/style_builder';
+import type { StyleRules, StyleRulesOptions } from '../lib/style_builder/types';
 
 export default class Colorful extends StyleBuilder<Colorful> {
 	public readonly name: string = 'Colorful';

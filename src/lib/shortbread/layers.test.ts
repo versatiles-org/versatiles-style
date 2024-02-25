@@ -1,10 +1,10 @@
 import type { FillLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import getLayers from './layers';
-import type { LanguageSuffix } from '../types';
+import type { LanguageSuffix } from '../style_builder/style_builder';
 
 describe('layers', () => {
 	it('should return an array of MaplibreLayer', () => {
-		const languageSuffix: LanguageSuffix = '_en';
+		const languageSuffix: LanguageSuffix = 'en';
 		const layers = getLayers({ languageSuffix });
 
 		expect(Array.isArray(layers)).toBe(true);
@@ -16,7 +16,7 @@ describe('layers', () => {
 	});
 
 	it('should handle language suffix correctly', () => {
-		const languageSuffix: LanguageSuffix = '_en';
+		const languageSuffix: LanguageSuffix = 'en';
 		const layers = getLayers({ languageSuffix });
 		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayerSpecification;
 
@@ -26,7 +26,7 @@ describe('layers', () => {
 	});
 
 	it('should create appropriate filters for land layers', () => {
-		const languageSuffix: LanguageSuffix = '_en';
+		const languageSuffix: LanguageSuffix = 'en';
 		const layers = getLayers({ languageSuffix });
 		const landLayer = layers.find((layer) => layer.id === 'land-agriculture') as FillLayerSpecification;
 

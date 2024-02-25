@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LanguageSuffix, MaplibreLayerDefinition } from '../types';
+import type { LanguageSuffix } from '../style_builder/style_builder';
+import type { MaplibreLayerDefinition } from '../types/maplibre';
 
 export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;
+	const nameField = languageSuffix ? '{name_' + languageSuffix + '}' : '{name}';
+	
 	return [
 
 		// background
@@ -368,7 +371,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			type: 'symbol',
 			'source-layer': 'street_labels',
 			filter: ['==', 'kind', t],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		})),
 
 		// label-place of small places
@@ -377,7 +380,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			type: 'symbol',
 			'source-layer': 'place_labels',
 			filter: ['==', 'kind', id],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		})),
 
 		// label-boundary
@@ -386,7 +389,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			type: 'symbol',
 			'source-layer': 'boundary_labels',
 			filter: ['in', 'admin_level', 4, '4'],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 
 		// label-place-* of large places
@@ -395,7 +398,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			type: 'symbol',
 			'source-layer': 'place_labels',
 			filter: ['==', 'kind', id],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		})),
 
 		{
@@ -406,7 +409,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['in', 'admin_level', 2, '2'],
 				['<=', 'way_area', 10000000],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'label-boundary-country-medium',
@@ -417,7 +420,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['<', 'way_area', 90000000],
 				['>', 'way_area', 10000000],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'label-boundary-country-large',
@@ -427,7 +430,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['in', 'admin_level', 2, '2'],
 				['>=', 'way_area', 90000000],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 
 		// marking
@@ -485,14 +488,14 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 			type: 'symbol',
 			'source-layer': 'public_transport',
 			filter: ['==', 'kind', 'bus_stop'],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-tram',
 			type: 'symbol',
 			'source-layer': 'public_transport',
 			filter: ['==', 'kind', 'tram_stop'],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-subway',
@@ -502,7 +505,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['in', 'kind', 'station', 'halt'],
 				['==', 'station', 'subway'],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-lightrail',
@@ -512,7 +515,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['in', 'kind', 'station', 'halt'],
 				['==', 'station', 'light_rail'],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-station',
@@ -522,7 +525,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['in', 'kind', 'station', 'halt'],
 				['!in', 'station', 'light_rail', 'subway'],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-airfield',
@@ -532,7 +535,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['==', 'kind', 'aerodrome'],
 				['!has', 'iata'],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-airport',
@@ -542,7 +545,7 @@ export default function getLayers(option: { readonly languageSuffix: LanguageSuf
 				['==', 'kind', 'aerodrome'],
 				['has', 'iata'],
 			],
-			layout: { 'text-field': `{name${languageSuffix}}` },
+			layout: { 'text-field': nameField },
 		},
 	];
 }

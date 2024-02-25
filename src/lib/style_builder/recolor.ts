@@ -1,6 +1,33 @@
 import Color from 'color';
-import type { RecolorOptions, StylemakerColors } from './types';
-import type StyleBuilder from './build_style';
+import type StyleBuilder from './style_builder';
+import type { StyleBuilderColors } from './types';
+
+export interface RecolorOptions {
+
+	/** If true, inverts the colors. */
+	invert?: boolean;
+
+	/** The degree to rotate the hue of the color (in degrees). */
+	rotate?: number;
+
+	/** Adjusts the saturation level of the color. Positive values increase saturation, negative values decrease it. */
+	saturate?: number;
+
+	/** Adjusts the gamma of the color. Affects the brightness in a non-linear manner. */
+	gamma?: number;
+
+	/** Adjusts the contrast of the color. Higher values produce more contrast. */
+	contrast?: number;
+
+	/** Adjusts the brightness of the color. Positive values make it brighter, negative values make it darker. */
+	brightness?: number;
+
+	/** Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect). */
+	tint?: number;
+
+	/** Specifies the color used for tinting, in a string format (e.g., '#FF0000'). */
+	tintColor?: string;
+}
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {
@@ -15,7 +42,7 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 	};
 }
 
-export function recolor<Subclass extends StyleBuilder<Subclass>>(colors: StylemakerColors<Subclass>, opt?: RecolorOptions): void {
+export function recolor<Subclass extends StyleBuilder<Subclass>>(colors: StyleBuilderColors<Subclass>, opt?: RecolorOptions): void {
 	if (!opt) return;
 
 	if (opt.invert ?? false) invert();
