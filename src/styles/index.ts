@@ -1,4 +1,4 @@
-import type { StyleBuilderOptions } from '../lib/style_builder/style_builder';
+import type { StyleBuilderOptions } from '../lib/style_builder/types';
 import type { MaplibreStyle } from '../lib/types/maplibre';
 export type { StyleBuilderOptions, MaplibreStyle };
 

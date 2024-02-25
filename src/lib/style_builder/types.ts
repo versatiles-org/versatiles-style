@@ -1,5 +1,41 @@
 import type Color from 'color';
 import type StyleBuilder from './style_builder';
+import type { RecolorOptions } from './recolor';
+
+
+
+/** Represents language suffixes used in map styles. */
+export type LanguageSuffix = 'de' | 'en' | undefined;
+
+export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
+
+	/** The base URL for loading external resources like tiles, sprites, and fonts. */
+	baseUrl?: string;
+
+	/** The URL template for loading font glyphs, formatted with `{fontstack}` and `{range}` placeholders. */
+	glyphs?: string;
+
+	/** The URL for loading sprite images and metadata. */
+	sprite?: string;
+
+	/** An array of URL templates for loading map tiles, with `{z}`, `{x}`, and `{y}` placeholders. */
+	tiles?: string[];
+
+	/** If true, hides all map labels. */
+	hideLabels?: boolean;
+
+	/** Suffix to append to language-specific resources, such as `"-en"` for English. */
+	languageSuffix?: LanguageSuffix;
+
+	/** An object specifying overrides for default color values, keyed by the color names. */
+	colors?: Partial<StyleBuilderColorStrings<T>>;
+
+	/** An object specifying overrides for default font names, keyed by the font names. */
+	fonts?: Partial<StyleBuilderFontStrings<T>>;
+
+	/** Options for color adjustments and transformations applied to the entire style. */
+	recolor?: RecolorOptions;
+}
 
 /** Defines the keys for color properties in a style builder. */
 export type StyleBuilderColorKeys<T extends StyleBuilder<T>> = keyof T['defaultColors'];
@@ -23,7 +59,7 @@ export type StyleBuilderFonts<T extends StyleBuilder<T>> = Record<StyleBuilderFo
 export interface StyleRulesOptions<T extends StyleBuilder<T>> {
 	colors: StyleBuilderColors<T>;
 	fonts: StyleBuilderFontStrings<T>;
-	languageSuffix: string;
+	languageSuffix: LanguageSuffix;
 }
 
 /** Defines the value type for a style rule. */

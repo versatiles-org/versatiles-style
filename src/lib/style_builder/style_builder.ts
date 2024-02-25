@@ -2,46 +2,13 @@ import Color from 'color';
 import getShortbreadTemplate from '../shortbread/template';
 import getShortbreadLayers from '../shortbread/layers';
 import { decorate } from './decorator';
-import type { RecolorOptions } from './recolor';
 import { getDefaultRecolorFlags, recolor } from './recolor';
 import { deepClone, resolveUrl } from '../utils';
 import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre';
-import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings } from './types';
+import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types';
 import type { StyleRules, StyleRulesOptions } from './types';
 
 
-/** Represents language suffixes used in map styles. */
-export type LanguageSuffix = '' | 'de' | 'en';
-
-export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
-
-	/** The base URL for loading external resources like tiles, sprites, and fonts. */
-	baseUrl?: string;
-
-	/** The URL template for loading font glyphs, formatted with `{fontstack}` and `{range}` placeholders. */
-	glyphs?: string;
-
-	/** The URL for loading sprite images and metadata. */
-	sprite?: string;
-
-	/** An array of URL templates for loading map tiles, with `{z}`, `{x}`, and `{y}` placeholders. */
-	tiles?: string[];
-
-	/** If true, hides all map labels. */
-	hideLabels?: boolean;
-
-	/** Suffix to append to language-specific resources, such as `"-en"` for English. */
-	languageSuffix?: LanguageSuffix;
-
-	/** An object specifying overrides for default color values, keyed by the color names. */
-	colors?: Partial<StyleBuilderColorStrings<T>>;
-
-	/** An object specifying overrides for default font names, keyed by the font names. */
-	fonts?: Partial<StyleBuilderFontStrings<T>>;
-
-	/** Options for color adjustments and transformations applied to the entire style. */
-	recolor?: RecolorOptions;
-}
 
 // StyleBuilder class definition
 export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
@@ -64,7 +31,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		const sprite = options.sprite ?? '/assets/sprites/sprites';
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
 		const hideLabels = options.hideLabels ?? false;
-		const languageSuffix = options.languageSuffix ?? '';
+		const { languageSuffix } = options;
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
 
 		const colors = this.getColors(this.defaultColors);
