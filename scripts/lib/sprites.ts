@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import type { Icon } from './icons.js';
-import pack from 'bin-pack';
+import binPack from 'bin-pack';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import type { Pack as TarPack } from 'tar-stream';
 import { resolve } from 'node:path';
@@ -58,7 +58,7 @@ export class Sprite {
 			};
 		});
 
-		const dimensions = pack(spriteEntries, { inPlace: true });
+		const dimensions = binPack(spriteEntries, { inPlace: true });
 
 		const buffer = await sharp({
 			create: {

@@ -6,6 +6,7 @@ import { createWriteStream, mkdirSync } from 'node:fs';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
 import { resolve } from 'node:path';
+import { pipeline } from 'node:stream/promises';
 
 
 
@@ -13,7 +14,6 @@ const dirTarget = new URL('../release', import.meta.url).pathname;
 const dirIcons = new URL('../icons', import.meta.url).pathname;
 
 mkdirSync(dirTarget, { recursive: true });
-
 const pack = tar.pack();
 
 console.log('load icons');
@@ -34,6 +34,9 @@ for (const [suffix, scale] of Object.entries(config.ratio)) {
 }
 
 pack.finalize();
-pack
-	.pipe(createGzip({ level: 9 }))
-	.pipe(createWriteStream(resolve(dirTarget, 'sprites.tar.gz')));
+
+await pipeline([
+	pack,
+	createGzip({ level: 9 }),
+	createWriteStream(resolve(dirTarget, 'sprites.tar.gz')),
+]);
