@@ -5,7 +5,7 @@ import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerS
 import type { MaplibreStyle, GuessStyleOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer, GuessContainerOptions } from './types';
 import { isTileJSONSpecification, isVectorLayers } from './types';
 import randomColorGenerator from './random_color';
-import Colorful from '../style/colorful';
+import Colorful from '../styles/colorful';
 import { resolveUrl } from './utils';
 import type { Container } from '@versatiles/container';
 
