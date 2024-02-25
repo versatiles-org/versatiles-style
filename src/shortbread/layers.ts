@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LanguageSuffix } from '../style_builder/types';
-import type { MaplibreLayerDefinition } from '../types/maplibre';
+import type { LanguageSuffix } from '../style_builder';
+import type { MaplibreLayerDefinition } from '../types';
 
-export default function getLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
+export function getShortbreadLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;
 	const nameField = languageSuffix ? '{name_' + languageSuffix + '}' : '{name}';
 	

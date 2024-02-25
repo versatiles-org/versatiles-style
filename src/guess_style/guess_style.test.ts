@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import getTemplate from '../shortbread/template';
-import type { VectorLayer } from '../types/vector_layer';
+import { getShortbreadTemplate } from '../shortbread';
+import type { VectorLayer } from '../types';
 import { guessStyle } from './guess_style';
 import type { GuessStyleOptions } from './types';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
 	const vectorLayersSomething: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-	const vectorLayersShortbread: VectorLayer[] = getTemplate().sources['versatiles-shortbread'].vector_layers;
+	const vectorLayersShortbread: VectorLayer[] = getShortbreadTemplate().sources['versatiles-shortbread'].vector_layers;
 
 	it('should build raster styles', () => {
 		const type = 'raster';

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { MaplibreStyle } from '../types/maplibre';
-import getTemplate from './template';
+import type { MaplibreStyle } from '../types';
+import { getShortbreadTemplate } from './template';
 
-describe('getTemplate', () => {
-	const styleTemplate: MaplibreStyle = getTemplate();
+describe('getShortbreadTemplate', () => {
+	const styleTemplate: MaplibreStyle = getShortbreadTemplate();
 
 	it('returns a style object with the correct version', () => {
 		expect(styleTemplate).toHaveProperty('version', 8);

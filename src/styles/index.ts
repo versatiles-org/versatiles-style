@@ -1,5 +1,5 @@
-import type { StyleBuilderOptions } from '../lib/style_builder/types';
-import type { MaplibreStyle } from '../lib/types/maplibre';
+import type { StyleBuilderOptions } from '../style_builder/types';
+import type { MaplibreStyle } from '../types/maplibre';
 export type { StyleBuilderOptions, MaplibreStyle };
 
 import Colorful from './colorful';

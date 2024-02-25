@@ -1,9 +1,8 @@
 import Color from 'color';
-import getShortbreadTemplate from '../shortbread/template';
-import getShortbreadLayers from '../shortbread/layers';
+import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread';
 import { decorate } from './decorator';
 import { getDefaultRecolorFlags, recolor } from './recolor';
-import { deepClone, resolveUrl } from '../utils';
+import { deepClone, resolveUrl } from '../lib/utils';
 import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre';
 import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types';
 import type { StyleRules, StyleRulesOptions } from './types';
