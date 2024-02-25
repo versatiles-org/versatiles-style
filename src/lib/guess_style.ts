@@ -2,15 +2,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { MaplibreStyle, StyleGuessOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from './types';
+import type { MaplibreStyle, GuessStyleOptions, TileJSONSpecification, TileJSONSpecificationBasic, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer, GuessContainerOptions } from './types';
 import { isTileJSONSpecification, isVectorLayers } from './types';
 import randomColorGenerator from './random_color';
 import Colorful from '../style/colorful';
 import { resolveUrl } from './utils';
+import type { Container } from '@versatiles/container';
 
-
-
-export function guessStyle(opt: StyleGuessOptions): MaplibreStyle {
+export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 	const { format } = opt;
 	const tilejsonBasic: TileJSONSpecificationBasic = {
 		tilejson: '3.0.0',
@@ -46,27 +45,15 @@ export function guessStyle(opt: StyleGuessOptions): MaplibreStyle {
 		case 'jpg':
 		case 'png':
 		case 'webp':
-			tilejson = {
-				...tilejsonBasic,
-				type: 'raster',
-				format,
-			};
+			tilejson = { ...tilejsonBasic, type: 'raster', format };
 			break;
 		case 'pbf':
 			const { vectorLayers } = opt;
-			if (vectorLayers == null) {
-				throw Error('property vector_layers is required for vector tiles');
-			}
-			if (!isVectorLayers(vectorLayers)) {
-				throw Error('property vector_layers must be valid Vector Layers');
-			}
-			tilejson = {
-				...tilejsonBasic,
-				type: 'vector',
-				format,
-				vector_layers: vectorLayers,
-			};
+			if (!isVectorLayers(vectorLayers)) throw Error('property vector_layers is invalid');
+			tilejson = { ...tilejsonBasic, type: 'vector', format, vector_layers: vectorLayers };
 			break;
+		default:
+			throw Error(`format "${String(format)}" is not supported`);
 	}
 
 	if (!isTileJSONSpecification(tilejson)) throw Error();
@@ -92,6 +79,40 @@ export function guessStyle(opt: StyleGuessOptions): MaplibreStyle {
 	if (opt.center) style.center = opt.center;
 
 	return style;
+}
+
+export async function guessStyleFromContainer(container: Container, options: GuessContainerOptions): Promise<MaplibreStyle> {
+	const header = await container.getHeader();
+	const metadata = await container.getMetadata();
+
+	const format = header.tileFormat;
+
+	switch (format) {
+		case 'bin':
+		case 'geojson':
+		case 'json':
+		case 'svg':
+		case 'topojson':
+			throw Error(`format "${String(format)}" is not supported`);
+		default:
+	}
+
+	let vectorLayers;
+	if (typeof metadata === 'string') {
+		const t = JSON.parse(metadata) as object;
+		if (('vector_layers' in t) && Array.isArray(t.vector_layers)) vectorLayers = t.vector_layers;
+	}
+
+	const guessStyleOptions: GuessStyleOptions = {
+		...options,
+		format,
+		bounds: header.bbox,
+		minzoom: header.zoomMin,
+		maxzoom: header.zoomMax,
+		vectorLayers,
+	};
+
+	return guessStyle(guessStyleOptions);
 }
 
 function isShortbread(spec: TileJSONSpecificationVector): boolean {

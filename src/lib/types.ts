@@ -65,9 +65,7 @@ export interface TileJSONSpecificationVector extends TileJSONSpecificationBasic 
 /** Represents a TileJSON specification, which can be either raster or vector. */
 export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecificationVector;
 
-/** Options for creating TileJSON, extending the basic specification with format and optional vector layers. */
-export interface StyleGuessOptions {
-	format: 'avif' | 'jpg' | 'pbf' | 'png' | 'webp';
+export interface GuessContainerOptions {
 	tiles: string[];
 	attribution?: string;
 	baseUrl?: string;
@@ -84,6 +82,11 @@ export interface StyleGuessOptions {
 	scheme?: 'tms' | 'xyz';
 	sprite?: string;
 	template?: string;
+}
+
+/** Options for creating TileJSON, extending the basic specification with format and optional vector layers. */
+export interface GuessStyleOptions extends GuessContainerOptions {
+	format: 'avif' | 'jpg' | 'pbf' | 'png' | 'webp';
 	vectorLayers?: unknown[];
 }
 

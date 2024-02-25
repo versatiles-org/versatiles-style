@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import getTemplate from './shortbread/template';
 import { guessStyle } from './guess_style';
-import type { StyleGuessOptions, VectorLayer } from './types';
+import type { GuessStyleOptions, VectorLayer } from './types';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
@@ -96,7 +96,7 @@ describe('guessStyle', () => {
 		});
 	});
 
-	const cases: { type: string; options: StyleGuessOptions }[] = [
+	const cases: { type: string; options: GuessStyleOptions }[] = [
 		{ type: 'image', options: { tiles, format: 'png' } },
 		{ type: 'inspector', options: { tiles, format: 'pbf', vectorLayers: vectorLayersSomething } },
 		{ type: 'shortbread', options: { tiles, format: 'pbf', vectorLayers: vectorLayersShortbread } },
