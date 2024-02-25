@@ -3,52 +3,110 @@
 import { isTileJSONSpecification } from './tilejson';
 
 describe('isTileJSONSpecification', () => {
-	it('should return true for a valid TileJSONSpecificationRaster object', () => {
-		const rasterSpec = {
-			type: 'raster',
-			format: 'png',
-			tiles: ['http://example.com/{z}/{x}/{y}.png'],
-		};
-		expect(isTileJSONSpecification(rasterSpec)).toBeTruthy();
+	const validVectorSpec = {
+		tilejson: '3.0.0',
+		type: 'vector',
+		format: 'pbf',
+		tiles: ['http://example.com/{z}/{x}/{y}.pbf'],
+		vector_layers: [{ id: 'layer1', fields: { property1: 'Number' }, description: 'A test layer' }],
+	};
+	const validRasterSpec = {
+		tilejson: '3.0.0',
+		type: 'raster',
+		format: 'png',
+		tiles: ['http://example.com/{z}/{x}/{y}.png'],
+	};
+
+	it('should return true for a valid raster source', () => {
+		expect(isTileJSONSpecification({ ...validRasterSpec })).toBeTruthy();
 	});
 
-	it('should throw an error for an invalid TileJSONSpecification object', () => {
-		const invalidSpec = {
-			type: 'vector', // Missing required 'vector_layers' property for 'vector' type
-			format: 'pbf',
-			tiles: ['http://example.com/{z}/{x}/{y}.pbf'],
-		};
-		expect(() => isTileJSONSpecification(invalidSpec)).toThrow();
+	it('should return true for a valid vector source', () => {
+		expect(isTileJSONSpecification({ ...validVectorSpec })).toBeTruthy();
 	});
 
-	// Test for valid TileJSONSpecificationVector object
-	it('should return true for a valid TileJSONSpecificationVector object', () => {
-		const vectorSpec = {
-			type: 'vector',
-			format: 'pbf',
-			tiles: ['http://example.com/{z}/{x}/{y}.pbf'],
-			vector_layers: [{ id: 'layer1', fields: { property1: 'Number' }, description: 'A test layer' }],
-		};
-		expect(isTileJSONSpecification(vectorSpec)).toBeTruthy();
+	it('should throw an error if not object', () => {
+		expect(() => isTileJSONSpecification(null)).toThrow('spec must be an object');
+		expect(() => isTileJSONSpecification(1)).toThrow('spec must be an object');
 	});
 
-	// Test for missing 'tiles' property
+	it('should throw an error if type is unknown', () => {
+		expect(() => isTileJSONSpecification({ ...validRasterSpec, type: 'cake' })).toThrow('spec.type must be "raster" or "vector"');
+	});
+
+	it('should throw an error if raster source has incompatible format', () => {
+		expect(() => isTileJSONSpecification({ ...validRasterSpec, format: 'pbf' })).toThrow('spec.format must be "avif", "jpg", "png", or "webp" for raster sources');
+	});
+
+	it('should throw an error if vector source has incompatible format', () => {
+		expect(() => isTileJSONSpecification({ ...validVectorSpec, format: 'png' })).toThrow('spec.format must be "pbf" for vector sources');
+	});
+
 	it('should throw an error if the tiles property is missing', () => {
-		const missingTilesSpec = {
-			type: 'raster',
-			format: 'png',
-		};
-		expect(() => isTileJSONSpecification(missingTilesSpec)).toThrow('spec.tiles must be an array of strings');
+		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow('spec.tiles must be an array of strings');
 	});
 
-	// Test for invalid 'bounds' property
+	it('should throw an error for missing vector_layers in vector source', () => {
+		expect(() => isTileJSONSpecification({ ...validVectorSpec, vector_layers: undefined })).toThrow('spec.vector_layers is invalid: Expected an array of layers');
+	});
+
 	it('should throw an error if the bounds property is invalid', () => {
-		const invalidBoundsSpec = {
-			type: 'vector',
-			format: 'pbf',
-			tiles: ['http://example.com/{z}/{x}/{y}.pbf'],
-			bounds: [180, -90, 190, 90], // Invalid longitude
-		};
-		expect(() => isTileJSONSpecification(invalidBoundsSpec)).toThrow();
+		[
+			{ bounds: [-181, -90, 180, 90], errorMessage: 'spec.bounds[0] must be between -180 and 180' },
+			{ bounds: [-180, -91, 180, 90], errorMessage: 'spec.bounds[1] must be between -90 and 90' },
+			{ bounds: [-180, -90, 181, 90], errorMessage: 'spec.bounds[2] must be between -180 and 180' },
+			{ bounds: [-180, -90, 180, 91], errorMessage: 'spec.bounds[3] must be between -90 and 90' },
+			{ bounds: [180, -90, -180, 90], errorMessage: 'spec.bounds[0] must be smaller than spec.bounds[2]' },
+			{ bounds: [-180, 90, 180, -90], errorMessage: 'spec.bounds[1] must be smaller than spec.bounds[3]' },
+		].forEach(({ bounds, errorMessage }) => {
+			expect(() => isTileJSONSpecification({ ...validVectorSpec, bounds })).toThrow(errorMessage);
+		});
+	});
+
+	it('should throw an error if the center property is invalid', () => {
+		[
+			{ center: [-181, 0], errorMessage: 'spec.center[0] must be between -180 and 180' },
+			{ center: [181, 0], errorMessage: 'spec.center[0] must be between -180 and 180' },
+			{ center: [0, -91], errorMessage: 'spec.center[1] must be between -90 and 90' },
+			{ center: [0, 91], errorMessage: 'spec.center[1] must be between -90 and 90' },
+		].forEach(({ center, errorMessage }) => {
+			expect(() => isTileJSONSpecification({ ...validVectorSpec, center })).toThrow(errorMessage);
+		});
+	});
+
+	describe('check every property', () => {
+		[
+			['tilejson', '"3.0.0"', '3.0.0', '2.0.0'],
+			['tiles', 'an array of strings', ['url'], 'url', [], [1], 1],
+			['attribution', 'a string if present', 'valid', 1],
+			['bounds', 'an array of four numbers if present', [1, 2, 3, 4], ['1', '2', '3', '4'], [1, 2, 3], [], 'invalid'],
+			['center', 'an array of two numbers if present', [1, 2], ['1', '2'], [1, 2, 3], [], 'invalid'],
+			['data', 'an array of strings if present', ['url'], 'url', [1], 1],
+			['description', 'a string if present', 'valid', 1],
+			['fillzoom', 'a positive integer if present', 5, 'invalid', -1],
+			['format', 'a string', 'pbf', 1],
+			['grids', 'an array of strings if present', ['1', '2', '3', '4'], [1, 2, 3, 4], 'invalid'],
+			['legend', 'a string if present', 'valid', 1],
+			['maxzoom', 'a positive integer if present', 5, 'invalid', -1],
+			['minzoom', 'a positive integer if present', 5, 'invalid', -1],
+			['name', 'a string if present', 'valid', 1],
+			['scheme', '"tms" or "xyz" if present', 'xyz', 'invalid', 1],
+			['template', 'a string if present', 'valid', 1],
+		].forEach(test => {
+			const key = test[0] as string;
+			const errorMessage = test[1] as string;
+			const values = test.slice(2) as unknown[];
+			it(key, () => {
+				for (let i = 0; i < values.length; i++) {
+					const value = values[i];
+					if (i === 0) {
+						expect(isTileJSONSpecification({ ...validVectorSpec, [key]: value })).toBe(true);
+					} else {
+						expect(() => isTileJSONSpecification({ ...validVectorSpec, [key]: value }))
+							.toThrow(`spec.${key} must be ${errorMessage}`);
+					}
+				}
+			});
+		});
 	});
 });
