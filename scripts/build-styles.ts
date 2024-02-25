@@ -18,7 +18,7 @@ const pack = tar.pack();
 
 // load styles
 Object.entries(styles).forEach(([name, build]) => {
-	produce(name, build({ languageSuffix: '' }));
+	produce(name, build({ languageSuffix: undefined }));
 	produce(name + '.en', build({ languageSuffix: 'en' }));
 	produce(name + '.de', build({ languageSuffix: 'de' }));
 	produce(name + '.nolabel', build({ hideLabels: true }));
