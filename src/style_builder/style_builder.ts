@@ -41,7 +41,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		// transform colors
 		recolor(colors, recolorOptions);
 
-		const fonts = deepClone(this.defaultColors);
+		const fonts = deepClone(this.defaultFonts);
 		if (options.fonts) {
 			for (const key in options.fonts) {
 				const fontName = options.fonts[key];
@@ -55,7 +55,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		const styleRuleOptions: StyleRulesOptions<typeof this> = {
 			colors,
-			fonts: deepClone(this.defaultFonts),
+			fonts,
 			languageSuffix,
 		};
 
@@ -100,6 +100,20 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColors<Subclass>][];
 		const result = Object.fromEntries(entriesColor) as StyleBuilderColors<Subclass>;
 		return result;
+	}
+
+	public getDefaultOptions(): StyleBuilderOptions<Subclass> {
+		return {
+			baseUrl: '',
+			glyphs: '',
+			sprite: '',
+			tiles: [],
+			hideLabels: false,
+			languageSuffix: undefined,
+			colors: deepClone(this.defaultColors),
+			fonts: deepClone(this.defaultFonts),
+			recolor: getDefaultRecolorFlags(),
+		};
 	}
 
 	protected transformDefaultColors(callback: (color: Color) => Color): void {

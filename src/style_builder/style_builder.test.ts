@@ -57,6 +57,29 @@ describe('StyleBuilder', () => {
 		expect(builder.defaultColors.primary).toBe(Color(initialColor).negate().hexa());
 	});
 
+	it('should create default options', () => {
+		expect(builder.getDefaultOptions()).toStrictEqual({
+			baseUrl: '',
+			colors: { primary: '#FF8800' },
+			fonts: { regular: 'Arial' },
+			glyphs: '',
+			hideLabels: false,
+			languageSuffix: undefined,
+			recolor: {
+				brightness: 0,
+				contrast: 1,
+				gamma: 1,
+				invert: false,
+				rotate: 0,
+				saturate: 0,
+				tint: 0,
+				tintColor: '#FF0000',
+			},
+			sprite: '',
+			tiles: [],
+		});
+	});
+
 	describe('build method', () => {
 		it('should create a style object', () => {
 			const style = builder.build();
