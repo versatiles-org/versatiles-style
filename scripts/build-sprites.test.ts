@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 
 import { jest } from '@jest/globals';
 import type { Pack } from 'tar-stream';
 
-
+console.log = jest.fn();
 
 const fs0 = await import('node:fs');
 async function getMockedFs(): Promise<typeof import('node:fs')> {
@@ -20,14 +21,15 @@ async function getMockedFs(): Promise<typeof import('node:fs')> {
 	return import('node:fs');
 }
 
-const tar0 = await import('tar-stream');
+const cp0 = await import('node:child_process');
 async function getMockedCp(): Promise<typeof import('node:child_process')> {
 	jest.unstable_mockModule('node:child_process', () => ({
-		spawnSync: jest.fn().mockReturnValue({ status: 0 }),
+		spawnSync: jest.fn(cp0.spawnSync),
 	}));
 	return import('node:child_process');
 }
 
+const tar0 = await import('tar-stream');
 async function getMockedTar(): Promise<typeof import('tar-stream')> {
 	jest.unstable_mockModule('tar-stream', () => {
 		const pack = jest.fn(() => {
@@ -39,6 +41,17 @@ async function getMockedTar(): Promise<typeof import('tar-stream')> {
 	});
 	return import('tar-stream');
 }
+
+
+jest.unstable_mockModule('./config-sprites', () => ({
+	default: {
+		ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4 },
+		sets: {
+			icon: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
+			pattern: { size: 12, names: ['hatched_thin', 'striped', 'warning'] },
+		},
+	},
+}));
 
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {
@@ -52,6 +65,8 @@ describe('Sprite Generation and Packaging', () => {
 			[expect.stringMatching(/release\/sprites\.tar\.gz$/)],
 		]);
 
+		expect(jest.mocked(fs.readFileSync)).toHaveBeenCalledTimes(10);
+		expect(jest.mocked(fs.writeFileSync)).toHaveBeenCalledTimes(4);
 		expect(jest.mocked(cp.spawnSync)).toHaveBeenCalledTimes(4);
 
 		const packInstances = jest.mocked(tar.pack).mock.results;
