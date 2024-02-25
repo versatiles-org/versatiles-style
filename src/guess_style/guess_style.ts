@@ -89,13 +89,14 @@ export async function guessStyleFromContainer(container: Container, options: Gue
 	const format = header.tileFormat;
 
 	switch (format) {
-		case 'bin':
-		case 'geojson':
-		case 'json':
-		case 'svg':
-		case 'topojson':
-			throw Error(`format "${String(format)}" is not supported`);
+		case 'avif':
+		case 'jpg':
+		case 'pbf':
+		case 'png':
+		case 'webp':
+			break;
 		default:
+			throw Error(`format "${String(format)}" is not supported`);
 	}
 
 	let vectorLayers;

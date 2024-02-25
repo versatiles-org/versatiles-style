@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { Container, Header } from '@versatiles/container';
 import { getShortbreadTemplate } from '../shortbread';
-import type { VectorLayer } from '../types';
-import { guessStyle } from './guess_style';
+import type { TileJSONSpecificationVector, VectorLayer } from '../types';
+import { guessStyle, guessStyleFromContainer } from './guess_style';
 import type { GuessStyleOptions } from './types';
 
 describe('guessStyle', () => {
@@ -154,4 +155,43 @@ describe('guessStyle', () => {
 			});
 		});
 	});
+});
+
+describe('guessStyleFromContainer', () => {
+	const options = { baseUrl: 'http://example.com', tiles: ['tiles/{z}/{x}/{y}'] };
+
+	it('should handle supported tile formats correctly', async () => {
+		const container = getMockedContainer();
+		const style = await guessStyleFromContainer(container, options);
+
+		expect(style).toBeDefined();
+		expect(style.sources).toBeDefined();
+		expect(style.layers.length).toBe(4);
+
+		const source = style.sources.vectorSource as TileJSONSpecificationVector;
+		expect(source.vector_layers).toBeDefined();
+		expect(source.vector_layers.length).toBe(1);
+	});
+
+	it('should throw an error for unsupported tile formats', async () => {
+		const container = getMockedContainer({ tileFormat: 'docx' });
+
+		await expect(guessStyleFromContainer(container, options))
+			.rejects
+			.toThrow('format "docx" is not supported');
+	});
+
+	function getMockedContainer(opt: { tileFormat?: string } = {}): Container {
+		return {
+			getHeader: async (): Promise<Header> => Promise.resolve({
+				tileFormat: opt.tileFormat ?? 'pbf',
+			} as Header),
+			getMetadata: async (): Promise<string> => Promise.resolve(JSON.stringify({
+				vector_layers: [{
+					id: 'id',
+					fields: {},
+				}],
+			})),
+		} as Container;
+	}
 });
