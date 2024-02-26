@@ -1,3 +1,3 @@
 
-export { getShortbreadTemplate } from './template';
-export { getShortbreadLayers } from './layers';
+export { getShortbreadTemplate } from './template.js';
+export { getShortbreadLayers } from './layers.js';

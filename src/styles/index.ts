@@ -1,22 +1,26 @@
-import type { StyleBuilderOptions } from '../style_builder/types';
-import type { MaplibreStyle } from '../types/maplibre';
+import type StyleBuilder from '../style_builder/style_builder.js';
+import type { StyleBuilderOptions } from '../style_builder/types.js';
+import type { MaplibreStyle } from '../types/maplibre.js';
 export type { StyleBuilderOptions, MaplibreStyle };
 
-import Colorful from './colorful';
-import Graybeard from './graybeard';
-import Neutrino from './neutrino';
+import Colorful from './colorful.js';
+import Graybeard from './graybeard.js';
+import Neutrino from './neutrino.js';
 
-export function colorful(options?: StyleBuilderOptions<Colorful>): MaplibreStyle {
-	return new Colorful().build(options);
-}
-colorful.getOptions = (): StyleBuilderOptions<Colorful> => new Colorful().getDefaultOptions();
+type MakeStyle<T extends StyleBuilder<T>> =
+	((options?: StyleBuilderOptions<T>) => MaplibreStyle) &
+	{ 
+		getOptions: () => StyleBuilderOptions<T>;
+	};
 
-export function graybeard(options?: StyleBuilderOptions<Graybeard>): MaplibreStyle {
-	return new Graybeard().build(options);
+function makeStyle<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeStyle<T> {
+	const fn = function (options?: StyleBuilderOptions<T>): MaplibreStyle {
+		return new styleBuilder().build(options);
+	};
+	fn.getOptions = (): StyleBuilderOptions<T> => new styleBuilder().getDefaultOptions();
+	return fn;
 }
-graybeard.getOptions = (): StyleBuilderOptions<Graybeard> => new Graybeard().getDefaultOptions();
 
-export function neutrino(options?: StyleBuilderOptions<Neutrino>): MaplibreStyle {
-	return new Neutrino().build(options);
-}
-neutrino.getOptions = (): StyleBuilderOptions<Neutrino> => new Neutrino().getDefaultOptions();
+export const colorful = makeStyle<Colorful>(Colorful);
+export const graybeard = makeStyle<Graybeard>(Graybeard);
+export const neutrino = makeStyle<Neutrino>(Neutrino);

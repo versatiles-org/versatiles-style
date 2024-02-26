@@ -1,2 +1,2 @@
 
-export type { LanguageSuffix } from './types';
+export type { LanguageSuffix } from './types.js';

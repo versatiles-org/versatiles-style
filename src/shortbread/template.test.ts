@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { MaplibreStyle } from '../types';
-import { getShortbreadTemplate } from './template';
+import type { MaplibreStyle } from '../types/index.js';
+import { getShortbreadTemplate } from './template.js';
 
 describe('getShortbreadTemplate', () => {
 	const styleTemplate: MaplibreStyle = getShortbreadTemplate();

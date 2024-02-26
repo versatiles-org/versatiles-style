@@ -1,14 +1,13 @@
-
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { TileJSONSpecification, TileJSONSpecificationBasic, MaplibreStyle, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types';
-import { isTileJSONSpecification, isVectorLayers } from '../types';
-import { resolveUrl } from '../lib/utils';
+import type { TileJSONSpecification, TileJSONSpecificationBasic, MaplibreStyle, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
+import { isTileJSONSpecification, isVectorLayers } from '../types/index.js';
+import { resolveUrl } from '../lib/utils.js';
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { Container } from '@versatiles/container';
-import randomColorGenerator from './random_color';
-import { colorful } from '../styles';
-import type { GuessContainerOptions, GuessStyleOptions } from './types';
+import randomColorGenerator from './random_color.js';
+import { colorful } from '../styles/index.js';
+import type { GuessContainerOptions, GuessStyleOptions } from './types.js';
 
 export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 	const { format } = opt;

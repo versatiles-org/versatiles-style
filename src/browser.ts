@@ -1,6 +1,6 @@
 
-export type * from './styles';
-export * as styles from './styles';
+export type * from './styles/index.js';
+export * as styles from './styles/index.js';
 
-export type { GuessStyleOptions } from './guess_style';
-export { guessStyle } from './guess_style';
+export type { GuessStyleOptions } from './guess_style/index.js';
+export { guessStyle } from './guess_style/index.js';

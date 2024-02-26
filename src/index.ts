@@ -1,8 +1,8 @@
 
-export type * from './styles';
-export * as styles from './styles';
+export type * from './styles/index.js';
+export * as styles from './styles/index.js';
 
-export { guessStyle, guessStyleFromContainer } from './guess_style';
-export type { GuessStyleOptions, GuessContainerOptions } from './guess_style';
+export { guessStyle, guessStyleFromContainer } from './guess_style/index.js';
+export type { GuessStyleOptions, GuessContainerOptions } from './guess_style/index.js';
 
-export type { VectorLayer } from './types';
+export type { VectorLayer } from './types/index.js';

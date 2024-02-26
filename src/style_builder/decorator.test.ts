@@ -1,6 +1,6 @@
-import { decorate } from './decorator';
+import { decorate } from './decorator.js';
 import Color from 'color';
-import type { MaplibreLayer } from '../types/maplibre';
+import type { MaplibreLayer } from '../types/maplibre.js';
 
 describe('decorate function', () => {
 	const mockLayers: MaplibreLayer[] = [

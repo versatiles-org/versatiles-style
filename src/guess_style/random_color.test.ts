@@ -1,5 +1,5 @@
-import type { RandomColorFunction, RandomColorOptions } from './random_color';
-import randomColorGenerator from './random_color';
+import type { RandomColorFunction, RandomColorOptions } from './random_color.js';
+import randomColorGenerator from './random_color.js';
 
 describe('RandomColor', () => {
 	let randomColor: RandomColorFunction;

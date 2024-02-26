@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LanguageSuffix } from '../style_builder';
-import type { MaplibreLayerDefinition } from '../types';
+import type { LanguageSuffix } from '../style_builder/index.js';
+import type { MaplibreLayerDefinition } from '../types/index.js';
 
 export function getShortbreadLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;

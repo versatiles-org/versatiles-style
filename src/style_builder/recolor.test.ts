@@ -1,8 +1,8 @@
 import type Color from 'color';
-import type { StyleBuilderColors } from './types';
-import type { StyleRules, StyleRulesOptions } from './types';
-import { getDefaultRecolorFlags, recolor } from './recolor';
-import StyleBuilder from './style_builder';
+import type { StyleBuilderColors } from './types.js';
+import type { StyleRules, StyleRulesOptions } from './types.js';
+import { getDefaultRecolorFlags, recolor } from './recolor.js';
+import StyleBuilder from './style_builder.js';
 
 
 describe('colorTransformer', () => {

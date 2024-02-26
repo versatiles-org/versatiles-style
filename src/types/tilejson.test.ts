@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { isTileJSONSpecification } from './tilejson';
+import { isTileJSONSpecification } from './tilejson.js';
 
 describe('isTileJSONSpecification', () => {
 	const validVectorSpec = {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import Color from 'color';
-import type { MaplibreStyle } from '../types/maplibre';
-import type { StyleRules, StyleRulesOptions } from './types';
-import StyleBuilder from './style_builder';
+import type { MaplibreStyle } from '../types/maplibre.js';
+import type { StyleRules, StyleRulesOptions } from './types.js';
+import StyleBuilder from './style_builder.js';
 
 // Mock class for abstract class StyleBuilder
 class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {

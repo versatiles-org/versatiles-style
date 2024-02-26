@@ -1,11 +1,11 @@
 import Color from 'color';
-import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread';
-import { decorate } from './decorator';
-import { getDefaultRecolorFlags, recolor } from './recolor';
-import { deepClone, resolveUrl } from '../lib/utils';
-import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre';
-import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types';
-import type { StyleRules, StyleRulesOptions } from './types';
+import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
+import { decorate } from './decorator.js';
+import { getDefaultRecolorFlags, recolor } from './recolor.js';
+import { deepClone, resolveUrl } from '../lib/utils.js';
+import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre.js';
+import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types.js';
+import type { StyleRules, StyleRulesOptions } from './types.js';
 
 
 

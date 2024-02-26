@@ -1,6 +1,6 @@
 import Color from 'color';
-import type StyleBuilder from './style_builder';
-import type { StyleBuilderColors } from './types';
+import type StyleBuilder from './style_builder.js';
+import type { StyleBuilderColors } from './types.js';
 
 export interface RecolorOptions {
 

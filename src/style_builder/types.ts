@@ -1,6 +1,6 @@
 import type Color from 'color';
-import type StyleBuilder from './style_builder';
-import type { RecolorOptions } from './recolor';
+import type StyleBuilder from './style_builder.js';
+import type { RecolorOptions } from './recolor.js';
 
 
 

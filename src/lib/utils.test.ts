@@ -1,4 +1,4 @@
-import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl } from './utils';
+import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl } from './utils.js';
 import Color from 'color';
 
 describe('deepClone', () => {
