@@ -1,19 +1,37 @@
 import type StyleBuilder from '../style_builder/style_builder.js';
 import type { StyleBuilderOptions } from '../style_builder/types.js';
 import type { MaplibreStyle } from '../types/maplibre.js';
-export type { StyleBuilderOptions, MaplibreStyle };
+export type { MaplibreStyle };
 
 import Colorful from './colorful.js';
 import Graybeard from './graybeard.js';
 import Neutrino from './neutrino.js';
 
-type MakeStyle<T extends StyleBuilder<T>> =
-	((options?: StyleBuilderOptions<T>) => MaplibreStyle) &
+
+
+export type ColorfulOptions = StyleBuilderOptions<Colorful>;
+export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
+export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
+
+export type SomeStyleOptions = ColorfulOptions | GraybeardOptions | NeutrinoOptions;
+
+
+
+type MakeStyle<T extends StyleBuilder<T>, O extends StyleBuilderOptions<T>> =
+	((options?: O) => MaplibreStyle) &
 	{
-		getOptions: () => StyleBuilderOptions<T>;
+		getOptions: () => O;
 	};
 
-function makeStyle<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeStyle<T> {
+export type ColorfulBuilder = MakeStyle<Colorful, ColorfulOptions>;
+export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
+export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
+
+export type SomeStyle = ColorfulBuilder | GraybeardBuilder | NeutrinoBuilder;
+
+
+
+function makeStyle<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeStyle<T, StyleBuilderOptions<T>> {
 	const fn = function (options?: StyleBuilderOptions<T>): MaplibreStyle {
 		return new styleBuilder().build(options);
 	};
@@ -21,8 +39,6 @@ function makeStyle<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeSt
 	return fn;
 }
 
-export const colorful = makeStyle<Colorful>(Colorful);
-export const graybeard = makeStyle<Graybeard>(Graybeard);
-export const neutrino = makeStyle<Neutrino>(Neutrino);
-
-export type Style = MakeStyle<Colorful> | MakeStyle<Graybeard> | MakeStyle<Neutrino>;
+export const colorful: ColorfulBuilder = makeStyle<Colorful>(Colorful);
+export const graybeard: GraybeardBuilder = makeStyle<Graybeard>(Graybeard);
+export const neutrino: NeutrinoBuilder = makeStyle<Neutrino>(Neutrino);
