@@ -13,7 +13,7 @@ export type ColorfulOptions = StyleBuilderOptions<Colorful>;
 export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
 export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
 
-export type SomeStyleOptions = ColorfulOptions | GraybeardOptions | NeutrinoOptions;
+export type SomeOptions = ColorfulOptions | GraybeardOptions | NeutrinoOptions;
 
 
 
@@ -27,7 +27,7 @@ export type ColorfulBuilder = MakeStyle<Colorful, ColorfulOptions>;
 export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
 export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
 
-export type SomeStyle = ColorfulBuilder | GraybeardBuilder | NeutrinoBuilder;
+export type SomeBuilder = ColorfulBuilder | GraybeardBuilder | NeutrinoBuilder;
 
 
 
