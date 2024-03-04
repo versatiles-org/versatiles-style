@@ -159,37 +159,37 @@ describe('colorTransformer', () => {
 			it('should tint a little bit red', () => {
 				const colors = getDefaultColors();
 				recolor(colors, { tint: 0.5, tintColor: '#F00' });
-				expect(colors2string(colors)).toBe('FF552B00,80805555,AA0080AA,D52B00FF');
+				expect(colors2string(colors)).toBe('FF805500,80805555,AA0080AA,AA2B00FF');
 			});
 
 			it('should tint a little bit yellow', () => {
 				const colors = getDefaultColors();
-				recolor(colors, { tint: 0.5, tintColor: '#FF0' });
-				expect(colors2string(colors)).toBe('FFD52B00,80FF5555,AA8080AA,D5AA00FF');
+				recolor(colors, { tint: 0.2, tintColor: '#FF0' });
+				expect(colors2string(colors)).toBe('FFBB5500,33FF8855,7733CCAA,AA6600FF');
 			});
 
 			it('should tint a little bit green', () => {
 				const colors = getDefaultColors();
-				recolor(colors, { tint: 0.5, tintColor: '#0F0' });
-				expect(colors2string(colors)).toBe('80D52B00,00FF5555,2B8080AA,55AA00FF');
+				recolor(colors, { tint: 0.2, tintColor: '#0F0' });
+				expect(colors2string(colors)).toBe('DDBB5500,00FF8855,4433CCAA,886600FF');
 			});
 
 			it('should tint a little bit blue', () => {
 				const colors = getDefaultColors();
-				recolor(colors, { tint: 0.5, tintColor: '#00F' });
-				expect(colors2string(colors)).toBe('8055AA00,0080D555,2B00FFAA,552B80FF');
+				recolor(colors, { tint: 0.2, tintColor: '#00F' });
+				expect(colors2string(colors)).toBe('DD997700,00CCBB55,4400FFAA,884422FF');
 			});
 
-			it('should tint a strongly orange', () => {
+			it('should tint strongly orange', () => {
 				const colors = getDefaultColors();
-				recolor(colors, { tint: 0.5, tintColor: '#F80' });
-				expect(colors2string(colors)).toBe('FF992B00,80C45555,AA4480AA,D56F00FF');
+				recolor(colors, { tint: 0.8, tintColor: '#F80' });
+				expect(colors2string(colors)).toBe('FFAF5500,CCA02255,DD6D33AA,AA5A00FF');
 			});
 
 			it('should tint a strongly blue', () => {
 				const colors = getDefaultColors();
-				recolor(colors, { tint: 0.5, tintColor: '#00F' });
-				expect(colors2string(colors)).toBe('8055AA00,0080D555,2B00FFAA,552B80FF');
+				recolor(colors, { tint: 0.8, tintColor: '#00F' });
+				expect(colors2string(colors)).toBe('7766DD00,0033EE55,1100FFAA,221188FF');
 			});
 		});
 	});
