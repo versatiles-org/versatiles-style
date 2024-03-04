@@ -123,8 +123,6 @@ export function recolor<Subclass extends StyleBuilder<Subclass>>(colors: StyleBu
 			const hsv: number[] = color.hsv().array();
 			// eslint-disable-next-line @typescript-eslint/prefer-destructuring
 			hsv[0] = tintColorHSV[0];
-			hsv[1] *= tintColorHSV[1];
-			hsv[2] *= tintColorHSV[2];
 			const rgbNew = Color.hsv(hsv).rgb().array();
 
 			return Color.rgb(
