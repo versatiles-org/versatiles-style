@@ -1,7 +1,9 @@
 import type StyleBuilder from '../style_builder/style_builder.js';
 import type { StyleBuilderOptions } from '../style_builder/types.js';
 import type { MaplibreStyle } from '../types/maplibre.js';
-export type { MaplibreStyle };
+import type { RecolorOptions } from '../style_builder/recolor.js';
+
+export type { MaplibreStyle, RecolorOptions };
 
 import Colorful from './colorful.js';
 import Graybeard from './graybeard.js';
