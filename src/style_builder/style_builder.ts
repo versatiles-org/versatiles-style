@@ -1,7 +1,7 @@
 import Color from 'color';
 import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
 import { decorate } from './decorator.js';
-import { getDefaultRecolorFlags, recolor } from './recolor.js';
+import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre.js';
 import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types.js';
@@ -38,9 +38,6 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 			for (const key in options.colors) colors[key] = Color(options.colors[key]);
 		}
 
-		// transform colors
-		recolor(colors, recolorOptions);
-
 		const fonts = deepClone(this.defaultFonts);
 		if (options.fonts) {
 			for (const key in options.fonts) {
@@ -48,7 +45,6 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 				if (fontName != null) fonts[key] = fontName;
 			}
 		}
-
 
 		// get empty shortbread style
 		const style: MaplibreStyle = getShortbreadTemplate();
@@ -79,7 +75,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 			throw Error('unknown layer type');
 		});
 		// apply layer rules
-		layers = decorate(layers, layerStyleRules);
+		layers = decorate(layers, layerStyleRules, new CachedRecolor(recolorOptions));
 
 		// hide labels, if wanted
 		if (hideLabels) layers = layers.filter(l => l.type !== 'symbol');

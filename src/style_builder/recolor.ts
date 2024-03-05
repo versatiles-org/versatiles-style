@@ -1,6 +1,4 @@
 import Color from 'color';
-import type StyleBuilder from './style_builder.js';
-import type { StyleBuilderColors } from './types.js';
 
 export interface RecolorOptions {
 
@@ -42,95 +40,118 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 	};
 }
 
-export function recolor<Subclass extends StyleBuilder<Subclass>>(colors: StyleBuilderColors<Subclass>, opt?: RecolorOptions): void {
-	if (!opt) return;
+function isValidRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
+	if (!opt) return false;
+	if ((opt.invert != null) && opt.invert) return true;
+	if ((opt.rotate != null) && (opt.rotate !== 0)) return true;
+	if ((opt.saturate != null) && (opt.saturate !== 0)) return true;
+	if ((opt.gamma != null) && (opt.gamma !== 1)) return true;
+	if ((opt.contrast != null) && (opt.contrast !== 1)) return true;
+	if ((opt.brightness != null) && (opt.brightness !== 0)) return true;
+	if ((opt.tint != null) && (opt.tint !== 0)) return true;
+	if ((opt.tintColor != null) && (opt.tintColor !== '#FF0000')) return true;
+	return false;
+}
 
-	if (opt.invert ?? false) invert();
-	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) rotate(opt.rotate);
-	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) saturate(opt.saturate);
-	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) gamma(opt.gamma);
-	if ((opt.contrast !== undefined) && (opt.contrast !== 1)) contrast(opt.contrast);
-	if ((opt.brightness !== undefined) && (opt.brightness !== 0)) brightness(opt.brightness);
-	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) tint(opt.tint, Color(opt.tintColor));
+export function recolorObject(colors: Record<string, Color>, opt?: RecolorOptions): void {
+	if (!isValidRecolorOptions(opt)) return;
 
-	function forEachColor(callback: (color: Color) => Color): void {
-		for (const k in colors) colors[k] = callback(colors[k]);
+	for (const [k, c] of Object.entries(colors)) {
+		colors[k] = recolor(c, opt);
+	}
+}
+
+export class CachedRecolor {
+	private readonly skip: boolean;
+
+	private readonly opt?: RecolorOptions;
+
+	private readonly cache: Map<string, Color>;
+
+	public constructor(opt?: RecolorOptions) {
+		this.skip = !isValidRecolorOptions(opt);
+		this.cache = new Map();
+		this.opt = opt;
 	}
 
-	function invert(): void {
-		forEachColor(c => c.negate());
-	}
+	public do(color: Color): Color {
+		if (this.skip) return color;
 
-	function rotate(value: number): void {
-		forEachColor(c => c.rotate(value));
-	}
+		const key = color.string();
 
-	function saturate(value: number): void {
-		forEachColor(c => c.saturate(value));
-	}
+		const result = this.cache.get(key);
+		if (result) return result;
 
-	function gamma(value: number): void {
+		color = recolor(color, this.opt);
+		this.cache.set(key, color);
+		return color;
+	}
+}
+
+export function recolor(color: Color, opt?: RecolorOptions): Color {
+	if (!isValidRecolorOptions(opt)) return color;
+
+	if (opt.invert ?? false) color = color.negate();
+	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) color = color.rotate(opt.rotate);
+	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) color = color.saturate(opt.saturate);
+	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) color = gamma(color, opt.gamma);
+	if ((opt.contrast !== undefined) && (opt.contrast !== 1)) color = contrast(color, opt.contrast);
+	if ((opt.brightness !== undefined) && (opt.brightness !== 0)) color = brightness(color, opt.brightness);
+	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) color = tint(color, opt.tint, Color(opt.tintColor));
+
+	return color;
+
+	function gamma(c: Color, value: number): Color {
 		if (value < 1e-3) value = 1e-3;
 		if (value > 1e3) value = 1e3;
-		forEachColor(color => {
-			const rgb: number[] = color.rgb().array();
-			return Color.rgb(
-				Math.pow(rgb[0] / 255, value) * 255,
-				Math.pow(rgb[1] / 255, value) * 255,
-				Math.pow(rgb[2] / 255, value) * 255,
-				color.alpha(),
-			);
-		});
+		const rgb: number[] = c.rgb().array();
+		return Color.rgb(
+			Math.pow(rgb[0] / 255, value) * 255,
+			Math.pow(rgb[1] / 255, value) * 255,
+			Math.pow(rgb[2] / 255, value) * 255,
+			c.alpha(),
+		);
 	}
 
-	function contrast(value: number): void {
+	function contrast(c: Color, value: number): Color {
 		if (value < 0) value = 0;
 		if (value > 1e6) value = 1e6;
-		forEachColor(color => {
-			const rgb: number[] = color.rgb().array();
-			return Color.rgb(
-				(rgb[0] - 127.5) * value + 127.5,
-				(rgb[1] - 127.5) * value + 127.5,
-				(rgb[2] - 127.5) * value + 127.5,
-				color.alpha(),
-			);
-		});
+		const rgb: number[] = c.rgb().array();
+		return Color.rgb(
+			(rgb[0] - 127.5) * value + 127.5,
+			(rgb[1] - 127.5) * value + 127.5,
+			(rgb[2] - 127.5) * value + 127.5,
+			c.alpha(),
+		);
 	}
 
-	function brightness(value: number): void {
+	function brightness(c: Color, value: number): Color {
 		if (value < -1e6) value = -1e6;
 		if (value > 1e6) value = 1e6;
 		const a = 1 - Math.abs(value);
 		const b = (value < 0) ? 0 : 255 * value;
-		forEachColor(color => {
-			const rgb: number[] = color.rgb().array();
-			return Color.rgb(
-				rgb[0] * a + b,
-				rgb[1] * a + b,
-				rgb[2] * a + b,
-				color.alpha(),
-			);
-		});
+		const rgb: number[] = c.rgb().array();
+		return Color.rgb(
+			rgb[0] * a + b,
+			rgb[1] * a + b,
+			rgb[2] * a + b,
+			c.alpha(),
+		);
 	}
 
-	function tint(value: number, tintColor: Color): void {
+	function tint(c: Color, value: number, tintColor: Color): Color {
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		const tintColorHSV: number[] = tintColor.hsv().array();
-		forEachColor(color => {
-			const rgb0: number[] = color.rgb().array();
+		const rgb0: number[] = c.rgb().array();
+		const hsv: number[] = c.hsv().array();
+		hsv[0] = tintColor.hue();
+		const rgbNew = Color.hsv(hsv).rgb().array();
 
-			const hsv: number[] = color.hsv().array();
-			// eslint-disable-next-line @typescript-eslint/prefer-destructuring
-			hsv[0] = tintColorHSV[0];
-			const rgbNew = Color.hsv(hsv).rgb().array();
-
-			return Color.rgb(
-				rgb0[0] * (1 - value) + value * rgbNew[0],
-				rgb0[1] * (1 - value) + value * rgbNew[1],
-				rgb0[2] * (1 - value) + value * rgbNew[2],
-				color.alpha(),
-			);
-		});
+		return Color.rgb(
+			rgb0[0] * (1 - value) + value * rgbNew[0],
+			rgb0[1] * (1 - value) + value * rgbNew[1],
+			rgb0[2] * (1 - value) + value * rgbNew[2],
+			c.alpha(),
+		);
 	}
 }

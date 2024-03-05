@@ -1,6 +1,7 @@
 import { decorate } from './decorator.js';
 import Color from 'color';
 import type { MaplibreLayer } from '../types/maplibre.js';
+import { CachedRecolor } from './recolor.ts';
 
 describe('decorate function', () => {
 	const mockLayers: MaplibreLayer[] = [
@@ -19,13 +20,15 @@ describe('decorate function', () => {
 		},
 	};
 
+	const noRecolor = new CachedRecolor();
+
 	it('should return an array of layers', () => {
-		const result = decorate(mockLayers, mockRules);
+		const result = decorate(mockLayers, mockRules, noRecolor);
 		expect(Array.isArray(result)).toBe(true);
 	});
 
 	it('should apply styles from rules to the corresponding layers', () => {
-		const result = decorate(mockLayers, mockRules);
+		const result = decorate(mockLayers, mockRules, noRecolor);
 
 		result.forEach(layer => {
 			if (layer.id === 'layer1') {
@@ -45,7 +48,7 @@ describe('decorate function', () => {
 				paintColor: new Color('#ff0000'),
 			},
 		};
-		const result = decorate(mockLayers, colorRule);
+		const result = decorate(mockLayers, colorRule, noRecolor);
 		const layer0: MaplibreLayer = result[0];
 
 		expect(layer0).toBeDefined();
@@ -58,7 +61,7 @@ describe('decorate function', () => {
 	});
 
 	it('should discard layers that have no style rules applied', () => {
-		const result = decorate(mockLayers, {});
+		const result = decorate(mockLayers, {}, noRecolor);
 		expect(result.length).toBe(0);
 	});
 });

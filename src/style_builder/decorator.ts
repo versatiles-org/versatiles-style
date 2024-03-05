@@ -5,10 +5,11 @@ import maplibreProperties from '../shortbread/properties.js';
 import { deepMerge } from '../lib/utils.js';
 import type { MaplibreLayer } from '../types/index.js';
 import type { StyleRule, StyleRuleValue, StyleRules } from './types.js';
+import type { CachedRecolor } from './recolor.ts';
 
 
 
-export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLayer[] {
+export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: CachedRecolor): MaplibreLayer[] {
 	const layerIds = layers.map(l => l.id);
 	const layerIdSet = new Set(layerIds);
 
@@ -18,7 +19,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLa
 	// Iterate through the generated layer style rules
 	Object.entries(rules).forEach(([idDef, layerStyle]) => {
 		if (layerStyle == null) return;
-		
+
 		// Expand any braces in IDs and filter them through a RegExp if necessary
 		const ids = expandBraces(idDef).flatMap(id => {
 			if (!id.includes('*')) return id;
@@ -48,87 +49,88 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLa
 
 		return [layer];
 	});
-}
 
-// Function to process each style attribute for the layer
-function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
+	// Function to process each style attribute for the layer
+	function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
 
-	for (const [ruleKeyCamelCase, ruleValue] of Object.entries(styleRule)) {
-		if (ruleValue == null) continue;
-		
-		// CamelCase to not-camel-case
-		const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
+		for (const [ruleKeyCamelCase, ruleValue] of Object.entries(styleRule)) {
+			if (ruleValue == null) continue;
 
-		const propertyDefs = maplibreProperties.get(layer.type + '/' + ruleKey);
-		if (!propertyDefs) continue;
+			// CamelCase to not-camel-case
+			const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
 
-		propertyDefs.forEach(propertyDef => {
-			const { key } = propertyDef;
-			let value: StyleRuleValue = ruleValue;
+			const propertyDefs = maplibreProperties.get(layer.type + '/' + ruleKey);
+			if (!propertyDefs) continue;
 
-			switch (propertyDef.valueType) {
-				case 'color': value = processExpression(value, processColor); break;
-				case 'fonts': value = processExpression(value, processFont); break;
-				case 'resolvedImage':
-				case 'formatted':
-				case 'array':
-				case 'boolean':
-				case 'enum':
-				case 'number': value = processExpression(value); break;
-				default: throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
+			propertyDefs.forEach(propertyDef => {
+				const { key } = propertyDef;
+				let value: StyleRuleValue = ruleValue;
+
+				switch (propertyDef.valueType) {
+					case 'color': value = processExpression(value, processColor); break;
+					case 'fonts': value = processExpression(value, processFont); break;
+					case 'resolvedImage':
+					case 'formatted':
+					case 'array':
+					case 'boolean':
+					case 'enum':
+					case 'number': value = processExpression(value); break;
+					default: throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
+				}
+
+				switch (propertyDef.parent) {
+					case 'layer':
+						// @ts-expect-error: too complex to handle
+						layer[key] = value;
+						break;
+					case 'layout':
+						if (!layer.layout) layer.layout = {};
+						// @ts-expect-error: too complex to handle
+						layer.layout[key] = value;
+						break;
+					case 'paint':
+						if (!layer.paint) layer.paint = {};
+						// @ts-expect-error: too complex to handle
+						layer.paint[key] = value;
+						break;
+					default:
+						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
+				}
+			});
+		}
+
+		function processColor(value: StyleRuleValue): string {
+			if (typeof value === 'string') value = Color(value);
+			if (value instanceof Color) {
+				const color = recolor.do(value as Color);
+				const text = (color.alpha() === 1) ? color.hex() : color.string();
+				return text.toLowerCase();
 			}
+			throw new Error(`unknown color type "${typeof value}"`);
+		}
 
-			switch (propertyDef.parent) {
-				case 'layer':
-					// @ts-expect-error: too complex to handle
-					layer[key] = value;
-					break;
-				case 'layout':
-					if (!layer.layout) layer.layout = {};
-					// @ts-expect-error: too complex to handle
-					layer.layout[key] = value;
-					break;
-				case 'paint':
-					if (!layer.paint) layer.paint = {};
-					// @ts-expect-error: too complex to handle
-					layer.paint[key] = value;
-					break;
-				default:
-					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-					throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
+		function processFont(value: StyleRuleValue): string[] {
+			if (typeof value === 'string') return [value];
+			throw new Error(`unknown font type "${typeof value}"`);
+		}
+
+		function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
+			if (typeof value === 'object') {
+				if (value instanceof Color) return processColor(value);
+				if (!Array.isArray(value)) {
+					return processZoomStops(value as Record<string, StyleRuleValue>, cbValue);
+				}
 			}
-		});
-	}
-}
+			return cbValue ? cbValue(value) : value;
+		}
 
-function processColor(value: StyleRuleValue): string {
-	if (typeof value === 'string') value = Color(value);
-	if (value instanceof Color) {
-		value = (value.alpha() === 1) ? value.hex() : value.string();
-		return value.toLowerCase();
-	}
-	throw new Error(`unknown color type "${typeof value}"`);
-}
-
-function processFont(value: StyleRuleValue): string[] {
-	if (typeof value === 'string') return [value];
-	throw new Error(`unknown font type "${typeof value}"`);
-}
-
-function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
-	if (typeof value === 'object') {
-		if (value instanceof Color) return processColor(value);
-		if (!Array.isArray(value)) {
-			return processZoomStops(value as Record<string, StyleRuleValue>, cbValue);
+		function processZoomStops(obj: Record<string, StyleRuleValue>, cbValue?: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
+			return {
+				stops: Object.entries(obj)
+					.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
+					.sort((a, b) => a[0] - b[0]),
+			};
 		}
 	}
-	return cbValue ? cbValue(value) : value;
-}
-
-function processZoomStops(obj: Record<string, StyleRuleValue>, cbValue?: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
-	return {
-		stops: Object.entries(obj)
-			.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
-			.sort((a, b) => a[0] - b[0]),
-	};
 }
