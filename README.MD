@@ -191,5 +191,5 @@ Iconsets can be defined in [`scripts/config-sprites.ts`](./scripts/config-sprite
 
 # Licenses
 
-* Sourcecode: [Unlicense](./UNLICENSE.md)
+* Sourcecode: [Unlicense](./LICENSE.md)
 * Iconsets and rendered Spritemaps: [CC0 1.0 Universal](./icons/LICENSE.md)
