@@ -11,6 +11,7 @@ import Colorful from './colorful.js';
 import Eclipse from './eclipse.js';
 import Graybeard from './graybeard.js';
 import Neutrino from './neutrino.js';
+import Empty from './empty.js';
 
 
 // generate style option types
@@ -18,8 +19,9 @@ export type ColorfulOptions = StyleBuilderOptions<Colorful>;
 export type EclipseOptions = StyleBuilderOptions<Eclipse>;
 export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
 export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
+export type EmptyOptions = StyleBuilderOptions<Empty>;
 
-export type SomeOptions = ColorfulOptions | EclipseOptions | GraybeardOptions | NeutrinoOptions;
+export type SomeOptions = ColorfulOptions | EclipseOptions | GraybeardOptions | NeutrinoOptions | EmptyOptions;
 
 
 // generate style builder types
@@ -33,8 +35,9 @@ export type ColorfulBuilder = MakeStyle<Colorful, ColorfulOptions>;
 export type EclipseBuilder = MakeStyle<Eclipse, EclipseOptions>;
 export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
 export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
+export type EmptyBuilder = MakeStyle<Empty, EmptyOptions>;
 
-export type SomeBuilder = ColorfulBuilder | GraybeardBuilder | NeutrinoBuilder;
+export type SomeBuilder = ColorfulBuilder | EclipseBuilder | GraybeardBuilder | NeutrinoBuilder | EmptyBuilder;
 
 
 
@@ -52,3 +55,4 @@ export const colorful: ColorfulBuilder = getStyleBuilder<Colorful>(Colorful);
 export const eclipse: EclipseBuilder = getStyleBuilder<Eclipse>(Eclipse);
 export const graybeard: GraybeardBuilder = getStyleBuilder<Graybeard>(Graybeard);
 export const neutrino: NeutrinoBuilder = getStyleBuilder<Neutrino>(Neutrino);
+export const empty: EmptyBuilder = getStyleBuilder<Empty>(Empty);
