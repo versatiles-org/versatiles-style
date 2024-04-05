@@ -19,6 +19,7 @@ const pack = tar.pack();
 // load styles
 Object.entries(styles).forEach(([name, build]) => {
 	produce(name, build({ languageSuffix: undefined }));
+	if (name === "empty") return;
 	produce(name + '.en', build({ languageSuffix: 'en' }));
 	produce(name + '.de', build({ languageSuffix: 'de' }));
 	produce(name + '.nolabel', build({ hideLabels: true }));
@@ -32,7 +33,7 @@ pack
 
 function produce(name: string, style: MaplibreStyle): void {
 
-	// Validate the style and log errors if any	
+	// Validate the style and log errors if any
 	const errors = validateStyleMin(style);
 	if (errors.length > 0) console.log(errors);
 
