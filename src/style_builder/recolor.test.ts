@@ -7,7 +7,7 @@ describe('recolor', () => {
 		it('should return the default color transformer flags', () => {
 			const defaultFlags = getDefaultRecolorFlags();
 			expect(defaultFlags).toEqual({
-				invert: false,
+				invertBrightness: false,
 				rotate: 0,
 				saturate: 0,
 				gamma: 1,
@@ -28,8 +28,8 @@ describe('recolor', () => {
 	describe('invert', () => {
 		it('should invert colors when invert flag is true', () => {
 			const colors = getTestColors();
-			recolorObject(colors, { invert: true });
-			expect(colors2string(colors)).toBe('0055AA00,FF005555,AAFF00AA,55AAFFFF');
+			recolorObject(colors, { invertBrightness: true });
+			expect(colors2string(colors)).toBe('AA550000,00FFAA55,5500FFAA,FFAA55FF');
 		});
 	});
 

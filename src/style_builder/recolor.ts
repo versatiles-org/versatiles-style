@@ -3,7 +3,7 @@ import Color from 'color';
 export interface RecolorOptions {
 
 	/** If true, inverts the colors. */
-	invert?: boolean;
+	invertBrightness?: boolean;
 
 	/** The degree to rotate the hue of the color (in degrees). */
 	rotate?: number;
@@ -29,7 +29,7 @@ export interface RecolorOptions {
 
 export function getDefaultRecolorFlags(): RecolorOptions {
 	return {
-		invert: false,
+		invertBrightness: false,
 		rotate: 0,
 		saturate: 0,
 		gamma: 1,
@@ -42,7 +42,7 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 
 function isValidRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
 	if (!opt) return false;
-	if ((opt.invert != null) && opt.invert) return true;
+	if ((opt.invertBrightness != null) && opt.invertBrightness) return true;
 	if ((opt.rotate != null) && (opt.rotate !== 0)) return true;
 	if ((opt.saturate != null) && (opt.saturate !== 0)) return true;
 	if ((opt.gamma != null) && (opt.gamma !== 1)) return true;
@@ -91,7 +91,7 @@ export class CachedRecolor {
 export function recolor(color: Color, opt?: RecolorOptions): Color {
 	if (!isValidRecolorOptions(opt)) return color;
 
-	if (opt.invert ?? false) color = color.negate();
+	if (opt.invertBrightness ?? false) color = invert(color);
 	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) color = color.rotate(opt.rotate);
 	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) color = color.saturate(opt.saturate);
 	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) color = gamma(color, opt.gamma);
@@ -100,6 +100,11 @@ export function recolor(color: Color, opt?: RecolorOptions): Color {
 	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) color = tint(color, opt.tint, Color(opt.tintColor));
 
 	return color;
+
+	function invert(c: Color): Color {
+		c = c.hsl();
+		return c.lightness(100 - c.lightness()).rgb();
+	}
 
 	function gamma(c: Color, value: number): Color {
 		if (value < 1e-3) value = 1e-3;

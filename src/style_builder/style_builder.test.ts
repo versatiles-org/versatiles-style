@@ -69,7 +69,7 @@ describe('StyleBuilder', () => {
 				brightness: 0,
 				contrast: 1,
 				gamma: 1,
-				invert: false,
+				invertBrightness: false,
 				rotate: 0,
 				saturate: 0,
 				tint: 0,
