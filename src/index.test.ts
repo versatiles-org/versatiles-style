@@ -5,7 +5,7 @@ import { guessStyle, styles } from './index.js';
 describe('styles', () => {
 	it('should be all styles', () => {
 		expect(Array.from(Object.keys(styles)).sort())
-			.toStrictEqual(['colorful', 'graybeard', 'neutrino']);
+			.toStrictEqual(['colorful', 'eclipse', 'graybeard', 'neutrino']);
 	});
 
 	Object.entries(styles).forEach(([name, builder]) => {

@@ -50,7 +50,7 @@ describe('Sprite Generation and Packaging', () => {
 		const fs = await getMockedFs();
 		const tar = await getMockedTar();
 
-		await import('./build-styles');
+		await import('./build-styles.js');
 
 		expect(jest.mocked(fs.createWriteStream).mock.calls).toStrictEqual([
 			[expect.stringMatching(/release\/styles\.tar\.gz$/)],
@@ -64,7 +64,7 @@ describe('Sprite Generation and Packaging', () => {
 
 		const packInstance = packInstances[0].value as Pack;
 
-		const files = ['colorful', 'graybeard', 'neutrino'].flatMap(style => [
+		const files = ['colorful', 'eclipse', 'graybeard', 'neutrino'].flatMap(style => [
 			`${style}.json`,
 			`${style}.en.json`,
 			`${style}.de.json`,

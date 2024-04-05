@@ -6,16 +6,18 @@ import type { RecolorOptions } from '../style_builder/recolor.js';
 export type { MaplibreStyle, RecolorOptions };
 
 import Colorful from './colorful.js';
+import Eclipse from './eclipse.js';
 import Graybeard from './graybeard.js';
 import Neutrino from './neutrino.js';
 
 
 
 export type ColorfulOptions = StyleBuilderOptions<Colorful>;
+export type EclipseOptions = StyleBuilderOptions<Eclipse>;
 export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
 export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
 
-export type SomeOptions = ColorfulOptions | GraybeardOptions | NeutrinoOptions;
+export type SomeOptions = ColorfulOptions | EclipseOptions | GraybeardOptions | NeutrinoOptions;
 
 
 
@@ -26,6 +28,7 @@ type MakeStyle<T extends StyleBuilder<T>, O extends StyleBuilderOptions<T>> =
 	};
 
 export type ColorfulBuilder = MakeStyle<Colorful, ColorfulOptions>;
+export type EclipseBuilder = MakeStyle<Eclipse, EclipseOptions>;
 export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
 export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
 
@@ -42,5 +45,6 @@ function makeStyle<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeSt
 }
 
 export const colorful: ColorfulBuilder = makeStyle<Colorful>(Colorful);
+export const eclipse: EclipseBuilder = makeStyle<Eclipse>(Eclipse);
 export const graybeard: GraybeardBuilder = makeStyle<Graybeard>(Graybeard);
 export const neutrino: NeutrinoBuilder = makeStyle<Neutrino>(Neutrino);
