@@ -144,17 +144,8 @@ describe('Sprite', () => {
 
 			sprite.renderSDF(); // Method under test
 
-			// Now, assert that the buffer was updated correctly
-			// For simplicity, just check the alpha values (every 4th value starting from index 3)
-			expect(buffer[3]).toBe(170);
-			expect(buffer[7]).toBe(148);
-			// Add assertions for the rest of the pixels
-
-			// Optionally, validate that the RGB channels are set to 0 as specified by the function
-			expect(buffer[0]).toBe(0); // Red channel of first pixel
-			expect(buffer[1]).toBe(0); // Green channel of first pixel
-			expect(buffer[2]).toBe(0); // Blue channel of first pixel
-			// Repeat for other pixels as needed
+			// Now, assert that the buffer was generated correctly
+			expect(Array.from(buffer)).toStrictEqual([0, 0, 0, 175, 0, 0, 0, 159, 0, 0, 0, 143, 0, 0, 0, 127]);
 		});
 
 		it('throws an error if distance is not set', async () => {

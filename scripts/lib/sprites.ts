@@ -22,6 +22,8 @@ export class Sprite {
 
 	// eslint-disable-next-line @typescript-eslint/max-params
 	private constructor(entries: SpriteEntry[], width: number, height: number, buffer: Buffer) {
+		if (width % 1 !== 0) throw Error();
+		if (height % 1 !== 0) throw Error();
 		this.entries = entries;
 		this.width = width;
 		this.height = height;
@@ -179,7 +181,7 @@ export class Sprite {
 		const length = width * height;
 
 		for (let i = 0; i < length; i++) {
-			const a = 0.75 - distance[i] / 12;
+			const a = 0.75 - distance[i] / 16;
 			buffer[i * 4 + 0] = 0;
 			buffer[i * 4 + 1] = 0;
 			buffer[i * 4 + 2] = 0;
@@ -245,13 +247,13 @@ export class Sprite {
 
 	private async getPng(): Promise<Buffer> {
 		if (this.bufferPng) return this.bufferPng;
-		
+
 		const pngBuffer = await sharp(this.buffer, { raw: { width: this.width, height: this.height, channels: 4 } })
 			.png({ palette: false })
 			.toBuffer();
-			
+
 		this.bufferPng = optipng(pngBuffer);
-		
+
 		return this.bufferPng;
 	}
 
@@ -284,9 +286,9 @@ interface SpriteEntry {
 export function optipng(bufferIn: Buffer): Buffer {
 	const randomString = Math.random().toString(36).replace(/[^a-z0-9]/g, '');
 	const filename = resolve(tmpdir(), randomString + '.png');
-	
+
 	writeFileSync(filename, bufferIn);
-	
+
 	const result = spawnSync('optipng', [filename]);
 
 	if (result.status === 1) {
