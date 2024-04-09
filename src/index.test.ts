@@ -5,7 +5,7 @@ import { guessStyle, styles } from './index.js';
 describe('styles', () => {
 	it('should be all styles', () => {
 		expect(Array.from(Object.keys(styles)).sort())
-			.toStrictEqual(['colorful', 'eclipse', 'graybeard', 'neutrino']);
+			.toStrictEqual(['colorful', 'eclipse', 'empty', 'graybeard', 'neutrino']);
 	});
 
 	Object.entries(styles).forEach(([name, builder]) => {
@@ -13,7 +13,9 @@ describe('styles', () => {
 			expect(typeof builder).toBe('function');
 
 			const style = builder({ baseUrl: 'https://example.org' });
-			expect(JSON.stringify(style).length).toBeGreaterThan(50000);
+
+			const minSize = (name === 'empty') ? 4000 : 50000;
+			expect(JSON.stringify(style).length).toBeGreaterThan(minSize);
 
 			expect(style.name).toBe('versatiles-' + name);
 			expect(style.glyphs).toBe('https://example.org/assets/fonts/{fontstack}/{range}.pbf');

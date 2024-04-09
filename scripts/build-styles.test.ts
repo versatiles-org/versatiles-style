@@ -64,16 +64,18 @@ describe('Sprite Generation and Packaging', () => {
 
 		const packInstance = packInstances[0].value as Pack;
 
-		const files = ['colorful', 'eclipse', 'graybeard', 'neutrino'].flatMap(style => [
+		const { calls } = jest.mocked(packInstance.entry).mock;
+		const generatedFiles = calls.map(call => call[0].name).sort();
+
+		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino'].flatMap(style => [
 			`${style}.json`,
 			`${style}.en.json`,
 			`${style}.de.json`,
 			`${style}.nolabel.json`,
 		]);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		const calls = files.map(name => [expect.objectContaining({ name }), expect.any(String)]);
+		expectedFiles.push('empty.json');
+		expectedFiles.sort();
 
-		expect(jest.mocked(packInstance.entry).mock.calls).toStrictEqual(calls);
-
+		expect(generatedFiles).toStrictEqual(expectedFiles);
 	}, 20000);
 });

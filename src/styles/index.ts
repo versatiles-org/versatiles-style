@@ -21,7 +21,7 @@ export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
 export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
 export type EmptyOptions = StyleBuilderOptions<Empty>;
 
-export type SomeOptions = ColorfulOptions | EclipseOptions | GraybeardOptions | NeutrinoOptions | EmptyOptions;
+export type SomeOptions = ColorfulOptions | EclipseOptions | EmptyOptions | GraybeardOptions | NeutrinoOptions;
 
 
 // generate style builder types
@@ -37,7 +37,7 @@ export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
 export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
 export type EmptyBuilder = MakeStyle<Empty, EmptyOptions>;
 
-export type SomeBuilder = ColorfulBuilder | EclipseBuilder | GraybeardBuilder | NeutrinoBuilder | EmptyBuilder;
+export type SomeBuilder = ColorfulBuilder | EclipseBuilder | EmptyBuilder | GraybeardBuilder | NeutrinoBuilder;
 
 
 
