@@ -233,6 +233,8 @@ export default class Colorful extends StyleBuilder<Colorful> {
 
 			'land-*': {
 				color: colors.land,
+				fillOutlineColor: color.transparent, // nessecary to hide polygon borders
+				fillAntialias: true,
 			},
 			'land-glacier': {
 				color: colors.glacier,
