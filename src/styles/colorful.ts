@@ -220,7 +220,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			'hillshade-*': {
 				fillOutlineColor: color.transparent, // nessecary to hide polygon borders
 				fillAntialias: true,
-				opacity: { 0: 0, 5: 0.3 },
+				opacity: { 0: 0, 5: 0.3, 12: 0.3, 16: 0.1 },
 			},
 			'hillshade-shadow': {
 				color: colors.hillshadeHighlight,
