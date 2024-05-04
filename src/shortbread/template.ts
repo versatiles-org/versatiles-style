@@ -338,6 +338,26 @@ export function getShortbreadTemplate(): MaplibreStyleVector {
 					},
 				],
 			},
+			'versatiles-hillshade': {
+				tilejson: "3.0.0",
+				name: "Versatiles Hillshade Vectors",
+				description: "Versatiles Hillshade Vectors based on Mapzen Jörð Terrain Tiles",
+				attribution: "<a href=\"https://github.com/tilezen/joerd/blob/master/docs/attribution.md\">Mapzen Terrain Tiles, DEM Sources</a>",
+				version: "0.0.1",
+				tiles: ["https://tiles.versatiles.org/tiles/hillshade-vectors/{z}/{x}/{y}"],
+				type: "vector",
+				scheme: "xyz",
+				format: "pbf",
+				bounds: [ -180, -85.0511287798066, 180, 85.0511287798066 ],
+				minzoom: 0,
+				maxzoom: 12,
+				vectorlayers: [{
+					id: "hillshade-vectors",
+					fields: { shade: "String" },
+					minzoom: 0,
+					maxzoom: 12
+				}]
+			},
 		},
 		layers: [],
 	};
