@@ -7,7 +7,7 @@ import type { MaplibreLayerDefinition } from '../types/index.js';
 export function getShortbreadLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
 	const { languageSuffix } = option;
 	const nameField = languageSuffix ? '{name_' + languageSuffix + '}' : '{name}';
-	
+
 	return [
 
 		// background
@@ -15,6 +15,22 @@ export function getShortbreadLayers(option: { readonly languageSuffix: LanguageS
 
 		// ocean
 		{ id: 'water-ocean', type: 'fill', 'source-layer': 'ocean' },
+
+		// hillshade
+		{
+			id: 'hillshade-highlight',
+			type: 'fill',
+			source: 'hillshade-vectors',
+			'source-layer': 'hillshade-vectors',
+			'filter': ['all', ['==', 'shade', 'light']],
+		},
+		{
+			id: 'hillshade-shadow',
+			type: 'fill',
+			source: 'hillshade-vectors',
+			'source-layer': 'hillshade-vectors',
+			'filter': ['all', ['==', 'shade', 'dark']],
+		},
 
 		// land
 		{
