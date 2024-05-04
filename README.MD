@@ -52,7 +52,7 @@ Use it in:
       container: 'map',
       style
    });
-<script>
+</script>
 ```
 
 # Create styles in the backend (Node.js)
