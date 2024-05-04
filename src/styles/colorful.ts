@@ -280,6 +280,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			},
 			'land-rock': {
 				color: colors.rock,
+				opacity: { 11: 0, 12: 0.5 },
 			},
 			'land-sand': {
 				color: colors.sand,
