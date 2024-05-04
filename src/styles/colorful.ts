@@ -13,8 +13,15 @@ export default class Colorful extends StyleBuilder<Colorful> {
 
 	public defaultColors = {
 
+		/** Transparent */
+		transparent: '#00000000',
+
 		/** Color for land areas on the map. */
 		land: '#F9F4EE',
+
+		/** Color for Vector Hillshade Shadows and Hightlights */
+		hillshadeHighlight: '#FFFFFF',
+		hillshadeShadow: '#CCCCCC',
 
 		/** Color for water bodies like lakes and rivers. */
 		water: '#BEDDF3',
@@ -206,6 +213,20 @@ export default class Colorful extends StyleBuilder<Colorful> {
 			},
 			'water-ditch': {
 				lineWidth: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
+			},
+
+			// hillshade
+
+			'hillshade-*': {
+				fillOutlineColor: color.transparent, // nessecary to hide polygon borders
+				fillAntialias: true,
+				opacity: { 0: 0, 5: 0.3 },
+			},
+			'hillshade-shadow': {
+				color: colors.hillshadeHighlight,
+			},
+			'hillshade-highlight': {
+				color: colors.hillshadeShadow,
 			},
 
 			// land
