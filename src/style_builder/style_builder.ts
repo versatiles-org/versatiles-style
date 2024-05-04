@@ -68,8 +68,8 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 				case 'line':
 				case 'symbol':
 					return {
-						...layer,
 						source: this.#sourceName,
+						...layer,
 					};
 			}
 			throw Error('unknown layer type');
