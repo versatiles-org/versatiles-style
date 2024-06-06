@@ -100,8 +100,10 @@ export async function guessStyleFromContainer(container: Container, options: Gue
 
 	let vectorLayers;
 	if (typeof metadata === 'string') {
-		const t = JSON.parse(metadata) as object;
-		if (('vector_layers' in t) && Array.isArray(t.vector_layers)) vectorLayers = t.vector_layers;
+		try {
+			const t = JSON.parse(metadata) as object;
+			if (('vector_layers' in t) && Array.isArray(t.vector_layers)) vectorLayers = t.vector_layers;
+		} catch (e) { }
 	}
 
 	const guessStyleOptions: GuessStyleOptions = {
