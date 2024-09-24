@@ -21,7 +21,7 @@ export default [
 		]
 	},
 	{
-		input: './release/versatiles-style/.tmp.d.ts/browser.d.ts',
+		input: './release/versatiles-style/browser.d.ts',
 		output: [{ file: './release/versatiles-style/versatiles-style.d.ts', format: 'es' }],
 		plugins: [dts()],
 	},

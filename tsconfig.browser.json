@@ -4,7 +4,7 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"declaration": true,
-		"declarationDir": ".tmp.d.ts",
+		"declarationDir": "./release/versatiles-style/",
 		"noEmit": false,
 		"allowImportingTsExtensions": false,
 	},
