@@ -3,13 +3,13 @@ import type { TileJSONSpecificationRaster, TileJSONSpecificationVector } from '.
 
 /** Type for Maplibre styles specifically designed for raster sources. */
 export type MaplibreStyleRaster = Omit<StyleSpecification, 'sources'> & {
-	// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+	 
 	'sources': { [_: string]: TileJSONSpecificationRaster };
 };
 
 /** Type for Maplibre styles specifically designed for vector sources. */
 export type MaplibreStyleVector = Omit<StyleSpecification, 'sources'> & {
-	// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+	 
 	'sources': { [_: string]: TileJSONSpecificationVector };
 };
 

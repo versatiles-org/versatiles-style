@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 import type { Container, Header } from '@versatiles/container';
 import { getShortbreadTemplate } from '../shortbread/index.js';
 import type { TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
@@ -140,7 +140,7 @@ describe('guessStyle', () => {
 		cases.forEach(({ type, options }) => {
 			it(type, () => {
 				const style = guessStyle({ ...options, tiles: ['https://example1.org/tiles/{z}/{x}/{y}'], baseUrl: 'https://example2.org/' });
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				 
 				expect(Object.values(style.sources)[0].tiles).toEqual(['https://example1.org/tiles/{z}/{x}/{y}']);
 			});
 		});
@@ -150,7 +150,7 @@ describe('guessStyle', () => {
 		cases.forEach(({ type, options }) => {
 			it(type, () => {
 				const style = guessStyle({ ...options, tiles: ['./{z}/{x}/{y}'], baseUrl: 'https://example2.org/tiles/' });
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				 
 				expect(Object.values(style.sources)[0].tiles).toEqual(['https://example2.org/tiles/{z}/{x}/{y}']);
 			});
 		});

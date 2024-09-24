@@ -51,7 +51,7 @@ describe('isSimpleObject', () => {
 
 	it('rejects objects with prototype properties', () => {
 		class MyClass {
-			readonly #property = true;
+			readonly property = true;
 		}
 		expect(isSimpleObject(new MyClass())).toBe(false);
 	});

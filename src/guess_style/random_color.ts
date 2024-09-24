@@ -101,7 +101,7 @@ export default function randomColorGenerator(startSeed?: number | string): Rando
 
 		if (typeof hue === 'string') {
 			const color = colorDictionary[hue];
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			 
 			if (color?.hueRange) return color.hueRange;
 		}
 
@@ -157,7 +157,7 @@ export default function randomColorGenerator(startSeed?: number | string): Rando
 		return dic;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+	 
 	function HSVtoHSL(hsv: [number, number, number]): [number, number, number] {
 		const s = hsv[1] / 100, v = hsv[2] / 100, k = (2 - s) * v;
 		return [hsv[0], 100 * s * v / (k < 1 ? k : 2 - k), 100 * k / 2];

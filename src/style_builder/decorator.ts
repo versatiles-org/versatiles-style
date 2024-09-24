@@ -94,7 +94,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						layer.paint[key] = value;
 						break;
 					default:
-						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+						 
 						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
 				}
 			});

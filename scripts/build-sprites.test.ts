@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+ 
+ 
+ 
 
 import { jest } from '@jest/globals';
 import type { Pack } from 'tar-stream';

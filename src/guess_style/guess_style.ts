@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+
 
 import type { TileJSONSpecification, TileJSONSpecificationBasic, MaplibreStyle, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
 import { isTileJSONSpecification, isVectorLayers } from '../types/index.js';
@@ -35,11 +35,12 @@ export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 
 	let k: keyof typeof tilejsonBasic;
 	for (k in tilejsonBasic) {
-		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+
 		if (tilejsonBasic[k] === undefined) delete tilejsonBasic[k];
 	}
 
 	let tilejson: TileJSONSpecification;
+	let vectorLayers: unknown[] | undefined;
 	switch (format) {
 		case 'avif':
 		case 'jpg':
@@ -48,7 +49,7 @@ export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 			tilejson = { ...tilejsonBasic, type: 'raster', format };
 			break;
 		case 'pbf':
-			const { vectorLayers } = opt;
+			vectorLayers = opt.vectorLayers;
 			if (!isVectorLayers(vectorLayers)) throw Error('property vector_layers is invalid');
 			tilejson = { ...tilejsonBasic, type: 'vector', format, vector_layers: vectorLayers };
 			break;
@@ -103,7 +104,9 @@ export async function guessStyleFromContainer(container: Container, options: Gue
 		try {
 			const t = JSON.parse(metadata) as object;
 			if (('vector_layers' in t) && Array.isArray(t.vector_layers)) vectorLayers = t.vector_layers;
-		} catch (e) { }
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	const guessStyleOptions: GuessStyleOptions = {

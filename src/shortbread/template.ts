@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 
 import type { MaplibreStyleVector } from '../types/index.js';
 

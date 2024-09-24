@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 import Color from 'color';
 import type { MaplibreStyle } from '../types/maplibre.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';

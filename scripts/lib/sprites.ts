@@ -20,7 +20,7 @@ export class Sprite {
 
 	private distance?: Float64Array;
 
-	// eslint-disable-next-line @typescript-eslint/max-params
+	 
 	private constructor(entries: SpriteEntry[], width: number, height: number, buffer: Buffer) {
 		if (width % 1 !== 0) throw Error();
 		if (height % 1 !== 0) throw Error();
@@ -148,9 +148,9 @@ export class Sprite {
 
 				for (let i = 1; i < max; i++) {
 					do {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						 
 						const r = v[k];
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+						 
 						s = (f[i] - f[r] + i ** 2 - r ** 2) / (i - r) / 2;
 					} while (s <= z[k] && --k >= 0);
 
@@ -163,9 +163,9 @@ export class Sprite {
 				k = 0;
 				for (let i = 0; i < max; i++) {
 					while (z[k + 1] < i) k++;
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					 
 					const r = v[k];
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					 
 					data[offset + i * stepSize] = f[r] + (i - r) ** 2;
 				}
 			}
@@ -257,7 +257,7 @@ export class Sprite {
 		return this.bufferPng;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
+	 
 	private async getJSON(): Promise<Buffer> {
 		let json = this.entries.map(e => '  "' + e.name + '": ' + JSON.stringify({
 			width: e.width,

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LanguageSuffix } from '../style_builder/index.js';

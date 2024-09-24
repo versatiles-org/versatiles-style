@@ -23,7 +23,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		options ??= {};
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		 
 		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.href ?? 'https://tiles.versatiles.org';
 		const glyphs = options.glyphs ?? '/assets/fonts/{fontstack}/{range}.pbf';
 

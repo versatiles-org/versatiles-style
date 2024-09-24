@@ -30,7 +30,7 @@ export interface TileJSONSpecificationRaster extends TileJSONSpecificationBasic 
 export interface TileJSONSpecificationVector extends TileJSONSpecificationBasic {
 	type: 'vector';
 	format: 'pbf';
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+	 
 	vector_layers: VectorLayer[];
 }
 

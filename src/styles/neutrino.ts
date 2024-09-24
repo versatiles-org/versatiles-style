@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 
 import StyleBuilder from '../style_builder/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../style_builder/types.js';

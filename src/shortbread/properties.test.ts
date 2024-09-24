@@ -12,7 +12,7 @@ describe('propertyLookup', () => {
 		expectedTypes.forEach(type => {
 			propertyLookup.forEach((value, key) => {
 				if (key.startsWith(type)) {
-					expect(key).toMatch(new RegExp(`^${type}\/`));
+					expect(key).toMatch(new RegExp(`^${type}/`));
 				}
 			});
 		});
