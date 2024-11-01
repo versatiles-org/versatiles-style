@@ -35,8 +35,8 @@ for (const [suffix, scale] of Object.entries(config.ratio)) {
 
 pack.finalize();
 
-await pipeline([
+await pipeline(
 	pack,
 	createGzip({ level: 9 }),
 	createWriteStream(resolve(dirTarget, 'sprites.tar.gz')),
-]);
+);
