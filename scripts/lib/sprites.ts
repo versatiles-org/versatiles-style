@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import type { Icon } from './icons.js';
+import type { Icon, IconSets } from './icons.js';
 import binPack from 'bin-pack';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import type { Pack as TarPack } from 'tar-stream';
@@ -8,45 +8,55 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 
 /**
- * Represents a sprite sheet that holds multiple icons arranged together.
+ * Configuration for creating a Sprite, specifying icon sets and scale ratios.
+ */
+export interface SpriteConfig {
+	sets: IconSets;       // Collection of icon sets to include in the sprite.
+	ratios: number[];     // Scale ratios to apply to each icon.
+}
+
+/**
+ * Represents a sprite sheet that holds multiple icons arranged together in a compact layout.
+ * Supports signed distance field (SDF) rendering and efficient memory management.
  */
 export class Sprite {
-	private readonly entries: SpriteEntry[]; // List of entries for each icon in the sprite.
-	private readonly width: number;         // Width of the sprite sheet.
-	private readonly height: number;        // Height of the sprite sheet.
-	private readonly buffer: Buffer;        // Buffer storing raw image data for the sprite sheet.
-	private bufferPng?: Buffer;             // PNG representation of the sprite sheet.
-	private distance?: Float64Array;        // Distance field values for SDF (Signed Distance Field) rendering.
+	private readonly entries: SpriteEntry[]; // Metadata and layout information for each icon in the sprite.
+	private readonly width: number;          // Width of the complete sprite sheet.
+	private readonly height: number;         // Height of the complete sprite sheet.
+	private readonly buffer: Buffer;         // Buffer storing raw image data for the sprite sheet.
+	private readonly distance: Float64Array; // Distance field values for SDF rendering.
 
 	/**
-	 * Private constructor to initialize a sprite instance.
-	 * @param entries - Array of sprite entries.
-	 * @param width - Width of the sprite sheet.
-	 * @param height - Height of the sprite sheet.
+	 * Private constructor for creating a sprite instance.
+	 * @param entries - Array of entries representing each icon in the sprite.
+	 * @param width - Calculated width of the sprite sheet.
+	 * @param height - Calculated height of the sprite sheet.
 	 * @param buffer - Raw image buffer for the sprite sheet.
+	 * @param distance - Signed Distance Field (SDF) data array.
 	 */
-	private constructor(entries: SpriteEntry[], width: number, height: number, buffer: Buffer) {
-		if (width % 1 !== 0) throw Error();
-		if (height % 1 !== 0) throw Error();
+	private constructor(entries: SpriteEntry[], width: number, height: number, buffer: Buffer, distance: Float64Array) {
+		if (width % 1 !== 0) throw Error('Sprite width must be an integer.');
+		if (height % 1 !== 0) throw Error('Sprite height must be an integer.');
 		this.entries = entries;
 		this.width = width;
 		this.height = height;
 		this.buffer = buffer;
+		this.distance = distance;
 	}
 
 	/**
-	 * Factory method to create a Sprite from a list of icons.
-	 * @param icons - Array of Icon objects.
-	 * @param scale - Scale factor for the icon size.
-	 * @param padding - Padding around each icon in the sprite.
-	 * @returns A promise resolving to a new Sprite instance.
+	 * Creates a Sprite instance from a set of icons.
+	 * @param icons - Array of Icon objects to include in the sprite.
+	 * @param scale - Scaling factor for each icon.
+	 * @param defaultPadding - Default padding around each icon.
+	 * @returns A promise resolving to the newly created Sprite instance.
 	 */
-	public static async fromIcons(icons: Icon[], scale: number, padding: number): Promise<Sprite> {
-		// Generate sprite entries by parsing the width and height of each SVG icon.
+	public static async fromIcons(icons: Icon[], scale: number, defaultPadding: number): Promise<Sprite> {
+		// Parse dimensions for each SVG icon and apply scaling and padding.
 		const spriteEntries = icons.map(icon => {
 			const wResult = /<svg[^>]+width="([^"]+)"/.exec(icon.svg);
 			const hResult = /<svg[^>]+height="([^"]+)"/.exec(icon.svg);
-			if (!wResult || !hResult) throw Error();
+			if (!wResult || !hResult) throw Error('Invalid SVG format.');
 
 			const w0 = parseFloat(wResult[1]);
 			const h0 = parseFloat(hResult[1]);
@@ -54,62 +64,70 @@ export class Sprite {
 			const width = Math.round(icon.size * w0 / h0) * scale;
 
 			const svg = icon.svg
-				.replace(/(<svg[^>]*width=")([^"]+)/, (all, before: string) => before + width)
-				.replace(/(<svg[^>]*height=")([^"]+)/, (all, before: string) => before + height);
+				.replace(/(<svg[^>]*width=")([^"]+)/, (_, before) => before + width)
+				.replace(/(<svg[^>]*height=")([^"]+)/, (_, before) => before + height);
+
+			const padding = icon.useSDF ? defaultPadding * scale : 0;
 
 			return {
 				name: icon.name,
-				offset: padding * scale,
+				useSDF: icon.useSDF,
+				padding,
 				svg,
-				width: width + 2 * padding * scale,
-				height: height + 2 * padding * scale,
+				width: width + 2 * padding,
+				height: height + 2 * padding,
 				x: 0,
 				y: 0,
 				pixelRatio: scale,
 			};
 		});
 
-		// Calculate dimensions for the sprite using bin packing.
-		const dimensions = binPack(spriteEntries, { inPlace: true });
+		// Calculate dimensions for the packed sprite layout using bin packing.
+		const { width, height } = binPack(spriteEntries, { inPlace: true });
 
-		// Render the sprite image using sharp.
+		// Render the sprite sheet using sharp with transparent background.
 		const buffer = await sharp({
 			create: {
-				width: dimensions.width,
-				height: dimensions.height,
+				width,
+				height,
 				channels: 4,
-				background: { r: 0, g: 0, b: 0, alpha: 0 },
+				background: '#fff',
 			},
 		}).composite(
-			spriteEntries.map(spriteEntry => ({
-				input: Buffer.from(spriteEntry.svg),
-				left: spriteEntry.x + spriteEntry.offset,
-				top: spriteEntry.y + spriteEntry.offset,
+			spriteEntries.map(e => ({
+				input: Buffer.from(e.svg),
+				left: e.x + e.padding,
+				top: e.y + e.padding,
 			})),
 		).raw().toBuffer();
 
-		return new Sprite(
-			spriteEntries,
-			dimensions.width,
-			dimensions.height,
-			buffer,
-		);
+		for (let i = 0; i < width * height; i++) buffer[i * 4 + 3] = 0;
+		for (const entry of spriteEntries) {
+			if (!entry.useSDF) continue;
+			for (const i of iteratePixels(entry, width)) {
+				buffer[i * 4 + 3] = 255 - buffer[i * 4 + 0];
+			}
+		}
+
+		// Generate SDF (Signed Distance Field) values based on alpha channel.
+		const distance = calcSDFFromAlpha(buffer, width, height);
+
+		return new Sprite(spriteEntries, width, height, buffer, distance);
 	}
 
 	/**
-	 * Save the sprite to disk as a PNG and JSON file.
-	 * @param basename - Base name for the files.
-	 * @param folder - Folder path where files will be saved.
+	 * Saves the sprite sheet and metadata to PNG and JSON files on disk.
+	 * @param basename - Base name for the output files.
 	 */
-	public async saveToDisk(basename: string, folder: string): Promise<void> {
-		writeFileSync(resolve(folder, basename + '.png'), await this.getPng());
-		writeFileSync(resolve(folder, basename + '.json'), await this.getJSON());
+	public async saveToDisk(basename: string): Promise<void> {
+		writeFileSync(basename + '.png', await this.getPng());
+		writeFileSync(basename + '.json', await this.getJSON());
 	}
 
 	/**
-	 * Save the sprite to a tar archive.
-	 * @param basename - Base name for the files in the tar archive.
-	 * @param tarPack - TarPack instance for archiving.
+	 * Adds the sprite sheet and metadata to a tar archive.
+	 * @param basename - Base name for the entries within the tar archive.
+	 * @param tarPack - TarPack instance for writing entries.
 	 */
 	public async saveToTar(basename: string, tarPack: TarPack): Promise<void> {
 		tarPack.entry({ name: basename + '.png' }, await this.getPng());
@@ -117,114 +135,42 @@ export class Sprite {
 	}
 
 	/**
-	 * Calculate the Signed Distance Field (SDF) for the sprite.
-	 */
-	public calcSDF(): void {
-		const INFINITY = 1e30;
-		// https://cs.brown.edu/people/pfelzens/dt/index.html
-		// Felzenszwalb Huttenlocher algorithm
-
-		const { width, height } = this;
-		const length = width * height;
-
-		const dInn = new Float64Array(length);
-		const dOut = new Float64Array(length);
-		dInn.fill(INFINITY);
-		dOut.fill(INFINITY);
-
-		for (let i = 0; i < length; i++) {
-			const alpha = this.buffer[i * 4 + 3] / 255;
-			if (alpha < 0.5) {
-				dInn[i] = alpha ** 2;
-			} else {
-				dOut[i] = (1 - alpha) ** 2;
-			}
-		}
-
-		euclideanDistance2D(dOut);
-		euclideanDistance2D(dInn);
-
-		for (let i = 0; i < length; i++) {
-			dOut[i] = (dOut[i] < dInn[i]) ? -Math.sqrt(dInn[i]) : Math.sqrt(dOut[i]);
-		}
-
-		this.distance = dOut;
-
-		function euclideanDistance2D(data: Float64Array): void {
-			const maxSize = Math.max(width, height);
-			const v = new Array(maxSize);
-			const z = new Float64Array(maxSize + 1);
-			const f = new Float64Array(maxSize);
-
-			for (let x = 0; x < width; x++) euclideanDistance1D(x, width, height);
-			for (let y = 0; y < height; y++) euclideanDistance1D(y * width, 1, width);
-
-			function euclideanDistance1D(offset: number, stepSize: number, max: number): void {
-				for (let i = 0; i < max; i++) f[i] = data[offset + i * stepSize];
-
-				let k = 0;
-				let s: number;
-				v[0] = 0;
-				z[0] = -INFINITY;
-				z[1] = INFINITY;
-
-				for (let i = 1; i < max; i++) {
-					do {
-						const r = v[k];
-						s = (f[i] - f[r] + i ** 2 - r ** 2) / (i - r) / 2;
-					} while (s <= z[k] && --k >= 0);
-
-					k++;
-					v[k] = i;
-					z[k] = s;
-					z[k + 1] = INFINITY;
-				}
-
-				k = 0;
-				for (let i = 0; i < max; i++) {
-					while (z[k + 1] < i) k++;
-					data[offset + i * stepSize] = f[v[k]] + (i - v[k]) ** 2;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Renders the sprite's distance field into the sprite's buffer.
+	 * Renders the SDF-based alpha channel for each icon in the sprite.
 	 */
 	public renderSDF(): void {
-		if (!this.distance) throw Error();
+		const { width, distance, buffer } = this;
 
-		const { width, height, distance, buffer } = this;
-		const length = width * height;
-
-		for (let i = 0; i < length; i++) {
-			const a = 0.75 - distance[i] / 16;
-			buffer[i * 4 + 0] = 0;
-			buffer[i * 4 + 1] = 0;
-			buffer[i * 4 + 2] = 0;
-			buffer[i * 4 + 3] = 255 * Math.max(0, Math.min(1, a));
+		for (const entry of this.entries) {
+			if (entry.useSDF) {
+				for (const i of iteratePixels(entry, width)) {
+					buffer[i * 4 + 3] = 255 * Math.max(0, Math.min(1, 0.75 - distance[i] / 16));
+				}
+			} else {
+				for (const i of iteratePixels(entry, width)) {
+					buffer[i * 4 + 3] = 255;
+				}
+			}
 		}
 	}
 
 	/**
-	 * Gets a scaled version of the sprite.
-	 * @param scale - Scaling factor.
-	 * @returns New scaled Sprite instance.
+	 * Creates a scaled version of the sprite.
+	 * @param scale - Scaling factor to apply.
+	 * @returns A new Sprite instance at the specified scale.
 	 */
 	public getScaledSprite(scale: number): Sprite {
-		if (scale % 1 !== 0) throw Error();
-		if (!this.distance) throw Error();
+		if (scale % 1 !== 0) throw Error('Scale factor must be an integer.');
+		if (!this.distance) throw Error('Distance field is not calculated.');
 
 		const width = this.width / scale;
 		const height = this.height / scale;
-		if (width % 1 !== 0) throw Error();
-		if (height % 1 !== 0) throw Error();
+		if (width % 1 !== 0 || height % 1 !== 0) throw Error('Width and height must be integers.');
 
 		const length = width * height;
 		const distance = new Float64Array(length);
 		const buffer = Buffer.alloc(length * 4);
 
+		// Downsample the buffer and distance field to the new scale.
 		for (let y = 0; y < height; y++) {
 			for (let x = 0; x < width; x++) {
 				let dSum = 0;
@@ -252,66 +198,61 @@ export class Sprite {
 			}
 		}
 
-		const sprite = new Sprite(this.entries.map(e => ({
-			name: e.name,
-			svg: e.svg,
-			x: e.x / scale,
-			y: e.y / scale,
-			offset: e.offset / scale,
-			width: e.width / scale,
-			height: e.height / scale,
-			pixelRatio: e.pixelRatio / scale,
-		})), width, height, buffer);
+		const scaledEntries = this.entries.map(entry => ({
+			...entry,
+			x: entry.x / scale,
+			y: entry.y / scale,
+			padding: entry.padding / scale,
+			width: entry.width / scale,
+			height: entry.height / scale,
+			pixelRatio: entry.pixelRatio / scale,
+		}));
 
-		sprite.distance = distance;
-		return sprite;
+		return new Sprite(scaledEntries, width, height, buffer, distance);
 	}
 
 	/**
-	 * Generates a PNG from the sprite buffer.
+	 * Converts the sprite buffer into a PNG image.
 	 * @returns A promise resolving to the PNG buffer.
 	 */
 	private async getPng(): Promise<Buffer> {
-		if (this.bufferPng) return this.bufferPng;
-
 		const pngBuffer = await sharp(this.buffer, { raw: { width: this.width, height: this.height, channels: 4 } })
 			.png({ palette: false })
 			.toBuffer();
 
-		this.bufferPng = optipng(pngBuffer);
-		return this.bufferPng;
+		return optipng(pngBuffer);
 	}
 
 	/**
-	 * Generates JSON metadata for the sprite entries.
+	 * Generates JSON metadata for each icon in the sprite.
 	 * @returns A promise resolving to the JSON buffer.
 	 */
 	private async getJSON(): Promise<Buffer> {
-		let json = this.entries.map(e => '  "' + e.name + '": ' + JSON.stringify({
+		const json = this.entries.map(e => `  "${e.name}": ` + JSON.stringify({
 			width: e.width,
 			height: e.height,
 			x: e.x,
 			y: e.y,
 			pixelRatio: e.pixelRatio,
-			sdf: true,
+			sdf: e.useSDF,
 		})).join(',\n');
-		json = `{\n${json}\n}`;
-		return Buffer.from(json, 'utf8');
+		return Buffer.from(`{\n${json}\n}`, 'utf8');
 	}
 }
 
 /**
- * Interface defining the structure of a sprite entry.
+ * Describes an entry in the sprite, containing the icon's layout and SDF properties.
  */
 interface SpriteEntry {
-	name: string;
-	svg: string;
-	x: number;
-	y: number;
-	offset: number;
-	width: number;
-	height: number;
-	pixelRatio: number;
+	name: string;        // Name of the icon.
+	svg: string;         // SVG data for the icon.
+	x: number;           // X-coordinate in the sprite sheet.
+	y: number;           // Y-coordinate in the sprite sheet.
+	padding: number;     // Padding around the icon.
+	width: number;       // Width of the icon (including padding).
+	height: number;      // Height of the icon (including padding).
+	pixelRatio: number;  // Scale ratio applied to the icon.
+	useSDF: boolean;     // Flag indicating if the icon uses SDF rendering.
 }
 
 /**
@@ -328,10 +269,109 @@ export function optipng(bufferIn: Buffer): Buffer {
 
 	if (result.status === 1) {
 		console.log(result.stderr.toString());
-		throw Error();
+		throw Error('optipng optimization failed.');
 	}
 
 	const bufferOut = readFileSync(filename);
 	rmSync(filename);
 	return bufferOut;
+}
+
+/**
+ * Calculates the Signed Distance Field (SDF) for the sprite based on alpha values.
+ * @param buffer - Image buffer with alpha values.
+ * @param width - Width of the sprite.
+ * @param height - Height of the sprite.
+ * @returns A Float64Array containing SDF values for each pixel.
+ */
+function calcSDFFromAlpha(buffer: Buffer, width: number, height: number): Float64Array {
+	const INFINITY = 1e30;
+	// https://cs.brown.edu/people/pfelzens/dt/index.html
+	// Felzenszwalb Huttenlocher algorithm
+
+	const length = width * height;
+	const dInn = new Float64Array(length);
+	const dOut = new Float64Array(length);
+	dInn.fill(INFINITY);
+	dOut.fill(INFINITY);
+
+	for (let i = 0; i < length; i++) {
+		const alpha = buffer[i * 4 + 3] / 255;
+		if (alpha < 0.5) {
+			dInn[i] = alpha ** 2;
+		} else {
+			dOut[i] = (1 - alpha) ** 2;
+		}
+	}
+
+	euclideanDistance2D(dOut);
+	euclideanDistance2D(dInn);
+
+	for (let i = 0; i < length; i++) {
+		dOut[i] = dOut[i] < dInn[i] ? -Math.sqrt(dInn[i]) : Math.sqrt(dOut[i]);
+	}
+	return dOut;
+
+	/**
+	 * Helper function to compute 2D Euclidean distance.
+	 */
+	function euclideanDistance2D(data: Float64Array): void {
+		const maxSize = Math.max(width, height);
+		const v = new Array(maxSize);
+		const z = new Float64Array(maxSize + 1);
+		const f = new Float64Array(maxSize);
+
+		for (let x = 0; x < width; x++) euclideanDistance1D(x, width, height);
+		for (let y = 0; y < height; y++) euclideanDistance1D(y * width, 1, width);
+
+		function euclideanDistance1D(offset: number, stepSize: number, max: number): void {
+			for (let i = 0; i < max; i++) f[i] = data[offset + i * stepSize];
+
+			let k = 0;
+			let s: number;
+			v[0] = 0;
+			z[0] = -INFINITY;
+			z[1] = INFINITY;
+
+			for (let i = 1; i < max; i++) {
+				do {
+					const r = v[k];
+					s = (f[i] - f[r] + i ** 2 - r ** 2) / (2 * (i - r));
+				} while (s <= z[k] && --k >= 0);
+
+				k++;
+				v[k] = i;
+				z[k] = s;
+				z[k + 1] = INFINITY;
+			}
+
+			k = 0;
+			for (let i = 0; i < max; i++) {
+				while (z[k + 1] < i) k++;
+				data[offset + i * stepSize] = f[v[k]] + (i - v[k]) ** 2;
+			}
+		}
+	}
+}
+
+/**
+ * Helper generator to iterate over all pixels in a given sprite entry.
+ * @param entry - The sprite entry.
+ * @param imageWidth - The width of the full image.
+ * @returns A generator yielding pixel indices for the entry's pixels.
+ */
+function* iteratePixels(
+	entry: { x: number, y: number, width: number, height: number },
+	imageWidth: number,
+): Generator<number> {
+	const x0 = entry.x;
+	const y0 = entry.y;
+	const x1 = entry.x + entry.width;
+	const y1 = entry.y + entry.height;
+
+	for (let y = y0; y < y1; y++) {
+		for (let x = x0; x < x1; x++) {
+			yield y * imageWidth + x;
+		}
+	}
 }

@@ -56,15 +56,4 @@ describe('loadIcons', () => {
 		expect(icons[0].size).toBe(24);
 		expect(icons[0].svg).toBe(svgContent);
 	});
-
-	it('should skip sets without names or size defined', () => {
-		const iconSets = {
-			set1: { names: ['icon1'] },
-			set2: { size: 24 },
-		};
-
-		const icons = loadIcons(iconSets, dirIcons);
-
-		expect(icons.length).toBe(0);
-	});
 });

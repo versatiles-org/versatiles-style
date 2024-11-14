@@ -23,14 +23,12 @@ console.log('build sprite');
 const maxScale = 12;
 const sprite = await Sprite.fromIcons(icons, maxScale, 5);
 
-console.log('calc sdf');
-sprite.calcSDF();
-
-for (const [suffix, scale] of Object.entries(config.ratio)) {
+for (const scale of config.ratios) {
+	const suffix = scale === 1 ? '' : `@${scale}x`;
 	console.log('scale sprite ' + scale);
-	const spriteSdf = sprite.getScaledSprite(maxScale / scale);
-	spriteSdf.renderSDF();
-	await spriteSdf.saveToTar(`sprites${suffix}`, pack);
+	const spriteLevel = sprite.getScaledSprite(maxScale / scale);
+	spriteLevel.renderSDF();
+	await spriteLevel.saveToTar(`sprites${suffix}`, pack);
 }
 
 pack.finalize();

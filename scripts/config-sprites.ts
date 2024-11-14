@@ -1,7 +1,7 @@
+import { SpriteConfig } from './lib/sprites.ts';
 
-
-export default {
-	ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4, },
+const config: SpriteConfig = {
+	ratios: [1, 2, 3, 4],
 	sets: {
 		icons: {
 			size: 22,
@@ -116,14 +116,13 @@ export default {
 		},
 		marking: { size: 15, names: ['arrow'], },
 		pattern: {
-			size: 12, names: ['hatched_thin', 'striped', 'warning',],
-		},
-		shield: {
-		},
-		symbol: {
+			useSDF: false,
+			size: 16, names: ['hatched_thin', 'striped', 'warning',],
 		},
 		transport: {
 			size: 22, names: ['tram', 'information',],
 		},
 	},
 };
+
+export default config;

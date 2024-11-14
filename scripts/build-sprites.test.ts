@@ -1,7 +1,3 @@
- 
- 
- 
-
 import { jest } from '@jest/globals';
 import type { Pack } from 'tar-stream';
 
@@ -45,10 +41,10 @@ async function getMockedTar(): Promise<typeof import('tar-stream')> {
 
 jest.unstable_mockModule('./config-sprites', () => ({
 	default: {
-		ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4 },
+		ratios: [1, 2, 3, 4],
 		sets: {
 			icons: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
-			pattern: { size: 12, names: ['hatched_thin', 'striped', 'warning'] },
+			pattern: { size: 12, useSDF: true, names: ['hatched_thin', 'striped', 'warning'] },
 		},
 	},
 }));
