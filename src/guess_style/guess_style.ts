@@ -134,7 +134,6 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 
 function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: string }): MaplibreStyle {
 	return colorful({
-		hideLabels: true,
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,
 		glyphs: builderOption.glyphs,
