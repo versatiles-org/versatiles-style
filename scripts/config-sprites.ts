@@ -8,7 +8,7 @@ export default {
 		'@4x': 4,
 	},
 	sets: {
-		icon: {
+		icons: {
 			size: 22,
 			names: [
 				'airfield',
