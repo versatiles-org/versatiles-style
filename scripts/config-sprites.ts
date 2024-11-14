@@ -1,12 +1,7 @@
- 
+
 
 export default {
-	ratio: {
-		'': 1,
-		'@2x': 2,
-		'@3x': 3,
-		'@4x': 4,
-	},
+	ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4, },
 	sets: {
 		icons: {
 			size: 22,
@@ -119,28 +114,16 @@ export default {
 				'zoo',
 			],
 		},
-		marking: {
-			size: 15,
-			names: ['arrow'],
-		},
+		marking: { size: 15, names: ['arrow'], },
 		pattern: {
-			size: 12,
-			names: [
-				'hatched_thin',
-				'striped',
-				'warning',
-			],
+			size: 12, names: ['hatched_thin', 'striped', 'warning',],
 		},
 		shield: {
 		},
 		symbol: {
 		},
 		transport: {
-			size: 22,
-			names: [
-				'tram',
-				'information',
-			],
+			size: 22, names: ['tram', 'information',],
 		},
 	},
 };
