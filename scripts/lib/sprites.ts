@@ -7,20 +7,24 @@ import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 
+/**
+ * Represents a sprite sheet that holds multiple icons arranged together.
+ */
 export class Sprite {
-	private readonly entries: SpriteEntry[];
+	private readonly entries: SpriteEntry[]; // List of entries for each icon in the sprite.
+	private readonly width: number;         // Width of the sprite sheet.
+	private readonly height: number;        // Height of the sprite sheet.
+	private readonly buffer: Buffer;        // Buffer storing raw image data for the sprite sheet.
+	private bufferPng?: Buffer;             // PNG representation of the sprite sheet.
+	private distance?: Float64Array;        // Distance field values for SDF (Signed Distance Field) rendering.
 
-	private readonly width: number;
-
-	private readonly height: number;
-
-	private readonly buffer: Buffer;
-
-	private bufferPng?: Buffer;
-
-	private distance?: Float64Array;
-
-	 
+	/**
+	 * Private constructor to initialize a sprite instance.
+	 * @param entries - Array of sprite entries.
+	 * @param width - Width of the sprite sheet.
+	 * @param height - Height of the sprite sheet.
+	 * @param buffer - Raw image buffer for the sprite sheet.
+	 */
 	private constructor(entries: SpriteEntry[], width: number, height: number, buffer: Buffer) {
 		if (width % 1 !== 0) throw Error();
 		if (height % 1 !== 0) throw Error();
@@ -30,19 +34,24 @@ export class Sprite {
 		this.buffer = buffer;
 	}
 
+	/**
+	 * Factory method to create a Sprite from a list of icons.
+	 * @param icons - Array of Icon objects.
+	 * @param scale - Scale factor for the icon size.
+	 * @param padding - Padding around each icon in the sprite.
+	 * @returns A promise resolving to a new Sprite instance.
+	 */
 	public static async fromIcons(icons: Icon[], scale: number, padding: number): Promise<Sprite> {
+		// Generate sprite entries by parsing the width and height of each SVG icon.
 		const spriteEntries = icons.map(icon => {
 			const wResult = /<svg[^>]+width="([^"]+)"/.exec(icon.svg);
 			const hResult = /<svg[^>]+height="([^"]+)"/.exec(icon.svg);
-			if (!wResult) throw Error();
-			if (!hResult) throw Error();
+			if (!wResult || !hResult) throw Error();
+
 			const w0 = parseFloat(wResult[1]);
 			const h0 = parseFloat(hResult[1]);
-
-			if (!w0 || !h0) throw Error();
-
-			const height: number = Math.round(icon.size) * scale;
-			const width: number = Math.round(icon.size * w0 / h0) * scale;
+			const height = Math.round(icon.size) * scale;
+			const width = Math.round(icon.size * w0 / h0) * scale;
 
 			const svg = icon.svg
 				.replace(/(<svg[^>]*width=")([^"]+)/, (all, before: string) => before + width)
@@ -60,8 +69,10 @@ export class Sprite {
 			};
 		});
 
+		// Calculate dimensions for the sprite using bin packing.
 		const dimensions = binPack(spriteEntries, { inPlace: true });
 
+		// Render the sprite image using sharp.
 		const buffer = await sharp({
 			create: {
 				width: dimensions.width,
@@ -85,16 +96,29 @@ export class Sprite {
 		);
 	}
 
+	/**
+	 * Save the sprite to disk as a PNG and JSON file.
+	 * @param basename - Base name for the files.
+	 * @param folder - Folder path where files will be saved.
+	 */
 	public async saveToDisk(basename: string, folder: string): Promise<void> {
 		writeFileSync(resolve(folder, basename + '.png'), await this.getPng());
 		writeFileSync(resolve(folder, basename + '.json'), await this.getJSON());
 	}
 
+	/**
+	 * Save the sprite to a tar archive.
+	 * @param basename - Base name for the files in the tar archive.
+	 * @param tarPack - TarPack instance for archiving.
+	 */
 	public async saveToTar(basename: string, tarPack: TarPack): Promise<void> {
 		tarPack.entry({ name: basename + '.png' }, await this.getPng());
 		tarPack.entry({ name: basename + '.json' }, await this.getJSON());
 	}
 
+	/**
+	 * Calculate the Signed Distance Field (SDF) for the sprite.
+	 */
 	public calcSDF(): void {
 		const INFINITY = 1e30;
 		// https://cs.brown.edu/people/pfelzens/dt/index.html
@@ -136,21 +160,17 @@ export class Sprite {
 			for (let y = 0; y < height; y++) euclideanDistance1D(y * width, 1, width);
 
 			function euclideanDistance1D(offset: number, stepSize: number, max: number): void {
-
 				for (let i = 0; i < max; i++) f[i] = data[offset + i * stepSize];
 
 				let k = 0;
 				let s: number;
-
 				v[0] = 0;
 				z[0] = -INFINITY;
 				z[1] = INFINITY;
 
 				for (let i = 1; i < max; i++) {
 					do {
-						 
 						const r = v[k];
-						 
 						s = (f[i] - f[r] + i ** 2 - r ** 2) / (i - r) / 2;
 					} while (s <= z[k] && --k >= 0);
 
@@ -163,17 +183,15 @@ export class Sprite {
 				k = 0;
 				for (let i = 0; i < max; i++) {
 					while (z[k + 1] < i) k++;
-					 
-					const r = v[k];
-					 
-					data[offset + i * stepSize] = f[r] + (i - r) ** 2;
+					data[offset + i * stepSize] = f[v[k]] + (i - v[k]) ** 2;
 				}
 			}
-
-
 		}
 	}
 
+	/**
+	 * Renders the sprite's distance field into the sprite's buffer.
+	 */
 	public renderSDF(): void {
 		if (!this.distance) throw Error();
 
@@ -189,6 +207,11 @@ export class Sprite {
 		}
 	}
 
+	/**
+	 * Gets a scaled version of the sprite.
+	 * @param scale - Scaling factor.
+	 * @returns New scaled Sprite instance.
+	 */
 	public getScaledSprite(scale: number): Sprite {
 		if (scale % 1 !== 0) throw Error();
 		if (!this.distance) throw Error();
@@ -241,10 +264,13 @@ export class Sprite {
 		})), width, height, buffer);
 
 		sprite.distance = distance;
-
 		return sprite;
 	}
 
+	/**
+	 * Generates a PNG from the sprite buffer.
+	 * @returns A promise resolving to the PNG buffer.
+	 */
 	private async getPng(): Promise<Buffer> {
 		if (this.bufferPng) return this.bufferPng;
 
@@ -253,11 +279,13 @@ export class Sprite {
 			.toBuffer();
 
 		this.bufferPng = optipng(pngBuffer);
-
 		return this.bufferPng;
 	}
 
-	 
+	/**
+	 * Generates JSON metadata for the sprite entries.
+	 * @returns A promise resolving to the JSON buffer.
+	 */
 	private async getJSON(): Promise<Buffer> {
 		let json = this.entries.map(e => '  "' + e.name + '": ' + JSON.stringify({
 			width: e.width,
@@ -272,6 +300,9 @@ export class Sprite {
 	}
 }
 
+/**
+ * Interface defining the structure of a sprite entry.
+ */
 interface SpriteEntry {
 	name: string;
 	svg: string;
@@ -283,12 +314,16 @@ interface SpriteEntry {
 	pixelRatio: number;
 }
 
+/**
+ * Optimizes a PNG buffer using the optipng command-line tool.
+ * @param bufferIn - Input PNG buffer.
+ * @returns Optimized PNG buffer.
+ */
 export function optipng(bufferIn: Buffer): Buffer {
 	const randomString = Math.random().toString(36).replace(/[^a-z0-9]/g, '');
 	const filename = resolve(tmpdir(), randomString + '.png');
 
 	writeFileSync(filename, bufferIn);
-
 	const result = spawnSync('optipng', [filename]);
 
 	if (result.status === 1) {
@@ -300,4 +335,3 @@ export function optipng(bufferIn: Buffer): Buffer {
 	rmSync(filename);
 	return bufferOut;
 }
-
