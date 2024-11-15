@@ -5,6 +5,9 @@
 
 # VersaTiles Style
 
+> [!WARNING]  
+> We are currently migrating to the [VersaTiles Frontend Specification](https://github.com/versatiles-org/versatiles-documentation/blob/main/compendium/specification_frontend.md). While this is good for the long term, it does mean that there will be breaking changes in the short term. You can find the [old v4.4.1 release here](https://github.com/versatiles-org/versatiles-style/releases/tag/v4.4.1).
+
 Generates styles and sprites for MapLibre.
 
 ![Example: Colorful Style](docs/colorful.png)
