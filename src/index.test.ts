@@ -1,4 +1,4 @@
- 
+
 import type { VectorLayer } from './index.js';
 import { guessStyle, styles } from './index.js';
 
@@ -19,7 +19,7 @@ describe('styles', () => {
 
 			expect(style.name).toBe('versatiles-' + name);
 			expect(style.glyphs).toBe('https://example.org/assets/fonts/{fontstack}/{range}.pbf');
-			expect(style.sprite).toBe('https://example.org/assets/sprites/sprites');
+			expect(style.sprite).toStrictEqual([{ id: 'basics', url: 'https://example.org/assets/sprites/basics/sprites' }]);
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');
 
 			expect(style.sources['versatiles-shortbread'].tiles).toEqual(['https://example.org/tiles/osm/{z}/{x}/{y}']);

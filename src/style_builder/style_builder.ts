@@ -2,10 +2,11 @@ import Color from 'color';
 import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
-import { deepClone, resolveUrl } from '../lib/utils.js';
+import { basename, deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre.js';
 import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
+import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 
@@ -23,11 +24,11 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		options ??= {};
 
-		 
+
 		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.href ?? 'https://tiles.versatiles.org';
 		const glyphs = options.glyphs ?? '/assets/fonts/{fontstack}/{range}.pbf';
 
-		const sprite = options.sprite ?? '/assets/sprites/sprites';
+		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
 		const hideLabels = options.hideLabels ?? false;
 		const { language } = options;
@@ -83,7 +84,12 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		style.layers = layers;
 		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(baseUrl, glyphs);
-		style.sprite = resolveUrl(baseUrl, sprite);
+
+		if (typeof sprite == 'string') {
+			style.sprite = [{ id: basename(sprite), url: resolveUrl(baseUrl, sprite) }];
+		} else {
+			style.sprite = sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));
+		}
 
 		const source = style.sources[this.#sourceName];
 		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));

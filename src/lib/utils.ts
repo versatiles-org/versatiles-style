@@ -124,3 +124,9 @@ export function resolveUrl(base: string, url: string): string {
 	url = url.replace(/%7D/gi, '}');
 	return url;
 }
+
+export function basename(url: string): string {
+	if (!url) return url;
+	url = url.replace(/\/+$/, '');
+	return url.split('/').pop() ?? '';
+}

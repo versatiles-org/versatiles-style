@@ -23,8 +23,7 @@ const INDEX = `<!DOCTYPE html>
 <body>
 	<div id="map"></div>
 	<script>
-		const style = VersaTilesStyle.colorful({
-		});
+		const style = VersaTilesStyle.colorful({});
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>
@@ -36,6 +35,7 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string }[] = 
 	{ reg: /^\/(index\.html?)?$/, type: 'mem', res: INDEX },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../release/sprites/' },
 	{ reg: /^\/assets\/lib\/versatiles-style\//, type: 'local', res: '../release/versatiles-style/' },
+	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/maplibre-gl/' },
 	{ reg: /^\//, type: 'proxy', res: 'https://tiles.versatiles.org/' },
 ];
 
