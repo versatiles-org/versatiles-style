@@ -1,4 +1,4 @@
- 
+
 
 import type { MaplibreStyle } from '../types/index.js';
 import { getShortbreadTemplate } from './template.js';
@@ -21,8 +21,8 @@ describe('getShortbreadTemplate', () => {
 	});
 
 	it('specifies glyphs and sprite URLs correctly', () => {
-		expect(styleTemplate).toHaveProperty('glyphs', 'https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf');
-		expect(styleTemplate).toHaveProperty('sprite', 'https://tiles.versatiles.org/sprites/sprites');
+		expect(styleTemplate).toHaveProperty('glyphs', 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf');
+		expect(styleTemplate).toHaveProperty('sprite', [{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }]);
 	});
 
 	it('defines sources with required properties', () => {

@@ -92,7 +92,7 @@ describe('StyleBuilder', () => {
 
 		it('should resolve urls correctly', () => {
 			const style: MaplibreStyle = builder.build({ baseUrl: 'https://my.base.url/' });
-			expect(style.glyphs).toBe('https://my.base.url/assets/fonts/{fontstack}/{range}.pbf');
+			expect(style.glyphs).toBe('https://my.base.url/assets/glyphs/{fontstack}/{range}.pbf');
 			expect(style.sprite).toStrictEqual([{id: 'basics', url: 'https://my.base.url/assets/sprites/basics/sprites'}]);
 
 			const source = style.sources['versatiles-shortbread'];

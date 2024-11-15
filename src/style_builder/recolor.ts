@@ -1,29 +1,28 @@
 import Color from 'color';
 
 export interface RecolorOptions {
-
-	/** If true, inverts the colors. */
+	// If true, inverts all colors.
 	invertBrightness?: boolean;
 
-	/** The degree to rotate the hue of the color (in degrees). */
+	// Rotate the hue of all colors (in degrees).
 	rotate?: number;
 
-	/** Adjusts the saturation level of the color. Positive values increase saturation, negative values decrease it. */
+	// Adjusts the saturation level of all colors. Positive values increase saturation, negative values decrease it.
 	saturate?: number;
 
-	/** Adjusts the gamma of the color. Affects the brightness in a non-linear manner. */
+	// Adjusts the gamma of all colors. Affects the brightness in a non-linear manner.
 	gamma?: number;
 
-	/** Adjusts the contrast of the color. Higher values produce more contrast. */
+	// Adjusts the contrast of all colors. Higher values produce more contrast.
 	contrast?: number;
 
-	/** Adjusts the brightness of the color. Positive values make it brighter, negative values make it darker. */
+	// Adjusts the brightness of all colors. Positive values make it brighter, negative values make it darker.
 	brightness?: number;
 
-	/** Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect). */
+	// Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect).
 	tint?: number;
 
-	/** Specifies the color used for tinting, in a string format (e.g., '#FF0000'). */
+	// Specifies the color used for tinting, in a string format (e.g., '#FF0000').
 	tintColor?: string;
 }
 

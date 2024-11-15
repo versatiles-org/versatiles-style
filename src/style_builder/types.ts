@@ -5,35 +5,41 @@ import type { RecolorOptions } from './recolor.js';
 
 
 /** Represents language suffixes used in map styles. */
-export type Language = 'de' | 'en' | undefined;
+export type Language = 'de' | 'en' | null;
 
 export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
-
-	/** The base URL for loading external resources like tiles, sprites, and fonts. */
+	// The base URL for loading external resources like tiles, sprites, and fonts.
+	// Default: document.location.origin (in the browser), or 'https://tiles.versatiles.org'
 	baseUrl?: string;
 
-	/** The URL template for loading font glyphs, formatted with `{fontstack}` and `{range}` placeholders. */
+	// The URL template for loading font glyphs, formatted with '{fontstack}' and '{range}' placeholders.
+	// Default: '/assets/glyphs/{fontstack}/{range}.pbf'
 	glyphs?: string;
 
-	/** The URL for loading sprite images and metadata. */
-	sprite?: string;
+	// The URL for loading sprite images and metadata.
+	// Default: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]
+	sprite?: string | { id: string; url: string }[];
 
-	/** An array of URL templates for loading map tiles, with `{z}`, `{x}`, and `{y}` placeholders. */
+	// An array of URL templates for loading map tiles, using '{z}', '{x}', and '{y}' placeholders.
+	// Default: ['/tiles/osm/{z}/{x}/{y}']
 	tiles?: string[];
 
-	/** If true, hides all map labels. */
+	// If set to true, hides all map labels.
+	// Default: false
 	hideLabels?: boolean;
 
-	/** Suffix to append to language-specific resources, such as `"-en"` for English. */
+	// Set the language ('en', 'de') of all map labels.
+	// A null value means that the language of the country in which the label is drawn will be used.
+	// Default: null
 	language?: Language;
 
-	/** An object specifying overrides for default color values, keyed by the color names. */
+	// An object specifying overrides for default color values, keyed by the color names.
 	colors?: Partial<StyleBuilderColorStrings<T>>;
 
-	/** An object specifying overrides for default font names, keyed by the font names. */
+	// An object specifying overrides for default font names, keyed by the font names.
 	fonts?: Partial<StyleBuilderFontStrings<T>>;
 
-	/** Options for color adjustments and transformations applied to the entire style. */
+	// Options for color adjustments and transformations applied to the entire style.
 	recolor?: RecolorOptions;
 }
 

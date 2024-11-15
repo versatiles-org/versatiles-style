@@ -72,7 +72,7 @@ describe('guessStyle', () => {
 		style.layers = [];
 
 		expect(style).toStrictEqual({
-			glyphs: 'http://example.com/assets/fonts/{fontstack}/{range}.pbf',
+			glyphs: 'http://example.com/assets/glyphs/{fontstack}/{range}.pbf',
 			metadata: {
 				license: 'https://creativecommons.org/publicdomain/zero/1.0/',
 				'maputnik:renderer': 'mbgljs',

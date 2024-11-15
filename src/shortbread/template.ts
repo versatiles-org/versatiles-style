@@ -1,4 +1,4 @@
- 
+
 
 import type { MaplibreStyleVector } from '../types/index.js';
 
@@ -12,8 +12,8 @@ export function getShortbreadTemplate(): MaplibreStyleVector {
 			'maputnik:renderer': 'mbgljs',
 			license: 'https://creativecommons.org/publicdomain/zero/1.0/',
 		},
-		glyphs: 'https://tiles.versatiles.org/fonts/{fontstack}/{range}.pbf',
-		sprite: 'https://tiles.versatiles.org/sprites/sprites',
+		glyphs: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
+		sprite: [{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }],
 		sources: {
 			'versatiles-shortbread': {
 				tilejson: '3.0.0',

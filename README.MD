@@ -13,6 +13,7 @@ Generates styles and sprites for MapLibre.
 
 * Colorful - colorful, full featured map
 * Graybeard - gray, full featured map
+* Eclipse - dark, full featured map
 * Neutrino - light basemap
 
 # Use styles for versatiles.org
@@ -23,12 +24,14 @@ Be aware that these styles use `tiles.versatiles.org` as source for tiles, fonts
 - [`sprites.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz) containing sprites, used e.g. for map icons
 - [`versatiles-style.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz) containing a JavaScript file to generate your own style in the browser.
 
-# Create styles in the frontend (web browser)
+# Generating styles on-the-fly
+
+## Generating styles in the frontend (web browser)
 
 Download latest release:
 
 ```bash
-wget "https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz"
+curl -Ls "https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz" | gzip -d | tar -xf -
 ```
 
 Use it in:
@@ -38,11 +41,7 @@ Use it in:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-   const style = VersaTilesStyle.styles.graybeard({
-      tiles: ['/tiles/osm/{z}/{x}/{y}'],
-      sprite: '/assets/styles/swr-bright/sprite',
-      glyphs: '/assets/fonts/{fontstack}/{range}.pbf',
-      baseUrl: 'https://example.org/',
+   const style = VersaTilesStyle.graybeard({
       language: 'de',
       colors: { label: '#222' },
       recolor: { gamma: 0.5 }
@@ -55,7 +54,7 @@ Use it in:
 </script>
 ```
 
-# Create styles in the backend (Node.js)
+## Generating styles in the backend (Node.js)
 
 Install `@versatiles/style` via NPM:
 
@@ -66,111 +65,101 @@ npm install @versatiles/style
 Use it in Node.js:
 
 ```javascript
-import { styles } from '@versatiles/style';
-let style = styles.colorful({
+import { colorful } from '@versatiles/style';
+let style = colorful({
   language: 'en',
 });
 writeFileSync('style.json', JSON.stringify(style));
 ```
 
-# API
+### Methods for generating styles
 
-<!--- This chapter is generated automatically --->
+This library provides:
+- `style = colorful(options);`
+- `style = eclipse(options);`
+- `style = graybeard(options);`
+- `style = neutrino(options);`
 
-## Interfaces
+Where `options` is an optional object:
 
-### Interface: `TileJSONSpecificationRaster`<a id="interface_tilejsonspecificationraster"></a>
+```javascript
+const options: StyleBuilderOptions<Colorful> = {
+	// The base URL for loading external resources like tiles, sprites, and fonts.
+	// Default: document.location.origin (in the browser), or 'https://tiles.versatiles.org'
+	baseUrl?: string;
 
-```typescript
-interface {
-  attribution?: string;
-  bounds?: [number, number, number, number];
-  center?: [number, number];
-  description?: string;
-  fillzoom?: number;
-  format: "avif" | "jpg" | "png" | "webp";
-  grids?: string[];
-  legend?: string;
-  maxzoom?: number;
-  minzoom?: number;
-  name?: string;
-  scheme?: "xyz" | "tms";
-  template?: string;
-  tilejson?: "3.0.0";
-  tiles: string[];
-  type: "raster";
+	// The URL template for loading font glyphs, formatted with '{fontstack}' and '{range}' placeholders.
+	// Default: '/assets/glyphs/{fontstack}/{range}.pbf'
+	glyphs?: string;
+
+	// The URL for loading sprite images and metadata.
+	// Default: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]
+	sprite?: string | { id: string; url: string }[];
+
+	// An array of URL templates for loading map tiles, using '{z}', '{x}', and '{y}' placeholders.
+	// Default: ['/tiles/osm/{z}/{x}/{y}']
+	tiles?: string[];
+
+	// If set to true, hides all map labels.
+	// Default: false
+	hideLabels?: boolean;
+
+	// Set the language ('en', 'de') of all map labels.
+	// A null value means that the language of the country in which the label is drawn will be used.
+	// Default: null
+	language?: Language;
+
+	// An object specifying overrides for default color values, keyed by the color names.
+	colors?: Partial<StyleBuilderColorStrings<T>>;
+
+	// An object specifying overrides for default font names, keyed by the font names.
+	fonts?: Partial<StyleBuilderFontStrings<T>>;
+
+	// Options for color adjustments and transformations applied to the entire style.
+	recolor?: RecolorOptions;
+}
+
+export interface RecolorOptions {
+	// If true, inverts all colors.
+	invertBrightness?: boolean;
+
+	// Rotate the hue of all colors (in degrees).
+	rotate?: number;
+
+	// Adjusts the saturation level of all colors. Positive values increase saturation, negative values decrease it.
+	saturate?: number;
+
+	// Adjusts the gamma of all colors. Affects the brightness in a non-linear manner.
+	gamma?: number;
+
+	// Adjusts the contrast of all colors. Higher values produce more contrast.
+	contrast?: number;
+
+	// Adjusts the brightness of all colors. Positive values make it brighter, negative values make it darker.
+	brightness?: number;
+
+	// Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect).
+	tint?: number;
+
+	// Specifies the color used for tinting, in a string format (e.g., '#FF0000').
+	tintColor?: string;
 }
 ```
 
-### Interface: `TileJSONSpecificationVector`<a id="interface_tilejsonspecificationvector"></a>
+### Method: `guessStyle(options)`
 
-```typescript
-interface {
-  attribution?: string;
-  bounds?: [number, number, number, number];
-  center?: [number, number];
-  description?: string;
-  fillzoom?: number;
-  format: "pbf";
-  grids?: string[];
-  legend?: string;
-  maxzoom?: number;
-  minzoom?: number;
-  name?: string;
-  scheme?: "xyz" | "tms";
-  template?: string;
-  tilejson?: "3.0.0";
-  tiles: string[];
-  type: "vector";
-  vector_layers: VectorLayer[];
-}
+```javascript
+const style = guessStyle(options);
 ```
 
-## Type Aliases
 
-### Type: `TileJSONSpecification`<a id="type_tilejsonspecification"></a>
-
-**Type:** <code>[TileJSONSpecificationRaster](#interface_tilejsonspecificationraster) | [TileJSONSpecificationVector](#interface_tilejsonspecificationvector)</code>
-
-## Functions
-
-### Method: `colorful(options)`
-
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L4">\[src]</a></sup>
-
-**Parameters:**
-
-* <code>options: StylemakerOptions<default></code> (optional)
-
-**Returns:** <code>MaplibreStyle</code>
-
-### Method: `graybeard(options)`
-
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L9">\[src]</a></sup>
-
-**Parameters:**
-
-* <code>options: StylemakerOptions<default></code> (optional)
-
-**Returns:** <code>MaplibreStyle</code>
-
-### Method: `guessStyle(opt)`
+GuessStyleOptions
 
 <sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/lib/style_guesser.ts#L13">\[src]</a></sup>
 
 **Parameters:**
 
 * <code>opt: TileJSONOption</code>
-
-**Returns:** <code>MaplibreStyle</code>
-
-### Method: `neutrino(options)`
-
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/index.ts#L14">\[src]</a></sup>
-
-**Parameters:**
-
-* <code>options: StylemakerOptions<default></code> (optional)
 
 **Returns:** <code>MaplibreStyle</code>
 
@@ -186,9 +175,7 @@ Please note that for building new sprites you need `optipng`.
 
 ## Configuration
 
-Iconsets can be defined in [`scripts/config-sprites.ts`](./scripts/config-sprites.ts);
-* `colors` are applied to each path in the order they appear in the source SVG.
-* `size` applies to the height
+Iconsets can be defined in [`scripts/config-sprites.ts`](./scripts/config-sprites.ts)
 
 # Licenses
 

@@ -1,7 +1,3 @@
- 
- 
- 
-
 import { jest } from '@jest/globals';
 import type { Pack } from 'tar-stream';
 
@@ -73,7 +69,6 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}.de.json`,
 			`${style}.nolabel.json`,
 		]);
-		expectedFiles.push('empty.json');
 		expectedFiles.sort();
 
 		expect(generatedFiles).toStrictEqual(expectedFiles);

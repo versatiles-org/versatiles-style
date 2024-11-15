@@ -25,13 +25,13 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		options ??= {};
 
 
-		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.href ?? 'https://tiles.versatiles.org';
-		const glyphs = options.glyphs ?? '/assets/fonts/{fontstack}/{range}.pbf';
+		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
+		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
 
 		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
 		const hideLabels = options.hideLabels ?? false;
-		const { language } = options;
+		const language = options.language ?? null;
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
 
 		const colors = this.getColors(this.defaultColors);

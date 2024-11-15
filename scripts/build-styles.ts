@@ -2,7 +2,7 @@
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { MaplibreStyle } from '../src/index.js';
-import { styles } from '../src/index.js';
+import { colorful, eclipse, graybeard, neutrino } from '../src/index.js';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
@@ -16,13 +16,17 @@ mkdirSync(dirDst, { recursive: true });
 
 const pack = tar.pack();
 
-// load styles
-Object.entries(styles).forEach(([name, build]) => {
-	produce(name, build({ language: undefined }));
+[
+	{ name: 'colorful', builder: colorful },
+	{ name: 'eclipse', builder: eclipse },
+	{ name: 'graybeard', builder: graybeard },
+	{ name: 'neutrino', builder: neutrino },
+].forEach(({ name, builder }) => {
+	produce(name, builder({ language: undefined }));
 	if (name === 'empty') return;
-	produce(name + '.en', build({ language: 'en' }));
-	produce(name + '.de', build({ language: 'de' }));
-	produce(name + '.nolabel', build({ hideLabels: true }));
+	produce(name + '.en', builder({ language: 'en' }));
+	produce(name + '.de', builder({ language: 'de' }));
+	produce(name + '.nolabel', builder({ hideLabels: true }));
 });
 
 pack.finalize();

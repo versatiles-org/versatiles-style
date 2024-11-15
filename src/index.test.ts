@@ -1,14 +1,14 @@
 
 import type { VectorLayer } from './index.js';
-import { guessStyle, styles } from './index.js';
+import { guessStyle, colorful, eclipse, graybeard, neutrino } from './index.js';
 
 describe('styles', () => {
-	it('should be all styles', () => {
-		expect(Array.from(Object.keys(styles)).sort())
-			.toStrictEqual(['colorful', 'eclipse', 'empty', 'graybeard', 'neutrino']);
-	});
-
-	Object.entries(styles).forEach(([name, builder]) => {
+	[
+		{ name: 'colorful', builder: colorful },
+		{ name: 'eclipse', builder: eclipse },
+		{ name: 'graybeard', builder: graybeard },
+		{ name: 'neutrino', builder: neutrino },
+	].forEach(({ name, builder }) => {
 		it(`should create and test an instance of ${name}`, () => {
 			expect(typeof builder).toBe('function');
 
@@ -18,7 +18,7 @@ describe('styles', () => {
 			expect(JSON.stringify(style).length).toBeGreaterThan(minSize);
 
 			expect(style.name).toBe('versatiles-' + name);
-			expect(style.glyphs).toBe('https://example.org/assets/fonts/{fontstack}/{range}.pbf');
+			expect(style.glyphs).toBe('https://example.org/assets/glyphs/{fontstack}/{range}.pbf');
 			expect(style.sprite).toStrictEqual([{ id: 'basics', url: 'https://example.org/assets/sprites/basics/sprites' }]);
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');
 
@@ -28,11 +28,11 @@ describe('styles', () => {
 });
 
 describe('Colorful', () => {
-	const style = styles.colorful({
+	const style = colorful({
 		baseUrl: 'https://dev.null',
 		colors: { commercial: '#f00' },
 	});
-	expect(style.glyphs).toBe('https://dev.null/assets/fonts/{fontstack}/{range}.pbf');
+	expect(style.glyphs).toBe('https://dev.null/assets/glyphs/{fontstack}/{range}.pbf');
 	const paint = style.layers.find(l => l.id === 'land-commercial')?.paint;
 
 	expect(paint).toBeDefined();
