@@ -18,10 +18,10 @@ const pack = tar.pack();
 
 // load styles
 Object.entries(styles).forEach(([name, build]) => {
-	produce(name, build({ languageSuffix: undefined }));
+	produce(name, build({ language: undefined }));
 	if (name === 'empty') return;
-	produce(name + '.en', build({ languageSuffix: 'en' }));
-	produce(name + '.de', build({ languageSuffix: 'de' }));
+	produce(name + '.en', build({ language: 'en' }));
+	produce(name + '.de', build({ language: 'de' }));
 	produce(name + '.nolabel', build({ hideLabels: true }));
 });
 

@@ -43,7 +43,7 @@ Use it in:
       sprite: '/assets/styles/swr-bright/sprite',
       glyphs: '/assets/fonts/{fontstack}/{range}.pbf',
       baseUrl: 'https://example.org/',
-      languageSuffix: 'de',
+      language: 'de',
       colors: { label: '#222' },
       recolor: { gamma: 0.5 }
    });
@@ -68,7 +68,7 @@ Use it in Node.js:
 ```javascript
 import { styles } from '@versatiles/style';
 let style = styles.colorful({
-  languageSuffix: 'en',
+  language: 'en',
 });
 writeFileSync('style.json', JSON.stringify(style));
 ```
