@@ -96,6 +96,9 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 				color: colors.land,
 				opacity: { 12: 0, 13: 1 },
 			},
+			'water-pier': {
+				color: colors.land,
+			},
 			'land-*': {
 				color: colors.land,
 			},

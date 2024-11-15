@@ -195,6 +195,9 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				color: colors.land,
 				opacity: { 12: 0, 13: 1 },
 			},
+			'water-pier': {
+				color: colors.land,
+			},
 			'water-river': {
 				lineWidth: { 9: 0, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
 			},
