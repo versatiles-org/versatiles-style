@@ -36,7 +36,7 @@ export function deepClone<T>(obj: T): T {
 	throw Error();
 }
 
-export function isSimpleObject(item: unknown): boolean {
+export function isSimpleObject(item: unknown): item is object {
 	if (item === null) return false;
 	if (typeof item !== 'object') return false;
 	if (Array.isArray(item)) return false;
@@ -46,7 +46,7 @@ export function isSimpleObject(item: unknown): boolean {
 	return true;
 }
 
-export function isBasicType(item: unknown): boolean {
+export function isBasicType(item: unknown): item is boolean | number | string | undefined {
 	switch (typeof item) {
 		case 'boolean':
 		case 'number':
@@ -60,15 +60,15 @@ export function isBasicType(item: unknown): boolean {
 	}
 }
 
-export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
+export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]): T {
 	const target: T = deepClone(source0);
 
 	for (const source of sources) {
 		if (typeof source !== 'object') continue;
 		for (const key in source) {
-			if (!Object.hasOwn(source, key)) continue;
+			if (!(key in source)) continue;
 
-			const sourceValue = source[key];
+			const sourceValue = source[key] as T[typeof key];
 
 			// *********
 			// overwrite
@@ -94,7 +94,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 			}
 
 			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				// @ts-expect-error: Too complicated to handle
 				target[key] = deepMerge(target[key], sourceValue);
 				continue;
 			}
@@ -104,7 +103,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: T[]): T {
 			// *********
 
 			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				// @ts-expect-error: Too complicated to handle
 				target[key] = deepMerge(target[key], sourceValue);
 				continue;
 			}
