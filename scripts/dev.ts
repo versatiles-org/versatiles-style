@@ -39,7 +39,9 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string }[] = 
 	{ reg: /^\//, type: 'proxy', res: 'https://tiles.versatiles.org/' },
 ];
 
-const server = http.createServer((req, res) => {
+const DIR = new URL(import.meta.url).pathname;
+
+export const server = http.createServer((req, res) => {
 	const { url } = req;
 
 	if (!url) return error('Bad Request: Missing URL');
@@ -51,10 +53,11 @@ const server = http.createServer((req, res) => {
 			switch (entry.type) {
 				case 'mem': return respond('html', entry.res);
 				case 'local': { // Serve files from the local folder
+					const filename = join(DIR, entry.res, relPath);
 					try {
-						const filename = join(import.meta.dirname, entry.res, relPath);
 						respond(relPath, readFileSync(filename));
 					} catch (err) {
+						console.error({ relPath, filename });
 						error('Error reading local file: ' + err);
 					}
 					return
