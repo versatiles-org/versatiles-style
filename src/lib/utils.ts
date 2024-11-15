@@ -124,7 +124,12 @@ export function resolveUrl(base: string, url: string): string {
 }
 
 export function basename(url: string): string {
-	if (!url) return url;
+	if (!url) return '';
+	try {
+		url = new URL(url, 'http://example.org').pathname;
+	} catch (_) {
+		// ignore
+	}
 	url = url.replace(/\/+$/, '');
 	return url.split('/').pop() ?? '';
 }

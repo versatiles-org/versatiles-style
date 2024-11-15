@@ -1,4 +1,4 @@
-import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl } from './utils.js';
+import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
 import Color from 'color';
 
 describe('deepClone', () => {
@@ -147,5 +147,51 @@ describe('resolveUrl', () => {
 
 	it('throws an error for invalid base URLs', () => {
 		expect(() => resolveUrl('invalid-base', 'path/page')).toThrow('Invalid URL');
+	});
+});
+
+describe('basename', () => {
+	it('returns the last segment of a URL-like string', () => {
+		expect(basename('http://example.com/path/to/resource')).toBe('resource');
+		expect(basename('/path/to/file.txt')).toBe('file.txt');
+		expect(basename('folder/subfolder/item')).toBe('item');
+	});
+
+	it('removes trailing slashes before extracting basename', () => {
+		expect(basename('http://example.com/path/to/resource/')).toBe('resource');
+		expect(basename('/path/to/folder/')).toBe('folder');
+		expect(basename('directory/')).toBe('directory');
+	});
+
+	it('returns an empty string for root paths or URLs ending with a slash', () => {
+		expect(basename('http://example.com/')).toBe('');
+		expect(basename('/')).toBe('');
+		expect(basename('////')).toBe('');
+	});
+
+	it('returns the full string if no slashes are present', () => {
+		expect(basename('file')).toBe('file');
+		expect(basename('filename.txt')).toBe('filename.txt');
+		expect(basename('no/slash')).toBe('slash');
+	});
+
+	it('handles empty and null inputs gracefully', () => {
+		expect(basename('')).toBe('');
+		expect(basename(null as unknown as string)).toBe('');
+		expect(basename(undefined as unknown as string)).toBe('');
+	});
+
+	it('handles URLs with query strings or fragments', () => {
+		expect(basename('http://example.com/path/to/resource?query=param')).toBe('resource');
+		expect(basename('http://example.com/path/to/resource#section')).toBe('resource');
+		expect(basename('/path/to/resource?query=param')).toBe('resource');
+		expect(basename('/path/to/resource#section')).toBe('resource');
+	});
+
+	it('handles URLs with special characters', () => {
+		expect(basename('http://example.com/path/to/resource%20name')).toBe('resource%20name');
+		expect(basename('/path/to/resource-name')).toBe('resource-name');
+		expect(basename('http://example.com/resource_name/')).toBe('resource_name');
+		expect(basename('/path/to/resource+name')).toBe('resource+name');
 	});
 });
