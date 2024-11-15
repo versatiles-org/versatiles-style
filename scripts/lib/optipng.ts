@@ -22,7 +22,7 @@ export async function optipng(bufferIn: Buffer): Promise<Buffer> {
 			let stderr = '';
 
 			// Capture stderr data
-			process.stderr.on('data', (data) => {
+			process.stderr?.on('data', (data) => {
 				stderr += data.toString();
 			});
 
