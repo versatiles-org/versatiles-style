@@ -69,6 +69,7 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}.de.json`,
 			`${style}.nolabel.json`,
 		]);
+		expectedFiles.push('empty.json');
 		expectedFiles.sort();
 
 		expect(generatedFiles).toStrictEqual(expectedFiles);
