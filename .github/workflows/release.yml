@@ -54,7 +54,7 @@ jobs:
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - name: Upload file to release
-        run: gh release upload $RELEASE_TAG release/sprites.tar.gz release/styles.tar.gz release/versatiles-style.tar.gz --clobber
+        run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
         working-directory: release
 
       - name: Update release
