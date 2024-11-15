@@ -21,7 +21,7 @@ jest.unstable_mockModule('./config-sprites', () => ({
 	default: {
 		ratios: [1, 2, 3, 4],
 		sets: {
-			icons: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
+			icon: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
 			pattern: { size: 12, useSDF: true, names: ['hatched_thin', 'striped', 'warning'] },
 		},
 	},

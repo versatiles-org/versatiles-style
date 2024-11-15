@@ -3,7 +3,7 @@ import { SpriteConfig } from './lib/sprites.ts';
 const config: SpriteConfig = {
 	ratios: [1, 2, 3, 4],
 	sets: {
-		icons: {
+		icon: {
 			size: 22,
 			names: [
 				'airfield',
