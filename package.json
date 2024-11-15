@@ -11,7 +11,7 @@
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json && chmod +x dist/index.js",
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
-    "// dev": "????",
+    "dev": "tsx scripts/dev.ts",
     "// doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '# API'",
     "lint": "eslint --color .",
     "prepack": "npm run build",
