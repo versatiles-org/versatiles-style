@@ -1,12 +1,12 @@
  
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LanguageSuffix } from '../style_builder/index.js';
+import type { Language } from '../style_builder/index.js';
 import type { MaplibreLayerDefinition } from '../types/index.js';
 
-export function getShortbreadLayers(option: { readonly languageSuffix: LanguageSuffix }): MaplibreLayerDefinition[] {
-	const { languageSuffix } = option;
-	const nameField = languageSuffix ? '{name_' + languageSuffix + '}' : '{name}';
+export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
+	const { language } = option;
+	const nameField = language ? '{name_' + language + '}' : '{name}';
 	
 	return [
 

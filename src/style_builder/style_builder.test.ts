@@ -64,7 +64,7 @@ describe('StyleBuilder', () => {
 			fonts: { regular: 'Arial' },
 			glyphs: '',
 			hideLabels: false,
-			languageSuffix: undefined,
+			language: undefined,
 			recolor: {
 				brightness: 0,
 				contrast: 1,

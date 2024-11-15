@@ -30,7 +30,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		const sprite = options.sprite ?? '/assets/sprites/sprites';
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
 		const hideLabels = options.hideLabels ?? false;
-		const { languageSuffix } = options;
+		const { language } = options;
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
 
 		const colors = this.getColors(this.defaultColors);
@@ -52,14 +52,14 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		const styleRuleOptions: StyleRulesOptions<typeof this> = {
 			colors,
 			fonts,
-			languageSuffix,
+			language,
 		};
 
 		// get layer style rules from child class
 		const layerStyleRules = this.getStyleRules(styleRuleOptions);
 
 		// get shortbread layers
-		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ languageSuffix });
+		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language });
 		let layers: MaplibreLayer[] = layerDefinitions.map(layer => {
 			switch (layer.type) {
 				case 'background':
@@ -105,7 +105,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 			sprite: '',
 			tiles: [],
 			hideLabels: false,
-			languageSuffix: undefined,
+			language: undefined,
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
 			recolor: getDefaultRecolorFlags(),

@@ -5,7 +5,7 @@ import type { RecolorOptions } from './recolor.js';
 
 
 /** Represents language suffixes used in map styles. */
-export type LanguageSuffix = 'de' | 'en' | undefined;
+export type Language = 'de' | 'en' | undefined;
 
 export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 
@@ -25,7 +25,7 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 	hideLabels?: boolean;
 
 	/** Suffix to append to language-specific resources, such as `"-en"` for English. */
-	languageSuffix?: LanguageSuffix;
+	language?: Language;
 
 	/** An object specifying overrides for default color values, keyed by the color names. */
 	colors?: Partial<StyleBuilderColorStrings<T>>;
@@ -59,7 +59,7 @@ export type StyleBuilderFonts<T extends StyleBuilder<T>> = Record<StyleBuilderFo
 export interface StyleRulesOptions<T extends StyleBuilder<T>> {
 	colors: StyleBuilderColors<T>;
 	fonts: StyleBuilderFontStrings<T>;
-	languageSuffix: LanguageSuffix;
+	language: Language;
 }
 
 /** Defines the value type for a style rule. */
