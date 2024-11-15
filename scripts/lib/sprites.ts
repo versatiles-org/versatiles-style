@@ -1,10 +1,11 @@
 import sharp from 'sharp';
 import type { Icon, IconSets } from './icons.js';
 import binPack from 'bin-pack';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { rmSync, writeFileSync } from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
 import type { Pack as TarPack } from 'tar-stream';
 import { resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 
 /**
@@ -215,19 +216,19 @@ export class Sprite {
 	 * Converts the sprite buffer into a PNG image.
 	 * @returns A promise resolving to the PNG buffer.
 	 */
-	private async getPng(): Promise<Buffer> {
+	public async getPng(): Promise<Buffer> {
 		const pngBuffer = await sharp(this.buffer, { raw: { width: this.width, height: this.height, channels: 4 } })
 			.png({ palette: false })
 			.toBuffer();
 
-		return optipng(pngBuffer);
+		return await optipng(pngBuffer);
 	}
 
 	/**
 	 * Generates JSON metadata for each icon in the sprite.
 	 * @returns A promise resolving to the JSON buffer.
 	 */
-	private async getJSON(): Promise<Buffer> {
+	public async getJSON(): Promise<Buffer> {
 		const json = this.entries.map(e => `  "${e.name}": ` + JSON.stringify({
 			width: e.width,
 			height: e.height,
@@ -260,21 +261,32 @@ interface SpriteEntry {
  * @param bufferIn - Input PNG buffer.
  * @returns Optimized PNG buffer.
  */
-export function optipng(bufferIn: Buffer): Buffer {
+export async function optipng(bufferIn: Buffer): Promise<Buffer> {
 	const randomString = Math.random().toString(36).replace(/[^a-z0-9]/g, '');
-	const filename = resolve(tmpdir(), randomString + '.png');
+	const filename = resolve(tmpdir(), `${randomString}.png`);
 
-	writeFileSync(filename, bufferIn);
-	const result = spawnSync('optipng', [filename]);
+	// Write the input buffer to a temporary file
+	await writeFile(filename, bufferIn);
 
-	if (result.status === 1) {
-		console.log(result.stderr.toString());
-		throw Error('optipng optimization failed.');
+	try {
+		// Spawn the optipng process asynchronously
+		await new Promise<void>((resolve, reject) => {
+			const process = spawn('optipng', [filename]);
+			process.on('error', (err) => reject(err));
+			process.on('close', (code) => {
+				if (code == 0) return resolve();
+				reject(new Error('optipng optimization failed.'));
+			});
+		});
+
+		const bufferOut = await readFile(filename);
+		rmSync(filename);
+		return bufferOut;
+	} catch (error) {
+		// Ensure the file is deleted in case of an error
+		rmSync(filename);
+		throw error;
 	}
-
-	const bufferOut = readFileSync(filename);
-	rmSync(filename);
-	return bufferOut;
 }
 
 /**

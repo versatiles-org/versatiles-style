@@ -9,8 +9,22 @@ jest.unstable_mockModule('node:fs', () => ({
 	rmSync: jest.fn(),
 }));
 jest.unstable_mockModule('node:child_process', () => ({
-	spawnSync: jest.fn().mockReturnValue({ status: 0 }),
+	spawn: jest.fn((_command, _args) => {
+		const events: Record<string, (...args: any[]) => void> = {};
+		return {
+			on: (event: string, callback: (...args: any[]) => void) => {
+				events[event] = callback;
+				if (event === 'close') setImmediate(() => callback(0));
+			},
+			emit: (event: string, ...args: any[]) => {
+				if (events[event]) {
+					events[event](...args);
+				}
+			},
+		};
+	}),
 }));
+
 jest.unstable_mockModule('path', () => ({}));
 jest.unstable_mockModule('tar-stream', () => ({}));
 
@@ -127,15 +141,10 @@ describe('Sprite', () => {
 	describe('getPng', () => {
 		it('returns a PNG buffer after compression', async () => {
 			const sprite = await Sprite.fromIcons(fakeIcons, 2, 5);
-
-			// Mock the actual implementation of sharp and optipng
-			// @ts-expect-error: lazy
-			jest.mocked(fs.readFileSync).mockImplementationOnce(() => Buffer.from('optimized PNG data'));
-
-			const result = await (sprite as any).getPng();
+			const result = await sprite.getPng();
 
 			expect(result).toBeInstanceOf(Buffer);
-			expect(result.toString()).toBe('optimized PNG data');
+			expect(Array.from(result.subarray(0, 8))).toStrictEqual([137, 80, 78, 71, 13, 10, 26, 10]);
 		});
 	});
 

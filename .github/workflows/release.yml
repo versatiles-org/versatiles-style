@@ -38,14 +38,20 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Build styles and sprites
-        run: npm run build
+      - name: Build sprites
+        run: |
+          npm run build-sprites
+          cd release/sprites
+          tar -cf - sprites*.json sprites*.png | gzip -9 > ../sprites.tar.gz
+
+      - name: Build styles
+        run: npm run build-styles
 
       - name: Get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
       - name: Upload file to release
-        run: gh release upload $RELEASE_TAG *.gz --clobber
+        run: gh release upload $RELEASE_TAG release/sprites.tar.gz release/styles.tar.gz --clobber
         working-directory: release
 
       - name: Update release
