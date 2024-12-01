@@ -64,11 +64,11 @@ export const server = http.createServer((req, res) => {
 					return
 				}
 				case 'proxy': { // Proxy the request to the remote tiles server
-					const allowedPaths = ['/assets/maplibre-gl/', '/']; // Define allowed paths
-					if (!allowedPaths.includes(relPath)) {
-						return error('Forbidden: Invalid path');
+					const remoteBase = entry.res;
+					const remoteUrl = (new URL(relPath, remoteBase)).href;
+					if (!remoteUrl.startsWith(remoteBase)) {
+						return error(`Forbidden: Proxy requests path "${remoteUrl}" that does not start with "${remoteBase}"`);
 					}
-					const remoteUrl = new URL(relPath, entry.res);
 					const proxyRequest = request(remoteUrl, (remoteRes) => {
 						res.writeHead(remoteRes.statusCode || 500, remoteRes.headers);
 						remoteRes.pipe(res, { end: true });
