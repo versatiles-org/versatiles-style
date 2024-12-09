@@ -381,6 +381,49 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				lineCap: 'butt',
 			},
 
+			// faux bridges
+			'bridge-{street,way}-*:bridge': {
+				lineCap: 'butt',
+				lineJoin: 'round',
+				color: colors.land.darken(0.02),
+				fillAntialias: true,
+				opacity: 0.5,
+			},
+			'bridge-street-motorway:bridge': {
+				size: { '5': 0, '6': 3, '10': 7, '14': 7, '16': 20, '18': 53, '19': 118, '20': 235 }
+			},
+			'bridge-street-trunk:bridge': {
+				size: { '7': 0, '8': 3, '10': 6, '14': 8, '16': 17, '18': 50, '19': 104, '20': 202 }
+			},
+			'bridge-street-primary:bridge': {
+				size: { '8': 0, '9': 1, '10': 6, '14': 8, '16': 17, '18': 50, '19': 104, '20': 202 }
+			},
+			'bridge-street-secondary:bridge': {
+				size: { '11': 3, '14': 7, '16': 11, '18': 42, '19': 95, '20': 193 },
+				opacity: { '11': 0, '12': 1 }
+			},
+			'bridge-street-motorway-link:bridge': {
+				minzoom: 12,
+				size: { '12': 3, '14': 4, '16': 10, '18': 20, '20': 56 }
+			},
+			'bridge-street-{trunk,primary,secondary}-link:bridge': {
+				minzoom: 13,
+				size: { '12': 3, '14': 4, '16': 10, '18': 20, '20': 56 }
+			},
+			'bridge-street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}*:bridge': {
+				size: { '12': 3, '14': 4, '16': 8, '18': 36, '19': 90, '20': 179 },
+				opacity: { '12': 0, '13': 1 }
+			},
+			'bridge-street-{service,track}:bridge': {
+				size: { '14': 3, '16': 6, '18': 25, '19': 67, '20': 134 },
+				opacity: { '14': 0, '15': 1 }
+			},
+			'bridge-way-*:bridge': {
+				size: { '15': 0, '16': 7, '18': 10, '19': 17, '20': 31 },
+				minzoom: 15
+			},
+
+
 			// special color: motorway
 			'{bridge-,}street-motorway{-link,}:outline': {
 				color: colors.motorwaybg,
