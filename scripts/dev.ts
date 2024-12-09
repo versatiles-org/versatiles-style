@@ -34,8 +34,9 @@ const INDEX = `<!DOCTYPE html>
 
 const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string }[] = [
 	{ reg: /^\/(index\.html?)?$/, type: 'mem', res: INDEX },
-	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../release/sprites/' },
-	{ reg: /^\/assets\/lib\/versatiles-style\//, type: 'local', res: '../release/versatiles-style/' },
+	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
+	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/fonts/' },
+	{ reg: /^\/assets\/lib\/versatiles-style\//, type: 'local', res: '../../release/versatiles-style/' },
 	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/maplibre-gl/' },
 	{ reg: /^\//, type: 'proxy', res: 'https://tiles.versatiles.org/' },
 ];
