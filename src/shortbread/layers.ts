@@ -130,19 +130,23 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayerDefinition[] => {
 			let filter: LegacyFilterSpecification[];
 			let prefix: string;
+			let suffixes: Array<string> = [];
 			const results: MaplibreLayerDefinition[] = [];
 			switch (c) {
 				case 'tunnel':
 					filter = [['==', 'tunnel', true]];
 					prefix = 'tunnel-';
+					suffixes = [':outline', ''];
 					break;
 				case 'street':
 					filter = [['!=', 'bridge', true], ['!=', 'tunnel', true]];
 					prefix = '';
+					suffixes = [':outline', ''];
 					break;
 				case 'bridge':
 					filter = [['==', 'bridge', true]];
 					prefix = 'bridge-';
+					suffixes = [':bridge', ':outline', ''];
 					break;
 			}
 
@@ -162,7 +166,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				'source-layer': 'bridges',
 			});
 
-			[':outline', ''].forEach(suffix => {
+			suffixes.forEach(suffix => {
 
 				// pedestrian zone — no outline
 				if (suffix === ':outline') results.push({
