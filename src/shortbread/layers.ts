@@ -146,8 +146,17 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					break;
 			}
 
-			// bridges, above street, below bridge
-			if (c === 'bridge') results.push({
+
+			// in osm data streets on bridges are often not tagged as such
+			// to be able to have multiple levels of bridges cross over each
+			// other in the right order without using a secondary property.
+			// this results in bridge-polygons being rendered above streets.
+			// therefore bridge polygons are *under* surface streets here.
+			// this workaround is also wrong, but everyone is using it since
+			// it's simpler than removing all these tagging hacks from osm.
+
+			// bridges, above tunnel, below street
+			if (c === 'street') results.push({
 				id: 'bridge',
 				type: 'fill',
 				'source-layer': 'bridges',
