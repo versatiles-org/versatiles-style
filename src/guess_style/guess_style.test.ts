@@ -68,7 +68,7 @@ describe('guessStyle', () => {
 		const format = 'pbf';
 		const style = guessStyle({ tiles, format, vectorLayers: vectorLayersShortbread, baseUrl: 'http://example.com' });
 
-		expect(style.layers.length).toBe(277);
+		expect(style.layers.length).toBe(297);
 		style.layers = [];
 
 		expect(style).toStrictEqual({
