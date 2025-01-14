@@ -64,12 +64,12 @@ describe('Sprite Generation and Packaging', () => {
 		const generatedFiles = calls.map(call => call[0].name).sort();
 
 		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino'].flatMap(style => [
-			`${style}.json`,
-			`${style}.en.json`,
-			`${style}.de.json`,
-			`${style}.nolabel.json`,
+			`${style}/style.json`,
+			`${style}/en.json`,
+			`${style}/de.json`,
+			`${style}/nolabel.json`,
 		]);
-		expectedFiles.push('empty.json');
+		expectedFiles.push('empty/style.json');
 		expectedFiles.sort();
 
 		expect(generatedFiles).toStrictEqual(expectedFiles);
