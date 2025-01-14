@@ -23,11 +23,11 @@ const pack = tar.pack();
 	{ name: 'graybeard', builder: graybeard },
 	{ name: 'neutrino', builder: neutrino },
 ].forEach(({ name, builder }) => {
-	produce(name, builder({ language: undefined }));
+	produce(name + '/style', builder({ language: undefined }));
 	if (name === 'empty') return;
-	produce(name + '.en', builder({ language: 'en' }));
-	produce(name + '.de', builder({ language: 'de' }));
-	produce(name + '.nolabel', builder({ hideLabels: true }));
+	produce(name + '/en', builder({ language: 'en' }));
+	produce(name + '/de', builder({ language: 'de' }));
+	produce(name + '/nolabel', builder({ hideLabels: true }));
 });
 
 pack.finalize();
@@ -43,7 +43,6 @@ function produce(name: string, style: MaplibreStyle): void {
 	if (errors.length > 0) console.log(errors);
 
 	// write
-	//writeFileSync(resolve(dirDst, name + '.json'), prettyStyleJSON(style));
 	pack.entry({ name: name + '.json' }, prettyStyleJSON(style));
 	console.log('Saved ' + name);
 }
