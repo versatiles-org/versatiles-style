@@ -1,4 +1,4 @@
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';

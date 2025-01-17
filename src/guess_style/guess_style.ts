@@ -5,7 +5,7 @@ import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerS
 import type { Container } from '@versatiles/container';
 import { colorful } from '../styles/index.js';
 import type { GuessContainerOptions, GuessStyleOptions } from './types.js';
-import { Color } from '../color/index.ts';
+import { Color } from '../color/index.js';
 
 export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 	const { format } = opt;

@@ -1,5 +1,5 @@
 
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import type { MaplibreStyle } from '../types/maplibre.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import StyleBuilder from './style_builder.js';

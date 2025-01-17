@@ -1,4 +1,4 @@
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 
 export interface RecolorOptions {
 	// If true, inverts all colors.

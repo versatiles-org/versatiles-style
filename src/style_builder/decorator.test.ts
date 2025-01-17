@@ -1,7 +1,7 @@
 import { decorate } from './decorator.js';
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import type { MaplibreLayer } from '../types/maplibre.js';
-import { CachedRecolor } from './recolor.ts';
+import { CachedRecolor } from './recolor.js';
 
 describe('decorate function', () => {
 	const mockLayers: MaplibreLayer[] = [

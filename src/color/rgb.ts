@@ -1,7 +1,7 @@
-import { HSL } from './hsl.ts';
-import { HSV } from './hsv.ts';
-import { Color } from './abstract.ts';
-import { clamp, formatFloat } from './utils.ts';
+import { HSL } from './hsl.js';
+import { HSV } from './hsv.js';
+import { Color } from './abstract.js';
+import { clamp, formatFloat } from './utils.js';
 
 export class RGB extends Color {
 	r: number = 0; // between 0 and 255
@@ -88,9 +88,9 @@ export class RGB extends Color {
 			};
 
 			s = diff / v;
-			let rdif = diffc(r);
-			let gdif = diffc(g);
-			let bdif = diffc(b);
+			const rdif = diffc(r);
+			const gdif = diffc(g);
+			const bdif = diffc(b);
 
 			if (r === v) h = bdif - gdif;
 			else if (g === v) h = (1 / 3) + rdif - bdif;
@@ -112,7 +112,7 @@ export class RGB extends Color {
 	}
 
 	static parse(str: string): RGB {
-		str = str.toLowerCase().replaceAll(/[^0-9a-z\.#,()]/g, '')
+		str = str.toLowerCase().replaceAll(/[^0-9a-z.#,()]/g, '')
 
 		let match;
 
@@ -196,14 +196,13 @@ export class RGB extends Color {
 	tint(value: number, tintColor: Color): RGB {
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		const rgb0 = this;
 		const hsv = this.asHSV();
 		hsv.h = tintColor.toHSV().h;
 		const rgbNew = hsv.toRGB();
 
-		rgbNew.r = rgb0.r * (1 - value) + value * rgbNew.r;
-		rgbNew.g = rgb0.g * (1 - value) + value * rgbNew.g;
-		rgbNew.b = rgb0.b * (1 - value) + value * rgbNew.b;
+		rgbNew.r = this.r * (1 - value) + value * rgbNew.r;
+		rgbNew.g = this.g * (1 - value) + value * rgbNew.g;
+		rgbNew.b = this.b * (1 - value) + value * rgbNew.b;
 
 		return rgbNew;
 	}

@@ -1,5 +1,5 @@
-import type { RandomColorOptions } from './random.ts';
-import randomColor from './random.ts';
+import type { RandomColorOptions } from './random.js';
+import randomColor from './random.js';
 
 describe('RandomColor', () => {
 	test('constructor initializes without errors', () => {

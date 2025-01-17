@@ -1,4 +1,4 @@
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import { getDefaultRecolorFlags, recolorArray } from './recolor.js';
 
 

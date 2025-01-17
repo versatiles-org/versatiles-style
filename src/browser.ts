@@ -1,5 +1,3 @@
-import { Color } from '@maplibre/maplibre-gl-style-spec';
-
 export type * from './styles/index.js';
 export * from './styles/index.js';
 export * as styles from './styles/index.js';

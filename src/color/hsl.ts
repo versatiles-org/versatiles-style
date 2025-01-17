@@ -1,7 +1,7 @@
-import { Color } from './abstract.ts';
-import { HSV } from './hsv.ts';
-import { RGB } from './rgb.ts';
-import { clamp, formatFloat, mod } from './utils.ts';
+import { Color } from './abstract.js';
+import { HSV } from './hsv.js';
+import { RGB } from './rgb.js';
+import { clamp, formatFloat, mod } from './utils.js';
 
 export class HSL extends Color {
 	h: number = 0; // between 0 and 360

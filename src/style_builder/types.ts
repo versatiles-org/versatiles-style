@@ -1,4 +1,4 @@
-import type Color from '../color/index.ts';
+import type Color from '../color/index.js';
 import type StyleBuilder from './style_builder.js';
 import type { RecolorOptions } from './recolor.js';
 

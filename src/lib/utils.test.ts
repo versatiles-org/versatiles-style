@@ -1,4 +1,4 @@
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
 
 describe('deepClone', () => {

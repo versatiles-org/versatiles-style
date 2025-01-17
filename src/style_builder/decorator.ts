@@ -1,11 +1,11 @@
 
-import Color from '../color/index.ts';
+import Color from '../color/index.js';
 import expandBraces from 'brace-expansion';
 import maplibreProperties from '../shortbread/properties.js';
 import { deepMerge } from '../lib/utils.js';
 import type { MaplibreLayer } from '../types/index.js';
 import type { StyleRule, StyleRuleValue, StyleRules } from './types.js';
-import type { CachedRecolor } from './recolor.ts';
+import type { CachedRecolor } from './recolor.js';
 
 
 

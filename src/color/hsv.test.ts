@@ -1,6 +1,6 @@
-import { HSV } from './hsv.ts';
-import { HSL } from './hsl.ts';
-import { RGB } from './rgb.ts';
+import { HSV } from './hsv.js';
+import { HSL } from './hsl.js';
+import { RGB } from './rgb.js';
 
 describe('HSV Class', () => {
 

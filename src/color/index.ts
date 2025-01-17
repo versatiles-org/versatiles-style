@@ -1,8 +1,8 @@
-import { Color } from './abstract.ts';
-import { HSL } from './hsl.ts';
-import { HSV } from './hsv.ts';
-import randomColor from './random.ts';
-import { RGB } from './rgb.ts';
+import { Color } from './abstract.js';
+import { HSL } from './hsl.js';
+import { HSV } from './hsv.js';
+import randomColor from './random.js';
+import { RGB } from './rgb.js';
 
 
 Color.parse = function (str: string): Color {
