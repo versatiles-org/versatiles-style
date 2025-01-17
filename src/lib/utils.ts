@@ -1,4 +1,4 @@
-import Color from 'color';
+import Color from '../color/index.ts';
 
 // Utility function to deep clone an object
 export function deepClone<T>(obj: T): T {
@@ -25,8 +25,7 @@ export function deepClone<T>(obj: T): T {
 	}
 
 	if (obj instanceof Color) {
-		// @ts-expect-error: Too complicated to handle
-		return Color(obj);
+		return obj.clone() as T;
 	}
 
 	if (obj == null) return obj;
@@ -89,7 +88,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 
 			if (sourceValue instanceof Color) {
 				// @ts-expect-error: Too complicated to handle
-				target[key] = Color(sourceValue);
+				target[key] = sourceValue.clone();
 				continue;
 			}
 

@@ -1,5 +1,5 @@
 import { decorate } from './decorator.js';
-import Color from 'color';
+import Color from '../color/index.ts';
 import type { MaplibreLayer } from '../types/maplibre.js';
 import { CachedRecolor } from './recolor.ts';
 
@@ -32,11 +32,11 @@ describe('decorate function', () => {
 
 		result.forEach(layer => {
 			if (layer.id === 'layer1') {
-				expect(layer.paint).toHaveProperty('fill-color', '#ff0000');
+				expect(layer.paint).toHaveProperty('fill-color', 'rgb(255,0,0)');
 				expect(layer.layout).toHaveProperty('visibility', 'none');
 			}
 			if (layer.id === 'layer2') {
-				expect(layer.paint).toHaveProperty('line-color', 'rgba(0, 255, 0, 0.5)');
+				expect(layer.paint).toHaveProperty('line-color', 'rgba(0,255,0,0.5)');
 				expect(layer.layout).toHaveProperty('visibility', 'visible');
 			}
 		});
@@ -45,7 +45,7 @@ describe('decorate function', () => {
 	it('should handle color conversion correctly', () => {
 		const colorRule = {
 			'layer1': {
-				paintColor: new Color('#ff0000'),
+				paintColor: Color.parse('#ff0000'),
 			},
 		};
 		const result = decorate(mockLayers, colorRule, noRecolor);
@@ -57,7 +57,7 @@ describe('decorate function', () => {
 		expect(layer0.paint).toBeDefined();
 		if (typeof layer0.paint === 'undefined') return;
 
-		expect(layer0.paint).toHaveProperty('fill-color', '#ff0000');
+		expect(layer0.paint).toHaveProperty('fill-color', 'rgb(255,0,0)');
 	});
 
 	it('should discard layers that have no style rules applied', () => {

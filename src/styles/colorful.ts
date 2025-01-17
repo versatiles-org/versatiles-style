@@ -551,10 +551,10 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				color: colors.foot.lighten(0.02),
 			},
 			'tunnel-way-{footway,path,steps}:outline': {
-				color: colors.foot.darken(0.1).desaturate(0.5),
+				color: colors.foot.darken(0.1).saturate(-0.5),
 			},
 			'tunnel-way-{footway,path,steps}': {
-				color: colors.foot.darken(0.02).desaturate(0.5),
+				color: colors.foot.darken(0.02).saturate(-0.5),
 				lineDasharray: [1, 0.2],
 			},
 
@@ -566,10 +566,10 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				color: colors.cycle,
 			},
 			'tunnel-way-cycleway:outline': {
-				color: colors.cycle.darken(0.1).desaturate(0.5),
+				color: colors.cycle.darken(0.1).saturate(-0.5),
 			},
 			'tunnel-way-cycleway': {
-				color: colors.cycle.darken(0.02).desaturate(0.5),
+				color: colors.cycle.darken(0.02).saturate(-0.5),
 				lineDasharray: [1, 0.2],
 			},
 
@@ -691,7 +691,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				size: { 5: 8, 8: 12 },
 			},
 			'label-place-*': {
-				color: colors.label.rotate(-15).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-15).saturate(1).darken(0.05),
 				font: fonts.regular,
 				textHaloColor: colors.labelHalo,
 				textHaloWidth: 2,
@@ -726,19 +726,19 @@ export default class Colorful extends StyleBuilder<Colorful> {
 				minzoom: 11,
 				size: { 11: 11, 13: 14 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-30).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-30).saturate(1).darken(0.05),
 			},
 			'label-place-quarter': {
 				minzoom: 13,
 				size: { 13: 13 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-40).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-40).saturate(1).darken(0.05),
 			},
 			'label-place-neighbourhood': {
 				minzoom: 14,
 				size: { 14: 12 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-50).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-50).saturate(1).darken(0.05),
 			},
 			'label-motorway-shield': {
 				color: colors.shield,

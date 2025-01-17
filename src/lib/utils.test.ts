@@ -1,5 +1,5 @@
+import Color from '../color/index.ts';
 import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
-import Color from 'color';
 
 describe('deepClone', () => {
 	it('clones primitive types correctly', () => {
@@ -24,9 +24,9 @@ describe('deepClone', () => {
 	});
 
 	it('clones a Color instance correctly', () => {
-		const color = new Color('#FF5733');
+		const color = Color.parse('#FF5733');
 		const clonedColor = deepClone(color);
-		expect(clonedColor.hex()).toBe(color.hex());
+		expect(clonedColor.asHex()).toBe(color.asHex());
 		expect(clonedColor).not.toBe(color);
 	});
 
@@ -80,7 +80,7 @@ describe('isBasicType', () => {
 	it('returns false for objects', () => {
 		expect(isBasicType({})).toBe(false);
 		expect(isBasicType([])).toBe(false);
-		expect(isBasicType(new Color('#FF5733'))).toBe(false);
+		expect(isBasicType(Color.parse('#FF5733'))).toBe(false);
 	});
 
 	it('throws an error for unsupported types like functions', () => {
@@ -111,10 +111,10 @@ describe('deepMerge', () => {
 	});
 
 	it('merges Color instances correctly', () => {
-		const target = { color: new Color('#FF5733') };
-		const source = { color: new Color('#33FF57') };
+		const target = { color: Color.parse('#FF5733') };
+		const source = { color: Color.parse('#33FF57') };
 		const result = deepMerge(target, source);
-		expect(result.color.hex()).toBe('#33FF57');
+		expect(result.color.asHex()).toBe('#33FF57');
 	});
 
 	it('throws error for unsupported cases', () => {

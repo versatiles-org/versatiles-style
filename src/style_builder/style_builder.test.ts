@@ -1,5 +1,5 @@
- 
-import Color from 'color';
+
+import Color from '../color/index.ts';
 import type { MaplibreStyle } from '../types/maplibre.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import StyleBuilder from './style_builder.js';
@@ -12,8 +12,8 @@ class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {
 
 	public defaultColors = { primary: '#FF8800' };
 
-	public negateColors(): void {
-		this.transformDefaultColors(color => color.negate());
+	public invertColors(): void {
+		this.transformDefaultColors(color => color.invert());
 	}
 
 	protected getStyleRules(opt: StyleRulesOptions<MockStyleBuilder>): StyleRules {
@@ -52,9 +52,9 @@ describe('StyleBuilder', () => {
 
 	it('should transform colors correctly', () => {
 		const initialColor: string = builder.defaultColors.primary;
-		builder.negateColors();
+		builder.invertColors();
 		expect(builder.defaultColors.primary).not.toBe(initialColor);
-		expect(builder.defaultColors.primary).toBe(Color(initialColor).negate().hexa());
+		expect(builder.defaultColors.primary).toBe(Color.parse(initialColor).invert().asHex());
 	});
 
 	it('should create default options', () => {
@@ -93,7 +93,7 @@ describe('StyleBuilder', () => {
 		it('should resolve urls correctly', () => {
 			const style: MaplibreStyle = builder.build({ baseUrl: 'https://my.base.url/' });
 			expect(style.glyphs).toBe('https://my.base.url/assets/glyphs/{fontstack}/{range}.pbf');
-			expect(style.sprite).toStrictEqual([{id: 'basics', url: 'https://my.base.url/assets/sprites/basics/sprites'}]);
+			expect(style.sprite).toStrictEqual([{ id: 'basics', url: 'https://my.base.url/assets/sprites/basics/sprites' }]);
 
 			const source = style.sources['versatiles-shortbread'];
 			expect(source).toHaveProperty('tiles');

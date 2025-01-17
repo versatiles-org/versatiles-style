@@ -1,13 +1,11 @@
-
-
 import type { TileJSONSpecification, TileJSONSpecificationBasic, MaplibreStyle, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
 import { isTileJSONSpecification, isVectorLayers } from '../types/index.js';
 import { resolveUrl } from '../lib/utils.js';
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { Container } from '@versatiles/container';
-import randomColorGenerator from './random_color.js';
 import { colorful } from '../styles/index.js';
 import type { GuessContainerOptions, GuessStyleOptions } from './types.js';
+import { Color } from '../color/index.ts';
 
 export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
 	const { format } = opt;
@@ -153,8 +151,6 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 
 	layers.background.push({ 'id': 'background', 'type': 'background', 'paint': { 'background-color': '#fff' } });
 
-	const randomColor = randomColorGenerator();
-
 	spec.vector_layers.forEach((vector_layer: VectorLayer) => {
 		let luminosity = 'bright', saturation, hue;
 
@@ -171,13 +167,13 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 			luminosity = 'light';
 		}
 
-		const color = randomColor({
+		const color = Color.random({
 			hue,
 			luminosity,
 			saturation,
 			seed: vector_layer.id,
 			opacity: 0.6,
-		});
+		}).asString();
 
 		layers.circle.push({
 			id: `${sourceName}-${vector_layer.id}-circle`,

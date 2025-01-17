@@ -41,7 +41,7 @@ describe('Colorful', () => {
 	expect(paint).toHaveProperty('fill-color');
 	if (!('fill-color' in paint)) throw Error();
 
-	expect(paint['fill-color']).toBe('#ff0000');
+	expect(paint['fill-color']).toBe('rgb(255,0,0)');
 });
 
 describe('guessStyle', () => {

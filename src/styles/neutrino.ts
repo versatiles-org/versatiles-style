@@ -319,7 +319,7 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 				size: { 5: 8, 8: 12 },
 			},
 			'label-place-*': {
-				color: colors.label.rotate(-15).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-15).saturate(1).darken(0.05),
 				font: fonts.regular,
 				textHaloColor: colors.label.lighten(0.5),
 				textHaloWidth: 0.1,
@@ -355,25 +355,25 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 				minzoom: 11,
 				size: { 11: 11, 13: 14 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-30).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-30).saturate(1).darken(0.05),
 			},
 			'label-place-quarter': {
 				minzoom: 13,
 				size: { 13: 13 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-40).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-40).saturate(1).darken(0.05),
 			},
 			'label-place-neighbourhood': {
 				minzoom: 14,
 				size: { 14: 12 },
 				textTransform: 'uppercase',
-				color: colors.label.rotate(-50).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-50).saturate(1).darken(0.05),
 			},
 
 			'label-motorway-shield': {
 				color: colors.label,
 				font: fonts.regular,
-				textHaloColor: colors.label.desaturate(0.5).lighten(0.1),
+				textHaloColor: colors.label.saturate(-0.5).lighten(0.1),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 				symbolPlacement: 'line',
@@ -386,7 +386,7 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 			'label-street-*': {
 				color: colors.label,
 				font: fonts.regular,
-				textHaloColor: colors.label.desaturate(0.5).lighten(0.1),
+				textHaloColor: colors.label.saturate(-0.5).lighten(0.1),
 				textHaloWidth: 0.1,
 				textHaloBlur: 1,
 				symbolPlacement: 'line',

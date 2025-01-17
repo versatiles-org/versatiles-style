@@ -1,5 +1,5 @@
 
-import Color from 'color';
+import Color from '../color/index.ts';
 import expandBraces from 'brace-expansion';
 import maplibreProperties from '../shortbread/properties.js';
 import { deepMerge } from '../lib/utils.js';
@@ -94,18 +94,17 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						layer.paint[key] = value;
 						break;
 					default:
-						 
+
 						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
 				}
 			});
 		}
 
 		function processColor(value: StyleRuleValue): string {
-			if (typeof value === 'string') value = Color(value);
+			if (typeof value === 'string') value = Color.parse(value);
 			if (value instanceof Color) {
 				const color = recolor.do(value as Color);
-				const text = (color.alpha() === 1) ? color.hex() : color.string();
-				return text.toLowerCase();
+				return color.asString()
 			}
 			throw new Error(`unknown color type "${typeof value}"`);
 		}

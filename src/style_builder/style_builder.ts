@@ -1,4 +1,4 @@
-import Color from 'color';
+import Color from '../color/index.ts';
 import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
@@ -36,7 +36,10 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 		const colors = this.getColors(this.defaultColors);
 		if (options.colors) {
-			for (const key in options.colors) colors[key] = Color(options.colors[key]);
+			for (const key in options.colors) {
+				const value = options.colors[key];
+				if (value != null) colors[key] = Color.parse(value);
+			}
 		}
 
 		const fonts = deepClone(this.defaultFonts);
@@ -98,8 +101,8 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 	}
 
 	public getColors(colors: StyleBuilderColorStrings<Subclass>): StyleBuilderColors<Subclass> {
-		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColorStrings<Subclass>][];
-		const entriesColor = entriesString.map(([key, value]) => [key, Color(value)]) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColors<Subclass>][];
+		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys<Subclass>, string][];
+		const entriesColor = entriesString.map(([key, value]) => [key, Color.parse(value)]) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColors<Subclass>][];
 		const result = Object.fromEntries(entriesColor) as StyleBuilderColors<Subclass>;
 		return result;
 	}
@@ -121,7 +124,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 	protected transformDefaultColors(callback: (color: Color) => Color): void {
 		const colors = this.getColors(this.defaultColors);
 		for (const key in colors) {
-			this.defaultColors[key] = callback(colors[key]).hexa();
+			this.defaultColors[key] = callback(colors[key]).asHex();
 		}
 	}
 
