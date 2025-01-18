@@ -75,5 +75,5 @@ export abstract class Color {
 		return this.toRGB().tint(value, tintColor);
 	}
 
-	abstract fade(value: number): InstanceType<typeof Color>;
+	abstract fade(value: number): Color;
 }
