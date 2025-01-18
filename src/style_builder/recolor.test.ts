@@ -1,5 +1,5 @@
 import Color from '../color/index.js';
-import { getDefaultRecolorFlags, recolorArray } from './recolor.js';
+import { CachedRecolor, getDefaultRecolorFlags, recolorArray, recolorObject } from './recolor.js';
 
 
 describe('recolor', () => {
@@ -187,6 +187,107 @@ describe('recolor', () => {
 			recolorArray(colors, { tint: 0.8, tintColor: '#00F' });
 			expect(colors2string(colors)).toBe('7766DD00,0033EE55,1100FFAA,221188,665C99');
 		});
+	});
+});
+
+describe('recolorObject', () => {
+	it('should recolor an object of colors', () => {
+		const colors = {
+			color1: Color.parse('#FA50'),
+			color2: Color.parse('#0FA5'),
+			color3: Color.parse('#50FA'),
+		};
+		recolorObject(colors, { rotate: 120 });
+		expect(colors.color1.asHex()).toBe('#55FFAA00');
+		expect(colors.color2.asHex()).toBe('#AA00FF55');
+		expect(colors.color3.asHex()).toBe('#FF5500AA');
+	});
+
+	it('should not alter colors if options are invalid', () => {
+		const colors = {
+			color1: Color.parse('#FA50'),
+			color2: Color.parse('#0FA5'),
+			color3: Color.parse('#50FA'),
+		};
+		const original = { ...colors };
+		recolorObject(colors, {});
+		expect(colors).toEqual(original);
+	});
+});
+
+describe('recolorArray', () => {
+	it('should recolor an array of colors with valid options', () => {
+		const colors = getTestColors();
+		recolorArray(colors, { rotate: 120 });
+		expect(colors.map((c) => c.asHex())).toEqual([
+			'#55FFAA00',
+			'#AA00FF55',
+			'#FF5500AA',
+			'#00AA55',
+			'#55AA77',
+		]);
+	});
+
+	it('should not alter the array if options are invalid', () => {
+		const colors = getTestColors();
+		const original = [...colors];
+		recolorArray(colors, {});
+		expect(colors).toEqual(original);
+	});
+
+	it('should handle multiple transformations on the same array', () => {
+		const colors = getTestColors();
+		recolorArray(colors, { saturate: 0.5 });
+		expect(colors.map((c) => c.asHex())).toEqual([
+			'#FFAA5500',
+			'#00FFAA55',
+			'#5500FFAA',
+			'#AA5500',
+			'#D46F2B',
+		]);
+
+		recolorArray(colors, { brightness: 0.5 });
+		expect(colors.map((c) => c.asHex())).toEqual([
+			'#FFD5AA00',
+			'#80FFD555',
+			'#AA80FFAA',
+			'#D5AA80',
+			'#EAB795',
+		]);
+	});
+});
+
+describe('CachedRecolor', () => {
+	it('should apply recolor transformations and cache the results', () => {
+		const cachedRecolor = new CachedRecolor({ rotate: 120 });
+		const color = Color.parse('#FA50');
+		const recolored = cachedRecolor.do(color);
+		expect(recolored.asHex()).toBe('#55FFAA00');
+
+		// Verify cached result
+		const cachedResult = cachedRecolor.do(color);
+		expect(cachedResult).toBe(recolored); // Cached object should be the same instance
+	});
+
+	it('should skip recoloring if options are invalid', () => {
+		const cachedRecolor = new CachedRecolor({});
+		const color = Color.parse('#FA50');
+		const recolored = cachedRecolor.do(color);
+		expect(recolored).toBe(color); // No changes applied
+	});
+
+	it('should handle multiple recoloring operations', () => {
+		const cachedRecolor = new CachedRecolor({ saturate: 0.5 });
+		const colors = getTestColors();
+
+		const recoloredColors = colors.map((color) => cachedRecolor.do(color));
+		expect(recoloredColors.map((c) => c.asHex())).toEqual([
+			'#FFAA5500',
+			'#00FFAA55',
+			'#5500FFAA',
+			'#AA5500',
+			'#D46F2B',
+		]);
 	});
 });
 
