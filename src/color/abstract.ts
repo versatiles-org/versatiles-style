@@ -9,14 +9,14 @@ export abstract class Color {
 	static HSV: typeof HSV;
 	static RGB: typeof RGB;
 	static random: (options?: RandomColorOptions) => HSV;
-	abstract clone(): InstanceType<typeof Color>;
+	abstract clone(): Color;
 
 	asHex(): string {
 		return this.toRGB().asHex();
 	}
 
 	abstract asString(): string;
-
+	abstract round(): Color;
 	abstract asArray(): number[];
 
 	abstract asHSL(): HSL;

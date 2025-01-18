@@ -17,8 +17,16 @@ export class HSL extends Color {
 		this.a = clamp(a, 0, 1);
 	}
 
-	asArray(): number[] {
+	asArray(): [number,number,number,number] {
 		return [this.h, this.s, this.l, this.a];
+	}
+
+	round(): HSL {
+		this.h = Math.round(this.h);
+		this.s = Math.round(this.s);
+		this.l = Math.round(this.l);
+		this.a = Math.round(this.a * 1000) / 1000;
+		return this;
 	}
 
 	clone(): HSL {

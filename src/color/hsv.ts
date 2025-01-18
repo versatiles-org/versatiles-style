@@ -17,8 +17,16 @@ export class HSV extends Color {
 		this.a = clamp(a, 0, 1);
 	}
 
-	asArray(): number[] {
+	asArray(): [number, number, number, number] {
 		return [this.h, this.s, this.v, this.a];
+	}
+
+	round(): HSV {
+		this.h = Math.round(this.h);
+		this.s = Math.round(this.s);
+		this.v = Math.round(this.v);
+		this.a = Math.round(this.a * 1000) / 1000;
+		return this;
 	}
 
 	asString(): string {

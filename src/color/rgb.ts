@@ -21,8 +21,16 @@ export class RGB extends Color {
 		return new RGB(this.r, this.g, this.b, this.a);
 	}
 
-	asArray(): number[] {
+	asArray(): [number, number, number, number] {
 		return [this.r, this.g, this.b, this.a];
+	}
+
+	round(): RGB {
+		this.r = Math.round(this.r);
+		this.g = Math.round(this.g);
+		this.b = Math.round(this.b);
+		this.a = Math.round(this.a * 1000) / 1000;
+		return this;
 	}
 
 	asString(): string {
