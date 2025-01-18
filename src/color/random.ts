@@ -74,11 +74,17 @@ export default function randomColor(options?: RandomColorOptions): HSV {
 	function pickBrightness(h: number, s: number, options: RandomColorOptions): number {
 		let bMin = getMinimumBrightness(h, s), bMax = 100;
 
-		switch (options.luminosity) {
-			case 'dark': bMax = Math.min(100, bMin + 20); break;
-			case 'light': bMin = (bMax + bMin) / 2; break;
-			case 'random': bMin = 0; bMax = 100; break;
-			default:
+
+		if (typeof options.luminosity === 'number') {
+			bMin = options.luminosity;
+			bMax = options.luminosity;
+		} else {
+			switch (options.luminosity) {
+				case 'dark': bMax = Math.min(100, bMin + 20); break;
+				case 'light': bMin = (bMax + bMin) / 2; break;
+				case 'random': bMin = 0; bMax = 100; break;
+				default:
+			}
 		}
 
 		return randomWithin([bMin, bMax]);

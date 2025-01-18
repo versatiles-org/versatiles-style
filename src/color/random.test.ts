@@ -14,6 +14,7 @@ describe('RandomColor', () => {
 			expect(t({ seed: 'testSeed', hue: 'red' })).toBe('hsl(356,90%,30%)');
 			expect(t({ seed: 'testSeed', hue: 120 })).toBe('hsl(120,92%,26%)');
 			expect(t({ seed: 'testSeed', luminosity: 'dark' })).toBe('hsl(185,98%,19%)');
+			expect(t({ seed: 'testSeed', luminosity: 12 })).toBe('hsl(185,90%,6%)');
 			expect(t({ seed: 'testSeed', saturation: 'strong' })).toBe('hsl(185,100%,48%)');
 			expect(t({ seed: 'testSeed', opacity: 0.5 })).toBe('hsla(185,90%,23%,0.5)');
 			expect(t({ seed: 'testSeed' })).toBe('hsl(185,90%,23%)');
