@@ -12,7 +12,7 @@
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
     "dev": "tsx scripts/dev.ts",
-    "// doc": "vrt ts2md src/index.ts tsconfig.node.json | vrt insertmd README.md '# API'",
+    "doc": "typedoc --options typedoc.json",
     "lint": "eslint --color .",
     "prepack": "npm run build",
     "release": "npx vrt release-npm",
@@ -64,6 +64,10 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
+    "typedoc": "^0.27.6",
+    "typedoc-github-theme": "^0.2.1",
+    "typedoc-plugin-coverage": "^3.4.1",
+    "typedoc-plugin-markdown": "^4.4.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   }

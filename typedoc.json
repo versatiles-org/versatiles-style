@@ -1,0 +1,22 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": [
+		"./src/index.ts"
+	],
+	"readme": "./README.MD",
+	"outputs": [
+		{
+			"name": "html",
+			"path": "./docs_html"
+		},
+		{
+			"name": "markdown",
+			"path": "./docs_md"
+		}
+	],
+	"plugin": [
+		"typedoc-plugin-markdown",
+		//"typedoc-plugin-coverage",
+		"typedoc-github-theme"
+	]
+}
