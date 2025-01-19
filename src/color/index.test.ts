@@ -112,12 +112,6 @@ describe('Color Class Properties', () => {
 });
 
 describe('Exported Module', () => {
-
-	test('default export is Color', async () => {
-		const module = await import('./index.js');
-		expect(module.default).toBe(Color);
-	});
-
 	test('named export is Color', async () => {
 		const module = await import('./index.js');
 		expect(module.Color).toBe(Color);

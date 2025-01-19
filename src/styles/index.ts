@@ -1,4 +1,4 @@
-import type StyleBuilder from '../style_builder/style_builder.js';
+import type { StyleBuilder } from '../style_builder/style_builder.js';
 import type { StyleBuilderOptions } from '../style_builder/types.js';
 import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 

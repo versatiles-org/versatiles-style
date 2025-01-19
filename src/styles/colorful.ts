@@ -1,6 +1,4 @@
-
-
-import StyleBuilder from '../style_builder/style_builder.js';
+import { StyleBuilder } from '../style_builder/style_builder.js';
 import type { StyleRules, StyleRulesOptions } from '../style_builder/types.js';
 
 export default class Colorful extends StyleBuilder<Colorful> {

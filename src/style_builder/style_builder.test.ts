@@ -1,7 +1,7 @@
 
-import Color from '../color/index.js';
+import { Color } from '../color/index.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
-import StyleBuilder from './style_builder.js';
+import { StyleBuilder } from './style_builder.js';
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 // Mock class for abstract class StyleBuilder

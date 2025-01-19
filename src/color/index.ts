@@ -4,7 +4,6 @@ import { HSV } from './hsv.js';
 import randomColor from './random.js';
 import { RGB } from './rgb.js';
 
-
 Color.parse = function (str: string): Color {
 	str = str.trim().toLowerCase();
 
@@ -30,5 +29,8 @@ Color.RGB = RGB;
 
 Color.random = randomColor;
 
+export type { RandomColorOptions } from './random.js';
+export type { HSL } from './hsl.js';
+export type { HSV } from './hsv.js';
+export type { RGB } from './rgb.js';
 export { Color };
-export default Color;

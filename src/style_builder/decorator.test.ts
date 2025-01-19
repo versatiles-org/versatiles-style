@@ -1,5 +1,5 @@
 import { decorate } from './decorator.js';
-import Color from '../color/index.js';
+import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/maplibre.js';
 import { CachedRecolor } from './recolor.js';
 

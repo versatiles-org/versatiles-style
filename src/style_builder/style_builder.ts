@@ -1,4 +1,4 @@
-import Color from '../color/index.js';
+import { Color } from '../color/index.js';
 import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
@@ -11,7 +11,7 @@ import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 // StyleBuilder class definition
-export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
+export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 	readonly #sourceName = 'versatiles-shortbread';
 
 	public abstract readonly name: string;

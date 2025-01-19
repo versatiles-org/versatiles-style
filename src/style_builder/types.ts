@@ -1,5 +1,5 @@
-import type Color from '../color/index.js';
-import type StyleBuilder from './style_builder.js';
+import type { Color } from '../color/index.js';
+import type { StyleBuilder } from './style_builder.js';
 import type { RecolorOptions } from './recolor.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
