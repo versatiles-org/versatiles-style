@@ -6,7 +6,7 @@ import dts from 'rollup-plugin-dts';
 
 export default [
 	{
-		input: './src/browser.ts',
+		input: './src/index.ts',
 		output: {
 			file: './release/versatiles-style/versatiles-style.js',
 			format: 'umd',
@@ -21,7 +21,7 @@ export default [
 		]
 	},
 	{
-		input: './release/versatiles-style/browser.d.ts',
+		input: './release/versatiles-style/index.d.ts',
 		output: [{ file: './release/versatiles-style/versatiles-style.d.ts', format: 'es' }],
 		plugins: [dts()],
 	},

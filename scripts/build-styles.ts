@@ -1,7 +1,7 @@
 
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { colorful, eclipse, empty, graybeard, neutrino } from '../src/index.js';
+import { styles } from '../src/index.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
@@ -14,6 +14,7 @@ mkdirSync(dirDst, { recursive: true });
 
 
 const pack = tar.pack();
+const { colorful, eclipse, empty, graybeard, neutrino } = styles;
 
 [
 	{ name: 'colorful', builder: colorful },
