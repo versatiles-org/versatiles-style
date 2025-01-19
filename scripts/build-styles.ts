@@ -1,9 +1,8 @@
 
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { MaplibreStyle } from '../src/index.js';
 import { colorful, eclipse, empty, graybeard, neutrino } from '../src/index.js';
-import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
+import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';
 
@@ -36,7 +35,7 @@ pack
 	.pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
 
 
-function produce(name: string, style: MaplibreStyle): void {
+function produce(name: string, style: StyleSpecification): void {
 
 	// Validate the style and log errors if any
 	const errors = validateStyleMin(style);

@@ -1,9 +1,7 @@
 import type StyleBuilder from '../style_builder/style_builder.js';
 import type { StyleBuilderOptions } from '../style_builder/types.js';
-import type { MaplibreStyle } from '../types/maplibre.js';
-import type { RecolorOptions } from '../style_builder/recolor.js';
+import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
-export type { MaplibreStyle, RecolorOptions };
 
 
 // import styles
@@ -25,8 +23,8 @@ export type SomeOptions = ColorfulOptions | EclipseOptions | EmptyOptions | Gray
 
 
 // generate style builder types
-type MakeStyle<T extends StyleBuilder<T>, O extends StyleBuilderOptions<T>> =
-	((options?: O) => MaplibreStyle) &
+export type MakeStyle<T extends StyleBuilder<T>, O extends StyleBuilderOptions<T>> =
+	((options?: O) => StyleSpecification) &
 	{
 		getOptions: () => O;
 	};
@@ -42,7 +40,7 @@ export type SomeBuilder = ColorfulBuilder | EclipseBuilder | EmptyBuilder | Gray
 
 
 function getStyleBuilder<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeStyle<T, StyleBuilderOptions<T>> {
-	const fn = function (options?: StyleBuilderOptions<T>): MaplibreStyle {
+	const fn = function (options?: StyleBuilderOptions<T>): StyleSpecification {
 		return new styleBuilder().build(options);
 	};
 	fn.getOptions = (): StyleBuilderOptions<T> => new styleBuilder().getDefaultOptions();

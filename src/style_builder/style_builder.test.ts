@@ -1,8 +1,8 @@
 
 import Color from '../color/index.js';
-import type { MaplibreStyle } from '../types/maplibre.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import StyleBuilder from './style_builder.js';
+import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 // Mock class for abstract class StyleBuilder
 class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {
@@ -91,13 +91,13 @@ describe('StyleBuilder', () => {
 		});
 
 		it('should resolve urls correctly', () => {
-			const style: MaplibreStyle = builder.build({ baseUrl: 'https://my.base.url/' });
+			const style = builder.build({ baseUrl: 'https://my.base.url/' });
 			expect(style.glyphs).toBe('https://my.base.url/assets/glyphs/{fontstack}/{range}.pbf');
 			expect(style.sprite).toStrictEqual([{ id: 'basics', url: 'https://my.base.url/assets/sprites/basics/sprites' }]);
 
-			const source = style.sources['versatiles-shortbread'];
+			const source = style.sources['versatiles-shortbread'] as VectorSourceSpecification;
 			expect(source).toHaveProperty('tiles');
-			expect(source.tiles[0]).toBe('https://my.base.url/tiles/osm/{z}/{x}/{y}');
+			expect(source.tiles).toStrictEqual(['https://my.base.url/tiles/osm/{z}/{x}/{y}']);
 		});
 	});
 });

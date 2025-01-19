@@ -1,6 +1,7 @@
 import type Color from '../color/index.js';
 import type StyleBuilder from './style_builder.js';
 import type { RecolorOptions } from './recolor.js';
+import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 
@@ -18,7 +19,7 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 
 	// The URL for loading sprite images and metadata.
 	// Default: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]
-	sprite?: string | { id: string; url: string }[];
+	sprite?: SpriteSpecification;
 
 	// An array of URL templates for loading map tiles, using '{z}', '{x}', and '{y}' placeholders.
 	// Default: ['/tiles/osm/{z}/{x}/{y}']

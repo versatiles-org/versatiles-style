@@ -1,10 +1,10 @@
 import type { VectorLayer } from './vector_layer.js';
-import { isVectorLayers } from './vector_layer.js';
 
 /** Basic structure for TileJSON specification, applicable to both raster and vector types. */
-export interface TileJSONSpecificationBasic {
-	tilejson: '3.0.0';
+export interface TileJSONSpecificationRaster {
+	tilejson?: '3.0.0';
 	tiles: string[];
+
 	attribution?: string;
 	bounds?: [number, number, number, number];
 	center?: [number, number];
@@ -18,19 +18,11 @@ export interface TileJSONSpecificationBasic {
 	name?: string;
 	scheme?: 'tms' | 'xyz';
 	template?: string;
-}
-
-/** Structure for TileJSON specification of raster type, specifying raster-specific properties. */
-export interface TileJSONSpecificationRaster extends TileJSONSpecificationBasic {
-	type: 'raster';
-	format: 'avif' | 'jpg' | 'png' | 'webp';
+	version?: string;
 }
 
 /** Structure for TileJSON specification of vector type, specifying vector-specific properties. */
-export interface TileJSONSpecificationVector extends TileJSONSpecificationBasic {
-	type: 'vector';
-	format: 'pbf';
-	 
+export interface TileJSONSpecificationVector extends TileJSONSpecificationRaster {
 	vector_layers: VectorLayer[];
 }
 
@@ -49,15 +41,15 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 	const obj = spec as Record<string, unknown>;
 
 	// Common property validation
-	if (obj.tilejson !== '3.0.0') {
+	if (obj.data != null && obj.tilejson !== '3.0.0') {
 		throw Error('spec.tilejson must be "3.0.0"');
 	}
 
-	if (obj.attribution !== undefined && typeof obj.attribution !== 'string') {
+	if (obj.attribution != null && typeof obj.attribution !== 'string') {
 		throw Error('spec.attribution must be a string if present');
 	}
 
-	if (obj.bounds !== undefined) {
+	if (obj.bounds != null) {
 		if (!Array.isArray(obj.bounds) || obj.bounds.length !== 4 || obj.bounds.some(num => typeof num !== 'number')) {
 			throw Error('spec.bounds must be an array of four numbers if present');
 		}
@@ -70,7 +62,7 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		if (a[1] > a[3]) throw Error('spec.bounds[1] must be smaller than spec.bounds[3]');
 	}
 
-	if (obj.center !== undefined) {
+	if (obj.center != null) {
 		if (!Array.isArray(obj.center) || obj.center.length !== 2 || obj.center.some(num => typeof num !== 'number')) {
 			throw Error('spec.center must be an array of two numbers if present');
 		}
@@ -79,43 +71,43 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		if (a[1] < -90 || a[1] > 90) throw Error('spec.center[1] must be between -90 and 90');
 	}
 
-	if (obj.data !== undefined && (!Array.isArray(obj.data) || obj.data.some(url => typeof url !== 'string'))) {
+	if (obj.data != null && (!Array.isArray(obj.data) || obj.data.some(url => typeof url !== 'string'))) {
 		throw Error('spec.data must be an array of strings if present');
 	}
 
-	if (obj.description !== undefined && typeof obj.description !== 'string') {
+	if (obj.description != null && typeof obj.description !== 'string') {
 		throw Error('spec.description must be a string if present');
 	}
 
-	if (obj.fillzoom !== undefined && (typeof obj.fillzoom !== 'number' || (obj.fillzoom < 0))) {
+	if (obj.fillzoom != null && (typeof obj.fillzoom !== 'number' || (obj.fillzoom < 0))) {
 		throw Error('spec.fillzoom must be a positive integer if present');
 	}
 
-	if (obj.grids !== undefined && (!Array.isArray(obj.grids) || obj.grids.some(url => typeof url !== 'string'))) {
+	if (obj.grids != null && (!Array.isArray(obj.grids) || obj.grids.some(url => typeof url !== 'string'))) {
 		throw Error('spec.grids must be an array of strings if present');
 	}
 
-	if (obj.legend !== undefined && typeof obj.legend !== 'string') {
+	if (obj.legend != null && typeof obj.legend !== 'string') {
 		throw Error('spec.legend must be a string if present');
 	}
 
-	if (obj.minzoom !== undefined && (typeof obj.minzoom !== 'number' || (obj.minzoom < 0))) {
+	if (obj.minzoom != null && (typeof obj.minzoom !== 'number' || (obj.minzoom < 0))) {
 		throw Error('spec.minzoom must be a positive integer if present');
 	}
 
-	if (obj.maxzoom !== undefined && (typeof obj.maxzoom !== 'number' || (obj.maxzoom < 0))) {
+	if (obj.maxzoom != null && (typeof obj.maxzoom !== 'number' || (obj.maxzoom < 0))) {
 		throw Error('spec.maxzoom must be a positive integer if present');
 	}
 
-	if (obj.name !== undefined && typeof obj.name !== 'string') {
+	if (obj.name != null && typeof obj.name !== 'string') {
 		throw Error('spec.name must be a string if present');
 	}
 
-	if (obj.scheme !== undefined && obj.scheme !== 'xyz' && obj.scheme !== 'tms') {
+	if (obj.scheme != null && obj.scheme !== 'xyz' && obj.scheme !== 'tms') {
 		throw Error('spec.scheme must be "tms" or "xyz" if present');
 	}
 
-	if (obj.template !== undefined && typeof obj.template !== 'string') {
+	if (obj.template != null && typeof obj.template !== 'string') {
 		throw Error('spec.template must be a string if present');
 	}
 
@@ -123,26 +115,11 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		throw Error('spec.tiles must be an array of strings');
 	}
 
-	if (typeof obj.format !== 'string') {
-		throw Error('spec.format must be a string');
-	}
+	return true;
+}
 
-	if (obj.type === 'raster') {
-		if (!['avif', 'jpg', 'png', 'webp'].includes(obj.format)) {
-			throw Error('spec.format must be "avif", "jpg", "png", or "webp" for raster sources');
-		}
-	} else if (obj.type === 'vector') {
-		if (obj.format !== 'pbf') {
-			throw Error('spec.format must be "pbf" for vector sources');
-		}
-		try {
-			if (!isVectorLayers(obj.vector_layers)) throw Error('spec.vector_layers is invalid');
-		} catch (error) {
-			throw Error('spec.vector_layers is invalid: ' + String((error instanceof Error) ? error.message : error));
-		}
-	} else {
-		throw Error('spec.type must be "raster" or "vector"');
-	}
-
+export function isRasterTileJSONSpecification(spec: unknown): spec is TileJSONSpecificationRaster {
+	if (!isTileJSONSpecification(spec)) return false;
+	if (('vector_layers' in spec) && (spec.vector_layers != null)) return false;
 	return true;
 }

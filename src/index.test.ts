@@ -1,4 +1,5 @@
 
+import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { VectorLayer } from './index.js';
 import { guessStyle, colorful, eclipse, graybeard, neutrino } from './index.js';
 
@@ -22,7 +23,8 @@ describe('styles', () => {
 			expect(style.sprite).toStrictEqual([{ id: 'basics', url: 'https://example.org/assets/sprites/basics/sprites' }]);
 			expect(Object.keys(style.sources).join(',')).toBe('versatiles-shortbread');
 
-			expect(style.sources['versatiles-shortbread'].tiles).toEqual(['https://example.org/tiles/osm/{z}/{x}/{y}']);
+			const source = style.sources['versatiles-shortbread'] as VectorSourceSpecification;
+			expect(source.tiles).toEqual(['https://example.org/tiles/osm/{z}/{x}/{y}']);
 		});
 	});
 });
@@ -46,26 +48,19 @@ describe('Colorful', () => {
 
 describe('guessStyle', () => {
 	const tiles = ['https://fancy.map/tiles/{z}/{x}/{y}'];
-	const vectorLayers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
+	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
 	it('should build raster styles', () => {
-		const style = guessStyle({
-			tiles,
-			format: 'png',
-		});
+		const style = guessStyle({ tiles });
 		expect(style).toStrictEqual({
 			layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
-			sources: { rasterSource: { format: 'png', tilejson: '3.0.0', tiles, type: 'raster' } },
+			sources: { rasterSource: { tiles, type: 'raster' } },
 			version: 8,
 		});
 	});
 
 	it('should build vector styles', () => {
-		const style = guessStyle({
-			tiles,
-			format: 'pbf',
-			vectorLayers,
-		});
+		const style = guessStyle({ tiles, vector_layers });
 		expect(style).toStrictEqual({
 			layers: [
 				{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' },
@@ -73,7 +68,7 @@ describe('guessStyle', () => {
 				{ id: 'vectorSource-hallo-line', filter: ['==', '$type', 'LineString'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'line' },
 				{ id: 'vectorSource-hallo-circle', filter: ['==', '$type', 'Point'], paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 }, source: 'vectorSource', 'source-layer': 'hallo', type: 'circle' },
 			],
-			sources: { vectorSource: { format: 'pbf', tilejson: '3.0.0', tiles, type: 'vector', vector_layers: vectorLayers } },
+			sources: { vectorSource: { tiles, type: 'vector' } },
 			'version': 8,
 		});
 	});

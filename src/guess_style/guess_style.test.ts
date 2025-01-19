@@ -1,33 +1,28 @@
 
-import type { Container, Header } from '@versatiles/container';
-import { getShortbreadTemplate } from '../shortbread/index.js';
-import type { TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
-import { guessStyle, guessStyleFromContainer } from './guess_style.js';
-import type { GuessStyleOptions } from './types.js';
+import type { TileJSONSpecification, VectorLayer } from '../types/index.js';
+import { guessStyle } from './guess_style.js';
+import { getShortbreadVectorLayers } from '../shortbread/template.ts';
+import { SourceSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
 	const vectorLayersSomething: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-	const vectorLayersShortbread: VectorLayer[] = getShortbreadTemplate().sources['versatiles-shortbread'].vector_layers;
+	const vectorLayersShortbread: VectorLayer[] = getShortbreadVectorLayers();
 
 	it('should build raster styles', () => {
-		const type = 'raster';
-		const format = 'avif';
-		expect(guessStyle({ tiles, format }))
+		expect(guessStyle({ tiles }))
 			.toStrictEqual({
 				version: 8,
-				sources: { rasterSource: { format, tilejson: '3.0.0', tiles, type } },
-				layers: [{ id: 'raster', source: 'rasterSource', type }],
+				sources: { rasterSource: { tiles, type: 'raster' } },
+				layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
 			});
 	});
 
 	it('should build vector inspector styles', () => {
-		const type = 'vector';
-		const format = 'pbf';
-		expect(guessStyle({ tiles, format, vectorLayers: vectorLayersSomething }))
+		expect(guessStyle({ tiles, vector_layers: vectorLayersSomething }))
 			.toStrictEqual({
 				version: 8,
-				sources: { vectorSource: { format, tilejson: '3.0.0', tiles, type, vector_layers: vectorLayersSomething } },
+				sources: { vectorSource: { tiles, type: 'vector' } },
 				layers: [
 					{
 						id: 'background',
@@ -64,9 +59,7 @@ describe('guessStyle', () => {
 	});
 
 	it('should build shortbread vector styles', () => {
-		const type = 'vector';
-		const format = 'pbf';
-		const style = guessStyle({ tiles, format, vectorLayers: vectorLayersShortbread, baseUrl: 'http://example.com' });
+		const style = guessStyle({ tiles, vector_layers: vectorLayersShortbread }, { baseUrl: 'http://example.com' });
 
 		expect(style.layers.length).toBe(297);
 		style.layers = [];
@@ -75,7 +68,6 @@ describe('guessStyle', () => {
 			glyphs: 'http://example.com/assets/glyphs/{fontstack}/{range}.pbf',
 			metadata: {
 				license: 'https://creativecommons.org/publicdomain/zero/1.0/',
-				'maputnik:renderer': 'mbgljs',
 			},
 			name: 'versatiles-colorful',
 			sprite: [{ id: 'basics', url: 'http://example.com/assets/sprites/basics/sprites' }],
@@ -84,114 +76,59 @@ describe('guessStyle', () => {
 				'versatiles-shortbread': {
 					attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 					bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
-					format,
 					maxzoom: 14,
 					minzoom: 0,
 					scheme: 'xyz',
-					tilejson: '3.0.0',
 					tiles,
-					type,
-					vector_layers: vectorLayersShortbread,
+					type: 'vector',
 				},
 			},
 			version: 8,
 		});
 	});
 
-	const cases: { type: string; options: GuessStyleOptions }[] = [
-		{ type: 'image', options: { tiles, format: 'png' } },
-		{ type: 'inspector', options: { tiles, format: 'pbf', vectorLayers: vectorLayersSomething } },
-		{ type: 'shortbread', options: { tiles, format: 'pbf', vectorLayers: vectorLayersShortbread } },
+	const cases: { type: string; tilejson: TileJSONSpecification }[] = [
+		{ type: 'image', tilejson: { tiles } },
+		{ type: 'inspector', tilejson: { tiles, vector_layers: vectorLayersSomething } },
 	];
 
-	describe('minzoom sets zoom', () => {
-		cases.forEach(({ type, options }) => {
+	function getSource(style: StyleSpecification): SourceSpecification {
+		return Object.values(style.sources)[0];
+	}
+
+	describe('minzoom sets minzoom', () => {
+		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
-				expect(guessStyle({ ...options, minzoom: 5 })).toHaveProperty('zoom', 5);
+				expect(getSource(guessStyle({ ...tilejson, minzoom: 5 }))).toHaveProperty('minzoom', 5);
 			});
 		});
 	});
 
-	describe('bounds sets center', () => {
-		cases.forEach(({ type, options }) => {
+	describe('maxzoom sets maxzoom', () => {
+		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
-				expect(guessStyle({ ...options, bounds: [1, 2, 3, 4] })).toHaveProperty('center', [2, 3]);
-			});
-		});
-	});
-
-	describe('center sets center', () => {
-		cases.forEach(({ type, options }) => {
-			it(type, () => {
-				expect(guessStyle({ ...options, center: [12, 34] })).toHaveProperty('center', [12, 34]);
-			});
-		});
-	});
-
-	describe('center overrides bounds', () => {
-		cases.forEach(({ type, options }) => {
-			it(type, () => {
-				expect(guessStyle({ ...options, bounds: [1, 2, 3, 4], center: [12, 34] })).toHaveProperty('center', [12, 34]);
+				expect(getSource(guessStyle({ ...tilejson, maxzoom: 5 }))).toHaveProperty('maxzoom', 5);
 			});
 		});
 	});
 
 	describe('absolute tile urls override baseUrl', () => {
-		cases.forEach(({ type, options }) => {
+		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
-				const style = guessStyle({ ...options, tiles: ['https://example1.org/tiles/{z}/{x}/{y}'], baseUrl: 'https://example2.org/' });
-
-				expect(Object.values(style.sources)[0].tiles).toEqual(['https://example1.org/tiles/{z}/{x}/{y}']);
+				const style = guessStyle({ ...tilejson, tiles: ['https://example1.org/tiles/{z}/{x}/{y}'] }, { baseUrl: 'https://example2.org/' });
+				const source = Object.values(style.sources)[0] as VectorSourceSpecification;
+				expect(source.tiles).toEqual(['https://example1.org/tiles/{z}/{x}/{y}']);
 			});
 		});
 	});
 
 	describe('relative tile urls are resolved with baseUrl', () => {
-		cases.forEach(({ type, options }) => {
+		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
-				const style = guessStyle({ ...options, tiles: ['./{z}/{x}/{y}'], baseUrl: 'https://example2.org/tiles/' });
-
-				expect(Object.values(style.sources)[0].tiles).toEqual(['https://example2.org/tiles/{z}/{x}/{y}']);
+				const style = guessStyle({ ...tilejson, tiles: ['./{z}/{x}/{y}'] }, { baseUrl: 'https://example2.org/tiles/' });
+				const source = Object.values(style.sources)[0] as VectorSourceSpecification;
+				expect(source.tiles).toEqual(['https://example2.org/tiles/{z}/{x}/{y}']);
 			});
 		});
 	});
-});
-
-describe('guessStyleFromContainer', () => {
-	const options = { baseUrl: 'http://example.com', tiles: ['tiles/{z}/{x}/{y}'] };
-
-	it('should handle supported tile formats correctly', async () => {
-		const container = getMockedContainer();
-		const style = await guessStyleFromContainer(container, options);
-
-		expect(style).toBeDefined();
-		expect(style.sources).toBeDefined();
-		expect(style.layers.length).toBe(4);
-
-		const source = style.sources.vectorSource as TileJSONSpecificationVector;
-		expect(source.vector_layers).toBeDefined();
-		expect(source.vector_layers.length).toBe(1);
-	});
-
-	it('should throw an error for unsupported tile formats', async () => {
-		const container = getMockedContainer({ tileFormat: 'docx' });
-
-		await expect(guessStyleFromContainer(container, options))
-			.rejects
-			.toThrow('format "docx" is not supported');
-	});
-
-	function getMockedContainer(opt: { tileFormat?: string } = {}): Container {
-		return {
-			getHeader: async (): Promise<Header> => Promise.resolve({
-				tileFormat: opt.tileFormat ?? 'pbf',
-			} as Header),
-			getMetadata: async (): Promise<string> => Promise.resolve(JSON.stringify({
-				vector_layers: [{
-					id: 'id',
-					fields: {},
-				}],
-			})),
-		} as Container;
-	}
 });

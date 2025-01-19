@@ -1,3 +1,3 @@
 
-export type { GuessStyleOptions, GuessContainerOptions } from './types.js';
-export { guessStyle, guessStyleFromContainer } from './guess_style.js';
+export type { GuessStyleOptions } from './guess_style.js';
+export { guessStyle } from './guess_style.js';

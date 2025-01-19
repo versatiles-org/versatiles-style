@@ -30,24 +30,8 @@ describe('isTileJSONSpecification', () => {
 		expect(() => isTileJSONSpecification(1)).toThrow('spec must be an object');
 	});
 
-	it('should throw an error if type is unknown', () => {
-		expect(() => isTileJSONSpecification({ ...validRasterSpec, type: 'cake' })).toThrow('spec.type must be "raster" or "vector"');
-	});
-
-	it('should throw an error if raster source has incompatible format', () => {
-		expect(() => isTileJSONSpecification({ ...validRasterSpec, format: 'pbf' })).toThrow('spec.format must be "avif", "jpg", "png", or "webp" for raster sources');
-	});
-
-	it('should throw an error if vector source has incompatible format', () => {
-		expect(() => isTileJSONSpecification({ ...validVectorSpec, format: 'png' })).toThrow('spec.format must be "pbf" for vector sources');
-	});
-
 	it('should throw an error if the tiles property is missing', () => {
 		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow('spec.tiles must be an array of strings');
-	});
-
-	it('should throw an error for missing vector_layers in vector source', () => {
-		expect(() => isTileJSONSpecification({ ...validVectorSpec, vector_layers: undefined })).toThrow('spec.vector_layers is invalid: Expected an array of layers');
 	});
 
 	it('should throw an error if the bounds property is invalid', () => {
@@ -76,7 +60,6 @@ describe('isTileJSONSpecification', () => {
 
 	describe('check every property', () => {
 		[
-			['tilejson', '"3.0.0"', '3.0.0', '2.0.0'],
 			['tiles', 'an array of strings', ['url'], 'url', [], [1], 1],
 			['attribution', 'a string if present', 'valid', 1],
 			['bounds', 'an array of four numbers if present', [1, 2, 3, 4], ['1', '2', '3', '4'], [1, 2, 3], [], 'invalid'],
@@ -84,7 +67,6 @@ describe('isTileJSONSpecification', () => {
 			['data', 'an array of strings if present', ['url'], 'url', [1], 1],
 			['description', 'a string if present', 'valid', 1],
 			['fillzoom', 'a positive integer if present', 5, 'invalid', -1],
-			['format', 'a string', 'pbf', 1],
 			['grids', 'an array of strings if present', ['1', '2', '3', '4'], [1, 2, 3, 4], 'invalid'],
 			['legend', 'a string if present', 'valid', 1],
 			['maxzoom', 'a positive integer if present', 5, 'invalid', -1],

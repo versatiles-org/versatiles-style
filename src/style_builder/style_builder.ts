@@ -3,7 +3,7 @@ import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { basename, deepClone, resolveUrl } from '../lib/utils.js';
-import type { MaplibreLayer, MaplibreLayerDefinition, MaplibreStyle } from '../types/maplibre.js';
+import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
 import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
@@ -20,7 +20,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 
 	public abstract readonly defaultFonts: StyleBuilderFontStrings<Subclass>;
 
-	public build(options?: StyleBuilderOptions<Subclass>): MaplibreStyle {
+	public build(options?: StyleBuilderOptions<Subclass>): StyleSpecification {
 
 		options ??= {};
 
@@ -51,7 +51,7 @@ export default abstract class StyleBuilder<Subclass extends StyleBuilder<Subclas
 		}
 
 		// get empty shortbread style
-		const style: MaplibreStyle = getShortbreadTemplate();
+		const style = getShortbreadTemplate();
 
 		const styleRuleOptions: StyleRulesOptions<typeof this> = {
 			colors,

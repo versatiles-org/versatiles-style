@@ -1,122 +1,43 @@
-import type { TileJSONSpecification, TileJSONSpecificationBasic, MaplibreStyle, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
-import { isTileJSONSpecification, isVectorLayers } from '../types/index.js';
-import { resolveUrl } from '../lib/utils.js';
-import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { Container } from '@versatiles/container';
+import type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
+import { isTileJSONSpecification } from '../types/index.js';
+import { deepClone, resolveUrl } from '../lib/utils.js';
+import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification, RasterSourceSpecification, SourceSpecification, SpriteSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { colorful } from '../styles/index.js';
-import type { GuessContainerOptions, GuessStyleOptions } from './types.js';
 import { Color } from '../color/index.js';
+import { isRasterTileJSONSpecification } from '../types/tilejson.js';
 
-export function guessStyle(opt: GuessStyleOptions): MaplibreStyle {
-	const { format } = opt;
-	const tilejsonBasic: TileJSONSpecificationBasic = {
-		tilejson: '3.0.0',
-		attribution: opt.attribution,
-		tiles: opt.tiles,
-		scheme: opt.scheme,
-		bounds: opt.bounds,
-		center: opt.center,
-		description: opt.description,
-		fillzoom: opt.fillzoom,
-		grids: opt.grids,
-		legend: opt.legend,
-		minzoom: opt.minzoom,
-		maxzoom: opt.maxzoom,
-		name: opt.name,
-		template: opt.template,
-	};
-
-	const { baseUrl } = opt;
-	if (typeof baseUrl === 'string') {
-		tilejsonBasic.tiles = tilejsonBasic.tiles.map(url => resolveUrl(baseUrl, url));
-	}
-
-	let k: keyof typeof tilejsonBasic;
-	for (k in tilejsonBasic) {
-
-		if (tilejsonBasic[k] === undefined) delete tilejsonBasic[k];
-	}
-
-	let tilejson: TileJSONSpecification;
-	let vectorLayers: unknown[] | undefined;
-	switch (format) {
-		case 'avif':
-		case 'jpg':
-		case 'png':
-		case 'webp':
-			tilejson = { ...tilejsonBasic, type: 'raster', format };
-			break;
-		case 'pbf':
-			vectorLayers = opt.vectorLayers;
-			if (!isVectorLayers(vectorLayers)) throw Error('property vector_layers is invalid');
-			tilejson = { ...tilejsonBasic, type: 'vector', format, vector_layers: vectorLayers };
-			break;
-		default:
-			throw Error(`format "${String(format)}" is not supported`);
-	}
-
-	if (!isTileJSONSpecification(tilejson)) throw Error();
-
-	let style: MaplibreStyle;
-	switch (tilejson.type) {
-		case 'raster':
-			style = getImageStyle(tilejson);
-			break;
-		case 'vector':
-			if (isShortbread(tilejson)) {
-				style = getShortbreadStyle(tilejson, opt);
-			} else {
-				style = getInspectorStyle(tilejson);
-			}
-	}
-
-	if (opt.minzoom ?? 0) style.zoom ??= opt.minzoom;
-	if (opt.bounds) style.center ??= [
-		(opt.bounds[0] + opt.bounds[2]) / 2,
-		(opt.bounds[1] + opt.bounds[3]) / 2,
-	];
-	if (opt.center) style.center = opt.center;
-
-	return style;
+export interface GuessStyleOptions {
+	baseUrl?: string;
+	glyphs?: string;
+	sprite?: SpriteSpecification;
 }
 
-export async function guessStyleFromContainer(container: Container, options: GuessContainerOptions): Promise<MaplibreStyle> {
-	const header = await container.getHeader();
-	const metadata = await container.getMetadata();
+export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyleOptions): StyleSpecification {
+	tileJSON = deepClone(tileJSON);
 
-	const format = header.tileFormat;
-
-	switch (format) {
-		case 'avif':
-		case 'jpg':
-		case 'pbf':
-		case 'png':
-		case 'webp':
-			break;
-		default:
-			throw Error(`format "${String(format)}" is not supported`);
+	if (options && options.baseUrl) {
+		const { baseUrl } = options;
+		tileJSON.tiles = tileJSON.tiles.map(url => resolveUrl(baseUrl, url));
 	}
 
-	let vectorLayers;
-	if (typeof metadata === 'string') {
-		try {
-			const t = JSON.parse(metadata) as object;
-			if (('vector_layers' in t) && Array.isArray(t.vector_layers)) vectorLayers = t.vector_layers;
-		} catch (error) {
-			console.log(error);
+	if (!isTileJSONSpecification(tileJSON)) throw Error('Invalid TileJSON specification');
+
+	let style: StyleSpecification;
+	if (isRasterTileJSONSpecification(tileJSON)) {
+		style = getRasterStyle(tileJSON);
+	} else {
+		if (isShortbread(tileJSON)) {
+			style = getShortbreadStyle(tileJSON, {
+				baseUrl: options?.baseUrl,
+				glyphs: options?.glyphs,
+				sprite: options?.sprite,
+			});
+		} else {
+			style = getInspectorStyle(tileJSON);
 		}
 	}
 
-	const guessStyleOptions: GuessStyleOptions = {
-		...options,
-		format,
-		bounds: header.bbox,
-		minzoom: header.zoomMin,
-		maxzoom: header.zoomMax,
-		vectorLayers,
-	};
-
-	return guessStyle(guessStyleOptions);
+	return style;
 }
 
 function isShortbread(spec: TileJSONSpecificationVector): boolean {
@@ -130,7 +51,7 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 	return shortbreadIds.every(id => layerIds.has(id));
 }
 
-function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: string }): MaplibreStyle {
+function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: SpriteSpecification }): StyleSpecification {
 	return colorful({
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,
@@ -139,7 +60,7 @@ function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { 
 	});
 }
 
-function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
+function getInspectorStyle(spec: TileJSONSpecificationVector): StyleSpecification {
 	const sourceName = 'vectorSource';
 
 	const layers: {
@@ -207,7 +128,7 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 	return {
 		version: 8,
 		sources: {
-			[sourceName]: spec,
+			[sourceName]: sourceFromSpec(spec, 'vector'),
 		},
 		layers: [
 			...layers.background,
@@ -218,15 +139,28 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): MaplibreStyle {
 	};
 }
 
-function getImageStyle(spec: TileJSONSpecificationRaster): MaplibreStyle {
+function getRasterStyle(spec: TileJSONSpecificationRaster): StyleSpecification {
 	const sourceName = 'rasterSource';
 	return {
 		version: 8,
-		sources: { [sourceName]: spec },
+		sources: {
+			[sourceName]: sourceFromSpec(spec, 'raster'),
+		},
 		layers: [{
 			id: 'raster',
 			type: 'raster',
 			source: sourceName,
 		}],
 	};
+}
+
+function sourceFromSpec(spec: TileJSONSpecification, type: 'raster' | 'vector'): SourceSpecification {
+	const source: RasterSourceSpecification | VectorSourceSpecification = { tiles: spec.tiles, type };
+
+	if (spec.minzoom != null) source.minzoom = spec.minzoom;
+	if (spec.maxzoom != null) source.maxzoom = spec.maxzoom;
+	if (spec.attribution != null) source.attribution = spec.attribution;
+	if (spec.scheme != null) source.scheme = spec.scheme;
+
+	return source;
 }

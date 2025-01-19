@@ -30,7 +30,6 @@ async function getMockedTar(): Promise<typeof import('tar-stream')> {
 	return import('tar-stream');
 }
 
-
 jest.unstable_mockModule('./config-sprites', () => ({
 	default: {
 		ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4 },

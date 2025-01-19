@@ -1,10 +1,8 @@
-
-
-import type { MaplibreStyle } from '../types/index.js';
+import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { getShortbreadTemplate } from './template.js';
 
 describe('getShortbreadTemplate', () => {
-	const styleTemplate: MaplibreStyle = getShortbreadTemplate();
+	const styleTemplate = getShortbreadTemplate();
 
 	it('returns a style object with the correct version', () => {
 		expect(styleTemplate).toHaveProperty('version', 8);
@@ -16,7 +14,6 @@ describe('getShortbreadTemplate', () => {
 
 	it('contains metadata with expected properties', () => {
 		expect(styleTemplate).toHaveProperty('metadata');
-		expect(styleTemplate.metadata).toHaveProperty('maputnik:renderer', 'mbgljs');
 		expect(styleTemplate.metadata).toHaveProperty('license', 'https://creativecommons.org/publicdomain/zero/1.0/');
 	});
 
@@ -27,10 +24,9 @@ describe('getShortbreadTemplate', () => {
 
 	it('defines sources with required properties', () => {
 		expect(styleTemplate).toHaveProperty('sources');
-		const sources = styleTemplate.sources['versatiles-shortbread'];
+		const sources = styleTemplate.sources['versatiles-shortbread'] as VectorSourceSpecification;
 		expect(sources).toHaveProperty('type', 'vector');
 		expect(sources).toHaveProperty('scheme', 'xyz');
-		expect(sources).toHaveProperty('format', 'pbf');
 		expect(sources).toHaveProperty('tiles');
 		expect(sources.tiles).toContain('https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}');
 	});
@@ -43,29 +39,5 @@ describe('getShortbreadTemplate', () => {
 	it('has layers array initialized as empty', () => {
 		expect(styleTemplate).toHaveProperty('layers');
 		expect(styleTemplate.layers).toEqual([]);
-	});
-
-	describe('sources vector_layers validation', () => {
-
-		expect(styleTemplate).toBeDefined();
-		expect(styleTemplate.sources).toBeDefined();
-
-		const { vector_layers } = styleTemplate.sources['versatiles-shortbread'];
-
-		expect(typeof vector_layers).toBe('object');
-
-		it('contains vector_layers with id and fields', () => {
-			expect(Array.isArray(vector_layers)).toBeTruthy();
-			vector_layers.forEach(layer => {
-				expect(layer).toHaveProperty('id');
-				expect(layer).toHaveProperty('fields');
-			});
-		});
-
-		it('has maxzoom set to 14 for all vector layers', () => {
-			vector_layers.forEach(layer => {
-				expect(layer).toHaveProperty('maxzoom', 14);
-			});
-		});
 	});
 });
