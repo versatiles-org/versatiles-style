@@ -1,7 +1,7 @@
 
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { styles } from '../src/index.js';
+import * as styles from '../src/styles/index.ts';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'node:zlib';

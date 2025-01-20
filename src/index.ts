@@ -1,5 +1,11 @@
-export type * from './styles/index.js';
-export * as styles from './styles/index.js';
+export type { colorful, eclipse, graybeard, neutrino } from './styles/index.js';
+import { colorful, eclipse, graybeard, neutrino } from './styles/index.js';
+export const styles = {
+	colorful,
+	eclipse,
+	graybeard,
+	neutrino,
+};
 
 export type { GuessStyleOptions } from './guess_style/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
