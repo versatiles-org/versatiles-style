@@ -69,13 +69,13 @@ describe('recolor', () => {
 		it('should increase saturation', () => {
 			const colors = getTestColors();
 			recolorArray(colors, { saturate: 0.5 });
-			expect(colors2string(colors)).toBe('FFAA5500,00FFAA55,5500FFAA,AA5500,D46F2B');
+			expect(colors2string(colors)).toBe('FFAA5500,00FFAA55,5500FFAA,AA5500,BF7340');
 		});
 
 		it('should maximize saturation', () => {
 			const colors = getTestColors();
 			recolorArray(colors, { saturate: 1.0 });
-			expect(colors2string(colors)).toBe('FFAA5500,00FFAA55,5500FFAA,AA5500,FF6600');
+			expect(colors2string(colors)).toBe('FFAA5500,00FFAA55,5500FFAA,AA5500,D46F2B');
 		});
 	});
 
@@ -243,7 +243,7 @@ describe('recolorArray', () => {
 			'#00FFAA55',
 			'#5500FFAA',
 			'#AA5500',
-			'#D46F2B',
+			'#BF7340',
 		]);
 
 		recolorArray(colors, { brightness: 0.5 });
@@ -252,7 +252,7 @@ describe('recolorArray', () => {
 			'#80FFD555',
 			'#AA80FFAA',
 			'#D5AA80',
-			'#EAB795',
+			'#DFB99F',
 		]);
 	});
 });
@@ -286,7 +286,7 @@ describe('CachedRecolor', () => {
 			'#00FFAA55',
 			'#5500FFAA',
 			'#AA5500',
-			'#D46F2B',
+			'#BF7340',
 		]);
 	});
 });

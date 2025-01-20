@@ -147,12 +147,15 @@ describe('HSL Class', () => {
 	});
 
 	describe('saturate', () => {
-		let color: HSL;
-		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
+		let color: HSL, grey: HSL;
+		beforeEach(() => {
+			color = new HSL(120, 50, 50, 0.8)
+			grey = new HSL(120, 0, 50, 0.8);
+		});
 
 		test('increases saturation correctly', () => {
-			color.saturate(0.5);
-			expect(color.asArray()).toStrictEqual([120, 75, 50, 0.8]); // Saturation increased by 50%
+			expect(color.saturate(0.5).asArray()).toStrictEqual([120, 75, 50, 0.8]);
+			expect(grey.saturate(0.5).asArray()).toStrictEqual([120, 0, 50, 0.8]);
 		});
 
 		test('decreases saturation correctly', () => {

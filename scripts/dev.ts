@@ -24,7 +24,7 @@ const INDEX = `<!DOCTYPE html>
 <body>
 	<div id="map"></div>
 	<script>
-		const style = VersaTilesStyle.colorful({});
+		const style = VersaTilesStyle.styles.graybeard({});
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>

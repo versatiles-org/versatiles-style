@@ -112,11 +112,7 @@ export class HSL extends Color {
 	}
 
 	saturate(ratio: number): HSL {
-		if (ratio < 0) {
-			this.s = clamp(this.s * (1 + ratio), 0, 100);
-		} else {
-			this.s = clamp(100 - (100 - this.s) * (1 - ratio), 0, 100);
-		}
+		this.s = clamp(this.s * (1 + ratio), 0, 100);
 		return this;
 	}
 
