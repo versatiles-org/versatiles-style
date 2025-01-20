@@ -18,7 +18,10 @@ export default [
 			commonjs({ extensions: ['.js', '.ts'] }),
 			nodeResolve(),
 			terser(),
-		]
+		],
+		onLog(level, log, handler) {
+			if (log.code === 'CIRCULAR_DEPENDENCY') return;
+		}
 	},
 	{
 		input: './release/versatiles-style/index.d.ts',

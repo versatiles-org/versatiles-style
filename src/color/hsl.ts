@@ -17,7 +17,7 @@ export class HSL extends Color {
 		this.a = clamp(a, 0, 1);
 	}
 
-	asArray(): [number,number,number,number] {
+	asArray(): [number, number, number, number] {
 		return [this.h, this.s, this.l, this.a];
 	}
 
