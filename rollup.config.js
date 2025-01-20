@@ -21,6 +21,7 @@ export default [
 		],
 		onLog(level, log, handler) {
 			if (log.code === 'CIRCULAR_DEPENDENCY') return;
+			handler(level, log);
 		}
 	},
 	{
