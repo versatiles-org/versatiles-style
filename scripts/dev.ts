@@ -4,7 +4,7 @@ import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { request } from 'node:https';
-import { getMimeType } from './lib/mime';
+import { getMimeType } from './lib/mime.js';
 import { rollup } from 'rollup';
 
 const PORT = 8080;
@@ -93,7 +93,8 @@ async function getStyles() {
 			typescript({
 				compilerOptions: {
 					lib: ['ESNext'],
-					module: 'ESNext',
+					module: 'NodeNext',
+					moduleResolution: 'bundler',
 					target: 'ES2022',
 					strict: true,
 					esModuleInterop: true,
@@ -104,7 +105,6 @@ async function getStyles() {
 					allowImportingTsExtensions: false,
 					noEmit: true,
 					sourceMap: false,
-					moduleResolution: 'bundler',
 				},
 				include: ['src/**/*.ts'],
 				exclude: ['**/*.test.ts']

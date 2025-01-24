@@ -1,5 +1,5 @@
-export { colorful, eclipse, graybeard, neutrino, type StyleBuilderFunction } from './styles/index';
-import { colorful, eclipse, graybeard, neutrino } from './styles/index';
+export { colorful, eclipse, graybeard, neutrino, type StyleBuilderFunction } from './styles/index.js';
+import { colorful, eclipse, graybeard, neutrino } from './styles/index.js';
 export const styles = {
 	colorful,
 	eclipse,
@@ -7,12 +7,12 @@ export const styles = {
 	neutrino,
 };
 
-export type { GuessStyleOptions } from './guess_style/index';
-export type { RGB, HSL, HSV, RandomColorOptions } from './color/index';
-export type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './types/tilejson';
-export type { VectorLayer } from './types/index';
-export type { StyleBuilderOptions, Language, StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts } from './style_builder/types';
-export type { RecolorOptions } from './style_builder/recolor';
+export type { GuessStyleOptions } from './guess_style/index.js';
+export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
+export type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector } from './types/tilejson.js';
+export type { VectorLayer } from './types/index.js';
+export type { StyleBuilderOptions, Language, StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts } from './style_builder/types.js';
+export type { RecolorOptions } from './style_builder/recolor.js';
 
-export { guessStyle } from './guess_style/index';
-export { Color } from './color/index';
+export { guessStyle } from './guess_style/index.js';
+export { Color } from './color/index.js';

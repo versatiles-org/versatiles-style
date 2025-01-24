@@ -1,8 +1,8 @@
-import { Color } from './abstract';
-import { HSL } from './hsl';
-import { HSV } from './hsv';
-import randomColor from './random';
-import { RGB } from './rgb';
+import { Color } from './abstract.js';
+import { HSL } from './hsl.js';
+import { HSV } from './hsv.js';
+import randomColor from './random.js';
+import { RGB } from './rgb.js';
 
 Color.parse = function (input: string | Color): Color {
 	if (input instanceof Color) return input;
@@ -31,8 +31,8 @@ Color.RGB = RGB;
 
 Color.random = randomColor;
 
-export type { RandomColorOptions } from './random';
-export type { HSL } from './hsl';
-export type { HSV } from './hsv';
-export type { RGB } from './rgb';
+export type { RandomColorOptions } from './random.js';
+export type { HSL } from './hsl.js';
+export type { HSV } from './hsv.js';
+export type { RGB } from './rgb.js';
 export { Color };

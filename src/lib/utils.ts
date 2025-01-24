@@ -1,4 +1,4 @@
-import { Color } from '../color/index';
+import { Color } from '../color/index.js';
 
 // Utility function to deep clone an object
 export function deepClone<T>(obj: T): T {

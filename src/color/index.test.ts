@@ -1,7 +1,7 @@
-import { Color } from './index';
-import { HSL } from './hsl';
-import { HSV } from './hsv';
-import { RGB } from './rgb';
+import { Color } from './index.js';
+import { HSL } from './hsl.js';
+import { HSV } from './hsv.js';
+import { RGB } from './rgb.js';
 
 describe('Color Conversions', () => {
 
@@ -113,7 +113,7 @@ describe('Color Class Properties', () => {
 
 describe('Exported Module', () => {
 	test('named export is Color', async () => {
-		const module = await import('./index');
+		const module = await import('./index.js');
 		expect(module.Color).toBe(Color);
 	});
 });

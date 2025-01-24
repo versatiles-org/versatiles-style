@@ -1,5 +1,5 @@
-import type { Color } from '../color/index';
-import type { RecolorOptions } from './recolor';
+import type { Color } from '../color/index.js';
+import type { RecolorOptions } from './recolor.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 /** Represents language suffixes used in map styles. */

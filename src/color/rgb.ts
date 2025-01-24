@@ -1,7 +1,7 @@
-import { HSL } from './hsl';
-import { HSV } from './hsv';
-import { Color } from './abstract';
-import { clamp, formatFloat } from './utils';
+import { HSL } from './hsl.js';
+import { HSV } from './hsv.js';
+import { Color } from './abstract.js';
+import { clamp, formatFloat } from './utils.js';
 
 export class RGB extends Color {
 	readonly r: number = 0; // between 0 and 255

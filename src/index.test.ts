@@ -1,7 +1,7 @@
 
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { VectorLayer } from './index';
-import { guessStyle, styles } from './index';
+import type { VectorLayer } from './index.js';
+import { guessStyle, styles } from './index.js';
 
 const { colorful, eclipse, graybeard, neutrino } = styles;
 

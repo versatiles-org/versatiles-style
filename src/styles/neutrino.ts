@@ -1,5 +1,5 @@
-import { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types';
-import Colorful from './colorful';
+import { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types.js';
+import Colorful from './colorful.js';
 
 export default class Neutrino extends Colorful {
 	public readonly name: string = 'Neutrino';

@@ -1,5 +1,5 @@
-import type { ShortbreadProperty } from './properties';
-import propertyLookup from './properties';
+import type { ShortbreadProperty } from './properties.js';
+import propertyLookup from './properties.js';
 
 describe('propertyLookup', () => {
 	it('should be a Map', () => {

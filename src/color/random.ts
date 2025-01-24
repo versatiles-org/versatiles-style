@@ -1,5 +1,5 @@
-import { HSV } from './hsv';
-import { mod } from './utils';
+import { HSV } from './hsv.js';
+import { mod } from './utils.js';
 
 
 type Range = [number, number];

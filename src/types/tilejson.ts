@@ -1,4 +1,4 @@
-import type { VectorLayer } from './vector_layer';
+import type { VectorLayer } from './vector_layer.js';
 
 /** Basic structure for TileJSON specification, applicable to both raster and vector types. */
 export interface TileJSONSpecificationRaster {

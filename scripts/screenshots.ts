@@ -1,6 +1,6 @@
 import mbgl from '@maplibre/maplibre-gl-native';
 import sharp from 'sharp';
-import { StyleBuilderFunction, styles } from '../src/index';
+import { StyleBuilderFunction, styles } from '../src/index.js';
 
 Promise.all([
 	draw('colorful', styles.colorful),

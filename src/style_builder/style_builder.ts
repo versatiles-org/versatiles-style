@@ -1,11 +1,11 @@
-import { Color } from '../color/index';
-import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index';
-import { decorate } from './decorator';
-import { CachedRecolor, getDefaultRecolorFlags } from './recolor';
-import { basename, deepClone, resolveUrl } from '../lib/utils';
-import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre';
-import type { StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts, StyleBuilderOptions } from './types';
-import type { StyleRules, StyleRulesOptions } from './types';
+import { Color } from '../color/index.js';
+import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
+import { decorate } from './decorator.js';
+import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
+import { basename, deepClone, resolveUrl } from '../lib/utils.js';
+import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
+import type { StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts, StyleBuilderOptions } from './types.js';
+import type { StyleRules, StyleRulesOptions } from './types.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 

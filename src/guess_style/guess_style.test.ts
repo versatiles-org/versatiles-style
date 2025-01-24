@@ -1,7 +1,7 @@
 
-import type { TileJSONSpecification, VectorLayer } from '../types/index';
-import { guessStyle } from './guess_style';
-import { getShortbreadVectorLayers } from '../shortbread/template';
+import type { TileJSONSpecification, VectorLayer } from '../types/index.js';
+import { guessStyle } from './guess_style.js';
+import { getShortbreadVectorLayers } from '../shortbread/template.js';
 import { SourceSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 describe('guessStyle', () => {

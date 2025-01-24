@@ -1,5 +1,5 @@
-import { StyleBuilder } from '../style_builder/style_builder';
-import type { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types';
+import { StyleBuilder } from '../style_builder/style_builder.js';
+import type { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types.js';
 
 export default class Colorful extends StyleBuilder {
 	public readonly name: string = 'Colorful';
