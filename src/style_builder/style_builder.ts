@@ -4,7 +4,7 @@ import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { basename, deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
-import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontStrings, StyleBuilderOptions } from './types.js';
+import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontKeys, StyleBuilderFonts, StyleBuilderOptions } from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -18,7 +18,7 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 	public abstract readonly defaultColors: StyleBuilderColorStrings<Subclass>;
 
-	public abstract readonly defaultFonts: StyleBuilderFontStrings<Subclass>;
+	public abstract readonly defaultFonts: StyleBuilderFonts;
 
 	public build(options?: StyleBuilderOptions<Subclass>): StyleSpecification {
 
@@ -44,7 +44,8 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 		const fonts = deepClone(this.defaultFonts);
 		if (options.fonts) {
-			for (const key in options.fonts) {
+			let key: StyleBuilderFontKeys;
+			for (key in options.fonts) {
 				const fontName = options.fonts[key];
 				if (fontName != null) fonts[key] = fontName;
 			}

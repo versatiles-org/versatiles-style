@@ -38,7 +38,7 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 	colors?: Partial<StyleBuilderColorStrings<T>>;
 
 	// An object specifying overrides for default font names, keyed by the font names.
-	fonts?: Partial<StyleBuilderFontStrings<T>>;
+	fonts?: Partial<StyleBuilderFonts>;
 
 	// Options for color adjustments and transformations applied to the entire style.
 	recolor?: RecolorOptions;
@@ -48,24 +48,21 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 export type StyleBuilderColorKeys<T extends StyleBuilder<T>> = keyof T['defaultColors'];
 
 /** Defines the keys for font properties in a style builder. */
-export type StyleBuilderFontKeys<T extends StyleBuilder<T>> = keyof T['defaultFonts'];
+export type StyleBuilderFontKeys = 'regular' | 'bold';
 
 /** Records string values for color properties in a style builder. */
 export type StyleBuilderColorStrings<T extends StyleBuilder<T>> = Record<StyleBuilderColorKeys<T>, string>;
-
-/** Records string values for font properties in a style builder. */
-export type StyleBuilderFontStrings<T extends StyleBuilder<T>> = Record<StyleBuilderFontKeys<T>, string>;
 
 /** Records Color objects for color properties in a style builder. */
 export type StyleBuilderColors<T extends StyleBuilder<T>> = Record<StyleBuilderColorKeys<T>, Color>;
 
 /** Records string values for font properties in a style builder. */
-export type StyleBuilderFonts<T extends StyleBuilder<T>> = Record<StyleBuilderFontKeys<T>, string>;
+export type StyleBuilderFonts = { [key in StyleBuilderFontKeys]: string };
 
 /** Defines options for style rules in a style builder. */
 export interface StyleRulesOptions<T extends StyleBuilder<T>> {
 	colors: StyleBuilderColors<T>;
-	fonts: StyleBuilderFontStrings<T>;
+	fonts: StyleBuilderFonts;
 	language: Language;
 }
 

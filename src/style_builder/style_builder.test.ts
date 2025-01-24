@@ -8,7 +8,7 @@ import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {
 	public readonly name = 'mock';
 
-	public defaultFonts = { regular: 'Arial' };
+	public defaultFonts = { regular: 'Arial', bold: 'Courier' };
 
 	public defaultColors = { primary: '#FF8800' };
 
@@ -61,7 +61,7 @@ describe('StyleBuilder', () => {
 		expect(builder.getDefaultOptions()).toStrictEqual({
 			baseUrl: '',
 			colors: { primary: '#FF8800' },
-			fonts: { regular: 'Arial' },
+			fonts: { regular: 'Arial', bold: 'Courier' },
 			glyphs: '',
 			hideLabels: false,
 			language: undefined,
