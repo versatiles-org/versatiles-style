@@ -9,36 +9,45 @@
 
 # VersaTiles Style
 
-Generates styles and sprites for MapLibre.
+**VersaTiles Style** generates styles and sprites for MapLibre.
 
-# Styles
+---
 
-style name | preview
------------|--------------------------------------------------------------------------
-colorful   | <img width="384" src="_media/colorful.png" alt="colorful style" />
-graybeard  | <img width="384" src="_media/graybeard.png" alt="graybeard style" />
-eclipse    | <img width="384" src="_media/eclipse.png" alt="eclipse style" />
-neutrino   | <img width="384" src="_media/neutrino.png" alt="neutrino style" />
+## Styles Overview
 
-# Use styles for versatiles.org
+| Style Name    | Preview                                                                   |
+|---------------|---------------------------------------------------------------------------|
+| **colorful**  | <img width="384" src="_media/colorful.png" alt="colorful style" />   |
+| **graybeard** | <img width="384" src="_media/graybeard.png" alt="graybeard style" /> |
+| **eclipse**   | <img width="384" src="_media/eclipse.png" alt="eclipse style" />     |
+| **neutrino**  | <img width="384" src="_media/neutrino.png" alt="neutrino style" />   |
 
-You in the the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/) you can find:
-- [`styles.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz) containing all styles, each in multiple languages.  
-Be aware that these styles use `tiles.versatiles.org` as source for tiles, fonts (glyphs) and icons (sprites). 
-- [`sprites.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz) containing sprites, used e.g. for map icons
-- [`versatiles-style.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz) containing a JavaScript file to generate your own style in the browser.
+---
 
-# Generating styles on-the-fly
+## Using VersaTiles Styles
 
-## Generating styles in the frontend (web browser)
+### Prebuilt Styles and Sprites
 
-Download latest release:
+Download the assets from the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/):
+
+- **[styles.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz):** Contains all styles in multiple languages.
+  - **Note:** These styles use `tiles.versatiles.org` as the source for tiles, fonts (glyphs), and icons (sprites).
+- **[sprites.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz):** Includes map icons and other sprites.
+- **[versatiles-style.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz):** Contains a JavaScript file to generate styles dynamically in the browser.
+
+---
+
+## Generating Styles On-the-Fly
+
+### Frontend Usage (Web Browser)
+
+Download the latest release:
 
 ```bash
 curl -Ls "https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz" | gzip -d | tar -xf -
 ```
 
-Use it in:
+Integrate it into your HTML application:
 
 ```html
 <div id="map"></div>
@@ -58,56 +67,79 @@ Use it in:
 </script>
 ```
 
-## Generating styles in the backend (Node.js)
+### Backend Usage (Node.js)
 
-Install `@versatiles/style` via NPM:
+Install the library via NPM:
 
 ```bash
 npm install @versatiles/style
 ```
 
-Use it in Node.js:
+Generate styles programmatically:
 
 ```javascript
 import { colorful } from '@versatiles/style';
-let style = colorful({
+import { writeFileSync } from 'node:fs';
+
+const style = colorful({
   language: 'en',
 });
 writeFileSync('style.json', JSON.stringify(style));
 ```
 
-### Methods for generating styles
+---
 
-This library provides:
-- `style = colorful(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/colorful.md)
-- `style = eclipse(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/eclipse.md)
-- `style = graybeard(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/graybeard.md)
-- `style = neutrino(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/neutrino.md)
+## Style Generation Methods
 
-[Where `options` is an optional object](https://github.com/versatiles-org/versatiles-style/blob/main/docs/interfaces/StyleBuilderOptions.md)
+The library offers the following style generation methods:
 
-### Method: `guessStyle(options)`
+- `colorful(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/colorful.md)
+- `eclipse(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/eclipse.md)
+- `graybeard(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/graybeard.md)
+- `neutrino(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/neutrino.md)
+
+**`options`**: An optional object to customize the styles. [Learn more](https://github.com/versatiles-org/versatiles-style/blob/main/docs/interfaces/StyleBuilderOptions.md)
+
+### Guess Style Method
 
 ```javascript
 const style = guessStyle(options);
 ```
-[documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/guessStyle.md)
+[Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/guessStyle.md)
 
-# Build
+---
 
-Please note that for building new sprites you need `optipng`.
+## Build Instructions
 
-## SVG Sources
+### Prerequisites
 
-* SVG sources should consist only of paths and not contain any `transform()`s.
-* Colors and styles are ignored.
-* All lengths must be in pixels without unit.
+To build new sprites, ensure `optipng` is installed.
 
-## Configuration
+### SVG Source Requirements
 
-Iconsets can be defined in [`scripts/config-sprites.ts`](_media/config-sprites.ts)
+- SVGs must consist only of paths and should not contain any `transform()` attributes.
+- Styles and colors within the SVG are ignored.
+- All length values must be specified in pixels without units.
 
-# Licenses
+### Configuration
 
-* Sourcecode: [Unlicense](_media/LICENSE.md)
-* Iconsets and rendered Spritemaps: [CC0 1.0 Universal](_media/LICENSE-1.md)
+Define icon sets in the configuration file: [`scripts/config-sprites.ts`](_media/config-sprites.ts)
+
+---
+
+## Development
+
+Run the project in development mode:
+
+```bash
+npm run dev
+```
+
+A local server will be available at [http://localhost:8080](http://localhost:8080). Use it to select a style, edit definitions in `src/styles/...`, and reload the page to view the changes.
+
+---
+
+## Licenses
+
+- **Source Code:** [Unlicense](_media/LICENSE.md)
+- **Iconsets and Rendered Spritemaps:** [CC0 1.0 Universal](_media/LICENSE-1.md)
