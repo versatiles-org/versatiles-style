@@ -120,12 +120,14 @@ export class RGB extends Color {
 		return this;
 	}
 
-	static parse(str: string): RGB {
-		str = str.toLowerCase().replaceAll(/[^0-9a-z.#,()]/g, '')
+	static parse(input: string | Color): RGB {
+		if (input instanceof Color) return input.asRGB();
+
+		input = input.toLowerCase().replaceAll(/[^0-9a-z.#,()]/g, '')
 
 		let match;
 
-		match = str.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/);
+		match = input.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/);
 		if (match) {
 			const r = parseInt(match[1], 16);
 			const g = parseInt(match[2], 16);
@@ -134,7 +136,7 @@ export class RGB extends Color {
 			return new RGB(r, g, b, a);
 		}
 
-		match = str.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/);
+		match = input.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/);
 		if (match) {
 			const r = parseInt(match[1], 16) * 17;
 			const g = parseInt(match[2], 16) * 17;
@@ -143,9 +145,9 @@ export class RGB extends Color {
 			return new RGB(r, g, b, a);
 		}
 
-		str = str.trim().toLowerCase().replaceAll(' ', '');
+		input = input.trim().toLowerCase().replaceAll(' ', '');
 
-		match = str.match(/^rgb\((\d+),(\d+),(\d+)\)$/);
+		match = input.match(/^rgb\((\d+),(\d+),(\d+)\)$/);
 		if (match) {
 			const r = parseInt(match[1]);
 			const g = parseInt(match[2]);
@@ -153,7 +155,7 @@ export class RGB extends Color {
 			return new RGB(r, g, b);
 		}
 
-		match = str.match(/^rgba\((\d+),(\d+),(\d+),([.\d]+)\)$/);
+		match = input.match(/^rgba\((\d+),(\d+),(\d+),([.\d]+)\)$/);
 		if (match) {
 			const r = parseInt(match[1]);
 			const g = parseInt(match[2]);
@@ -162,7 +164,7 @@ export class RGB extends Color {
 			return new RGB(r, g, b, a);
 		}
 
-		throw new Error(`Invalid RGB color string: "${str}"`);
+		throw new Error(`Invalid RGB color string: "${input}"`);
 	}
 
 

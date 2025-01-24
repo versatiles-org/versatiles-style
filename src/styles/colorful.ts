@@ -1,5 +1,5 @@
 import { StyleBuilder } from '../style_builder/style_builder';
-import type { StyleRules, StyleRulesOptions } from '../style_builder/types';
+import type { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types';
 
 export default class Colorful extends StyleBuilder {
 	public readonly name: string = 'Colorful';
@@ -9,7 +9,7 @@ export default class Colorful extends StyleBuilder {
 		bold: 'noto_sans_bold',
 	};
 
-	public defaultColors = {
+	public defaultColors: StyleBuilderColors = {
 
 		/** Color for land areas on the map. */
 		land: '#F9F4EE',

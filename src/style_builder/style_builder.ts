@@ -4,7 +4,7 @@ import { decorate } from './decorator';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor';
 import { basename, deepClone, resolveUrl } from '../lib/utils';
 import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre';
-import type { StyleBuilderColorKeys, StyleBuilderColorStrings, StyleBuilderColors, StyleBuilderFontKeys, StyleBuilderFonts, StyleBuilderOptions } from './types';
+import type { StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts, StyleBuilderOptions } from './types';
 import type { StyleRules, StyleRulesOptions } from './types';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -16,7 +16,7 @@ export abstract class StyleBuilder {
 
 	public abstract readonly name: string;
 
-	public abstract readonly defaultColors: StyleBuilderColorStrings;
+	public abstract readonly defaultColors: StyleBuilderColors;
 
 	public abstract readonly defaultFonts: StyleBuilderFonts;
 
@@ -36,7 +36,7 @@ export abstract class StyleBuilder {
 
 		const colors = this.getColors(this.defaultColors);
 		if (options.colors) {
-			let key: StyleBuilderColorKeys;
+			let key: keyof StyleBuilderColorsEnsured;
 			for (key in options.colors) {
 				const value = options.colors[key];
 				if (value != null) colors[key] = Color.parse(value);
@@ -45,7 +45,7 @@ export abstract class StyleBuilder {
 
 		const fonts = deepClone(this.defaultFonts);
 		if (options.fonts) {
-			let key: StyleBuilderFontKeys;
+			let key: keyof StyleBuilderFonts;
 			for (key in options.fonts) {
 				const fontName = options.fonts[key];
 				if (fontName != null) fonts[key] = fontName;
@@ -102,9 +102,9 @@ export abstract class StyleBuilder {
 		return style;
 	}
 
-	public getColors(colors: StyleBuilderColorStrings): StyleBuilderColors {
-		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys, string][];
-		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColors;
+	public getColors(colors: StyleBuilderColors): StyleBuilderColorsEnsured {
+		const entriesString = Object.entries(colors) as [keyof StyleBuilderColors, string | Color][];
+		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColorsEnsured;
 		return result;
 	}
 
@@ -124,9 +124,9 @@ export abstract class StyleBuilder {
 
 	protected transformDefaultColors(callback: (color: Color) => Color): void {
 		const colors = this.getColors(this.defaultColors);
-		let key: StyleBuilderColorKeys;
+		let key: keyof StyleBuilderColorsEnsured;
 		for (key in colors) {
-			this.defaultColors[key] = callback(colors[key]).asHex();
+			this.defaultColors[key] = callback(colors[key]);
 		}
 	}
 

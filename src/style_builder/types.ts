@@ -47,7 +47,7 @@ export interface StyleBuilderOptions {
 	/**
 	 * An object specifying overrides for default color values, keyed by the color names.
 	 */
-	colors?: Partial<StyleBuilderColorStrings>;
+	colors?: Partial<StyleBuilderColors>;
 
 	/**
 	 * An object specifying overrides for default font names, keyed by the font names.
@@ -60,27 +60,65 @@ export interface StyleBuilderOptions {
 	recolor?: RecolorOptions;
 }
 
-/** Defines the keys for color properties in a style builder. */
-export type StyleBuilderColorKeys = 'agriculture' | 'boundary' | 'building' | 'buildingbg' | 'burial' | 'commercial' | 'construction' | 'cycle' | 'danger' | 'disputed' | 'education' | 'foot' | 'glacier' | 'grass' | 'hospital' | 'industrial' | 'label' | 'labelHalo' | 'land' | 'leisure' | 'motorway' | 'motorwaybg' | 'park' | 'parking' | 'poi' | 'prison' | 'rail' | 'residential' | 'rock' | 'sand' | 'shield' | 'street' | 'streetbg' | 'subway' | 'symbol' | 'trunk' | 'trunkbg' | 'waste' | 'water' | 'wetland' | 'wood';
-
-/** Defines the keys for font properties in a style builder. */
-export type StyleBuilderFontKeys = 'regular' | 'bold';
-
 /** Records string values for color properties in a style builder. */
-export type StyleBuilderColorStrings = { [key in StyleBuilderColorKeys]: string };
+export interface StyleBuilderColors {
+	agriculture: Color | string;
+	boundary: Color | string;
+	building: Color | string;
+	buildingbg: Color | string;
+	burial: Color | string;
+	commercial: Color | string;
+	construction: Color | string;
+	cycle: Color | string;
+	danger: Color | string;
+	disputed: Color | string;
+	education: Color | string;
+	foot: Color | string;
+	glacier: Color | string;
+	grass: Color | string;
+	hospital: Color | string;
+	industrial: Color | string;
+	label: Color | string;
+	labelHalo: Color | string;
+	land: Color | string;
+	leisure: Color | string;
+	motorway: Color | string;
+	motorwaybg: Color | string;
+	park: Color | string;
+	parking: Color | string;
+	poi: Color | string;
+	prison: Color | string;
+	rail: Color | string;
+	residential: Color | string;
+	rock: Color | string;
+	sand: Color | string;
+	shield: Color | string;
+	street: Color | string;
+	streetbg: Color | string;
+	subway: Color | string;
+	symbol: Color | string;
+	trunk: Color | string;
+	trunkbg: Color | string;
+	waste: Color | string;
+	water: Color | string;
+	wetland: Color | string;
+	wood: Color | string;
+};
 
-/** Records Color objects for color properties in a style builder. */
-export type StyleBuilderColors = { [key in StyleBuilderColorKeys]: Color };
+export type StyleBuilderColorsEnsured = Record<keyof StyleBuilderColors, Color>;
 
 /** Records string values for font properties in a style builder. */
-export type StyleBuilderFonts = { [key in StyleBuilderFontKeys]: string };
+export type StyleBuilderFonts = {
+	regular: string;
+	bold: string;
+};
 
 /** Defines options for style rules in a style builder. */
 export interface StyleRulesOptions {
 	/**
 	 * The set of colors used in the style builder.
 	 */
-	colors: StyleBuilderColors;
+	colors: StyleBuilderColorsEnsured;
 
 	/**
 	 * The set of fonts used in the style builder.

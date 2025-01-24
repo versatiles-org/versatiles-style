@@ -86,20 +86,22 @@ export class HSL extends Color {
 		);
 	}
 
-	static parse(str: string): HSL {
-		str = str.replace(/\s+/g, '').toLowerCase();
+	static parse(input: string | Color): HSL {
+		if (input instanceof Color) return input.asHSL();
 
-		let match = str.match(/^hsl\((?<h>[-+0-9.]+)(?:deg)?,(?<s>[-+0-9.]+)%,(?<l>[-+0-9.]+)%\)$/);
+		input = input.replace(/\s+/g, '').toLowerCase();
+
+		let match = input.match(/^hsl\((?<h>[-+0-9.]+)(?:deg)?,(?<s>[-+0-9.]+)%,(?<l>[-+0-9.]+)%\)$/);
 		if (match) {
 			return new HSL(parseFloat(match.groups!.h), parseFloat(match.groups!.s), parseFloat(match.groups!.l));
 		}
 
-		match = str.match(/^hsla\((?<h>[-+0-9.]+)(?:deg)?,(?<s>[-+0-9.]+)%,(?<l>[-+0-9.]+)%,(?<a>[-+0-9.]+)\)$/);
+		match = input.match(/^hsla\((?<h>[-+0-9.]+)(?:deg)?,(?<s>[-+0-9.]+)%,(?<l>[-+0-9.]+)%,(?<a>[-+0-9.]+)\)$/);
 		if (match) {
 			return new HSL(parseFloat(match.groups!.h), parseFloat(match.groups!.s), parseFloat(match.groups!.l), parseFloat(match.groups!.a));
 		}
 
-		throw new Error(`Invalid HSL color string: "${str}"`);
+		throw new Error(`Invalid HSL color string: "${input}"`);
 	}
 
 	invertLuminosity(): HSL {

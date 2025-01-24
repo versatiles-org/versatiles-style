@@ -106,15 +106,15 @@ Defined in: [color/abstract.ts:9](https://github.com/versatiles-org/versatiles-s
 
 ### parse()
 
-> `static` **parse**: (`str`) => [`Color`](Color.md)
+> `static` **parse**: (`input`) => [`Color`](Color.md)
 
 Defined in: [color/abstract.ts:7](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L7)
 
 #### Parameters
 
-##### str
+##### input
 
-`string`
+`string` | [`Color`](Color.md)
 
 #### Returns
 

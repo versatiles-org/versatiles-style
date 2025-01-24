@@ -1,13 +1,13 @@
- 
+
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { Language } from '../style_builder/index';
 import type { MaplibreLayerDefinition } from '../types/index';
+import { Language } from '../style_builder/types';
 
 export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;
 	const nameField = language ? '{name_' + language + '}' : '{name}';
-	
+
 	return [
 
 		// background

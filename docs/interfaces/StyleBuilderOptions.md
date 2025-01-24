@@ -25,7 +25,7 @@ Default: document.location.origin (in the browser), or 'https://tiles.versatiles
 
 ### colors?
 
-> `optional` **colors**: `Partial`\<[`StyleBuilderColorStrings`](../type-aliases/StyleBuilderColorStrings.md)\>
+> `optional` **colors**: `Partial`\<[`StyleBuilderColors`](StyleBuilderColors.md)\>
 
 Defined in: [style\_builder/types.ts:50](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L50)
 

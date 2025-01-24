@@ -4,7 +4,7 @@ import { RandomColorOptions } from './random';
 import type { RGB } from './rgb';
 
 export abstract class Color {
-	static parse: (str: string) => Color;
+	static parse: (input: Color | string) => Color;
 	static HSL: typeof HSL;
 	static HSV: typeof HSV;
 	static RGB: typeof RGB;

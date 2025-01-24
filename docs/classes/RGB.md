@@ -238,7 +238,7 @@ Defined in: [color/rgb.ts:37](https://github.com/versatiles-org/versatiles-style
 
 > **brightness**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:200](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L200)
+Defined in: [color/rgb.ts:202](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L202)
 
 #### Parameters
 
@@ -276,7 +276,7 @@ Defined in: [color/rgb.ts:20](https://github.com/versatiles-org/versatiles-style
 
 > **contrast**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:189](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L189)
+Defined in: [color/rgb.ts:191](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L191)
 
 #### Parameters
 
@@ -298,7 +298,7 @@ Defined in: [color/rgb.ts:189](https://github.com/versatiles-org/versatiles-styl
 
 > **darken**(`ratio`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:234](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L234)
+Defined in: [color/rgb.ts:236](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L236)
 
 #### Parameters
 
@@ -320,7 +320,7 @@ Defined in: [color/rgb.ts:234](https://github.com/versatiles-org/versatiles-styl
 
 > **fade**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:243](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L243)
+Defined in: [color/rgb.ts:245](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L245)
 
 #### Parameters
 
@@ -342,7 +342,7 @@ Defined in: [color/rgb.ts:243](https://github.com/versatiles-org/versatiles-styl
 
 > **gamma**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:169](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L169)
+Defined in: [color/rgb.ts:171](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L171)
 
 #### Parameters
 
@@ -364,7 +364,7 @@ Defined in: [color/rgb.ts:169](https://github.com/versatiles-org/versatiles-styl
 
 > **invert**(): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:180](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L180)
+Defined in: [color/rgb.ts:182](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L182)
 
 #### Returns
 
@@ -396,7 +396,7 @@ Defined in: [color/abstract.ts:38](https://github.com/versatiles-org/versatiles-
 
 > **lighten**(`ratio`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:225](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L225)
+Defined in: [color/rgb.ts:227](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L227)
 
 #### Parameters
 
@@ -500,7 +500,7 @@ Defined in: [color/abstract.ts:78](https://github.com/versatiles-org/versatiles-
 
 > **tint**(`value`, `tintColor`): [`RGB`](RGB.md)
 
-Defined in: [color/rgb.ts:213](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L213)
+Defined in: [color/rgb.ts:215](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L215)
 
 #### Parameters
 
@@ -572,15 +572,15 @@ Defined in: [color/rgb.ts:119](https://github.com/versatiles-org/versatiles-styl
 
 ### parse()
 
-> `static` **parse**(`str`): [`RGB`](RGB.md)
+> `static` **parse**(`input`): [`RGB`](RGB.md)
 
 Defined in: [color/rgb.ts:123](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/rgb.ts#L123)
 
 #### Parameters
 
-##### str
+##### input
 
-`string`
+`string` | [`Color`](Color.md)
 
 #### Returns
 

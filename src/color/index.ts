@@ -4,22 +4,24 @@ import { HSV } from './hsv';
 import randomColor from './random';
 import { RGB } from './rgb';
 
-Color.parse = function (str: string): Color {
-	str = str.trim().toLowerCase();
+Color.parse = function (input: string | Color): Color {
+	if (input instanceof Color) return input;
 
-	if (str.startsWith('#')) return RGB.parse(str);
+	input = input.trim().toLowerCase();
 
-	const prefix = str.replace(/\d.*/, '').trim().toLowerCase();
+	if (input.startsWith('#')) return RGB.parse(input);
+
+	const prefix = input.replace(/\d.*/, '').trim().toLowerCase();
 
 	switch (prefix) {
 		case 'rgb(':
 		case 'rgba(':
-			return RGB.parse(str);
+			return RGB.parse(input);
 		case 'hsl(':
 		case 'hsla(':
-			return HSL.parse(str);
+			return HSL.parse(input);
 		default:
-			throw Error('Unknown color format: ' + str);
+			throw Error('Unknown color format: ' + input);
 	}
 }
 

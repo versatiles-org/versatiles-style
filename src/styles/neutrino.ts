@@ -1,4 +1,4 @@
-import { StyleRules, StyleRulesOptions } from '../style_builder/types';
+import { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types';
 import Colorful from './colorful';
 
 export default class Neutrino extends Colorful {
@@ -9,7 +9,7 @@ export default class Neutrino extends Colorful {
 		bold: 'noto_sans_bold',
 	};
 
-	public defaultColors = {
+	public defaultColors: StyleBuilderColors = {
 
 		/** Color representing land areas. */
 		land: '#f6f0f6',

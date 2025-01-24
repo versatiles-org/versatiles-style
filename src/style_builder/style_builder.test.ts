@@ -50,10 +50,11 @@ describe('StyleBuilder', () => {
 	});
 
 	it('should transform colors correctly', () => {
-		const initialColor: string = builder.defaultColors.land;
+		const initialColor = Color.parse(builder.defaultColors.land).asHex();
 		builder.invertColors();
-		expect(builder.defaultColors.land).not.toBe(initialColor);
-		expect(builder.defaultColors.land).toBe(Color.parse(initialColor).invert().asHex());
+		const newColor = Color.parse(builder.defaultColors.land).asHex();
+		expect(newColor).not.toBe(initialColor);
+		expect(newColor).toBe(Color.parse(initialColor).invert().asHex());
 	});
 
 	it('should create default options', () => {
