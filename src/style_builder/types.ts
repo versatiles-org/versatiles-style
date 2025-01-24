@@ -1,5 +1,4 @@
 import type { Color } from '../color/index';
-import type { StyleBuilder } from './style_builder';
 import type { RecolorOptions } from './recolor';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -8,7 +7,7 @@ import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 /** Represents language suffixes used in map styles. */
 export type Language = 'de' | 'en' | null;
 
-export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
+export interface StyleBuilderOptions {
 	// The base URL for loading external resources like tiles, sprites, and fonts.
 	// Default: document.location.origin (in the browser), or 'https://tiles.versatiles.org'
 	baseUrl?: string;

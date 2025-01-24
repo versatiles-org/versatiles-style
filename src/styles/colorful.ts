@@ -1,7 +1,7 @@
 import { StyleBuilder } from '../style_builder/style_builder';
 import type { StyleRules, StyleRulesOptions } from '../style_builder/types';
 
-export default class Colorful extends StyleBuilder<Colorful> {
+export default class Colorful extends StyleBuilder {
 	public readonly name: string = 'Colorful';
 
 	public defaultFonts = {

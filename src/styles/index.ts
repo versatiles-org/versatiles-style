@@ -12,45 +12,18 @@ import Neutrino from './neutrino';
 import Empty from './empty';
 
 
-// generate style option types
-export type ColorfulOptions = StyleBuilderOptions<Colorful>;
-export type EclipseOptions = StyleBuilderOptions<Eclipse>;
-export type GraybeardOptions = StyleBuilderOptions<Graybeard>;
-export type NeutrinoOptions = StyleBuilderOptions<Neutrino>;
-export type EmptyOptions = StyleBuilderOptions<Empty>;
-
-export type SomeOptions = ColorfulOptions | EclipseOptions | EmptyOptions | GraybeardOptions | NeutrinoOptions;
-
-
-// generate style builder types
-export type MakeStyle<T extends StyleBuilder<T>, O extends StyleBuilderOptions<T>> =
-	((options?: O) => StyleSpecification) &
-	{
-		getOptions: () => O;
-	};
-
-export type ColorfulBuilder = MakeStyle<Colorful, ColorfulOptions>;
-export type EclipseBuilder = MakeStyle<Eclipse, EclipseOptions>;
-export type GraybeardBuilder = MakeStyle<Graybeard, GraybeardOptions>;
-export type NeutrinoBuilder = MakeStyle<Neutrino, NeutrinoOptions>;
-export type EmptyBuilder = MakeStyle<Empty, EmptyOptions>;
-
-export type SomeBuilder = ColorfulBuilder | EclipseBuilder | EmptyBuilder | GraybeardBuilder | NeutrinoBuilder;
-
-
-
-function getStyleBuilder<T extends StyleBuilder<T>>(styleBuilder: new () => T): MakeStyle<T, StyleBuilderOptions<T>> {
-	const fn = function (options?: StyleBuilderOptions<T>): StyleSpecification {
+function getStyleBuilder(styleBuilder: new () => StyleBuilder) {
+	const fn = function (options?: StyleBuilderOptions): StyleSpecification {
 		return new styleBuilder().build(options);
 	};
-	fn.getOptions = (): StyleBuilderOptions<T> => new styleBuilder().getDefaultOptions();
+	fn.getOptions = (): StyleBuilderOptions => new styleBuilder().getDefaultOptions();
 	return fn;
 }
 
 
 // generate style builders
-export const colorful: ColorfulBuilder = getStyleBuilder<Colorful>(Colorful);
-export const eclipse: EclipseBuilder = getStyleBuilder<Eclipse>(Eclipse);
-export const graybeard: GraybeardBuilder = getStyleBuilder<Graybeard>(Graybeard);
-export const neutrino: NeutrinoBuilder = getStyleBuilder<Neutrino>(Neutrino);
-export const empty: EmptyBuilder = getStyleBuilder<Empty>(Empty);
+export const colorful = getStyleBuilder(Colorful);
+export const eclipse = getStyleBuilder(Eclipse);
+export const graybeard = getStyleBuilder(Graybeard);
+export const neutrino = getStyleBuilder(Neutrino);
+export const empty = getStyleBuilder(Empty);

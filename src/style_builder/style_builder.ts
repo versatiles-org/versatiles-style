@@ -11,7 +11,7 @@ import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 // StyleBuilder class definition
-export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
+export abstract class StyleBuilder {
 	readonly #sourceName = 'versatiles-shortbread';
 
 	public abstract readonly name: string;
@@ -20,7 +20,7 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 	public abstract readonly defaultFonts: StyleBuilderFonts;
 
-	public build(options?: StyleBuilderOptions<Subclass>): StyleSpecification {
+	public build(options?: StyleBuilderOptions): StyleSpecification {
 
 		options ??= {};
 
@@ -108,7 +108,7 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 		return result;
 	}
 
-	public getDefaultOptions(): StyleBuilderOptions<Subclass> {
+	public getDefaultOptions(): StyleBuilderOptions {
 		return {
 			baseUrl: '',
 			glyphs: '',
