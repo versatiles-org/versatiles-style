@@ -6,23 +6,23 @@ import { getMimeType } from './lib/mime';
 
 const PORT = 8080;
 
+type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino';
 
-const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => string) }[] = [
+const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
-	{ reg: /^\/\?colorful$/, type: 'mem', res: getStylePage('colorful') },
-	{ reg: /^\/\?eclipse$/, type: 'mem', res: getStylePage('eclipse') },
-	{ reg: /^\/\?graybeard$/, type: 'mem', res: getStylePage('graybeard') },
-	{ reg: /^\/\?neutrino$/, type: 'mem', res: getStylePage('neutrino') },
+	{ reg: /^\/\?colorful$/, type: 'mem', res: () => getStylePage('colorful') },
+	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
+	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
+	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
 	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/fonts/' },
-	{ reg: /^\/assets\/lib\/versatiles-style\//, type: 'local', res: '../../release/versatiles-style/' },
 	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/maplibre-gl/' },
 	{ reg: /^\//, type: 'proxy', res: 'https://tiles.versatiles.org/' },
 ];
 
 const DIR = new URL(import.meta.url).pathname;
 
-export const server = http.createServer((req, response) => {
+export const server = http.createServer(async (req, response) => {
 	const { url } = req;
 
 	if (!url) return error('Bad Request: Missing URL');
@@ -31,7 +31,7 @@ export const server = http.createServer((req, response) => {
 		const { reg, type, res } = entry;
 		const match = reg.exec(url);
 		if (match) {
-			const content = typeof res === 'function' ? res() : res;
+			const content = typeof res === 'function' ? await res() : res;
 			const relPath = url.slice(match[0].length);
 			switch (type) {
 				case 'mem': return respond('html', content);
@@ -90,7 +90,6 @@ function getPage(content: string) {
 	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 	<script src="/assets/lib/maplibre-gl/maplibre-gl.js"></script>
 	<link href="/assets/lib/maplibre-gl/maplibre-gl.css" rel="stylesheet">
-	<script src="/assets/lib/versatiles-style/versatiles-style.js"></script>
 
 	<style>
 		body { margin: 0; padding: 0; }
@@ -114,11 +113,14 @@ function getIndexPage() {
 	</ul>`);
 };
 
-function getStylePage(styleName: string) {
+async function getStylePage(styleName: StyleName) {
+	const versatilesStyles = (await import('../src/index?' + Date.now())).styles;
+	const styleBuilder = versatilesStyles[styleName];
+	const style = JSON.stringify(styleBuilder({ baseUrl: 'http://localhost:8080/' }));
 	return getPage(`
 	<div id="map"></div>
 	<script>
-		const style = VersaTilesStyle.styles.${styleName}({});
+		const style = ${style};
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>`);
