@@ -79,24 +79,19 @@ writeFileSync('style.json', JSON.stringify(style));
 ### Methods for generating styles
 
 This library provides:
-- `style = colorful(options);`
-- `style = eclipse(options);`
-- `style = graybeard(options);`
-- `style = neutrino(options);`
+- `style = colorful(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/colorful.md)
+- `style = eclipse(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/eclipse.md)
+- `style = graybeard(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/graybeard.md)
+- `style = neutrino(options);` [documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/neutrino.md)
 
-Where `options` is an optional object
+[Where `options` is an optional object](https://github.com/versatiles-org/versatiles-style/blob/main/docs/interfaces/StyleBuilderOptions.md)
 
 ### Method: `guessStyle(options)`
 
 ```javascript
 const style = guessStyle(options);
 ```
-
-**Parameters:**
-
-* <code>opt: TileJSONOption</code>
-
-**Returns:** <code>MaplibreStyle</code>
+[documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/guessStyle.md)
 
 # Build
 
