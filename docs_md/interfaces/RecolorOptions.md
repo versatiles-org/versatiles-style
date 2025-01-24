@@ -6,7 +6,7 @@
 
 # Interface: RecolorOptions
 
-Defined in: [style\_builder/recolor.ts:3](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L3)
+Defined in: [style\_builder/recolor.ts:3](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L3)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [style\_builder/recolor.ts:3](https://github.com/versatiles-org/vers
 
 > `optional` **brightness**: `number`
 
-Defined in: [style\_builder/recolor.ts:20](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L20)
+Defined in: [style\_builder/recolor.ts:20](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L20)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [style\_builder/recolor.ts:20](https://github.com/versatiles-org/ver
 
 > `optional` **contrast**: `number`
 
-Defined in: [style\_builder/recolor.ts:17](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L17)
+Defined in: [style\_builder/recolor.ts:17](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L17)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [style\_builder/recolor.ts:17](https://github.com/versatiles-org/ver
 
 > `optional` **gamma**: `number`
 
-Defined in: [style\_builder/recolor.ts:14](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L14)
+Defined in: [style\_builder/recolor.ts:14](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L14)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [style\_builder/recolor.ts:14](https://github.com/versatiles-org/ver
 
 > `optional` **invertBrightness**: `boolean`
 
-Defined in: [style\_builder/recolor.ts:5](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L5)
+Defined in: [style\_builder/recolor.ts:5](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L5)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [style\_builder/recolor.ts:5](https://github.com/versatiles-org/vers
 
 > `optional` **rotate**: `number`
 
-Defined in: [style\_builder/recolor.ts:8](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L8)
+Defined in: [style\_builder/recolor.ts:8](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L8)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [style\_builder/recolor.ts:8](https://github.com/versatiles-org/vers
 
 > `optional` **saturate**: `number`
 
-Defined in: [style\_builder/recolor.ts:11](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L11)
+Defined in: [style\_builder/recolor.ts:11](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L11)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [style\_builder/recolor.ts:11](https://github.com/versatiles-org/ver
 
 > `optional` **tint**: `number`
 
-Defined in: [style\_builder/recolor.ts:23](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L23)
+Defined in: [style\_builder/recolor.ts:23](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L23)
 
 ***
 
@@ -70,4 +70,4 @@ Defined in: [style\_builder/recolor.ts:23](https://github.com/versatiles-org/ver
 
 > `optional` **tintColor**: `string`
 
-Defined in: [style\_builder/recolor.ts:26](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/recolor.ts#L26)
+Defined in: [style\_builder/recolor.ts:26](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/recolor.ts#L26)

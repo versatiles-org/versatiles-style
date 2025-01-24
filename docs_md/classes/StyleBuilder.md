@@ -6,7 +6,7 @@
 
 # Class: `abstract` StyleBuilder
 
-Defined in: [style\_builder/style\_builder.ts:14](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L14)
+Defined in: [style\_builder/style\_builder.ts:14](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L14)
 
 ## Constructors
 
@@ -24,7 +24,7 @@ Defined in: [style\_builder/style\_builder.ts:14](https://github.com/versatiles-
 
 > `abstract` `readonly` **defaultColors**: [`StyleBuilderColorStrings`](../type-aliases/StyleBuilderColorStrings.md)
 
-Defined in: [style\_builder/style\_builder.ts:19](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L19)
+Defined in: [style\_builder/style\_builder.ts:19](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L19)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [style\_builder/style\_builder.ts:19](https://github.com/versatiles-
 
 > `abstract` `readonly` **defaultFonts**: [`StyleBuilderFonts`](../type-aliases/StyleBuilderFonts.md)
 
-Defined in: [style\_builder/style\_builder.ts:21](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L21)
+Defined in: [style\_builder/style\_builder.ts:21](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L21)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [style\_builder/style\_builder.ts:21](https://github.com/versatiles-
 
 > `abstract` `readonly` **name**: `string`
 
-Defined in: [style\_builder/style\_builder.ts:17](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L17)
+Defined in: [style\_builder/style\_builder.ts:17](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L17)
 
 ## Methods
 
@@ -48,7 +48,7 @@ Defined in: [style\_builder/style\_builder.ts:17](https://github.com/versatiles-
 
 > **build**(`options`?): `StyleSpecification`
 
-Defined in: [style\_builder/style\_builder.ts:23](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L23)
+Defined in: [style\_builder/style\_builder.ts:23](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L23)
 
 #### Parameters
 
@@ -66,7 +66,7 @@ Defined in: [style\_builder/style\_builder.ts:23](https://github.com/versatiles-
 
 > **getColors**(`colors`): [`StyleBuilderColors`](../type-aliases/StyleBuilderColors.md)
 
-Defined in: [style\_builder/style\_builder.ts:105](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L105)
+Defined in: [style\_builder/style\_builder.ts:105](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L105)
 
 #### Parameters
 
@@ -84,7 +84,7 @@ Defined in: [style\_builder/style\_builder.ts:105](https://github.com/versatiles
 
 > **getDefaultOptions**(): [`StyleBuilderOptions`](../interfaces/StyleBuilderOptions.md)
 
-Defined in: [style\_builder/style\_builder.ts:111](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L111)
+Defined in: [style\_builder/style\_builder.ts:111](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L111)
 
 #### Returns
 
@@ -96,7 +96,7 @@ Defined in: [style\_builder/style\_builder.ts:111](https://github.com/versatiles
 
 > `abstract` `protected` **getStyleRules**(`options`): [`StyleRules`](../type-aliases/StyleRules.md)
 
-Defined in: [style\_builder/style\_builder.ts:133](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L133)
+Defined in: [style\_builder/style\_builder.ts:133](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L133)
 
 #### Parameters
 
@@ -114,7 +114,7 @@ Defined in: [style\_builder/style\_builder.ts:133](https://github.com/versatiles
 
 > `protected` **transformDefaultColors**(`callback`): `void`
 
-Defined in: [style\_builder/style\_builder.ts:125](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/style_builder/style_builder.ts#L125)
+Defined in: [style\_builder/style\_builder.ts:125](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/style_builder.ts#L125)
 
 #### Parameters
 

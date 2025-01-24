@@ -6,7 +6,7 @@
 
 # Class: HSL
 
-Defined in: [color/hsl.ts:6](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L6)
+Defined in: [color/hsl.ts:6](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L6)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [color/hsl.ts:6](https://github.com/versatiles-org/versatiles-style/
 
 > **new HSL**(`h`, `s`, `l`, `a`): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:12](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L12)
+Defined in: [color/hsl.ts:12](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L12)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [color/hsl.ts:12](https://github.com/versatiles-org/versatiles-style
 
 > `readonly` **a**: `number` = `1`
 
-Defined in: [color/hsl.ts:10](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L10)
+Defined in: [color/hsl.ts:10](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L10)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [color/hsl.ts:10](https://github.com/versatiles-org/versatiles-style
 
 > `readonly` **h**: `number` = `0`
 
-Defined in: [color/hsl.ts:7](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L7)
+Defined in: [color/hsl.ts:7](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L7)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: [color/hsl.ts:7](https://github.com/versatiles-org/versatiles-style/
 
 > `readonly` **l**: `number` = `0`
 
-Defined in: [color/hsl.ts:9](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L9)
+Defined in: [color/hsl.ts:9](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L9)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: [color/hsl.ts:9](https://github.com/versatiles-org/versatiles-style/
 
 > `readonly` **s**: `number` = `0`
 
-Defined in: [color/hsl.ts:8](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L8)
+Defined in: [color/hsl.ts:8](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L8)
 
 ***
 
@@ -84,7 +84,7 @@ Defined in: [color/hsl.ts:8](https://github.com/versatiles-org/versatiles-style/
 
 > `static` **HSL**: *typeof* [`HSL`](HSL.md)
 
-Defined in: [color/abstract.ts:8](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L8)
+Defined in: [color/abstract.ts:8](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L8)
 
 #### Inherited from
 
@@ -96,7 +96,7 @@ Defined in: [color/abstract.ts:8](https://github.com/versatiles-org/versatiles-s
 
 > `static` **HSV**: *typeof* [`HSV`](HSV.md)
 
-Defined in: [color/abstract.ts:9](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L9)
+Defined in: [color/abstract.ts:9](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L9)
 
 #### Inherited from
 
@@ -108,7 +108,7 @@ Defined in: [color/abstract.ts:9](https://github.com/versatiles-org/versatiles-s
 
 > `static` **random**: (`options`?) => [`HSV`](HSV.md)
 
-Defined in: [color/abstract.ts:11](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L11)
+Defined in: [color/abstract.ts:11](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L11)
 
 #### Parameters
 
@@ -130,7 +130,7 @@ Defined in: [color/abstract.ts:11](https://github.com/versatiles-org/versatiles-
 
 > `static` **RGB**: *typeof* [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:10](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L10)
+Defined in: [color/abstract.ts:10](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L10)
 
 #### Inherited from
 
@@ -142,7 +142,7 @@ Defined in: [color/abstract.ts:10](https://github.com/versatiles-org/versatiles-
 
 > **asArray**(): \[`number`, `number`, `number`, `number`\]
 
-Defined in: [color/hsl.ts:20](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L20)
+Defined in: [color/hsl.ts:20](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L20)
 
 #### Returns
 
@@ -158,7 +158,7 @@ Defined in: [color/hsl.ts:20](https://github.com/versatiles-org/versatiles-style
 
 > **asHex**(): `string`
 
-Defined in: [color/abstract.ts:14](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L14)
+Defined in: [color/abstract.ts:14](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L14)
 
 #### Returns
 
@@ -174,7 +174,7 @@ Defined in: [color/abstract.ts:14](https://github.com/versatiles-org/versatiles-
 
 > **asHSL**(): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:45](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L45)
+Defined in: [color/hsl.ts:45](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L45)
 
 #### Returns
 
@@ -190,7 +190,7 @@ Defined in: [color/hsl.ts:45](https://github.com/versatiles-org/versatiles-style
 
 > **asHSV**(): [`HSV`](HSV.md)
 
-Defined in: [color/hsl.ts:53](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L53)
+Defined in: [color/hsl.ts:53](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L53)
 
 #### Returns
 
@@ -206,7 +206,7 @@ Defined in: [color/hsl.ts:53](https://github.com/versatiles-org/versatiles-style
 
 > **asRGB**(): [`RGB`](RGB.md)
 
-Defined in: [color/hsl.ts:60](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L60)
+Defined in: [color/hsl.ts:60](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L60)
 
 #### Returns
 
@@ -222,7 +222,7 @@ Defined in: [color/hsl.ts:60](https://github.com/versatiles-org/versatiles-style
 
 > **asString**(): `string`
 
-Defined in: [color/hsl.ts:37](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L37)
+Defined in: [color/hsl.ts:37](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L37)
 
 #### Returns
 
@@ -238,7 +238,7 @@ Defined in: [color/hsl.ts:37](https://github.com/versatiles-org/versatiles-style
 
 > **brightness**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:62](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L62)
+Defined in: [color/abstract.ts:62](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L62)
 
 #### Parameters
 
@@ -260,7 +260,7 @@ Defined in: [color/abstract.ts:62](https://github.com/versatiles-org/versatiles-
 
 > **clone**(): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:33](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L33)
+Defined in: [color/hsl.ts:33](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L33)
 
 #### Returns
 
@@ -276,7 +276,7 @@ Defined in: [color/hsl.ts:33](https://github.com/versatiles-org/versatiles-style
 
 > **contrast**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:58](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L58)
+Defined in: [color/abstract.ts:58](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L58)
 
 #### Parameters
 
@@ -298,7 +298,7 @@ Defined in: [color/abstract.ts:58](https://github.com/versatiles-org/versatiles-
 
 > **darken**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:70](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L70)
+Defined in: [color/abstract.ts:70](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L70)
 
 #### Parameters
 
@@ -320,7 +320,7 @@ Defined in: [color/abstract.ts:70](https://github.com/versatiles-org/versatiles-
 
 > **fade**(`value`): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:117](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L117)
+Defined in: [color/hsl.ts:117](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L117)
 
 #### Parameters
 
@@ -342,7 +342,7 @@ Defined in: [color/hsl.ts:117](https://github.com/versatiles-org/versatiles-styl
 
 > **gamma**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:50](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L50)
+Defined in: [color/abstract.ts:50](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L50)
 
 #### Parameters
 
@@ -364,7 +364,7 @@ Defined in: [color/abstract.ts:50](https://github.com/versatiles-org/versatiles-
 
 > **invert**(): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:54](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L54)
+Defined in: [color/abstract.ts:54](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L54)
 
 #### Returns
 
@@ -380,7 +380,7 @@ Defined in: [color/abstract.ts:54](https://github.com/versatiles-org/versatiles-
 
 > **invertLuminosity**(): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:105](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L105)
+Defined in: [color/hsl.ts:105](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L105)
 
 #### Returns
 
@@ -396,7 +396,7 @@ Defined in: [color/hsl.ts:105](https://github.com/versatiles-org/versatiles-styl
 
 > **lighten**(`value`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:66](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L66)
+Defined in: [color/abstract.ts:66](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L66)
 
 #### Parameters
 
@@ -418,7 +418,7 @@ Defined in: [color/abstract.ts:66](https://github.com/versatiles-org/versatiles-
 
 > **rotateHue**(`offset`): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:109](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L109)
+Defined in: [color/hsl.ts:109](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L109)
 
 #### Parameters
 
@@ -440,7 +440,7 @@ Defined in: [color/hsl.ts:109](https://github.com/versatiles-org/versatiles-styl
 
 > **round**(): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:24](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L24)
+Defined in: [color/hsl.ts:24](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L24)
 
 #### Returns
 
@@ -456,7 +456,7 @@ Defined in: [color/hsl.ts:24](https://github.com/versatiles-org/versatiles-style
 
 > **saturate**(`ratio`): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:113](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L113)
+Defined in: [color/hsl.ts:113](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L113)
 
 #### Parameters
 
@@ -478,7 +478,7 @@ Defined in: [color/hsl.ts:113](https://github.com/versatiles-org/versatiles-styl
 
 > **setHue**(`value`): [`HSV`](HSV.md)
 
-Defined in: [color/abstract.ts:78](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L78)
+Defined in: [color/abstract.ts:78](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L78)
 
 #### Parameters
 
@@ -500,7 +500,7 @@ Defined in: [color/abstract.ts:78](https://github.com/versatiles-org/versatiles-
 
 > **tint**(`value`, `tintColor`): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:74](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L74)
+Defined in: [color/abstract.ts:74](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L74)
 
 #### Parameters
 
@@ -526,7 +526,7 @@ Defined in: [color/abstract.ts:74](https://github.com/versatiles-org/versatiles-
 
 > **toHSL**(): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:49](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L49)
+Defined in: [color/hsl.ts:49](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L49)
 
 #### Returns
 
@@ -542,7 +542,7 @@ Defined in: [color/hsl.ts:49](https://github.com/versatiles-org/versatiles-style
 
 > **toHSV**(): [`HSV`](HSV.md)
 
-Defined in: [color/abstract.ts:30](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L30)
+Defined in: [color/abstract.ts:30](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L30)
 
 #### Returns
 
@@ -558,7 +558,7 @@ Defined in: [color/abstract.ts:30](https://github.com/versatiles-org/versatiles-
 
 > **toRGB**(): [`RGB`](RGB.md)
 
-Defined in: [color/abstract.ts:34](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/abstract.ts#L34)
+Defined in: [color/abstract.ts:34](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/abstract.ts#L34)
 
 #### Returns
 
@@ -574,7 +574,7 @@ Defined in: [color/abstract.ts:34](https://github.com/versatiles-org/versatiles-
 
 > `static` **parse**(`str`): [`HSL`](HSL.md)
 
-Defined in: [color/hsl.ts:89](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/color/hsl.ts#L89)
+Defined in: [color/hsl.ts:89](https://github.com/versatiles-org/versatiles-style/blob/main/src/color/hsl.ts#L89)
 
 #### Parameters
 

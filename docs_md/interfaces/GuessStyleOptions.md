@@ -6,7 +6,7 @@
 
 # Interface: GuessStyleOptions
 
-Defined in: [guess\_style/guess\_style.ts:9](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/guess_style/guess_style.ts#L9)
+Defined in: [guess\_style/guess\_style.ts:9](https://github.com/versatiles-org/versatiles-style/blob/main/src/guess_style/guess_style.ts#L9)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [guess\_style/guess\_style.ts:9](https://github.com/versatiles-org/v
 
 > `optional` **baseUrl**: `string`
 
-Defined in: [guess\_style/guess\_style.ts:10](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/guess_style/guess_style.ts#L10)
+Defined in: [guess\_style/guess\_style.ts:10](https://github.com/versatiles-org/versatiles-style/blob/main/src/guess_style/guess_style.ts#L10)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [guess\_style/guess\_style.ts:10](https://github.com/versatiles-org/
 
 > `optional` **glyphs**: `string`
 
-Defined in: [guess\_style/guess\_style.ts:11](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/guess_style/guess_style.ts#L11)
+Defined in: [guess\_style/guess\_style.ts:11](https://github.com/versatiles-org/versatiles-style/blob/main/src/guess_style/guess_style.ts#L11)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: [guess\_style/guess\_style.ts:11](https://github.com/versatiles-org/
 
 > `optional` **sprite**: `SpriteSpecification`
 
-Defined in: [guess\_style/guess\_style.ts:12](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/guess_style/guess_style.ts#L12)
+Defined in: [guess\_style/guess\_style.ts:12](https://github.com/versatiles-org/versatiles-style/blob/main/src/guess_style/guess_style.ts#L12)

@@ -3,6 +3,7 @@
 	"entryPoints": [
 		"./src/index.ts"
 	],
+	"gitRevision": "main",
 	"readme": "./README.MD",
 	"outputs": [
 		{

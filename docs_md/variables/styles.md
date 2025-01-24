@@ -8,7 +8,7 @@
 
 > `const` **styles**: `object`
 
-Defined in: [index.ts:3](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/index.ts#L3)
+Defined in: [index.ts:3](https://github.com/versatiles-org/versatiles-style/blob/main/src/index.ts#L3)
 
 ## Type declaration
 

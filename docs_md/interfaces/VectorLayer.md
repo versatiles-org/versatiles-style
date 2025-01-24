@@ -6,7 +6,7 @@
 
 # Interface: VectorLayer
 
-Defined in: [types/vector\_layer.ts:2](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L2)
+Defined in: [types/vector\_layer.ts:2](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L2)
 
 Represents the structure of a vector layer in a TileJSON specification.
 
@@ -16,7 +16,7 @@ Represents the structure of a vector layer in a TileJSON specification.
 
 > `optional` **description**: `string`
 
-Defined in: [types/vector\_layer.ts:5](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L5)
+Defined in: [types/vector\_layer.ts:5](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L5)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [types/vector\_layer.ts:5](https://github.com/versatiles-org/versati
 
 > **fields**: `Record`\<`string`, `"Boolean"` \| `"Number"` \| `"String"`\>
 
-Defined in: [types/vector\_layer.ts:4](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L4)
+Defined in: [types/vector\_layer.ts:4](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L4)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [types/vector\_layer.ts:4](https://github.com/versatiles-org/versati
 
 > **id**: `string`
 
-Defined in: [types/vector\_layer.ts:3](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L3)
+Defined in: [types/vector\_layer.ts:3](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L3)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [types/vector\_layer.ts:3](https://github.com/versatiles-org/versati
 
 > `optional` **maxzoom**: `number`
 
-Defined in: [types/vector\_layer.ts:7](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L7)
+Defined in: [types/vector\_layer.ts:7](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L7)
 
 ***
 
@@ -48,4 +48,4 @@ Defined in: [types/vector\_layer.ts:7](https://github.com/versatiles-org/versati
 
 > `optional` **minzoom**: `number`
 
-Defined in: [types/vector\_layer.ts:6](https://github.com/versatiles-org/versatiles-style/blob/d8cc33a46b85aeaa89bfc9bbd1ece1792d845335/src/types/vector_layer.ts#L6)
+Defined in: [types/vector\_layer.ts:6](https://github.com/versatiles-org/versatiles-style/blob/main/src/types/vector_layer.ts#L6)
