@@ -4,10 +4,10 @@ import { Color } from './abstract';
 import { clamp, formatFloat } from './utils';
 
 export class RGB extends Color {
-	r: number = 0; // between 0 and 255
-	g: number = 0;	// between 0 and 255
-	b: number = 0;	// between 0 and 255
-	a: number = 1;	// between 0 and 1
+	readonly r: number = 0; // between 0 and 255
+	readonly g: number = 0;	// between 0 and 255
+	readonly b: number = 0;	// between 0 and 255
+	readonly a: number = 1;	// between 0 and 1
 
 	constructor(r: number, g: number, b: number, a: number = 1) {
 		super();
@@ -26,11 +26,12 @@ export class RGB extends Color {
 	}
 
 	round(): RGB {
-		this.r = Math.round(this.r);
-		this.g = Math.round(this.g);
-		this.b = Math.round(this.b);
-		this.a = Math.round(this.a * 1000) / 1000;
-		return this;
+		return new RGB(
+			Math.round(this.r),
+			Math.round(this.g),
+			Math.round(this.b),
+			Math.round(this.a * 1000) / 1000,
+		);
 	}
 
 	asString(): string {
@@ -168,26 +169,32 @@ export class RGB extends Color {
 	gamma(value: number): RGB {
 		if (value < 1e-3) value = 1e-3;
 		if (value > 1e3) value = 1e3;
-		this.r = Math.pow(this.r / 255, value) * 255;
-		this.g = Math.pow(this.g / 255, value) * 255;
-		this.b = Math.pow(this.b / 255, value) * 255;
-		return this;
+		return new RGB(
+			Math.pow(this.r / 255, value) * 255,
+			Math.pow(this.g / 255, value) * 255,
+			Math.pow(this.b / 255, value) * 255,
+			this.a
+		);
 	}
 
 	invert(): RGB {
-		this.r = 255 - this.r;
-		this.g = 255 - this.g;
-		this.b = 255 - this.b;
-		return this;
+		return new RGB(
+			255 - this.r,
+			255 - this.g,
+			255 - this.b,
+			this.a
+		);
 	}
 
 	contrast(value: number): RGB {
 		if (value < 0) value = 0;
 		if (value > 1e6) value = 1e6;
-		this.r = clamp((this.r - 127.5) * value + 127.5, 0, 255);
-		this.g = clamp((this.g - 127.5) * value + 127.5, 0, 255);
-		this.b = clamp((this.b - 127.5) * value + 127.5, 0, 255);
-		return this;
+		return new RGB(
+			clamp((this.r - 127.5) * value + 127.5, 0, 255),
+			clamp((this.g - 127.5) * value + 127.5, 0, 255),
+			clamp((this.b - 127.5) * value + 127.5, 0, 255),
+			this.a
+		);
 	}
 
 	brightness(value: number): RGB {
@@ -195,42 +202,45 @@ export class RGB extends Color {
 		if (value > 1) value = 1;
 		const a = 1 - Math.abs(value);
 		const b = (value < 0) ? 0 : 255 * value;
-		this.r = this.r * a + b;
-		this.g = this.g * a + b;
-		this.b = this.b * a + b;
-		return this;
+		return new RGB(
+			this.r * a + b,
+			this.g * a + b,
+			this.b * a + b,
+			this.a
+		);
 	}
 
 	tint(value: number, tintColor: Color): RGB {
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		const hsv = this.asHSV();
-		hsv.h = tintColor.toHSV().h;
-		const rgbNew = hsv.toRGB();
-
-		rgbNew.r = this.r * (1 - value) + value * rgbNew.r;
-		rgbNew.g = this.g * (1 - value) + value * rgbNew.g;
-		rgbNew.b = this.b * (1 - value) + value * rgbNew.b;
-
-		return rgbNew;
+		const rgbNew = this.setHue(tintColor.toHSV().h).toRGB();
+		return new RGB(
+			this.r * (1 - value) + value * rgbNew.r,
+			this.g * (1 - value) + value * rgbNew.g,
+			this.b * (1 - value) + value * rgbNew.b,
+			this.a
+		)
 	}
 
 	lighten(ratio: number): RGB {
-		this.r = clamp(255 - (255 - this.r) * (1 - ratio), 0, 255);
-		this.g = clamp(255 - (255 - this.g) * (1 - ratio), 0, 255);
-		this.b = clamp(255 - (255 - this.b) * (1 - ratio), 0, 255);
-		return this;
+		return new RGB(
+			clamp(255 - (255 - this.r) * (1 - ratio), 0, 255),
+			clamp(255 - (255 - this.g) * (1 - ratio), 0, 255),
+			clamp(255 - (255 - this.b) * (1 - ratio), 0, 255),
+			this.a
+		);
 	}
 
 	darken(ratio: number): RGB {
-		this.r = clamp(this.r * (1 - ratio), 0, 255);
-		this.g = clamp(this.g * (1 - ratio), 0, 255);
-		this.b = clamp(this.b * (1 - ratio), 0, 255);
-		return this;
+		return new RGB(
+			clamp(this.r * (1 - ratio), 0, 255),
+			clamp(this.g * (1 - ratio), 0, 255),
+			clamp(this.b * (1 - ratio), 0, 255),
+			this.a
+		);
 	}
 
 	fade(value: number): RGB {
-		this.a *= 1 - value;
-		return this;
+		return new RGB(this.r, this.g, this.b, this.a * (1 - value));
 	}
 }

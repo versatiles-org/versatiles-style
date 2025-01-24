@@ -111,18 +111,15 @@ describe('HSL Class', () => {
 		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
 
 		test('inverts luminosity correctly', () => {
-			color.invertLuminosity();
-			expect(color.asArray()).toStrictEqual([120, 50, 50, 0.8]); // Luminosity inverted to 50%
+			expect(color.invertLuminosity().asArray()).toStrictEqual([120, 50, 50, 0.8]); // Luminosity inverted to 50%
 		});
 
 		test('handles edge cases for luminosity inversion', () => {
 			const black = new HSL(0, 0, 0, 1);
-			black.invertLuminosity();
-			expect(black.asArray()).toStrictEqual([0, 0, 100, 1]); // Black becomes white
+			expect(black.invertLuminosity().asArray()).toStrictEqual([0, 0, 100, 1]); // Black becomes white
 
 			const white = new HSL(0, 0, 100, 1);
-			white.invertLuminosity();
-			expect(white.asArray()).toStrictEqual([0, 0, 0, 1]); // White becomes black
+			expect(white.invertLuminosity().asArray()).toStrictEqual([0, 0, 0, 1]); // White becomes black
 		});
 	});
 
@@ -131,18 +128,15 @@ describe('HSL Class', () => {
 		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
 
 		test('rotates hue correctly within the range of 0-360', () => {
-			color.rotateHue(180);
-			expect(color.asArray()).toStrictEqual([300, 50, 50, 0.8]); // Hue rotated by 180 degrees
+			expect(color.rotateHue(180).asArray()).toStrictEqual([300, 50, 50, 0.8]); // Hue rotated by 180 degrees
 		});
 
 		test('handles negative rotation correctly', () => {
-			color.rotateHue(-270);
-			expect(color.asArray()).toStrictEqual([210, 50, 50, 0.8]); // Hue rotated negatively
+			expect(color.rotateHue(-270).asArray()).toStrictEqual([210, 50, 50, 0.8]); // Hue rotated negatively
 		});
 
 		test('handles rotations that exceed 360 degrees', () => {
-			color.rotateHue(540);
-			expect(color.asArray()).toStrictEqual([300, 50, 50, 0.8]); // Hue wrapped around to 300
+			expect(color.rotateHue(540).asArray()).toStrictEqual([300, 50, 50, 0.8]); // Hue wrapped around to 300
 		});
 	});
 
@@ -159,16 +153,13 @@ describe('HSL Class', () => {
 		});
 
 		test('decreases saturation correctly', () => {
-			color.saturate(-0.5);
-			expect(color.asArray()).toStrictEqual([120, 25, 50, 0.8]); // Saturation decreased by 50%
+			expect(color.saturate(-0.5).asArray()).toStrictEqual([120, 25, 50, 0.8]); // Saturation decreased by 50%
 		});
 
 		test('clamps saturation to the valid range', () => {
-			color.saturate(1.5);
-			expect(color.asArray()).toStrictEqual([120, 100, 50, 0.8]); // Saturation clamped to 100%
+			expect(color.saturate(1.5).asArray()).toStrictEqual([120, 100, 50, 0.8]); // Saturation clamped to 100%
 
-			color.saturate(-2);
-			expect(color.asArray()).toStrictEqual([120, 0, 50, 0.8]); // Saturation clamped to 0%
+			expect(color.saturate(-2).asArray()).toStrictEqual([120, 0, 50, 0.8]); // Saturation clamped to 0%
 		});
 	});
 
@@ -177,18 +168,15 @@ describe('HSL Class', () => {
 		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
 
 		test('reduces alpha correctly', () => {
-			color.fade(0.5);
-			expect(color.asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%
+			expect(color.fade(0.5).asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%
 		});
 
 		test('handles edge cases for fading', () => {
 			const opaque = new HSL(0, 50, 50, 1);
-			opaque.fade(1);
-			expect(opaque.asArray()).toStrictEqual([0, 50, 50, 0]); // Fully faded to transparent
+			expect(opaque.fade(1).asArray()).toStrictEqual([0, 50, 50, 0]); // Fully faded to transparent
 
 			const transparent = new HSL(0, 50, 50, 0);
-			transparent.fade(0.5);
-			expect(transparent.asArray()).toStrictEqual([0, 50, 50, 0]); // Remains fully transparent
+			expect(transparent.fade(0.5).asArray()).toStrictEqual([0, 50, 50, 0]); // Remains fully transparent
 		});
 	});
 });

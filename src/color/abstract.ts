@@ -75,5 +75,9 @@ export abstract class Color {
 		return this.toRGB().tint(value, tintColor);
 	}
 
+	setHue(value: number): HSV {
+		return this.toHSV().setHue(value);
+	}
+
 	abstract fade(value: number): Color;
 }

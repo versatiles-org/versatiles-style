@@ -4,10 +4,10 @@ import { RGB } from './rgb';
 import { clamp, mod } from './utils';
 
 export class HSV extends Color {
-	h: number = 0; // between 0 and 360
-	s: number = 0; // between 0 and 100
-	v: number = 0; // between 0 and 100
-	a: number = 1; // between 0 and 1
+	readonly h: number = 0; // between 0 and 360
+	readonly s: number = 0; // between 0 and 100
+	readonly v: number = 0; // between 0 and 100
+	readonly a: number = 1; // between 0 and 1
 
 	constructor(h: number, s: number, v: number, a: number = 1) {
 		super();
@@ -22,11 +22,12 @@ export class HSV extends Color {
 	}
 
 	round(): HSV {
-		this.h = Math.round(this.h);
-		this.s = Math.round(this.s);
-		this.v = Math.round(this.v);
-		this.a = Math.round(this.a * 1000) / 1000;
-		return this;
+		return new HSV(
+			Math.round(this.h),
+			Math.round(this.s),
+			Math.round(this.v),
+			Math.round(this.a * 1000) / 1000
+		);
 	}
 
 	asString(): string {
@@ -90,7 +91,10 @@ export class HSV extends Color {
 	}
 
 	fade(value: number): HSV {
-		this.a *= 1 - value;
-		return this;
+		return new HSV(this.h, this.s, this.v, this.a * (1 - value));
+	}
+
+	setHue(value: number): HSV {
+		return new HSV(value, this.s, this.v, this.a);
 	}
 }

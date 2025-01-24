@@ -4,10 +4,10 @@ import { RGB } from './rgb';
 import { clamp, formatFloat, mod } from './utils';
 
 export class HSL extends Color {
-	h: number = 0; // between 0 and 360
-	s: number = 0; // between 0 and 100
-	l: number = 0; // between 0 and 100
-	a: number = 1; // between 0 and 1
+	readonly h: number = 0; // between 0 and 360
+	readonly s: number = 0; // between 0 and 100
+	readonly l: number = 0; // between 0 and 100
+	readonly a: number = 1; // between 0 and 1
 
 	constructor(h: number, s: number, l: number, a: number = 1) {
 		super();
@@ -22,11 +22,12 @@ export class HSL extends Color {
 	}
 
 	round(): HSL {
-		this.h = Math.round(this.h);
-		this.s = Math.round(this.s);
-		this.l = Math.round(this.l);
-		this.a = Math.round(this.a * 1000) / 1000;
-		return this;
+		return new HSL(
+			Math.round(this.h),
+			Math.round(this.s),
+			Math.round(this.l),
+			Math.round(this.a * 1000) / 1000,
+		);
 	}
 
 	clone(): HSL {
@@ -102,22 +103,18 @@ export class HSL extends Color {
 	}
 
 	invertLuminosity(): HSL {
-		this.l = 100 - this.l;
-		return this;
+		return new HSL(this.h, this.s, 100 - this.l, this.a);
 	}
 
 	rotateHue(offset: number): HSL {
-		this.h = mod(this.h + offset, 360);
-		return this;
+		return new HSL(mod(this.h + offset, 360), this.s, this.l, this.a);
 	}
 
 	saturate(ratio: number): HSL {
-		this.s = clamp(this.s * (1 + ratio), 0, 100);
-		return this;
+		return new HSL(this.h, clamp(this.s * (1 + ratio), 0, 100), this.l, this.a);
 	}
 
 	fade(value: number): HSL {
-		this.a *= 1 - value;
-		return this;
+		return new HSL(this.h, this.s, this.l, this.a * (1 - value));
 	}
 }

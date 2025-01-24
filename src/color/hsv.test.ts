@@ -160,18 +160,15 @@ describe('HSV Class', () => {
 	describe('fade', () => {
 		test('reduces alpha correctly', () => {
 			const color = new HSV(120, 50, 50, 0.8);
-			color.fade(0.5);
-			expect(color.asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%
+			expect(color.fade(0.5).asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%
 		});
 
 		test('handles edge cases for fading', () => {
 			const opaque = new HSV(0, 50, 50, 1);
-			opaque.fade(1);
-			expect(opaque.asArray()).toStrictEqual([0, 50, 50, 0]); // Fully faded to transparent
+			expect(opaque.fade(1).asArray()).toStrictEqual([0, 50, 50, 0]); // Fully faded to transparent
 
 			const transparent = new HSV(0, 50, 50, 0);
-			transparent.fade(0.5);
-			expect(transparent.asArray()).toStrictEqual([0, 50, 50, 0]); // Remains fully transparent
+			expect(transparent.fade(0.5).asArray()).toStrictEqual([0, 50, 50, 0]); // Remains fully transparent
 		});
 	});
 });
