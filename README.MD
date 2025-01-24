@@ -83,71 +83,7 @@ This library provides:
 - `style = graybeard(options);`
 - `style = neutrino(options);`
 
-Where `options` is an optional object:
-
-```javascript
-const options: StyleBuilderOptions<Colorful> = {
-	// The base URL for loading external resources like tiles, sprites, and fonts.
-	// Default: document.location.origin (in the browser), or 'https://tiles.versatiles.org'
-	baseUrl?: string;
-
-	// The URL template for loading font glyphs, formatted with '{fontstack}' and '{range}' placeholders.
-	// Default: '/assets/glyphs/{fontstack}/{range}.pbf'
-	glyphs?: string;
-
-	// The URL for loading sprite images and metadata.
-	// Default: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]
-	sprite?: string | { id: string; url: string }[];
-
-	// An array of URL templates for loading map tiles, using '{z}', '{x}', and '{y}' placeholders.
-	// Default: ['/tiles/osm/{z}/{x}/{y}']
-	tiles?: string[];
-
-	// If set to true, hides all map labels.
-	// Default: false
-	hideLabels?: boolean;
-
-	// Set the language ('en', 'de') of all map labels.
-	// A null value means that the language of the country in which the label is drawn will be used.
-	// Default: null
-	language?: Language;
-
-	// An object specifying overrides for default color values, keyed by the color names.
-	colors?: Partial<StyleBuilderColorStrings<T>>;
-
-	// An object specifying overrides for default font names, keyed by the font names.
-	fonts?: Partial<StyleBuilderFontStrings<T>>;
-
-	// Options for color adjustments and transformations applied to the entire style.
-	recolor?: RecolorOptions;
-}
-
-export interface RecolorOptions {
-	// If true, inverts all colors.
-	invertBrightness?: boolean;
-
-	// Rotate the hue of all colors (in degrees).
-	rotate?: number;
-
-	// Adjusts the saturation level of all colors. Positive values increase saturation, negative values decrease it.
-	saturate?: number;
-
-	// Adjusts the gamma of all colors. Affects the brightness in a non-linear manner.
-	gamma?: number;
-
-	// Adjusts the contrast of all colors. Higher values produce more contrast.
-	contrast?: number;
-
-	// Adjusts the brightness of all colors. Positive values make it brighter, negative values make it darker.
-	brightness?: number;
-
-	// Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect).
-	tint?: number;
-
-	// Specifies the color used for tinting, in a string format (e.g., '#FF0000').
-	tintColor?: string;
-}
-```
+Where `options` is an optional object
 
 ### Method: `guessStyle(options)`
 
@@ -155,10 +91,6 @@ export interface RecolorOptions {
 const style = guessStyle(options);
 ```
 
-
-GuessStyleOptions
-
-<sup><a href="https://github.com/versatiles-org/versatiles-style/blob/be6dcfe/src/lib/style_guesser.ts#L13">\[src]</a></sup>
 
 **Parameters:**
 
