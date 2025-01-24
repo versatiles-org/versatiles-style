@@ -3,26 +3,25 @@ import { Color } from '../color/index';
 import type { StyleRules, StyleRulesOptions } from './types';
 import { StyleBuilder } from './style_builder';
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
+import Colorful from '../styles/colorful';
 
 // Mock class for abstract class StyleBuilder
-class MockStyleBuilder extends StyleBuilder<MockStyleBuilder> {
+class MockStyleBuilder extends Colorful {
 	public readonly name = 'mock';
 
 	public defaultFonts = { regular: 'Arial', bold: 'Courier' };
-
-	public defaultColors = { primary: '#FF8800' };
 
 	public invertColors(): void {
 		this.transformDefaultColors(color => color.invert());
 	}
 
-	protected getStyleRules(opt: StyleRulesOptions<MockStyleBuilder>): StyleRules {
+	protected getStyleRules(opt: StyleRulesOptions): StyleRules {
 		for (const color of Object.values(opt.colors)) if (!(color instanceof Color)) throw Error();
 		for (const font of Object.values(opt.fonts)) if (typeof font !== 'string') throw Error();
 
 		return {
 			'water-area': {
-				textColor: opt.colors.primary,
+				textColor: opt.colors.land,
 				textSize: 12,
 				textFont: opt.fonts.regular,
 			},
@@ -51,16 +50,16 @@ describe('StyleBuilder', () => {
 	});
 
 	it('should transform colors correctly', () => {
-		const initialColor: string = builder.defaultColors.primary;
+		const initialColor: string = builder.defaultColors.land;
 		builder.invertColors();
-		expect(builder.defaultColors.primary).not.toBe(initialColor);
-		expect(builder.defaultColors.primary).toBe(Color.parse(initialColor).invert().asHex());
+		expect(builder.defaultColors.land).not.toBe(initialColor);
+		expect(builder.defaultColors.land).toBe(Color.parse(initialColor).invert().asHex());
 	});
 
 	it('should create default options', () => {
 		expect(builder.getDefaultOptions()).toStrictEqual({
 			baseUrl: '',
-			colors: { primary: '#FF8800' },
+			colors: expect.any(Object),
 			fonts: { regular: 'Arial', bold: 'Courier' },
 			glyphs: '',
 			hideLabels: false,

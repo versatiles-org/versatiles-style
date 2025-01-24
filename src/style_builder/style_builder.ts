@@ -16,7 +16,7 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 	public abstract readonly name: string;
 
-	public abstract readonly defaultColors: StyleBuilderColorStrings<Subclass>;
+	public abstract readonly defaultColors: StyleBuilderColorStrings;
 
 	public abstract readonly defaultFonts: StyleBuilderFonts;
 
@@ -36,7 +36,8 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 		const colors = this.getColors(this.defaultColors);
 		if (options.colors) {
-			for (const key in options.colors) {
+			let key: StyleBuilderColorKeys;
+			for (key in options.colors) {
 				const value = options.colors[key];
 				if (value != null) colors[key] = Color.parse(value);
 			}
@@ -54,7 +55,7 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 		// get empty shortbread style
 		const style = getShortbreadTemplate();
 
-		const styleRuleOptions: StyleRulesOptions<typeof this> = {
+		const styleRuleOptions: StyleRulesOptions = {
 			colors,
 			fonts,
 			language,
@@ -101,10 +102,9 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 		return style;
 	}
 
-	public getColors(colors: StyleBuilderColorStrings<Subclass>): StyleBuilderColors<Subclass> {
-		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys<Subclass>, string][];
-		const entriesColor = entriesString.map(([key, value]) => [key, Color.parse(value)]) as [StyleBuilderColorKeys<Subclass>, StyleBuilderColors<Subclass>][];
-		const result = Object.fromEntries(entriesColor) as StyleBuilderColors<Subclass>;
+	public getColors(colors: StyleBuilderColorStrings): StyleBuilderColors {
+		const entriesString = Object.entries(colors) as [StyleBuilderColorKeys, string][];
+		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColors;
 		return result;
 	}
 
@@ -124,10 +124,11 @@ export abstract class StyleBuilder<Subclass extends StyleBuilder<Subclass>> {
 
 	protected transformDefaultColors(callback: (color: Color) => Color): void {
 		const colors = this.getColors(this.defaultColors);
-		for (const key in colors) {
+		let key: StyleBuilderColorKeys;
+		for (key in colors) {
 			this.defaultColors[key] = callback(colors[key]).asHex();
 		}
 	}
 
-	protected abstract getStyleRules(options: StyleRulesOptions<Subclass>): StyleRules;
+	protected abstract getStyleRules(options: StyleRulesOptions): StyleRules;
 }

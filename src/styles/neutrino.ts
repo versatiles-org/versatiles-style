@@ -1,7 +1,7 @@
 import { StyleRules, StyleRulesOptions } from '../style_builder/types';
 import Colorful from './colorful';
 
-export default class Neutrino extends StyleBuilder<Neutrino> {
+export default class Neutrino extends Colorful {
 	public readonly name: string = 'Neutrino';
 
 	public defaultFonts = {
@@ -27,7 +27,7 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 		agriculture: '#f8eeee',
 
 		/** Color for site areas such as parks or recreational facilities. */
-		site: '#ebe8e6',
+		commercial: '#ebe8e6',
 
 		/** Primary color for buildings. */
 		building: '#e0d1d9',
@@ -46,10 +46,41 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 
 		/** Primary color used for text labels. */
 		label: '#cbb7b7',
+
+		// Don't need these colors:
+		buildingbg: '#000',
+		burial: '#000',
+		construction: '#000',
+		cycle: '#000',
+		danger: '#000',
+		disputed: '#000',
+		education: '#000',
+		glacier: '#000',
+		hospital: '#000',
+		industrial: '#000',
+		labelHalo: '#000',
+		leisure: '#000',
+		motorway: '#000',
+		motorwaybg: '#000',
+		park: '#000',
+		parking: '#000',
+		poi: '#000',
+		prison: '#000',
+		residential: '#000',
+		rock: '#000',
+		sand: '#000',
+		shield: '#000',
+		streetbg: '#000',
+		subway: '#000',
+		symbol: '#000',
+		trunk: '#000',
+		trunkbg: '#000',
+		waste: '#000',
+		wetland: '#000',
 	};
 
 
-	protected getStyleRules(options: StyleRulesOptions<Neutrino>): StyleRules {
+	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			'background': {
@@ -121,7 +152,7 @@ export default class Neutrino extends StyleBuilder<Neutrino> {
 				opacity: { 10: 0, 11: 1 },
 			},
 			'site-{bicycleparking,parking}': {
-				color: colors.site,
+				color: colors.commercial,
 			},
 			'building': {
 				color: colors.building,

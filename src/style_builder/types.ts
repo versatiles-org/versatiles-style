@@ -35,7 +35,7 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 	language?: Language;
 
 	// An object specifying overrides for default color values, keyed by the color names.
-	colors?: Partial<StyleBuilderColorStrings<T>>;
+	colors?: Partial<StyleBuilderColorStrings>;
 
 	// An object specifying overrides for default font names, keyed by the font names.
 	fonts?: Partial<StyleBuilderFonts>;
@@ -45,23 +45,23 @@ export interface StyleBuilderOptions<T extends StyleBuilder<T>> {
 }
 
 /** Defines the keys for color properties in a style builder. */
-export type StyleBuilderColorKeys<T extends StyleBuilder<T>> = keyof T['defaultColors'];
+export type StyleBuilderColorKeys = 'agriculture' | 'boundary' | 'building' | 'buildingbg' | 'burial' | 'commercial' | 'construction' | 'cycle' | 'danger' | 'disputed' | 'education' | 'foot' | 'glacier' | 'grass' | 'hospital' | 'industrial' | 'label' | 'labelHalo' | 'land' | 'leisure' | 'motorway' | 'motorwaybg' | 'park' | 'parking' | 'poi' | 'prison' | 'rail' | 'residential' | 'rock' | 'sand' | 'shield' | 'street' | 'streetbg' | 'subway' | 'symbol' | 'trunk' | 'trunkbg' | 'waste' | 'water' | 'wetland' | 'wood';
 
 /** Defines the keys for font properties in a style builder. */
 export type StyleBuilderFontKeys = 'regular' | 'bold';
 
 /** Records string values for color properties in a style builder. */
-export type StyleBuilderColorStrings<T extends StyleBuilder<T>> = Record<StyleBuilderColorKeys<T>, string>;
+export type StyleBuilderColorStrings = { [key in StyleBuilderColorKeys]: string };
 
 /** Records Color objects for color properties in a style builder. */
-export type StyleBuilderColors<T extends StyleBuilder<T>> = Record<StyleBuilderColorKeys<T>, Color>;
+export type StyleBuilderColors = { [key in StyleBuilderColorKeys]: Color };
 
 /** Records string values for font properties in a style builder. */
 export type StyleBuilderFonts = { [key in StyleBuilderFontKeys]: string };
 
 /** Defines options for style rules in a style builder. */
-export interface StyleRulesOptions<T extends StyleBuilder<T>> {
-	colors: StyleBuilderColors<T>;
+export interface StyleRulesOptions {
+	colors: StyleBuilderColors;
 	fonts: StyleBuilderFonts;
 	language: Language;
 }

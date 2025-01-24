@@ -135,7 +135,7 @@ export default class Colorful extends StyleBuilder<Colorful> {
 		poi: '#555555',
 	};
 
-	protected getStyleRules(options: StyleRulesOptions<Colorful>): StyleRules {
+	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {
 			// background
