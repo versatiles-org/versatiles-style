@@ -9,20 +9,15 @@ on:
 jobs:
   release:
     name: Build and release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Install optipng
-        run: sudo apt-get install -y optipng
+        run: brew install optipng
 
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Cache node modules
         id: cache-node-modules

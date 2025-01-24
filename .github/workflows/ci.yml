@@ -15,18 +15,13 @@ env:
 jobs:
   release:
     name: Lint and test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Install optipng
-        run: sudo apt-get install -y optipng
+        run: brew install optipng
 
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - name: Cache Node Modules
         id: cache-node-modules
