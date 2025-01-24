@@ -19,7 +19,7 @@ neutrino   | <img width="384" src="screenshots/neutrino.png" alt="neutrino style
 
 # Use styles for versatiles.org
 
-You in the the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/) you can find:
+In the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/) you can find:
 - [`styles.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz) containing all styles, each in multiple languages.  
 Be aware that these styles use `tiles.versatiles.org` as source for tiles, fonts (glyphs) and icons (sprites). 
 - [`sprites.tar.gz`](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz) containing sprites, used e.g. for map icons
@@ -103,6 +103,15 @@ Please note that for building new sprites you need `optipng`.
 ## Configuration
 
 Iconsets can be defined in [`scripts/config-sprites.ts`](./scripts/config-sprites.ts)
+
+# Development
+
+You can run this in a "developer mode":
+```bash
+npm run dev
+```
+
+This will start a local server at "http://localhost:8080". There you can select the style you want to edit. Then you can change the style definitions in folder `src/styles/...` and reload the website. A new style will be generated on the fly.
 
 # Licenses
 

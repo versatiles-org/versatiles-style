@@ -1,8 +1,11 @@
+import nodeResolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { request } from 'node:https';
 import { getMimeType } from './lib/mime';
+import { rollup } from 'rollup';
 
 const PORT = 8080;
 
@@ -14,6 +17,7 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() 
 	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
+	{ reg: /^\/assets\/lib\/versatiles-style\/versatiles-style.js/, type: 'mem', res: () => getStyles() },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
 	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/glyphs/' },
 	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/lib/maplibre-gl/' },
@@ -81,6 +85,49 @@ server.listen(PORT, () => {
 });
 
 
+async function getStyles() {
+	console.time('Building styles');
+	const bundle = await rollup({
+		input: './src/index.ts',
+		plugins: [
+			typescript({
+				compilerOptions: {
+					lib: ['ESNext'],
+					module: 'ESNext',
+					target: 'ES2022',
+					strict: true,
+					esModuleInterop: true,
+					skipLibCheck: true,
+					forceConsistentCasingInFileNames: true,
+					declaration: false,
+					allowJs: true,
+					allowImportingTsExtensions: false,
+					noEmit: true,
+					sourceMap: false,
+					moduleResolution: 'bundler',
+				},
+				include: ['src/**/*.ts'],
+				exclude: ['**/*.test.ts']
+			}),
+			nodeResolve(),
+		],
+		onLog(level, log, handler) {
+			if (log.code === 'CIRCULAR_DEPENDENCY') return;
+			handler(level, log);
+		}
+	});
+
+	const result = await bundle.generate({
+		format: 'umd',
+		name: 'VersaTilesStyle',
+		file: 'style.js'
+	});
+
+	console.timeEnd('Building styles');
+
+	return result.output[0].code;
+}
+
 
 function getPage(content: string) {
 	return `<!DOCTYPE html>
@@ -88,7 +135,9 @@ function getPage(content: string) {
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+	<link rel="icon" type="image/png" href="/assets/images/versatiles-logo.png">
 	<script src="/assets/lib/maplibre-gl/maplibre-gl.js"></script>
+	<script src="/assets/lib/versatiles-style/versatiles-style.js"></script>
 	<link href="/assets/lib/maplibre-gl/maplibre-gl.css" rel="stylesheet">
 
 	<style>
@@ -114,13 +163,10 @@ function getIndexPage() {
 };
 
 async function getStylePage(styleName: StyleName) {
-	const versatilesStyles = (await import('../src/index?' + Date.now())).styles;
-	const styleBuilder = versatilesStyles[styleName];
-	const style = JSON.stringify(styleBuilder({ baseUrl: 'http://localhost:8080/' }));
 	return getPage(`
 	<div id="map"></div>
 	<script>
-		const style = ${style};
+		const style = VersaTilesStyle.${styleName}();
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>`);
