@@ -1,6 +1,6 @@
 import type { FillLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { getShortbreadLayers } from './layers.js';
-import type { Language } from '../style_builder/index.js';
+import { getShortbreadLayers } from './layers';
+import type { Language } from '../style_builder/index';
 
 describe('layers', () => {
 	it('should return an array of MaplibreLayer', () => {

@@ -1,5 +1,5 @@
-import { Color } from '../color/index.js';
-import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
+import { Color } from '../color/index';
+import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils';
 
 describe('deepClone', () => {
 	it('clones primitive types correctly', () => {

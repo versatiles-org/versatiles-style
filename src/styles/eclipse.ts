@@ -1,4 +1,4 @@
-import Colorful from './colorful.js';
+import Colorful from './colorful';
 
 export default class Eclipse extends Colorful {
 	public readonly name: string = 'Eclipse';

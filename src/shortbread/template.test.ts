@@ -1,5 +1,5 @@
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { getShortbreadTemplate } from './template.js';
+import { getShortbreadTemplate } from './template';
 
 describe('getShortbreadTemplate', () => {
 	const styleTemplate = getShortbreadTemplate();

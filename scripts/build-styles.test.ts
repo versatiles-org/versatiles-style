@@ -45,7 +45,7 @@ describe('Sprite Generation and Packaging', () => {
 		const fs = await getMockedFs();
 		const tar = await getMockedTar();
 
-		await import('./build-styles.js');
+		await import('./build-styles');
 
 		expect(jest.mocked(fs.createWriteStream).mock.calls).toStrictEqual([
 			[expect.stringMatching(/release\/styles\.tar\.gz$/)],

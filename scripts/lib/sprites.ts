@@ -1,10 +1,10 @@
 import sharp from 'sharp';
-import type { Icon, IconSets } from './icons.js';
+import type { Icon, IconSets } from './icons';
 import binPack from 'bin-pack';
 import { writeFileSync } from 'node:fs';
 import type { Pack as TarPack } from 'tar-stream';
-import { calcSDFFromAlpha } from './sdf.ts';
-import { optipng } from './optipng.ts';
+import { calcSDFFromAlpha } from './sdf';
+import { optipng } from './optipng';
 
 /**
  * Configuration for creating a Sprite, specifying icon sets and scale ratios.

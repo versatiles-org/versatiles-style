@@ -1,5 +1,5 @@
-import type { VectorLayer } from './vector_layer.js';
-import { isVectorLayer, isVectorLayers } from './vector_layer.js';
+import type { VectorLayer } from './vector_layer';
+import { isVectorLayer, isVectorLayers } from './vector_layer';
 
 describe('isVectorLayer', () => {
 	it('should validate a correct VectorLayer object', () => {

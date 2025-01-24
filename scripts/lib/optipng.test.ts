@@ -18,7 +18,7 @@ jest.unstable_mockModule('node:os', () => ({
 
 const { spawn } = await import('node:child_process');
 const { writeFile, rm } = await import('node:fs/promises');
-const { optipng } = await import('./optipng.ts');
+const { optipng } = await import('./optipng');
 
 describe('optipng', () => {
 	const mockBuffer = Buffer.from('test png buffer');

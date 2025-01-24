@@ -1,6 +1,6 @@
  
 
-import { isTileJSONSpecification } from './tilejson.js';
+import { isTileJSONSpecification } from './tilejson';
 
 describe('isTileJSONSpecification', () => {
 	const validVectorSpec = {

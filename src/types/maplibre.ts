@@ -1,6 +1,5 @@
 import type { BackgroundLayerSpecification, FillLayerSpecification, FilterSpecification, LineLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 export type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-//import type { TileJSONSpecificationRaster, TileJSONSpecificationVector } from './tilejson.js';
 
 /** Type for Maplibre layers, including background, fill, line, and symbol specifications. */
 export type MaplibreLayer = BackgroundLayerSpecification | FillLayerSpecification | LineLayerSpecification | SymbolLayerSpecification;

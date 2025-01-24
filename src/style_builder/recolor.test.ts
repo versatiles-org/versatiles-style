@@ -1,5 +1,5 @@
-import { Color } from '../color/index.js';
-import { CachedRecolor, getDefaultRecolorFlags, recolorArray, recolorObject } from './recolor.js';
+import { Color } from '../color/index';
+import { CachedRecolor, getDefaultRecolorFlags, recolorArray, recolorObject } from './recolor';
 
 
 describe('recolor', () => {

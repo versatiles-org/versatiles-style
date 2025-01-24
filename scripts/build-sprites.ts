@@ -1,7 +1,7 @@
 
-import { loadIcons } from './lib/icons.ts';
-import { Sprite } from './lib/sprites.ts';
-import config from './config-sprites.ts';
+import { loadIcons } from './lib/icons';
+import { Sprite } from './lib/sprites';
+import config from './config-sprites';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 

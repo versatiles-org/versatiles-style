@@ -9,7 +9,7 @@ jest.unstable_mockModule('node:fs', () => ({
 }));
 
 const { existsSync, readFileSync } = await import('node:fs');
-const { Icon, loadIcons } = await import('./icons.js');
+const { Icon, loadIcons } = await import('./icons');
 
 describe('Icon', () => {
 	const filename = 'path/to/icon.svg';

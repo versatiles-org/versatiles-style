@@ -1,2 +1,2 @@
 
-export type { Language } from './types.js';
+export type { Language } from './types';

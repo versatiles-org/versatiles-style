@@ -14,7 +14,7 @@ describe('Server', () => {
 
 	beforeAll(async () => {
 		// Dynamically import the server script
-		server = (await import('./dev.js')).server;
+		server = (await import('./dev')).server;
 	});
 
 	afterAll(() => {

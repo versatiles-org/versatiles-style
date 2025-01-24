@@ -1,4 +1,4 @@
-import { clamp, formatFloat, mod } from './utils.js';
+import { clamp, formatFloat, mod } from './utils';
 
 describe('clamp function', () => {
 	test('returns the number itself if within the range', () => {

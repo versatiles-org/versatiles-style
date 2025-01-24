@@ -1,10 +1,10 @@
-import type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
-import { isTileJSONSpecification } from '../types/index.js';
-import { deepClone, resolveUrl } from '../lib/utils.js';
+import type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index';
+import { isTileJSONSpecification } from '../types/index';
+import { deepClone, resolveUrl } from '../lib/utils';
 import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification, RasterSourceSpecification, SourceSpecification, SpriteSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { colorful } from '../styles/index.js';
-import { Color } from '../color/index.js';
-import { isRasterTileJSONSpecification } from '../types/tilejson.js';
+import { colorful } from '../styles/index';
+import { Color } from '../color/index';
+import { isRasterTileJSONSpecification } from '../types/tilejson';
 
 export interface GuessStyleOptions {
 	baseUrl?: string;

@@ -1,6 +1,6 @@
-import type { Color } from '../color/index.js';
-import type { StyleBuilder } from './style_builder.js';
-import type { RecolorOptions } from './recolor.js';
+import type { Color } from '../color/index';
+import type { StyleBuilder } from './style_builder';
+import type { RecolorOptions } from './recolor';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 

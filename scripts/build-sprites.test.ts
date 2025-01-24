@@ -32,7 +32,7 @@ const cp = await import('node:child_process');
 
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {
-		await import('./build-sprites.js');
+		await import('./build-sprites');
 
 		expect(jest.mocked(fs.readFileSync)).toHaveBeenCalledTimes(6);
 		expect(jest.mocked(cp.spawn)).toHaveBeenCalledTimes(4);

@@ -1,4 +1,4 @@
-import { SpriteConfig } from './lib/sprites.ts';
+import { SpriteConfig } from './lib/sprites';
 
 const config: SpriteConfig = {
 	ratios: [1, 2, 3, 4],

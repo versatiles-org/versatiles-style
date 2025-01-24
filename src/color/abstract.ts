@@ -1,7 +1,7 @@
-import type { HSL } from './hsl.js';
-import type { HSV } from './hsv.js';
-import { RandomColorOptions } from './random.js';
-import type { RGB } from './rgb.js';
+import type { HSL } from './hsl';
+import type { HSV } from './hsv';
+import { RandomColorOptions } from './random';
+import type { RGB } from './rgb';
 
 export abstract class Color {
 	static parse: (str: string) => Color;

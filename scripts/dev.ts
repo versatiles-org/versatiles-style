@@ -2,7 +2,7 @@ import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { request } from 'node:https';
-import { getMimeType } from './lib/mime.ts';
+import { getMimeType } from './lib/mime';
 
 const PORT = 8080;
 

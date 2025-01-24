@@ -1,8 +1,8 @@
  
 
 import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { Language } from '../style_builder/index.js';
-import type { MaplibreLayerDefinition } from '../types/index.js';
+import type { Language } from '../style_builder/index';
+import type { MaplibreLayerDefinition } from '../types/index';
 
 export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;

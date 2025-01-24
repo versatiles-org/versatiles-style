@@ -1,7 +1,7 @@
-import { Color } from './abstract.js';
-import { HSL } from './hsl.js';
-import { RGB } from './rgb.js';
-import { clamp, mod } from './utils.js';
+import { Color } from './abstract';
+import { HSL } from './hsl';
+import { RGB } from './rgb';
+import { clamp, mod } from './utils';
 
 export class HSV extends Color {
 	h: number = 0; // between 0 and 360

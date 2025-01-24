@@ -3,8 +3,8 @@
 		"lib": [
 			"ESNext"
 		],
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
 		"target": "ES2022",
 		"strict": true,
 		"esModuleInterop": true,

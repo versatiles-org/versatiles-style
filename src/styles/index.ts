@@ -1,15 +1,15 @@
-import type { StyleBuilder } from '../style_builder/style_builder.js';
-import type { StyleBuilderOptions } from '../style_builder/types.js';
+import type { StyleBuilder } from '../style_builder/style_builder';
+import type { StyleBuilderOptions } from '../style_builder/types';
 import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 
 // import styles
-import Colorful from './colorful.js';
-import Eclipse from './eclipse.js';
-import Graybeard from './graybeard.js';
-import Neutrino from './neutrino.js';
-import Empty from './empty.js';
+import Colorful from './colorful';
+import Eclipse from './eclipse';
+import Graybeard from './graybeard';
+import Neutrino from './neutrino';
+import Empty from './empty';
 
 
 // generate style option types
