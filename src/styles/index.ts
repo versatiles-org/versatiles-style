@@ -11,8 +11,12 @@ import Graybeard from './graybeard';
 import Neutrino from './neutrino';
 import Empty from './empty';
 
+export interface StyleBuilderFunction {
+	(options?: StyleBuilderOptions): StyleSpecification;
+	getOptions(): StyleBuilderOptions;
+}
 
-function getStyleBuilder(styleBuilder: new () => StyleBuilder) {
+function getStyleBuilder(styleBuilder: new () => StyleBuilder): StyleBuilderFunction {
 	const fn = function (options?: StyleBuilderOptions): StyleSpecification {
 		return new styleBuilder().build(options);
 	};
