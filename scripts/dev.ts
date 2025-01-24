@@ -15,8 +15,8 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() 
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
-	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/fonts/' },
-	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/maplibre-gl/' },
+	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/glyphs/' },
+	{ reg: /^\/assets\/lib\/maplibre-gl\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/lib/maplibre-gl/' },
 	{ reg: /^\//, type: 'proxy', res: 'https://tiles.versatiles.org/' },
 ];
 
