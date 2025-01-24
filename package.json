@@ -6,13 +6,13 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "check": "npm run lint && npm run test && npm run build",
-    "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites",
+    "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
     "build-browser": "rollup -c=rollup.config.js && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
     "build-node": "rm -rf dist && tsc -p tsconfig.node.json && chmod +x dist/index.js",
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
     "dev": "tsx scripts/dev.ts",
-    "doc": "typedoc --options typedoc.json",
+    "doc": "tsx scripts/screenshots.ts && typedoc --options typedoc.json",
     "lint": "eslint --color .",
     "prepack": "npm run build",
     "release": "npx vrt release-npm",
@@ -36,6 +36,7 @@
     "dist/**/*.d.ts"
   ],
   "devDependencies": {
+    "@maplibre/maplibre-gl-native": "^6.0.0",
     "@maplibre/maplibre-gl-style-spec": "^23.1.0",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^16.0.0",
@@ -65,8 +66,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typedoc": "^0.27.6",
-    "typedoc-github-theme": "^0.2.1",
-    "typedoc-plugin-coverage": "^3.4.1",
     "typedoc-plugin-markdown": "^4.4.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"

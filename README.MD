@@ -5,19 +5,17 @@
 
 # VersaTiles Style
 
-> [!WARNING]  
-> We are currently migrating to the [VersaTiles Frontend Specification](https://github.com/versatiles-org/versatiles-documentation/blob/main/compendium/specification_frontend.md). While this is good for the long term, it does mean that there will be breaking changes in the short term. You can find the [old v4.4.1 release here](https://github.com/versatiles-org/versatiles-style/releases/tag/v4.4.1).
-
 Generates styles and sprites for MapLibre.
-
-![Example: Colorful Style](docs/colorful.png)
 
 # Styles
 
-* Colorful - colorful, full featured map
-* Graybeard - gray, full featured map
-* Eclipse - dark, full featured map
-* Neutrino - light basemap
+style name | preview
+-----------|--------------------------------------------------------------------------------------
+colorful   | <img style="max-width=512px" src="screenshots/colorful.png" alt="colorful style" />
+graybeard  | <img style="max-width=512px" src="screenshots/graybeard.png" alt="graybeard style" />
+eclipse    | <img style="max-width=512px" src="screenshots/eclipse.png" alt="eclipse style" />
+neutrino   | <img style="max-width=512px" src="screenshots/neutrino.png" alt="neutrino style" />
+
 
 # Use styles for versatiles.org
 
