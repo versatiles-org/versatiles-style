@@ -6,34 +6,13 @@ import { getMimeType } from './lib/mime';
 
 const PORT = 8080;
 
-const INDEX = `<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-	<script src="assets/lib/maplibre-gl/maplibre-gl.js"></script>
-	<link href="assets/lib/maplibre-gl/maplibre-gl.css" rel="stylesheet">
-	<script src="assets/lib/versatiles-style/versatiles-style.js"></script>
 
-	<style>
-		body { margin: 0; padding: 0; }
-		#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-	</style>
-</head>
-
-<body>
-	<div id="map"></div>
-	<script>
-		const style = VersaTilesStyle.styles.graybeard({});
-		console.log(style);
-		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
-	</script>
-</body>
-
-</html>`;
-
-const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string }[] = [
-	{ reg: /^\/(index\.html?)?$/, type: 'mem', res: INDEX },
+const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => string) }[] = [
+	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
+	{ reg: /^\/\?colorful$/, type: 'mem', res: getStylePage('colorful') },
+	{ reg: /^\/\?eclipse$/, type: 'mem', res: getStylePage('eclipse') },
+	{ reg: /^\/\?graybeard$/, type: 'mem', res: getStylePage('graybeard') },
+	{ reg: /^\/\?neutrino$/, type: 'mem', res: getStylePage('neutrino') },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
 	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/fonts/' },
 	{ reg: /^\/assets\/lib\/versatiles-style\//, type: 'local', res: '../../release/versatiles-style/' },
@@ -43,19 +22,21 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string }[] = 
 
 const DIR = new URL(import.meta.url).pathname;
 
-export const server = http.createServer((req, res) => {
+export const server = http.createServer((req, response) => {
 	const { url } = req;
 
 	if (!url) return error('Bad Request: Missing URL');
 
 	for (const entry of config) {
-		const match = entry.reg.exec(url);
+		const { reg, type, res } = entry;
+		const match = reg.exec(url);
 		if (match) {
+			const content = typeof res === 'function' ? res() : res;
 			const relPath = url.slice(match[0].length);
-			switch (entry.type) {
-				case 'mem': return respond('html', entry.res);
+			switch (type) {
+				case 'mem': return respond('html', content);
 				case 'local': { // Serve files from the local folder
-					const filename = join(DIR, entry.res, relPath);
+					const filename = join(DIR, content, relPath);
 					try {
 						respond(relPath, readFileSync(filename));
 					} catch (err) {
@@ -65,14 +46,14 @@ export const server = http.createServer((req, res) => {
 					return
 				}
 				case 'proxy': { // Proxy the request to the remote tiles server
-					const remoteBase = entry.res;
+					const remoteBase = content;
 					const remoteUrl = (new URL(relPath, remoteBase)).href;
 					if (!remoteUrl.startsWith(remoteBase)) {
 						return error(`Forbidden: Proxy requests path "${remoteUrl}" that does not start with "${remoteBase}"`);
 					}
 					const proxyRequest = request(remoteUrl, (remoteRes) => {
-						res.writeHead(remoteRes.statusCode || 500, remoteRes.headers);
-						remoteRes.pipe(res, { end: true });
+						response.writeHead(remoteRes.statusCode || 500, remoteRes.headers);
+						remoteRes.pipe(response, { end: true });
 					});
 					proxyRequest.on('error', (err) => error('Error in proxying request:' + err));
 					return proxyRequest.end();
@@ -85,16 +66,60 @@ export const server = http.createServer((req, res) => {
 
 	function error(content: string) {
 		console.error('Error: ' + content);
-		res.writeHead(500, { 'Content-Type': 'text/plain' });
-		res.end(content);
+		response.writeHead(500, { 'Content-Type': 'text/plain' });
+		response.end(content);
 	}
 
 	function respond(filename: string, content: string | Buffer) {
-		res.writeHead(200, { 'Content-Type': getMimeType(filename) });
-		res.end(content);
+		response.writeHead(200, { 'Content-Type': getMimeType(filename) });
+		response.end(content);
 	}
 });
 
 server.listen(PORT, () => {
 	console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+
+
+function getPage(content: string) {
+	return `<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+	<script src="/assets/lib/maplibre-gl/maplibre-gl.js"></script>
+	<link href="/assets/lib/maplibre-gl/maplibre-gl.css" rel="stylesheet">
+	<script src="/assets/lib/versatiles-style/versatiles-style.js"></script>
+
+	<style>
+		body { margin: 0; padding: 0; }
+		#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+	</style>
+</head>
+
+<body>
+	${content}
+</body>
+
+</html>`
+};
+
+function getIndexPage() {
+	return getPage(`<ul>
+		<li><a href="/?colorful">colorful</a></li>
+		<li><a href="/?eclipse">eclipse</a></li>
+		<li><a href="/?graybeard">graybeard</a></li>
+		<li><a href="/?neutrino">neutrino</a></li>
+	</ul>`);
+};
+
+function getStylePage(styleName: string) {
+	return getPage(`
+	<div id="map"></div>
+	<script>
+		const style = VersaTilesStyle.styles.${styleName}({});
+		console.log(style);
+		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
+	</script>`);
+};
