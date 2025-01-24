@@ -11,10 +11,10 @@ Generates styles and sprites for MapLibre.
 
 style name | preview
 -----------|--------------------------------------------------------------------------------------
-colorful   | <img style="max-width=512px" src="screenshots/colorful.png" alt="colorful style" />
-graybeard  | <img style="max-width=512px" src="screenshots/graybeard.png" alt="graybeard style" />
-eclipse    | <img style="max-width=512px" src="screenshots/eclipse.png" alt="eclipse style" />
-neutrino   | <img style="max-width=512px" src="screenshots/neutrino.png" alt="neutrino style" />
+colorful   | <img style="max-width:384px" src="screenshots/colorful.png" alt="colorful style" />
+graybeard  | <img style="max-width:384px" src="screenshots/graybeard.png" alt="graybeard style" />
+eclipse    | <img style="max-width:384px" src="screenshots/eclipse.png" alt="eclipse style" />
+neutrino   | <img style="max-width:384px" src="screenshots/neutrino.png" alt="neutrino style" />
 
 
 # Use styles for versatiles.org
