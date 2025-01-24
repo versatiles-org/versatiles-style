@@ -2,6 +2,7 @@
 .DS_Store
 coverage
 dist/**/*.js
+dist/**/*.map
 dist/**/*.ts
 node_modules
 release
