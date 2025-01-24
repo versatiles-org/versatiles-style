@@ -8,7 +8,7 @@
 	"outputs": [
 		{
 			"name": "markdown",
-			"path": "./docs_md"
+			"path": "./docs"
 		}
 	],
 	"plugin": [
