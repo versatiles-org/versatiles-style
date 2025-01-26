@@ -4,19 +4,19 @@
 			"ESNext"
 		],
 		"module": "ESNext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"target": "ES2022",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"declaration": true,
 		"allowJs": true,
 		"allowImportingTsExtensions": false,
 		"noEmit": true,
-		"sourceMap": true,
+		"sourceMap": false,
 	},
 	"include": [
+		"rollup.config.*",
 		"scripts/**/*.ts",
 		"src/**/*.ts"
 	]
