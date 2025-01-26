@@ -14,7 +14,7 @@
     "dev": "tsx scripts/dev.ts",
     "doc": "tsx scripts/screenshots.ts && typedoc --options typedoc.json",
     "lint": "eslint --color .",
-    "prepack": "npm run build",
+    "prepack": "npm run check",
     "release": "npx vrt release-npm",
     "test": "npm run test-typescript",
     "test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
