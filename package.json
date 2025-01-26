@@ -33,7 +33,8 @@
   },
   "files": [
     "dist/**/*.js",
-    "dist/**/*.d.ts"
+    "dist/**/*.d.ts",
+    "dist/**/*.map"
   ],
   "devDependencies": {
     "@maplibre/maplibre-gl-native": "^6.0.0",
