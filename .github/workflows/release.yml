@@ -30,20 +30,16 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Run tests
+      - name: Run build
+        run: npm run build
+
+      - name: Run test
         run: npm run test
 
       - name: Build sprites
         run: |
-          npm run build-sprites
           cd release/sprites
           tar -cf - * | gzip -9 > ../sprites.tar.gz
-
-      - name: Build styles
-        run: npm run build-styles
-
-      - name: Build lib
-        run: npm run build-browser
 
       - name: Get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
