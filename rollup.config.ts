@@ -15,7 +15,7 @@ const config: RollupOptions[] = [
 		input: 'src/index.ts',
 		output: {
 			file: browser ? 'release/versatiles-style/versatiles-style.js' : 'dist/index.js',
-			format: 'umd',
+			format: browser ? 'umd' : 'es',
 			sourcemap: true,
 			indent: !browser,
 			name: 'VersaTilesStyle'
