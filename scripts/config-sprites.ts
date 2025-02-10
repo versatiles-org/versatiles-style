@@ -124,6 +124,56 @@ const config: SpriteConfig = {
 				size: 22, names: ['tram', 'information'],
 		},
 	},
+		symbols: {
+			icon: {
+				size: 22,
+				names: [
+					'animal_shelter',
+					'aquarium',
+					'bbq',
+					'beach',
+					'entrance1',
+					'heart',
+					'home',
+					'information',
+					'karaoke',
+					'mountain',
+					'mushroom',
+					'music',
+					'park',
+					'park1',
+					'roadblock',
+					'rocket',
+					'water',
+				]
+			},
+			symbol: {
+				size: 22,
+				names: [
+					'arrow',
+					'arrow1',
+					'arrow2',
+					'circle',
+					'circle_outline',
+					'cross',
+					'cross_outline',
+					'diamond',
+					'diamond_outline',
+					'hexagon',
+					'hexagon_outline',
+					'marker',
+					'marker_outline',
+					'square',
+					'square_outline',
+					'star',
+					'star_outline',
+					'triangle',
+					'triangle_outline',
+					'x',
+					'x_outline',
+				]
+			}
+		}
 	}
 };
 
