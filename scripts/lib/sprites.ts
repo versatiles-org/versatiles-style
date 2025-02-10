@@ -10,7 +10,7 @@ import { optipng } from './optipng.js';
  * Configuration for creating a Sprite, specifying icon sets and scale ratios.
  */
 export interface SpriteConfig {
-	sets: IconSets;       // Collection of icon sets to include in the sprite.
+	spritesheets: Record<string, IconSets>;       // Collection of icon sets to include in the sprite.
 	ratios: number[];     // Scale ratios to apply to each icon.
 }
 

@@ -2,7 +2,8 @@ import { SpriteConfig } from './lib/sprites.js';
 
 const config: SpriteConfig = {
 	ratios: [1, 2, 3, 4],
-	sets: {
+	spritesheets: {
+		basics: {
 		icon: {
 			size: 22,
 			names: [
@@ -79,12 +80,12 @@ const config: SpriteConfig = {
 				'place_of_worship',
 				'playground',
 				'police',
+					'post',
 				'postbox',
-				'post',
 				'prison',
+					'rail',
 				'rail_light',
 				'rail_metro',
-				'rail',
 				'recycling',
 				'restaurant',
 				'school',
@@ -117,12 +118,13 @@ const config: SpriteConfig = {
 		marking: { size: 15, names: ['arrow'], },
 		pattern: {
 			useSDF: false,
-			size: 16, names: ['hatched_thin', 'striped', 'warning',],
+				size: 16, names: ['hatched_thin', 'striped', 'warning'],
 		},
 		transport: {
-			size: 22, names: ['tram', 'information',],
+				size: 22, names: ['tram', 'information'],
 		},
 	},
+	}
 };
 
 export default config;
