@@ -2,7 +2,8 @@ import { SpriteConfig } from './lib/sprites.js';
 
 const config: SpriteConfig = {
 	ratios: [1, 2, 3, 4],
-	sets: {
+	spritesheets: {
+		basics: {
 		icon: {
 			size: 22,
 			names: [
@@ -79,12 +80,12 @@ const config: SpriteConfig = {
 				'place_of_worship',
 				'playground',
 				'police',
+					'post',
 				'postbox',
-				'post',
 				'prison',
+					'rail',
 				'rail_light',
 				'rail_metro',
-				'rail',
 				'recycling',
 				'restaurant',
 				'school',
@@ -117,12 +118,63 @@ const config: SpriteConfig = {
 		marking: { size: 15, names: ['arrow'], },
 		pattern: {
 			useSDF: false,
-			size: 16, names: ['hatched_thin', 'striped', 'warning',],
+				size: 16, names: ['hatched_thin', 'striped', 'warning'],
 		},
 		transport: {
-			size: 22, names: ['tram', 'information',],
+				size: 22, names: ['tram', 'information'],
 		},
 	},
+		symbols: {
+			icon: {
+				size: 22,
+				names: [
+					'animal_shelter',
+					'aquarium',
+					'bbq',
+					'beach',
+					'entrance1',
+					'heart',
+					'home',
+					'information',
+					'karaoke',
+					'mountain',
+					'mushroom',
+					'music',
+					'park',
+					'park1',
+					'roadblock',
+					'rocket',
+					'water',
+				]
+			},
+			symbol: {
+				size: 22,
+				names: [
+					'arrow',
+					'arrow1',
+					'arrow2',
+					'circle',
+					'circle_outline',
+					'cross',
+					'cross_outline',
+					'diamond',
+					'diamond_outline',
+					'hexagon',
+					'hexagon_outline',
+					'marker',
+					'marker_outline',
+					'square',
+					'square_outline',
+					'star',
+					'star_outline',
+					'triangle',
+					'triangle_outline',
+					'x',
+					'x_outline',
+				]
+			}
+		}
+	}
 };
 
 export default config;
