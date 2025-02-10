@@ -1,6 +1,6 @@
 {
   "name": "@versatiles/style",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
