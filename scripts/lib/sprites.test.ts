@@ -132,9 +132,19 @@ describe('Sprite', () => {
 			(sprite as any).buffer = buffer;
 			(sprite as any).distance = distance;
 
-			sprite.renderSDF();
+			sprite.renderSDF(1);
+			expect(getValues(buffer)).toStrictEqual([159, 127, 95, 63]);
 
-			expect(Array.from(buffer)).toStrictEqual([0, 0, 0, 175, 0, 0, 0, 159, 0, 0, 0, 143, 0, 0, 0, 127]);
+			sprite.renderSDF(2);
+			expect(getValues(buffer)).toStrictEqual([175, 159, 143, 127]);
+
+			function getValues(buffer: Buffer): number[] {
+				const values = [];
+				for (let i = 0; i < buffer.length; i += 4) {
+					values.push(buffer.readUInt8(i + 3));
+				}
+				return values;
+			}
 		});
 	});
 

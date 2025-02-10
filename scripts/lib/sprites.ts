@@ -135,14 +135,15 @@ export class Sprite {
 
 	/**
 	 * Renders the SDF-based alpha channel for each icon in the sprite.
+	 * @param ratio - Scaling factor to apply.
 	 */
-	public renderSDF(): void {
+	public renderSDF(ratio: number): void {
 		const { width, distance, buffer } = this;
 
 		for (const entry of this.entries) {
 			if (entry.useSDF) {
 				for (const i of iteratePixels(entry, width)) {
-					buffer[i * 4 + 3] = 255 * Math.max(0, Math.min(1, 0.75 - distance[i] / 16));
+					buffer[i * 4 + 3] = 255 * Math.max(0, Math.min(1, 0.75 - distance[i] / ratio / 8));
 				}
 			} else {
 				for (const i of iteratePixels(entry, width)) {

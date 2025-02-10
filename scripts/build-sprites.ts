@@ -24,7 +24,7 @@ for (const scale of config.ratios) {
 	const suffix = scale === 1 ? '' : `@${scale}x`;
 	console.log('scale sprite ' + scale);
 	const sprite = spriteBig.getScaledSprite(maxScale / scale);
-	sprite.renderSDF();
+	sprite.renderSDF(scale);
 	const png = await sprite.getPng()
 	const json = await sprite.getJSON()
 
