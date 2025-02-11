@@ -30,6 +30,7 @@ export abstract class StyleBuilder {
 
 		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
+		const bounds = options.bounds ?? [-180, -85.0511287798066, 180, 85.0511287798066];
 		const hideLabels = options.hideLabels ?? false;
 		const language = options.language ?? null;
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
@@ -98,6 +99,7 @@ export abstract class StyleBuilder {
 
 		const source = style.sources[this.#sourceName];
 		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));
+		if ('bounds' in source) source.bounds = bounds;
 
 		return style;
 	}
@@ -111,6 +113,12 @@ export abstract class StyleBuilder {
 	public getDefaultOptions(): StyleBuilderOptions {
 		return {
 			baseUrl: '',
+			bounds: [
+				-180, 
+				-85.0511287798066, 
+				180, 
+				85.0511287798066
+			],
 			glyphs: '',
 			sprite: '',
 			tiles: [],

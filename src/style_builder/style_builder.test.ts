@@ -60,6 +60,12 @@ describe('StyleBuilder', () => {
 	it('should create default options', () => {
 		expect(builder.getDefaultOptions()).toStrictEqual({
 			baseUrl: '',
+			bounds: [
+				-180, 
+				-85.0511287798066, 
+				180, 
+				85.0511287798066
+			],
 			colors: expect.any(Object),
 			fonts: { regular: 'Arial', bold: 'Courier' },
 			glyphs: '',
