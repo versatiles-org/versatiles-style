@@ -13,6 +13,12 @@ export interface StyleBuilderOptions {
 	 */
 	baseUrl?: string;
 
+  /**
+   * The bounding box for the map, formatted as [west, south, east, north] in degrees.
+   * Default: [-180, -85.0511287798066, 180, 85.0511287798066]
+   */
+  bounds?: [number, number, number, number];
+
 	/**
 	 * The URL template for loading font glyphs, formatted with '{fontstack}' and '{range}' placeholders.
 	 * Default: '/assets/glyphs/{fontstack}/{range}.pbf'
