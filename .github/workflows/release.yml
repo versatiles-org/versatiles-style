@@ -35,6 +35,7 @@ jobs:
 
       - name: Run test
         run: |
+          npm run build-browser
           npm run build-node
           npm run test
 
