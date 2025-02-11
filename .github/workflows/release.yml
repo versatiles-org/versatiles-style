@@ -6,6 +6,9 @@ on:
       - "v*"
   workflow_dispatch:
 
+env:
+  FORCE_COLOR: 3
+
 jobs:
   release:
     name: Build and release
@@ -31,7 +34,9 @@ jobs:
         run: npm ci
 
       - name: Run test
-        run: npm run test
+        run: |
+          npm run build-node
+          npm run test
 
       - name: Run build
         run: npm run build
