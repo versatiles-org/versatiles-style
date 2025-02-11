@@ -30,11 +30,11 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Run build
-        run: npm run build
-
       - name: Run test
         run: npm run test
+
+      - name: Run build
+        run: npm run build
 
       - name: Build sprites
         run: |
