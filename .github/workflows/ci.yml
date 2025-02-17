@@ -3,9 +3,9 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+      - "**"
     tags:
-      - '!**' # Don't run twice on commits with tags
+      - "!**" # Avoid running twice for commits with tags
   pull_request:
   workflow_dispatch:
 
@@ -13,8 +13,8 @@ env:
   FORCE_COLOR: 3
 
 jobs:
-  release:
-    name: Lint and test
+  lint-test:
+    name: Lint and Test
     runs-on: macos-latest
     steps:
       - name: Install optipng
@@ -23,18 +23,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
         with:
-          path: node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          node-version: 22
+          cache: "npm"
 
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Check vulnerabilities
+      - name: Audit
         run: npm audit
 
       - name: Lint
@@ -43,13 +41,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run tests
+      - name: Test
         run: npm run test
 
-      - name: Generate test coverage
+      - name: Generate coverage
         run: npm run test-coverage
 
-      - name: Upload test coverage
+      - name: Upload coverage
         uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
