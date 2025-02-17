@@ -6,7 +6,7 @@
 
 # Interface: StyleBuilderColors
 
-Defined in: [style\_builder/types.ts:64](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L64)
+Defined in: [style\_builder/types.ts:70](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L70)
 
 Records string values for color properties in a style builder.
 
@@ -16,7 +16,7 @@ Records string values for color properties in a style builder.
 
 > **agriculture**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:65](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L65)
+Defined in: [style\_builder/types.ts:71](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L71)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [style\_builder/types.ts:65](https://github.com/versatiles-org/versa
 
 > **boundary**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:66](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L66)
+Defined in: [style\_builder/types.ts:72](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L72)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [style\_builder/types.ts:66](https://github.com/versatiles-org/versa
 
 > **building**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:67](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L67)
+Defined in: [style\_builder/types.ts:73](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L73)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [style\_builder/types.ts:67](https://github.com/versatiles-org/versa
 
 > **buildingbg**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:68](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L68)
+Defined in: [style\_builder/types.ts:74](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L74)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [style\_builder/types.ts:68](https://github.com/versatiles-org/versa
 
 > **burial**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:69](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L69)
+Defined in: [style\_builder/types.ts:75](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L75)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [style\_builder/types.ts:69](https://github.com/versatiles-org/versa
 
 > **commercial**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:70](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L70)
+Defined in: [style\_builder/types.ts:76](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L76)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [style\_builder/types.ts:70](https://github.com/versatiles-org/versa
 
 > **construction**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:71](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L71)
+Defined in: [style\_builder/types.ts:77](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L77)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: [style\_builder/types.ts:71](https://github.com/versatiles-org/versa
 
 > **cycle**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:72](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L72)
+Defined in: [style\_builder/types.ts:78](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L78)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [style\_builder/types.ts:72](https://github.com/versatiles-org/versa
 
 > **danger**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:73](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L73)
+Defined in: [style\_builder/types.ts:79](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L79)
 
 ***
 
@@ -88,7 +88,7 @@ Defined in: [style\_builder/types.ts:73](https://github.com/versatiles-org/versa
 
 > **disputed**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:74](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L74)
+Defined in: [style\_builder/types.ts:80](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L80)
 
 ***
 
@@ -96,7 +96,7 @@ Defined in: [style\_builder/types.ts:74](https://github.com/versatiles-org/versa
 
 > **education**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:75](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L75)
+Defined in: [style\_builder/types.ts:81](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L81)
 
 ***
 
@@ -104,7 +104,7 @@ Defined in: [style\_builder/types.ts:75](https://github.com/versatiles-org/versa
 
 > **foot**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:76](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L76)
+Defined in: [style\_builder/types.ts:82](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L82)
 
 ***
 
@@ -112,7 +112,7 @@ Defined in: [style\_builder/types.ts:76](https://github.com/versatiles-org/versa
 
 > **glacier**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:77](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L77)
+Defined in: [style\_builder/types.ts:83](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L83)
 
 ***
 
@@ -120,7 +120,7 @@ Defined in: [style\_builder/types.ts:77](https://github.com/versatiles-org/versa
 
 > **grass**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:78](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L78)
+Defined in: [style\_builder/types.ts:84](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L84)
 
 ***
 
@@ -128,7 +128,7 @@ Defined in: [style\_builder/types.ts:78](https://github.com/versatiles-org/versa
 
 > **hospital**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:79](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L79)
+Defined in: [style\_builder/types.ts:85](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L85)
 
 ***
 
@@ -136,7 +136,7 @@ Defined in: [style\_builder/types.ts:79](https://github.com/versatiles-org/versa
 
 > **industrial**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:80](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L80)
+Defined in: [style\_builder/types.ts:86](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L86)
 
 ***
 
@@ -144,7 +144,7 @@ Defined in: [style\_builder/types.ts:80](https://github.com/versatiles-org/versa
 
 > **label**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:81](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L81)
+Defined in: [style\_builder/types.ts:87](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L87)
 
 ***
 
@@ -152,7 +152,7 @@ Defined in: [style\_builder/types.ts:81](https://github.com/versatiles-org/versa
 
 > **labelHalo**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:82](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L82)
+Defined in: [style\_builder/types.ts:88](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L88)
 
 ***
 
@@ -160,7 +160,7 @@ Defined in: [style\_builder/types.ts:82](https://github.com/versatiles-org/versa
 
 > **land**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:83](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L83)
+Defined in: [style\_builder/types.ts:89](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L89)
 
 ***
 
@@ -168,7 +168,7 @@ Defined in: [style\_builder/types.ts:83](https://github.com/versatiles-org/versa
 
 > **leisure**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:84](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L84)
+Defined in: [style\_builder/types.ts:90](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L90)
 
 ***
 
@@ -176,7 +176,7 @@ Defined in: [style\_builder/types.ts:84](https://github.com/versatiles-org/versa
 
 > **motorway**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:85](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L85)
+Defined in: [style\_builder/types.ts:91](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L91)
 
 ***
 
@@ -184,7 +184,7 @@ Defined in: [style\_builder/types.ts:85](https://github.com/versatiles-org/versa
 
 > **motorwaybg**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:86](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L86)
+Defined in: [style\_builder/types.ts:92](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L92)
 
 ***
 
@@ -192,7 +192,7 @@ Defined in: [style\_builder/types.ts:86](https://github.com/versatiles-org/versa
 
 > **park**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:87](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L87)
+Defined in: [style\_builder/types.ts:93](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L93)
 
 ***
 
@@ -200,7 +200,7 @@ Defined in: [style\_builder/types.ts:87](https://github.com/versatiles-org/versa
 
 > **parking**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:88](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L88)
+Defined in: [style\_builder/types.ts:94](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L94)
 
 ***
 
@@ -208,7 +208,7 @@ Defined in: [style\_builder/types.ts:88](https://github.com/versatiles-org/versa
 
 > **poi**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:89](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L89)
+Defined in: [style\_builder/types.ts:95](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L95)
 
 ***
 
@@ -216,7 +216,7 @@ Defined in: [style\_builder/types.ts:89](https://github.com/versatiles-org/versa
 
 > **prison**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:90](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L90)
+Defined in: [style\_builder/types.ts:96](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L96)
 
 ***
 
@@ -224,7 +224,7 @@ Defined in: [style\_builder/types.ts:90](https://github.com/versatiles-org/versa
 
 > **rail**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:91](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L91)
+Defined in: [style\_builder/types.ts:97](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L97)
 
 ***
 
@@ -232,7 +232,7 @@ Defined in: [style\_builder/types.ts:91](https://github.com/versatiles-org/versa
 
 > **residential**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:92](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L92)
+Defined in: [style\_builder/types.ts:98](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L98)
 
 ***
 
@@ -240,7 +240,7 @@ Defined in: [style\_builder/types.ts:92](https://github.com/versatiles-org/versa
 
 > **rock**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:93](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L93)
+Defined in: [style\_builder/types.ts:99](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L99)
 
 ***
 
@@ -248,7 +248,7 @@ Defined in: [style\_builder/types.ts:93](https://github.com/versatiles-org/versa
 
 > **sand**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:94](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L94)
+Defined in: [style\_builder/types.ts:100](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L100)
 
 ***
 
@@ -256,7 +256,7 @@ Defined in: [style\_builder/types.ts:94](https://github.com/versatiles-org/versa
 
 > **shield**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:95](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L95)
+Defined in: [style\_builder/types.ts:101](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L101)
 
 ***
 
@@ -264,7 +264,7 @@ Defined in: [style\_builder/types.ts:95](https://github.com/versatiles-org/versa
 
 > **street**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:96](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L96)
+Defined in: [style\_builder/types.ts:102](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L102)
 
 ***
 
@@ -272,7 +272,7 @@ Defined in: [style\_builder/types.ts:96](https://github.com/versatiles-org/versa
 
 > **streetbg**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:97](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L97)
+Defined in: [style\_builder/types.ts:103](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L103)
 
 ***
 
@@ -280,7 +280,7 @@ Defined in: [style\_builder/types.ts:97](https://github.com/versatiles-org/versa
 
 > **subway**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:98](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L98)
+Defined in: [style\_builder/types.ts:104](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L104)
 
 ***
 
@@ -288,7 +288,7 @@ Defined in: [style\_builder/types.ts:98](https://github.com/versatiles-org/versa
 
 > **symbol**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:99](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L99)
+Defined in: [style\_builder/types.ts:105](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L105)
 
 ***
 
@@ -296,7 +296,7 @@ Defined in: [style\_builder/types.ts:99](https://github.com/versatiles-org/versa
 
 > **trunk**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:100](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L100)
+Defined in: [style\_builder/types.ts:106](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L106)
 
 ***
 
@@ -304,7 +304,7 @@ Defined in: [style\_builder/types.ts:100](https://github.com/versatiles-org/vers
 
 > **trunkbg**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:101](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L101)
+Defined in: [style\_builder/types.ts:107](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L107)
 
 ***
 
@@ -312,7 +312,7 @@ Defined in: [style\_builder/types.ts:101](https://github.com/versatiles-org/vers
 
 > **waste**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:102](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L102)
+Defined in: [style\_builder/types.ts:108](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L108)
 
 ***
 
@@ -320,7 +320,7 @@ Defined in: [style\_builder/types.ts:102](https://github.com/versatiles-org/vers
 
 > **water**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:103](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L103)
+Defined in: [style\_builder/types.ts:109](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L109)
 
 ***
 
@@ -328,7 +328,7 @@ Defined in: [style\_builder/types.ts:103](https://github.com/versatiles-org/vers
 
 > **wetland**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:104](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L104)
+Defined in: [style\_builder/types.ts:110](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L110)
 
 ***
 
@@ -336,4 +336,4 @@ Defined in: [style\_builder/types.ts:104](https://github.com/versatiles-org/vers
 
 > **wood**: `string` \| [`Color`](../classes/Color.md)
 
-Defined in: [style\_builder/types.ts:105](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L105)
+Defined in: [style\_builder/types.ts:111](https://github.com/versatiles-org/versatiles-style/blob/main/src/style_builder/types.ts#L111)
