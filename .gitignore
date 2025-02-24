@@ -4,6 +4,7 @@ coverage
 dist/**/*.js
 dist/**/*.map
 dist/**/*.ts
+docs/
 node_modules
 release
 test
