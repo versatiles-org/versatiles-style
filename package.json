@@ -12,14 +12,16 @@
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
     "dev": "tsx scripts/dev.ts",
-    "doc": "tsx scripts/screenshots.ts && typedoc --options typedoc.json",
+    "doc": "npm run doc-graph && npm run doc-screenshots",
+    "doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
+    "doc-screenshots": "tsx scripts/screenshots.ts",
     "lint": "eslint --color .",
-    "prepack": "npm run build && npm run check",
-    "release": "npx vrt release-npm",
+    "prepack": "npm run build",
+    "release": "vrt release-npm",
     "test": "npm run test-typescript",
     "test-coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test-typescript": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "upgrade": "npm-check-updates -u && rm -f package-lock.json && rm -rf node_modules; npm i"
+    "upgrade": "vrt deps-upgrade"
   },
   "repository": {
     "type": "git",
@@ -50,7 +52,7 @@
     "@types/tar-stream": "^3.1.3",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
-    "@versatiles/release-tool": "^2.1.0",
+    "@versatiles/release-tool": "^2.2.1",
     "bin-pack": "^1.0.2",
     "esbuild": "^0.25.0",
     "eslint": "^9.21.0",
@@ -66,8 +68,6 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
-    "typedoc": "^0.27.8",
-    "typedoc-plugin-markdown": "^4.4.2",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.1"
   }
