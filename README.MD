@@ -12,7 +12,7 @@
 ## Styles Overview
 
 | Style Name    | Preview                                                                   |
-|---------------|---------------------------------------------------------------------------|
+| ------------- | ------------------------------------------------------------------------- |
 | **colorful**  | <img width="384" src="screenshots/colorful.png" alt="colorful style" />   |
 | **graybeard** | <img width="384" src="screenshots/graybeard.png" alt="graybeard style" /> |
 | **eclipse**   | <img width="384" src="screenshots/eclipse.png" alt="eclipse style" />     |
@@ -101,6 +101,7 @@ The library offers the following style generation methods:
 ```javascript
 const style = guessStyle(options);
 ```
+
 [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/guessStyle.md)
 
 ---
@@ -131,12 +132,124 @@ Run the project in development mode:
 npm run dev
 ```
 
-A local server will be available at [http://localhost:8080](http://localhost:8080). Use it to select a style, edit definitions in `src/styles/...`, and reload the page to view the changes.
+A local server will be available at <http://localhost:8080>. Use it to select a style, edit definitions in `src/styles/...`, and reload the page to view the changes.
 
----
+### Dependency Graph
+
+<!--- This chapter is generated automatically --->
+
+```mermaid
+flowchart TB
+
+subgraph 0["src"]
+subgraph 1["color"]
+2["abstract.ts"]
+3["hsl.ts"]
+4["hsv.ts"]
+5["rgb.ts"]
+6["utils.ts"]
+7["index.ts"]
+8["random.ts"]
+end
+subgraph 9["guess_style"]
+A["guess_style.ts"]
+X["index.ts"]
+end
+subgraph B["lib"]
+C["utils.ts"]
+end
+subgraph D["styles"]
+E["index.ts"]
+F["colorful.ts"]
+P["eclipse.ts"]
+Q["empty.ts"]
+R["graybeard.ts"]
+S["neutrino.ts"]
+end
+subgraph G["style_builder"]
+H["style_builder.ts"]
+M["decorator.ts"]
+O["recolor.ts"]
+Z["types.ts"]
+end
+subgraph I["shortbread"]
+J["index.ts"]
+K["layers.ts"]
+L["template.ts"]
+N["properties.ts"]
+end
+subgraph T["types"]
+U["index.ts"]
+V["tilejson.ts"]
+W["vector_layer.ts"]
+10["maplibre.ts"]
+end
+Y["index.ts"]
+end
+3-->2
+3-->4
+3-->5
+3-->6
+4-->2
+4-->3
+4-->5
+4-->6
+5-->2
+5-->3
+5-->4
+5-->6
+7-->2
+7-->3
+7-->4
+7-->8
+7-->5
+8-->4
+8-->6
+A-->7
+A-->C
+A-->E
+A-->U
+A-->V
+C-->7
+E-->F
+E-->P
+E-->Q
+E-->R
+E-->S
+F-->H
+H-->7
+H-->C
+H-->J
+H-->M
+H-->O
+J-->K
+J-->L
+M-->7
+M-->C
+M-->N
+O-->7
+P-->F
+Q-->F
+R-->F
+S-->F
+U-->V
+U-->W
+X-->A
+Y-->7
+Y-->X
+Y-->E
+
+style 0 fill-opacity:0.2
+style 1 fill-opacity:0.2
+style 9 fill-opacity:0.2
+style B fill-opacity:0.2
+style D fill-opacity:0.2
+style G fill-opacity:0.2
+style I fill-opacity:0.2
+style T fill-opacity:0.2
+```
 
 ## Licenses
 
 - **Source Code:** [Unlicense](./LICENSE.md)
 - **Iconsets and Rendered Spritemaps:** [CC0 1.0 Universal](./icons/LICENSE.md)
-
