@@ -53,7 +53,7 @@ async function draw(name: string, style: StyleBuilderFunction): Promise<void> {
 				const image = sharp(buffer, { raw: { width, height, channels: 4 } });
 
 				// Convert the raw image buffer to a PNG file and save it
-				image.toFile(`screenshots/${name}.png`, err => {
+				image.toFile(`docs/${name}.png`, err => {
 					if (err) throw err;
 					console.log(`Saved screenshot ${name}`);
 					resolve();

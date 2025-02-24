@@ -33,26 +33,57 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Run test
+      - name: Test
         run: |
           npm run build-browser
           npm run build-node
           npm run test
 
-      - name: Run build
+      - name: Build
         run: npm run build
 
-      - name: Build sprites
-        run: |
-          cd release/sprites
-          tar -cf - * | gzip -9 > ../sprites.tar.gz
+      #      - name: Build sprites
+      #        run: |
+      #          cd release/sprites
+      #          tar -cf - * | gzip -9 > ../sprites.tar.gz
+      #
+      #      - name: Get version
+      #        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
+      #
+      #      - name: Upload file to release
+      #        run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
+      #        working-directory: release
+      #
+      #      - name: Update release
+      #        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
 
-      - name: Get version
-        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
+      - name: Generate Documentation
+        run: npm run doc-typescript
 
-      - name: Upload file to release
-        run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
-        working-directory: release
+      - name: Generate Screenshots
+        run: npm run doc-screenshots
 
-      - name: Update release
-        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "docs"
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+
+    needs: release
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
