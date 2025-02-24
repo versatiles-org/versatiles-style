@@ -11,7 +11,7 @@ export default [
 			'**/dist/**/*.*',
 			'**/coverage/**/*.*',
 			'**/release/**/*.*',
-			'**/docs_*/**/*.*',
+			'**/docs/**/*.*',
 		]
 	},
 	{
