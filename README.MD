@@ -11,12 +11,12 @@
 
 ## Styles Overview
 
-| Style Name    | Preview                                                                   |
-| ------------- | ------------------------------------------------------------------------- |
-| **colorful**  | <img width="384" src="screenshots/colorful.png" alt="colorful style" />   |
-| **graybeard** | <img width="384" src="screenshots/graybeard.png" alt="graybeard style" /> |
-| **eclipse**   | <img width="384" src="screenshots/eclipse.png" alt="eclipse style" />     |
-| **neutrino**  | <img width="384" src="screenshots/neutrino.png" alt="neutrino style" />   |
+| Style Name    | Preview                                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------------------- |
+| **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   |
+| **graybeard** | <img width="384" src="https://versatiles.org/versatiles-style/graybeard.png" alt="graybeard style" /> |
+| **eclipse**   | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />     |
+| **neutrino**  | <img width="384" src="https://versatiles.org/versatiles-style/neutrino.png" alt="neutrino style" />   |
 
 ---
 
@@ -50,16 +50,16 @@ Integrate it into your HTML application:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-   const style = VersaTilesStyle.graybeard({
-      language: 'de',
-      colors: { label: '#222' },
-      recolor: { gamma: 0.5 }
-   });
+  const style = VersaTilesStyle.graybeard({
+    language: "de",
+    colors: { label: "#222" },
+    recolor: { gamma: 0.5 },
+  });
 
-   const map = new maplibregl.Map({
-      container: 'map',
-      style
-   });
+  const map = new maplibregl.Map({
+    container: "map",
+    style,
+  });
 </script>
 ```
 
@@ -74,13 +74,13 @@ npm install @versatiles/style
 Generate styles programmatically:
 
 ```javascript
-import { colorful } from '@versatiles/style';
-import { writeFileSync } from 'node:fs';
+import { colorful } from "@versatiles/style";
+import { writeFileSync } from "node:fs";
 
 const style = colorful({
-  language: 'en',
+  language: "en",
 });
-writeFileSync('style.json', JSON.stringify(style));
+writeFileSync("style.json", JSON.stringify(style));
 ```
 
 ---
@@ -89,12 +89,12 @@ writeFileSync('style.json', JSON.stringify(style));
 
 The library offers the following style generation methods:
 
-- `colorful(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/colorful.md)
-- `eclipse(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/eclipse.md)
-- `graybeard(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/graybeard.md)
-- `neutrino(options)` - [Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/neutrino.md)
+- `colorful(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/colorful.html)
+- `eclipse(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/eclipse.html)
+- `graybeard(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/graybeard.html)
+- `neutrino(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/neutrino.html)
 
-**`options`**: An optional object to customize the styles. [Learn more](https://github.com/versatiles-org/versatiles-style/blob/main/docs/interfaces/StyleBuilderOptions.md)
+**`options`**: An optional object to customize the styles. [Learn more](https://versatiles.org/versatiles-style/interfaces/StyleBuilderOptions.html)
 
 ### Guess Style Method
 
@@ -102,7 +102,7 @@ The library offers the following style generation methods:
 const style = guessStyle(options);
 ```
 
-[Documentation](https://github.com/versatiles-org/versatiles-style/blob/main/docs/functions/guessStyle.md)
+[Documentation](https://versatiles.org/versatiles-style/functions/guessStyle.html)
 
 ---
 
