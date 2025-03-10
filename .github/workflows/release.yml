@@ -42,20 +42,20 @@ jobs:
       - name: Build
         run: npm run build
 
-      #      - name: Build sprites
-      #        run: |
-      #          cd release/sprites
-      #          tar -cf - * | gzip -9 > ../sprites.tar.gz
-      #
-      #      - name: Get version
-      #        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
-      #
-      #      - name: Upload file to release
-      #        run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
-      #        working-directory: release
-      #
-      #      - name: Update release
-      #        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
+      - name: Tar sprites
+        run: |
+          cd release/sprites
+          tar -cf - * | gzip -9 > ../sprites.tar.gz
+
+      - name: Get version
+        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
+
+      - name: Upload file to release
+        run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
+        working-directory: release
+
+      - name: Update release
+        run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
 
       - name: Generate Documentation
         run: npm run doc-typescript
@@ -71,6 +71,8 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main'
+
+    name: Deploy Documentation
 
     needs: release
 
