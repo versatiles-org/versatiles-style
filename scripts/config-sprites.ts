@@ -124,7 +124,7 @@ const config: SpriteConfig = {
 				size: 22, names: ['tram', 'information'],
 		},
 	},
-		symbols: {
+		markers: {
 			icon: {
 				size: 22,
 				names: [

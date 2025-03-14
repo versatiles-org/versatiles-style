@@ -139,6 +139,10 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 <!--- This chapter is generated automatically --->
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TB
 
 subgraph 0["src"]
@@ -239,14 +243,8 @@ Y-->7
 Y-->X
 Y-->E
 
-style 0 fill-opacity:0.2
-style 1 fill-opacity:0.2
-style 9 fill-opacity:0.2
-style B fill-opacity:0.2
-style D fill-opacity:0.2
-style G fill-opacity:0.2
-style I fill-opacity:0.2
-style T fill-opacity:0.2
+class 0,1,9,B,D,G,I,T subgraphs;
+classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
 ## Licenses
