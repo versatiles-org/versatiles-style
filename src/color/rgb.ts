@@ -224,6 +224,17 @@ export class RGB extends Color {
 		)
 	}
 
+	blend(value: number, blendColor: Color): RGB {
+		value = clamp(value ?? 0, 0, 1);
+		const rgbNew = blendColor.toRGB();
+		return new RGB(
+			this.r * (1 - value) + value * rgbNew.r,
+			this.g * (1 - value) + value * rgbNew.g,
+			this.b * (1 - value) + value * rgbNew.b,
+			this.a
+		);
+	}
+
 	lighten(ratio: number): RGB {
 		return new RGB(
 			clamp(255 - (255 - this.r) * (1 - ratio), 0, 255),

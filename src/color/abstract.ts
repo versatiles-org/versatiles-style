@@ -75,6 +75,10 @@ export abstract class Color {
 		return this.toRGB().tint(value, tintColor);
 	}
 
+	blend(value: number, blendColor: Color): RGB {
+		return this.toRGB().blend(value, blendColor);
+	}
+
 	setHue(value: number): HSV {
 		return this.toHSV().setHue(value);
 	}
