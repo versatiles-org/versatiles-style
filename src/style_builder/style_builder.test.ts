@@ -80,6 +80,8 @@ describe('StyleBuilder', () => {
 				saturate: 0,
 				tint: 0,
 				tintColor: '#FF0000',
+				blend: 0,
+				blendColor: '#000000',
 			},
 			sprite: '',
 			tiles: [],

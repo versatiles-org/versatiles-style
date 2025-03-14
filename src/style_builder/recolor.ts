@@ -22,8 +22,14 @@ export interface RecolorOptions {
 	// Specifies the intensity of the tinting effect. Ranges from 0 (no effect) to 1 (full effect).
 	tint?: number;
 
-	// Specifies the color used for tinting, in a string format (e.g., '#FF0000').
+	// Specifies the color used for tinting, in a string format (default: '#FF0000').
 	tintColor?: string;
+
+	// Specifies the intensity of the blending effect. Ranges from 0 (no effect) to 1 (full effect).
+	blend?: number;
+
+	// Specifies the color used for blending, in a string format (default: '#000000').
+	blendColor?: string;
 }
 
 export function getDefaultRecolorFlags(): RecolorOptions {
@@ -36,6 +42,8 @@ export function getDefaultRecolorFlags(): RecolorOptions {
 		brightness: 0,
 		tint: 0,
 		tintColor: '#FF0000',
+		blend: 0,
+		blendColor: '#000000',
 	};
 }
 
@@ -49,6 +57,8 @@ function isValidRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
 	if ((opt.brightness != null) && (opt.brightness !== 0)) return true;
 	if ((opt.tint != null) && (opt.tint !== 0)) return true;
 	if ((opt.tintColor != null) && (opt.tintColor !== '#FF0000')) return true;
+	if ((opt.blend != null) && (opt.blend !== 0)) return true;
+	if ((opt.blendColor != null) && (opt.blendColor !== '#000000')) return true;
 	return false;
 }
 
@@ -99,12 +109,13 @@ export function recolor(color: Color, opt?: RecolorOptions): Color {
 	if (!isValidRecolorOptions(opt)) return color;
 
 	if (opt.invertBrightness ?? false) color = color.invertLuminosity();
-	if ((opt.rotate !== undefined) && (opt.rotate !== 0)) color = color.rotateHue(opt.rotate);
-	if ((opt.saturate !== undefined) && (opt.saturate !== 0)) color = color.saturate(opt.saturate);
-	if ((opt.gamma !== undefined) && (opt.gamma !== 1)) color = color.gamma(opt.gamma);
-	if ((opt.contrast !== undefined) && (opt.contrast !== 1)) color = color.contrast(opt.contrast);
-	if ((opt.brightness !== undefined) && (opt.brightness !== 0)) color = color.brightness(opt.brightness);
-	if ((opt.tint !== undefined) && (opt.tintColor !== undefined) && (opt.tint !== 0)) color = color.tint(opt.tint, Color.parse(opt.tintColor));
+	if ((opt.rotate != null) && (opt.rotate !== 0)) color = color.rotateHue(opt.rotate);
+	if ((opt.saturate != null) && (opt.saturate !== 0)) color = color.saturate(opt.saturate);
+	if ((opt.gamma != null) && (opt.gamma !== 1)) color = color.gamma(opt.gamma);
+	if ((opt.contrast != null) && (opt.contrast !== 1)) color = color.contrast(opt.contrast);
+	if ((opt.brightness != null) && (opt.brightness !== 0)) color = color.brightness(opt.brightness);
+	if ((opt.tint != null) && (opt.tintColor != null) && (opt.tint !== 0)) color = color.tint(opt.tint, Color.parse(opt.tintColor));
+	if ((opt.blend != null) && (opt.blendColor != null) && (opt.blend !== 0)) color = color.blend(opt.blend, Color.parse(opt.blendColor));
 
 	return color;
 }

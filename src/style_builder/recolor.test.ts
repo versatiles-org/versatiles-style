@@ -15,6 +15,8 @@ describe('recolor', () => {
 				brightness: 0,
 				tint: 0,
 				tintColor: '#FF0000',
+				blend: 0,
+				blendColor: '#000000',
 			});
 		});
 	});
@@ -186,6 +188,50 @@ describe('recolor', () => {
 			const colors = getTestColors();
 			recolorArray(colors, { tint: 0.8, tintColor: '#00F' });
 			expect(colors2string(colors)).toBe('7766DD00,0033EE55,1100FFAA,221188,665C99');
+		});
+	});
+
+	describe('blend', () => {
+		it('should not blend at all', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0, blendColor: '#F00' });
+			expect(colors2string(colors)).toBe('FFAA5500,00FFAA55,5500FFAA,AA5500,AA7755');
+		});
+
+		it('should blend a little bit red', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.5, blendColor: '#F00' });
+			expect(colors2string(colors)).toBe('FF552B00,80805555,AA0080AA,D52B00,D53C2B');
+		});
+
+		it('should blend a little bit yellow', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.2, blendColor: '#FF0' });
+			expect(colors2string(colors)).toBe('FFBB4400,33FF8855,7733CCAA,BB7700,BB9244');
+		});
+
+		it('should blend a little bit green', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.2, blendColor: '#0F0' });
+			expect(colors2string(colors)).toBe('CCBB4400,00FF8855,4433CCAA,887700,889244');
+		});
+
+		it('should blend a little bit blue', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.2, blendColor: '#00F' });
+			expect(colors2string(colors)).toBe('CC887700,00CCBB55,4400FFAA,884433,885F77');
+		});
+
+		it('should blend strongly orange', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.8, blendColor: '#F80' });
+			expect(colors2string(colors)).toBe('FF8F1100,CCA02255,DD6D33AA,EE7E00,EE8511');
+		});
+
+		it('should blend a strongly blue', () => {
+			const colors = getTestColors();
+			recolorArray(colors, { blend: 0.8, blendColor: '#00F' });
+			expect(colors2string(colors)).toBe('3322DD00,0033EE55,1100FFAA,2211CC,2218DD');
 		});
 	});
 });
