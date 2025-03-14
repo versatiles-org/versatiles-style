@@ -193,7 +193,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				});
 
 				// no links
-				const noDrivewayExpression: LegacyFilterSpecification = ['!=', 'service', 'driveway'];
 				['track', 'pedestrian', 'service', 'living_street', 'residential', 'unclassified'].forEach(t => {
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
@@ -202,7 +201,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 						filter: ['all',
 							['==', 'kind', t],
 							...filter,
-							...(t === 'service') ? [noDrivewayExpression] : [], // ignore driveways
 						],
 					});
 				});
@@ -217,7 +215,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 							['==', 'kind', t],
 							['==', 'bicycle', 'designated'],
 							...filter,
-							...(t === 'service') ? [noDrivewayExpression] : [], // ignore driveways
 						],
 					});
 				});

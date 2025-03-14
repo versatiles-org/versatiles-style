@@ -521,14 +521,26 @@ export default class Colorful extends StyleBuilder {
 				opacity: { 12: 0, 13: 1 },
 			},
 
-			// service and tracks
-			'{bridge-,tunnel-,}street-{service,track}:outline': {
+			// tracks
+			'{bridge-,tunnel-,}street-track:outline': {
 				size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 },
 				opacity: { 14: 0, 15: 1 },
 			},
-			'{bridge-,tunnel-,}street-{service,track}': {
+			'{bridge-,tunnel-,}street-track': {
 				size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 },
 				opacity: { 14: 0, 15: 1 },
+			},
+
+			// service
+			'{bridge-,tunnel-,}street-service:outline': {
+				size: { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 },
+				opacity: { 15: 0, 16: 1 },
+				color: colors.streetbg.lighten(0.3),
+			},
+			'{bridge-,tunnel-,}street-service': {
+				size: { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 },
+				opacity: { 15: 0, 16: 1 },
+				color: colors.street.darken(0.03),
 			},
 
 			// ways
