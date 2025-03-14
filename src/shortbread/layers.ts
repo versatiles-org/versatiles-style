@@ -290,7 +290,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 						type: 'line',
 						'source-layer': 'streets',
 						filter: ['all',
-							['in', 'kind', t]
+							['in', 'kind', t],
 							...filter,
 						],
 					});
