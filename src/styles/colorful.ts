@@ -586,7 +586,7 @@ export default class Colorful extends StyleBuilder {
 			// cycle streets overlay
 			'{bridge-,tunnel-,}street-{tertiary,tertiary-link,unclassified,residential,livingstreet,pedestrian}-bicycle': {
 				lineJoin: 'round',
-				lineCap: 'round'
+				lineCap: 'round',
 				color: colors.cycle,
 			},
 
