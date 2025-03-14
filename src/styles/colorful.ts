@@ -591,13 +591,29 @@ export default class Colorful extends StyleBuilder {
 			// rail, lightrail
 			'{tunnel-,bridge-,}transport-{rail,lightrail}:outline': {
 				color: colors.rail,
-				size: { 8: 1, 13: 1, 15: 3, 16: 4, 18: 8, 19: 11, 20: 14 },
+				minzoom: 8,
+				size: { 8: 1, 13: 1, 15: 1, 20: 14 },
 			},
 			'{tunnel-,bridge-,}transport-{rail,lightrail}': {
 				color: colors.rail.lighten(0.25),
-				size: { 8: 1, 13: 1, 15: 2, 16: 3, 18: 6, 19: 8, 20: 10 },
+				minzoom: 14,
+				size: { 14: 0, 15: 1, 20: 10 },
 				lineDasharray: [2, 2],
 			},
+
+			// rail-service, lightrail-service
+			'{tunnel-,bridge-,}transport-{rail,lightrail}-service:outline': {
+				color: colors.rail,
+				minzoom: 14,
+				size: { 14: 0, 15: 1, 16: 1, 20: 14 },
+			},
+			'{tunnel-,bridge-,}transport-{rail,lightrail}-service': {
+				color: colors.rail.lighten(0.25),
+				minzoom: 15,
+				size: { 15: 0, 16: 1, 20: 10 },
+				lineDasharray: [2, 2],
+			},
+
 			// subway
 			'{tunnel-,bridge-,}transport-subway:outline': {
 				color: colors.subway,

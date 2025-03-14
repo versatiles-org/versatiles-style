@@ -254,8 +254,11 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 
 			// separate outline for trains
 			[':outline', ''].forEach(suffix => {
-				// transport
-				['rail', 'light_rail', 'subway', 'narrow_gauge', 'tram', 'funicular', 'monorail', 'bus_guideway', 'busway'].reverse().forEach((t) => {
+
+				// with service distinction
+				['rail', 'light_rail', 'subway', 'narrow_gauge', 'tram'].reverse().forEach((t) => {
+
+					// main rail
 					results.push({
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
@@ -263,6 +266,31 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 						filter: ['all',
 							['in', 'kind', t],
 							['!has', 'service'],
+							...filter,
+						],
+					});
+
+					// service rail (crossover, siding, spur, yard)
+					results.push({
+						id: prefix + 'transport-' + t.replace(/_/g, '') + '-service' + suffix,
+						type: 'line',
+						'source-layer': 'streets',
+						filter: ['all',
+							['in', 'kind', t],
+							['has', 'service'],
+							...filter,
+						],
+					});
+				});
+
+				// other transport
+				['funicular', 'monorail', 'bus_guideway', 'busway'].reverse().forEach((t) => {
+					results.push({
+						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
+						type: 'line',
+						'source-layer': 'streets',
+						filter: ['all',
+							['in', 'kind', t]
 							...filter,
 						],
 					});
