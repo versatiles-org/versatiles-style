@@ -70,10 +70,8 @@ jobs:
           path: "docs"
 
   deploy:
-    if: github.ref == 'refs/heads/main'
-
     name: Deploy Documentation
-
+    
     needs: release
 
     permissions:
