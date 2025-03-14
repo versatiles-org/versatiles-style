@@ -805,7 +805,7 @@ export default class Colorful extends StyleBuilder {
 			'marking-oneway{-reverse,}': {
 				minzoom: 16,
 				image: 'basics:marking-arrow',
-				opacity: { 16: 0, 17: 0.7 },
+				opacity: { 16: 0, 17: 0.4, 20: 0.4 },
 				font: fonts.regular,
 			},
 
