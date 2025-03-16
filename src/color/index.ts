@@ -1,7 +1,6 @@
 import { Color } from './abstract.js';
 import { HSL } from './hsl.js';
 import { HSV } from './hsv.js';
-import randomColor from './random.js';
 import { RGB } from './rgb.js';
 
 Color.parse = function (input: string | Color): Color {
@@ -28,8 +27,6 @@ Color.parse = function (input: string | Color): Color {
 Color.HSL = HSL;
 Color.HSV = HSV;
 Color.RGB = RGB;
-
-Color.random = randomColor;
 
 export type { RandomColorOptions } from './random.js';
 export type { HSL } from './hsl.js';

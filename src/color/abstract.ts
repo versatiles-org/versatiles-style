@@ -1,6 +1,5 @@
 import type { HSL } from './hsl.js';
 import type { HSV } from './hsv.js';
-import { RandomColorOptions } from './random.js';
 import type { RGB } from './rgb.js';
 
 export abstract class Color {
@@ -8,7 +7,7 @@ export abstract class Color {
 	static HSL: typeof HSL;
 	static HSV: typeof HSV;
 	static RGB: typeof RGB;
-	static random: (options?: RandomColorOptions) => HSV;
+
 	abstract clone(): Color;
 
 	asHex(): string {

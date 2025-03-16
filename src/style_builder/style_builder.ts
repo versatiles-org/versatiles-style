@@ -4,7 +4,7 @@ import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { basename, deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
-import type { StyleBuilderColors, StyleBuilderColorsEnsured, StyleBuilderFonts, StyleBuilderOptions } from './types.js';
+import { styleBuilderColorKeys, type StyleBuilderColors, type StyleBuilderFonts, type StyleBuilderOptions } from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -37,7 +37,7 @@ export abstract class StyleBuilder {
 
 		const colors = this.getColors(this.defaultColors);
 		if (options.colors) {
-			let key: keyof StyleBuilderColorsEnsured;
+			let key: keyof StyleBuilderColors;
 			for (key in options.colors) {
 				const value = options.colors[key];
 				if (value != null) colors[key] = Color.parse(value);
@@ -104,9 +104,9 @@ export abstract class StyleBuilder {
 		return style;
 	}
 
-	public getColors(colors: StyleBuilderColors): StyleBuilderColorsEnsured {
+	public getColors(colors: StyleBuilderColors): StyleBuilderColors<Color> {
 		const entriesString = Object.entries(colors) as [keyof StyleBuilderColors, string | Color][];
-		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColorsEnsured;
+		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColors<Color>;
 		return result;
 	}
 
@@ -114,9 +114,9 @@ export abstract class StyleBuilder {
 		return {
 			baseUrl: '',
 			bounds: [
-				-180, 
-				-85.0511287798066, 
-				180, 
+				-180,
+				-85.0511287798066,
+				180,
 				85.0511287798066
 			],
 			glyphs: '',
@@ -132,8 +132,7 @@ export abstract class StyleBuilder {
 
 	protected transformDefaultColors(callback: (color: Color) => Color): void {
 		const colors = this.getColors(this.defaultColors);
-		let key: keyof StyleBuilderColorsEnsured;
-		for (key in colors) {
+		for (const key of styleBuilderColorKeys) {
 			this.defaultColors[key] = callback(colors[key]);
 		}
 	}

@@ -77,26 +77,6 @@ describe('Color.parse', () => {
 	});
 });
 
-describe('Color.random', () => {
-	test('generates random HSV colors', () => {
-		const random = Color.random();
-		expect(random).toBeInstanceOf(HSV);
-		const array = random.asArray();
-		expect(array[0]).toBeGreaterThanOrEqual(0);
-		expect(array[0]).toBeLessThanOrEqual(360);
-		expect(array[1]).toBeGreaterThanOrEqual(0);
-		expect(array[1]).toBeLessThanOrEqual(100);
-		expect(array[2]).toBeGreaterThanOrEqual(0);
-		expect(array[2]).toBeLessThanOrEqual(100);
-	});
-
-	test('supports options for generating random colors', () => {
-		const random = Color.random({ hue: 'red', luminosity: 'bright' });
-		expect(random).toBeInstanceOf(HSV);
-		// Additional checks based on the options provided can be added here
-	});
-});
-
 describe('Color Class Properties', () => {
 	test('Color.HSL is accessible', () => {
 		expect(Color.HSL).toBe(HSL);

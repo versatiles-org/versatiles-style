@@ -1,9 +1,30 @@
+import { HSV } from './hsv.js';
 import type { RandomColorOptions } from './random.js';
 import randomColor from './random.js';
 
 describe('RandomColor', () => {
 	test('constructor initializes without errors', () => {
 		expect(randomColor).toBeDefined();
+	});
+
+	describe('Color.random', () => {
+		test('generates random HSV colors', () => {
+			const random = randomColor();
+			expect(random).toBeInstanceOf(HSV);
+			const array = random.asArray();
+			expect(array[0]).toBeGreaterThanOrEqual(0);
+			expect(array[0]).toBeLessThanOrEqual(360);
+			expect(array[1]).toBeGreaterThanOrEqual(0);
+			expect(array[1]).toBeLessThanOrEqual(100);
+			expect(array[2]).toBeGreaterThanOrEqual(0);
+			expect(array[2]).toBeLessThanOrEqual(100);
+		});
+	
+		test('supports options for generating random colors', () => {
+			const random = randomColor({ hue: 'red', luminosity: 'bright' });
+			expect(random).toBeInstanceOf(HSV);
+			// Additional checks based on the options provided can be added here
+		});
 	});
 
 	describe('randomColor method', () => {

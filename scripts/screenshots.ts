@@ -1,6 +1,7 @@
 import mbgl from '@maplibre/maplibre-gl-native';
 import sharp from 'sharp';
-import { StyleBuilderFunction, styles } from '../src/index.js';
+import { styles } from '../src/index.js';
+import type { StyleBuilderFunction } from '../src/styles/index.js';
 
 /**
  * Renders map images for predefined styles and saves them as PNG files.
