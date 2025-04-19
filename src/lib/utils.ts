@@ -92,11 +92,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 				continue;
 			}
 
-			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				target[key] = deepMerge(target[key], sourceValue);
-				continue;
-			}
-
 			// *********
 			// merge
 			// *********
