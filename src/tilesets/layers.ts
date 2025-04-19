@@ -4,7 +4,7 @@ import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import { Language } from '../style_builder/types.js';
 
-export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
+export function getTilesetsLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;
 	const nameField = language ? '{name_' + language + '}' : '{name}';
 
@@ -14,14 +14,22 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{ id: 'background', type: 'background' },
 
 		// ocean
-		{ id: 'water-ocean', type: 'fill', 'source-layer': 'ocean' },
+		{ id: 'water-ocean', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'ocean' },
+
+		// bathymetry
+		{ id: 'water-bathymetry', type: 'fill', source: 'versatiles-bathymetry', 'source-layer': 'bathymetry' },
+
+		// landcover
+		...[ 'bare','builtup','cropland','grassland','mangroves','moss','shrubland','snow','treecover','water','wetland' ].map((t: string): MaplibreLayerDefinition => ({
+			id: 'landcover-' + t,
+			type: 'fill',
+			source: 'versatiles-landcover',
+			'source-layer': 'landcover-vectors',
+			filter: ['all', ['==', 'kind', t] ],
+		})),
 
 		// land
-		{
-			id: 'land-glacier',
-			type: 'fill', 'source-layer': 'water_polygons',
-			filter: ['all', ['==', 'kind', 'glacier']],
-		},
+		{ id: 'land-glacier', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'water_polygons', filter: ['all', ['==', 'kind', 'glacier']] },
 
 		...[
 			{ id: 'commercial', kinds: ['commercial', 'retail'] },
@@ -42,16 +50,27 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
 			id: 'land-' + id,
 			type: 'fill',
+			source: 'versatiles-shortbread',
 			'source-layer': 'land',
 			filter: ['all',
 				['in', 'kind', ...kinds],
 			],
 		})),
 
+		// hillshade
+		...['dark','light'].map((t: string): MaplibreLayerDefinition => ({
+			id: 'hillshade-' + t,
+			type: 'fill',
+			source: 'versatiles-hillshade',
+			'source-layer': 'hillshade-vectors',
+			filter: ['all', ['==', 'shade', t] ],
+		})),
+
 		// water-lines
 		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayerDefinition => ({
 			id: 'water-' + t,
 			type: 'line',
+			source: 'versatiles-shortbread',
 			'source-layer': 'water_lines',
 			filter: ['all',
 				['in', 'kind', t],
@@ -61,69 +80,46 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		})),
 
 		// water polygons
-		{
-			id: 'water-area',
-			type: 'fill', 'source-layer': 'water_polygons',
-			filter: ['==', 'kind', 'water'],
-		},
-		{
-			id: 'water-area-river',
-			type: 'fill', 'source-layer': 'water_polygons',
-			filter: ['==', 'kind', 'river'],
-		},
-		{
-			id: 'water-area-small',
-			type: 'fill', 'source-layer': 'water_polygons',
-			filter: ['in', 'kind', 'reservoir', 'basin', 'dock'],
-		},
-
+		{ id: 'water-area', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'water_polygons', filter: ['==', 'kind', 'water'] },
+		{ id: 'water-area-river', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'water_polygons', filter: ['==', 'kind', 'river'] },
+		{ id: 'water-area-small', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'water_polygons', filter: ['in', 'kind', 'reservoir', 'basin', 'dock'] },
 
 		// dam
-		{ id: 'water-dam-area', type: 'fill', 'source-layer': 'dam_polygons', filter: ['==', 'kind', 'dam'] },
-		{ id: 'water-dam', type: 'line', 'source-layer': 'dam_lines', filter: ['==', 'kind', 'dam'] },
+		{ id: 'water-dam-area', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'dam_polygons', filter: ['==', 'kind', 'dam'] },
+		{ id: 'water-dam', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'dam_lines', filter: ['==', 'kind', 'dam'] },
 
 		// pier
-		{ id: 'water-pier-area', type: 'fill', 'source-layer': 'pier_polygons', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
-		{ id: 'water-pier', type: 'line', 'source-layer': 'pier_lines', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
+		{ id: 'water-pier-area', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'pier_polygons', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
+		{ id: 'water-pier', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'pier_lines', filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'] },
 
 		// site
 		...['danger_area', 'sports_center', 'university', 'college', 'school', 'hospital', 'prison', 'parking', 'bicycle_parking', 'construction'].map((t): MaplibreLayerDefinition => ({
 			id: 'site-' + t.replace(/_/g, ''),
 			type: 'fill',
+			source: 'versatiles-shortbread',
 			'source-layer': 'sites',
 			filter: ['in', 'kind', t],
 		})),
 
 		// airport
-		{
-			id: 'airport-area',
-			type: 'fill', 'source-layer': 'street_polygons', filter: ['in', 'kind', 'runway', 'taxiway'],
-		},
-		{
-			id: 'airport-taxiway:outline',
-			type: 'line', 'source-layer': 'streets', filter: ['==', 'kind', 'taxiway'],
-		},
-		{
-			id: 'airport-runway:outline',
-			type: 'line', 'source-layer': 'streets', filter: ['==', 'kind', 'runway'],
-		},
-		{
-			id: 'airport-taxiway',
-			type: 'line', 'source-layer': 'streets', filter: ['==', 'kind', 'taxiway'],
-		},
-		{
-			id: 'airport-runway',
-			type: 'line', 'source-layer': 'streets', filter: ['==', 'kind', 'runway'],
-		},
+		{ id: 'airport-area', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'street_polygons', filter: ['in', 'kind', 'runway', 'taxiway'] },
+		{ id: 'airport-taxiway:outline', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'streets', filter: ['==', 'kind', 'taxiway'] },
+		{ id: 'airport-runway:outline', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'streets', filter: ['==', 'kind', 'runway'] },
+		{ id: 'airport-taxiway', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'streets', filter: ['==', 'kind', 'taxiway'] },
+		{ id: 'airport-runway', type: 'line', source: 'versatiles-shortbread', 'source-layer': 'streets', filter: ['==', 'kind', 'runway'] },
 
 		// building
 		{
 			id: 'building:outline',
-			type: 'fill', 'source-layer': 'buildings',
+			type: 'fill',
+			source: 'versatiles-shortbread',
+			'source-layer': 'buildings',
 		},
 		{
 			id: 'building',
-			type: 'fill', 'source-layer': 'buildings',
+			type: 'fill',
+			source: 'versatiles-shortbread',
+			'source-layer': 'buildings',
 		},
 
 		// tunnel-, street-, bridges-bridge
@@ -163,6 +159,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			if (c === 'street') results.push({
 				id: 'bridge',
 				type: 'fill',
+				source: 'versatiles-shortbread',
 				'source-layer': 'bridges',
 			});
 
@@ -172,6 +169,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				if (suffix === ':outline') results.push({
 					id: prefix + 'street-pedestrian-zone',
 					type: 'fill',
+					source: 'versatiles-shortbread',
 					'source-layer': 'street_polygons',
 					filter: ['all',
 						...filter,
@@ -184,6 +182,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'way-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							...filter,
@@ -197,6 +196,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							['==', 'kind', t],
@@ -210,6 +210,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + '-bicycle',
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							['==', 'kind', t],
@@ -224,6 +225,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + '-link' + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							...filter,
@@ -238,6 +240,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							...filter,
@@ -259,6 +262,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							['in', 'kind', t],
@@ -271,6 +275,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'transport-' + t.replace(/_/g, '') + '-service' + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							['in', 'kind', t],
@@ -285,6 +290,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'streets',
 						filter: ['all',
 							['in', 'kind', t],
@@ -299,6 +305,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 						results.push({
 							id: 'aerialway-' + t.replace(/[_-]+/g, '') + suffix,
 							type: 'line',
+							source: 'versatiles-shortbread',
 							'source-layer': 'aerialways',
 							filter: ['all',
 								...filter,
@@ -311,6 +318,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 					results.push({
 						id: 'transport-ferry' + suffix,
 						type: 'line',
+						source: 'versatiles-shortbread',
 						'source-layer': 'ferries',
 					});
 				}
@@ -322,8 +330,8 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		// poi, one layer per type
 		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map((key): MaplibreLayerDefinition => ({
 			id: 'poi-' + key,
-
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'pois',
 			filter: ['to-boolean', ['get', key]],
 		})),
@@ -333,6 +341,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			{
 				id: 'boundary-country' + suffix,
 				type: 'line',
+				source: 'versatiles-shortbread',
 				'source-layer': 'boundaries',
 				filter: ['all',
 					['==', 'admin_level', 2],
@@ -344,6 +353,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			{
 				id: 'boundary-country-disputed' + suffix,
 				type: 'line',
+				source: 'versatiles-shortbread',
 				'source-layer': 'boundaries',
 				filter: ['all',
 					['==', 'admin_level', 2],
@@ -355,6 +365,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			{
 				id: 'boundary-country-maritime' + suffix,
 				type: 'line',
+				source: 'versatiles-shortbread',
 				'source-layer': 'boundaries',
 				filter: ['all',
 					['==', 'admin_level', 2],
@@ -366,6 +377,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			{
 				id: 'boundary-state' + suffix,
 				type: 'line',
+				source: 'versatiles-shortbread',
 				'source-layer': 'boundaries',
 				filter: ['all',
 					['==', 'admin_level', 4],
@@ -380,6 +392,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-address-housenumber',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'addresses',
 			filter: ['has', 'housenumber'],
 			layout: { 'text-field': '{housenumber}' },
@@ -389,6 +402,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-motorway-exit',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'street_labels_points', // docs say `streets_labels_points`, but layer is actually called `street_labels_points`
 			filter: ['==', 'kind', 'motorway_junction'],
 			layout: { 'text-field': '{ref}' },
@@ -397,6 +411,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-motorway-shield',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'street_labels',
 			filter: ['==', 'kind', 'motorway'],
 			layout: { 'text-field': '{ref}' },
@@ -407,6 +422,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map((t: string): MaplibreLayerDefinition => ({
 			id: 'label-street-' + t.replace(/_/g, ''),
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'street_labels',
 			filter: ['==', 'kind', t],
 			layout: { 'text-field': nameField },
@@ -416,6 +432,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		...[ /*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood', 'quarter', 'suburb', 'hamlet', 'village', 'town'].map((id: string): MaplibreLayerDefinition => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'place_labels',
 			filter: ['==', 'kind', id],
 			layout: { 'text-field': nameField },
@@ -425,6 +442,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-boundary-state',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'boundary_labels',
 			filter: ['in', 'admin_level', 4, '4'],
 			layout: { 'text-field': nameField },
@@ -434,6 +452,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		...['city', 'state_capital', 'capital'].map((id: string): MaplibreLayerDefinition => ({
 			id: 'label-place-' + id.replace(/_/g, ''),
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'place_labels',
 			filter: ['==', 'kind', id],
 			layout: { 'text-field': nameField },
@@ -442,6 +461,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-boundary-country-small',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'boundary_labels',
 			filter: ['all',
 				['in', 'admin_level', 2, '2'],
@@ -452,6 +472,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-boundary-country-medium',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'boundary_labels',
 			filter: ['all',
 				['in', 'admin_level', 2, '2'],
@@ -463,6 +484,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'label-boundary-country-large',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'boundary_labels',
 			filter: ['all',
 				['in', 'admin_level', 2, '2'],
@@ -475,6 +497,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'marking-oneway', // streets → oneway
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'streets',
 			filter: ['all',
 				['==', 'oneway', true],
@@ -492,6 +515,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'marking-oneway-reverse', // oneway_reverse
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'streets',
 			filter: ['all',
 				['==', 'oneway_reverse', true],
@@ -509,6 +533,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'marking-bicycle', // bicycle=designated or kind=cycleway
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'streets',
 			filter: ['all',
 				['==', 'bicycle', 'designated'],
@@ -524,6 +549,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-bus',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['==', 'kind', 'bus_stop'],
 			layout: { 'text-field': nameField },
@@ -531,6 +557,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-tram',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['==', 'kind', 'tram_stop'],
 			layout: { 'text-field': nameField },
@@ -538,6 +565,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-subway',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['all',
 				['in', 'kind', 'station', 'halt'],
@@ -548,6 +576,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-lightrail',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['all',
 				['in', 'kind', 'station', 'halt'],
@@ -558,6 +587,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-station',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['all',
 				['in', 'kind', 'station', 'halt'],
@@ -568,6 +598,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-airfield',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['all',
 				['==', 'kind', 'aerodrome'],
@@ -578,6 +609,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		{
 			id: 'symbol-transit-airport',
 			type: 'symbol',
+			source: 'versatiles-shortbread',
 			'source-layer': 'public_transport',
 			filter: ['all',
 				['==', 'kind', 'aerodrome'],

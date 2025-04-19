@@ -176,7 +176,7 @@ M["decorator.ts"]
 O["recolor.ts"]
 Z["types.ts"]
 end
-subgraph I["shortbread"]
+subgraph I["tilesets"]
 J["index.ts"]
 K["layers.ts"]
 L["template.ts"]

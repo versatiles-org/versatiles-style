@@ -27,7 +27,7 @@ export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyle
 		style = getRasterStyle(tileJSON);
 	} else {
 		if (isShortbread(tileJSON)) {
-			style = getShortbreadStyle(tileJSON, {
+			style = getTilesetsStyle(tileJSON, {
 				baseUrl: options?.baseUrl,
 				glyphs: options?.glyphs,
 				sprite: options?.sprite,

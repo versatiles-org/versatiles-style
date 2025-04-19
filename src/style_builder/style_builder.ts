@@ -1,5 +1,5 @@
 import { Color } from '../color/index.js';
-import { getShortbreadTemplate, getShortbreadLayers } from '../shortbread/index.js';
+import { getTilesetsTemplate, getTilesetsLayers } from '../tilesets/index.js';
 import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { basename, deepClone, resolveUrl } from '../lib/utils.js';
@@ -53,8 +53,8 @@ export abstract class StyleBuilder {
 			}
 		}
 
-		// get empty shortbread style
-		const style = getShortbreadTemplate();
+		// get empty style
+		const style = getTilesetsTemplate();
 
 		const styleRuleOptions: StyleRulesOptions = {
 			colors,
@@ -65,8 +65,8 @@ export abstract class StyleBuilder {
 		// get layer style rules from child class
 		const layerStyleRules = this.getStyleRules(styleRuleOptions);
 
-		// get shortbread layers
-		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language });
+		// get layers
+		const layerDefinitions: MaplibreLayerDefinition[] = getTilesetsLayers({ language });
 		let layers: MaplibreLayer[] = layerDefinitions.map(layer => {
 			switch (layer.type) {
 				case 'background':

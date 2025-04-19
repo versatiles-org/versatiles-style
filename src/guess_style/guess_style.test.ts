@@ -1,13 +1,13 @@
 
 import type { TileJSONSpecification, VectorLayer } from '../types/index.js';
 import { guessStyle } from './guess_style.js';
-import { getShortbreadVectorLayers } from '../shortbread/template.js';
+import { getTilesetsVectorLayers } from '../tilesets/template.js';
 import { SourceSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
 	const vectorLayersSomething: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
-	const vectorLayersShortbread: VectorLayer[] = getShortbreadVectorLayers();
+	const vectorLayersTilesets: VectorLayer[] = getTilesetsVectorLayers();
 
 	it('should build raster styles', () => {
 		expect(guessStyle({ tiles }))
@@ -59,7 +59,7 @@ describe('guessStyle', () => {
 	});
 
 	it('should build shortbread vector styles', () => {
-		const style = guessStyle({ tiles, vector_layers: vectorLayersShortbread }, { baseUrl: 'http://example.com' });
+		const style = guessStyle({ tiles, vector_layers: vectorLayersTilesets }, { baseUrl: 'http://example.com' });
 
 		expect(style.layers.length).toBe(309);
 		style.layers = [];

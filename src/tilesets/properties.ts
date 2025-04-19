@@ -1,18 +1,18 @@
 
-export interface ShortbreadProperty {
+export interface TilesetsProperty {
 	readonly key: string;
 	readonly parent: 'layer' | 'layout' | 'paint';
 	readonly valueType: 'array' | 'boolean' | 'color' | 'enum' | 'filter' | 'fonts' | 'formatted' | 'number' | 'padding' | 'resolvedImage' | 'variableAnchorOffsetCollection';
 }
 
-type ShortbreadPropertyDef = ShortbreadProperty & {
+type TilesetsPropertyDef = TilesetsProperty & {
 	readonly types: string;
 	readonly short?: string;
 };
 
-const propertyLookup = new Map<string, ShortbreadProperty[]>();
+const propertyLookup = new Map<string, TilesetsProperty[]>();
 
-const propertyDefs: ShortbreadPropertyDef[] = [
+const propertyDefs: TilesetsPropertyDef[] = [
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'filter', valueType: 'filter' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'maxzoom', valueType: 'number' },
 	{ parent: 'layer', types: 'background,fill,line,symbol', key: 'minzoom', valueType: 'number' },
@@ -114,19 +114,19 @@ const propertyDefs: ShortbreadPropertyDef[] = [
 	{ parent: 'paint', types: 'symbol', key: 'text-translate', valueType: 'array' },
 ];
 
-propertyDefs.forEach((propertyDef: ShortbreadPropertyDef) => {
+propertyDefs.forEach((propertyDef: TilesetsPropertyDef) => {
 	const types: string = propertyDef.types;
 
 	types.split(',').forEach((type: string) => {
 
 		function add(propertyKey: string): void {
 			const key = type + '/' + propertyKey;
-			const property: ShortbreadProperty = {
+			const property: TilesetsProperty = {
 				key: propertyDef.key,
 				parent: propertyDef.parent,
 				valueType: propertyDef.valueType,
 			};
-			const propertyList: ShortbreadProperty[] | undefined = propertyLookup.get(key);
+			const propertyList: TilesetsProperty[] | undefined = propertyLookup.get(key);
 			if (propertyList) {
 				propertyList.push(property);
 			} else {

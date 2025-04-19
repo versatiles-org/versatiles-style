@@ -1,4 +1,4 @@
-import type { ShortbreadProperty } from './properties.js';
+import type { TilesetsProperty } from './properties.js';
 import propertyLookup from './properties.js';
 
 describe('propertyLookup', () => {
@@ -24,7 +24,7 @@ describe('propertyLookup', () => {
 		expectedProps.forEach(prop => {
 			propertyLookup.forEach((value, key) => {
 				if (key.endsWith(prop)) {
-					expect(value.some((p: ShortbreadProperty) => p.key === prop)).toBeTruthy();
+					expect(value.some((p: TilesetsProperty) => p.key === prop)).toBeTruthy();
 				}
 			});
 		});
@@ -32,7 +32,7 @@ describe('propertyLookup', () => {
 
 	it('should store properties with the correct structure', () => {
 		propertyLookup.forEach(properties => {
-			properties.forEach((prop: ShortbreadProperty) => {
+			properties.forEach((prop: TilesetsProperty) => {
 				expect(prop).toHaveProperty('key');
 				expect(prop).toHaveProperty('parent');
 				expect(prop).toHaveProperty('valueType');
