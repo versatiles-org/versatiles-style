@@ -209,6 +209,49 @@ export default class Colorful extends StyleBuilder {
 				lineWidth: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
 			},
 
+			// bathymetry
+
+			// FIXME tiles are not yet available on tileserver
+			// FIXME decorator can't handle colors that are objects
+			// FIXME style_builder overrides source url to osm
+			// FIXME utils "unpredicted case"
+			// FIXME everything is undocumented and uncommented
+			/*
+			'water-bathymetry': {
+				fillAntialias: false,
+				color: ["case",
+					["==", ["get", "mindepth"], -25],   colors.water.darken(0.02),
+					["==", ["get", "mindepth"], -50],   colors.water.darken(0.04),
+					["==", ["get", "mindepth"], -100],  colors.water.darken(0.06),
+					["==", ["get", "mindepth"], -200],  colors.water.darken(0.08),
+					["==", ["get", "mindepth"], -250],  colors.water.darken(0.10),
+					["==", ["get", "mindepth"], -500],  colors.water.darken(0.12),
+					["==", ["get", "mindepth"], -750],  colors.water.darken(0.14),
+					["==", ["get", "mindepth"], -1000], colors.water.darken(0.16),
+					["==", ["get", "mindepth"], -1250], colors.water.darken(0.18),
+					["==", ["get", "mindepth"], -1500], colors.water.darken(0.20),
+					["==", ["get", "mindepth"], -1750], colors.water.darken(0.22),
+					["==", ["get", "mindepth"], -2000], colors.water.darken(0.24),
+					["==", ["get", "mindepth"], -2500], colors.water.darken(0.26),
+					["==", ["get", "mindepth"], -3000], colors.water.darken(0.28),
+					["==", ["get", "mindepth"], -3500], colors.water.darken(0.30),
+					["==", ["get", "mindepth"], -4000], colors.water.darken(0.32),
+					["==", ["get", "mindepth"], -4500], colors.water.darken(0.34),
+					["==", ["get", "mindepth"], -5000], colors.water.darken(0.36),
+					["==", ["get", "mindepth"], -5500], colors.water.darken(0.38),
+					["==", ["get", "mindepth"], -6000], colors.water.darken(0.40),
+					["==", ["get", "mindepth"], -6500], colors.water.darken(0.42),
+					["==", ["get", "mindepth"], -7000], colors.water.darken(0.44),
+					["==", ["get", "mindepth"], -7500], colors.water.darken(0.46),
+					["==", ["get", "mindepth"], -8000], colors.water.darken(0.48),
+					["==", ["get", "mindepth"], -8500], colors.water.darken(0.50),
+					["==", ["get", "mindepth"], -9000], colors.water.darken(0.52),
+					["==", ["get", "mindepth"], -9500], colors.water.darken(0.54),
+					colors.water,
+				],
+			},
+			*/
+
 			// hillshade
 			'hillshade-dark': {
 				color: '#000000',
