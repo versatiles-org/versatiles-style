@@ -114,9 +114,9 @@ export abstract class StyleBuilder {
 		return {
 			baseUrl: '',
 			bounds: [
-				-180, 
-				-85.0511287798066, 
-				180, 
+				-180,
+				-85.0511287798066,
+				180,
 				85.0511287798066
 			],
 			glyphs: '',
