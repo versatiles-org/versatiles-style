@@ -224,6 +224,45 @@ export default class Colorful extends StyleBuilder {
 				fillAntialias: true,
 			},
 
+			// landcover
+			/* tiles are not yet available on tileserver
+			'landcover-*': {
+				fillAntialias: true,
+				fillOutlineColor: "#ffffff00",
+				opacity: { 0: 0.2, 10: 0.2, 11: 0 },
+			},
+			'landcover-bare': {
+				color: colors.rock, // or better?
+			},
+			'landcover-builtup': {
+				color: colors.residential,
+			},
+			'landcover-cropland': {
+				color: colors.agriculture,
+			},
+			'landcover-grassland': {
+				color: colors.grass,
+			},
+			'landcover-mangroves': {
+				color: colors.wetland, // FIXME
+			},
+			'landcover-moss': {
+				color: colors.wood, // FIXME
+			},
+			'landcover-shrubland': {
+				color: colors.wood, // FIXME
+			},
+			'landcover-snow': {
+				color: colors.glacier,
+			},
+			'landcover-treecover': {
+				color: colors.wood,
+			},
+			'landcover-wetland': {
+				color: colors.wetland,
+			},
+			*/
+
 			// land
 
 			'land-*': {
