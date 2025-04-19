@@ -12,7 +12,6 @@ import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 // StyleBuilder class definition
 export abstract class StyleBuilder {
-	readonly #sourceName = 'versatiles-shortbread';
 
 	public abstract readonly name: string;
 
@@ -70,14 +69,11 @@ export abstract class StyleBuilder {
 		let layers: MaplibreLayer[] = layerDefinitions.map(layer => {
 			switch (layer.type) {
 				case 'background':
-					return layer;
 				case 'fill':
 				case 'line':
 				case 'symbol':
-					return {
-						source: this.#sourceName,
-						...layer,
-					};
+					return layer;
+				break;
 			}
 			throw Error('unknown layer type');
 		});
@@ -97,9 +93,10 @@ export abstract class StyleBuilder {
 			style.sprite = sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));
 		}
 
-		const source = style.sources[this.#sourceName];
-		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));
-		if ('bounds' in source) source.bounds = bounds;
+		for (const source of Object.values(style.sources)) {
+			if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url)); // this does nothing for absolute urls?
+			if ('bounds' in source) source.bounds = bounds; // why is this overridden? FIXME
+		}
 
 		return style;
 	}
