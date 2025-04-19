@@ -93,10 +93,12 @@ export abstract class StyleBuilder {
 			style.sprite = sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));
 		}
 
+		/* these are stupid overrides for everything declared in template.ts ffs
 		for (const source of Object.values(style.sources)) {
 			if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url)); // this does nothing for absolute urls?
 			if ('bounds' in source) source.bounds = bounds; // why is this overridden? FIXME
 		}
+		*/
 
 		return style;
 	}
