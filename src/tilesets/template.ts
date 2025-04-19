@@ -418,6 +418,6 @@ export function getTilesetsTemplate(): StyleSpecification {
 };
 
 // this is only used in guess_style/guess_style.test.ts
-export function getTilesetsVectorLayers(String: source = "versatiles-shortbread"): VectorLayer[] {
+export function getTilesetsVectorLayers(source = "versatiles-shortbread"): VectorLayer[] {
 	return getTilesetsTemplate().sources[source].vector_layers;
 };
