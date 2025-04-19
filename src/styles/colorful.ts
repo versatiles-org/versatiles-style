@@ -209,6 +209,21 @@ export default class Colorful extends StyleBuilder {
 				lineWidth: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
 			},
 
+			// hillshade
+			'hillshade-dark': {
+				color: '#000000',
+				fillOutlineColor: "#00000000",
+				opacity: { 0: 0, 4: 0.05 },
+			},
+			'hillshade-light': {
+				color: '#ffffff',
+				fillOutlineColor: "#ffffff00",
+				opacity: { 0: 0, 4: 0.2 },
+			},
+			'hillshade-*': {
+				fillAntialias: true,
+			},
+
 			// land
 
 			'land-*': {
