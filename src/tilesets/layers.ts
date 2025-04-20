@@ -17,7 +17,7 @@ export function getTilesetsLayers(option: { readonly language: Language }): Mapl
 		{ id: 'water-ocean', type: 'fill', source: 'versatiles-shortbread', 'source-layer': 'ocean' },
 
 		// bathymetry
-		{ id: 'water-bathymetry', type: 'fill', source: 'versatiles-bathymetry', 'source-layer': 'bathymetry' },
+		{ id: 'bathymetry', type: 'fill', source: 'versatiles-bathymetry', 'source-layer': 'bathymetry' },
 
 		// landcover
 		...[ 'bare','builtup','cropland','grassland','mangroves','moss','shrubland','snow','treecover','water','wetland' ].map((t: string): MaplibreLayerDefinition => ({

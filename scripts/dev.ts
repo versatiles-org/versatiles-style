@@ -9,11 +9,12 @@ import { rollup } from 'rollup';
 
 const PORT = 8080;
 
-type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino';
+type StyleName = 'colorful' | 'colorfancy' | 'eclipse' | 'graybeard' | 'neutrino';
 
 const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
 	{ reg: /^\/\?colorful$/, type: 'mem', res: () => getStylePage('colorful') },
+	{ reg: /^\/\?colorfancy$/, type: 'mem', res: () => getStylePage('colorfancy') },
 	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
@@ -156,6 +157,7 @@ function getPage(content: string) {
 function getIndexPage() {
 	return getPage(`<ul>
 		<li><a href="/?colorful">colorful</a></li>
+		<li><a href="/?colorfancy">colorfancy</a></li>
 		<li><a href="/?eclipse">eclipse</a></li>
 		<li><a href="/?graybeard">graybeard</a></li>
 		<li><a href="/?neutrino">neutrino</a></li>

@@ -1,8 +1,8 @@
 import { StyleBuilder } from '../style_builder/style_builder.js';
 import type { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types.js';
 
-export default class Colorful extends StyleBuilder {
-	public readonly name: string = 'Colorful';
+export default class Colorfancy extends StyleBuilder {
+	public readonly name: string = 'Colorfancy';
 
 	public defaultFonts = {
 		regular: 'noto_sans_regular',
@@ -211,6 +211,95 @@ export default class Colorful extends StyleBuilder {
 			},
 			'water-ditch': {
 				lineWidth: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
+			},
+
+			// bathymetry
+			'bathymetry': {
+				fillAntialias: true,
+				opacity: { 0: 0.2, 5: 1 },
+				color: ["case",
+					["==", ["get", "mindepth"], -25],   colors.water.blend(0.07, colors.deepwater),
+					["==", ["get", "mindepth"], -50],   colors.water.blend(0.10, colors.deepwater),
+					["==", ["get", "mindepth"], -100],  colors.water.blend(0.14, colors.deepwater),
+					["==", ["get", "mindepth"], -200],  colors.water.blend(0.18, colors.deepwater),
+					["==", ["get", "mindepth"], -250],  colors.water.blend(0.21, colors.deepwater),
+					["==", ["get", "mindepth"], -500],  colors.water.blend(0.25, colors.deepwater),
+					["==", ["get", "mindepth"], -750],  colors.water.blend(0.28, colors.deepwater),
+					["==", ["get", "mindepth"], -1000], colors.water.blend(0.32, colors.deepwater),
+					["==", ["get", "mindepth"], -1250], colors.water.blend(0.35, colors.deepwater),
+					["==", ["get", "mindepth"], -1500], colors.water.blend(0.39, colors.deepwater),
+					["==", ["get", "mindepth"], -1750], colors.water.blend(0.42, colors.deepwater),
+					["==", ["get", "mindepth"], -2000], colors.water.blend(0.46, colors.deepwater),
+					["==", ["get", "mindepth"], -2500], colors.water.blend(0.49, colors.deepwater),
+					["==", ["get", "mindepth"], -3000], colors.water.blend(0.53, colors.deepwater),
+					["==", ["get", "mindepth"], -3500], colors.water.blend(0.56, colors.deepwater),
+					["==", ["get", "mindepth"], -4000], colors.water.blend(0.60, colors.deepwater),
+					["==", ["get", "mindepth"], -4500], colors.water.blend(0.63, colors.deepwater),
+					["==", ["get", "mindepth"], -5000], colors.water.blend(0.67, colors.deepwater),
+					["==", ["get", "mindepth"], -5500], colors.water.blend(0.70, colors.deepwater),
+					["==", ["get", "mindepth"], -6000], colors.water.blend(0.73, colors.deepwater),
+					["==", ["get", "mindepth"], -6500], colors.water.blend(0.77, colors.deepwater),
+					["==", ["get", "mindepth"], -7000], colors.water.blend(0.81, colors.deepwater),
+					["==", ["get", "mindepth"], -7500], colors.water.blend(0.84, colors.deepwater),
+					["==", ["get", "mindepth"], -8000], colors.water.blend(0.88, colors.deepwater),
+					["==", ["get", "mindepth"], -8500], colors.water.blend(0.91, colors.deepwater),
+					["==", ["get", "mindepth"], -9000], colors.water.blend(0.95, colors.deepwater),
+					["==", ["get", "mindepth"], -9500], colors.water.blend(0.98, colors.deepwater),
+					colors.water,
+				],
+			},
+
+			// hillshade
+			'hillshade-dark': {
+				color: '#000000',
+				fillOutlineColor: "#00000000",
+				opacity: { 0: 0, 4: 0.05 },
+			},
+			'hillshade-light': {
+				color: '#ffffff',
+				fillOutlineColor: "#ffffff00",
+				opacity: { 0: 0, 4: 0.2 },
+			},
+			'hillshade-*': {
+				fillAntialias: true,
+			},
+
+			// landcover
+			'landcover-*': {
+				fillAntialias: true,
+				fillOutlineColor: "#ffffff00",
+				opacity: { 0: 0.2, 10: 0.2, 11: 0 },
+				color: "#ffffff00",
+			},
+			'landcover-bare': {
+				color: colors.sand, // or better?
+			},
+			'landcover-builtup': {
+				color: colors.building, // maybe better color
+			},
+			'landcover-cropland': {
+				color: colors.agriculture,
+			},
+			'landcover-grassland': {
+				color: colors.grass,
+			},
+			'landcover-mangroves': {
+				color: colors.wetland, // FIXME
+			},
+			'landcover-moss': {
+				color: colors.moss, // FIXME
+			},
+			'landcover-shrubland': {
+				color: colors.park, // same as land-vegetation
+			},
+			'landcover-snow': {
+				color: colors.glacier,
+			},
+			'landcover-treecover': {
+				color: colors.wood,
+			},
+			'landcover-wetland': {
+				color: colors.wetland,
 			},
 
 			// land

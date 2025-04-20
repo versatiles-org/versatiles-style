@@ -6,6 +6,7 @@ import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 // import styles
 import Colorful from './colorful.js';
+import Colorfancy from './colorfancy.js';
 import Eclipse from './eclipse.js';
 import Graybeard from './graybeard.js';
 import Neutrino from './neutrino.js';
@@ -27,6 +28,7 @@ function getStyleBuilder(styleBuilder: new () => StyleBuilder): StyleBuilderFunc
 
 // generate style builders
 export const colorful = getStyleBuilder(Colorful);
+export const colorfancy = getStyleBuilder(Colorfancy);
 export const eclipse = getStyleBuilder(Eclipse);
 export const graybeard = getStyleBuilder(Graybeard);
 export const neutrino = getStyleBuilder(Neutrino);
