@@ -392,7 +392,7 @@ export function getTilesetsTemplate(): StyleSpecification {
 				attribution: "Derived product from the <a href=\"https://www.gebco.net/data_and_products/historical_data_sets/#gebco_2019\">GEBCO 2019 Grid</a>, made with <a href=\"https://www.naturalearthdata.com/\">NaturalEarth</a> by <a href=\"https://opendem.info\">OpenDEM</a>",
 				version: "1.0.0",
 				tiles: [
-					"https://tiles.versatiles.org/tiles/batymetry-vectors/{z}/{x}/{y}"
+					"https://tiles.versatiles.org/tiles/bathymetry-vectors/{z}/{x}/{y}"
 				],
 				type: "vector",
 				scheme: "xyz",
