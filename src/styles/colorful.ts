@@ -27,6 +27,9 @@ export default class Colorful extends StyleBuilder {
 		/** Color for grasslands or open fields. */
 		grass: '#D8E8C8',
 
+		/** Color for moss and tundra. */
+		moss: '#2F714D',
+
 		/** Color for parks and recreational areas. */
 		park: '#D9D9A5',
 
@@ -262,17 +265,17 @@ export default class Colorful extends StyleBuilder {
 			},
 
 			// landcover
-			/* tiles are not yet available on tileserver
 			'landcover-*': {
 				fillAntialias: true,
 				fillOutlineColor: "#ffffff00",
 				opacity: { 0: 0.2, 10: 0.2, 11: 0 },
+				color: "#ffffff00",
 			},
 			'landcover-bare': {
-				color: colors.rock, // or better?
+				color: colors.sand, // or better?
 			},
 			'landcover-builtup': {
-				color: colors.residential,
+				color: colors.building, // maybe better color
 			},
 			'landcover-cropland': {
 				color: colors.agriculture,
@@ -284,10 +287,10 @@ export default class Colorful extends StyleBuilder {
 				color: colors.wetland, // FIXME
 			},
 			'landcover-moss': {
-				color: colors.wood, // FIXME
+				color: colors.moss, // FIXME
 			},
 			'landcover-shrubland': {
-				color: colors.wood, // FIXME
+				color: colors.park, // same as land-vegetation
 			},
 			'landcover-snow': {
 				color: colors.glacier,
@@ -298,7 +301,6 @@ export default class Colorful extends StyleBuilder {
 			'landcover-wetland': {
 				color: colors.wetland,
 			},
-			*/
 
 			// land
 
