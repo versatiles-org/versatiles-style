@@ -94,7 +94,6 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						layer.paint[key] = value;
 						break;
 					default:
-
 						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
 				}
 			});

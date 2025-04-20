@@ -23,7 +23,6 @@ export abstract class StyleBuilder {
 
 		options ??= {};
 
-
 		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
 
