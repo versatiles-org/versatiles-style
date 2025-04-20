@@ -16,7 +16,6 @@ export default class Colorful extends StyleBuilder {
 
 		/** Color for water bodies like lakes and rivers. */
 		water: '#BEDDF3',
-		deepwater: '#79A1C2',
 
 		/** Color for glacier areas, usually shown as white. */
 		glacier: '#FFFFFF',
@@ -26,9 +25,6 @@ export default class Colorful extends StyleBuilder {
 
 		/** Color for grasslands or open fields. */
 		grass: '#D8E8C8',
-
-		/** Color for moss and tundra. */
-		moss: '#2F714D',
 
 		/** Color for parks and recreational areas. */
 		park: '#D9D9A5',
@@ -137,6 +133,11 @@ export default class Colorful extends StyleBuilder {
 
 		/** Color used for points of interest. */
 		poi: '#555555',
+
+		// Don't need these colors, but we have types and one-size-fits-all unit-tests, so they have to be here to please the tests:
+		moss: '#FF0000',
+		deepwater: '#FF0000',
+
 	};
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {

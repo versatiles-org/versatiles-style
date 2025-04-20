@@ -47,7 +47,7 @@ export default class Neutrino extends Colorful {
 		/** Primary color used for text labels. */
 		label: '#cbb7b7',
 
-		// Don't need these colors:
+		// Don't need these colors, but we have types and one-size-fits-all unit-tests, so they have to be here to please the tests:
 		buildingbg: '#000',
 		burial: '#000',
 		construction: '#000',
@@ -77,6 +77,9 @@ export default class Neutrino extends Colorful {
 		trunkbg: '#000',
 		waste: '#000',
 		wetland: '#000',
+		moss: '#000',
+		deepwater: '#000',
+
 	};
 
 
