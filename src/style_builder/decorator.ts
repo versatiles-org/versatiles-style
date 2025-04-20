@@ -99,15 +99,17 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			});
 		}
 
-		function processColor(value: StyleRuleValue): string|any[] {
+		function processColor(value: StyleRuleValue): string | unknown[] {
 			if (typeof value === 'string') value = Color.parse(value);
+
 			if (value instanceof Color) {
 				const color = recolor.do(value as Color);
 				return color.asString()
 			}
+
 			// check if conditional thingie
-			if (typeof value === "object" && value instanceof Array && value[0] === "case") {
-				return value.map(v=>((v instanceof Color) ? recolor.do(v as Color).asString() : v)) as any[];
+			if (Array.isArray(value) && value[0] === "case") {
+				return value.map(v => ((v instanceof Color) ? recolor.do(v).asString() : v));
 			}
 
 			throw new Error(`unknown color type "${typeof value}"`);

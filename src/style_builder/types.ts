@@ -140,7 +140,7 @@ export interface StyleRulesOptions {
 }
 
 /** Defines the value type for a style rule. */
-export type StyleRuleValue = boolean | number | object | string;
+export type StyleRuleValue = boolean | number | object | string | Color | unknown[];
 
 /** Defines the structure of a style rule, which is a record of properties to style values. */
 export type StyleRule = Record<string, StyleRuleValue | undefined>;

@@ -27,8 +27,13 @@ export abstract class StyleBuilder {
 		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
 
 		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
+
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}']; // wtf, there are different sources...
+		
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const bounds = options.bounds ?? [-180, -85.0511287798066, 180, 85.0511287798066];
+		
 		const hideLabels = options.hideLabels ?? false;
 		const language = options.language ?? null;
 		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
@@ -72,7 +77,7 @@ export abstract class StyleBuilder {
 				case 'line':
 				case 'symbol':
 					return layer;
-				break;
+					break;
 			}
 			throw Error('unknown layer type');
 		});
@@ -99,16 +104,16 @@ export abstract class StyleBuilder {
 		}
 
 		// find used sources
-		const usedSources = style.layers.filter(layer=>(layer.type !== "background")).reduce((sources,layer)=>{
-			if (layer.hasOwnProperty("source")) sources.add(layer.source);
+		const usedSources = style.layers.filter(layer => (layer.type !== "background")).reduce((sources, layer) => {
+			if ('source' in layer) sources.add(layer.source);
 			return sources;
-		},new Set());
+		}, new Set());
 
 		// remove unused sources
-		style.sources = Object.entries(style.sources).reduce((sources,[id,source])=>{
+		style.sources = Object.entries(style.sources).reduce((sources, [id, source]) => {
 			if (usedSources.has(id)) sources[id] = source;
 			return sources;
-		},{} as Record<string, typeof style.sources[string]>);
+		}, {} as Record<string, typeof style.sources[string]>);
 
 		return style;
 	}
