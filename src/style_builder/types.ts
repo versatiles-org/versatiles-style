@@ -88,6 +88,7 @@ export interface StyleBuilderColors {
 	labelHalo: Color | string;
 	land: Color | string;
 	leisure: Color | string;
+	moss: Color | string;
 	motorway: Color | string;
 	motorwaybg: Color | string;
 	park: Color | string;
@@ -107,6 +108,7 @@ export interface StyleBuilderColors {
 	trunkbg: Color | string;
 	waste: Color | string;
 	water: Color | string;
+	deepwater: Color | string;
 	wetland: Color | string;
 	wood: Color | string;
 };
