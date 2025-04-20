@@ -100,6 +100,18 @@ export abstract class StyleBuilder {
 		}
 		*/
 
+		// find used sources
+		const usedSources = style.layers.reduce((sources,layer)=>{
+			if (layer.source) sources.add(layer.source);
+			return sources;
+		},new Set());
+
+		// remove unused sources
+		style.sources = Object.entries(style.sources).reduce((sources,[id,source])=>{
+			if (usedSources.has(id)) sources[id] = source;
+			return sources;
+		},{});
+
 		return style;
 	}
 
