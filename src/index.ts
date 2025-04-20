@@ -2,6 +2,7 @@ export { colorful, colorfancy, eclipse, graybeard, neutrino, type StyleBuilderFu
 import { colorful, colorfancy, eclipse, graybeard, neutrino } from './styles/index.js';
 export const styles = {
 	colorful,
+	colorfancy,
 	eclipse,
 	graybeard,
 	neutrino,
