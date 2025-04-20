@@ -101,6 +101,12 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 				continue;
 			}
 
+			// case statements: override value
+			if (source[key] instanceof Array && source[key][0] === "case") {
+				target[key] = deepMerge(source[key]);
+				continue;
+			}
+
 			console.log('target[key]:', target[key]);
 			console.log('source[key]:', source[key]);
 			throw Error('unpredicted case');
