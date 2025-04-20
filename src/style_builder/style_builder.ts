@@ -27,7 +27,7 @@ export abstract class StyleBuilder {
 		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
 
 		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
-		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
+		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}']; // wtf, there are different sources...
 		const bounds = options.bounds ?? [-180, -85.0511287798066, 180, 85.0511287798066];
 		const hideLabels = options.hideLabels ?? false;
 		const language = options.language ?? null;
@@ -92,16 +92,15 @@ export abstract class StyleBuilder {
 			style.sprite = sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));
 		}
 
-		/* these are stupid overrides for everything declared in template.ts ffs
 		for (const source of Object.values(style.sources)) {
-			if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url)); // this does nothing for absolute urls?
-			if ('bounds' in source) source.bounds = bounds; // why is this overridden? FIXME
+			if ('tiles' in source) source.tiles = source.tiles?.map(url => resolveUrl(baseUrl, new URL(url, 'https://example.org').pathname));
+			// if ('tiles' in source) source.tiles = source.tiles.map(url => resolveUrl(baseUrl, basename(url))); // HERE
+			// if ('bounds' in source) source.bounds = bounds; // why is this overridden? bounds might be different by source
 		}
-		*/
 
 		// find used sources
-		const usedSources = style.layers.reduce((sources,layer)=>{
-			if (layer.source) sources.add(layer.source);
+		const usedSources = style.layers.filter(layer=>(layer.type !== "background")).reduce((sources,layer)=>{
+			if (layer.hasOwnProperty("source")) sources.add(layer.source);
 			return sources;
 		},new Set());
 
@@ -109,7 +108,7 @@ export abstract class StyleBuilder {
 		style.sources = Object.entries(style.sources).reduce((sources,[id,source])=>{
 			if (usedSources.has(id)) sources[id] = source;
 			return sources;
-		},{});
+		},{} as Record<string, typeof style.sources[string]>);
 
 		return style;
 	}

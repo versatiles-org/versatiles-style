@@ -51,7 +51,7 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 	return shortbreadIds.every(id => layerIds.has(id));
 }
 
-function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: SpriteSpecification }): StyleSpecification {
+function getTilesetsStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: SpriteSpecification }): StyleSpecification {
 	return colorful({
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,

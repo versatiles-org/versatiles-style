@@ -103,7 +103,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 
 			// case statements: override value
 			if (source[key] instanceof Array && source[key][0] === "case") {
-				target[key] = deepMerge(source[key]);
+				target[key] = deepMerge(source[key]) as any;
 				continue;
 			}
 

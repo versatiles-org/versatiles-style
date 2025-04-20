@@ -5,7 +5,7 @@ import { getTilesetsVectorLayers } from '../tilesets/template.js';
 import { SourceSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 describe('guessStyle', () => {
-	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
+	const tiles = ['https://example.com/tiles/osm/{z}/{x}/{y}'];
 	const vectorLayersSomething: VectorLayer[] = [{ id: 'geometry', fields: { label: 'String', height: 'Number' } }];
 	const vectorLayersTilesets: VectorLayer[] = getTilesetsVectorLayers();
 
@@ -58,19 +58,20 @@ describe('guessStyle', () => {
 			});
 	});
 
+	// this unit test makes no sense, sicne it requires every source to be shortbread FIXME
 	it('should build shortbread vector styles', () => {
-		const style = guessStyle({ tiles, vector_layers: vectorLayersTilesets }, { baseUrl: 'http://example.com' });
+		const style = guessStyle({ tiles, vector_layers: vectorLayersTilesets }, { baseUrl: 'https://example.com' });
 
 		expect(style.layers.length).toBe(309);
 		style.layers = [];
 
 		expect(style).toStrictEqual({
-			glyphs: 'http://example.com/assets/glyphs/{fontstack}/{range}.pbf',
+			glyphs: 'https://example.com/assets/glyphs/{fontstack}/{range}.pbf',
 			metadata: {
 				license: 'https://creativecommons.org/publicdomain/zero/1.0/',
 			},
 			name: 'versatiles-colorful',
-			sprite: [{ id: 'basics', url: 'http://example.com/assets/sprites/basics/sprites' }],
+			sprite: [{ id: 'basics', url: 'https://example.com/assets/sprites/basics/sprites' }],
 			layers: [],
 			sources: {
 				'versatiles-shortbread': {
