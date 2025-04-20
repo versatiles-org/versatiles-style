@@ -4,13 +4,14 @@ import { StyleBuilderFunction, styles } from '../src/index.js';
 
 /**
  * Renders map images for predefined styles and saves them as PNG files.
- * 
+ *
  * The script uses `@maplibre/maplibre-gl-native` for map rendering
  * and `sharp` for image processing. It generates map images for a set
  * of predefined styles and saves them in the `screenshots` directory.
  */
 Promise.all([
 	draw('colorful', styles.colorful),
+	draw('colorfancy', styles.colorfancy),
 	draw('eclipse', styles.eclipse),
 	draw('graybeard', styles.graybeard),
 	draw('neutrino', styles.neutrino),
@@ -18,7 +19,7 @@ Promise.all([
 
 /**
  * Renders a map image using the given style and saves it as a PNG file.
- * 
+ *
  * @param name - The name of the style, used in the output filename.
  * @param style - The style builder function that configures the map style.
  * @returns A promise that resolves when the image has been successfully saved.

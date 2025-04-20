@@ -14,10 +14,11 @@ mkdirSync(dirDst, { recursive: true });
 
 
 const pack = tar.pack();
-const { colorful, eclipse, empty, graybeard, neutrino } = styles;
+const { colorful, colorfancy, eclipse, empty, graybeard, neutrino } = styles;
 
 [
 	{ name: 'colorful', builder: colorful },
+	{ name: 'colorfancy', builder: colorfancy },
 	{ name: 'eclipse', builder: eclipse },
 	{ name: 'empty', builder: empty },
 	{ name: 'graybeard', builder: graybeard },

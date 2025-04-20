@@ -11,12 +11,13 @@
 
 ## Styles Overview
 
-| Style Name    | Preview                                                                                               |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   |
-| **graybeard** | <img width="384" src="https://versatiles.org/versatiles-style/graybeard.png" alt="graybeard style" /> |
-| **eclipse**   | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />     |
-| **neutrino**  | <img width="384" src="https://versatiles.org/versatiles-style/neutrino.png" alt="neutrino style" />   |
+| Style Name     | Preview                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------- |
+| **colorful**   | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />     |
+| **colorfancy** | <img width="384" src="https://versatiles.org/versatiles-style/colorfancy.png" alt="colorfancy style" /> |
+| **graybeard**  | <img width="384" src="https://versatiles.org/versatiles-style/graybeard.png" alt="graybeard style" />   |
+| **eclipse**    | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />       |
+| **neutrino**   | <img width="384" src="https://versatiles.org/versatiles-style/neutrino.png" alt="neutrino style" />     |
 
 ---
 
@@ -157,24 +158,25 @@ subgraph 1["color"]
 end
 subgraph 9["guess_style"]
 A["guess_style.ts"]
-X["index.ts"]
+Y["index.ts"]
 end
 subgraph B["lib"]
 C["utils.ts"]
 end
 subgraph D["styles"]
 E["index.ts"]
-F["colorful.ts"]
-P["eclipse.ts"]
-Q["empty.ts"]
-R["graybeard.ts"]
-S["neutrino.ts"]
+F["colorfancy.ts"]
+P["colorful.ts"]
+Q["eclipse.ts"]
+R["empty.ts"]
+S["graybeard.ts"]
+T["neutrino.ts"]
 end
 subgraph G["style_builder"]
 H["style_builder.ts"]
 M["decorator.ts"]
 O["recolor.ts"]
-Z["types.ts"]
+10["types.ts"]
 end
 subgraph I["tilesets"]
 J["index.ts"]
@@ -182,13 +184,13 @@ K["layers.ts"]
 L["template.ts"]
 N["properties.ts"]
 end
-subgraph T["types"]
-U["index.ts"]
-V["tilejson.ts"]
-W["vector_layer.ts"]
-10["maplibre.ts"]
+subgraph U["types"]
+V["index.ts"]
+W["tilejson.ts"]
+X["vector_layer.ts"]
+11["maplibre.ts"]
 end
-Y["index.ts"]
+Z["index.ts"]
 end
 3-->2
 3-->4
@@ -212,14 +214,15 @@ end
 A-->7
 A-->C
 A-->E
-A-->U
 A-->V
+A-->W
 C-->7
 E-->F
 E-->P
 E-->Q
 E-->R
 E-->S
+E-->T
 F-->H
 H-->7
 H-->C
@@ -232,18 +235,19 @@ M-->7
 M-->C
 M-->N
 O-->7
-P-->F
-Q-->F
-R-->F
-S-->F
-U-->V
-U-->W
-X-->A
-Y-->7
-Y-->X
-Y-->E
+P-->H
+Q-->P
+R-->P
+S-->P
+T-->P
+V-->W
+V-->X
+Y-->A
+Z-->7
+Z-->Y
+Z-->E
 
-class 0,1,9,B,D,G,I,T subgraphs;
+class 0,1,9,B,D,G,I,U subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
