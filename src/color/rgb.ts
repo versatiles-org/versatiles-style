@@ -3,12 +3,40 @@ import { HSV } from './hsv.js';
 import { Color } from './abstract.js';
 import { clamp, formatFloat } from './utils.js';
 
+/**
+ * Represents an RGB color with optional alpha transparency.
+ * 
+ * @extends Color
+ */
 export class RGB extends Color {
-	readonly r: number = 0; // between 0 and 255
-	readonly g: number = 0;	// between 0 and 255
-	readonly b: number = 0;	// between 0 and 255
-	readonly a: number = 1;	// between 0 and 1
+	/**
+	 * Red component (0-255).
+	 */
+	readonly r;
 
+	/**
+	 * Green component (0-255).
+	 */
+	readonly g;
+
+	/**
+	 * Blue component (0-255).
+	 */
+	readonly b;
+
+	/**
+	 * Alpha component (0-1).
+	 */
+	readonly a;
+
+	/**
+	 * Creates an instance of RGB.
+	 * 
+	 * @param r - Red component (0-255).
+	 * @param g - Green component (0-255).
+	 * @param b - Blue component (0-255).
+	 * @param a - Alpha component (0-1), defaults to 1.
+	 */
 	constructor(r: number, g: number, b: number, a: number = 1) {
 		super();
 		this.r = clamp(r, 0, 255);
@@ -17,14 +45,29 @@ export class RGB extends Color {
 		this.a = clamp(a, 0, 1);
 	}
 
+	/**
+	 * Creates a clone of the current RGB color.
+	 * 
+	 * @returns A new RGB instance with the same color values.
+	 */
 	clone(): RGB {
 		return new RGB(this.r, this.g, this.b, this.a);
 	}
 
+	/**
+	 * Returns the RGB color as an array.
+	 * 
+	 * @returns An array containing the red, green, blue, and alpha components.
+	 */
 	asArray(): [number, number, number, number] {
 		return [this.r, this.g, this.b, this.a];
 	}
 
+	/**
+	 * Rounds the RGB color components to the nearest integer.
+	 * 
+	 * @returns A new RGB instance with rounded color values.
+	 */
 	round(): RGB {
 		return new RGB(
 			Math.round(this.r),
@@ -34,6 +77,11 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Returns the RGB color as a string.
+	 * 
+	 * @returns A string representation of the RGB color in either `rgb` or `rgba` format.
+	 */
 	asString(): string {
 		if (this.a === 1) {
 			return `rgb(${this.r.toFixed(0)},${this.g.toFixed(0)},${this.b.toFixed(0)})`;
@@ -42,6 +90,11 @@ export class RGB extends Color {
 		}
 	}
 
+	/**
+	 * Returns the RGB color as a hexadecimal string.
+	 * 
+	 * @returns A string representation of the RGB color in hexadecimal format.
+	 */
 	asHex(): string {
 		const r = Math.round(this.r).toString(16).padStart(2, '0');
 		const g = Math.round(this.g).toString(16).padStart(2, '0');
@@ -55,6 +108,11 @@ export class RGB extends Color {
 		}
 	}
 
+	/**
+	 * Converts the RGB color to an HSL color.
+	 * 
+	 * @returns An HSL instance representing the same color.
+	 */
 	asHSL(): HSL {
 		const r = this.r / 255;
 		const g = this.g / 255;
@@ -82,6 +140,11 @@ export class RGB extends Color {
 		return new HSL(h, s * 100, l * 100, this.a);
 	};
 
+	/**
+	 * Converts the RGB color to an HSV color.
+	 * 
+	 * @returns An HSV instance representing the same color.
+	 */
 	asHSV(): HSV {
 		const r = this.r / 255;
 		const g = this.g / 255;
@@ -112,14 +175,31 @@ export class RGB extends Color {
 		return new HSV(h * 360, s * 100, v * 100, this.a);
 	}
 
+	/**
+	 * Returns the RGB color.
+	 * 
+	 * @returns The current RGB instance.
+	 */
 	asRGB(): RGB {
 		return this.clone();
 	}
 
+	/**
+	 * Returns the RGB color.
+	 * 
+	 * @returns The current RGB instance.
+	 */
 	toRGB(): RGB {
 		return this;
 	}
 
+	/**
+	 * Parses a string or Color instance into an RGB color.
+	 * 
+	 * @param input - The input string or Color instance to parse.
+	 * @returns A new RGB instance representing the parsed color.
+	 * @throws Will throw an error if the input string is not a valid RGB color string.
+	 */
 	static parse(input: string | Color): RGB {
 		if (input instanceof Color) return input.asRGB();
 
@@ -167,7 +247,12 @@ export class RGB extends Color {
 		throw new Error(`Invalid RGB color string: "${input}"`);
 	}
 
-
+	/**
+	 * Adjusts the gamma of the RGB color.
+	 * 
+	 * @param value - The gamma value to apply.
+	 * @returns A new RGB instance with the adjusted gamma.
+	 */
 	gamma(value: number): RGB {
 		if (value < 1e-3) value = 1e-3;
 		if (value > 1e3) value = 1e3;
@@ -179,6 +264,11 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Inverts the RGB color.
+	 * 
+	 * @returns A new RGB instance with the inverted color values.
+	 */
 	invert(): RGB {
 		return new RGB(
 			255 - this.r,
@@ -188,6 +278,12 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Adjusts the contrast of the RGB color.
+	 * 
+	 * @param value - The contrast value to apply.
+	 * @returns A new RGB instance with the adjusted contrast.
+	 */
 	contrast(value: number): RGB {
 		if (value < 0) value = 0;
 		if (value > 1e6) value = 1e6;
@@ -199,6 +295,12 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Adjusts the brightness of the RGB color.
+	 * 
+	 * @param value - The brightness value to apply.
+	 * @returns A new RGB instance with the adjusted brightness.
+	 */
 	brightness(value: number): RGB {
 		if (value < -1) value = -1;
 		if (value > 1) value = 1;
@@ -212,10 +314,17 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Tints the RGB color with another color.
+	 * 
+	 * @param value - The tint value to apply.
+	 * @param tintColor - The color to use for tinting.
+	 * @returns A new RGB instance with the applied tint.
+	 */
 	tint(value: number, tintColor: Color): RGB {
 		if (value < 0) value = 0;
 		if (value > 1) value = 1;
-		const rgbNew = this.setHue(tintColor.toHSV().h).toRGB();
+		const rgbNew = this.setHue(tintColor.asHSV().h).asRGB();
 		return new RGB(
 			this.r * (1 - value) + value * rgbNew.r,
 			this.g * (1 - value) + value * rgbNew.g,
@@ -224,9 +333,16 @@ export class RGB extends Color {
 		)
 	}
 
+	/**
+	 * Blends the RGB color with another color.
+	 * 
+	 * @param value - The blend value to apply.
+	 * @param blendColor - The color to blend with.
+	 * @returns A new RGB instance with the blended color.
+	 */
 	blend(value: number, blendColor: Color): RGB {
 		value = clamp(value ?? 0, 0, 1);
-		const rgbNew = blendColor.toRGB();
+		const rgbNew = blendColor.asRGB();
 		return new RGB(
 			this.r * (1 - value) + value * rgbNew.r,
 			this.g * (1 - value) + value * rgbNew.g,
@@ -235,6 +351,12 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Lightens the RGB color.
+	 * 
+	 * @param ratio - The ratio to lighten the color by.
+	 * @returns A new RGB instance with the lightened color.
+	 */
 	lighten(ratio: number): RGB {
 		return new RGB(
 			clamp(255 - (255 - this.r) * (1 - ratio), 0, 255),
@@ -244,6 +366,12 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Darkens the RGB color.
+	 * 
+	 * @param ratio - The ratio to darken the color by.
+	 * @returns A new RGB instance with the darkened color.
+	 */
 	darken(ratio: number): RGB {
 		return new RGB(
 			clamp(this.r * (1 - ratio), 0, 255),
@@ -253,6 +381,12 @@ export class RGB extends Color {
 		);
 	}
 
+	/**
+	 * Fades the RGB color by reducing its alpha value.
+	 * 
+	 * @param value - The fade value to apply.
+	 * @returns A new RGB instance with the faded color.
+	 */
 	fade(value: number): RGB {
 		return new RGB(this.r, this.g, this.b, this.a * (1 - value));
 	}

@@ -12,7 +12,7 @@
 ## Styles Overview
 
 | Style Name    | Preview                                                                                               |
-|---------------|-------------------------------------------------------------------------------------------------------|
+| ------------- | ----------------------------------------------------------------------------------------------------- |
 | **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   |
 | **graybeard** | <img width="384" src="https://versatiles.org/versatiles-style/graybeard.png" alt="graybeard style" /> |
 | **eclipse**   | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />     |
@@ -159,7 +159,7 @@ subgraph 1["color"]
 end
 subgraph 9["guess_style"]
 A["guess_style.ts"]
-Y["index.ts"]
+Z["index.ts"]
 end
 subgraph B["lib"]
 C["utils.ts"]
@@ -167,17 +167,17 @@ end
 subgraph D["styles"]
 E["index.ts"]
 F["colorful.ts"]
-P["eclipse.ts"]
-Q["empty.ts"]
-R["graybeard.ts"]
-S["neutrino.ts"]
-T["shadow.ts"]
+Q["eclipse.ts"]
+R["empty.ts"]
+S["graybeard.ts"]
+T["neutrino.ts"]
+U["shadow.ts"]
 end
 subgraph G["style_builder"]
 H["style_builder.ts"]
 M["decorator.ts"]
 O["recolor.ts"]
-10["types.ts"]
+P["types.ts"]
 end
 subgraph I["shortbread"]
 J["index.ts"]
@@ -185,13 +185,13 @@ K["layers.ts"]
 L["template.ts"]
 N["properties.ts"]
 end
-subgraph U["types"]
-V["index.ts"]
-W["tilejson.ts"]
-X["vector_layer.ts"]
+subgraph V["types"]
+W["index.ts"]
+X["tilejson.ts"]
+Y["vector_layer.ts"]
 11["maplibre.ts"]
 end
-Z["index.ts"]
+10["index.ts"]
 end
 3-->2
 3-->4
@@ -208,47 +208,47 @@ end
 7-->2
 7-->3
 7-->4
-7-->8
 7-->5
 8-->4
 8-->6
-A-->7
+A-->8
 A-->C
 A-->E
-A-->V
 A-->W
+A-->X
 C-->7
 E-->F
-E-->P
 E-->Q
 E-->R
 E-->S
 E-->T
+E-->U
 F-->H
 H-->7
 H-->C
 H-->J
 H-->M
 H-->O
+H-->P
 J-->K
 J-->L
 M-->7
 M-->C
 M-->N
 O-->7
-P-->F
 Q-->F
 R-->F
 S-->F
 T-->F
-V-->W
-V-->X
-Y-->A
-Z-->7
-Z-->Y
-Z-->E
+U-->F
+W-->X
+W-->Y
+Z-->A
+10-->7
+10-->Z
+10-->E
 
-class 0,1,9,B,D,G,I,U subgraphs;
+class 0,1,9,B,D,G,I,V subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

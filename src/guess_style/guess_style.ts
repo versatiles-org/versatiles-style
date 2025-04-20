@@ -6,12 +6,35 @@ import { colorful } from '../styles/index.js';
 import { isRasterTileJSONSpecification } from '../types/tilejson.js';
 import randomColor from '../color/random.js';
 
+/**
+ * Options for guessing the style of a map.
+ */
 export interface GuessStyleOptions {
+	/**
+	 * Base URL to resolve URLs for tile sources, glyphs, and sprites.
+	 */
 	baseUrl?: string;
+	/**
+	 * URL template for glyphs.
+	 */
 	glyphs?: string;
+	/**
+	 * URL template for sprites. See also {@link SpriteSpecification}.
+	 */
 	sprite?: SpriteSpecification;
 }
 
+/**
+ * Generates a style specification based on the provided TileJSON specification and optional parameters.
+ *
+ * @param {TileJSONSpecification} tileJSON - The TileJSON specification to generate the style from.
+ * @param {GuessStyleOptions} [options] - Optional parameters to customize the style generation.
+ * @param {string} [options.baseUrl] - Base URL to resolve tile URLs.
+ * @param {string} [options.glyphs] - URL template for glyphs.
+ * @param {string} [options.sprite] - URL template for sprites.
+ * @returns {StyleSpecification} The generated style specification.
+ * @throws {Error} If the provided TileJSON specification is invalid.
+ */
 export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyleOptions): StyleSpecification {
 	tileJSON = deepClone(tileJSON);
 
@@ -60,6 +83,23 @@ function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { 
 	});
 }
 
+/**
+ * Generates a Mapbox GL style specification based on the provided TileJSON vector specification.
+ *
+ * @param {TileJSONSpecificationVector} spec - The TileJSON vector specification containing vector layers.
+ * @returns {StyleSpecification} The generated Mapbox GL style specification.
+ *
+ * This function creates a style specification with background, circle, line, and fill layers.
+ * It assigns colors to the layers based on the vector layer IDs using predefined rules for hue, luminosity, and saturation.
+ *
+ * The resulting style specification includes:
+ * - A white background layer.
+ * - Circle layers for point features.
+ * - Line layers for line features.
+ * - Fill layers for polygon features.
+ *
+ * The source for the layers is created using the `sourceFromSpec` function with the provided vector specification.
+ */
 function getInspectorStyle(spec: TileJSONSpecificationVector): StyleSpecification {
 	const sourceName = 'vectorSource';
 

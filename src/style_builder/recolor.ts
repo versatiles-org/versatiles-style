@@ -22,22 +22,22 @@ import { Color } from '../color/index.js';
  *
  * ```typescript
  * const style = VersaTilesStyle.colorful({
- *    recolor: {
- *       rotate: 180,
- *       saturate: 0.5,
- *       brightness: 0.2,
- *    }
+ *   recolor: {
+ *     rotate: 180,
+ *     saturate: 0.5,
+ *     brightness: 0.2,
+ *   }
  * };
  * ```
  * 
  * If you want do make you map simply brighter or darker, you can use the `blend` option:
  * ```typescript
  * const style = VersaTilesStyle.colorful({
- *    recolor: {
- *       blend: 0.5,
- *       blendColor: '#000000', // to blend all colors with black
- *       // or blendColor: '#FFFFFF', // to blend all colors with white
- *    }
+ *   recolor: {
+ *     blend: 0.5,
+ *     blendColor: '#000000', // to blend all colors with black
+ *     // or blendColor: '#FFFFFF', // to blend all colors with white
+ *   }
  * };
  * ```
  * 
