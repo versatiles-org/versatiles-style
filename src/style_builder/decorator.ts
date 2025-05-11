@@ -108,7 +108,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			}
 
 			// check if conditional thingie
-			if (Array.isArray(value) && value[0] === "case") {
+			if (Array.isArray(value) && (value[0] === "case" || value[0] === "interpolate")) {
 				return value.map(v => ((v instanceof Color) ? recolor.do(v).asString() : v));
 			}
 
