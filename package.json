@@ -32,6 +32,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@versatiles/style": "^5.6.0",
     "brace-expansion": "^4.0.0"
   },
   "files": [

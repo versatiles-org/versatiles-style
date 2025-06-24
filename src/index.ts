@@ -1,9 +1,10 @@
-export { colorful, eclipse, graybeard, neutrino, type StyleBuilderFunction } from './styles/index.js';
-import { colorful, eclipse, graybeard, neutrino } from './styles/index.js';
+export { colorful, eclipse, graybeard, shadow, neutrino, type StyleBuilderFunction } from './styles/index.js';
+import { colorful, eclipse, graybeard, shadow, neutrino } from './styles/index.js';
 export const styles = {
 	colorful,
 	eclipse,
 	graybeard,
+	shadow,
 	neutrino,
 };
 
