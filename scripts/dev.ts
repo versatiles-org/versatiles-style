@@ -16,6 +16,7 @@ const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() 
 	{ reg: /^\/\?colorful$/, type: 'mem', res: () => getStylePage('colorful') },
 	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
+	{ reg: /^\/\?shadow$/, type: 'mem', res: () => getStylePage('shadow') },	
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
 	{ reg: /^\/assets\/lib\/versatiles-style\/versatiles-style.js/, type: 'mem', res: () => getStyles() },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
