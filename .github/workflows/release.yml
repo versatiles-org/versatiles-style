@@ -10,7 +10,7 @@ env:
   FORCE_COLOR: 3
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   release:
