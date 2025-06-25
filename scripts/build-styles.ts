@@ -14,7 +14,7 @@ mkdirSync(dirDst, { recursive: true });
 
 
 const pack = tar.pack();
-const { colorful, eclipse, empty, graybeard, neutrino } = styles;
+const { colorful, eclipse, empty, graybeard, neutrino, shadow } = styles;
 
 [
 	{ name: 'colorful', builder: colorful },
@@ -22,6 +22,7 @@ const { colorful, eclipse, empty, graybeard, neutrino } = styles;
 	{ name: 'empty', builder: empty },
 	{ name: 'graybeard', builder: graybeard },
 	{ name: 'neutrino', builder: neutrino },
+	{ name: 'shadow', builder: shadow },
 ].forEach(({ name, builder }) => {
 	produce(name + '/style', builder({ language: undefined }));
 	if (name === 'empty') return;

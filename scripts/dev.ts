@@ -9,7 +9,7 @@ import { rollup } from 'rollup';
 
 const PORT = 8080;
 
-type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino';
+type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino' | 'shadow';
 
 const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },

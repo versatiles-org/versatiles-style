@@ -62,7 +62,7 @@ describe('Sprite Generation and Packaging', () => {
 		const { calls } = jest.mocked(packInstance.entry).mock;
 		const generatedFiles = calls.map(call => call[0].name).sort();
 
-		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'shadow', 'neutrino'].flatMap(style => [
+		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'].flatMap(style => [
 			`${style}/style.json`,
 			`${style}/en.json`,
 			`${style}/de.json`,
