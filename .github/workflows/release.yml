@@ -9,6 +9,9 @@ on:
 env:
   FORCE_COLOR: 3
 
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Build and release
@@ -71,7 +74,7 @@ jobs:
 
   deploy:
     name: Deploy Documentation
-    
+
     needs: release
 
     permissions:
