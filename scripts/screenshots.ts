@@ -13,8 +13,8 @@ Promise.all([
 	draw('colorful', styles.colorful),
 	draw('eclipse', styles.eclipse),
 	draw('graybeard', styles.graybeard),
-	draw('shadow', styles.shadow),
 	draw('neutrino', styles.neutrino),
+	draw('shadow', styles.shadow),
 ])
 
 /**

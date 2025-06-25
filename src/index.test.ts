@@ -3,14 +3,14 @@ import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { VectorLayer } from './index.js';
 import { guessStyle, styles } from './index.js';
 
-const { colorful, eclipse, graybeard, neutrino } = styles;
+const { colorful, eclipse, graybeard, neutrino, shadow } = styles;
 
 describe('styles', () => {
 	[
 		{ name: 'colorful', builder: colorful },
 		{ name: 'eclipse', builder: eclipse },
 		{ name: 'graybeard', builder: graybeard },
-		{ name: 'shadow', builder: shadow },		
+		{ name: 'shadow', builder: shadow },
 		{ name: 'neutrino', builder: neutrino },
 	].forEach(({ name, builder }) => {
 		it(`should create and test an instance of ${name}`, () => {
