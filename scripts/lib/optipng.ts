@@ -1,7 +1,7 @@
-import { spawn } from 'node:child_process';
-import { rm, readFile, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
+import { spawn } from 'child_process';
+import { rm, readFile, writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { resolve } from 'path';
 
 /**
  * Optimizes a PNG buffer using the optipng command-line tool.

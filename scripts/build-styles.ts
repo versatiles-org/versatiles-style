@@ -1,10 +1,10 @@
 
-import { createWriteStream, mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { createWriteStream, mkdirSync } from 'fs';
+import { resolve } from 'path';
 import * as styles from '../src/styles/index.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
-import { createGzip } from 'node:zlib';
+import { createGzip } from 'zlib';
 
 
 

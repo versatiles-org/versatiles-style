@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import type { Icon, IconSets } from './icons.js';
 import binPack from 'bin-pack';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync } from 'fs';
 import type { Pack as TarPack } from 'tar-stream';
 import { calcSDFFromAlpha } from './sdf.js';
 import { optipng } from './optipng.js';

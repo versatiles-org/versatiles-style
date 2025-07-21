@@ -2,10 +2,10 @@ import { jest } from '@jest/globals';
 
 console.log = jest.fn();
 
-const fs0 = await import('node:fs');
-const cp0 = await import('node:child_process');
+const fs0 = await import('fs');
+const cp0 = await import('child_process');
 
-jest.unstable_mockModule('node:fs', () => ({
+jest.unstable_mockModule('fs', () => ({
 	existsSync: jest.fn(fs0.existsSync),
 	mkdirSync: jest.fn(fs0.mkdirSync),
 	readFileSync: jest.fn(fs0.readFileSync),
@@ -13,7 +13,7 @@ jest.unstable_mockModule('node:fs', () => ({
 	writeFileSync: jest.fn(fs0.writeFileSync),
 }));
 
-jest.unstable_mockModule('node:child_process', () => ({
+jest.unstable_mockModule('child_process', () => ({
 	spawn: jest.fn(cp0.spawn),
 }));
 
@@ -29,8 +29,8 @@ jest.unstable_mockModule('./config-sprites', () => ({
 	},
 }));
 
-const fs = await import('node:fs');
-const cp = await import('node:child_process');
+const fs = await import('fs');
+const cp = await import('child_process');
 
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {

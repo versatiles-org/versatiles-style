@@ -3,9 +3,9 @@ import type { Pack } from 'tar-stream';
 
 console.log = jest.fn();
 
-const fs0 = await import('node:fs');
-async function getMockedFs(): Promise<typeof import('node:fs')> {
-	jest.unstable_mockModule('node:fs', () => ({
+const fs0 = await import('fs');
+async function getMockedFs(): Promise<typeof import('fs')> {
+	jest.unstable_mockModule('fs', () => ({
 		createWriteStream: jest.fn(fs0.createWriteStream),
 		// @ts-expect-error too lazy
 		existsSync: jest.fn(filename => fs0.existsSync(filename)),
@@ -14,7 +14,7 @@ async function getMockedFs(): Promise<typeof import('node:fs')> {
 		rmSync: jest.fn(fs0.rmSync),
 		writeFileSync: jest.fn(fs0.writeFileSync),
 	}));
-	return import('node:fs');
+	return import('fs');
 }
 
 const tar0 = await import('tar-stream');

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
 
 export class Icon {
 	public readonly name: string;

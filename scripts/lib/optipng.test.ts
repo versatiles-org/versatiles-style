@@ -1,23 +1,23 @@
 import { jest } from '@jest/globals';
-import type { ChildProcess } from 'node:child_process';
-import type { Readable } from 'node:stream';
+import type { ChildProcess } from 'child_process';
+import type { Readable } from 'stream';
 
-jest.unstable_mockModule('node:child_process', () => ({
+jest.unstable_mockModule('child_process', () => ({
 	spawn: jest.fn(async () => { }),
 }));
 
-jest.unstable_mockModule('node:fs/promises', () => ({
+jest.unstable_mockModule('fs/promises', () => ({
 	writeFile: jest.fn(async () => { }),
 	readFile: jest.fn(async () => Buffer.from('optimized png buffer')),
 	rm: jest.fn(async () => { }),
 }));
 
-jest.unstable_mockModule('node:os', () => ({
+jest.unstable_mockModule('os', () => ({
 	tmpdir: jest.fn(() => '/tmp'),
 }));
 
-const { spawn } = await import('node:child_process');
-const { writeFile, rm } = await import('node:fs/promises');
+const { spawn } = await import('child_process');
+const { writeFile, rm } = await import('fs/promises');
 const { optipng } = await import('./optipng.js');
 
 describe('optipng', () => {
@@ -68,8 +68,6 @@ describe('optipng', () => {
 			}),
 		} as unknown as ChildProcess;;
 		mockSpawn.mockReturnValue(mockProcess);
-
-		//jest.mocked(rm).mockRejectedValueOnce(new Error('mock error'));
 
 		await expect(optipng(mockBuffer)).rejects.toThrow('optipng optimization failed: mock error');
 

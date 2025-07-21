@@ -3,12 +3,12 @@
 import { jest } from '@jest/globals';
 
 // Mocking Node.js modules
-jest.unstable_mockModule('node:fs', () => ({
+jest.unstable_mockModule('fs', () => ({
 	existsSync: jest.fn(),
 	readFileSync: jest.fn(),
 }));
 
-const { existsSync, readFileSync } = await import('node:fs');
+const { existsSync, readFileSync } = await import('fs');
 const { Icon, loadIcons } = await import('./icons.js');
 
 describe('Icon', () => {

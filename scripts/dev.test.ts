@@ -1,11 +1,13 @@
-import http from 'node:http';
+import http from 'http';
 import { jest } from '@jest/globals';
 
-jest.unstable_mockModule('node:fs', () => ({
+const fs = await import('fs');
+
+jest.unstable_mockModule('fs', () => ({
 	readFileSync: jest.fn(),
 }));
 
-const { readFileSync } = await import('node:fs');
+const { readFileSync } = await import('fs');
 
 const PORT = 8080;
 

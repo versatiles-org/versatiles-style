@@ -3,12 +3,12 @@
 import { jest } from '@jest/globals';
 import type { Pack } from 'tar-stream';
 
-jest.unstable_mockModule('node:fs', () => ({
+jest.unstable_mockModule('fs', () => ({
 	writeFileSync: jest.fn(),
 	readFileSync: jest.fn(),
 	rmSync: jest.fn(),
 }));
-jest.unstable_mockModule('node:child_process', () => ({
+jest.unstable_mockModule('child_process', () => ({
 	spawn: jest.fn((_command, _args) => {
 		const events: Record<string, (...args: any[]) => void> = {};
 		return {
@@ -29,8 +29,8 @@ jest.unstable_mockModule('path', () => ({}));
 jest.unstable_mockModule('tar-stream', () => ({}));
 
 const { Sprite } = await import('./sprites.js');
-const fs = await import('node:fs');
-await import('node:child_process');
+const fs = await import('fs');
+await import('child_process');
 
 const fakeIcons = [
 	{

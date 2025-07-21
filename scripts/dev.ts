@@ -1,9 +1,9 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
-import http from 'node:http';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { request } from 'node:https';
+import http from 'http';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { request } from 'https';
 import { getMimeType } from './lib/mime.js';
 import { rollup } from 'rollup';
 
