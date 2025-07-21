@@ -4,6 +4,7 @@ import { jest } from '@jest/globals';
 const fs = await import('fs');
 
 jest.unstable_mockModule('fs', () => ({
+	...fs,
 	readFileSync: jest.fn(),
 }));
 

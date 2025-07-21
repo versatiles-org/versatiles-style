@@ -25,7 +25,6 @@ jest.unstable_mockModule('child_process', () => ({
 	}),
 }));
 
-jest.unstable_mockModule('path', () => ({}));
 jest.unstable_mockModule('tar-stream', () => ({}));
 
 const { Sprite } = await import('./sprites.js');

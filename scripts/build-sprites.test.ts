@@ -6,6 +6,7 @@ const fs0 = await import('fs');
 const cp0 = await import('child_process');
 
 jest.unstable_mockModule('fs', () => ({
+	...fs0,
 	existsSync: jest.fn(fs0.existsSync),
 	mkdirSync: jest.fn(fs0.mkdirSync),
 	readFileSync: jest.fn(fs0.readFileSync),
