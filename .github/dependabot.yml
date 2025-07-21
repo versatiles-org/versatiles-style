@@ -2,10 +2,14 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
-    schedule: { interval: monthly }
-    groups: { npm: { patterns: ['*'] } }
-    versioning-strategy: increase
+    schedule:
+      interval: weekly
+    versioning-strategy: widen
+    groups:
+      npm:
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: /
-    schedule: { interval: monthly }
-    groups: { github-action: { patterns: ['*'] } }
+    schedule:
+      interval: weekly
