@@ -10,7 +10,7 @@
  *   <body>
  *     <!-- ... -->
  *     <script>
- *       const style = VersatilesStyle.colorful();
+ *       const style = VersaTilesStyle.colorful();
  *       // ...
  *     </script>
  *   </body>
