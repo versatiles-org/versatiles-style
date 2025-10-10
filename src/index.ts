@@ -22,8 +22,8 @@
  * npm i @versatiles/style
  * ```
  * ```
- * import { colorful } from 'versatiles-style';
- * // OR: const { colorful } = require('versatiles-style');
+ * import { colorful } from '@versatiles/style';
+ * // OR: const { colorful } = require('@versatiles/style');
  * const style = colorful();
  * ```
  * 
