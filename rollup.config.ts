@@ -29,6 +29,8 @@ const config: RollupOptions[] = [
 				exclude: ['**/*.test.ts'],
 				sourceMap: true,
 				declaration: true,
+				noEmit: true,
+				outDir: browser ? 'release/versatiles-style' : 'dist',
 				declarationDir: browser ? 'release/versatiles-style/declaration' : 'dist/declaration',
 			}),
 			commonjs(),
