@@ -1,5 +1,6 @@
 import { Color } from './abstract.js';
 import { HSL } from './hsl.js';
+import randomColor, { RandomColorOptions } from './random.js';
 import { RGB } from './rgb.js';
 import { clamp, mod } from './utils.js';
 
@@ -164,5 +165,9 @@ export class HSV extends Color {
 	 */
 	setHue(value: number): HSV {
 		return new HSV(value, this.s, this.v, this.a);
+	}
+
+	static randomColor(options?: RandomColorOptions): HSV {
+		return randomColor(options);
 	}
 }
