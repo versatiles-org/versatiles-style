@@ -13,8 +13,8 @@
   "scripts": {
     "check": "npm run lint && npm run build && npm run test ",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
-    "build-browser": "rollup --configPlugin '@rollup/plugin-typescript={sourceMap:false}' -c --environment BUILD:browser && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
-    "build-node": "rm -rf dist && rollup --configPlugin '@rollup/plugin-typescript={sourceMap:false}' -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
+    "build-browser": "rollup -c --environment BUILD:browser && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
+    "build-node": "rm -rf dist && rollup -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
     "dev": "tsx scripts/dev.ts",

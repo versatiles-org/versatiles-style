@@ -13,7 +13,7 @@
 		"allowJs": true,
 		"allowImportingTsExtensions": false,
 		"noEmit": true,
-		"sourceMap": true,
+		"sourceMap": false,
 	},
 	"include": [
 		"rollup.config.*",

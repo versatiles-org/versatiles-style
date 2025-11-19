@@ -5,12 +5,11 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import process from 'node:process';
-import type { RollupOptions } from 'rollup';
 
 const { BUILD } = process.env;
 const browser = BUILD === 'browser';
 
-const config: RollupOptions[] = [
+const config = [
 	{
 		input: 'src/index.ts',
 		output: {
@@ -24,7 +23,7 @@ const config: RollupOptions[] = [
 			browser && terser({ compress: { pure_getters: true, passes: 3 }, sourceMap: true }),
 			nodeResolve({ browser }),
 			typescript({
-				tsconfig: './tsconfig.json',
+				tsconfig: 'tsconfig.json',
 				include: ['src/**/*.ts'],
 				exclude: ['**/*.test.ts'],
 				sourceMap: true,
