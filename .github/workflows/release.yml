@@ -66,6 +66,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Install optipng
+        run: brew install optipng
+        
       - name: Checkout
         uses: actions/checkout@v5
 
