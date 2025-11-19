@@ -4,6 +4,9 @@
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=20.0.0 <24.0.0"
+  },
   "scripts": {
     "check": "npm run lint && npm run build && npm run test ",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
@@ -32,7 +35,6 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@versatiles/style": "^5.7.0",
     "brace-expansion": "^4.0.1"
   },
   "files": [
@@ -41,7 +43,7 @@
   ],
   "devDependencies": {
     "@maplibre/maplibre-gl-native": "^6.2.0",
-    "@maplibre/maplibre-gl-style-spec": "^24.3.0",
+    "@maplibre/maplibre-gl-style-spec": "^24.3.1",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -50,27 +52,27 @@
     "@types/brace-expansion": "^1.1.2",
     "@types/inquirer": "^9.0.9",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.9.1",
+    "@types/node": "^24.10.1",
     "@types/tar-stream": "^3.1.4",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
-    "@versatiles/release-tool": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "@versatiles/release-tool": "^2.4.5",
     "bin-pack": "^1.0.2",
-    "esbuild": "^0.25.11",
-    "eslint": "^9.38.0",
-    "inquirer": "^12.10.0",
+    "esbuild": "^0.27.0",
+    "eslint": "^9.39.1",
+    "inquirer": "^13.0.1",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "jest-ts-webcompat-resolver": "^1.0.1",
-    "rollup": "^4.52.5",
+    "rollup": "^4.53.3",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-sourcemaps2": "^0.5.4",
-    "sharp": "^0.34.4",
+    "sharp": "^0.34.5",
     "tar-stream": "^3.1.7",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2"
+    "typescript-eslint": "^8.47.0"
   }
 }
