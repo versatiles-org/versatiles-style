@@ -1,9 +1,9 @@
 
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { VectorLayer } from './index.js';
-import { guessStyle, styles } from './index.js';
+import * as lib from './index.js';
 
-const { colorful, eclipse, graybeard, neutrino, shadow } = styles;
+const { colorful, eclipse, graybeard, neutrino, shadow } = lib.styles;
 
 describe('styles', () => {
 	[
@@ -54,7 +54,7 @@ describe('guessStyle', () => {
 	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
 	it('should build raster styles', () => {
-		const style = guessStyle({ tiles });
+		const style = lib.guessStyle({ tiles });
 		expect(style).toStrictEqual({
 			layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
 			sources: { rasterSource: { tiles, type: 'raster' } },
@@ -63,7 +63,7 @@ describe('guessStyle', () => {
 	});
 
 	it('should build vector styles', () => {
-		const style = guessStyle({ tiles, vector_layers });
+		const style = lib.guessStyle({ tiles, vector_layers });
 		expect(style).toStrictEqual({
 			layers: [
 				{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' },
@@ -76,3 +76,27 @@ describe('guessStyle', () => {
 		});
 	});
 });
+
+describe('exports', () => {
+	it('should export styles', () => {
+		type something = Record<string, unknown>;
+		expect(typeof lib.styles).toBe('object');
+		const styleNames = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'];
+		for (const name of styleNames) {
+			expect(typeof (lib as something)[name]).toBe('function');
+			expect(typeof (lib.styles as something)[name]).toBe('function');
+		}
+	});
+
+	it('should export guessStyle', () => {
+		expect(typeof lib.guessStyle).toBe('function');
+	});
+
+	it('should export Color', () => {
+		expect(typeof lib.Color).toBe('function');
+		expect(typeof lib.Color.HSL).toBe('function');
+		expect(typeof lib.Color.HSV).toBe('function');
+		expect(typeof lib.Color.HSV.randomColor).toBe('function');
+		expect(typeof lib.Color.RGB).toBe('function');
+	});
+})
