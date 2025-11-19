@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import type { VectorLayer } from './vector_layer.js';
 import { isVectorLayer, isVectorLayers } from './vector_layer.js';
 

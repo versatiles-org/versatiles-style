@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { Color } from '../color/index.js';
 import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
 

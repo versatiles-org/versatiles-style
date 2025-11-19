@@ -1,14 +1,15 @@
+import { describe, expect, it } from 'vitest';
 import { HSV } from './hsv.js';
 import type { RandomColorOptions } from './random.js';
 import randomColor from './random.js';
 
 describe('RandomColor', () => {
-	test('constructor initializes without errors', () => {
+	it('constructor initializes without errors', () => {
 		expect(randomColor).toBeDefined();
 	});
 
 	describe('Color.random', () => {
-		test('generates random HSV colors', () => {
+		it('generates random HSV colors', () => {
 			const random = randomColor();
 			expect(random).toBeInstanceOf(HSV);
 			const array = random.asArray();
@@ -20,7 +21,7 @@ describe('RandomColor', () => {
 			expect(array[2]).toBeLessThanOrEqual(100);
 		});
 	
-		test('supports options for generating random colors', () => {
+		it('supports options for generating random colors', () => {
 			const random = randomColor({ hue: 'red', luminosity: 'bright' });
 			expect(random).toBeInstanceOf(HSV);
 			// Additional checks based on the options provided can be added here
@@ -28,7 +29,7 @@ describe('RandomColor', () => {
 	});
 
 	describe('randomColor method', () => {
-		test('returns correct color string for some test cases', () => {
+		it('returns correct color string for some test cases', () => {
 			function t(options: RandomColorOptions): string {
 				return randomColor(options).asHSL().asString();
 			}
@@ -41,13 +42,13 @@ describe('RandomColor', () => {
 			expect(t({ seed: 'testSeed' })).toBe('hsl(185,90%,23%)');
 		});
 
-		test('consistent color generation with a seed', () => {
+		it('consistent color generation with a seed', () => {
 			const color1 = randomColor({ seed: 'consistentSeed' });
 			const color2 = randomColor({ seed: 'consistentSeed' });
 			expect(color1.asHex()).toBe(color2.asHex());
 		});
 
-		test('different color generation without a seed', () => {
+		it('different color generation without a seed', () => {
 			const color1 = randomColor({ seed: 'seed1' });
 			const color2 = randomColor({ seed: 'seed2' });
 			expect(color1.asHex()).not.toBe(color2.asHex());

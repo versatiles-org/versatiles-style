@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { Pack } from 'tar-stream';
 
-jest.unstable_mockModule('fs', () => ({
-	writeFileSync: jest.fn(),
-	readFileSync: jest.fn(),
-	rmSync: jest.fn(),
+vi.mock('fs', () => ({
+	writeFileSync: vi.fn(),
+	readFileSync: vi.fn(),
+	rmSync: vi.fn(),
 }));
-jest.unstable_mockModule('child_process', () => ({
-	spawn: jest.fn((_command, _args) => {
+vi.mock('child_process', () => ({
+	spawn: vi.fn((_command, _args) => {
 		const events: Record<string, (...args: any[]) => void> = {};
 		return {
 			on: (event: string, callback: (...args: any[]) => void) => {
@@ -25,7 +25,7 @@ jest.unstable_mockModule('child_process', () => ({
 	}),
 }));
 
-jest.unstable_mockModule('tar-stream', () => ({}));
+vi.mock('tar-stream', () => ({}));
 
 const { Sprite } = await import('./sprites.js');
 const fs = await import('fs');
@@ -46,14 +46,18 @@ const fakeIcons = [
 	},
 ];
 
+beforeEach(() => {
+	vi.resetAllMocks();
+});
+
 describe('Sprite', () => {
 	describe('saveToDisk', () => {
 		it('should save the sprite as PNG and JSON on disk', async () => {
 			const basename = '/test/sprite';
 			const mockSprite = await Sprite.fromIcons(fakeIcons, 1, 10);
 
-			jest.spyOn(mockSprite as any, 'getPng').mockResolvedValue(Buffer.from('png data'));
-			jest.spyOn(mockSprite as any, 'getJSON').mockResolvedValue(Buffer.from('json data'));
+			vi.spyOn(mockSprite as any, 'getPng').mockResolvedValue(Buffer.from('png data'));
+			vi.spyOn(mockSprite as any, 'getJSON').mockResolvedValue(Buffer.from('json data'));
 
 			await mockSprite.saveToDisk(basename);
 
@@ -64,10 +68,7 @@ describe('Sprite', () => {
 
 	describe('fromIcons', () => {
 		it('creates a Sprite instance with correct dimensions and properties', async () => {
-			jest.mock('sharp');
-			jest.mock('bin-pack', () => ({
-				default: jest.fn(() => ({ width: 100, height: 100 })),
-			}));
+			vi.mock('sharp', { spy: true });
 
 			const sprite = await Sprite.fromIcons(fakeIcons, 2, 5);
 
@@ -100,15 +101,15 @@ describe('Sprite', () => {
 	describe('saveToTar', () => {
 		it('adds PNG and JSON entries to a tar archive', async () => {
 			const tarPackMock = {
-				entry: jest.fn<Pack['entry']>(),
-			} as unknown as jest.Mocked<Pack>;
+				entry: vi.fn<Pack['entry']>(),
+			} as unknown as Mocked<Pack>;
 
 			const sprite = await Sprite.fromIcons(fakeIcons, 2, 5);
 			const buffer1 = Buffer.from('fake png data');
 			const buffer2 = Buffer.from('{"fake": "json data"}');
 
-			jest.spyOn(sprite as any, 'getPng').mockResolvedValue(buffer1);
-			jest.spyOn(sprite as any, 'getJSON').mockResolvedValue(buffer2);
+			vi.spyOn(sprite as any, 'getPng').mockResolvedValue(buffer1);
+			vi.spyOn(sprite as any, 'getJSON').mockResolvedValue(buffer2);
 
 			await sprite.saveToTar('testbasename', tarPackMock);
 

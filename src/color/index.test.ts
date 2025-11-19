@@ -1,7 +1,9 @@
+import { describe, expect, it } from 'vitest';
 import { Color } from './index.js';
 import { HSL } from './hsl.js';
 import { HSV } from './hsv.js';
 import { RGB } from './rgb.js';
+
 
 describe('Color Conversions', () => {
 
@@ -18,7 +20,7 @@ describe('Color Conversions', () => {
 		[800, 100, 100, 0.9],
 		[900, 12, 13, 1.0],
 	]
-	test('test HSV -> HSL -> RGB', () => {
+	it('test HSV -> HSL -> RGB', () => {
 		for (const v of scenarios) {
 			const hsv = new HSV(...v);
 			expect(hsv.a).toEqual(v[3]);
@@ -29,7 +31,7 @@ describe('Color Conversions', () => {
 		}
 	});
 
-	test('test HSL -> HSV -> RGB', () => {
+	it('test HSL -> HSV -> RGB', () => {
 		for (const v of scenarios) {
 			const hsl = new HSL(...v);
 			expect(hsl.a).toEqual(v[3]);
@@ -42,7 +44,7 @@ describe('Color Conversions', () => {
 })
 
 describe('Color.parse', () => {
-	test('parses hexadecimal color strings correctly', () => {
+	it('parses hexadecimal color strings correctly', () => {
 		const color = Color.parse('#ff8040');
 		expect(color).toBeInstanceOf(RGB);
 		expect(color.asArray()).toStrictEqual([255, 128, 64, 1]);
@@ -52,7 +54,7 @@ describe('Color.parse', () => {
 		expect(colorWithAlpha.asHex()).toStrictEqual('#FF80407F');
 	});
 
-	test('parses RGB strings correctly', () => {
+	it('parses RGB strings correctly', () => {
 		const color = Color.parse('rgb(255, 128, 64)');
 		expect(color).toBeInstanceOf(RGB);
 		expect(color.asArray()).toStrictEqual([255, 128, 64, 1]);
@@ -62,7 +64,7 @@ describe('Color.parse', () => {
 		expect(colorWithAlpha.asArray()).toStrictEqual([255, 128, 64, 0.5]);
 	});
 
-	test('parses HSL strings correctly', () => {
+	it('parses HSL strings correctly', () => {
 		const color = Color.parse('hsl(120, 50%, 50%)');
 		expect(color).toBeInstanceOf(HSL);
 		expect(color.asArray()).toStrictEqual([120, 50, 50, 1]);
@@ -72,27 +74,27 @@ describe('Color.parse', () => {
 		expect(colorWithAlpha.asArray()).toStrictEqual([120, 50, 50, 0.5]);
 	});
 
-	test('throws an error for unsupported formats', () => {
+	it('throws an error for unsupported formats', () => {
 		expect(() => Color.parse('invalid color string')).toThrow('Unknown color format: invalid color string');
 	});
 });
 
 describe('Color Class Properties', () => {
-	test('Color.HSL is accessible', () => {
+	it('Color.HSL is accessible', () => {
 		expect(Color.HSL).toBe(HSL);
 	});
 
-	test('Color.HSV is accessible', () => {
+	it('Color.HSV is accessible', () => {
 		expect(Color.HSV).toBe(HSV);
 	});
 
-	test('Color.RGB is accessible', () => {
+	it('Color.RGB is accessible', () => {
 		expect(Color.RGB).toBe(RGB);
 	});
 });
 
 describe('Exported Module', () => {
-	test('named export is Color', async () => {
+	it('named export is Color', async () => {
 		const module = await import('./index.js');
 		expect(module.Color).toBe(Color);
 	});

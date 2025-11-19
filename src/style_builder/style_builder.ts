@@ -21,10 +21,9 @@ export abstract class StyleBuilder {
 	public abstract readonly defaultFonts: StyleBuilderFonts;
 
 	public build(options?: StyleBuilderOptions): StyleSpecification {
-
 		options ??= {};
 
-
+		// @ts-expect-error globalThis may be undefined in some environments
 		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
 

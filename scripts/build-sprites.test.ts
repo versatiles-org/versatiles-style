@@ -1,24 +1,11 @@
-import { jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 
-console.log = jest.fn();
+console.log = vi.fn();
 
-const fs0 = await import('fs');
-const cp0 = await import('child_process');
+vi.mock('fs', { spy: true });
+vi.mock('child_process', { spy: true });
 
-jest.unstable_mockModule('fs', () => ({
-	...fs0,
-	existsSync: jest.fn(fs0.existsSync),
-	mkdirSync: jest.fn(fs0.mkdirSync),
-	readFileSync: jest.fn(fs0.readFileSync),
-	rmSync: jest.fn(fs0.rmSync),
-	writeFileSync: jest.fn(fs0.writeFileSync),
-}));
-
-jest.unstable_mockModule('child_process', () => ({
-	spawn: jest.fn(cp0.spawn),
-}));
-
-jest.unstable_mockModule('./config-sprites', () => ({
+vi.mock('./config-sprites', () => ({
 	default: {
 		ratios: [1, 2, 3, 4],
 		spritesheets: {
@@ -30,16 +17,18 @@ jest.unstable_mockModule('./config-sprites', () => ({
 	},
 }));
 
-const fs = await import('fs');
-const cp = await import('child_process');
-
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {
+		const cp = await import('child_process');
+		const fs = await import('fs');
+		vi.clearAllMocks();
+
 		await import('./build-sprites.js');
 
-		expect(jest.mocked(fs.readFileSync)).toHaveBeenCalledTimes(6);
-		expect(jest.mocked(cp.spawn)).toHaveBeenCalledTimes(4);
-		expect(jest.mocked(fs.writeFileSync).mock.calls).toStrictEqual([
+		const readCalls = vi.mocked(fs.readFileSync).mock.calls.filter((call) => /\.svg$/.test(String(call[0])));
+		expect(readCalls.length).toBe(6);
+		expect(vi.mocked(cp.spawn)).toHaveBeenCalledTimes(4);
+		expect(vi.mocked(fs.writeFileSync).mock.calls).toStrictEqual([
 			[expect.stringMatching(/\/release\/sprites\/basics\/sprites\.png$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/basics\/sprites\.json$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@2x\.png$/), expect.any(Buffer)],

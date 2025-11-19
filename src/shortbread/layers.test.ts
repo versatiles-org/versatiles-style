@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import type { FillLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { getShortbreadLayers } from './layers.js';
 import { Language } from '../style_builder/types.js';

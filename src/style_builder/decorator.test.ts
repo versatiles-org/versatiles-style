@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { decorate } from './decorator.js';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/maplibre.js';

@@ -1,11 +1,9 @@
- 
-
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mocking Node.js modules
-jest.unstable_mockModule('fs', () => ({
-	existsSync: jest.fn(),
-	readFileSync: jest.fn(),
+vi.mock('fs', () => ({
+	existsSync: vi.fn(),
+	readFileSync: vi.fn(),
 }));
 
 const { existsSync, readFileSync } = await import('fs');
@@ -16,8 +14,8 @@ describe('Icon', () => {
 	const svgContent = '<svg></svg>';
 
 	beforeEach(() => {
-		jest.mocked(existsSync).mockReturnValue(true);
-		jest.mocked(readFileSync).mockReturnValue(svgContent);
+		vi.mocked(existsSync).mockReturnValue(true);
+		vi.mocked(readFileSync).mockReturnValue(svgContent);
 	});
 
 	it('should initialize icon with provided options', () => {
@@ -31,7 +29,7 @@ describe('Icon', () => {
 	});
 
 	it('should throw an error if the icon file does not exist', () => {
-		jest.mocked(existsSync).mockReturnValue(false);
+		vi.mocked(existsSync).mockReturnValue(false);
 
 		expect(() => new Icon({ name: 'missing-icon', size: 24, filename })).toThrow('icon not found: ' + filename);
 	});
@@ -42,8 +40,8 @@ describe('loadIcons', () => {
 	const svgContent = '<svg></svg>';
 
 	beforeEach(() => {
-		jest.mocked(existsSync).mockReturnValue(true);
-		jest.mocked(readFileSync).mockReturnValue(svgContent);
+		vi.mocked(existsSync).mockReturnValue(true);
+		vi.mocked(readFileSync).mockReturnValue(svgContent);
 	});
 
 	it('should load icons from specified icon sets', () => {

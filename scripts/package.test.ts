@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+import { describe, expect, it } from 'vitest';
 
 describe('nodejs', () => {
 	it('should return a style object', async () => {
@@ -21,12 +20,10 @@ describe('nodejs', () => {
 
 describe('browser', () => {
 	it('should return a style object', async () => {
-		await import('../release/versatiles-style/versatiles-style.js');
+		const { styles } = await import('../release/versatiles-style/versatiles-style.js');;
 
-		const { styles } = globalThis.VersaTilesStyle;
-
-		expect(styles).toBeDefined();
-		expect(styles.colorful).toBeDefined();
+		expect(typeof styles).toBe('object');
+		expect(typeof styles.colorful).toBe('function');
 		expect(styles.colorful()).toStrictEqual({
 			glyphs: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
 			layers: expect.any(Array),

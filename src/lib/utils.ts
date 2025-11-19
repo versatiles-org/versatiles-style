@@ -15,13 +15,11 @@ export function deepClone<T>(obj: T): T {
 	}
 
 	if (isSimpleObject(obj)) {
-		// @ts-expect-error: Too complicated to handle
-		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, deepClone(value)]));
+		return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, deepClone(value)])) as T;
 	}
 
 	if (obj instanceof Array) {
-		// @ts-expect-error: Too complicated to handle
-		return obj.map((e: unknown) => deepClone(e));
+		return obj.map((e: unknown) => deepClone(e)) as T;
 	}
 
 	if (obj instanceof Color) {
@@ -87,8 +85,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 			}
 
 			if (sourceValue instanceof Color) {
-				// @ts-expect-error: Too complicated to handle
-				target[key] = sourceValue.clone();
+				target[key] = sourceValue.clone() as T[typeof key];
 				continue;
 			}
 

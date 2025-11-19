@@ -1,4 +1,4 @@
-
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Color } from '../color/index.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
 import { StyleBuilder } from './style_builder.js';

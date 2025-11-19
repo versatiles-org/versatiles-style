@@ -1,4 +1,4 @@
-
+import { describe, expect, it } from 'vitest';
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { VectorLayer } from './index.js';
 import * as lib from './index.js';
@@ -33,20 +33,22 @@ describe('styles', () => {
 });
 
 describe('Colorful', () => {
-	const style = colorful({
-		baseUrl: 'https://dev.null',
-		colors: { commercial: '#f00' },
+	it('should allow custom colors and baseUrl', () => {
+		const style = colorful({
+			baseUrl: 'https://dev.null',
+			colors: { commercial: '#f00' },
+		});
+		expect(style.glyphs).toBe('https://dev.null/assets/glyphs/{fontstack}/{range}.pbf');
+		const paint = style.layers.find(l => l.id === 'land-commercial')?.paint;
+
+		expect(paint).toBeDefined();
+		if (paint == null) throw Error();
+
+		expect(paint).toHaveProperty('fill-color');
+		if (!('fill-color' in paint)) throw Error();
+
+		expect(paint['fill-color']).toBe('rgb(255,0,0)');
 	});
-	expect(style.glyphs).toBe('https://dev.null/assets/glyphs/{fontstack}/{range}.pbf');
-	const paint = style.layers.find(l => l.id === 'land-commercial')?.paint;
-
-	expect(paint).toBeDefined();
-	if (paint == null) throw Error();
-
-	expect(paint).toHaveProperty('fill-color');
-	if (!('fill-color' in paint)) throw Error();
-
-	expect(paint['fill-color']).toBe('rgb(255,0,0)');
 });
 
 describe('guessStyle', () => {

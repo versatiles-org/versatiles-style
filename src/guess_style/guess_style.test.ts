@@ -1,4 +1,4 @@
-
+import { describe, expect, it } from 'vitest';
 import type { TileJSONSpecification, VectorLayer } from '../types/index.js';
 import { guessStyle } from './guess_style.js';
 import { getShortbreadVectorLayers } from '../shortbread/template.js';

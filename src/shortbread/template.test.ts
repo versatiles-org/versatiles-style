@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { getShortbreadTemplate } from './template.js';
 

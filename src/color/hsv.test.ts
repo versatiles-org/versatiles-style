@@ -1,10 +1,11 @@
+import { describe, expect, it } from 'vitest';
 import { HSV } from './hsv.js';
 import { HSL } from './hsl.js';
 import { RGB } from './rgb.js';
 
 describe('HSV Class', () => {
 
-	test('constructor initializes values correctly with clamping', () => {
+	it('constructor initializes values correctly with clamping', () => {
 		const color = new HSV(400, 120, 120, 2);
 		expect(color.asArray()).toStrictEqual([40, 100, 100, 1]);
 
@@ -12,12 +13,12 @@ describe('HSV Class', () => {
 		expect(colorNegative.asArray()).toStrictEqual([300, 0, 0, 0]);
 	});
 
-	test('asArray returns correct array representation', () => {
+	it('asArray returns correct array representation', () => {
 		const color = new HSV(120, 50, 50, 0.5);
 		expect(color.asArray()).toStrictEqual([120, 50, 50, 0.5]);
 	});
 
-	test('clone returns a new instance with identical values', () => {
+	it('clone returns a new instance with identical values', () => {
 		const color = new HSV(180, 70, 70, 0.7);
 		const clone = color.clone();
 		expect(clone).toBeInstanceOf(HSV);
@@ -26,35 +27,35 @@ describe('HSV Class', () => {
 	});
 
 	describe('asString', () => {
-		test('converts fully saturated colors correctly', () => {
+		it('converts fully saturated colors correctly', () => {
 			expect(new HSV(0, 100, 100).asString()).toBe('hsl(0,100%,50%)');
 			expect(new HSV(120, 100, 100).asString()).toBe('hsl(120,100%,50%)');
 			expect(new HSV(240, 100, 100).asString()).toBe('hsl(240,100%,50%)');
 		});
 
-		test('handles partially saturated colors', () => {
+		it('handles partially saturated colors', () => {
 			expect(new HSV(60, 50, 100).asString()).toBe('hsl(60,100%,75%)');
 			expect(new HSV(300, 25, 50).asString()).toBe('hsl(300,14%,44%)');
 		});
 
-		test('handles achromatic (grey) colors', () => {
+		it('handles achromatic (grey) colors', () => {
 			expect(new HSV(0, 0, 0).asString()).toBe('hsl(0,0%,0%)');
 			expect(new HSV(0, 0, 50).asString()).toBe('hsl(0,0%,50%)');
 			expect(new HSV(0, 0, 100).asString()).toBe('hsl(0,0%,100%)');
 		});
 
-		test('handles hue wrapping and extreme values', () => {
+		it('handles hue wrapping and extreme values', () => {
 			expect(new HSV(-60, 100, 100).asString()).toBe('hsl(300,100%,50%)');
 			expect(new HSV(420, 100, 100).asString()).toBe('hsl(60,100%,50%)');
 		});
 
-		test('handles alpha transparency', () => {
+		it('handles alpha transparency', () => {
 			expect(new HSV(0, 100, 100, 0.5).asString()).toBe('hsla(0,100%,50%,0.5)');
 			expect(new HSV(120, 100, 100, 0.25).asString()).toBe('hsla(120,100%,50%,0.25)');
 			expect(new HSV(240, 100, 100, 1).asString()).toBe('hsl(240,100%,50%)');
 		});
 
-		test('produces consistent results for repeated calls', () => {
+		it('produces consistent results for repeated calls', () => {
 			const color = new HSV(60, 50, 50);
 			expect(color.asString()).toBe('hsl(60,33%,38%)');
 			expect(color.asString()).toBe('hsl(60,33%,38%)');
@@ -63,7 +64,7 @@ describe('HSV Class', () => {
 
 	describe('color conversion', () => {
 
-		test('asHSL converts HSV to HSL correctly', () => {
+		it('asHSL converts HSV to HSL correctly', () => {
 			function check(input: [number, number, number], output: [number, number, number]) {
 				const hsv = new HSV(...input);
 				const hsl = hsv.asHSL();
@@ -85,7 +86,7 @@ describe('HSV Class', () => {
 			check([18, 100, 100], [18, 100, 50]);
 		});
 
-		test('asRGB converts HSV to RGB correctly', () => {
+		it('asRGB converts HSV to RGB correctly', () => {
 			const color = new HSV(120, 100, 100);
 			const rgb = color.asRGB();
 			expect(rgb).toBeInstanceOf(RGB);
@@ -93,13 +94,13 @@ describe('HSV Class', () => {
 				.toStrictEqual([0, 255, 0, 1]);
 		});
 
-		test('asHSV and toHSV return the same instance or clone', () => {
+		it('asHSV and toHSV return the same instance or clone', () => {
 			const color = new HSV(240, 100, 50, 1);
 			expect(color.asHSV()).toStrictEqual(color);
 			expect(color.toHSV()).toStrictEqual(color);
 		});
 
-		test('asRGB conversion S and V', () => {
+		it('asRGB conversion S and V', () => {
 			function check(input: [number, number, number], output: [number, number, number]) {
 				const color = new HSV(...input);
 				const rgb = color.asRGB();
@@ -118,7 +119,7 @@ describe('HSV Class', () => {
 			check([18, 100, 100], [255, 77, 0]);
 		});
 
-		test('asRGB conversion H', () => {
+		it('asRGB conversion H', () => {
 			function check(hue: number, output: string) {
 				const color = new HSV(hue, 100, 100);
 				expect(color.asRGB().asHex()).toBe(output);
@@ -146,24 +147,24 @@ describe('HSV Class', () => {
 	});
 
 	describe('parse errors and validations', () => {
-		test('constructor clamps out-of-bound values', () => {
+		it('constructor clamps out-of-bound values', () => {
 			const color = new HSV(400, 150, 150, 2);
 			expect(color.asArray()).toStrictEqual([40, 100, 100, 1]);
 		});
 
-		test('negative values are handled correctly', () => {
+		it('negative values are handled correctly', () => {
 			const color = new HSV(-360, -50, -50, -1);
 			expect(color.asArray()).toStrictEqual([0, 0, 0, 0]);
 		});
 	});
 
 	describe('fade', () => {
-		test('reduces alpha correctly', () => {
+		it('reduces alpha correctly', () => {
 			const color = new HSV(120, 50, 50, 0.8);
 			expect(color.fade(0.5).asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%
 		});
 
-		test('handles edge cases for fading', () => {
+		it('handles edge cases for fading', () => {
 			const opaque = new HSV(0, 50, 50, 1);
 			expect(opaque.fade(1).asArray()).toStrictEqual([0, 50, 50, 0]); // Fully faded to transparent
 

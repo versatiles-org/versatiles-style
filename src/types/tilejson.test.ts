@@ -1,5 +1,4 @@
- 
-
+import { describe, expect, it } from 'vitest'; 
 import { isTileJSONSpecification } from './tilejson.js';
 
 describe('isTileJSONSpecification', () => {

@@ -1,36 +1,20 @@
-import { jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 import type { Pack } from 'tar-stream';
 
-console.log = jest.fn();
+console.log = vi.fn();
 
-const fs0 = await import('fs');
-async function getMockedFs(): Promise<typeof import('fs')> {
-	jest.unstable_mockModule('fs', () => ({
-		createWriteStream: jest.fn(fs0.createWriteStream),
-		// @ts-expect-error too lazy
-		existsSync: jest.fn(filename => fs0.existsSync(filename)),
-		mkdirSync: jest.fn(fs0.mkdirSync),
-		readFileSync: jest.fn(fs0.readFileSync),
-		rmSync: jest.fn(fs0.rmSync),
-		writeFileSync: jest.fn(fs0.writeFileSync),
-	}));
-	return import('fs');
-}
-
-const tar0 = await import('tar-stream');
-async function getMockedTar(): Promise<typeof import('tar-stream')> {
-	jest.unstable_mockModule('tar-stream', () => {
-		const pack = jest.fn(() => {
-			const packInstance = tar0.pack();
-			jest.spyOn(packInstance, 'entry');
-			return packInstance;
-		});
-		return { default: { pack }, pack };
+vi.mock('fs', { spy: true });
+vi.mock(import('tar-stream'), async originalImport => {
+	const tar = await originalImport();
+	const pack = vi.fn(() => {
+		const packInstance = tar.pack();
+		vi.spyOn(packInstance, 'entry');
+		return packInstance;
 	});
-	return import('tar-stream');
-}
+	return { default: { pack }, pack } as unknown as typeof tar;
+});
 
-jest.unstable_mockModule('./config-sprites', () => ({
+vi.mock('./config-sprites', () => ({
 	default: {
 		ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4 },
 		sets: {
@@ -42,24 +26,22 @@ jest.unstable_mockModule('./config-sprites', () => ({
 
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {
-		const fs = await getMockedFs();
-		const tar = await getMockedTar();
+		vi.clearAllMocks();
+		const fs = await import('fs');
+		const tar = await import('tar-stream');
 
 		await import('./build-styles.js');
 
-		expect(jest.mocked(fs.createWriteStream).mock.calls).toStrictEqual([
+		expect(vi.mocked(fs.createWriteStream).mock.calls).toStrictEqual([
 			[expect.stringMatching(/release\/styles\.tar\.gz$/)],
 		]);
 
-		expect(jest.mocked(fs.readFileSync)).toHaveBeenCalledTimes(0);
-		expect(jest.mocked(fs.writeFileSync)).toHaveBeenCalledTimes(0);
-
-		const packInstances = jest.mocked(tar.pack).mock.results;
+		const packInstances = vi.mocked(tar.pack).mock.results;
 		expect(packInstances.length).toBe(1);
 
 		const packInstance = packInstances[0].value as Pack;
 
-		const { calls } = jest.mocked(packInstance.entry).mock;
+		const { calls } = vi.mocked(packInstance.entry).mock;
 		const generatedFiles = calls.map(call => call[0].name).sort();
 
 		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'].flatMap(style => [

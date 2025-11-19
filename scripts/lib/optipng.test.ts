@@ -1,19 +1,19 @@
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ChildProcess } from 'child_process';
 import type { Readable } from 'stream';
 
-jest.unstable_mockModule('child_process', () => ({
-	spawn: jest.fn(async () => { }),
+vi.mock('child_process', () => ({
+	spawn: vi.fn(async () => { }),
 }));
 
-jest.unstable_mockModule('fs/promises', () => ({
-	writeFile: jest.fn(async () => { }),
-	readFile: jest.fn(async () => Buffer.from('optimized png buffer')),
-	rm: jest.fn(async () => { }),
+vi.mock('fs/promises', () => ({
+	writeFile: vi.fn(async () => { }),
+	readFile: vi.fn(async () => Buffer.from('optimized png buffer')),
+	rm: vi.fn(async () => { }),
 }));
 
-jest.unstable_mockModule('os', () => ({
-	tmpdir: jest.fn(() => '/tmp'),
+vi.mock('os', () => ({
+	tmpdir: vi.fn(() => '/tmp'),
 }));
 
 const { spawn } = await import('child_process');
@@ -25,18 +25,18 @@ describe('optipng', () => {
 	const checkFilename = expect.stringMatching(/^\/tmp\/.*\.png$/);
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
-	test('successfully optimizes a PNG buffer', async () => {
-		const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
+	it('successfully optimizes a PNG buffer', async () => {
+		const mockSpawn = vi.mocked(spawn);
 
 		// Mock spawn behavior
 		const mockProcess = {
 			stderr: {
-				on: jest.fn(),
+				on: vi.fn(),
 			},
-			on: jest.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
+			on: vi.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
 				if (event === 'close') listener(0); // Simulate successful process exit
 				return mockProcess;
 			}),
@@ -51,18 +51,18 @@ describe('optipng', () => {
 		expect(rm).toHaveBeenCalledWith(checkFilename);
 	});
 
-	test('throws an error if the optipng process fails', async () => {
-		const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
+	it('throws an error if the optipng process fails', async () => {
+		const mockSpawn = vi.mocked(spawn);
 
 		// Mock spawn behavior
 		const mockProcess = {
 			stderr: {
-				on: jest.fn((event: string, listener: (...args: unknown[]) => void): Readable | null => {
+				on: vi.fn((event: string, listener: (...args: unknown[]) => void): Readable | null => {
 					if (event === 'data') listener('mock error');
 					return mockProcess.stderr;
 				}),
 			},
-			on: jest.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
+			on: vi.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
 				if (event === 'close') listener(1);
 				return mockProcess;
 			}),
@@ -75,12 +75,12 @@ describe('optipng', () => {
 		expect(rm).toHaveBeenCalledWith(checkFilename);
 	});
 
-	test('throws an error if the spawn process itself fails', async () => {
-		const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
+	it('throws an error if the spawn process itself fails', async () => {
+		const mockSpawn = vi.mocked(spawn);
 
 		// Mock spawn behavior
 		const mockProcess = {
-			on: jest.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
+			on: vi.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
 				if (event === 'error') listener(new Error('spawn error'));
 				return mockProcess;
 			}),
@@ -93,12 +93,12 @@ describe('optipng', () => {
 		expect(rm).toHaveBeenCalledWith(checkFilename);
 	});
 
-	test('cleans up temporary files in case of errors', async () => {
-		const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
+	it('cleans up temporary files in case of errors', async () => {
+		const mockSpawn = vi.mocked(spawn);
 
 		// Mock spawn behavior
 		const mockProcess = {
-			on: jest.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
+			on: vi.fn((event: string, listener: (...args: unknown[]) => void): ChildProcess => {
 				if (event === 'error') listener(new Error('spawn error'));
 				return mockProcess;
 			}),

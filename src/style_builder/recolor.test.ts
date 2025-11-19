@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { Color } from '../color/index.js';
 import { CachedRecolor, getDefaultRecolorFlags, recolorArray, recolorObject } from './recolor.js';
 

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import type { ShortbreadProperty } from './properties.js';
 import propertyLookup from './properties.js';
 
