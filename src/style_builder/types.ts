@@ -3,7 +3,7 @@ import type { RecolorOptions } from './recolor.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 /** Represents language suffixes used in map styles. */
-export type Language = 'de' | 'en' | null;
+export type Language = string | null;
 
 /**
  * Options for configuring the style builder.
@@ -46,7 +46,7 @@ export interface StyleBuilderOptions {
 	hideLabels?: boolean;
 
 	/**
-	 * Set the language ('en', 'de') of all map labels.
+	 * Set the language ('en', 'de', ...) of all map labels.
 	 * A null value means that the language of the country in which the label is drawn will be used.
 	 * See also: {@link Language}
 	 * @default null

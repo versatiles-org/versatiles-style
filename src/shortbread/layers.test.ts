@@ -16,14 +16,42 @@ describe('layers', () => {
 		});
 	});
 
-	it('should handle language suffix correctly', () => {
+	it('should handle no language suffix correctly', () => {
+		const language: Language = '';
+		const layers = getShortbreadLayers({ language });
+		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayerSpecification;
+
+		expect(labelLayer).toBeDefined();
+
+		expect(labelLayer.layout?.['text-field']).toBe("{name}");
+	});
+
+	it('should handle language suffix en correctly', () => {
 		const language: Language = 'en';
 		const layers = getShortbreadLayers({ language });
 		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayerSpecification;
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toContain('{name_en}');
+		expect(labelLayer.layout?.['text-field']).toStrictEqual([
+			"coalesce",
+			"{name_en}",
+			"{name}",
+		]);
+	});
+
+	it('should handle language suffix fr correctly', () => {
+		const language: Language = 'fr';
+		const layers = getShortbreadLayers({ language });
+		const labelLayer = layers.find((layer) => layer.id === 'label-street-pedestrian') as SymbolLayerSpecification;
+
+		expect(labelLayer).toBeDefined();
+
+		expect(labelLayer.layout?.['text-field']).toStrictEqual([
+			"coalesce",
+			"{name_fr}",
+			"{name}",
+		]);
 	});
 
 	it('should create appropriate filters for land layers', () => {

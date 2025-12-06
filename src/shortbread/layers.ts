@@ -1,12 +1,15 @@
 
 
-import type { LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { DataDrivenPropertyValueSpecification, FormattedSpecification, LegacyFilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import { Language } from '../style_builder/types.js';
 
 export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;
-	const nameField = language ? '{name_' + language + '}' : '{name}';
+	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification> = '{name}';
+	if (language) {
+		nameField = ['coalesce', '{name_' + language + '}', '{name}'];
+	}
 
 	return [
 
