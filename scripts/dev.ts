@@ -94,7 +94,7 @@ async function getStyles() {
 			typescript({
 				compilerOptions: {
 					lib: ['ESNext'],
-					module: 'NodeNext',
+					module: 'preserve',
 					moduleResolution: 'bundler',
 					target: 'ES2022',
 					strict: true,
@@ -121,7 +121,6 @@ async function getStyles() {
 	const result = await bundle.generate({
 		format: 'umd',
 		name: 'VersaTilesStyle',
-		file: 'style.js'
 	});
 
 	console.timeEnd('Building styles');
