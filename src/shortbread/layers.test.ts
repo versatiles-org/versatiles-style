@@ -23,7 +23,7 @@ describe('layers', () => {
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toBe("{name}");
+		expect(labelLayer.layout?.['text-field']).toStrictEqual(['get', 'name']);
 	});
 
 	it('should handle language suffix en correctly', () => {
@@ -35,8 +35,8 @@ describe('layers', () => {
 
 		expect(labelLayer.layout?.['text-field']).toStrictEqual([
 			"coalesce",
-			"{name_en}",
-			"{name}",
+			['get', 'name_en'],
+			['get', 'name'],
 		]);
 	});
 
@@ -49,8 +49,8 @@ describe('layers', () => {
 
 		expect(labelLayer.layout?.['text-field']).toStrictEqual([
 			"coalesce",
-			"{name_fr}",
-			"{name}",
+			['get', 'name_fr'],
+			['get', 'name'],
 		]);
 	});
 

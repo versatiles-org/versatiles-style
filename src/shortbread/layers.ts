@@ -6,9 +6,9 @@ import { Language } from '../style_builder/types.js';
 
 export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;
-	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification> = '{name}';
+	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification> = ['get', 'name'];
 	if (language) {
-		nameField = ['coalesce', '{name_' + language + '}', '{name}'];
+		nameField = ['coalesce', ['get', 'name_' + language], ['get', 'name']];
 	}
 
 	return [
