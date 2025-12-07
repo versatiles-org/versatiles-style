@@ -22,7 +22,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Install optipng
-        run: apt-get install -y optipng
+        run: sudo apt-get install -y optipng
 
       - name: Checkout
         uses: actions/checkout@v5
