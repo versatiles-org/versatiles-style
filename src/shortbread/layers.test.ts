@@ -34,7 +34,8 @@ describe('layers', () => {
 		expect(labelLayer).toBeDefined();
 
 		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			"coalesce",
+			'case',
+			['to-boolean', ['get', 'name_en']],
 			['get', 'name_en'],
 			['get', 'name'],
 		]);
@@ -48,7 +49,8 @@ describe('layers', () => {
 		expect(labelLayer).toBeDefined();
 
 		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			"coalesce",
+			'case',
+			['to-boolean', ['get', 'name_fr']],
 			['get', 'name_fr'],
 			['get', 'name'],
 		]);

@@ -8,7 +8,12 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 	const { language } = option;
 	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification> = ['get', 'name'];
 	if (language) {
-		nameField = ['coalesce', ['get', 'name_' + language], ['get', 'name']];
+		nameField = [
+			'case',
+			['to-boolean', ['get', 'name_' + language]],
+			['get', 'name_' + language],
+			['get', 'name']
+		];
 	}
 
 	return [
