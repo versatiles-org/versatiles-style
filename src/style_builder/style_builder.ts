@@ -6,7 +6,6 @@ import { basename, deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
 import { styleBuilderColorKeys, type StyleBuilderColors, type StyleBuilderFonts, type StyleBuilderOptions } from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
-import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 
 
@@ -15,24 +14,22 @@ export abstract class StyleBuilder {
 	readonly #sourceName = 'versatiles-shortbread';
 
 	public abstract readonly name: string;
-
 	public abstract readonly defaultColors: StyleBuilderColors;
-
 	public abstract readonly defaultFonts: StyleBuilderFonts;
 
 	public build(options?: StyleBuilderOptions): StyleSpecification {
 		options ??= {};
 
-		// @ts-expect-error globalThis may be undefined in some environments
-		const baseUrl = options.baseUrl ?? globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
-		const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
+		const defaults = this.getDefaultOptions();
 
-		const sprite: SpriteSpecification = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
-		const tiles = options.tiles ?? ['/tiles/osm/{z}/{x}/{y}'];
-		const bounds = options.bounds ?? [-180, -85.0511287798066, 180, 85.0511287798066];
-		const hideLabels = options.hideLabels ?? false;
-		const language = options.language ?? null;
-		const recolorOptions = options.recolor ?? getDefaultRecolorFlags();
+		const baseUrl = options.baseUrl ?? defaults.baseUrl;
+		const glyphs = options.glyphs ?? defaults.glyphs;
+		const sprite = options.sprite ?? defaults.sprite;
+		const tiles = options.tiles ?? defaults.tiles;
+		const bounds = options.bounds ?? defaults.bounds;
+		const hideLabels = options.hideLabels ?? defaults.hideLabels;
+		const language = options.language ?? defaults.language;
+		const recolorOptions = options.recolor ?? defaults.recolor;
 
 		const colors = this.getColors(this.defaultColors);
 		if (options.colors) {
@@ -109,20 +106,21 @@ export abstract class StyleBuilder {
 		return result;
 	}
 
-	public getDefaultOptions(): StyleBuilderOptions {
+	public getDefaultOptions(): Required<StyleBuilderOptions> {
 		return {
-			baseUrl: '',
+			// @ts-expect-error globalThis may be undefined in some environments
+			baseUrl: globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org',
 			bounds: [
 				-180,
 				-85.0511287798066,
 				180,
 				85.0511287798066
 			],
-			glyphs: '',
-			sprite: '',
-			tiles: [],
+			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
+			sprite: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }],
+			tiles: ['/tiles/osm/{z}/{x}/{y}'],
 			hideLabels: false,
-			language: undefined,
+			language: '',
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
 			recolor: getDefaultRecolorFlags(),
