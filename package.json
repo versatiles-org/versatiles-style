@@ -30,7 +30,8 @@
     "test": "npm run test-typescript",
     "test-coverage": "vitest run --coverage",
     "test-typescript": "vitest run",
-    "upgrade": "vrt deps-upgrade"
+    "upgrade": "vrt deps-upgrade",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -65,6 +66,7 @@
     "bin-pack": "^1.0.2",
     "esbuild": "^0.27.1",
     "eslint": "^9.39.1",
+    "husky": "^9.1.7",
     "inquirer": "^13.0.2",
     "prettier": "^3.7.4",
     "rollup": "^4.53.3",
