@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "check": "npm run lint && npm run build && npm run test ",
+    "check": "npm run lint && npm run build && npm run test && npm run format:check",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
     "build-browser": "rollup -c --environment BUILD:browser && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
     "build-node": "rm -rf dist && rollup -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
@@ -22,6 +22,8 @@
     "doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
     "doc-screenshots": "tsx scripts/screenshots.ts",
     "doc-typescript": "vrt doc-typescript -f html",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint --color .",
     "prepack": "npm run build",
     "release": "vrt release-npm",
@@ -64,6 +66,7 @@
     "esbuild": "^0.27.1",
     "eslint": "^9.39.1",
     "inquirer": "^13.0.2",
+    "prettier": "^3.7.4",
     "rollup": "^4.53.3",
     "rollup-plugin-dts": "^6.3.0",
     "rollup-plugin-sourcemaps2": "^0.5.4",
