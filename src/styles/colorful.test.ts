@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import Colorful from './colorful';
-import { beforeEach } from 'node:test';
 
 describe('Colorful Styles', () => {
 	const colorful = new Colorful();
