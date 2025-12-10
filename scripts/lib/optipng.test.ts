@@ -3,13 +3,13 @@ import type { ChildProcess } from 'child_process';
 import type { Readable } from 'stream';
 
 vi.mock('child_process', () => ({
-	spawn: vi.fn(async () => { }),
+	spawn: vi.fn(async () => {}),
 }));
 
 vi.mock('fs/promises', () => ({
-	writeFile: vi.fn(async () => { }),
+	writeFile: vi.fn(async () => {}),
 	readFile: vi.fn(async () => Buffer.from('optimized png buffer')),
-	rm: vi.fn(async () => { }),
+	rm: vi.fn(async () => {}),
 }));
 
 vi.mock('os', () => ({
@@ -66,7 +66,7 @@ describe('optipng', () => {
 				if (event === 'close') listener(1);
 				return mockProcess;
 			}),
-		} as unknown as ChildProcess;;
+		} as unknown as ChildProcess;
 		mockSpawn.mockReturnValue(mockProcess);
 
 		await expect(optipng(mockBuffer)).rejects.toThrow('optipng optimization failed: mock error');
@@ -84,7 +84,7 @@ describe('optipng', () => {
 				if (event === 'error') listener(new Error('spawn error'));
 				return mockProcess;
 			}),
-		} as unknown as ChildProcess;;
+		} as unknown as ChildProcess;
 		mockSpawn.mockReturnValue(mockProcess);
 
 		await expect(optipng(mockBuffer)).rejects.toThrow('spawn error');
@@ -102,7 +102,7 @@ describe('optipng', () => {
 				if (event === 'error') listener(new Error('spawn error'));
 				return mockProcess;
 			}),
-		} as unknown as ChildProcess;;
+		} as unknown as ChildProcess;
 		mockSpawn.mockReturnValue(mockProcess);
 
 		await expect(optipng(mockBuffer)).rejects.toThrow();

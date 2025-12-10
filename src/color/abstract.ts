@@ -6,7 +6,7 @@ import type { RGB } from './rgb.js';
  * The abstract `Color` class provides a blueprint for color manipulation and conversion.
  * It includes methods for converting between different color models ({@link HSL}, {@link HSV}, {@link RGB}),
  * as well as various color transformations such as inversion, rotation, saturation, and blending.
- * 
+ *
  * @abstract
  */
 /**

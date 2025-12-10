@@ -1,8 +1,18 @@
-
 export interface ShortbreadProperty {
 	readonly key: string;
 	readonly parent: 'layer' | 'layout' | 'paint';
-	readonly valueType: 'array' | 'boolean' | 'color' | 'enum' | 'filter' | 'fonts' | 'formatted' | 'number' | 'padding' | 'resolvedImage' | 'variableAnchorOffsetCollection';
+	readonly valueType:
+		| 'array'
+		| 'boolean'
+		| 'color'
+		| 'enum'
+		| 'filter'
+		| 'fonts'
+		| 'formatted'
+		| 'number'
+		| 'padding'
+		| 'resolvedImage'
+		| 'variableAnchorOffsetCollection';
 }
 
 type ShortbreadPropertyDef = ShortbreadProperty & {
@@ -65,7 +75,12 @@ const propertyDefs: ShortbreadPropertyDef[] = [
 	{ parent: 'layout', types: 'symbol', key: 'text-rotation-alignment', valueType: 'enum' },
 	{ parent: 'layout', types: 'symbol', key: 'text-size', short: 'size', valueType: 'number' },
 	{ parent: 'layout', types: 'symbol', key: 'text-transform', valueType: 'enum' },
-	{ parent: 'layout', types: 'symbol', key: 'text-variable-anchor-offset', valueType: 'variableAnchorOffsetCollection' },
+	{
+		parent: 'layout',
+		types: 'symbol',
+		key: 'text-variable-anchor-offset',
+		valueType: 'variableAnchorOffsetCollection',
+	},
 	{ parent: 'layout', types: 'symbol', key: 'text-variable-anchor', valueType: 'array' },
 	{ parent: 'layout', types: 'symbol', key: 'text-writing-mode', valueType: 'array' },
 
@@ -118,7 +133,6 @@ propertyDefs.forEach((propertyDef: ShortbreadPropertyDef) => {
 	const types: string = propertyDef.types;
 
 	types.split(',').forEach((type: string) => {
-
 		function add(propertyKey: string): void {
 			const key = type + '/' + propertyKey;
 			const property: ShortbreadProperty = {

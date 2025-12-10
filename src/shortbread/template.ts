@@ -1,5 +1,5 @@
-import { StyleSpecification } from "@maplibre/maplibre-gl-style-spec";
-import { VectorLayer } from "../types/vector_layer.js";
+import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
+import { VectorLayer } from '../types/vector_layer.js';
 
 const maxzoom = 14;
 
@@ -15,19 +15,12 @@ export function getShortbreadTemplate(): StyleSpecification {
 		sources: {
 			'versatiles-shortbread': {
 				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-				tiles: [
-					'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}',
-				],
+				tiles: ['https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'],
 				type: 'vector',
 				scheme: 'xyz',
-				bounds: [
-					-180,
-					-85.0511287798066,
-					180,
-					85.0511287798066,
-				],
+				bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
 				minzoom: 0,
-				maxzoom
+				maxzoom,
 			},
 		},
 		layers: [],
@@ -339,5 +332,5 @@ export function getShortbreadVectorLayers(): VectorLayer[] {
 			minzoom: 14,
 			maxzoom,
 		},
-	]
+	];
 }

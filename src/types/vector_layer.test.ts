@@ -20,7 +20,10 @@ describe('isVectorLayer', () => {
 
 	it('should throw an error for invalid fields', () => {
 		verifyError({ id: 'test', fields: null }, 'Layer.fields must be a non-null object');
-		verifyError({ id: 'test', fields: { field1: 'InvalidType' } }, 'Layer.fields values must be one of \'Boolean\', \'Number\', or \'String\'');
+		verifyError(
+			{ id: 'test', fields: { field1: 'InvalidType' } },
+			"Layer.fields values must be one of 'Boolean', 'Number', or 'String'"
+		);
 	});
 
 	it('should throw an error for invalid optional properties', () => {

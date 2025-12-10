@@ -1,5 +1,3 @@
-
-
 export function clamp(value: number, min: number, max: number): number {
 	if (value == null || isNaN(value)) return min;
 	if (value < min) return min;

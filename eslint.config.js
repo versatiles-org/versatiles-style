@@ -7,25 +7,17 @@ export default [
 	js.configs.recommended,
 	...ts.configs.recommended,
 	{
-		ignores: [
-			'**/dist/**/*.*',
-			'**/coverage/**/*.*',
-			'**/release/**/*.*',
-			'**/docs/**/*.*',
-		]
+		ignores: ['**/dist/**/*.*', '**/coverage/**/*.*', '**/release/**/*.*', '**/docs/**/*.*'],
 	},
 	{
-		files: [
-			'**/scripts/**/*.ts',
-			'**/src/**/*.ts',
-		],
+		files: ['**/scripts/**/*.ts', '**/src/**/*.ts'],
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'module',
 			globals: {
 				browser: true,
 				es6: true,
-				node: true
+				node: true,
 			},
 			parser,
 			parserOptions: {
@@ -47,9 +39,9 @@ export default [
 				{
 					argsIgnorePattern: '^_',
 					varsIgnorePattern: '^_',
-					caughtErrorsIgnorePattern: '^_'
-				}
-			]
-		}
-	}
-]
+					caughtErrorsIgnorePattern: '^_',
+				},
+			],
+		},
+	},
+];

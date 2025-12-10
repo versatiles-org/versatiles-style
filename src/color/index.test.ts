@@ -4,9 +4,7 @@ import { HSL } from './hsl.js';
 import { HSV } from './hsv.js';
 import { RGB } from './rgb.js';
 
-
 describe('Color Conversions', () => {
-
 	const scenarios: [number, number, number, number][] = [
 		[-100, 14, 15, 0],
 		[0, 0, 0, 0.1],
@@ -19,7 +17,7 @@ describe('Color Conversions', () => {
 		[700, 100, 50, 0.8],
 		[800, 100, 100, 0.9],
 		[900, 12, 13, 1.0],
-	]
+	];
 	it('test HSV -> HSL -> RGB', () => {
 		for (const v of scenarios) {
 			const hsv = new HSV(...v);
@@ -41,7 +39,7 @@ describe('Color Conversions', () => {
 			for (let i = 0; i < 4; i++) expect(a1[i]).toBeCloseTo(a2[i]);
 		}
 	});
-})
+});
 
 describe('Color.parse', () => {
 	it('parses hexadecimal color strings correctly', () => {

@@ -18,7 +18,7 @@ describe('styles', () => {
 
 			const style = builder({ baseUrl: 'https://example.org' });
 
-			const minSize = (name === 'empty') ? 4000 : 50000;
+			const minSize = name === 'empty' ? 4000 : 50000;
 			expect(JSON.stringify(style).length).toBeGreaterThan(minSize);
 
 			expect(style.name).toBe('versatiles-' + name);
@@ -39,7 +39,7 @@ describe('Colorful', () => {
 			colors: { commercial: '#f00' },
 		});
 		expect(style.glyphs).toBe('https://dev.null/assets/glyphs/{fontstack}/{range}.pbf');
-		const paint = style.layers.find(l => l.id === 'land-commercial')?.paint;
+		const paint = style.layers.find((l) => l.id === 'land-commercial')?.paint;
 
 		expect(paint).toBeDefined();
 		if (paint == null) throw Error();
@@ -69,12 +69,39 @@ describe('guessStyle', () => {
 		expect(style).toStrictEqual({
 			layers: [
 				{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' },
-				{ id: 'vectorSource-hallo-fill', filter: ['==', '$type', 'Polygon'], paint: { 'fill-antialias': true, 'fill-color': 'hsla(14,50%,52%,0.6)', 'fill-opacity': 0.3, 'fill-outline-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'fill' },
-				{ id: 'vectorSource-hallo-line', filter: ['==', '$type', 'LineString'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': 'hsla(14,50%,52%,0.6)' }, source: 'vectorSource', 'source-layer': 'hallo', type: 'line' },
-				{ id: 'vectorSource-hallo-circle', filter: ['==', '$type', 'Point'], paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 }, source: 'vectorSource', 'source-layer': 'hallo', type: 'circle' },
+				{
+					id: 'vectorSource-hallo-fill',
+					filter: ['==', '$type', 'Polygon'],
+					paint: {
+						'fill-antialias': true,
+						'fill-color': 'hsla(14,50%,52%,0.6)',
+						'fill-opacity': 0.3,
+						'fill-outline-color': 'hsla(14,50%,52%,0.6)',
+					},
+					source: 'vectorSource',
+					'source-layer': 'hallo',
+					type: 'fill',
+				},
+				{
+					id: 'vectorSource-hallo-line',
+					filter: ['==', '$type', 'LineString'],
+					layout: { 'line-cap': 'round', 'line-join': 'round' },
+					paint: { 'line-color': 'hsla(14,50%,52%,0.6)' },
+					source: 'vectorSource',
+					'source-layer': 'hallo',
+					type: 'line',
+				},
+				{
+					id: 'vectorSource-hallo-circle',
+					filter: ['==', '$type', 'Point'],
+					paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 },
+					source: 'vectorSource',
+					'source-layer': 'hallo',
+					type: 'circle',
+				},
 			],
 			sources: { vectorSource: { tiles, type: 'vector' } },
-			'version': 8,
+			version: 8,
 		});
 	});
 });
@@ -101,4 +128,4 @@ describe('exports', () => {
 		expect(typeof lib.Color.HSV.randomColor).toBe('function');
 		expect(typeof lib.Color.RGB).toBe('function');
 	});
-})
+});

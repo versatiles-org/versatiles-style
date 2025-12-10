@@ -20,7 +20,7 @@ describe('RandomColor', () => {
 			expect(array[2]).toBeGreaterThanOrEqual(0);
 			expect(array[2]).toBeLessThanOrEqual(100);
 		});
-	
+
 		it('supports options for generating random colors', () => {
 			const random = randomColor({ hue: 'red', luminosity: 'bright' });
 			expect(random).toBeInstanceOf(HSV);

@@ -1,8 +1,6 @@
 {
 	"compilerOptions": {
-		"lib": [
-			"ESNext"
-		],
+		"lib": ["ESNext"],
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"target": "ES2022",
@@ -13,11 +11,7 @@
 		"allowJs": true,
 		"allowImportingTsExtensions": false,
 		"noEmit": true,
-		"sourceMap": true,
+		"sourceMap": true
 	},
-	"include": [
-		"rollup.config.*",
-		"scripts/**/*.ts",
-		"src/**/*.ts"
-	]
+	"include": ["rollup.config.*", "scripts/**/*.ts", "src/**/*.ts"]
 }

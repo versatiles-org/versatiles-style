@@ -98,14 +98,14 @@ describe('deepMerge', () => {
 	});
 
 	it('merges nested objects correctly', () => {
-		const target = { a: { d: 4, e: 3 }, b: 2 } as { a: { d?: number, e: number }, b: number };
+		const target = { a: { d: 4, e: 3 }, b: 2 } as { a: { d?: number; e: number }; b: number };
 		const source = { a: { e: 5 }, b: 3 };
 		const result = deepMerge(target, source);
 		expect(result).toEqual({ a: { d: 4, e: 5 }, b: 3 });
 	});
 
 	it('overrides primitives with objects', () => {
-		const target = { a: 1, b: 2 } as { a: object | number, b: object | number };
+		const target = { a: 1, b: 2 } as { a: object | number; b: object | number };
 		const source = { a: { d: 4 }, b: { e: 5 } };
 		const result = deepMerge(target, source);
 		expect(result).toEqual({ a: { d: 4 }, b: { e: 5 } });

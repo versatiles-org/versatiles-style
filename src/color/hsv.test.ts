@@ -4,7 +4,6 @@ import { HSL } from './hsl.js';
 import { RGB } from './rgb.js';
 
 describe('HSV Class', () => {
-
 	it('constructor initializes values correctly with clamping', () => {
 		const color = new HSV(400, 120, 120, 2);
 		expect(color.asArray()).toStrictEqual([40, 100, 100, 1]);
@@ -63,14 +62,12 @@ describe('HSV Class', () => {
 	});
 
 	describe('color conversion', () => {
-
 		it('asHSL converts HSV to HSL correctly', () => {
 			function check(input: [number, number, number], output: [number, number, number]) {
 				const hsv = new HSV(...input);
 				const hsl = hsv.asHSL();
 				expect(hsl).toBeInstanceOf(HSL);
-				expect(hsl.asArray().map(Math.round))
-					.toStrictEqual([...output, 1]);
+				expect(hsl.asArray().map(Math.round)).toStrictEqual([...output, 1]);
 
 				expect(hsv.asHex()).toStrictEqual(hsl.asHex());
 			}
@@ -90,8 +87,7 @@ describe('HSV Class', () => {
 			const color = new HSV(120, 100, 100);
 			const rgb = color.asRGB();
 			expect(rgb).toBeInstanceOf(RGB);
-			expect(rgb.asArray().map(value => Math.round(value)))
-				.toStrictEqual([0, 255, 0, 1]);
+			expect(rgb.asArray().map((value) => Math.round(value))).toStrictEqual([0, 255, 0, 1]);
 		});
 
 		it('asHSV and toHSV return the same instance or clone', () => {
@@ -104,8 +100,7 @@ describe('HSV Class', () => {
 			function check(input: [number, number, number], output: [number, number, number]) {
 				const color = new HSV(...input);
 				const rgb = color.asRGB();
-				expect(rgb.asArray().map(value => Math.round(value)))
-					.toStrictEqual([...output, 1]);
+				expect(rgb.asArray().map((value) => Math.round(value))).toStrictEqual([...output, 1]);
 			}
 
 			check([10, 0, 0], [0, 0, 0]);
@@ -143,7 +138,6 @@ describe('HSV Class', () => {
 			check(360, '#FF0000');
 			check(361, '#FF0400');
 		});
-
 	});
 
 	describe('parse errors and validations', () => {

@@ -8,7 +8,7 @@ mkdirSync('docs', { recursive: true });
 
 /**
  * Renders map images for predefined styles and saves them as PNG files.
- * 
+ *
  * The script uses `@maplibre/maplibre-gl-native` for map rendering
  * and `sharp` for image processing. It generates map images for a set
  * of predefined styles and saves them in the `screenshots` directory.
@@ -19,11 +19,11 @@ Promise.all([
 	draw('graybeard', styles.graybeard),
 	draw('neutrino', styles.neutrino),
 	draw('shadow', styles.shadow),
-])
+]);
 
 /**
  * Renders a map image using the given style and saves it as a PNG file.
- * 
+ *
  * @param name - The name of the style, used in the output filename.
  * @param style - The style builder function that configures the map style.
  * @returns A promise that resolves when the image has been successfully saved.
@@ -46,7 +46,7 @@ async function draw(name: string, style: StyleBuilderFunction): Promise<void> {
 				center: [13.408333, 52.518611],
 				zoom: 9.2,
 				width,
-				height
+				height,
 			},
 			(err, buffer) => {
 				if (err) throw err;
@@ -58,11 +58,12 @@ async function draw(name: string, style: StyleBuilderFunction): Promise<void> {
 				const image = sharp(buffer, { raw: { width, height, channels: 4 } });
 
 				// Convert the raw image buffer to a PNG file and save it
-				image.toFile(`docs/${name}.png`, err => {
+				image.toFile(`docs/${name}.png`, (err) => {
 					if (err) throw err;
 					console.log(`Saved screenshot ${name}`);
 					resolve();
 				});
-			});
+			}
+		);
 	});
 }

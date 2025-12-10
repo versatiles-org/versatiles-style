@@ -3,9 +3,9 @@ name: CI
 on:
   push:
     branches:
-      - "**"
+      - '**'
     tags:
-      - "!**" # Avoid running twice for commits with tags
+      - '!**' # Avoid running twice for commits with tags
   pull_request:
   workflow_dispatch:
 
@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "npm"
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci

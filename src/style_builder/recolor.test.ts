@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { Color } from '../color/index.js';
 import { CachedRecolor, getDefaultRecolorFlags, recolorArray, recolorObject } from './recolor.js';
 
-
 describe('recolor', () => {
 	describe('getDefaultRecolorFlags', () => {
 		it('should return the default color transformer flags', () => {
@@ -120,7 +119,7 @@ describe('recolor', () => {
 			recolorArray(colors, { contrast: Infinity });
 			expect(colors2string(colors)).toBe('FFFF0000,00FFFF55,0000FFAA,FF0000,FF0000');
 		});
-	})
+	});
 
 	describe('brightness', () => {
 		it('should remove any brightness', () => {
@@ -266,13 +265,7 @@ describe('recolorArray', () => {
 	it('should recolor an array of colors with valid options', () => {
 		const colors = getTestColors();
 		recolorArray(colors, { rotate: 120 });
-		expect(colors.map((c) => c.asHex())).toEqual([
-			'#55FFAA00',
-			'#AA00FF55',
-			'#FF5500AA',
-			'#00AA55',
-			'#55AA77',
-		]);
+		expect(colors.map((c) => c.asHex())).toEqual(['#55FFAA00', '#AA00FF55', '#FF5500AA', '#00AA55', '#55AA77']);
 	});
 
 	it('should not alter the array if options are invalid', () => {
@@ -285,22 +278,10 @@ describe('recolorArray', () => {
 	it('should handle multiple transformations on the same array', () => {
 		const colors = getTestColors();
 		recolorArray(colors, { saturate: 0.5 });
-		expect(colors.map((c) => c.asHex())).toEqual([
-			'#FFAA5500',
-			'#00FFAA55',
-			'#5500FFAA',
-			'#AA5500',
-			'#BF7340',
-		]);
+		expect(colors.map((c) => c.asHex())).toEqual(['#FFAA5500', '#00FFAA55', '#5500FFAA', '#AA5500', '#BF7340']);
 
 		recolorArray(colors, { brightness: 0.5 });
-		expect(colors.map((c) => c.asHex())).toEqual([
-			'#FFD5AA00',
-			'#80FFD555',
-			'#AA80FFAA',
-			'#D5AA80',
-			'#DFB99F',
-		]);
+		expect(colors.map((c) => c.asHex())).toEqual(['#FFD5AA00', '#80FFD555', '#AA80FFAA', '#D5AA80', '#DFB99F']);
 	});
 });
 
@@ -339,15 +320,9 @@ describe('CachedRecolor', () => {
 });
 
 function getTestColors(): Color[] {
-	return [
-		Color.parse('#FA50'),
-		Color.parse('#0FA5'),
-		Color.parse('#50FA'),
-		Color.parse('#A50F'),
-		Color.parse('#A75F'),
-	];
+	return [Color.parse('#FA50'), Color.parse('#0FA5'), Color.parse('#50FA'), Color.parse('#A50F'), Color.parse('#A75F')];
 }
 
 function colors2string(colors: Color[]): string {
-	return colors.map(c => c.asHex().slice(1)).join(',');
+	return colors.map((c) => c.asHex().slice(1)).join(',');
 }

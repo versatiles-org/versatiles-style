@@ -6,6 +6,6 @@ export default class Shadow extends Colorful {
 	public constructor() {
 		super();
 
-		this.transformDefaultColors(color => color.saturate(-1).invert().brightness(0.2));
+		this.transformDefaultColors((color) => color.saturate(-1).invert().brightness(0.2));
 	}
 }

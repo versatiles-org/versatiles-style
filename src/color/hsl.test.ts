@@ -4,9 +4,7 @@ import { HSV } from './hsv.js';
 import { RGB } from './rgb.js';
 
 describe('HSL Class', () => {
-
 	describe('constructor', () => {
-
 		it('should initialize small HSL values correctly', () => {
 			const color = new HSL(10, 20, 30, 0.4);
 			expect(color.asArray()).toStrictEqual([10, 20, 30, 0.4]);
@@ -21,7 +19,7 @@ describe('HSL Class', () => {
 			const color = new HSL(-60, -10, -10, -1);
 			expect(color.asArray()).toStrictEqual([300, 0, 0, 0]);
 		});
-	})
+	});
 
 	it('clone should return a new HSL instance with identical values', () => {
 		const color = new HSL(120, 50, 50, 0.5);
@@ -32,7 +30,6 @@ describe('HSL Class', () => {
 	});
 
 	describe('conversion', () => {
-
 		it('asString should return correct HSL and HSLA strings', () => {
 			const color1 = new HSL(120, 50, 50);
 			expect(color1.asString()).toBe('hsl(120,50%,50%)');
@@ -52,8 +49,7 @@ describe('HSL Class', () => {
 				const hsl = new HSL(...input);
 				const hsv = hsl.asHSV();
 				expect(hsv).toBeInstanceOf(HSV);
-				expect(hsv.asArray().map(Math.round))
-					.toStrictEqual([...output, 1]);
+				expect(hsv.asArray().map(Math.round)).toStrictEqual([...output, 1]);
 			}
 
 			check([10, 0, 0], [10, 0, 0]);
@@ -69,11 +65,10 @@ describe('HSL Class', () => {
 
 		it('asRGB should correctly convert HSL to RGB', () => {
 			function check(input: [number, number, number], output: [number, number, number]) {
-				const hsl = new HSL(...input)
+				const hsl = new HSL(...input);
 				const rgb = hsl.asRGB();
 				expect(rgb).toBeInstanceOf(RGB);
-				expect(rgb.asArray().map(Math.round))
-					.toStrictEqual([...output, 1]);
+				expect(rgb.asArray().map(Math.round)).toStrictEqual([...output, 1]);
 			}
 
 			check([10, 0, 0], [0, 0, 0]);
@@ -86,8 +81,7 @@ describe('HSL Class', () => {
 			check([17, 100, 50], [255, 72, 0]);
 			check([18, 100, 100], [255, 255, 255]);
 		});
-
-	})
+	});
 
 	describe('should parse valid HSL and HSLA strings', () => {
 		function check(str: string, result: number[]) {
@@ -95,7 +89,7 @@ describe('HSL Class', () => {
 				const color = HSL.parse(str);
 				expect(color).toBeInstanceOf(HSL);
 				expect(color.asArray()).toStrictEqual(result);
-			})
+			});
 		}
 
 		check('hsl(240,100%,50%)', [240, 100, 50, 1]);
@@ -109,7 +103,7 @@ describe('HSL Class', () => {
 
 	describe('invertLuminosity', () => {
 		let color: HSL;
-		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
+		beforeEach(() => (color = new HSL(120, 50, 50, 0.8)));
 
 		it('inverts luminosity correctly', () => {
 			expect(color.invertLuminosity().asArray()).toStrictEqual([120, 50, 50, 0.8]); // Luminosity inverted to 50%
@@ -126,7 +120,7 @@ describe('HSL Class', () => {
 
 	describe('rotateHue', () => {
 		let color: HSL;
-		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
+		beforeEach(() => (color = new HSL(120, 50, 50, 0.8)));
 
 		it('rotates hue correctly within the range of 0-360', () => {
 			expect(color.rotateHue(180).asArray()).toStrictEqual([300, 50, 50, 0.8]); // Hue rotated by 180 degrees
@@ -144,7 +138,7 @@ describe('HSL Class', () => {
 	describe('saturate', () => {
 		let color: HSL, grey: HSL;
 		beforeEach(() => {
-			color = new HSL(120, 50, 50, 0.8)
+			color = new HSL(120, 50, 50, 0.8);
 			grey = new HSL(120, 0, 50, 0.8);
 		});
 
@@ -166,7 +160,7 @@ describe('HSL Class', () => {
 
 	describe('fade', () => {
 		let color: HSL;
-		beforeEach(() => color = new HSL(120, 50, 50, 0.8));
+		beforeEach(() => (color = new HSL(120, 50, 50, 0.8)));
 
 		it('reduces alpha correctly', () => {
 			expect(color.fade(0.5).asArray()).toStrictEqual([120, 50, 50, 0.4]); // Alpha reduced by 50%

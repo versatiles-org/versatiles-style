@@ -11,11 +11,11 @@ describe('decorate function', () => {
 	];
 
 	const mockRules = {
-		'layer1': {
+		layer1: {
 			color: '#ff0000',
 			visibility: 'none',
 		},
-		'layer2': {
+		layer2: {
 			color: 'rgba(0, 255, 0, 0.5)',
 			visibility: 'visible',
 		},
@@ -31,7 +31,7 @@ describe('decorate function', () => {
 	it('should apply styles from rules to the corresponding layers', () => {
 		const result = decorate(mockLayers, mockRules, noRecolor);
 
-		result.forEach(layer => {
+		result.forEach((layer) => {
 			if (layer.id === 'layer1') {
 				expect(layer.paint).toHaveProperty('fill-color', 'rgb(255,0,0)');
 				expect(layer.layout).toHaveProperty('visibility', 'none');
@@ -45,7 +45,7 @@ describe('decorate function', () => {
 
 	it('should handle color conversion correctly', () => {
 		const colorRule = {
-			'layer1': {
+			layer1: {
 				paintColor: Color.parse('#ff0000'),
 			},
 		};

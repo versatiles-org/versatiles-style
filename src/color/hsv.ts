@@ -57,12 +57,7 @@ export class HSV extends Color {
 	 * @returns A new HSV color with rounded components.
 	 */
 	round(): HSV {
-		return new HSV(
-			Math.round(this.h),
-			Math.round(this.s),
-			Math.round(this.v),
-			Math.round(this.a * 1000) / 1000
-		);
+		return new HSV(Math.round(this.h), Math.round(this.s), Math.round(this.v), Math.round(this.a * 1000) / 1000);
 	}
 
 	/**
@@ -89,13 +84,8 @@ export class HSV extends Color {
 		const s = this.s / 100;
 		const v = this.v / 100;
 		const k = (2 - s) * v;
-		const q = k < 1 ? k : 2 - k
-		return new HSL(
-			this.h,
-			q == 0 ? 0 : 100 * s * v / q,
-			100 * k / 2,
-			this.a
-		);
+		const q = k < 1 ? k : 2 - k;
+		return new HSL(this.h, q == 0 ? 0 : (100 * s * v) / q, (100 * k) / 2, this.a);
 	}
 
 	/**
@@ -123,25 +113,51 @@ export class HSV extends Color {
 		const s = this.s / 100; // Normalize s to range [0, 1]
 		const v = this.v / 100; // Normalize v to range [0, 1]
 
-		let r = 0, g = 0, b = 0;
+		let r = 0,
+			g = 0,
+			b = 0;
 
 		if (s === 0) {
 			// Achromatic (grey)
 			r = g = b = v;
 		} else {
 			const i = Math.floor(h * 6); // Determine the sector of the color wheel
-			const f = h * 6 - i;         // Fractional part of h * 6
+			const f = h * 6 - i; // Fractional part of h * 6
 			const p = v * (1 - s);
 			const q = v * (1 - s * f);
 			const t = v * (1 - s * (1 - f));
 
 			switch (i % 6) {
-				case 0: r = v; g = t; b = p; break;
-				case 1: r = q; g = v; b = p; break;
-				case 2: r = p; g = v; b = t; break;
-				case 3: r = p; g = q; b = v; break;
-				case 4: r = t; g = p; b = v; break;
-				case 5: r = v; g = p; b = q; break;
+				case 0:
+					r = v;
+					g = t;
+					b = p;
+					break;
+				case 1:
+					r = q;
+					g = v;
+					b = p;
+					break;
+				case 2:
+					r = p;
+					g = v;
+					b = t;
+					break;
+				case 3:
+					r = p;
+					g = q;
+					b = v;
+					break;
+				case 4:
+					r = t;
+					g = p;
+					b = v;
+					break;
+				case 5:
+					r = v;
+					g = p;
+					b = q;
+					break;
 			}
 		}
 

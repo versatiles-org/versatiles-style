@@ -10,7 +10,9 @@ import { resolve } from 'path';
  * @throws Error if the optipng process fails or if stderr contains an error message.
  */
 export async function optipng(bufferIn: Buffer): Promise<Buffer> {
-	const randomString = Math.random().toString(36).replace(/[^a-z0-9]/g, '');
+	const randomString = Math.random()
+		.toString(36)
+		.replace(/[^a-z0-9]/g, '');
 	const filename = resolve(tmpdir(), `${randomString}.png`);
 
 	// Write the input buffer to a temporary file
@@ -40,7 +42,7 @@ export async function optipng(bufferIn: Buffer): Promise<Buffer> {
 		return bufferOut;
 	} catch (error) {
 		// Ensure the file is deleted in case of an error
-		await rm(filename).catch(() => { }); // Suppress errors if the file doesn't exist
+		await rm(filename).catch(() => {}); // Suppress errors if the file doesn't exist
 		throw error;
 	}
 }

@@ -29,10 +29,10 @@ export interface TileJSONSpecificationVector extends TileJSONSpecificationRaster
 /** Represents a TileJSON specification, which can be either raster or vector. */
 export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecificationVector;
 
-/** 
-* Checks if an object adheres to the TileJSON specification. 
-* Throws errors if the object does not conform to the expected structure or types.
-*/
+/**
+ * Checks if an object adheres to the TileJSON specification.
+ * Throws errors if the object does not conform to the expected structure or types.
+ */
 export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecification {
 	if (typeof spec !== 'object' || spec === null) {
 		throw Error('spec must be an object');
@@ -50,7 +50,7 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 	}
 
 	if (obj.bounds != null) {
-		if (!Array.isArray(obj.bounds) || obj.bounds.length !== 4 || obj.bounds.some(num => typeof num !== 'number')) {
+		if (!Array.isArray(obj.bounds) || obj.bounds.length !== 4 || obj.bounds.some((num) => typeof num !== 'number')) {
 			throw Error('spec.bounds must be an array of four numbers if present');
 		}
 		const a = obj.bounds as [number, number, number, number];
@@ -63,7 +63,7 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 	}
 
 	if (obj.center != null) {
-		if (!Array.isArray(obj.center) || obj.center.length !== 2 || obj.center.some(num => typeof num !== 'number')) {
+		if (!Array.isArray(obj.center) || obj.center.length !== 2 || obj.center.some((num) => typeof num !== 'number')) {
 			throw Error('spec.center must be an array of two numbers if present');
 		}
 		const a = obj.center as [number, number];
@@ -71,7 +71,7 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		if (a[1] < -90 || a[1] > 90) throw Error('spec.center[1] must be between -90 and 90');
 	}
 
-	if (obj.data != null && (!Array.isArray(obj.data) || obj.data.some(url => typeof url !== 'string'))) {
+	if (obj.data != null && (!Array.isArray(obj.data) || obj.data.some((url) => typeof url !== 'string'))) {
 		throw Error('spec.data must be an array of strings if present');
 	}
 
@@ -79,11 +79,11 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		throw Error('spec.description must be a string if present');
 	}
 
-	if (obj.fillzoom != null && (typeof obj.fillzoom !== 'number' || (obj.fillzoom < 0))) {
+	if (obj.fillzoom != null && (typeof obj.fillzoom !== 'number' || obj.fillzoom < 0)) {
 		throw Error('spec.fillzoom must be a positive integer if present');
 	}
 
-	if (obj.grids != null && (!Array.isArray(obj.grids) || obj.grids.some(url => typeof url !== 'string'))) {
+	if (obj.grids != null && (!Array.isArray(obj.grids) || obj.grids.some((url) => typeof url !== 'string'))) {
 		throw Error('spec.grids must be an array of strings if present');
 	}
 
@@ -91,11 +91,11 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		throw Error('spec.legend must be a string if present');
 	}
 
-	if (obj.minzoom != null && (typeof obj.minzoom !== 'number' || (obj.minzoom < 0))) {
+	if (obj.minzoom != null && (typeof obj.minzoom !== 'number' || obj.minzoom < 0)) {
 		throw Error('spec.minzoom must be a positive integer if present');
 	}
 
-	if (obj.maxzoom != null && (typeof obj.maxzoom !== 'number' || (obj.maxzoom < 0))) {
+	if (obj.maxzoom != null && (typeof obj.maxzoom !== 'number' || obj.maxzoom < 0)) {
 		throw Error('spec.maxzoom must be a positive integer if present');
 	}
 
@@ -111,7 +111,7 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 		throw Error('spec.template must be a string if present');
 	}
 
-	if (!Array.isArray(obj.tiles) || obj.tiles.length === 0 || obj.tiles.some(url => typeof url !== 'string')) {
+	if (!Array.isArray(obj.tiles) || obj.tiles.length === 0 || obj.tiles.some((url) => typeof url !== 'string')) {
 		throw Error('spec.tiles must be an array of strings');
 	}
 
@@ -120,6 +120,6 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 
 export function isRasterTileJSONSpecification(spec: unknown): spec is TileJSONSpecificationRaster {
 	if (!isTileJSONSpecification(spec)) return false;
-	if (('vector_layers' in spec) && (spec.vector_layers != null)) return false;
+	if ('vector_layers' in spec && spec.vector_layers != null) return false;
 	return true;
 }

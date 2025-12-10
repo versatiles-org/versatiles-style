@@ -1,4 +1,3 @@
-
 import { createWriteStream, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import * as styles from '../src/styles/index.js';
@@ -6,12 +5,8 @@ import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-styl
 import tar from 'tar-stream';
 import { createGzip } from 'zlib';
 
-
-
 const dirDst = new URL('../release', import.meta.url).pathname;
 mkdirSync(dirDst, { recursive: true });
-
-
 
 const pack = tar.pack();
 const { colorful, eclipse, empty, graybeard, neutrino, shadow } = styles;
@@ -32,13 +27,9 @@ const { colorful, eclipse, empty, graybeard, neutrino, shadow } = styles;
 });
 
 pack.finalize();
-pack
-	.pipe(createGzip({ level: 9 }))
-	.pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
-
+pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
 
 function produce(name: string, style: StyleSpecification): void {
-
 	// Validate the style and log errors if any
 	const errors = validateStyleMin(style);
 	if (errors.length > 0) console.log(errors);
@@ -47,7 +38,6 @@ function produce(name: string, style: StyleSpecification): void {
 	pack.entry({ name: name + '.json' }, prettyStyleJSON(style));
 	console.log('Saved ' + name);
 }
-
 
 export function prettyStyleJSON(inputData: unknown): string {
 	return recursive(inputData);
@@ -62,14 +52,26 @@ export function prettyStyleJSON(inputData: unknown): string {
 
 		if (typeof data === 'object') {
 			if (Array.isArray(data)) {
-				return '[\n\t' + prefix + data.map((value: unknown) =>
-					recursive(value, prefix + '\t', path + '[]'),
-				).join(',\n\t' + prefix) + '\n' + prefix + ']';
+				return (
+					'[\n\t' +
+					prefix +
+					data.map((value: unknown) => recursive(value, prefix + '\t', path + '[]')).join(',\n\t' + prefix) +
+					'\n' +
+					prefix +
+					']'
+				);
 			}
 			if (data) {
-				return '{\n\t' + prefix + Object.entries(data).map(([key, value]) =>
-					'"' + key + '": ' + recursive(value, prefix + '\t', path + '.' + key),
-				).join(',\n\t' + prefix) + '\n' + prefix + '}';
+				return (
+					'{\n\t' +
+					prefix +
+					Object.entries(data)
+						.map(([key, value]) => '"' + key + '": ' + recursive(value, prefix + '\t', path + '.' + key))
+						.join(',\n\t' + prefix) +
+					'\n' +
+					prefix +
+					'}'
+				);
 			}
 		}
 

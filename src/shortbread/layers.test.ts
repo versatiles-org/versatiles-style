@@ -62,6 +62,20 @@ describe('layers', () => {
 		const landLayer = layers.find((layer) => layer.id === 'land-agriculture') as FillLayerSpecification;
 
 		expect(landLayer).toBeDefined();
-		expect(landLayer.filter).toEqual(['all', ['in', 'kind', 'brownfield', 'farmland', 'farmyard', 'greenfield', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard']]);
+		expect(landLayer.filter).toEqual([
+			'all',
+			[
+				'in',
+				'kind',
+				'brownfield',
+				'farmland',
+				'farmyard',
+				'greenfield',
+				'greenhouse_horticulture',
+				'orchard',
+				'plant_nursery',
+				'vineyard',
+			],
+		]);
 	});
 });

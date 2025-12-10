@@ -10,8 +10,8 @@ import { optipng } from './optipng.js';
  * Configuration for creating a Sprite, specifying icon sets and scale ratios.
  */
 export interface SpriteConfig {
-	spritesheets: Record<string, IconSets>;       // Collection of icon sets to include in the sprite.
-	ratios: number[];     // Scale ratios to apply to each icon.
+	spritesheets: Record<string, IconSets>; // Collection of icon sets to include in the sprite.
+	ratios: number[]; // Scale ratios to apply to each icon.
 }
 
 /**
@@ -20,9 +20,9 @@ export interface SpriteConfig {
  */
 export class Sprite {
 	private readonly entries: SpriteEntry[]; // Metadata and layout information for each icon in the sprite.
-	private readonly width: number;          // Width of the complete sprite sheet.
-	private readonly height: number;         // Height of the complete sprite sheet.
-	private readonly buffer: Buffer;         // Buffer storing raw image data for the sprite sheet.
+	private readonly width: number; // Width of the complete sprite sheet.
+	private readonly height: number; // Height of the complete sprite sheet.
+	private readonly buffer: Buffer; // Buffer storing raw image data for the sprite sheet.
 	private readonly distance: Float64Array; // Distance field values for SDF rendering.
 
 	/**
@@ -52,7 +52,7 @@ export class Sprite {
 	 */
 	public static async fromIcons(icons: Icon[], scale: number, defaultPadding: number): Promise<Sprite> {
 		// Parse dimensions for each SVG icon and apply scaling and padding.
-		const spriteEntries = icons.map(icon => {
+		const spriteEntries = icons.map((icon) => {
 			const wResult = /<svg[^>]+width="([^"]+)"/.exec(icon.svg);
 			const hResult = /<svg[^>]+height="([^"]+)"/.exec(icon.svg);
 			if (!wResult || !hResult) throw Error('Invalid SVG format.');
@@ -60,7 +60,7 @@ export class Sprite {
 			const w0 = parseFloat(wResult[1]);
 			const h0 = parseFloat(hResult[1]);
 			const height = Math.round(icon.size) * scale;
-			const width = Math.round(icon.size * w0 / h0) * scale;
+			const width = Math.round((icon.size * w0) / h0) * scale;
 
 			const svg = icon.svg
 				.replace(/(<svg[^>]*width=")([^"]+)/, (_, before) => before + width)
@@ -92,13 +92,16 @@ export class Sprite {
 				channels: 4,
 				background: '#fff',
 			},
-		}).composite(
-			spriteEntries.map(e => ({
-				input: Buffer.from(e.svg),
-				left: e.x + e.padding,
-				top: e.y + e.padding,
-			})),
-		).raw().toBuffer();
+		})
+			.composite(
+				spriteEntries.map((e) => ({
+					input: Buffer.from(e.svg),
+					left: e.x + e.padding,
+					top: e.y + e.padding,
+				}))
+			)
+			.raw()
+			.toBuffer();
 
 		for (let i = 0; i < width * height; i++) buffer[i * 4 + 3] = 0;
 		for (const entry of spriteEntries) {
@@ -178,7 +181,7 @@ export class Sprite {
 
 				for (let ya = 0; ya < scale; ya++) {
 					for (let xa = 0; xa < scale; xa++) {
-						const indexa = (x * scale + xa) + (y * scale + ya) * width * scale;
+						const indexa = x * scale + xa + (y * scale + ya) * width * scale;
 
 						dSum += this.distance[indexa];
 						pSum[0] += this.buffer[indexa * 4 + 0];
@@ -198,7 +201,7 @@ export class Sprite {
 			}
 		}
 
-		const scaledEntries = this.entries.map(entry => ({
+		const scaledEntries = this.entries.map((entry) => ({
 			...entry,
 			x: entry.x / scale,
 			y: entry.y / scale,
@@ -228,14 +231,20 @@ export class Sprite {
 	 * @returns A promise resolving to the JSON buffer.
 	 */
 	public async getJSON(): Promise<Buffer> {
-		const json = this.entries.map(e => `  "${e.name}": ` + JSON.stringify({
-			width: e.width,
-			height: e.height,
-			x: e.x,
-			y: e.y,
-			pixelRatio: e.pixelRatio,
-			sdf: e.useSDF,
-		})).join(',\n');
+		const json = this.entries
+			.map(
+				(e) =>
+					`  "${e.name}": ` +
+					JSON.stringify({
+						width: e.width,
+						height: e.height,
+						x: e.x,
+						y: e.y,
+						pixelRatio: e.pixelRatio,
+						sdf: e.useSDF,
+					})
+			)
+			.join(',\n');
 		return Buffer.from(`{\n${json}\n}`, 'utf8');
 	}
 }
@@ -244,15 +253,15 @@ export class Sprite {
  * Describes an entry in the sprite, containing the icon's layout and SDF properties.
  */
 interface SpriteEntry {
-	name: string;        // Name of the icon.
-	svg: string;         // SVG data for the icon.
-	x: number;           // X-coordinate in the sprite sheet.
-	y: number;           // Y-coordinate in the sprite sheet.
-	padding: number;     // Padding around the icon.
-	width: number;       // Width of the icon (including padding).
-	height: number;      // Height of the icon (including padding).
-	pixelRatio: number;  // Scale ratio applied to the icon.
-	useSDF: boolean;     // Flag indicating if the icon uses SDF rendering.
+	name: string; // Name of the icon.
+	svg: string; // SVG data for the icon.
+	x: number; // X-coordinate in the sprite sheet.
+	y: number; // Y-coordinate in the sprite sheet.
+	padding: number; // Padding around the icon.
+	width: number; // Width of the icon (including padding).
+	height: number; // Height of the icon (including padding).
+	pixelRatio: number; // Scale ratio applied to the icon.
+	useSDF: boolean; // Flag indicating if the icon uses SDF rendering.
 }
 
 /**
@@ -262,8 +271,8 @@ interface SpriteEntry {
  * @returns A generator yielding pixel indices for the entry's pixels.
  */
 function* iteratePixels(
-	entry: { x: number, y: number, width: number, height: number },
-	imageWidth: number,
+	entry: { x: number; y: number; width: number; height: number },
+	imageWidth: number
 ): Generator<number> {
 	const x0 = entry.x;
 	const y0 = entry.y;

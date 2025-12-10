@@ -39,6 +39,5 @@ describe('Sprite Generation and Packaging', () => {
 			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@4x\.json$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/index\.json$/), '["basics"]'],
 		]);
-
 	}, 20000);
 });

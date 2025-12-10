@@ -11,12 +11,12 @@ const PORT = 8080;
 
 type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino' | 'shadow';
 
-const config: { reg: RegExp, type: 'mem' | 'local' | 'proxy', res: string | (() => Promise<string>) }[] = [
+const config: { reg: RegExp; type: 'mem' | 'local' | 'proxy'; res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
 	{ reg: /^\/\?colorful$/, type: 'mem', res: () => getStylePage('colorful') },
 	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
-	{ reg: /^\/\?shadow$/, type: 'mem', res: () => getStylePage('shadow') },	
+	{ reg: /^\/\?shadow$/, type: 'mem', res: () => getStylePage('shadow') },
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
 	{ reg: /^\/assets\/lib\/versatiles-style\/versatiles-style.js/, type: 'mem', res: () => getStyles() },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
@@ -39,8 +39,10 @@ export const server = http.createServer(async (req, response) => {
 			const content = typeof res === 'function' ? await res() : res;
 			const relPath = url.slice(match[0].length);
 			switch (type) {
-				case 'mem': return respond('html', content);
-				case 'local': { // Serve files from the local folder
+				case 'mem':
+					return respond('html', content);
+				case 'local': {
+					// Serve files from the local folder
 					const filename = join(DIR, content, relPath);
 					try {
 						respond(relPath, readFileSync(filename));
@@ -48,11 +50,12 @@ export const server = http.createServer(async (req, response) => {
 						console.error({ relPath, filename });
 						error('Error reading local file: ' + err);
 					}
-					return
+					return;
 				}
-				case 'proxy': { // Proxy the request to the remote tiles server
+				case 'proxy': {
+					// Proxy the request to the remote tiles server
 					const remoteBase = content;
-					const remoteUrl = (new URL(relPath, remoteBase)).href;
+					const remoteUrl = new URL(relPath, remoteBase).href;
 					if (!remoteUrl.startsWith(remoteBase)) {
 						return error(`Forbidden: Proxy requests path "${remoteUrl}" that does not start with "${remoteBase}"`);
 					}
@@ -85,7 +88,6 @@ server.listen(PORT, () => {
 	console.log(`Server is running at http://localhost:${PORT}`);
 });
 
-
 async function getStyles() {
 	console.time('Building styles');
 	const bundle = await rollup({
@@ -108,14 +110,14 @@ async function getStyles() {
 					sourceMap: false,
 				},
 				include: ['src/**/*.ts'],
-				exclude: ['**/*.test.ts']
+				exclude: ['**/*.test.ts'],
 			}),
 			nodeResolve(),
 		],
 		onLog(level, log, handler) {
 			if (log.code === 'CIRCULAR_DEPENDENCY') return;
 			handler(level, log);
-		}
+		},
 	});
 
 	const result = await bundle.generate({
@@ -127,7 +129,6 @@ async function getStyles() {
 
 	return result.output[0].code;
 }
-
 
 function getPage(content: string) {
 	return `<!DOCTYPE html>
@@ -150,8 +151,8 @@ function getPage(content: string) {
 	${content}
 </body>
 
-</html>`
-};
+</html>`;
+}
 
 function getIndexPage() {
 	return getPage(`<ul>
@@ -160,7 +161,7 @@ function getIndexPage() {
 		<li><a href="/?graybeard">graybeard</a></li>
 		<li><a href="/?neutrino">neutrino</a></li>
 	</ul>`);
-};
+}
 
 async function getStylePage(styleName: StyleName) {
 	return getPage(`
@@ -170,4 +171,4 @@ async function getStylePage(styleName: StyleName) {
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>`);
-};
+}

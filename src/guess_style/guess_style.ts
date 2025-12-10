@@ -1,7 +1,22 @@
-import type { TileJSONSpecification, TileJSONSpecificationRaster, TileJSONSpecificationVector, VectorLayer } from '../types/index.js';
+import type {
+	TileJSONSpecification,
+	TileJSONSpecificationRaster,
+	TileJSONSpecificationVector,
+	VectorLayer,
+} from '../types/index.js';
 import { isTileJSONSpecification } from '../types/index.js';
 import { deepClone, resolveUrl } from '../lib/utils.js';
-import type { BackgroundLayerSpecification, CircleLayerSpecification, FillLayerSpecification, LineLayerSpecification, RasterSourceSpecification, SourceSpecification, SpriteSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type {
+	BackgroundLayerSpecification,
+	CircleLayerSpecification,
+	FillLayerSpecification,
+	LineLayerSpecification,
+	RasterSourceSpecification,
+	SourceSpecification,
+	SpriteSpecification,
+	StyleSpecification,
+	VectorSourceSpecification,
+} from '@maplibre/maplibre-gl-style-spec';
 import { colorful } from '../styles/index.js';
 import { isRasterTileJSONSpecification } from '../types/tilejson.js';
 import randomColor from '../color/random.js';
@@ -40,7 +55,7 @@ export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyle
 
 	if (options && options.baseUrl) {
 		const { baseUrl } = options;
-		tileJSON.tiles = tileJSON.tiles.map(url => resolveUrl(baseUrl, url));
+		tileJSON.tiles = tileJSON.tiles.map((url) => resolveUrl(baseUrl, url));
 	}
 
 	if (!isTileJSONSpecification(tileJSON)) throw Error('Invalid TileJSON specification');
@@ -68,13 +83,42 @@ function isShortbread(spec: TileJSONSpecificationVector): boolean {
 	if (!('vector_layers' in spec)) return false;
 	if (!Array.isArray(spec.vector_layers)) return false;
 
-
-	const layerIds = new Set(spec.vector_layers.map(l => String(l.id)));
-	const shortbreadIds = ['place_labels', 'boundaries', 'boundary_labels', 'addresses', 'water_lines', 'water_lines_labels', 'dam_lines', 'dam_polygons', 'pier_lines', 'pier_polygons', 'bridges', 'street_polygons', 'streets_polygons_labels', 'ferries', 'streets', 'street_labels', 'street_labels_points', 'aerialways', 'public_transport', 'buildings', 'water_polygons', 'ocean', 'water_polygons_labels', 'land', 'sites', 'pois'];
-	return shortbreadIds.every(id => layerIds.has(id));
+	const layerIds = new Set(spec.vector_layers.map((l) => String(l.id)));
+	const shortbreadIds = [
+		'place_labels',
+		'boundaries',
+		'boundary_labels',
+		'addresses',
+		'water_lines',
+		'water_lines_labels',
+		'dam_lines',
+		'dam_polygons',
+		'pier_lines',
+		'pier_polygons',
+		'bridges',
+		'street_polygons',
+		'streets_polygons_labels',
+		'ferries',
+		'streets',
+		'street_labels',
+		'street_labels_points',
+		'aerialways',
+		'public_transport',
+		'buildings',
+		'water_polygons',
+		'ocean',
+		'water_polygons_labels',
+		'land',
+		'sites',
+		'pois',
+	];
+	return shortbreadIds.every((id) => layerIds.has(id));
 }
 
-function getShortbreadStyle(spec: TileJSONSpecificationVector, builderOption: { baseUrl?: string; glyphs?: string; sprite?: SpriteSpecification }): StyleSpecification {
+function getShortbreadStyle(
+	spec: TileJSONSpecificationVector,
+	builderOption: { baseUrl?: string; glyphs?: string; sprite?: SpriteSpecification }
+): StyleSpecification {
 	return colorful({
 		tiles: spec.tiles,
 		baseUrl: builderOption.baseUrl,
@@ -110,10 +154,12 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): StyleSpecificatio
 		fill: FillLayerSpecification[];
 	} = { background: [], circle: [], line: [], fill: [] };
 
-	layers.background.push({ 'id': 'background', 'type': 'background', 'paint': { 'background-color': '#fff' } });
+	layers.background.push({ id: 'background', type: 'background', paint: { 'background-color': '#fff' } });
 
 	spec.vector_layers.forEach((vector_layer: VectorLayer) => {
-		let luminosity = 'bright', saturation, hue;
+		let luminosity = 'bright',
+			saturation,
+			hue;
 
 		if (/water|ocean|lake|sea|river/.test(vector_layer.id)) hue = 'blue';
 		if (/state|country|place/.test(vector_layer.id)) hue = 'pink';
@@ -170,12 +216,7 @@ function getInspectorStyle(spec: TileJSONSpecificationVector): StyleSpecificatio
 		sources: {
 			[sourceName]: sourceFromSpec(spec, 'vector'),
 		},
-		layers: [
-			...layers.background,
-			...layers.fill,
-			...layers.line,
-			...layers.circle,
-		],
+		layers: [...layers.background, ...layers.fill, ...layers.line, ...layers.circle],
 	};
 }
 
@@ -186,11 +227,13 @@ function getRasterStyle(spec: TileJSONSpecificationRaster): StyleSpecification {
 		sources: {
 			[sourceName]: sourceFromSpec(spec, 'raster'),
 		},
-		layers: [{
-			id: 'raster',
-			type: 'raster',
-			source: sourceName,
-		}],
+		layers: [
+			{
+				id: 'raster',
+				type: 'raster',
+				source: sourceName,
+			},
+		],
 	};
 }
 

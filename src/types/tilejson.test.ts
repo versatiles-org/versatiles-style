@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'; 
+import { describe, expect, it } from 'vitest';
 import { isTileJSONSpecification } from './tilejson.js';
 
 describe('isTileJSONSpecification', () => {
@@ -30,7 +30,9 @@ describe('isTileJSONSpecification', () => {
 	});
 
 	it('should throw an error if the tiles property is missing', () => {
-		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow('spec.tiles must be an array of strings');
+		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow(
+			'spec.tiles must be an array of strings'
+		);
 	});
 
 	it('should throw an error if the bounds property is invalid', () => {
@@ -73,7 +75,7 @@ describe('isTileJSONSpecification', () => {
 			['name', 'a string if present', 'valid', 1],
 			['scheme', '"tms" or "xyz" if present', 'xyz', 'invalid', 1],
 			['template', 'a string if present', 'valid', 1],
-		].forEach(test => {
+		].forEach((test) => {
 			const key = test[0] as string;
 			const errorMessage = test[1] as string;
 			const values = test.slice(2) as unknown[];
@@ -83,8 +85,9 @@ describe('isTileJSONSpecification', () => {
 					if (i === 0) {
 						expect(isTileJSONSpecification({ ...validVectorSpec, [key]: value })).toBe(true);
 					} else {
-						expect(() => isTileJSONSpecification({ ...validVectorSpec, [key]: value }))
-							.toThrow(`spec.${key} must be ${errorMessage}`);
+						expect(() => isTileJSONSpecification({ ...validVectorSpec, [key]: value })).toThrow(
+							`spec.${key} must be ${errorMessage}`
+						);
 					}
 				}
 			});

@@ -1,4 +1,3 @@
-
 export type { MaplibreLayerDefinition, MaplibreLayer } from './maplibre.js';
 export type { VectorLayer } from './vector_layer.js';
 export { isTileJSONSpecification } from './tilejson.js';

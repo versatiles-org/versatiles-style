@@ -2,8 +2,6 @@ import type { StyleBuilder } from '../style_builder/style_builder.js';
 import type { StyleBuilderOptions } from '../style_builder/types.js';
 import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
-
-
 // import styles
 import Colorful from './colorful.js';
 import Eclipse from './eclipse.js';
@@ -24,7 +22,6 @@ function getStyleBuilder(styleBuilder: new () => StyleBuilder): StyleBuilderFunc
 	fn.getOptions = (): StyleBuilderOptions => new styleBuilder().getDefaultOptions();
 	return fn;
 }
-
 
 // generate style builders
 export const colorful = getStyleBuilder(Colorful);

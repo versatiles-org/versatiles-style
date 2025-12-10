@@ -7,10 +7,10 @@ export interface VectorLayer {
 	maxzoom?: number;
 }
 
-/** 
-* Verifies if an object conforms to the VectorLayer structure. 
-* Throws errors for any deviations from the expected structure or types.
-*/
+/**
+ * Verifies if an object conforms to the VectorLayer structure.
+ * Throws errors for any deviations from the expected structure or types.
+ */
 export function isVectorLayer(layer: unknown): layer is VectorLayer {
 	if (typeof layer !== 'object' || layer === null) {
 		throw new Error('Layer must be a non-null object');
@@ -25,8 +25,8 @@ export function isVectorLayer(layer: unknown): layer is VectorLayer {
 	if (typeof obj.fields !== 'object' || obj.fields === null) {
 		throw new Error('Layer.fields must be a non-null object');
 	}
-	if (Object.values(obj.fields).some(type => !['Boolean', 'Number', 'String'].includes(type as string))) {
-		throw new Error('Layer.fields values must be one of \'Boolean\', \'Number\', or \'String\'');
+	if (Object.values(obj.fields).some((type) => !['Boolean', 'Number', 'String'].includes(type as string))) {
+		throw new Error("Layer.fields values must be one of 'Boolean', 'Number', or 'String'");
 	}
 
 	if ('description' in obj && typeof obj.description !== 'string') {
@@ -61,7 +61,7 @@ export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
 		} catch (error) {
 			// Assuming `isVectorLayer` throws an error with a meaningful message, you can rethrow it
 			// Alternatively, customize the error message or handle the error as needed
-			throw new Error(`Layer[${index}] at invalid: ${String((error instanceof Error) ? error.message : error)}`);
+			throw new Error(`Layer[${index}] at invalid: ${String(error instanceof Error ? error.message : error)}`);
 		}
 	});
 

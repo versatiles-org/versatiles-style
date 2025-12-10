@@ -7,7 +7,7 @@ import { Color } from '../color/index.js';
 
 /**
  * Configuration options for recoloring all map colors.
- * 
+ *
  * The transformations (if specified) are done in the following order:
  * 1. [Invert brightness](#invertbrightness)
  * 2. [Rotate hue](#rotate)
@@ -29,7 +29,7 @@ import { Color } from '../color/index.js';
  *   }
  * };
  * ```
- * 
+ *
  * If you want do make you map simply brighter or darker, you can use the `blend` option:
  * ```typescript
  * const style = VersaTilesStyle.colorful({
@@ -40,77 +40,77 @@ import { Color } from '../color/index.js';
  *   }
  * };
  * ```
- * 
+ *
  */
 
 export interface RecolorOptions {
-	/** 
+	/**
 	 * If true, inverts all colors' brightness.
 	 * See also {@link HSL.invertLuminosity}
-	*/
+	 */
 	invertBrightness?: boolean;
 
-	/** 
+	/**
 	 * Rotate the hue of all colors in degrees (0-360).
 	 * See also {@link HSL.rotateHue}
 	 */
 	rotate?: number;
 
-	/** 
+	/**
 	 * Adjust the saturation level. Positive values increase, negative values decrease saturation.
 	 * |value|effect           |
 	 * |----:|-----------------|
 	 * |   -1|grayscale        |
 	 * |    0|no effect        |
 	 * |    1|double saturation|
-	 * 
+	 *
 	 * See also {@link HSL.saturate}
 	 */
 	saturate?: number;
 
 	/**
-	 * Adjust the gamma (non-linear brightness adjustment).  
-	 * Defaults to 1.   
+	 * Adjust the gamma (non-linear brightness adjustment).
+	 * Defaults to 1.
 	 * See also {@link RGB.gamma}
 	 */
 	gamma?: number;
 
 	/**
-	 * Adjust the contrast level.  
-	 * Values > 1 increase contrast, values < 1 decrease it.  
-	 * Defaults to 1.  
+	 * Adjust the contrast level.
+	 * Values > 1 increase contrast, values < 1 decrease it.
+	 * Defaults to 1.
 	 * See also {@link RGB.contrast}
 	 */
 	contrast?: number;
 
 	/**
-	 * Adjust the brightness level.  
-	 * Positive values make it brighter, negative values make it darker.  
-	 * Defaults to 0.  
+	 * Adjust the brightness level.
+	 * Positive values make it brighter, negative values make it darker.
+	 * Defaults to 0.
 	 *	See also {@link RGB.brightness}
 	 */
 	brightness?: number;
 
 	/**
-	 * Intensity of the tinting effect (0 = none, 1 = full effect). 
+	 * Intensity of the tinting effect (0 = none, 1 = full effect).
 	 * See also {@link RGB.tint}
 	 */
 	tint?: number;
 
 	/**
-	 * The tinting color in hex format (default: '#FF0000'). 
+	 * The tinting color in hex format (default: '#FF0000').
 	 * See also {@link RGB.tint}
 	 */
 	tintColor?: string;
 
 	/**
-	 * Intensity of the blending effect (0 = none, 1 = full effect). 
+	 * Intensity of the blending effect (0 = none, 1 = full effect).
 	 * See also {@link RGB.blend}
 	 */
 	blend?: number;
 
 	/**
-	 * The blending color in hex format (default: '#000000'). 
+	 * The blending color in hex format (default: '#000000').
 	 *	See also {@link RGB.blend}
 	 */
 	blendColor?: string;

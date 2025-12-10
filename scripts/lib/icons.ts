@@ -7,7 +7,7 @@ export class Icon {
 	public readonly svg: string;
 	public readonly useSDF: boolean;
 
-	public constructor(options: { name: string; filename: string; size: number; useSDF?: boolean; }) {
+	public constructor(options: { name: string; filename: string; size: number; useSDF?: boolean }) {
 		this.name = options.name;
 		this.size = options.size;
 		this.useSDF = options.useSDF ?? true;
@@ -18,11 +18,14 @@ export class Icon {
 	}
 }
 
-export type IconSets = Record<string, {
-	useSDF?: boolean;
-	size: number;
-	names: string[];
-}>;
+export type IconSets = Record<
+	string,
+	{
+		useSDF?: boolean;
+		size: number;
+		names: string[];
+	}
+>;
 
 export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 	const icons: Icon[] = [];
@@ -33,14 +36,15 @@ export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 		const folder = resolve(dirIcons, setName);
 		for (const iconName of iconSet.names) {
 			const filename = resolve(folder, iconName + '.svg');
-			icons.push(new Icon({
-				name: `${setName}-${iconName}`,
-				filename,
-				size,
-				useSDF,
-			}));
+			icons.push(
+				new Icon({
+					name: `${setName}-${iconName}`,
+					filename,
+					size,
+					useSDF,
+				})
+			);
 		}
 	}
 	return icons;
 }
-

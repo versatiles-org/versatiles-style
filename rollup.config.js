@@ -17,7 +17,7 @@ const config = [
 			format: browser ? 'umd' : 'es',
 			sourcemap: true,
 			indent: !browser,
-			name: 'VersaTilesStyle'
+			name: 'VersaTilesStyle',
 		},
 		plugins: [
 			browser && terser({ compress: { pure_getters: true, passes: 3 }, sourceMap: true }),
@@ -38,15 +38,16 @@ const config = [
 		onLog(level, log, handler) {
 			if (log.code === 'CIRCULAR_DEPENDENCY') return;
 			handler(level, log);
-		}
-	}, {
+		},
+	},
+	{
 		input: browser ? 'release/versatiles-style/declaration/index.d.ts' : 'dist/declaration/index.d.ts',
 		output: {
 			file: browser ? 'release/versatiles-style/versatiles-style.d.ts' : 'dist/index.d.ts',
-			format: 'es'
+			format: 'es',
 		},
 		plugins: [dts()],
-	}
-]
+	},
+];
 
 export default config;

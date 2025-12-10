@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
 
 env:
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Install optipng
         run: brew install optipng
-        
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -92,11 +92,11 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "docs"
+          path: 'docs'
 
   deploy:
     name: Deploy Documentation
-    
+
     needs: docs
 
     permissions:

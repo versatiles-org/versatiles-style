@@ -6,6 +6,6 @@ export default class Graybeard extends Colorful {
 	public constructor() {
 		super();
 
-		this.transformDefaultColors(color => color.saturate(-1));
+		this.transformDefaultColors((color) => color.saturate(-1));
 	}
 }

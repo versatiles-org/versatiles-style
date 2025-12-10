@@ -1,12 +1,12 @@
 import http from 'http';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-vi.mock(import('fs'), async originalImport => {
+vi.mock(import('fs'), async (originalImport) => {
 	const fs = await originalImport();
 	return {
 		...fs,
 		readFileSync: vi.fn(),
-	}
+	};
 });
 
 const { readFileSync } = await import('fs');

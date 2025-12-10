@@ -22,7 +22,7 @@ Color.parse = function (input: string | Color): Color {
 		default:
 			throw Error('Unknown color format: ' + input);
 	}
-}
+};
 
 Color.HSL = HSL;
 Color.HSV = HSV;

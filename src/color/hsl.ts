@@ -56,12 +56,7 @@ export class HSL extends Color {
 	 * @returns A new HSL color with rounded hue, saturation, lightness, and alpha components.
 	 */
 	round(): HSL {
-		return new HSL(
-			Math.round(this.h),
-			Math.round(this.s),
-			Math.round(this.l),
-			Math.round(this.a * 1000) / 1000,
-		);
+		return new HSL(Math.round(this.h), Math.round(this.s), Math.round(this.l), Math.round(this.a * 1000) / 1000);
 	}
 
 	/**
@@ -105,7 +100,8 @@ export class HSL extends Color {
 	 * @returns A new HSV color representing the same color.
 	 */
 	asHSV(): HSV {
-		const s = this.s / 100, l = this.l / 100;
+		const s = this.s / 100,
+			l = this.l / 100;
 		const v = l + s * Math.min(l, 1 - l);
 		const sv = v === 0 ? 0 : 2 * (1 - l / v);
 		return new HSV(this.h, sv * 100, v * 100, this.a);
@@ -136,12 +132,7 @@ export class HSL extends Color {
 		};
 
 		// Convert to RGB in the 0-255 range and return
-		return new RGB(
-			255 * hueToRgb(h + 1 / 3),
-			255 * hueToRgb(h),
-			255 * hueToRgb(h - 1 / 3),
-			this.a
-		);
+		return new RGB(255 * hueToRgb(h + 1 / 3), 255 * hueToRgb(h), 255 * hueToRgb(h - 1 / 3), this.a);
 	}
 
 	/**
@@ -162,7 +153,12 @@ export class HSL extends Color {
 
 		match = input.match(/^hsla\((?<h>[-+0-9.]+)(?:deg)?,(?<s>[-+0-9.]+)%,(?<l>[-+0-9.]+)%,(?<a>[-+0-9.]+)\)$/);
 		if (match) {
-			return new HSL(parseFloat(match.groups!.h), parseFloat(match.groups!.s), parseFloat(match.groups!.l), parseFloat(match.groups!.a));
+			return new HSL(
+				parseFloat(match.groups!.h),
+				parseFloat(match.groups!.s),
+				parseFloat(match.groups!.l),
+				parseFloat(match.groups!.a)
+			);
 		}
 
 		throw new Error(`Invalid HSL color string: "${input}"`);

@@ -19,8 +19,13 @@ describe('getShortbreadTemplate', () => {
 	});
 
 	it('specifies glyphs and sprite URLs correctly', () => {
-		expect(styleTemplate).toHaveProperty('glyphs', 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf');
-		expect(styleTemplate).toHaveProperty('sprite', [{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }]);
+		expect(styleTemplate).toHaveProperty(
+			'glyphs',
+			'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf'
+		);
+		expect(styleTemplate).toHaveProperty('sprite', [
+			{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' },
+		]);
 	});
 
 	it('defines sources with required properties', () => {

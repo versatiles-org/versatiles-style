@@ -1,4 +1,3 @@
-
 /**
  * Calculates the Signed Distance Field (SDF) for the sprite based on alpha values.
  * @param buffer - Image buffer with alpha values.

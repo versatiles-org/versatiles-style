@@ -10,7 +10,7 @@ describe('propertyLookup', () => {
 	it('should contain keys for each type and property', () => {
 		const expectedTypes = ['background', 'fill', 'line', 'symbol'];
 
-		expectedTypes.forEach(type => {
+		expectedTypes.forEach((type) => {
 			propertyLookup.forEach((value, key) => {
 				if (key.startsWith(type)) {
 					expect(key).toMatch(new RegExp(`^${type}/`));
@@ -22,7 +22,7 @@ describe('propertyLookup', () => {
 	it('should contain the correct properties for each type', () => {
 		const expectedProps = ['filter', 'maxzoom', 'minzoom', 'visibility'];
 
-		expectedProps.forEach(prop => {
+		expectedProps.forEach((prop) => {
 			propertyLookup.forEach((value, key) => {
 				if (key.endsWith(prop)) {
 					expect(value.some((p: ShortbreadProperty) => p.key === prop)).toBeTruthy();
@@ -32,7 +32,7 @@ describe('propertyLookup', () => {
 	});
 
 	it('should store properties with the correct structure', () => {
-		propertyLookup.forEach(properties => {
+		propertyLookup.forEach((properties) => {
 			properties.forEach((prop: ShortbreadProperty) => {
 				expect(prop).toHaveProperty('key');
 				expect(prop).toHaveProperty('parent');
@@ -42,4 +42,3 @@ describe('propertyLookup', () => {
 		});
 	});
 });
-

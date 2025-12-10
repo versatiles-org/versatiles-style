@@ -6,6 +6,6 @@ export default class Eclipse extends Colorful {
 	public constructor() {
 		super();
 
-		this.transformDefaultColors(color => color.invertLuminosity());
+		this.transformDefaultColors((color) => color.invertLuminosity());
 	}
 }

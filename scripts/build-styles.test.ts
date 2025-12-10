@@ -4,7 +4,7 @@ import type { Pack } from 'tar-stream';
 console.log = vi.fn();
 
 vi.mock('fs', { spy: true });
-vi.mock(import('tar-stream'), async originalImport => {
+vi.mock(import('tar-stream'), async (originalImport) => {
 	const tar = await originalImport();
 	const pack = vi.fn(() => {
 		const packInstance = tar.pack();
@@ -42,9 +42,9 @@ describe('Sprite Generation and Packaging', () => {
 		const packInstance = packInstances[0].value as Pack;
 
 		const { calls } = vi.mocked(packInstance.entry).mock;
-		const generatedFiles = calls.map(call => call[0].name).sort();
+		const generatedFiles = calls.map((call) => call[0].name).sort();
 
-		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'].flatMap(style => [
+		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'].flatMap((style) => [
 			`${style}/style.json`,
 			`${style}/en.json`,
 			`${style}/de.json`,

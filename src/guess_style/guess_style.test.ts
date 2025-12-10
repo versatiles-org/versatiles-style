@@ -10,52 +10,55 @@ describe('guessStyle', () => {
 	const vectorLayersShortbread: VectorLayer[] = getShortbreadVectorLayers();
 
 	it('should build raster styles', () => {
-		expect(guessStyle({ tiles }))
-			.toStrictEqual({
-				version: 8,
-				sources: { rasterSource: { tiles, type: 'raster' } },
-				layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
-			});
+		expect(guessStyle({ tiles })).toStrictEqual({
+			version: 8,
+			sources: { rasterSource: { tiles, type: 'raster' } },
+			layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
+		});
 	});
 
 	it('should build vector inspector styles', () => {
-		expect(guessStyle({ tiles, vector_layers: vectorLayersSomething }))
-			.toStrictEqual({
-				version: 8,
-				sources: { vectorSource: { tiles, type: 'vector' } },
-				layers: [
-					{
-						id: 'background',
-						type: 'background',
-						paint: { 'background-color': '#fff' },
+		expect(guessStyle({ tiles, vector_layers: vectorLayersSomething })).toStrictEqual({
+			version: 8,
+			sources: { vectorSource: { tiles, type: 'vector' } },
+			layers: [
+				{
+					id: 'background',
+					type: 'background',
+					paint: { 'background-color': '#fff' },
+				},
+				{
+					id: 'vectorSource-geometry-fill',
+					type: 'fill',
+					source: 'vectorSource',
+					'source-layer': 'geometry',
+					filter: ['==', '$type', 'Polygon'],
+					paint: {
+						'fill-antialias': true,
+						'fill-color': 'hsla(7,57%,56%,0.6)',
+						'fill-opacity': 0.3,
+						'fill-outline-color': 'hsla(7,57%,56%,0.6)',
 					},
-					{
-						id: 'vectorSource-geometry-fill',
-						type: 'fill',
-						source: 'vectorSource',
-						'source-layer': 'geometry',
-						filter: ['==', '$type', 'Polygon'],
-						paint: { 'fill-antialias': true, 'fill-color': 'hsla(7,57%,56%,0.6)', 'fill-opacity': 0.3, 'fill-outline-color': 'hsla(7,57%,56%,0.6)' },
-					},
-					{
-						id: 'vectorSource-geometry-line',
-						type: 'line',
-						source: 'vectorSource',
-						'source-layer': 'geometry',
-						filter: ['==', '$type', 'LineString'],
-						layout: { 'line-cap': 'round', 'line-join': 'round' },
-						paint: { 'line-color': 'hsla(7,57%,56%,0.6)' },
-					},
-					{
-						id: 'vectorSource-geometry-circle',
-						type: 'circle',
-						source: 'vectorSource',
-						'source-layer': 'geometry',
-						filter: ['==', '$type', 'Point'],
-						paint: { 'circle-color': 'hsla(7,57%,56%,0.6)', 'circle-radius': 2 },
-					},
-				],
-			});
+				},
+				{
+					id: 'vectorSource-geometry-line',
+					type: 'line',
+					source: 'vectorSource',
+					'source-layer': 'geometry',
+					filter: ['==', '$type', 'LineString'],
+					layout: { 'line-cap': 'round', 'line-join': 'round' },
+					paint: { 'line-color': 'hsla(7,57%,56%,0.6)' },
+				},
+				{
+					id: 'vectorSource-geometry-circle',
+					type: 'circle',
+					source: 'vectorSource',
+					'source-layer': 'geometry',
+					filter: ['==', '$type', 'Point'],
+					paint: { 'circle-color': 'hsla(7,57%,56%,0.6)', 'circle-radius': 2 },
+				},
+			],
+		});
 	});
 
 	it('should build shortbread vector styles', () => {
@@ -115,7 +118,10 @@ describe('guessStyle', () => {
 	describe('absolute tile urls override baseUrl', () => {
 		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
-				const style = guessStyle({ ...tilejson, tiles: ['https://example1.org/tiles/{z}/{x}/{y}'] }, { baseUrl: 'https://example2.org/' });
+				const style = guessStyle(
+					{ ...tilejson, tiles: ['https://example1.org/tiles/{z}/{x}/{y}'] },
+					{ baseUrl: 'https://example2.org/' }
+				);
 				const source = Object.values(style.sources)[0] as VectorSourceSpecification;
 				expect(source.tiles).toEqual(['https://example1.org/tiles/{z}/{x}/{y}']);
 			});

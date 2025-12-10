@@ -4,10 +4,13 @@ import { decorate } from './decorator.js';
 import { CachedRecolor, getDefaultRecolorFlags } from './recolor.js';
 import { basename, deepClone, resolveUrl } from '../lib/utils.js';
 import type { MaplibreLayer, MaplibreLayerDefinition, StyleSpecification } from '../types/maplibre.js';
-import { styleBuilderColorKeys, type StyleBuilderColors, type StyleBuilderFonts, type StyleBuilderOptions } from './types.js';
+import {
+	styleBuilderColorKeys,
+	type StyleBuilderColors,
+	type StyleBuilderFonts,
+	type StyleBuilderOptions,
+} from './types.js';
 import type { StyleRules, StyleRulesOptions } from './types.js';
-
-
 
 // StyleBuilder class definition
 export abstract class StyleBuilder {
@@ -63,7 +66,7 @@ export abstract class StyleBuilder {
 
 		// get shortbread layers
 		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language });
-		let layers: MaplibreLayer[] = layerDefinitions.map(layer => {
+		let layers: MaplibreLayer[] = layerDefinitions.map((layer) => {
 			switch (layer.type) {
 				case 'background':
 					return layer;
@@ -81,7 +84,7 @@ export abstract class StyleBuilder {
 		layers = decorate(layers, layerStyleRules, new CachedRecolor(recolorOptions));
 
 		// hide labels, if wanted
-		if (hideLabels) layers = layers.filter(l => l.type !== 'symbol');
+		if (hideLabels) layers = layers.filter((l) => l.type !== 'symbol');
 
 		style.layers = layers;
 		style.name = 'versatiles-' + this.name.toLowerCase();
@@ -94,7 +97,7 @@ export abstract class StyleBuilder {
 		}
 
 		const source = style.sources[this.#sourceName];
-		if ('tiles' in source) source.tiles = tiles.map(url => resolveUrl(baseUrl, url));
+		if ('tiles' in source) source.tiles = tiles.map((url) => resolveUrl(baseUrl, url));
 		if ('bounds' in source) source.bounds = bounds;
 
 		return style;
@@ -102,7 +105,9 @@ export abstract class StyleBuilder {
 
 	public getColors(colors: StyleBuilderColors): StyleBuilderColors<Color> {
 		const entriesString = Object.entries(colors) as [keyof StyleBuilderColors, string | Color][];
-		const result = Object.fromEntries(entriesString.map(([key, value]) => [key, Color.parse(value)])) as StyleBuilderColors<Color>;
+		const result = Object.fromEntries(
+			entriesString.map(([key, value]) => [key, Color.parse(value)])
+		) as StyleBuilderColors<Color>;
 		return result;
 	}
 
@@ -110,12 +115,7 @@ export abstract class StyleBuilder {
 		return {
 			// @ts-expect-error globalThis may be undefined in some environments
 			baseUrl: globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org',
-			bounds: [
-				-180,
-				-85.0511287798066,
-				180,
-				85.0511287798066
-			],
+			bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			sprite: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }],
 			tiles: ['/tiles/osm/{z}/{x}/{y}'],

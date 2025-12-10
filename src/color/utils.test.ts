@@ -58,7 +58,7 @@ describe('formatFloat function', () => {
 
 	it('handles trailing zeros correctly', () => {
 		expect(formatFloat(0.000123, 6)).toBe('0.000123');
-		expect(formatFloat(0.000100, 6)).toBe('0.0001');
+		expect(formatFloat(0.0001, 6)).toBe('0.0001');
 		expect(formatFloat(10.0, 1)).toBe('10');
 	});
 
@@ -79,9 +79,7 @@ describe('formatFloat function', () => {
 	});
 
 	it('handles no unnecessary decimal points', () => {
-		expect(formatFloat(10.000, 3)).toBe('10');
-		expect(formatFloat(10.010, 3)).toBe('10.01');
+		expect(formatFloat(10.0, 3)).toBe('10');
+		expect(formatFloat(10.01, 3)).toBe('10.01');
 	});
-})
-
-
+});

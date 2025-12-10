@@ -10,7 +10,6 @@ export default class Neutrino extends Colorful {
 	};
 
 	public defaultColors: StyleBuilderColors = {
-
 		/** Color representing land areas. */
 		land: '#f6f0f6',
 
@@ -79,11 +78,10 @@ export default class Neutrino extends Colorful {
 		wetland: '#000',
 	};
 
-
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		return {
-			'background': {
+			background: {
 				color: colors.land,
 			},
 			'boundary-{country,state}': {
@@ -154,11 +152,11 @@ export default class Neutrino extends Colorful {
 			'site-{bicycleparking,parking}': {
 				color: colors.commercial,
 			},
-			'building': {
+			building: {
 				color: colors.building,
 				opacity: { 14: 0, 15: 1 },
 			},
-			'bridge': {
+			bridge: {
 				color: colors.land.darken(0.01),
 			},
 			'{tunnel-,bridge-,}street-*': {
@@ -246,14 +244,16 @@ export default class Neutrino extends Colorful {
 			},
 
 			// minor streets
-			'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}:outline': {
-				size: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
-				opacity: { 12: 0, 13: 1 },
-			},
-			'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}': {
-				size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
-				opacity: { 12: 0, 13: 1 },
-			},
+			'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}:outline':
+				{
+					size: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
+					opacity: { 12: 0, 13: 1 },
+				},
+			'{bridge-street,tunnel-street,street}-{tertiary,tertiary-link,unclassified,residential,living_street,pedestrian}':
+				{
+					size: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
+					opacity: { 12: 0, 13: 1 },
+				},
 			// service and tracks
 			'{bridge-street,tunnel-street,street}-{service,track}:outline': {
 				size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 },
@@ -411,7 +411,6 @@ export default class Neutrino extends Colorful {
 				size: { 14: 8, 18: 10, 20: 16 },
 			},
 
-
 			'label-street-*': {
 				color: colors.label,
 				font: fonts.regular,
@@ -423,7 +422,6 @@ export default class Neutrino extends Colorful {
 				minzoom: 12,
 				size: { 12: 10, 15: 13 },
 			},
-
 		};
 	}
 }

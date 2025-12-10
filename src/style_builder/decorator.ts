@@ -1,4 +1,3 @@
-
 import { Color } from '../color/index.js';
 import expandBraces from 'brace-expansion';
 import maplibreProperties from '../shortbread/properties.js';
@@ -7,10 +6,8 @@ import type { MaplibreLayer } from '../types/index.js';
 import type { StyleRule, StyleRuleValue, StyleRules } from './types.js';
 import type { CachedRecolor } from './recolor.js';
 
-
-
 export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: CachedRecolor): MaplibreLayer[] {
-	const layerIds = layers.map(l => l.id);
+	const layerIds = layers.map((l) => l.id);
 	const layerIdSet = new Set(layerIds);
 
 	// Initialize a new map to hold final styles for layers
@@ -21,24 +18,24 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 		if (layerStyle == null) return;
 
 		// Expand any braces in IDs and filter them through a RegExp if necessary
-		const ids = expandBraces(idDef).flatMap(id => {
+		const ids = expandBraces(idDef).flatMap((id) => {
 			if (!id.includes('*')) return id;
-			const regExpString = id.replace(/[^a-z_:-]/g, c => {
+			const regExpString = id.replace(/[^a-z_:-]/g, (c) => {
 				if (c === '*') return '[a-z_-]*';
 				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
 			});
 			const regExp = new RegExp(`^${regExpString}$`, 'i');
-			return layerIds.filter(layerId => regExp.test(layerId));
+			return layerIds.filter((layerId) => regExp.test(layerId));
 		});
 
-		ids.forEach(id => {
+		ids.forEach((id) => {
 			if (!layerIdSet.has(id)) return;
 			layerStyles.set(id, deepMerge(layerStyles.get(id) ?? {}, layerStyle));
 		});
 	});
 
 	// Deep clone the original layers and apply styles
-	return layers.flatMap(layer => {
+	return layers.flatMap((layer) => {
 		// Get the id and style of the layer
 		const layerStyle = layerStyles.get(layer.id);
 
@@ -52,30 +49,36 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 
 	// Function to process each style attribute for the layer
 	function processStyling(layer: MaplibreLayer, styleRule: StyleRule): void {
-
 		for (const [ruleKeyCamelCase, ruleValue] of Object.entries(styleRule)) {
 			if (ruleValue == null) continue;
 
 			// CamelCase to not-camel-case
-			const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
+			const ruleKey = ruleKeyCamelCase.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
 
 			const propertyDefs = maplibreProperties.get(layer.type + '/' + ruleKey);
 			if (!propertyDefs) continue;
 
-			propertyDefs.forEach(propertyDef => {
+			propertyDefs.forEach((propertyDef) => {
 				const { key } = propertyDef;
 				let value: StyleRuleValue = ruleValue;
 
 				switch (propertyDef.valueType) {
-					case 'color': value = processExpression(value, processColor); break;
-					case 'fonts': value = processExpression(value, processFont); break;
+					case 'color':
+						value = processExpression(value, processColor);
+						break;
+					case 'fonts':
+						value = processExpression(value, processFont);
+						break;
 					case 'resolvedImage':
 					case 'formatted':
 					case 'array':
 					case 'boolean':
 					case 'enum':
-					case 'number': value = processExpression(value); break;
-					default: throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
+					case 'number':
+						value = processExpression(value);
+						break;
+					default:
+						throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
 				}
 
 				switch (propertyDef.parent) {
@@ -94,7 +97,6 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						layer.paint[key] = value;
 						break;
 					default:
-
 						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
 				}
 			});
@@ -104,7 +106,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			if (typeof value === 'string') value = Color.parse(value);
 			if (value instanceof Color) {
 				const color = recolor.do(value as Color);
-				return color.asString()
+				return color.asString();
 			}
 			throw new Error(`unknown color type "${typeof value}"`);
 		}
@@ -114,7 +116,10 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			throw new Error(`unknown font type "${typeof value}"`);
 		}
 
-		function processExpression(value: StyleRuleValue, cbValue?: (value: StyleRuleValue) => StyleRuleValue): StyleRuleValue {
+		function processExpression(
+			value: StyleRuleValue,
+			cbValue?: (value: StyleRuleValue) => StyleRuleValue
+		): StyleRuleValue {
 			if (typeof value === 'object') {
 				if (value instanceof Color) return processColor(value);
 				if (!Array.isArray(value)) {
@@ -124,7 +129,10 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			return cbValue ? cbValue(value) : value;
 		}
 
-		function processZoomStops(obj: Record<string, StyleRuleValue>, cbValue?: (value: StyleRuleValue) => StyleRuleValue): { stops: StyleRuleValue[] } {
+		function processZoomStops(
+			obj: Record<string, StyleRuleValue>,
+			cbValue?: (value: StyleRuleValue) => StyleRuleValue
+		): { stops: StyleRuleValue[] } {
 			return {
 				stops: Object.entries(obj)
 					.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
