@@ -67,7 +67,8 @@ export abstract class StyleBuilder {
 		// get shortbread layers
 		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language });
 		let layers: MaplibreLayer[] = layerDefinitions.map((layer) => {
-			switch (layer.type) {
+			const { type, id } = layer;
+			switch (type) {
 				case 'background':
 					return layer;
 				case 'fill':
@@ -79,7 +80,7 @@ export abstract class StyleBuilder {
 					};
 			}
 			throw new Error(
-				`StyleBuilder: Unknown layer type "${layer.type}" for layer "${layer.id}". Expected "background", "fill", "line", or "symbol".`
+				`StyleBuilder: Unknown layer type "${type}" for layer "${id}". Expected "background", "fill", "line", or "symbol".`
 			);
 		});
 		// apply layer rules
