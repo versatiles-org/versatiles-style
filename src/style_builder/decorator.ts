@@ -22,7 +22,9 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 			if (!id.includes('*')) return id;
 			const regExpString = id.replace(/[^a-z_:-]/g, (c) => {
 				if (c === '*') return '[a-z_-]*';
-				throw new Error('unknown char to process. Do not know how to make a RegExp from: ' + JSON.stringify(c));
+				throw new Error(
+					`decorator: Invalid character ${JSON.stringify(c)} in layer ID pattern "${id}". Only alphanumeric, underscore, colon, hyphen, and asterisk are allowed.`
+				);
 			});
 			const regExp = new RegExp(`^${regExpString}$`, 'i');
 			return layerIds.filter((layerId) => regExp.test(layerId));
@@ -78,7 +80,9 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						value = processExpression(value);
 						break;
 					default:
-						throw new Error(`unknown propertyDef.valueType "${propertyDef.valueType}" for key "${key}"`);
+						throw new Error(
+							`decorator: Unknown property value type "${propertyDef.valueType}" for key "${key}" on layer type "${layer.type}". This may indicate a MapLibre property definition mismatch.`
+						);
 				}
 
 				switch (propertyDef.parent) {
@@ -97,7 +101,9 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 						layer.paint[key] = value;
 						break;
 					default:
-						throw new Error(`unknown parent "${propertyDef.parent}" for key "${key}"`);
+						throw new Error(
+							`decorator: Unknown property parent "${propertyDef.parent}" for key "${key}" on layer type "${layer.type}". Expected "layer", "layout", or "paint".`
+						);
 				}
 			});
 		}
@@ -108,12 +114,16 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 				const color = recolor.do(value as Color);
 				return color.asString();
 			}
-			throw new Error(`unknown color type "${typeof value}"`);
+			throw new Error(
+				`decorator.processColor: Expected a color string or Color instance, but got ${typeof value}. Value: ${JSON.stringify(value)}`
+			);
 		}
 
 		function processFont(value: StyleRuleValue): string[] {
 			if (typeof value === 'string') return [value];
-			throw new Error(`unknown font type "${typeof value}"`);
+			throw new Error(
+				`decorator.processFont: Expected a font name string, but got ${typeof value}. Value: ${JSON.stringify(value)}`
+			);
 		}
 
 		function processExpression(

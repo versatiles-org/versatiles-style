@@ -78,7 +78,9 @@ export abstract class StyleBuilder {
 						...layer,
 					};
 			}
-			throw Error('unknown layer type');
+			throw new Error(
+				`StyleBuilder: Unknown layer type "${layer.type}" for layer "${layer.id}". Expected "background", "fill", "line", or "symbol".`
+			);
 		});
 		// apply layer rules
 		layers = decorate(layers, layerStyleRules, new CachedRecolor(recolorOptions));

@@ -58,7 +58,9 @@ export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyle
 		tileJSON.tiles = tileJSON.tiles.map((url) => resolveUrl(baseUrl, url));
 	}
 
-	if (!isTileJSONSpecification(tileJSON)) throw Error('Invalid TileJSON specification');
+	if (!isTileJSONSpecification(tileJSON)) {
+		throw new Error('guessStyle: Invalid TileJSON specification (this error should never be reached)');
+	}
 
 	let style: StyleSpecification;
 	if (isRasterTileJSONSpecification(tileJSON)) {

@@ -20,7 +20,9 @@ Color.parse = function (input: string | Color): Color {
 		case 'hsla(':
 			return HSL.parse(input);
 		default:
-			throw Error('Unknown color format: ' + input);
+			throw new Error(
+				`Color.parse: Unknown color format "${input}". Expected formats: "#RRGGBB", "#RGB", "rgb(...)", "rgba(...)", "hsl(...)", or "hsla(...)".`
+			);
 	}
 };
 

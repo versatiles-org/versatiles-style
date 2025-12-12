@@ -263,5 +263,7 @@ function getColorInfo(hue: number): ColorInfo {
 			return color;
 		}
 	}
-	throw Error('Color hue value not found');
+	throw new Error(
+		`getColorInfo: No color info found for hue value ${hue}. This indicates a gap in the color dictionary hue ranges.`
+	);
 }

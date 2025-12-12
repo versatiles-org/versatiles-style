@@ -73,7 +73,9 @@ describe('Color.parse', () => {
 	});
 
 	it('throws an error for unsupported formats', () => {
-		expect(() => Color.parse('invalid color string')).toThrow('Unknown color format: invalid color string');
+		expect(() => Color.parse('invalid color string')).toThrow(
+			'Color.parse: Unknown color format "invalid color string"'
+		);
 	});
 });
 

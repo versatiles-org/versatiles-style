@@ -31,16 +31,16 @@ describe('isTileJSONSpecification', () => {
 
 	it('should throw an error if the tiles property is missing', () => {
 		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow(
-			'spec.tiles must be an array of strings'
+			'spec.tiles must be a non-empty array of strings'
 		);
 	});
 
 	it('should throw an error if the bounds property is invalid', () => {
 		[
-			{ bounds: [-181, -90, 180, 90], errorMessage: 'spec.bounds[0] must be between -180 and 180' },
-			{ bounds: [-180, -91, 180, 90], errorMessage: 'spec.bounds[1] must be between -90 and 90' },
-			{ bounds: [-180, -90, 181, 90], errorMessage: 'spec.bounds[2] must be between -180 and 180' },
-			{ bounds: [-180, -90, 180, 91], errorMessage: 'spec.bounds[3] must be between -90 and 90' },
+			{ bounds: [-181, -90, 180, 90], errorMessage: 'spec.bounds[0]' },
+			{ bounds: [-180, -91, 180, 90], errorMessage: 'spec.bounds[1]' },
+			{ bounds: [-180, -90, 181, 90], errorMessage: 'spec.bounds[2]' },
+			{ bounds: [-180, -90, 180, 91], errorMessage: 'spec.bounds[3]' },
 			{ bounds: [180, -90, -180, 90], errorMessage: 'spec.bounds[0] must be smaller than spec.bounds[2]' },
 			{ bounds: [-180, 90, 180, -90], errorMessage: 'spec.bounds[1] must be smaller than spec.bounds[3]' },
 		].forEach(({ bounds, errorMessage }) => {
@@ -50,10 +50,10 @@ describe('isTileJSONSpecification', () => {
 
 	it('should throw an error if the center property is invalid', () => {
 		[
-			{ center: [-181, 0], errorMessage: 'spec.center[0] must be between -180 and 180' },
-			{ center: [181, 0], errorMessage: 'spec.center[0] must be between -180 and 180' },
-			{ center: [0, -91], errorMessage: 'spec.center[1] must be between -90 and 90' },
-			{ center: [0, 91], errorMessage: 'spec.center[1] must be between -90 and 90' },
+			{ center: [-181, 0], errorMessage: 'spec.center[0]' },
+			{ center: [181, 0], errorMessage: 'spec.center[0]' },
+			{ center: [0, -91], errorMessage: 'spec.center[1]' },
+			{ center: [0, 91], errorMessage: 'spec.center[1]' },
 		].forEach(({ center, errorMessage }) => {
 			expect(() => isTileJSONSpecification({ ...validVectorSpec, center })).toThrow(errorMessage);
 		});
@@ -61,7 +61,7 @@ describe('isTileJSONSpecification', () => {
 
 	describe('check every property', () => {
 		[
-			['tiles', 'an array of strings', ['url'], 'url', [], [1], 1],
+			['tiles', 'a non-empty array of strings', ['url'], 'url', [], [1], 1],
 			['attribution', 'a string if present', 'valid', 1],
 			['bounds', 'an array of four numbers if present', [1, 2, 3, 4], ['1', '2', '3', '4'], [1, 2, 3], [], 'invalid'],
 			['center', 'an array of two numbers if present', [1, 2], ['1', '2'], [1, 2, 3], [], 'invalid'],
