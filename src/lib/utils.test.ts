@@ -123,6 +123,89 @@ describe('deepMerge', () => {
 		const source = { a: { b: 1 } };
 		expect(() => deepMerge(target, source)).toThrow('Not implemented yet: "function" case');
 	});
+
+	it('merges multiple source objects', () => {
+		const target = { a: 1, b: 2, c: 3 };
+		const source1 = { b: 10, d: 4 };
+		const source2 = { c: 20, e: 5 };
+		const result = deepMerge(target, source1, source2);
+		expect(result).toEqual({ a: 1, b: 10, c: 20, d: 4, e: 5 });
+	});
+
+	it('handles undefined values in source', () => {
+		const target = { a: 1, b: 2 };
+		const source = { a: undefined, c: 3 };
+		const result = deepMerge(target, source);
+		expect(result).toEqual({ a: undefined, b: 2, c: 3 });
+	});
+
+	it('overwrites with null when target is a basic type', () => {
+		const target = { a: 1, b: 'string' };
+		const source = { a: null, b: null };
+		const result = deepMerge(target, source);
+		expect(result).toEqual({ a: null, b: null });
+	});
+
+	it('throws error when merging null with object', () => {
+		const target = { a: { x: 10 } } as { a: object | null };
+		const source = { a: null };
+		expect(() => deepMerge(target, source)).toThrow('deepMerge: Cannot merge incompatible types for key "a"');
+	});
+
+	it('merges with empty source object', () => {
+		const target = { a: 1, b: 2 };
+		const source = {};
+		const result = deepMerge(target, source);
+		expect(result).toEqual({ a: 1, b: 2 });
+	});
+
+	it('skips non-object sources', () => {
+		const target = { a: 1, b: 2 };
+		// @ts-expect-error Testing runtime behavior with invalid input
+		const result = deepMerge(target, null, undefined, 'string', 123, { c: 3 });
+		expect(result).toEqual({ a: 1, b: 2, c: 3 });
+	});
+
+	it('throws error when merging incompatible types (array with object)', () => {
+		const target = { a: [1, 2, 3] } as { a: object };
+		const source = { a: { b: 1 } };
+		expect(() => deepMerge(target, source)).toThrow('deepMerge: Cannot merge incompatible types for key "a"');
+	});
+
+	it('throws error when merging incompatible types (object with array)', () => {
+		const target = { a: { b: 1 } } as { a: object };
+		const source = { a: [1, 2, 3] };
+		expect(() => deepMerge(target, source)).toThrow('deepMerge: Cannot merge incompatible types for key "a"');
+	});
+
+	it('overwrites basic types with arrays', () => {
+		const target = { a: 1, b: 'string' };
+		const source = { a: [1, 2, 3], b: [4, 5] };
+		const result = deepMerge(target, source);
+		expect(result).toEqual({ a: [1, 2, 3], b: [4, 5] });
+		expect(result.a).not.toBe(source.a); // Should be a deep clone
+	});
+
+	it('throws error when merging array with array', () => {
+		const target = { a: [1, 2, 3] };
+		const source = { a: [4, 5] };
+		expect(() => deepMerge(target, source)).toThrow('deepMerge: Cannot merge incompatible types for key "a"');
+	});
+
+	it('deeply merges nested objects across multiple levels', () => {
+		const target = { a: { b: { c: 1, d: 2 }, e: 3 }, f: 4 };
+		const source = { a: { b: { c: 10 }, g: 5 }, h: 6 };
+		const result = deepMerge(target, source);
+		expect(result).toEqual({ a: { b: { c: 10, d: 2 }, e: 3, g: 5 }, f: 4, h: 6 });
+	});
+
+	it('does not mutate the original target object', () => {
+		const target = { a: { b: 1 }, c: 2 };
+		const source = { a: { b: 10 }, d: 3 };
+		const result = deepMerge(target, source);
+		expect(target).toEqual({ a: { b: 1 }, c: 2 }); // Original unchanged
+		expect(result).toEqual({ a: { b: 10 }, c: 2, d: 3 });
+	});
 });
 
 describe('resolveUrl', () => {
