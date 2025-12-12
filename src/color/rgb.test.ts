@@ -182,6 +182,8 @@ describe('RGB Class', () => {
 			expect(pc((c) => c.tint(0.5, tintColor))).toStrictEqual([125, 100, 125, 0.8]);
 			expect(pc((c) => c.tint(1, tintColor))).toStrictEqual([200, 50, 50, 0.8]);
 			expect(pc((c) => c.tint(0, tintColor))).toStrictEqual([50, 150, 200, 0.8]);
+			expect(pc((c) => c.tint(-1, tintColor))).toStrictEqual([50, 150, 200, 0.8]);
+			expect(pc((c) => c.tint(2, tintColor))).toStrictEqual([200, 50, 50, 0.8]);
 		});
 
 		it('blends color correctly', () => {
@@ -191,6 +193,8 @@ describe('RGB Class', () => {
 			expect(pc((c) => c.blend(0.8, blendColor))).toStrictEqual([214, 30, 40, 0.8]);
 			expect(pc((c) => c.blend(1, blendColor))).toStrictEqual([255, 0, 0, 0.8]);
 			expect(pc((c) => c.blend(0, blendColor))).toStrictEqual([50, 150, 200, 0.8]);
+			expect(pc((c) => c.blend(-1, blendColor))).toStrictEqual([50, 150, 200, 0.8]);
+			expect(pc((c) => c.blend(2, blendColor))).toStrictEqual([255, 0, 0, 0.8]);
 		});
 
 		it('lightens the color correctly', () => {
