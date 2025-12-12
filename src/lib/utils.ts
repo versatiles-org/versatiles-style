@@ -29,9 +29,7 @@ export function deepClone<T>(obj: T): T {
 
 	if (obj == null) return obj;
 
-	console.log('obj', obj);
-	console.log('obj.prototype', Object.getPrototypeOf(obj));
-	throw Error();
+	throw new Error(`deepClone: Unsupported object type "${Object.getPrototypeOf(obj)?.constructor?.name ?? 'unknown'}"`);
 }
 
 export function isSimpleObject(item: unknown): item is object {
@@ -54,7 +52,7 @@ export function isBasicType(item: unknown): item is boolean | number | string | 
 		case 'object':
 			return false;
 		default:
-			throw Error('unknown type: ' + typeof item);
+			throw new Error(`isBasicType: Unknown type "${typeof item}"`);
 	}
 }
 
@@ -104,9 +102,9 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 				continue;
 			}
 
-			console.log('target[key]:', target[key]);
-			console.log('source[key]:', source[key]);
-			throw Error('unpredicted case');
+			throw new Error(
+				`deepMerge: Cannot merge incompatible types for key "${String(key)}" (target: ${typeof target[key]}, source: ${typeof sourceValue})`
+			);
 		}
 	}
 	return target;

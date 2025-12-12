@@ -85,7 +85,7 @@ describe('isBasicType', () => {
 	});
 
 	it('throws an error for unsupported types like functions', () => {
-		expect(() => isBasicType(() => true)).toThrow('unknown type: function');
+		expect(() => isBasicType(() => true)).toThrow('isBasicType: Unknown type "function"');
 	});
 });
 
