@@ -42,6 +42,60 @@ describe('RandomColor', () => {
 			expect(t({ seed: 'testSeed' })).toBe('hsl(185,90%,23%)');
 		});
 
+		it('generates light colors with luminosity: "light"', () => {
+			const color = randomColor({ seed: 'lightSeed', luminosity: 'light' });
+			const hsv = color.asArray();
+			// Light colors should have higher brightness values
+			expect(hsv[2]).toBeGreaterThan(50);
+			expect(color).toBeInstanceOf(HSV);
+		});
+
+		it('generates random luminosity colors with luminosity: "random"', () => {
+			const color = randomColor({ seed: 'randomSeed', luminosity: 'random' });
+			const hsv = color.asArray();
+			// Random luminosity can be anywhere from 0-100
+			expect(hsv[2]).toBeGreaterThanOrEqual(0);
+			expect(hsv[2]).toBeLessThanOrEqual(100);
+			expect(color).toBeInstanceOf(HSV);
+		});
+
+		it('generates light saturation with luminosity: "light"', () => {
+			// Test light luminosity affects saturation picking
+			const color1 = randomColor({ seed: 'lightTest1', luminosity: 'light', hue: 'blue' });
+			const color2 = randomColor({ seed: 'lightTest2', luminosity: 'light', hue: 'green' });
+			expect(color1).toBeInstanceOf(HSV);
+			expect(color2).toBeInstanceOf(HSV);
+		});
+
+		it('generates colors with various saturation options', () => {
+			const weak = randomColor({ seed: 'satTest', saturation: 'weak' });
+			const strong = randomColor({ seed: 'satTest', saturation: 'strong' });
+
+			expect(weak).toBeInstanceOf(HSV);
+			expect(strong).toBeInstanceOf(HSV);
+			// Strong saturation should have higher saturation values
+			expect(strong.s).toBeGreaterThan(80);
+		});
+
+		it('generates colors with all hue name options', () => {
+			const hues: Array<string | number> = [
+				'red',
+				'orange',
+				'yellow',
+				'green',
+				'blue',
+				'purple',
+				'pink',
+				'monochrome',
+				180,
+			];
+
+			hues.forEach((hue) => {
+				const color = randomColor({ seed: `hue-${hue}`, hue });
+				expect(color).toBeInstanceOf(HSV);
+			});
+		});
+
 		it('consistent color generation with a seed', () => {
 			const color1 = randomColor({ seed: 'consistentSeed' });
 			const color2 = randomColor({ seed: 'consistentSeed' });
