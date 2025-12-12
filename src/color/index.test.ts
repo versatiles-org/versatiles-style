@@ -97,3 +97,42 @@ describe('Exported Module', () => {
 		expect(module.Color).toBe(Color);
 	});
 });
+
+describe('Color Transformation Methods', () => {
+	it('gamma() applies gamma correction', () => {
+		const color = Color.parse('#808080');
+		const adjusted = color.gamma(2.2);
+		expect(adjusted).toBeInstanceOf(RGB);
+		expect(adjusted.asHex()).not.toBe('#808080');
+	});
+
+	it('contrast() adjusts contrast', () => {
+		const color = Color.parse('#FF8040');
+		const adjusted = color.contrast(1.5);
+		expect(adjusted).toBeInstanceOf(RGB);
+		expect(adjusted.asHex()).not.toBe('#FF8040');
+	});
+
+	it('tint() blends with a tint color', () => {
+		const color = Color.parse('#FF0000');
+		const tintColor = Color.parse('#0000FF');
+		const tinted = color.tint(0.5, tintColor);
+		expect(tinted).toBeInstanceOf(RGB);
+		expect(tinted.asHex()).not.toBe('#FF0000');
+	});
+
+	it('blend() blends with another color', () => {
+		const color1 = Color.parse('#FF0000');
+		const color2 = Color.parse('#0000FF');
+		const blended = color1.blend(0.5, color2);
+		expect(blended).toBeInstanceOf(RGB);
+		expect(blended.asHex()).not.toBe('#FF0000');
+	});
+
+	it('setHue() changes the hue', () => {
+		const color = Color.parse('#FF0000');
+		const newHue = color.setHue(180);
+		expect(newHue).toBeInstanceOf(HSV);
+		expect(newHue.h).toBe(180);
+	});
+});
