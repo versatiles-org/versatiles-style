@@ -1,6 +1,7 @@
 
 .claude
 .DS_Store
+.vscode
 coverage
 dist/
 docs/
