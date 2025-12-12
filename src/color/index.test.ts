@@ -103,38 +103,85 @@ describe('Exported Module', () => {
 describe('Color Transformation Methods', () => {
 	it('gamma() applies gamma correction', () => {
 		const color = Color.parse('#808080');
-		const adjusted = color.gamma(2.2);
-		expect(adjusted).toBeInstanceOf(RGB);
-		expect(adjusted.asHex()).not.toBe('#808080');
+		expect(color.gamma(2.2).asString()).toBe('rgb(56,56,56)');
+	});
+
+	it('gamma() works from HSL', () => {
+		const hsl = new HSL(120, 50, 50, 1);
+		expect(hsl.gamma(2.2).asString()).toBe('rgb(12,135,12)');
 	});
 
 	it('contrast() adjusts contrast', () => {
 		const color = Color.parse('#FF8040');
-		const adjusted = color.contrast(1.5);
-		expect(adjusted).toBeInstanceOf(RGB);
-		expect(adjusted.asHex()).not.toBe('#FF8040');
+		expect(color.contrast(1.5).asString()).toBe('rgb(255,128,32)');
+	});
+
+	it('contrast() works from HSV', () => {
+		const hsv = new HSV(180, 50, 50, 1);
+		expect(hsv.contrast(1.5).asString()).toBe('rgb(32,128,128)');
+	});
+
+	it('brightness() works from HSL', () => {
+		const hsl = new HSL(240, 100, 50, 1);
+		expect(hsl.brightness(0.3).asString()).toBe('rgb(77,77,255)');
+	});
+
+	it('lighten() works from HSL', () => {
+		const hsl = new HSL(0, 100, 30, 1);
+		expect(hsl.lighten(0.2).asString()).toBe('rgb(173,51,51)');
+	});
+
+	it('darken() works from HSV', () => {
+		const hsv = new HSV(60, 100, 80, 1);
+		expect(hsv.darken(0.3).asString()).toBe('rgb(143,143,0)');
 	});
 
 	it('tint() blends with a tint color', () => {
 		const color = Color.parse('#FF0000');
 		const tintColor = Color.parse('#0000FF');
-		const tinted = color.tint(0.5, tintColor);
-		expect(tinted).toBeInstanceOf(RGB);
-		expect(tinted.asHex()).not.toBe('#FF0000');
+		expect(color.tint(0.5, tintColor).asString()).toBe('rgb(128,0,128)');
+	});
+
+	it('tint() works from HSL', () => {
+		const hsl = new HSL(0, 100, 50, 1);
+		const tintColor = new HSL(120, 100, 50, 1);
+		expect(hsl.tint(0.5, tintColor).asString()).toBe('rgb(128,128,0)');
 	});
 
 	it('blend() blends with another color', () => {
 		const color1 = Color.parse('#FF0000');
 		const color2 = Color.parse('#0000FF');
-		const blended = color1.blend(0.5, color2);
-		expect(blended).toBeInstanceOf(RGB);
-		expect(blended.asHex()).not.toBe('#FF0000');
+		expect(color1.blend(0.5, color2).asString()).toBe('rgb(128,0,128)');
+	});
+
+	it('blend() works from HSV', () => {
+		const hsv1 = new HSV(0, 100, 100, 1);
+		const hsv2 = new HSV(240, 100, 100, 1);
+		expect(hsv1.blend(0.3, hsv2).asString()).toBe('rgb(179,0,77)');
 	});
 
 	it('setHue() changes the hue', () => {
 		const color = Color.parse('#FF0000');
-		const newHue = color.setHue(180);
-		expect(newHue).toBeInstanceOf(HSV);
-		expect(newHue.h).toBe(180);
+		expect(color.setHue(180).asString()).toBe('hsl(180,100%,50%)');
+	});
+
+	it('invertLuminosity() inverts from HSV', () => {
+		const hsv = new HSV(200, 50, 60, 1);
+		expect(hsv.invertLuminosity().asString()).toBe('hsl(200,33%,55%)');
+	});
+
+	it('rotateHue() rotates from RGB', () => {
+		const rgb = new RGB(255, 0, 0, 1);
+		expect(rgb.rotateHue(120).asString()).toBe('hsl(120,100%,50%)');
+	});
+
+	it('saturate() increases saturation from HSV', () => {
+		const hsv = new HSV(100, 30, 70, 1);
+		expect(hsv.saturate(1.5).asString()).toBe('hsl(100,65%,60%)');
+	});
+
+	it('invert() inverts from HSL', () => {
+		const hsl = new HSL(180, 100, 50, 1);
+		expect(hsl.invert().asString()).toBe('rgb(255,0,0)');
 	});
 });
