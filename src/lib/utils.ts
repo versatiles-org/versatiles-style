@@ -66,9 +66,7 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 
 			const sourceValue = source[key] as T[typeof key];
 
-			// *********
-			// overwrite
-			// *********
+			// Handle basic types (number, string, boolean) - always overwrite
 			switch (typeof sourceValue) {
 				case 'number':
 				case 'string':
@@ -78,30 +76,25 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 				default:
 			}
 
+			// If target is a basic type, overwrite with deep clone of source
 			if (isBasicType(target[key])) {
 				target[key] = deepClone(sourceValue);
 				continue;
 			}
 
+			// Handle Color instances - clone the source color
 			if (sourceValue instanceof Color) {
 				target[key] = sourceValue.clone() as T[typeof key];
 				continue;
 			}
 
+			// If both are simple objects, merge them recursively
 			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
 				target[key] = deepMerge(target[key], sourceValue);
 				continue;
 			}
 
-			// *********
-			// merge
-			// *********
-
-			if (isSimpleObject(target[key]) && isSimpleObject(sourceValue)) {
-				target[key] = deepMerge(target[key], sourceValue);
-				continue;
-			}
-
+			// Incompatible types - throw error
 			throw new Error(
 				`deepMerge: Cannot merge incompatible types for key "${String(key)}" (target: ${typeof target[key]}, source: ${typeof sourceValue})`
 			);
