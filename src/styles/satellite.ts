@@ -5,7 +5,7 @@ import type { Language } from '../style_builder/types.js';
 export interface SatelliteStyleOptions {
 	baseUrl?: string;
 	rasterTiles?: string[];
-	tiles?: string[];
+	overlayTiles?: string[];
 	overlay?: boolean;
 	language?: Language;
 	rasterOpacity?: number;
@@ -19,7 +19,7 @@ export interface SatelliteStyleOptions {
 export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpecification {
 	options ??= {};
 	const baseUrl = options.baseUrl ?? 'https://tiles.versatiles.org';
-	const rasterTiles = options.rasterTiles ?? ['https://versatiles-satellite.b-cdn.net/tiles/orthophotos/{z}/{x}/{y}'];
+	const rasterTiles = options.rasterTiles ?? [`${baseUrl}/tiles/satellite/{z}/{x}/{y}`];
 	const overlay = options.overlay ?? true;
 
 	let style: StyleSpecification;
@@ -28,7 +28,7 @@ export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpeci
 		// Generate graybeard style for overlay
 		style = new Graybeard().build({
 			baseUrl,
-			tiles: options.tiles,
+			tiles: options.overlayTiles,
 			language: options.language,
 		});
 

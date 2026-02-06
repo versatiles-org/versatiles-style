@@ -9,7 +9,7 @@ describe('satellite style', () => {
 		expect(style.sources.orthophotos).toBeDefined();
 		expect(style.sources.orthophotos).toMatchObject({
 			type: 'raster',
-			tiles: ['https://versatiles-satellite.b-cdn.net/tiles/orthophotos/{z}/{x}/{y}'],
+			tiles: ['https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}'],
 			tileSize: 512,
 			maxzoom: 17,
 		});
