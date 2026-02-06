@@ -84,10 +84,9 @@ describe('RGB Class', () => {
 			expect(RGB.parse('#FF0080').asHSV().round().asArray()).toStrictEqual([330, 100, 100, 1]);
 		});
 
-		it('asRGB and toRGB return the same instance or clone', () => {
+		it('asRGB returns a clone', () => {
 			const color = new RGB(255, 128, 64, 0.5);
 			expect(color.asRGB()).toStrictEqual(color);
-			expect(color.toRGB()).toStrictEqual(color);
 		});
 
 		it('handles black correctly', () => {

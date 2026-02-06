@@ -88,14 +88,6 @@ export class HSL extends Color {
 	}
 
 	/**
-	 * Returns the current HSL color.
-	 * @returns The current HSL color.
-	 */
-	toHSL(): HSL {
-		return this;
-	}
-
-	/**
 	 * Converts the HSL color to an HSV color.
 	 * @returns A new HSV color representing the same color.
 	 */

@@ -182,15 +182,6 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Returns the RGB color.
-	 *
-	 * @returns The current RGB instance.
-	 */
-	toRGB(): RGB {
-		return this;
-	}
-
-	/**
 	 * Parses a string or Color instance into an RGB color.
 	 *
 	 * @param input - The input string or Color instance to parse.

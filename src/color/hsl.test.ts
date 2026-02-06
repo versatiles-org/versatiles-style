@@ -38,10 +38,9 @@ describe('HSL Class', () => {
 			expect(color2.asString()).toBe('hsla(120,50%,50%,0.5)');
 		});
 
-		it('asHSL and toHSL should return the same instance', () => {
+		it('asHSL should return a clone', () => {
 			const color = new HSL(120, 50, 50);
 			expect(color.asHSL()).toStrictEqual(color);
-			expect(color.toHSL()).toStrictEqual(color);
 		});
 
 		it('asHSV should correctly convert HSL to HSV', () => {
