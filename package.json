@@ -44,8 +44,7 @@
     "brace-expansion": "^4.0.1"
   },
   "files": [
-    "dist/*",
-    "src/*"
+    "dist/*"
   ],
   "devDependencies": {
     "@maplibre/maplibre-gl-native": "^6.3.0",
