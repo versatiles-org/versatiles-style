@@ -58,10 +58,8 @@ export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
 			if (!isVectorLayer(layer)) {
 				throw new Error(`Layer[${index}] is invalid`);
 			}
-		} catch (error) {
-			// Assuming `isVectorLayer` throws an error with a meaningful message, you can rethrow it
-			// Alternatively, customize the error message or handle the error as needed
-			throw new Error(`Layer[${index}] is invalid: ${String(error instanceof Error ? error.message : error)}`);
+		} catch (cause) {
+			throw new Error(`Layer[${index}] is invalid`, { cause });
 		}
 	});
 
