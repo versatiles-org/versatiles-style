@@ -87,18 +87,15 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 
 				switch (propertyDef.parent) {
 					case 'layer':
-						// @ts-expect-error: too complex to handle
-						layer[key] = value;
+						(layer as Record<string, unknown>)[key] = value;
 						break;
 					case 'layout':
 						if (!layer.layout) layer.layout = {};
-						// @ts-expect-error: too complex to handle
-						layer.layout[key] = value;
+						(layer.layout as Record<string, unknown>)[key] = value;
 						break;
 					case 'paint':
 						if (!layer.paint) layer.paint = {};
-						// @ts-expect-error: too complex to handle
-						layer.paint[key] = value;
+						(layer.paint as Record<string, unknown>)[key] = value;
 						break;
 					default:
 						throw new Error(
