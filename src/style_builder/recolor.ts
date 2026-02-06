@@ -138,7 +138,7 @@ export function getDefaultRecolorFlags(): RecolorOptions {
  * Checks if the given options object contains any active recolor transformations.
  * @param opt The recolor options to validate.
  */
-function isValidRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
+function hasActiveRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
 	if (!opt) return false;
 	return (
 		opt.invertBrightness ||
@@ -160,7 +160,7 @@ function isValidRecolorOptions(opt?: RecolorOptions): opt is RecolorOptions {
  * @param opt Optional recolor options.
  */
 export function recolorObject(colors: Record<string, Color>, opt?: RecolorOptions): void {
-	if (!isValidRecolorOptions(opt)) return;
+	if (!hasActiveRecolorOptions(opt)) return;
 
 	for (const [key, color] of Object.entries(colors)) {
 		colors[key] = recolor(color, opt);
@@ -173,7 +173,7 @@ export function recolorObject(colors: Record<string, Color>, opt?: RecolorOption
  * @param opt Optional recolor options.
  */
 export function recolorArray(colors: Color[], opt?: RecolorOptions): void {
-	if (!isValidRecolorOptions(opt)) return;
+	if (!hasActiveRecolorOptions(opt)) return;
 
 	for (let i = 0; i < colors.length; i++) {
 		colors[i] = recolor(colors[i], opt);
@@ -193,7 +193,7 @@ export class CachedRecolor {
 	 * @param opt Optional recolor options.
 	 */
 	public constructor(opt?: RecolorOptions) {
-		this.skip = !isValidRecolorOptions(opt);
+		this.skip = !hasActiveRecolorOptions(opt);
 		this.cache = new Map();
 		this.opt = opt;
 	}
@@ -222,7 +222,7 @@ export class CachedRecolor {
  * @returns A new `Color` instance with applied transformations.
  */
 export function recolor(color: Color, opt?: RecolorOptions): Color {
-	if (!isValidRecolorOptions(opt)) return color;
+	if (!hasActiveRecolorOptions(opt)) return color;
 
 	if (opt.invertBrightness) color = color.invertLuminosity();
 	if (opt.rotate) color = color.rotateHue(opt.rotate);
