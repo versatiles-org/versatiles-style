@@ -93,7 +93,7 @@ export abstract class StyleBuilder {
 		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(baseUrl, glyphs);
 
-		if (typeof sprite == 'string') {
+		if (typeof sprite === 'string') {
 			style.sprite = [{ id: basename(sprite), url: resolveUrl(baseUrl, sprite) }];
 		} else {
 			style.sprite = sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));

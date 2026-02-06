@@ -8,7 +8,7 @@ export function clamp(value: number, min: number, max: number): number {
 export function mod(value: number, max: number): number {
 	value = value % max;
 	if (value < 0) value += max;
-	if (value == 0) return 0;
+	if (value === 0) return 0;
 	return value;
 }
 

@@ -33,6 +33,7 @@ export default [
 			reportUnusedDisableDirectives: true,
 		},
 		rules: {
+			eqeqeq: ['error', 'always', { null: 'ignore' }],
 			'no-unused-vars': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				'error',

@@ -85,7 +85,7 @@ export class HSV extends Color {
 		const v = this.v / 100;
 		const k = (2 - s) * v;
 		const q = k < 1 ? k : 2 - k;
-		return new HSL(this.h, q == 0 ? 0 : (100 * s * v) / q, (100 * k) / 2, this.a);
+		return new HSL(this.h, q === 0 ? 0 : (100 * s * v) / q, (100 * k) / 2, this.a);
 	}
 
 	/**
