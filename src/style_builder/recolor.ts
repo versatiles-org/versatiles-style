@@ -187,6 +187,8 @@ export class CachedRecolor {
 	private readonly skip: boolean;
 	private readonly opt?: RecolorOptions;
 	private readonly cache: Map<string, Color>;
+	private readonly parsedTintColor?: Color;
+	private readonly parsedBlendColor?: Color;
 
 	/**
 	 * Creates a cached recolor instance.
@@ -196,6 +198,8 @@ export class CachedRecolor {
 		this.skip = !hasActiveRecolorOptions(opt);
 		this.cache = new Map();
 		this.opt = opt;
+		if (opt?.tint && opt.tintColor != null) this.parsedTintColor = Color.parse(opt.tintColor);
+		if (opt?.blend && opt.blendColor != null) this.parsedBlendColor = Color.parse(opt.blendColor);
 	}
 
 	/**
@@ -209,7 +213,7 @@ export class CachedRecolor {
 		const key = color.asHex();
 		if (this.cache.has(key)) return this.cache.get(key)!;
 
-		const recolored = recolor(color, this.opt);
+		const recolored = recolor(color, this.opt, this.parsedTintColor, this.parsedBlendColor);
 		this.cache.set(key, recolored);
 		return recolored;
 	}
@@ -219,9 +223,11 @@ export class CachedRecolor {
  * Applies the specified recoloring transformations to a single color.
  * @param color The original color.
  * @param opt Optional recolor options.
+ * @param parsedTintColor Optional pre-parsed tint color to avoid repeated parsing.
+ * @param parsedBlendColor Optional pre-parsed blend color to avoid repeated parsing.
  * @returns A new `Color` instance with applied transformations.
  */
-export function recolor(color: Color, opt?: RecolorOptions): Color {
+export function recolor(color: Color, opt?: RecolorOptions, parsedTintColor?: Color, parsedBlendColor?: Color): Color {
 	if (!hasActiveRecolorOptions(opt)) return color;
 
 	if (opt.invertBrightness) color = color.invertLuminosity();
@@ -230,8 +236,9 @@ export function recolor(color: Color, opt?: RecolorOptions): Color {
 	if (opt.gamma != null && opt.gamma !== 1) color = color.gamma(opt.gamma);
 	if (opt.contrast != null && opt.contrast !== 1) color = color.contrast(opt.contrast);
 	if (opt.brightness) color = color.brightness(opt.brightness);
-	if (opt.tint && opt.tintColor != null) color = color.tint(opt.tint, Color.parse(opt.tintColor));
-	if (opt.blend && opt.blendColor != null) color = color.blend(opt.blend, Color.parse(opt.blendColor));
+	if (opt.tint && opt.tintColor != null) color = color.tint(opt.tint, parsedTintColor ?? Color.parse(opt.tintColor));
+	if (opt.blend && opt.blendColor != null)
+		color = color.blend(opt.blend, parsedBlendColor ?? Color.parse(opt.blendColor));
 
 	return color;
 }
