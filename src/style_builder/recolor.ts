@@ -227,8 +227,8 @@ export function recolor(color: Color, opt?: RecolorOptions): Color {
 	if (opt.invertBrightness) color = color.invertLuminosity();
 	if (opt.rotate) color = color.rotateHue(opt.rotate);
 	if (opt.saturate) color = color.saturate(opt.saturate);
-	if (opt.gamma != null && opt.gamma != 1) color = color.gamma(opt.gamma);
-	if (opt.contrast != null && opt.contrast != 1) color = color.contrast(opt.contrast);
+	if (opt.gamma != null && opt.gamma !== 1) color = color.gamma(opt.gamma);
+	if (opt.contrast != null && opt.contrast !== 1) color = color.contrast(opt.contrast);
 	if (opt.brightness) color = color.brightness(opt.brightness);
 	if (opt.tint && opt.tintColor != null) color = color.tint(opt.tint, Color.parse(opt.tintColor));
 	if (opt.blend && opt.blendColor != null) color = color.blend(opt.blend, Color.parse(opt.blendColor));
