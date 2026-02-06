@@ -1,7 +1,7 @@
 import mbgl from '@maplibre/maplibre-gl-native';
 import sharp from 'sharp';
 import { styles } from '../src/index.js';
-import type { StyleBuilderFunction } from '../src/styles/index.js';
+import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { mkdirSync } from 'fs';
 
 mkdirSync('docs', { recursive: true });
@@ -14,26 +14,27 @@ mkdirSync('docs', { recursive: true });
  * of predefined styles and saves them in the `screenshots` directory.
  */
 Promise.all([
-	draw('colorful', styles.colorful),
-	draw('eclipse', styles.eclipse),
-	draw('graybeard', styles.graybeard),
-	draw('neutrino', styles.neutrino),
-	draw('shadow', styles.shadow),
+	draw('colorful', styles.colorful({})),
+	draw('eclipse', styles.eclipse({})),
+	draw('graybeard', styles.graybeard({})),
+	draw('neutrino', styles.neutrino({})),
+	draw('shadow', styles.shadow({})),
+	draw('satellite', styles.satellite({})),
 ]);
 
 /**
  * Renders a map image using the given style and saves it as a PNG file.
  *
  * @param name - The name of the style, used in the output filename.
- * @param style - The style builder function that configures the map style.
+ * @param style - The style specification to render.
  * @returns A promise that resolves when the image has been successfully saved.
  */
-async function draw(name: string, style: StyleBuilderFunction): Promise<void> {
+async function draw(name: string, style: StyleSpecification): Promise<void> {
 	// Create a new MapLibre GL map instance
 	const map = new mbgl.Map();
 
 	// Load the map style
-	map.load(style({}));
+	map.load(style);
 
 	// Define the dimensions of the rendered image
 	const width = 1024;

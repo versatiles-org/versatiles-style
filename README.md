@@ -18,6 +18,7 @@
 | **eclipse**   | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />     |
 | **neutrino**  | <img width="384" src="https://versatiles.org/versatiles-style/neutrino.png" alt="neutrino style" />   |
 | **shadow**    | <img width="384" src="https://versatiles.org/versatiles-style/shadow.png" alt="shadow style" />       |
+| **satellite** | <img width="384" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> |
 
 ---
 
@@ -95,8 +96,10 @@ The library offers the following style generation methods:
 - `graybeard(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/graybeard.html)
 - `neutrino(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/neutrino.html)
 - `shadow(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/shadow.html)
+- `satellite(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/satellite.html)
 
 **`options`**: An optional object to customize the styles. [Learn more](https://versatiles.org/versatiles-style/interfaces/StyleBuilderOptions.html)
+`satellite` uses a different options type: [SatelliteStyleOptions](https://versatiles.org/versatiles-style/interfaces/SatelliteStyleOptions.html)
 
 ### Guess Style Method
 
