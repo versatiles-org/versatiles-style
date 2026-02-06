@@ -9,16 +9,16 @@ import { rollup } from 'rollup';
 
 const PORT = 8080;
 
-type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino' | 'shadow' | 'satellite';
+const styleNames = ['colorful', 'eclipse', 'graybeard', 'shadow', 'neutrino', 'satellite'] as const;
+type StyleName = (typeof styleNames)[number];
 
 const config: { reg: RegExp; type: 'mem' | 'local' | 'proxy'; res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
-	{ reg: /^\/\?colorful$/, type: 'mem', res: () => getStylePage('colorful') },
-	{ reg: /^\/\?eclipse$/, type: 'mem', res: () => getStylePage('eclipse') },
-	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
-	{ reg: /^\/\?shadow$/, type: 'mem', res: () => getStylePage('shadow') },
-	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
-	{ reg: /^\/\?satellite$/, type: 'mem', res: () => getStylePage('satellite') },
+	...styleNames.map((name) => ({
+		reg: new RegExp(`^/\\?${name}$`),
+		type: 'mem' as const,
+		res: () => getStylePage(name),
+	})),
 	{ reg: /^\/assets\/lib\/versatiles-style\/versatiles-style.js/, type: 'mem', res: () => getStyles() },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
 	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/glyphs/' },
@@ -156,14 +156,8 @@ function getPage(content: string) {
 }
 
 function getIndexPage() {
-	return getPage(`<ul>
-		<li><a href="/?colorful">colorful</a></li>
-		<li><a href="/?eclipse">eclipse</a></li>
-		<li><a href="/?graybeard">graybeard</a></li>
-		<li><a href="/?shadow">shadow</a></li>
-		<li><a href="/?neutrino">neutrino</a></li>
-		<li><a href="/?satellite">satellite</a></li>
-	</ul>`);
+	const links = styleNames.map((name) => `\t\t<li><a href="/?${name}">${name}</a></li>`).join('\n');
+	return getPage(`<ul>\n${links}\n\t</ul>`);
 }
 
 async function getStylePage(styleName: StyleName) {
