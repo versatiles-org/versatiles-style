@@ -6,8 +6,8 @@ describe('satellite style', () => {
 		const style = buildSatelliteStyle();
 
 		expect(style.name).toBe('versatiles-satellite');
-		expect(style.sources.orthophotos).toBeDefined();
-		expect(style.sources.orthophotos).toMatchObject({
+		expect(style.sources.satellite).toBeDefined();
+		expect(style.sources.satellite).toMatchObject({
 			type: 'raster',
 			tiles: ['https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}'],
 			tileSize: 512,
@@ -16,9 +16,9 @@ describe('satellite style', () => {
 
 		// Raster layer should be the first layer
 		expect(style.layers[0]).toMatchObject({
-			id: 'orthophotos',
+			id: 'satellite',
 			type: 'raster',
-			source: 'orthophotos',
+			source: 'satellite',
 		});
 	});
 
@@ -82,20 +82,20 @@ describe('satellite style', () => {
 		// Should only have the raster layer
 		expect(style.layers).toHaveLength(1);
 		expect(style.layers[0]).toMatchObject({
-			id: 'orthophotos',
+			id: 'satellite',
 			type: 'raster',
-			source: 'orthophotos',
+			source: 'satellite',
 		});
 
 		// Should only have the raster source
-		expect(Object.keys(style.sources)).toEqual(['orthophotos']);
+		expect(Object.keys(style.sources)).toEqual(['satellite']);
 	});
 
 	it('should accept custom raster tiles', () => {
 		const customTiles = ['https://example.com/tiles/{z}/{x}/{y}'];
 		const style = buildSatelliteStyle({ rasterTiles: customTiles });
 
-		const source = style.sources.orthophotos as { tiles: string[] };
+		const source = style.sources.satellite as { tiles: string[] };
 		expect(source.tiles).toEqual(customTiles);
 	});
 

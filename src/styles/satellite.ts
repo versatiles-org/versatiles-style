@@ -81,19 +81,21 @@ export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpeci
 	if (options.rasterContrast != null) rasterPaint['raster-contrast'] = options.rasterContrast;
 
 	// Add raster source
-	style.sources.orthophotos = {
+	style.sources.satellite = {
 		type: 'raster',
 		tiles: rasterTiles,
 		tileSize: 512,
-		attribution: '© VersaTiles',
+		attribution: "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
+		bounds: [-178.187256, -21.401934, 55.846252, 58.061897],
+		minzoom: 0,
 		maxzoom: 17,
 	};
 
 	// Add raster layer at bottom
 	style.layers.unshift({
-		id: 'orthophotos',
+		id: 'satellite',
 		type: 'raster',
-		source: 'orthophotos',
+		source: 'satellite',
 		minzoom: 0,
 		...(Object.keys(rasterPaint).length > 0 ? { paint: rasterPaint } : {}),
 	} as StyleSpecification['layers'][number]);
