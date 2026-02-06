@@ -72,49 +72,7 @@ export interface StyleBuilderOptions {
 	recolor?: RecolorOptions;
 }
 
-export type StyleBuilderColorKey =
-	| 'agriculture'
-	| 'boundary'
-	| 'building'
-	| 'buildingbg'
-	| 'burial'
-	| 'commercial'
-	| 'construction'
-	| 'cycle'
-	| 'danger'
-	| 'disputed'
-	| 'education'
-	| 'foot'
-	| 'glacier'
-	| 'grass'
-	| 'hospital'
-	| 'industrial'
-	| 'label'
-	| 'labelHalo'
-	| 'land'
-	| 'leisure'
-	| 'motorway'
-	| 'motorwaybg'
-	| 'park'
-	| 'parking'
-	| 'poi'
-	| 'prison'
-	| 'rail'
-	| 'residential'
-	| 'rock'
-	| 'sand'
-	| 'shield'
-	| 'street'
-	| 'streetbg'
-	| 'subway'
-	| 'symbol'
-	| 'trunk'
-	| 'trunkbg'
-	| 'waste'
-	| 'water'
-	| 'wetland'
-	| 'wood';
-export const styleBuilderColorKeys: StyleBuilderColorKey[] = [
+export const styleBuilderColorKeys = [
 	'agriculture',
 	'boundary',
 	'building',
@@ -157,6 +115,7 @@ export const styleBuilderColorKeys: StyleBuilderColorKey[] = [
 	'wetland',
 	'wood',
 ] as const;
+export type StyleBuilderColorKey = (typeof styleBuilderColorKeys)[number];
 
 /** Records string values for color properties in a style builder. */
 export type StyleBuilderColors<T = Color | string> = Record<StyleBuilderColorKey, T>;
