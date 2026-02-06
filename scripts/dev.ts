@@ -9,7 +9,7 @@ import { rollup } from 'rollup';
 
 const PORT = 8080;
 
-type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino' | 'shadow';
+type StyleName = 'colorful' | 'eclipse' | 'graybeard' | 'neutrino' | 'shadow' | 'satellite';
 
 const config: { reg: RegExp; type: 'mem' | 'local' | 'proxy'; res: string | (() => Promise<string>) }[] = [
 	{ reg: /^\/$/, type: 'mem', res: getIndexPage() },
@@ -18,6 +18,7 @@ const config: { reg: RegExp; type: 'mem' | 'local' | 'proxy'; res: string | (() 
 	{ reg: /^\/\?graybeard$/, type: 'mem', res: () => getStylePage('graybeard') },
 	{ reg: /^\/\?shadow$/, type: 'mem', res: () => getStylePage('shadow') },
 	{ reg: /^\/\?neutrino$/, type: 'mem', res: () => getStylePage('neutrino') },
+	{ reg: /^\/\?satellite$/, type: 'mem', res: () => getStylePage('satellite') },
 	{ reg: /^\/assets\/lib\/versatiles-style\/versatiles-style.js/, type: 'mem', res: () => getStyles() },
 	{ reg: /^\/assets\/sprites\//, type: 'local', res: '../../release/sprites/' },
 	{ reg: /^\/assets\/glyphs\//, type: 'proxy', res: 'https://tiles.versatiles.org/assets/glyphs/' },
@@ -159,7 +160,9 @@ function getIndexPage() {
 		<li><a href="/?colorful">colorful</a></li>
 		<li><a href="/?eclipse">eclipse</a></li>
 		<li><a href="/?graybeard">graybeard</a></li>
+		<li><a href="/?shadow">shadow</a></li>
 		<li><a href="/?neutrino">neutrino</a></li>
+		<li><a href="/?satellite">satellite</a></li>
 	</ul>`);
 }
 
