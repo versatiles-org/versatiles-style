@@ -10,6 +10,8 @@ import Shadow from './shadow.js';
 import Neutrino from './neutrino.js';
 import Empty from './empty.js';
 
+export { buildSatelliteStyle as satellite, type SatelliteStyleOptions } from './satellite.js';
+
 export interface StyleBuilderFunction {
 	(options?: StyleBuilderOptions): StyleSpecification;
 	getOptions(): StyleBuilderOptions;

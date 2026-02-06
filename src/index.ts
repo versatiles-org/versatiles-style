@@ -80,14 +80,24 @@
  * @module
  */
 
-export { colorful, eclipse, graybeard, neutrino, shadow, type StyleBuilderFunction } from './styles/index.js';
-import { colorful, eclipse, graybeard, neutrino, shadow } from './styles/index.js';
+export {
+	colorful,
+	eclipse,
+	graybeard,
+	neutrino,
+	shadow,
+	satellite,
+	type StyleBuilderFunction,
+	type SatelliteStyleOptions,
+} from './styles/index.js';
+import { colorful, eclipse, graybeard, neutrino, shadow, satellite } from './styles/index.js';
 export const styles = {
 	colorful,
 	eclipse,
 	graybeard,
 	shadow,
 	neutrino,
+	satellite,
 };
 
 export type { GuessStyleOptions } from './guess_style/index.js';

@@ -9,7 +9,7 @@ const dirDst = new URL('../release', import.meta.url).pathname;
 mkdirSync(dirDst, { recursive: true });
 
 const pack = tar.pack();
-const { colorful, eclipse, empty, graybeard, neutrino, shadow } = styles;
+const { colorful, eclipse, empty, graybeard, neutrino, shadow, satellite } = styles;
 
 [
 	{ name: 'colorful', builder: colorful },
@@ -25,6 +25,12 @@ const { colorful, eclipse, empty, graybeard, neutrino, shadow } = styles;
 	produce(name + '/de', builder({ language: 'de' }));
 	produce(name + '/nolabel', builder({ hideLabels: true }));
 });
+
+// Satellite style (different options type)
+produce('satellite/style', satellite({ language: undefined }));
+produce('satellite/en', satellite({ language: 'en' }));
+produce('satellite/de', satellite({ language: 'de' }));
+produce('satellite/nooverlay', satellite({ overlay: false }));
 
 pack.finalize();
 pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));

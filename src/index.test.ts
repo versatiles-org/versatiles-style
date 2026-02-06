@@ -110,7 +110,7 @@ describe('exports', () => {
 	it('should export styles', () => {
 		type something = Record<string, unknown>;
 		expect(typeof lib.styles).toBe('object');
-		const styleNames = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'];
+		const styleNames = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow', 'satellite'];
 		for (const name of styleNames) {
 			expect(typeof (lib as something)[name]).toBe('function');
 			expect(typeof (lib.styles as something)[name]).toBe('function');

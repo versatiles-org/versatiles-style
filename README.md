@@ -159,7 +159,7 @@ subgraph 1["color"]
 end
 subgraph 9["guess_style"]
 A["guess_style.ts"]
-Z["index.ts"]
+10["index.ts"]
 end
 subgraph B["lib"]
 C["utils.ts"]
@@ -171,7 +171,8 @@ Q["eclipse.ts"]
 R["empty.ts"]
 S["graybeard.ts"]
 T["neutrino.ts"]
-U["shadow.ts"]
+U["satellite.ts"]
+V["shadow.ts"]
 end
 subgraph G["style_builder"]
 H["style_builder.ts"]
@@ -185,13 +186,13 @@ K["layers.ts"]
 L["template.ts"]
 N["properties.ts"]
 end
-subgraph V["types"]
-W["index.ts"]
-X["tilejson.ts"]
-Y["vector_layer.ts"]
-11["maplibre.ts"]
+subgraph W["types"]
+X["index.ts"]
+Y["tilejson.ts"]
+Z["vector_layer.ts"]
+12["maplibre.ts"]
 end
-10["index.ts"]
+11["index.ts"]
 end
 3-->2
 3-->4
@@ -215,8 +216,8 @@ end
 A-->5
 A-->C
 A-->E
-A-->W
 A-->X
+A-->Y
 C-->8
 E-->F
 E-->Q
@@ -224,6 +225,7 @@ E-->R
 E-->S
 E-->T
 E-->U
+E-->V
 F-->H
 H-->8
 H-->C
@@ -241,15 +243,16 @@ Q-->F
 R-->F
 S-->F
 T-->F
-U-->F
-W-->X
-W-->Y
-Z-->A
-10-->8
-10-->Z
-10-->E
+U-->S
+V-->F
+X-->Y
+X-->Z
+10-->A
+11-->8
+11-->10
+11-->E
 
-class 0,1,9,B,D,G,I,V subgraphs;
+class 0,1,9,B,D,G,I,W subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
