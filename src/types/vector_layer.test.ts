@@ -63,6 +63,6 @@ describe('isVectorLayers', () => {
 			{ id: 'layer2', fields: { field2: 'InvalidType' } },
 		];
 
-		expect(() => isVectorLayers(invalidLayers)).toThrow(/Layer\[\d+\] at invalid:/);
+		expect(() => isVectorLayers(invalidLayers)).toThrow(/Layer\[\d+\] is invalid:/);
 	});
 });
