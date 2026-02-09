@@ -86,7 +86,7 @@ export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpeci
 		tiles: rasterTiles,
 		tileSize: 512,
 		attribution: "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
-		bounds: [-178.187256, -21.401934, 55.846252, 58.061897],
+		bounds: [-180, -86, 180, 86],
 		minzoom: 0,
 		maxzoom: 17,
 	};
