@@ -19,7 +19,7 @@ Promise.all([
 	draw('graybeard', styles.graybeard({})),
 	draw('neutrino', styles.neutrino({})),
 	draw('shadow', styles.shadow({})),
-	draw('satellite', styles.satellite({})),
+	draw('satellite', await styles.satellite({})),
 ]);
 
 /**
