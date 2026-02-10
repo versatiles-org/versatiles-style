@@ -1,17 +1,37 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildSatelliteStyle } from './satellite.js';
 
+const fakeTilejson = {
+	tilejson: '3.0.0',
+	tiles: ['/tiles/satellite/{z}/{x}/{y}'],
+	bounds: [-180, -85, 180, 85],
+	minzoom: 0,
+	maxzoom: 14,
+	attribution: 'fake',
+};
+
 describe('satellite style', () => {
-	it('should create a satellite style with default options', () => {
-		const style = buildSatelliteStyle();
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+	it('should create a satellite style with default options', async () => {
+		const style = await buildSatelliteStyle();
 
 		expect(style.name).toBe('versatiles-satellite');
-		expect(style.sources.satellite).toBeDefined();
-		expect(style.sources.satellite).toMatchObject({
-			type: 'raster',
-			tiles: ['https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}'],
-			tileSize: 512,
+		expect(style.sources.satellite).toStrictEqual({
+			attribution: "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
+			bounds: [-178.187256, -21.401934, 55.846252, 58.061897],
+			description: 'High-resolution satellite and orthophoto imagery from various providers, merged by VersaTiles.',
 			maxzoom: 17,
+			minzoom: 0,
+			name: 'VersaTiles - Satellite + Orthophotos',
+			tile_format: 'image/webp',
+			tile_schema: 'rgb',
+			tile_type: 'raster',
+			tilejson: '3.0.0',
+			tiles: ['/tiles/satellite/{z}/{x}/{y}'],
+			type: 'raster',
+			version: '3.0',
 		});
 
 		// Raster layer should be the first layer
@@ -22,14 +42,22 @@ describe('satellite style', () => {
 		});
 	});
 
-	it('should include vector overlay by default', () => {
-		const style = buildSatelliteStyle();
+	it('should include vector overlay by default', async () => {
+		const style = await buildSatelliteStyle();
 
 		// Should have more than just the raster layer
 		expect(style.layers.length).toBeGreaterThan(1);
 
 		// Should have the vector source
-		expect(style.sources['versatiles-shortbread']).toBeDefined();
+		expect(style.sources['versatiles-shortbread']).toStrictEqual({
+			type: 'vector',
+			attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
+			maxzoom: 14,
+			minzoom: 0,
+			scheme: 'xyz',
+			tiles: ['https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'],
+		});
 
 		// Should not contain background layer
 		expect(style.layers.find((l) => l.id === 'background')).toBeUndefined();
@@ -42,8 +70,8 @@ describe('satellite style', () => {
 		expect(unwanted).toHaveLength(0);
 	});
 
-	it('should modify symbol layers for satellite overlay', () => {
-		const style = buildSatelliteStyle();
+	it('should modify symbol layers for satellite overlay', async () => {
+		const style = await buildSatelliteStyle();
 
 		const symbolLayers = style.layers.filter((l) => l.type === 'symbol');
 		expect(symbolLayers.length).toBeGreaterThan(0);
@@ -60,8 +88,8 @@ describe('satellite style', () => {
 		}
 	});
 
-	it('should reduce line layer opacity', () => {
-		const style = buildSatelliteStyle();
+	it('should reduce line layer opacity', async () => {
+		const style = await buildSatelliteStyle();
 
 		const lineLayers = style.layers.filter((l) => l.type === 'line');
 		expect(lineLayers.length).toBeGreaterThan(0);
@@ -75,8 +103,8 @@ describe('satellite style', () => {
 		}
 	});
 
-	it('should create minimal style when overlay is false', () => {
-		const style = buildSatelliteStyle({ overlay: false });
+	it('should create minimal style when overlay is false', async () => {
+		const style = await buildSatelliteStyle({ overlay: false });
 
 		expect(style.name).toBe('versatiles-satellite');
 		// Should only have the raster layer
@@ -91,22 +119,27 @@ describe('satellite style', () => {
 		expect(Object.keys(style.sources)).toEqual(['satellite']);
 	});
 
-	it('should accept custom raster tiles', () => {
-		const customTiles = ['https://example.com/tiles/{z}/{x}/{y}'];
-		const style = buildSatelliteStyle({ rasterTiles: customTiles });
+	it('should accept custom rasterTilejson', async () => {
+		const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json(fakeTilejson));
 
-		const source = style.sources.satellite as { tiles: string[] };
-		expect(source.tiles).toEqual(customTiles);
+		const style = await buildSatelliteStyle({ rasterTilejson: 'https://example.com/satellite.json' });
+
+		expect(fetchSpy).toHaveBeenCalledWith('https://example.com/satellite.json');
+		expect(style.sources.satellite).toMatchObject({ type: 'raster', tiles: fakeTilejson.tiles });
 	});
 
-	it('should accept custom baseUrl', () => {
-		const style = buildSatelliteStyle({ baseUrl: 'https://example.org' });
+	it('should accept custom baseUrl', async () => {
+		const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json(fakeTilejson));
 
+		const style = await buildSatelliteStyle({ baseUrl: 'https://example.org' });
+
+		expect(fetchSpy).toHaveBeenCalledWith('https://example.org/tiles/satellite/tiles.json');
 		expect(style.glyphs).toBe('https://example.org/assets/glyphs/{fontstack}/{range}.pbf');
+		expect(style.sources.satellite).toMatchObject({ type: 'raster', tiles: fakeTilejson.tiles });
 	});
 
-	it('should apply raster paint properties', () => {
-		const style = buildSatelliteStyle({
+	it('should apply raster paint properties', async () => {
+		const style = await buildSatelliteStyle({
 			overlay: false,
 			rasterOpacity: 0.8,
 			rasterHueRotate: 45,
@@ -129,15 +162,15 @@ describe('satellite style', () => {
 		});
 	});
 
-	it('should not include raster paint when no raster options set', () => {
-		const style = buildSatelliteStyle({ overlay: false });
+	it('should not include raster paint when no raster options set', async () => {
+		const style = await buildSatelliteStyle({ overlay: false });
 
 		const rasterLayer = style.layers[0];
 		expect(rasterLayer).not.toHaveProperty('paint');
 	});
 
-	it('should accept language option', () => {
-		const style = buildSatelliteStyle({ language: 'de' });
+	it('should accept language option', async () => {
+		const style = await buildSatelliteStyle({ language: 'de' });
 
 		// Style should still be valid
 		expect(style.name).toBe('versatiles-satellite');

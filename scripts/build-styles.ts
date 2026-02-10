@@ -27,10 +27,10 @@ const { colorful, eclipse, empty, graybeard, neutrino, shadow, satellite } = sty
 });
 
 // Satellite style (different options type)
-produce('satellite/style', satellite({ language: undefined }));
-produce('satellite/en', satellite({ language: 'en' }));
-produce('satellite/de', satellite({ language: 'de' }));
-produce('satellite/nooverlay', satellite({ overlay: false }));
+produce('satellite/style', await satellite({ language: undefined }));
+produce('satellite/en', await satellite({ language: 'en' }));
+produce('satellite/de', await satellite({ language: 'de' }));
+produce('satellite/nooverlay', await satellite({ overlay: false }));
 
 pack.finalize();
 pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));

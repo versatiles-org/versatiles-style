@@ -1,10 +1,12 @@
 import Graybeard from './graybeard.js';
 import type { StyleSpecification } from '../types/maplibre.js';
 import type { Language } from '../style_builder/types.js';
+import { resolveUrl } from '../lib/utils.js';
+import { TileJSONSpecification } from '../types/tilejson.js';
 
 export interface SatelliteStyleOptions {
 	baseUrl?: string;
-	rasterTiles?: string[];
+	rasterTilejson?: string;
 	overlayTiles?: string[];
 	overlay?: boolean;
 	language?: Language;
@@ -16,10 +18,9 @@ export interface SatelliteStyleOptions {
 	rasterContrast?: number;
 }
 
-export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpecification {
+export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Promise<StyleSpecification> {
 	options ??= {};
 	const baseUrl = options.baseUrl ?? 'https://tiles.versatiles.org';
-	const rasterTiles = options.rasterTiles ?? [`${baseUrl}/tiles/satellite/{z}/{x}/{y}`];
 	const overlay = options.overlay ?? true;
 
 	let style: StyleSpecification;
@@ -81,15 +82,9 @@ export function buildSatelliteStyle(options?: SatelliteStyleOptions): StyleSpeci
 	if (options.rasterContrast != null) rasterPaint['raster-contrast'] = options.rasterContrast;
 
 	// Add raster source
-	style.sources.satellite = {
-		type: 'raster',
-		tiles: rasterTiles,
-		tileSize: 512,
-		attribution: "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
-		bounds: [-180, -86, 180, 86],
-		minzoom: 0,
-		maxzoom: 17,
-	};
+	const rasterTilejsonUrl = resolveUrl(baseUrl, options.rasterTilejson ?? '/tiles/satellite/tiles.json');
+	const rasterTilejson = (await fetch(rasterTilejsonUrl).then((res) => res.json())) as TileJSONSpecification;
+	style.sources.satellite = { ...rasterTilejson, type: 'raster' };
 
 	// Add raster layer at bottom
 	style.layers.unshift({
