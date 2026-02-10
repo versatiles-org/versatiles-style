@@ -29,7 +29,7 @@ describe('satellite style', () => {
 			tile_schema: 'rgb',
 			tile_type: 'raster',
 			tilejson: '3.0.0',
-			tiles: ['/tiles/satellite/{z}/{x}/{y}'],
+			tiles: ['https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}'],
 			type: 'raster',
 			version: '3.0',
 		});
@@ -125,7 +125,10 @@ describe('satellite style', () => {
 		const style = await buildSatelliteStyle({ rasterTilejson: 'https://example.com/satellite.json' });
 
 		expect(fetchSpy).toHaveBeenCalledWith('https://example.com/satellite.json');
-		expect(style.sources.satellite).toMatchObject({ type: 'raster', tiles: fakeTilejson.tiles });
+		expect(style.sources.satellite).toMatchObject({
+			type: 'raster',
+			tiles: ['https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}'],
+		});
 	});
 
 	it('should accept custom baseUrl', async () => {
@@ -135,7 +138,10 @@ describe('satellite style', () => {
 
 		expect(fetchSpy).toHaveBeenCalledWith('https://example.org/tiles/satellite/tiles.json');
 		expect(style.glyphs).toBe('https://example.org/assets/glyphs/{fontstack}/{range}.pbf');
-		expect(style.sources.satellite).toMatchObject({ type: 'raster', tiles: fakeTilejson.tiles });
+		expect(style.sources.satellite).toMatchObject({
+			type: 'raster',
+			tiles: ['https://example.org/tiles/satellite/{z}/{x}/{y}'],
+		});
 	});
 
 	it('should apply raster paint properties', async () => {

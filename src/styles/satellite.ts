@@ -84,6 +84,9 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 	// Add raster source
 	const rasterTilejsonUrl = resolveUrl(baseUrl, options.rasterTilejson ?? '/tiles/satellite/tiles.json');
 	const rasterTilejson = (await fetch(rasterTilejsonUrl).then((res) => res.json())) as TileJSONSpecification;
+	if (rasterTilejson.tiles) {
+		rasterTilejson.tiles = rasterTilejson.tiles.map((url) => resolveUrl(baseUrl, url));
+	}
 	style.sources.satellite = { ...rasterTilejson, type: 'raster' };
 
 	// Add raster layer at bottom
