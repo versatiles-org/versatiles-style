@@ -47,6 +47,15 @@ jobs:
           cd release/sprites
           tar -cf - * | gzip -9 > ../sprites.tar.gz
 
+      - name: Verify sprites.tar.gz size
+        run: |
+          SIZE=$(stat -c%s release/sprites.tar.gz)
+          echo "sprites.tar.gz size: $SIZE bytes"
+          if [ "$SIZE" -lt 1048576 ]; then
+            echo "ERROR: sprites.tar.gz is smaller than 1 MB ($SIZE bytes)"
+            exit 1
+          fi
+
       - name: Get version
         run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
 
