@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.9.4] - 2026-02-15
+
+### Bug Fixes
+
+- update badge labels in README for consistency
+- reorder build step in release workflow for improved execution
+- add verification step for sprites.tar.gz size in release workflow
+- remove redundant browser test for style object
+- prevent tests from modifying the release directory by mocking fs methods
+- update satellite style bounds and center coordinates for accuracy
+- simplify mock implementations in sprite generation tests
+
+### Chores
+
+- update dependencies in package.json
+
 ## [5.9.3] - 2026-02-10
 
 ### Bug Fixes
