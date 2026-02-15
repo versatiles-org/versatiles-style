@@ -20,7 +20,8 @@ describe('satellite style', () => {
 		expect(style.name).toBe('versatiles-satellite');
 		expect(style.sources.satellite).toStrictEqual({
 			attribution: "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
-			bounds: [-178.187256, -21.401934, 55.846252, 58.061897],
+			bounds: [-180, -85.051129, 180, 85.051129],
+			center: [-61.170502, 18.329982, 2],
 			description: 'High-resolution satellite and orthophoto imagery from various providers, merged by VersaTiles.',
 			maxzoom: 17,
 			minzoom: 0,
