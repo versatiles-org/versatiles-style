@@ -23,6 +23,11 @@ describe('Sprite Generation and Packaging', () => {
 		const fs = await import('fs');
 		vi.clearAllMocks();
 
+		// Prevent tests from modifying the release directory
+		vi.mocked(fs.rmSync).mockImplementation(() => undefined as any);
+		vi.mocked(fs.mkdirSync).mockImplementation(() => undefined as any);
+		vi.mocked(fs.writeFileSync).mockImplementation(() => undefined as any);
+
 		await import('./build-sprites.js');
 
 		const readCalls = vi.mocked(fs.readFileSync).mock.calls.filter((call) => /\.svg$/.test(String(call[0])));
