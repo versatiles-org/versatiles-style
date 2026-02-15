@@ -24,9 +24,9 @@ describe('Sprite Generation and Packaging', () => {
 		vi.clearAllMocks();
 
 		// Prevent tests from modifying the release directory
-		vi.mocked(fs.rmSync).mockImplementation(() => undefined as any);
-		vi.mocked(fs.mkdirSync).mockImplementation(() => undefined as any);
-		vi.mocked(fs.writeFileSync).mockImplementation(() => undefined as any);
+		vi.mocked(fs.rmSync).mockImplementation(() => undefined);
+		vi.mocked(fs.mkdirSync).mockImplementation(() => undefined);
+		vi.mocked(fs.writeFileSync).mockImplementation(() => undefined);
 
 		await import('./build-sprites.js');
 
