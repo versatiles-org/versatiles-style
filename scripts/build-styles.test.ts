@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { PassThrough } from 'node:stream';
 import type { Pack } from 'tar-stream';
 
 console.log = vi.fn();
@@ -26,9 +27,13 @@ vi.mock('./config-sprites', () => ({
 
 describe('Sprite Generation and Packaging', () => {
 	it('successfully generates and packages sprites', async () => {
-		vi.clearAllMocks();
 		const fs = await import('fs');
 		const tar = await import('tar-stream');
+		vi.clearAllMocks();
+
+		// Prevent tests from modifying the release directory
+		vi.mocked(fs.mkdirSync).mockImplementation(() => undefined);
+		vi.mocked(fs.createWriteStream).mockImplementation(() => new PassThrough() as never);
 
 		await import('./build-styles.js');
 

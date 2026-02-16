@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "check": "npm run lint && npm run build && npm run test && npm run format:check",
+    "check": "npm run lint && npm run build && npm run test:all && npm run format:check",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
     "build-browser": "rollup -c --environment BUILD:browser && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
     "build-node": "rm -rf dist && rollup -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
@@ -27,9 +27,10 @@
     "lint": "eslint --color .",
     "prepack": "npm run build",
     "release": "vrt release-npm",
-    "test": "npm run test-typescript",
+    "test": "vitest run --project unit",
+    "test:e2e": "vitest run --project e2e",
+    "test:all": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "test-typescript": "vitest run",
     "upgrade": "vrt deps-upgrade",
     "prepare": "husky"
   },
