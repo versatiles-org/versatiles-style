@@ -1,5 +1,5 @@
 import { Color } from '../color/index.js';
-import expandBraces from 'brace-expansion';
+import { expand } from 'brace-expansion';
 import maplibreProperties from '../shortbread/properties.js';
 import { deepMerge } from '../lib/utils.js';
 import type { MaplibreLayer } from '../types/index.js';
@@ -18,7 +18,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 		if (layerStyle == null) return;
 
 		// Expand any braces in IDs and filter them through a RegExp if necessary
-		const ids = expandBraces(idDef).flatMap((id) => {
+		const ids = expand(idDef).flatMap((id) => {
 			if (!id.includes('*')) return id;
 			const regExpString = id.replace(/[^a-z_:-]/g, (c) => {
 				if (c === '*') return '[a-z_-]*';
