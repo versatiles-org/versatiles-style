@@ -118,7 +118,7 @@ export class RGB extends Color {
 		const max = Math.max(r, g, b);
 		const delta = max - min;
 		let h = 0;
-		let s = 0;
+		let s;
 
 		if (max === min) h = 0;
 		else if (r === max) h = (g - b) / delta;
