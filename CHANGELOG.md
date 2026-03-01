@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.9.5] - 2026-03-01
+
+### Bug Fixes
+
+- update test scripts and add end-to-end tests for style object validation
+- update CI workflows to run all tests and add end-to-end testing step
+- remove unnecessary initialization of saturation variable in HSL conversion
+- update import statement for brace expansion and adjust usage in decorate function
+- update brace-expansion and other dependencies in package.json
+- remove unused inquirer types from dependencies in package.json
+- add tslib as a dependency in package.json and package-lock.json
+
+### Build System
+
+- **deps:** bump the npm group with 11 updates
+
+### Chores
+
+- update dependencies and devDependencies in package.json
+
 ## [5.9.4] - 2026-02-15
 
 ### Bug Fixes
