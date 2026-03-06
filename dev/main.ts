@@ -1,6 +1,7 @@
 import { styles } from '@versatiles/style';
 
-declare const maplibregl: typeof import('maplibre-gl');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const maplibregl: any;
 
 type StyleName = keyof typeof styles;
 
@@ -11,7 +12,8 @@ const params = new URLSearchParams(location.search);
 const initialStyle = (params.get('style') ?? 'colorful') as StyleName;
 styleSelect.value = initialStyle;
 
-let map: InstanceType<typeof maplibregl.Map> | undefined;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let map: any;
 
 async function loadStyle(name: StyleName) {
 	const buildFn = styles[name];

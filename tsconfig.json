@@ -11,7 +11,11 @@
 		"allowJs": true,
 		"allowImportingTsExtensions": false,
 		"noEmit": true,
-		"sourceMap": true
+		"sourceMap": true,
+		"paths": {
+			"@versatiles/style": ["./src/index.ts"]
+		}
 	},
-	"include": ["rollup.config.*", "scripts/**/*.ts", "src/**/*.ts"]
+	"include": ["rollup.config.*", "scripts/**/*.ts", "src/**/*.ts"],
+	"exclude": ["dev/**/*.ts"]
 }

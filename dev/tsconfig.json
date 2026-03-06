@@ -1,0 +1,10 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"lib": ["ESNext", "DOM"],
+		"paths": {
+			"@versatiles/style": ["../src/index.ts"]
+		}
+	},
+	"include": ["./**/*.ts"]
+}

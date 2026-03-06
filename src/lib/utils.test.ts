@@ -142,6 +142,7 @@ describe('deepMerge', () => {
 	it('overwrites with null when target is a basic type', () => {
 		const target = { a: 1, b: 'string' };
 		const source = { a: null, b: null };
+		// @ts-expect-error Testing runtime behavior with null values
 		const result = deepMerge(target, source);
 		expect(result).toEqual({ a: null, b: null });
 	});
@@ -181,6 +182,7 @@ describe('deepMerge', () => {
 	it('overwrites basic types with arrays', () => {
 		const target = { a: 1, b: 'string' };
 		const source = { a: [1, 2, 3], b: [4, 5] };
+		// @ts-expect-error Testing runtime behavior with incompatible types
 		const result = deepMerge(target, source);
 		expect(result).toEqual({ a: [1, 2, 3], b: [4, 5] });
 		expect(result.a).not.toBe(source.a); // Should be a deep clone
@@ -195,6 +197,7 @@ describe('deepMerge', () => {
 	it('deeply merges nested objects across multiple levels', () => {
 		const target = { a: { b: { c: 1, d: 2 }, e: 3 }, f: 4 };
 		const source = { a: { b: { c: 10 }, g: 5 }, h: 6 };
+		// @ts-expect-error Testing runtime behavior with structurally incompatible types
 		const result = deepMerge(target, source);
 		expect(result).toEqual({ a: { b: { c: 10, d: 2 }, e: 3, g: 5 }, f: 4, h: 6 });
 	});
