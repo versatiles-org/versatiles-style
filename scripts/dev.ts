@@ -163,8 +163,8 @@ function getIndexPage() {
 async function getStylePage(styleName: StyleName) {
 	return getPage(`
 	<div id="map"></div>
-	<script>
-		const style = VersaTilesStyle.${styleName}();
+	<script type="module">
+		const style = await VersaTilesStyle.${styleName}();
 		console.log(style);
 		new maplibregl.Map({ container: 'map', style, maxZoom: 20, hash: true });
 	</script>`);
