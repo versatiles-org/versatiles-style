@@ -19,6 +19,8 @@ export interface TileJSONSpecificationRaster {
 	scheme?: 'tms' | 'xyz';
 	template?: string;
 	version?: string;
+	tile_schema?: string;
+	encoding?: string;
 }
 
 /** Structure for TileJSON specification of vector type, specifying vector-specific properties. */
