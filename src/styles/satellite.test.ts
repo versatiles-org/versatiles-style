@@ -183,4 +183,102 @@ describe('satellite style', () => {
 		expect(style.name).toBe('versatiles-satellite');
 		expect(style.layers.length).toBeGreaterThan(1);
 	});
+
+	it('should add terrain with defaults', async () => {
+		const fetchSpy = vi
+			.spyOn(globalThis, 'fetch')
+			.mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		const style = await buildSatelliteStyle({ overlay: false, terrain: true });
+
+		expect(fetchSpy).toHaveBeenCalledWith('https://tiles.versatiles.org/tiles/elevation/tiles.json');
+		expect(style.sources.elevation).toMatchObject({ type: 'raster-dem' });
+		expect(style.terrain).toEqual({ source: 'elevation', exaggeration: 1 });
+	});
+
+	it('should add terrain with custom exaggeration', async () => {
+		vi.spyOn(globalThis, 'fetch').mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		const style = await buildSatelliteStyle({ overlay: false, terrain: { exaggeration: 2.5 } });
+
+		expect(style.terrain).toEqual({ source: 'elevation', exaggeration: 2.5 });
+	});
+
+	it('should add hillshade layer with defaults', async () => {
+		vi.spyOn(globalThis, 'fetch').mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		const style = await buildSatelliteStyle({ overlay: false, hillshade: true });
+
+		expect(style.sources.elevation).toMatchObject({ type: 'raster-dem' });
+		expect(style.layers[0]).toMatchObject({ id: 'satellite', type: 'raster' });
+		expect(style.layers[1]).toMatchObject({ id: 'hillshade', type: 'hillshade', source: 'elevation' });
+		expect(style.layers[1]).not.toHaveProperty('paint');
+	});
+
+	it('should add hillshade layer with custom paint properties', async () => {
+		vi.spyOn(globalThis, 'fetch').mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		const style = await buildSatelliteStyle({
+			overlay: false,
+			hillshade: {
+				exaggeration: 0.5,
+				shadowColor: '#333',
+				highlightColor: '#fff',
+				accentColor: '#000',
+				illuminationDirection: 315,
+				illuminationAnchor: 'map',
+			},
+		});
+
+		expect(style.layers[1]).toMatchObject({
+			id: 'hillshade',
+			type: 'hillshade',
+			source: 'elevation',
+			paint: {
+				'hillshade-exaggeration': 0.5,
+				'hillshade-shadow-color': '#333',
+				'hillshade-highlight-color': '#fff',
+				'hillshade-accent-color': '#000',
+				'hillshade-illumination-direction': 315,
+				'hillshade-illumination-anchor': 'map',
+			},
+		});
+	});
+
+	it('should use a single elevation source when both terrain and hillshade are enabled', async () => {
+		const fetchSpy = vi
+			.spyOn(globalThis, 'fetch')
+			.mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		const style = await buildSatelliteStyle({ overlay: false, terrain: true, hillshade: true });
+
+		// Two fetches: one for satellite raster, one for elevation
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+		expect(fetchSpy).toHaveBeenCalledWith('https://tiles.versatiles.org/tiles/elevation/tiles.json');
+		expect(style.sources.elevation).toMatchObject({ type: 'raster-dem' });
+		expect(style.terrain).toEqual({ source: 'elevation', exaggeration: 1 });
+		expect(style.layers[1]).toMatchObject({ id: 'hillshade', type: 'hillshade' });
+	});
+
+	it('should use custom elevationTilejson URL', async () => {
+		const fetchSpy = vi
+			.spyOn(globalThis, 'fetch')
+			.mockImplementation(() => Promise.resolve(Response.json(fakeTilejson)));
+
+		await buildSatelliteStyle({
+			overlay: false,
+			terrain: true,
+			elevationTilejson: 'https://example.com/elevation.json',
+		});
+
+		expect(fetchSpy).toHaveBeenCalledWith('https://example.com/elevation.json');
+	});
+
+	it('should not add elevation source when neither terrain nor hillshade is enabled', async () => {
+		const style = await buildSatelliteStyle({ overlay: false });
+
+		expect(style.sources.elevation).toBeUndefined();
+		expect(style.terrain).toBeUndefined();
+		expect(style.layers.find((l) => l.id === 'hillshade')).toBeUndefined();
+	});
 });
