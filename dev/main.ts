@@ -6,8 +6,8 @@ type StyleName = keyof typeof styles;
 
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
 
-// Restore style from URL hash or default to "colorful"
-const params = new URLSearchParams(location.hash.replace(/^#/, '').replace(/^[^?]*/, ''));
+// Restore style from URL query parameter
+const params = new URLSearchParams(location.search);
 const initialStyle = (params.get('style') ?? 'colorful') as StyleName;
 styleSelect.value = initialStyle;
 
@@ -25,14 +25,14 @@ async function loadStyle(name: StyleName) {
 			container: 'map',
 			style,
 			maxZoom: 20,
-			hash: 'pos',
+			hash: true,
 		});
 	}
 
-	// Persist style choice in hash
-	const hash = location.hash || '#';
-	const [positionPart] = hash.replace(/^#/, '').split('?');
-	location.hash = `${positionPart}?style=${name}`;
+	// Persist style choice in query parameter
+	const url = new URL(location.href);
+	url.searchParams.set('style', name);
+	history.replaceState(null, '', url);
 }
 
 styleSelect.addEventListener('change', () => {
