@@ -33,6 +33,7 @@ async function loadStyle(name: string) {
 			maxZoom: 20,
 			hash: true,
 		});
+		map.addControl(new maplibregl.NavigationControl(), 'top-right');
 	}
 
 	// Persist style choice in query parameter
