@@ -6,5 +6,6 @@
 			"@versatiles/style": ["../src/index.ts"]
 		}
 	},
-	"include": ["./**/*.ts"]
+	"include": ["./**/*.ts"],
+	"exclude": []
 }
