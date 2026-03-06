@@ -89,6 +89,8 @@ export {
 	satellite,
 	type StyleBuilderFunction,
 	type SatelliteStyleOptions,
+	getStyleVariants,
+	type StyleVariant,
 } from './styles/index.js';
 import { colorful, eclipse, graybeard, neutrino, shadow, satellite } from './styles/index.js';
 export const styles = {

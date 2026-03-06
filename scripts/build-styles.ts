@@ -1,6 +1,6 @@
 import { createWriteStream, mkdirSync } from 'fs';
 import { resolve } from 'path';
-import * as styles from '../src/styles/index.js';
+import { getStyleVariants } from '../src/styles/variants.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'zlib';
@@ -9,28 +9,11 @@ const dirDst = new URL('../release', import.meta.url).pathname;
 mkdirSync(dirDst, { recursive: true });
 
 const pack = tar.pack();
-const { colorful, eclipse, empty, graybeard, neutrino, shadow, satellite } = styles;
 
-[
-	{ name: 'colorful', builder: colorful },
-	{ name: 'eclipse', builder: eclipse },
-	{ name: 'empty', builder: empty },
-	{ name: 'graybeard', builder: graybeard },
-	{ name: 'neutrino', builder: neutrino },
-	{ name: 'shadow', builder: shadow },
-].forEach(({ name, builder }) => {
-	produce(name + '/style', builder({ language: undefined }));
-	if (name === 'empty') return;
-	produce(name + '/en', builder({ language: 'en' }));
-	produce(name + '/de', builder({ language: 'de' }));
-	produce(name + '/nolabel', builder({ hideLabels: true }));
-});
-
-// Satellite style (different options type)
-produce('satellite/style', await satellite({ language: undefined }));
-produce('satellite/en', await satellite({ language: 'en' }));
-produce('satellite/de', await satellite({ language: 'de' }));
-produce('satellite/nooverlay', await satellite({ overlay: false }));
+const variants = getStyleVariants();
+for (const { name, build } of variants) {
+	produce(name, await build());
+}
 
 pack.finalize();
 pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));

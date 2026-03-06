@@ -1,23 +1,31 @@
-import { styles } from '@versatiles/style';
+import { getStyleVariants } from '@versatiles/style';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const maplibregl: any;
 
-type StyleName = keyof typeof styles;
-
+const variants = getStyleVariants();
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
+
+// Populate select from variants
+for (const { name } of variants) {
+	const option = document.createElement('option');
+	option.value = name;
+	option.textContent = name;
+	styleSelect.appendChild(option);
+}
 
 // Restore style from URL query parameter
 const params = new URLSearchParams(location.search);
-const initialStyle = (params.get('style') ?? 'colorful') as StyleName;
+const initialStyle = params.get('style') ?? 'colorful/style';
 styleSelect.value = initialStyle;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let map: any;
 
-async function loadStyle(name: StyleName) {
-	const buildFn = styles[name];
-	const style = await buildFn();
+async function loadStyle(name: string) {
+	const variant = variants.find((v) => v.name === name);
+	if (!variant) return;
+	const style = await variant.build();
 	console.log(`Style "${name}":`, style);
 
 	if (map) {
@@ -38,7 +46,7 @@ async function loadStyle(name: StyleName) {
 }
 
 styleSelect.addEventListener('change', () => {
-	loadStyle(styleSelect.value as StyleName);
+	loadStyle(styleSelect.value);
 });
 
 loadStyle(initialStyle);

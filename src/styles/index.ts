@@ -32,3 +32,5 @@ export const graybeard = getStyleBuilder(Graybeard);
 export const shadow = getStyleBuilder(Shadow);
 export const neutrino = getStyleBuilder(Neutrino);
 export const empty = getStyleBuilder(Empty);
+
+export { getStyleVariants, type StyleVariant } from './variants.js';
