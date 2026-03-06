@@ -22,15 +22,15 @@ export interface SatelliteStyleOptions {
 	terrain?: boolean | { exaggeration?: number };
 	/** Enable hillshade layer. `true` for defaults, or object for custom paint properties. */
 	hillshade?:
-		| boolean
-		| {
-				exaggeration?: number;
-				shadowColor?: string;
-				highlightColor?: string;
-				accentColor?: string;
-				illuminationDirection?: number;
-				illuminationAnchor?: 'map' | 'viewport';
-		  };
+	| boolean
+	| {
+		exaggeration?: number;
+		shadowColor?: string;
+		highlightColor?: string;
+		accentColor?: string;
+		illuminationDirection?: number;
+		illuminationAnchor?: 'map' | 'viewport';
+	};
 }
 
 export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Promise<StyleSpecification> {
@@ -121,7 +121,23 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 		if (elevationTilejson.tiles) {
 			elevationTilejson.tiles = elevationTilejson.tiles.map((url) => resolveUrl(baseUrl, url));
 		}
-		style.sources.elevation = { ...elevationTilejson, type: 'raster-dem' };
+		style.sources.elevation = {
+			attribution: elevationTilejson.attribution,
+			bounds: elevationTilejson.bounds,
+			minzoom: elevationTilejson.minzoom,
+			maxzoom: elevationTilejson.maxzoom,
+			tiles: elevationTilejson.tiles,
+			type: 'raster-dem'
+		};
+		switch (elevationTilejson.tile_schema) {
+			case 'dem/mapbox':
+				style.sources.elevation.encoding = 'mapbox';
+				break;
+			case 'dem/terrarium':
+				style.sources.elevation.encoding = 'terrarium';
+				break;
+		}
+		console.log('Elevation source:', style.sources.elevation);
 	}
 
 	// 3D terrain
