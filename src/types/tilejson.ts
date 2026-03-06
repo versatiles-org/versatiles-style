@@ -20,7 +20,8 @@ export interface TileJSONSpecificationRaster {
 	template?: string;
 	version?: string;
 	tile_schema?: string;
-	encoding?: string;
+	tile_size?: number;
+	encoding?: 'terrarium' | 'mapbox' | 'custom';
 }
 
 /** Structure for TileJSON specification of vector type, specifying vector-specific properties. */

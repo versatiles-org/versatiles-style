@@ -22,14 +22,14 @@ export interface SatelliteStyleOptions {
 	terrain?: boolean | { exaggeration?: number };
 	/** Enable hillshade layer. `true` for defaults, or object for custom paint properties. */
 	hillshade?:
-	| boolean
-	| {
-		shadowColor?: string;
-		highlightColor?: string;
-		accentColor?: string;
-		illuminationDirection?: number;
-		illuminationAnchor?: 'map' | 'viewport';
-	};
+		| boolean
+		| {
+				shadowColor?: string;
+				highlightColor?: string;
+				accentColor?: string;
+				illuminationDirection?: number;
+				illuminationAnchor?: 'map' | 'viewport';
+		  };
 }
 
 export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Promise<StyleSpecification> {
@@ -126,7 +126,9 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 			minzoom: elevationTilejson.minzoom,
 			maxzoom: elevationTilejson.maxzoom,
 			tiles: elevationTilejson.tiles,
-			type: 'raster-dem'
+			encoding: elevationTilejson.encoding,
+			tileSize: elevationTilejson.tile_size ?? 512,
+			type: 'raster-dem',
 		};
 		switch (elevationTilejson.tile_schema) {
 			case 'dem/mapbox':
