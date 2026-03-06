@@ -30,5 +30,11 @@ export function getStyleVariants(): StyleVariant[] {
 	variants.push({ name: 'satellite/de', build: () => satellite({ language: 'de' }) });
 	variants.push({ name: 'satellite/nooverlay', build: () => satellite({ overlay: false }) });
 
+	let terrain = { terrain: true, hillshade: true } as const;
+	variants.push({ name: 'terrain/style', build: () => satellite({ ...terrain, language: undefined }) });
+	variants.push({ name: 'terrain/en', build: () => satellite({ ...terrain, language: 'en' }) });
+	variants.push({ name: 'terrain/de', build: () => satellite({ ...terrain, language: 'de' }) });
+	variants.push({ name: 'terrain/nooverlay', build: () => satellite({ ...terrain, overlay: false }) });
+
 	return variants;
 }
