@@ -24,7 +24,6 @@ export interface SatelliteStyleOptions {
 	hillshade?:
 	| boolean
 	| {
-		exaggeration?: number;
 		shadowColor?: string;
 		highlightColor?: string;
 		accentColor?: string;
@@ -150,7 +149,7 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 	if (options.hillshade) {
 		const hsConfig = typeof options.hillshade === 'object' ? options.hillshade : {};
 		const paint: Record<string, unknown> = {};
-		if (hsConfig.exaggeration != null) paint['hillshade-exaggeration'] = hsConfig.exaggeration;
+		paint['hillshade-exaggeration'] = ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.2];
 		if (hsConfig.shadowColor != null) paint['hillshade-shadow-color'] = hsConfig.shadowColor;
 		if (hsConfig.highlightColor != null) paint['hillshade-highlight-color'] = hsConfig.highlightColor;
 		if (hsConfig.accentColor != null) paint['hillshade-accent-color'] = hsConfig.accentColor;
