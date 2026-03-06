@@ -26,7 +26,6 @@ async function loadStyle(name: string) {
 	const variant = variants.find((v) => v.name === name);
 	if (!variant) return;
 	const style = await variant.build();
-	console.log(`Style "${name}":`, style);
 
 	if (map) {
 		map.setStyle(style);
