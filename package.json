@@ -17,7 +17,7 @@
     "build-node": "rm -rf dist && rollup -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
     "build-styles": "tsx scripts/build-styles.ts",
     "build-sprites": "tsx scripts/build-sprites.ts",
-    "dev": "tsx scripts/dev.ts",
+    "dev": "vite",
     "doc": "npm run doc-graph",
     "doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
     "doc-screenshots": "tsx scripts/screenshots.ts",
@@ -76,6 +76,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
+    "vite": "^7.3.1",
     "vitest": "^4.0.18"
   }
 }
