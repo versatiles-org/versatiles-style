@@ -1,7 +1,5 @@
 import { getStyleVariants } from '@versatiles/style';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const maplibregl: any;
+declare const maplibregl: typeof import('maplibre-gl');
 
 const variants = getStyleVariants();
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
@@ -19,8 +17,7 @@ const params = new URLSearchParams(location.search);
 const initialStyle = params.get('style') ?? 'colorful/style';
 styleSelect.value = initialStyle;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let map: any;
+let map: maplibregl.Map | undefined;
 
 async function loadStyle(name: string) {
 	const variant = variants.find((v) => v.name === name);
