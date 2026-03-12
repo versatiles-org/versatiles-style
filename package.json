@@ -22,7 +22,7 @@
     "doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
     "doc-screenshots": "tsx scripts/screenshots.ts",
     "doc-typescript": "vrt doc-typescript -f html",
-    "format": "prettier --write .",
+    "format": "prettier --write --log-level warn .",
     "format:check": "prettier --check .",
     "lint": "eslint --color .",
     "prepack": "npm run build",
