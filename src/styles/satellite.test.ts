@@ -234,7 +234,7 @@ describe('satellite style', () => {
 			type: 'hillshade',
 			source: 'elevation',
 			paint: {
-				'hillshade-exaggeration': 0.5,
+				'hillshade-exaggeration': ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.2],
 				'hillshade-shadow-color': '#333',
 				'hillshade-highlight-color': '#fff',
 				'hillshade-accent-color': '#000',
