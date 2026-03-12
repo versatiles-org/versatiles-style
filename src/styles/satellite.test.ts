@@ -221,7 +221,6 @@ describe('satellite style', () => {
 		const style = await buildSatelliteStyle({
 			overlay: false,
 			hillshade: {
-				exaggeration: 0.5,
 				shadowColor: '#333',
 				highlightColor: '#fff',
 				accentColor: '#000',

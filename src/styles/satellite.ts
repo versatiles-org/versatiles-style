@@ -138,7 +138,6 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 				style.sources.elevation.encoding = 'terrarium';
 				break;
 		}
-		console.log('Elevation source:', style.sources.elevation);
 	}
 
 	// 3D terrain
