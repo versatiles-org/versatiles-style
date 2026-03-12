@@ -56,7 +56,9 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}/nolabel.json`,
 		]);
 		expectedFiles.push('empty/style.json');
-		expectedFiles.push('satellite/style.json', 'satellite/en.json', 'satellite/de.json', 'satellite/nooverlay.json');
+		['satellite', 'terrain'].forEach((style) => {
+			expectedFiles.push(`${style}/style.json`, `${style}/en.json`, `${style}/de.json`, `${style}/nooverlay.json`);
+		});
 		expectedFiles.sort();
 
 		expect(generatedFiles).toStrictEqual(expectedFiles);

@@ -212,7 +212,6 @@ describe('satellite style', () => {
 		expect(style.sources.elevation).toMatchObject({ type: 'raster-dem' });
 		expect(style.layers[0]).toMatchObject({ id: 'satellite', type: 'raster' });
 		expect(style.layers[1]).toMatchObject({ id: 'hillshade', type: 'hillshade', source: 'elevation' });
-		expect(style.layers[1]).not.toHaveProperty('paint');
 	});
 
 	it('should add hillshade layer with custom paint properties', async () => {
@@ -234,7 +233,7 @@ describe('satellite style', () => {
 			type: 'hillshade',
 			source: 'elevation',
 			paint: {
-				'hillshade-exaggeration': ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.2],
+				'hillshade-exaggeration': ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.3],
 				'hillshade-shadow-color': '#333',
 				'hillshade-highlight-color': '#fff',
 				'hillshade-accent-color': '#000',

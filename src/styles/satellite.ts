@@ -28,6 +28,8 @@ export interface SatelliteStyleOptions {
 				highlightColor?: string;
 				accentColor?: string;
 				illuminationDirection?: number;
+				illuminationAltitude?: number;
+				exaggeration?: number;
 				illuminationAnchor?: 'map' | 'viewport';
 		  };
 }
@@ -150,13 +152,14 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 	if (options.hillshade) {
 		const hsConfig = typeof options.hillshade === 'object' ? options.hillshade : {};
 		const paint: Record<string, unknown> = {};
-		paint['hillshade-exaggeration'] = ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.2];
-		if (hsConfig.shadowColor != null) paint['hillshade-shadow-color'] = hsConfig.shadowColor;
-		if (hsConfig.highlightColor != null) paint['hillshade-highlight-color'] = hsConfig.highlightColor;
-		if (hsConfig.accentColor != null) paint['hillshade-accent-color'] = hsConfig.accentColor;
-		if (hsConfig.illuminationDirection != null)
-			paint['hillshade-illumination-direction'] = hsConfig.illuminationDirection;
-		if (hsConfig.illuminationAnchor != null) paint['hillshade-illumination-anchor'] = hsConfig.illuminationAnchor;
+		paint['hillshade-exaggeration'] = hsConfig.exaggeration ?? ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.3];
+		paint['hillshade-shadow-color'] = hsConfig.shadowColor ?? '#000000';
+		paint['hillshade-highlight-color'] = hsConfig.highlightColor ?? '#ffffff';
+		paint['hillshade-accent-color'] = hsConfig.accentColor ?? '#000000';
+		paint['hillshade-illumination-direction'] = hsConfig.illuminationDirection ?? 315;
+		paint['hillshade-illumination-altitude'] = hsConfig.illuminationAltitude ?? 45;
+		paint['hillshade-illumination-anchor'] = hsConfig.illuminationAnchor ?? 'map';
+		paint['hillshade-method'] = 'standard';
 
 		style.layers.splice(1, 0, {
 			id: 'hillshade',
