@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.10.0] - 2026-03-12
+
+### Features
+
+- add support for terrain and hillshade layers in satellite style
+- add initial HTML structure, main TypeScript logic, and Vite configuration for development
+- add local sprites plugin to serve asset sprites from the release directory
+- implement style variants management and update style selection in UI
+- add terrain style variants for satellite rendering
+- add tile_schema and encoding properties to TileJSONSpecificationRaster interface
+- enhance elevation source handling in buildSatelliteStyle function
+- add maplibre-gl dependency to package.json and package-lock.json
+- add navigation control to the map on initialization
+- enhance TileJSON specification with encoding and tile size properties
+
+### Bug Fixes
+
+- update script type and await style initialization in getStylePage function
+- update style restoration to use query parameters instead of hash
+- update check script to include typecheck command
+- update type declarations to use 'any' for compatibility and add tsconfig for dev environment
+- add exclusion for TypeScript files in tsconfig
+- remove debug log for style loading in loadStyle function
+- replace 'any' type with specific type for maplibregl and map variable
+- remove exaggerated hillshade option and set default interpolation for hillshade-exaggeration
+- change terrain variable from let to const for better immutability
+- update hillshade-exaggeration to use interpolation for better zoom handling
+- update format script to include log level for prettier
+- improve hillshade layer configuration with customizable properties
+
+### Code Refactoring
+
+- remove unused server and MIME type handling code
+
+### Chores
+
+- update dependencies in package.json
+- update dependencies to latest versions
+- update @types/node to version 25.5.0
+
+### Styles
+
+- standardize HTML structure and formatting in index.html
+
 ## [5.9.5] - 2026-03-01
 
 ### Bug Fixes
