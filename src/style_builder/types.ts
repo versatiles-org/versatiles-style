@@ -9,6 +9,8 @@ export type Language = string | null;
  * Options for configuring the style builder.
  */
 export interface StyleBuilderOptions {
+	[key: string]: unknown;
+
 	/**
 	 * The base URL for loading external resources like tiles, sprites, and fonts.
 	 * @default document.location.origin (in the browser), or 'https://tiles.versatiles.org'

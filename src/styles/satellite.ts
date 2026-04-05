@@ -5,6 +5,8 @@ import { resolveUrl } from '../lib/utils.js';
 import { TileJSONSpecification } from '../types/tilejson.js';
 
 export interface SatelliteStyleOptions {
+	[key: string]: unknown;
+
 	baseUrl?: string;
 	rasterTilejson?: string;
 	overlayTiles?: string[];
