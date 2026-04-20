@@ -430,7 +430,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 		},
 
 		// label-street
-		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk'].map(
+		...['pedestrian', 'living_street', 'residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk', 'track'].map(
 			(t: string): MaplibreLayerDefinition => ({
 				id: 'label-street-' + t.replace(/_/g, ''),
 				type: 'symbol',
