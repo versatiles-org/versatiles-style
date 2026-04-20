@@ -64,7 +64,7 @@ describe('guessStyle', () => {
 	it('should build shortbread vector styles', () => {
 		const style = guessStyle({ tiles, vector_layers: vectorLayersShortbread }, { baseUrl: 'http://example.com' });
 
-		expect(style.layers.length).toBe(309);
+		expect(style.layers.length).toBe(310);
 		style.layers = [];
 
 		expect(style).toStrictEqual({
