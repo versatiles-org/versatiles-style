@@ -27,6 +27,8 @@ vi.mock('child_process', () => ({
 
 vi.mock('tar-stream', () => ({}));
 
+vi.mock('sharp', { spy: true });
+
 const { Sprite } = await import('./sprites.js');
 const fs = await import('fs');
 await import('child_process');
@@ -74,8 +76,6 @@ describe('Sprite', () => {
 
 	describe('fromIcons', () => {
 		it('creates a Sprite instance with correct dimensions and properties', async () => {
-			vi.mock('sharp', { spy: true });
-
 			const sprite = await Sprite.fromIcons(fakeIcons, 2, 5);
 
 			expect(sprite).toBeInstanceOf(Sprite);

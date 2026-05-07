@@ -116,7 +116,6 @@ export abstract class StyleBuilder {
 
 	public getDefaultOptions(): Required<StyleBuilderOptions> {
 		return {
-			// @ts-expect-error globalThis may be undefined in some environments
 			baseUrl: globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org',
 			bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',

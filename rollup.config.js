@@ -23,9 +23,7 @@ const config = [
 			browser && terser({ compress: { pure_getters: true, passes: 3 }, sourceMap: true }),
 			nodeResolve({ browser }),
 			typescript({
-				tsconfig: 'tsconfig.json',
-				include: ['src/**/*.ts'],
-				exclude: ['**/*.test.ts'],
+				tsconfig: 'tsconfig.build.json',
 				sourceMap: true,
 				declaration: true,
 				noEmit: true,
