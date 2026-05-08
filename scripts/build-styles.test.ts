@@ -54,6 +54,9 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}/en.json`,
 			`${style}/de.json`,
 			`${style}/nolabel.json`,
+			`${style}-terrain/style.json`,
+			`${style}-terrain/en.json`,
+			`${style}-terrain/de.json`,
 		]);
 		expectedFiles.push('empty/style.json');
 		['satellite', 'terrain'].forEach((style) => {

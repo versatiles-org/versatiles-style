@@ -1,4 +1,5 @@
 import type { Color } from '../color/index.js';
+import type { HillshadeOption, TerrainOption } from '../lib/elevation.js';
 import type { RecolorOptions } from './recolor.js';
 import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -72,6 +73,25 @@ export interface StyleBuilderOptions {
 	 * See also: {@link RecolorOptions}
 	 */
 	recolor?: RecolorOptions;
+
+	/**
+	 * URL to elevation TileJSON used for terrain and hillshade.
+	 * Defaults to `/tiles/elevation/tiles.json` (resolved against `baseUrl`) when terrain or hillshade is enabled.
+	 * Only consulted if `terrain` or `hillshade` is set.
+	 */
+	elevationTilejson?: string;
+
+	/**
+	 * Enable 3D terrain. Pass `true` for defaults or an object for a custom exaggeration.
+	 * When set, the returned style is a Promise because the elevation TileJSON must be fetched.
+	 */
+	terrain?: TerrainOption;
+
+	/**
+	 * Enable a hillshade layer. Pass `true` for defaults or an object for custom paint properties.
+	 * When set, the returned style is a Promise because the elevation TileJSON must be fetched.
+	 */
+	hillshade?: HillshadeOption;
 }
 
 export const styleBuilderColorKeys = [

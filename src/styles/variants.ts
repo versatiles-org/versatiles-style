@@ -10,6 +10,8 @@ export interface StyleVariant {
 export function getStyleVariants(): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
+	const terrainOpts = { terrain: true, hillshade: true } as const;
+
 	for (const { name, builder } of [
 		{ name: 'colorful', builder: colorful },
 		{ name: 'eclipse', builder: eclipse },
@@ -23,6 +25,9 @@ export function getStyleVariants(): StyleVariant[] {
 		variants.push({ name: name + '/en', build: () => builder({ language: 'en' }) });
 		variants.push({ name: name + '/de', build: () => builder({ language: 'de' }) });
 		variants.push({ name: name + '/nolabel', build: () => builder({ hideLabels: true }) });
+		variants.push({ name: name + '-terrain/style', build: () => builder({ ...terrainOpts, language: undefined }) });
+		variants.push({ name: name + '-terrain/en', build: () => builder({ ...terrainOpts, language: 'en' }) });
+		variants.push({ name: name + '-terrain/de', build: () => builder({ ...terrainOpts, language: 'de' }) });
 	}
 
 	variants.push({ name: 'satellite/style', build: () => satellite({ language: undefined }) });
@@ -30,11 +35,10 @@ export function getStyleVariants(): StyleVariant[] {
 	variants.push({ name: 'satellite/de', build: () => satellite({ language: 'de' }) });
 	variants.push({ name: 'satellite/nooverlay', build: () => satellite({ overlay: false }) });
 
-	const terrain = { terrain: true, hillshade: true } as const;
-	variants.push({ name: 'terrain/style', build: () => satellite({ ...terrain, language: undefined }) });
-	variants.push({ name: 'terrain/en', build: () => satellite({ ...terrain, language: 'en' }) });
-	variants.push({ name: 'terrain/de', build: () => satellite({ ...terrain, language: 'de' }) });
-	variants.push({ name: 'terrain/nooverlay', build: () => satellite({ ...terrain, overlay: false }) });
+	variants.push({ name: 'terrain/style', build: () => satellite({ ...terrainOpts, language: undefined }) });
+	variants.push({ name: 'terrain/en', build: () => satellite({ ...terrainOpts, language: 'en' }) });
+	variants.push({ name: 'terrain/de', build: () => satellite({ ...terrainOpts, language: 'de' }) });
+	variants.push({ name: 'terrain/nooverlay', build: () => satellite({ ...terrainOpts, overlay: false }) });
 
 	return variants;
 }

@@ -3,6 +3,7 @@ import type { StyleSpecification } from '../types/maplibre.js';
 import type { Language } from '../style_builder/types.js';
 import { resolveUrl } from '../lib/utils.js';
 import { TileJSONSpecification } from '../types/tilejson.js';
+import { applyElevation, type HillshadeOption, type TerrainOption } from '../lib/elevation.js';
 
 export interface SatelliteStyleOptions {
 	[key: string]: unknown;
@@ -21,19 +22,9 @@ export interface SatelliteStyleOptions {
 	/** URL to elevation TileJSON. Defaults to `/tiles/elevation/tiles.json` if terrain or hillshade is enabled. */
 	elevationTilejson?: string;
 	/** Enable 3D terrain. `true` for defaults, or object for custom exaggeration. */
-	terrain?: boolean | { exaggeration?: number };
+	terrain?: TerrainOption;
 	/** Enable hillshade layer. `true` for defaults, or object for custom paint properties. */
-	hillshade?:
-		| boolean
-		| {
-				shadowColor?: string;
-				highlightColor?: string;
-				accentColor?: string;
-				illuminationDirection?: number;
-				illuminationAltitude?: number;
-				exaggeration?: number;
-				illuminationAnchor?: 'map' | 'viewport';
-		  };
+	hillshade?: HillshadeOption;
 }
 
 export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Promise<StyleSpecification> {
@@ -116,60 +107,13 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 		...(Object.keys(rasterPaint).length > 0 ? { paint: rasterPaint } : {}),
 	} as StyleSpecification['layers'][number]);
 
-	// Elevation source (for terrain and/or hillshade)
-	const needsElevation = !!(options.terrain || options.hillshade);
-	if (needsElevation) {
-		const elevationTilejsonUrl = resolveUrl(baseUrl, options.elevationTilejson ?? '/tiles/elevation/tiles.json');
-		const elevationTilejson = (await fetch(elevationTilejsonUrl).then((res) => res.json())) as TileJSONSpecification;
-		if (elevationTilejson.tiles) {
-			elevationTilejson.tiles = elevationTilejson.tiles.map((url) => resolveUrl(baseUrl, url));
-		}
-		style.sources.elevation = {
-			attribution: elevationTilejson.attribution,
-			bounds: elevationTilejson.bounds,
-			minzoom: elevationTilejson.minzoom,
-			maxzoom: elevationTilejson.maxzoom,
-			tiles: elevationTilejson.tiles,
-			encoding: elevationTilejson.encoding,
-			tileSize: elevationTilejson.tile_size ?? 512,
-			type: 'raster-dem',
-		};
-		switch (elevationTilejson.tile_schema) {
-			case 'dem/mapbox':
-				style.sources.elevation.encoding = 'mapbox';
-				break;
-			case 'dem/terrarium':
-				style.sources.elevation.encoding = 'terrarium';
-				break;
-		}
-	}
-
-	// 3D terrain
-	if (options.terrain) {
-		const terrainConfig = typeof options.terrain === 'object' ? options.terrain : {};
-		style.terrain = { source: 'elevation', exaggeration: terrainConfig.exaggeration ?? 1 };
-	}
-
-	// Hillshade layer
-	if (options.hillshade) {
-		const hsConfig = typeof options.hillshade === 'object' ? options.hillshade : {};
-		const paint: Record<string, unknown> = {};
-		paint['hillshade-exaggeration'] = hsConfig.exaggeration ?? ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.3];
-		paint['hillshade-shadow-color'] = hsConfig.shadowColor ?? '#000000';
-		paint['hillshade-highlight-color'] = hsConfig.highlightColor ?? '#ffffff';
-		paint['hillshade-accent-color'] = hsConfig.accentColor ?? '#000000';
-		paint['hillshade-illumination-direction'] = hsConfig.illuminationDirection ?? 315;
-		paint['hillshade-illumination-altitude'] = hsConfig.illuminationAltitude ?? 45;
-		paint['hillshade-illumination-anchor'] = hsConfig.illuminationAnchor ?? 'map';
-		paint['hillshade-method'] = 'standard';
-
-		style.layers.splice(1, 0, {
-			id: 'hillshade',
-			type: 'hillshade',
-			source: 'elevation',
-			...(Object.keys(paint).length > 0 ? { paint } : {}),
-		} as StyleSpecification['layers'][number]);
-	}
+	// Elevation source, terrain, hillshade
+	await applyElevation(style, {
+		baseUrl,
+		elevationTilejson: options.elevationTilejson,
+		terrain: options.terrain,
+		hillshade: options.hillshade,
+	});
 
 	style.name = 'versatiles-satellite';
 

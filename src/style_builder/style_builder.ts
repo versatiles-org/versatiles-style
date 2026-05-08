@@ -126,6 +126,9 @@ export abstract class StyleBuilder {
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
 			recolor: getDefaultRecolorFlags(),
+			elevationTilejson: '/tiles/elevation/tiles.json',
+			terrain: false,
+			hillshade: false,
 		};
 	}
 

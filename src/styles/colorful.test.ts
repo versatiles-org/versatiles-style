@@ -51,13 +51,16 @@ describe('Colorful Styles', () => {
 				wetland: '#D3E6DB',
 				wood: '#66AA44',
 			},
+			elevationTilejson: '/tiles/elevation/tiles.json',
 			fonts: {
 				bold: 'noto_sans_bold',
 				regular: 'noto_sans_regular',
 			},
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			hideLabels: false,
+			hillshade: false,
 			language: '',
+			terrain: false,
 			recolor: {
 				blend: 0,
 				blendColor: '#000000',

@@ -104,10 +104,13 @@ describe('StyleBuilder', () => {
 				wetland: '#D3E6DB',
 				wood: '#66AA44',
 			},
+			elevationTilejson: '/tiles/elevation/tiles.json',
 			fonts: { regular: 'Arial', bold: 'Courier' },
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			hideLabels: false,
+			hillshade: false,
 			language: '',
+			terrain: false,
 			recolor: {
 				brightness: 0,
 				contrast: 1,
