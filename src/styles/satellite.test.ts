@@ -232,7 +232,7 @@ describe('satellite style', () => {
 			type: 'hillshade',
 			source: 'elevation',
 			paint: {
-				'hillshade-exaggeration': ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.3],
+				'hillshade-exaggeration': 0.1,
 				'hillshade-shadow-color': '#333',
 				'hillshade-highlight-color': '#fff',
 				'hillshade-accent-color': '#000',

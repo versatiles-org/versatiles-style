@@ -87,7 +87,7 @@ export async function applyElevation(
 	if (options.hillshade) {
 		const hsConfig = typeof options.hillshade === 'object' ? options.hillshade : {};
 		const paint: Record<string, unknown> = {};
-		paint['hillshade-exaggeration'] = hsConfig.exaggeration ?? ['interpolate', ['linear'], ['zoom'], 5, 0, 10, 0.3];
+		paint['hillshade-exaggeration'] = hsConfig.exaggeration ?? 0.1;
 		paint['hillshade-shadow-color'] = hsConfig.shadowColor ?? '#000000';
 		paint['hillshade-highlight-color'] = hsConfig.highlightColor ?? '#ffffff';
 		paint['hillshade-accent-color'] = hsConfig.accentColor ?? '#000000';
