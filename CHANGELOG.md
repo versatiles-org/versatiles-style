@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.11.0] - 2026-05-08
+
+### Features
+
+- add elevation support with terrain and hillshade options ([6ef75eb](https://github.com/versatiles-org/versatiles-style/commit/6ef75eb8d9a09f3db5042773227e3883d3794fa3))
+
+### Bug Fixes
+
+- update default hillshade exaggeration ([90e454f](https://github.com/versatiles-org/versatiles-style/commit/90e454f3731619207cfd8d1d62edec4bf74e4d39))
+
+### Code Refactoring
+
+- update TypeScript configuration and improve layer definitions ([3ef41c3](https://github.com/versatiles-org/versatiles-style/commit/3ef41c3cf27a78cef7c56efa9f494445dec5dc96))
+
+### Build System
+
+- **deps:** bump actions/upload-pages-artifact in the action group ([5dbfabd](https://github.com/versatiles-org/versatiles-style/commit/5dbfabd6c5bd6264d60aff2ae72072977de10e8a))
+
+### Chores
+
+- update dependencies in package.json ([443fddd](https://github.com/versatiles-org/versatiles-style/commit/443fddd274c997d30b74937466ceb0a1a4f1511c))
+
+### Other Changes
+
+- +label-street-track ([78421f4](https://github.com/versatiles-org/versatiles-style/commit/78421f4e48943b7adc23ca24dcfcce7a01c3760a))
+- fix test after adding missing label for tracks ([2c2573e](https://github.com/versatiles-org/versatiles-style/commit/2c2573e4b5b4961ad3c6e65683569cdf99129249))
+
 ## [5.10.2] - 2026-04-05
 
 ### Bug Fixes
