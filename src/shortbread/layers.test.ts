@@ -56,6 +56,14 @@ describe('layers', () => {
 		]);
 	});
 
+	it('should sort place labels by population', () => {
+		const layers = getShortbreadLayers({ language: '' });
+		const cityLayer = layers.find((layer) => layer.id === 'label-place-city') as SymbolLayerSpecification;
+
+		expect(cityLayer).toBeDefined();
+		expect(cityLayer.layout?.['symbol-sort-key']).toStrictEqual(['-', ['to-number', ['get', 'population'], 0]]);
+	});
+
 	it('should create appropriate filters for land layers', () => {
 		const language: Language = 'en';
 		const layers = getShortbreadLayers({ language });

@@ -468,7 +468,10 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				type: 'symbol',
 				'source-layer': 'place_labels',
 				filter: ['==', 'kind', id],
-				layout: { 'text-field': nameField },
+				layout: {
+					'text-field': nameField,
+					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+				},
 			})
 		),
 
@@ -488,7 +491,10 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				type: 'symbol',
 				'source-layer': 'place_labels',
 				filter: ['==', 'kind', id],
-				layout: { 'text-field': nameField },
+				layout: {
+					'text-field': nameField,
+					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+				},
 			})
 		),
 
