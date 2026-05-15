@@ -157,35 +157,43 @@ export class HSL extends Color {
 	}
 
 	/**
-	 * Inverts the lightness component of the HSL color.
-	 * @returns A new HSL color with the lightness component inverted.
+	 * Returns a new HSL color with the lightness flipped: `l → 100 − l`. Hue and saturation are preserved.
+	 *
+	 * @returns A new HSL color with the lightness inverted.
 	 */
 	invertLuminosity(): HSL {
 		return new HSL(this.h, this.s, 100 - this.l, this.a);
 	}
 
 	/**
-	 * Rotates the hue component of the HSL color by a given offset.
-	 * @param offset - The amount to rotate the hue by, in degrees.
-	 * @returns A new HSL color with the hue rotated by the given offset.
+	 * Rotates the hue around the color wheel.
+	 *
+	 * @param offset - Rotation in degrees. Any number; reduced modulo 360.
+	 *                 0 leaves the hue unchanged; 180 yields the complementary hue.
+	 * @returns A new HSL color with the rotated hue.
 	 */
 	rotateHue(offset: number): HSL {
 		return new HSL(mod(this.h + offset, 360), this.s, this.l, this.a);
 	}
 
 	/**
-	 * Increases the saturation of the HSL color by a given ratio.
-	 * @param ratio - The ratio by which to increase the saturation.
-	 * @returns A new HSL color with increased saturation.
+	 * Scales the saturation by `(1 + ratio)`, then clamps to [0, 100].
+	 *
+	 * @param ratio - Saturation change ratio. Range: [-1, ∞).
+	 *                -1 fully desaturates (gray); 0 is identity; 1 doubles saturation;
+	 *                values that would push S past 100 are clamped.
+	 * @returns A new HSL color with adjusted saturation.
 	 */
 	saturate(ratio: number): HSL {
 		return new HSL(this.h, clamp(this.s * (1 + ratio), 0, 100), this.l, this.a);
 	}
 
 	/**
-	 * Decreases the alpha (opacity) of the HSL color by a given value.
-	 * @param value - The value by which to decrease the alpha.
-	 * @returns A new HSL color with decreased alpha.
+	 * Reduces the alpha proportionally: `a → a · (1 − value)`.
+	 *
+	 * @param value - Fade amount. Range: [0, 1].
+	 *                0 is identity; 1 yields fully transparent.
+	 * @returns A new HSL color with reduced alpha.
 	 */
 	fade(value: number): HSL {
 		return new HSL(this.h, this.s, this.l, this.a * (1 - value));

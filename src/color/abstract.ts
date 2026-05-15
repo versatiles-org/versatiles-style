@@ -86,34 +86,44 @@ export abstract class Color {
 	abstract asRGB(): RGB;
 
 	/**
-	 * Inverts the luminosity of the color.
-	 * @returns A new HSL color with inverted luminosity.
+	 * Returns a new color with the HSL lightness flipped (L → 100 − L).
+	 * Hue and saturation are preserved, so a light cream becomes a dark cream of the same hue.
+	 * Useful for deriving a dark-theme palette from a light-theme palette.
+	 *
+	 * @returns A new HSL color with the lightness inverted.
 	 */
 	invertLuminosity(): HSL {
 		return this.asHSL().invertLuminosity();
 	}
 
 	/**
-	 * Rotates the hue of the color by a given offset.
-	 * @param offset - The amount to rotate the hue.
-	 * @returns A new HSL color with the hue rotated.
+	 * Rotates the hue around the color wheel.
+	 *
+	 * @param offset - Rotation in degrees. Any number is accepted and reduced modulo 360.
+	 *                 0 leaves the hue unchanged; 180 yields the complementary hue.
+	 * @returns A new HSL color with the rotated hue.
 	 */
 	rotateHue(offset: number): HSL {
 		return this.asHSL().rotateHue(offset);
 	}
 
 	/**
-	 * Saturates the color by a given ratio.
-	 * @param ratio - The ratio to saturate the color.
-	 * @returns A new HSL color with increased saturation.
+	 * Scales the HSL saturation by `(1 + ratio)`, then clamps to [0, 100].
+	 *
+	 * @param ratio - Saturation change ratio. Range: [-1, ∞).
+	 *                -1 fully desaturates (gray); 0 is identity; 1 doubles saturation;
+	 *                values that would push S past 100 are clamped.
+	 * @returns A new HSL color with adjusted saturation.
 	 */
 	saturate(ratio: number): HSL {
 		return this.asHSL().saturate(ratio);
 	}
 
 	/**
-	 * Applies gamma correction to the color.
-	 * @param value - The gamma correction value.
+	 * Applies a per-channel gamma correction: `c → 255 · (c/255)^value`.
+	 *
+	 * @param value - Gamma exponent. Clamped to [1e-3, 1e3].
+	 *                1 is identity; <1 brightens midtones; >1 darkens midtones.
 	 * @returns A new RGB color with gamma correction applied.
 	 */
 	gamma(value: number): RGB {
@@ -121,16 +131,22 @@ export abstract class Color {
 	}
 
 	/**
-	 * Inverts the color.
-	 * @returns A new RGB color with inverted values.
+	 * Inverts each RGB channel: `c → 255 − c`. The hue is also flipped.
+	 * For a hue-preserving "dark mode" inversion, use {@link invertLuminosity} instead.
+	 *
+	 * @returns A new RGB color with all channels inverted.
 	 */
 	invert(): RGB {
 		return this.asRGB().invert();
 	}
 
 	/**
-	 * Adjusts the contrast of the color.
-	 * @param value - The contrast adjustment value.
+	 * Scales each RGB channel around the midpoint 127.5: `c → (c − 127.5) · value + 127.5`,
+	 * clamped to [0, 255].
+	 *
+	 * @param value - Contrast multiplier. Clamped to [0, 1e6].
+	 *                1 is identity; 0 collapses the color to mid-gray (#808080);
+	 *                values >1 increase contrast; very large values push each channel to 0 or 255.
 	 * @returns A new RGB color with adjusted contrast.
 	 */
 	contrast(value: number): RGB {
@@ -138,8 +154,10 @@ export abstract class Color {
 	}
 
 	/**
-	 * Adjusts the brightness of the color.
-	 * @param value - The brightness adjustment value.
+	 * Linearly shifts each RGB channel toward black (negative `value`) or white (positive `value`).
+	 *
+	 * @param value - Brightness shift. Clamped to [-1, 1].
+	 *                0 is identity; -1 yields pure black; +1 yields pure white.
 	 * @returns A new RGB color with adjusted brightness.
 	 */
 	brightness(value: number): RGB {
@@ -147,56 +165,77 @@ export abstract class Color {
 	}
 
 	/**
-	 * Lightens the color by a given value.
-	 * @param value - The amount to lighten the color.
-	 * @returns A new RGB color that is lightened.
+	 * Blends each RGB channel toward white. Mathematically equivalent to {@link blend} with white as target.
+	 *
+	 * Note: this operation is theme-absolute — under luminosity inversion it still moves toward white,
+	 * which means "lighten" inverts in meaning relative to a dark background.
+	 * For inversion-safe rules use `blend(value, bg)` where `bg` is your style's background reference.
+	 *
+	 * @param value - Lightening ratio. Range: [0, 1] (values are clamped).
+	 *                0 is identity; 1 yields pure white.
+	 * @returns A new RGB color, lightened.
 	 */
 	lighten(value: number): RGB {
 		return this.asRGB().lighten(value);
 	}
 
 	/**
-	 * Darkens the color by a given value.
-	 * @param value - The amount to darken the color.
-	 * @returns A new RGB color that is darkened.
+	 * Multiplies each RGB channel by `(1 − value)`. Mathematically equivalent to {@link blend} with black as target.
+	 *
+	 * Note: this operation is theme-absolute — under luminosity inversion it still moves toward black,
+	 * not toward the dark-theme contrast endpoint.
+	 * For inversion-safe rules use `blend(value, fg)` where `fg` is your style's foreground/contrast reference.
+	 *
+	 * @param value - Darkening ratio. Range: [0, 1] (values are clamped).
+	 *                0 is identity; 1 yields pure black.
+	 * @returns A new RGB color, darkened.
 	 */
 	darken(value: number): RGB {
 		return this.asRGB().darken(value);
 	}
 
 	/**
-	 * Tints the color by blending it with another color.
-	 * @param value - The blend ratio.
-	 * @param tintColor - The color to blend with.
-	 * @returns A new RGB color that is tinted.
+	 * Shifts the hue toward `tintColor`'s hue, blending in RGB space.
+	 * Internally: derives a version of this color carrying `tintColor`'s hue, then linearly interpolates
+	 * between this and that variant by `value`.
+	 *
+	 * @param value - Tint amount. Range: [0, 1] (clamped).
+	 *                0 is identity; 1 yields this color's luminosity/saturation but with `tintColor`'s hue.
+	 * @param tintColor - Color whose hue is used for tinting; only its hue matters.
+	 * @returns A new RGB color, tinted.
 	 */
 	tint(value: number, tintColor: Color): RGB {
 		return this.asRGB().tint(value, tintColor);
 	}
 
 	/**
-	 * Blends the color with another color.
-	 * @param value - The blend ratio.
-	 * @param blendColor - The color to blend with.
-	 * @returns A new RGB color that is blended.
+	 * Linearly interpolates between this color and `blendColor` in RGB space.
+	 *
+	 * @param value - Blend ratio. Range: [0, 1] (clamped; `null`/`undefined` treated as 0).
+	 *                0 returns this color; 1 returns `blendColor`.
+	 * @param blendColor - Target color to blend toward.
+	 * @returns A new RGB color, blended.
 	 */
 	blend(value: number, blendColor: Color): RGB {
 		return this.asRGB().blend(value, blendColor);
 	}
 
 	/**
-	 * Sets the hue of the color.
-	 * @param value - The new hue value.
-	 * @returns A new HSV color with the hue set.
+	 * Replaces the hue, preserving saturation and value.
+	 *
+	 * @param value - Hue in degrees. Any number; reduced modulo 360.
+	 * @returns A new HSV color with the new hue.
 	 */
 	setHue(value: number): HSV {
 		return this.asHSV().setHue(value);
 	}
 
 	/**
-	 * Fades the color by a given value.
-	 * @param value - The fade value.
-	 * @returns A new Color instance that is faded.
+	 * Reduces the alpha proportionally: `a → a · (1 − value)`.
+	 *
+	 * @param value - Fade amount. Range: [0, 1].
+	 *                0 is identity; 1 yields fully transparent.
+	 * @returns A new color with reduced alpha.
 	 */
 	abstract fade(value: number): Color;
 }

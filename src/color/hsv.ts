@@ -166,18 +166,21 @@ export class HSV extends Color {
 	}
 
 	/**
-	 * Fades the color by a given value.
-	 * @param value - The amount to fade the color by, in the range [0, 1].
-	 * @returns A new HSV color with the alpha component faded by the given value.
+	 * Reduces the alpha proportionally: `a → a · (1 − value)`.
+	 *
+	 * @param value - Fade amount. Range: [0, 1].
+	 *                0 is identity; 1 yields fully transparent.
+	 * @returns A new HSV color with reduced alpha.
 	 */
 	fade(value: number): HSV {
 		return new HSV(this.h, this.s, this.v, this.a * (1 - value));
 	}
 
 	/**
-	 * Sets the hue component of the color.
-	 * @param value - The new hue value, in the range [0, 360].
-	 * @returns A new HSV color with the updated hue component.
+	 * Replaces the hue, preserving saturation and value.
+	 *
+	 * @param value - Hue in degrees. Any number; reduced modulo 360 by the constructor.
+	 * @returns A new HSV color with the new hue.
 	 */
 	setHue(value: number): HSV {
 		return new HSV(value, this.s, this.v, this.a);

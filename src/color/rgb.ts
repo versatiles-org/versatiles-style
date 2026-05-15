@@ -236,10 +236,11 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Adjusts the gamma of the RGB color.
+	 * Applies a per-channel gamma correction: `c → 255 · (c/255)^value`.
 	 *
-	 * @param value - The gamma value to apply.
-	 * @returns A new RGB instance with the adjusted gamma.
+	 * @param value - Gamma exponent. Clamped to [1e-3, 1e3].
+	 *                1 is identity; <1 brightens midtones; >1 darkens midtones.
+	 * @returns A new RGB color with gamma correction applied.
 	 */
 	gamma(value: number): RGB {
 		if (value < 1e-3) value = 1e-3;
@@ -253,19 +254,23 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Inverts the RGB color.
+	 * Inverts each RGB channel: `c → 255 − c`. The hue is also flipped.
+	 * For a hue-preserving "dark mode" inversion, use `invertLuminosity` instead.
 	 *
-	 * @returns A new RGB instance with the inverted color values.
+	 * @returns A new RGB color with all channels inverted.
 	 */
 	invert(): RGB {
 		return new RGB(255 - this.r, 255 - this.g, 255 - this.b, this.a);
 	}
 
 	/**
-	 * Adjusts the contrast of the RGB color.
+	 * Scales each channel around the midpoint 127.5: `c → (c − 127.5) · value + 127.5`,
+	 * clamped to [0, 255].
 	 *
-	 * @param value - The contrast value to apply.
-	 * @returns A new RGB instance with the adjusted contrast.
+	 * @param value - Contrast multiplier. Clamped to [0, 1e6].
+	 *                1 is identity; 0 collapses the color to mid-gray (#808080);
+	 *                values >1 increase contrast; very large values push each channel to 0 or 255.
+	 * @returns A new RGB color with adjusted contrast.
 	 */
 	contrast(value: number): RGB {
 		if (value < 0) value = 0;
@@ -279,10 +284,11 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Adjusts the brightness of the RGB color.
+	 * Linearly shifts each channel toward black (negative `value`) or white (positive `value`).
 	 *
-	 * @param value - The brightness value to apply.
-	 * @returns A new RGB instance with the adjusted brightness.
+	 * @param value - Brightness shift. Clamped to [-1, 1].
+	 *                0 is identity; -1 yields pure black; +1 yields pure white.
+	 * @returns A new RGB color with adjusted brightness.
 	 */
 	brightness(value: number): RGB {
 		if (value < -1) value = -1;
@@ -293,11 +299,14 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Tints the RGB color with another color.
+	 * Shifts the hue toward `tintColor`'s hue, blending in RGB space.
+	 * Internally: derives a version of this color carrying `tintColor`'s hue, then linearly interpolates
+	 * between this and that variant by `value`.
 	 *
-	 * @param value - The tint value to apply.
-	 * @param tintColor - The color to use for tinting.
-	 * @returns A new RGB instance with the applied tint.
+	 * @param value - Tint amount. Clamped to [0, 1].
+	 *                0 is identity; 1 yields this color's luminosity/saturation but with `tintColor`'s hue.
+	 * @param tintColor - Color whose hue is used for tinting; only its hue matters.
+	 * @returns A new RGB color, tinted.
 	 */
 	tint(value: number, tintColor: Color): RGB {
 		if (value < 0) value = 0;
@@ -312,11 +321,12 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Blends the RGB color with another color.
+	 * Linearly interpolates between this color and `blendColor` in RGB space.
 	 *
-	 * @param value - The blend value to apply.
-	 * @param blendColor - The color to blend with.
-	 * @returns A new RGB instance with the blended color.
+	 * @param value - Blend ratio. Clamped to [0, 1] (`null`/`undefined` treated as 0).
+	 *                0 returns this color; 1 returns `blendColor`.
+	 * @param blendColor - Target color to blend toward.
+	 * @returns A new RGB color, blended.
 	 */
 	blend(value: number, blendColor: Color): RGB {
 		value = clamp(value ?? 0, 0, 1);
@@ -330,10 +340,14 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Lightens the RGB color.
+	 * Blends each channel toward white. Mathematically equivalent to `blend(ratio, white)`.
 	 *
-	 * @param ratio - The ratio to lighten the color by.
-	 * @returns A new RGB instance with the lightened color.
+	 * Note: this operation is theme-absolute — under luminosity inversion it still moves toward white.
+	 * For inversion-safe rules use `blend(ratio, bg)` where `bg` is your style's background reference.
+	 *
+	 * @param ratio - Lightening ratio. Range: [0, 1] (per-channel result is clamped to [0, 255]).
+	 *                0 is identity; 1 yields pure white.
+	 * @returns A new RGB color, lightened.
 	 */
 	lighten(ratio: number): RGB {
 		return new RGB(
@@ -345,10 +359,14 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Darkens the RGB color.
+	 * Multiplies each channel by `(1 − ratio)`. Mathematically equivalent to `blend(ratio, black)`.
 	 *
-	 * @param ratio - The ratio to darken the color by.
-	 * @returns A new RGB instance with the darkened color.
+	 * Note: this operation is theme-absolute — under luminosity inversion it still moves toward black.
+	 * For inversion-safe rules use `blend(ratio, fg)` where `fg` is your style's foreground/contrast reference.
+	 *
+	 * @param ratio - Darkening ratio. Range: [0, 1] (per-channel result is clamped to [0, 255]).
+	 *                0 is identity; 1 yields pure black.
+	 * @returns A new RGB color, darkened.
 	 */
 	darken(ratio: number): RGB {
 		return new RGB(
@@ -360,10 +378,11 @@ export class RGB extends Color {
 	}
 
 	/**
-	 * Fades the RGB color by reducing its alpha value.
+	 * Reduces the alpha proportionally: `a → a · (1 − value)`.
 	 *
-	 * @param value - The fade value to apply.
-	 * @returns A new RGB instance with the faded color.
+	 * @param value - Fade amount. Range: [0, 1].
+	 *                0 is identity; 1 yields fully transparent.
+	 * @returns A new RGB color with reduced alpha.
 	 */
 	fade(value: number): RGB {
 		return new RGB(this.r, this.g, this.b, this.a * (1 - value));
