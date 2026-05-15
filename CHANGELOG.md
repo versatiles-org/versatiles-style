@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.12.0] - 2026-05-15
+
+### Features
+
+- render highway=busway and highway=bus_guideway as service streets ([1d2d15b](https://github.com/versatiles-org/versatiles-style/commit/1d2d15be8574ae68cbcbc0e03165c4977fa642fd))
+- add textScale option to multiply symbol text sizes ([e91c2af](https://github.com/versatiles-org/versatiles-style/commit/e91c2afaa91fc6346477a0e810b735c276ab85d9))
+- add iconScale option to scale icon sizes in symbol layers ([58cc1ff](https://github.com/versatiles-org/versatiles-style/commit/58cc1ff5d8c968364926a9a873a9cdac70b7b020))
+
+### Bug Fixes
+
+- fall back across name/name_en/name_<lang> for label text-field ([d734120](https://github.com/versatiles-org/versatiles-style/commit/d734120ce3e5c03efaf2b2dc57c7d5b1549e67d5))
+- sort place labels by population for collision priority ([b53ea37](https://github.com/versatiles-org/versatiles-style/commit/b53ea37ff20de5895f47b2815486953b0c4e891f))
+- reorder check script for improved execution flow ([eacc8eb](https://github.com/versatiles-org/versatiles-style/commit/eacc8eb7a3f11d5f398d32d31925023afb6446e2))
+- render trunk roads one zoom earlier to match tile data availability ([ec736a5](https://github.com/versatiles-org/versatiles-style/commit/ec736a59894ccbbd909128aa3259836a5dd16959))
+- derive housenumber colors via blend so they survive theme inversion ([fcc1815](https://github.com/versatiles-org/versatiles-style/commit/fcc18151579b8b6f501115e3343fafa695c4bf95))
+- emit glyphs and sprite from satellite style with overlay disabled ([9d69de3](https://github.com/versatiles-org/versatiles-style/commit/9d69de3f73d92659c472fb0733756b833038dfdb))
+- normalize attribution strings so MapLibre dedupes cosmetic duplicates ([e6d1f12](https://github.com/versatiles-org/versatiles-style/commit/e6d1f12e08940f2a6f306e346a019f9719d05b6f))
+
+### Code Refactoring
+
+- replace lighten/darken with blend(x, fg|bg) in colorful ([b515c9e](https://github.com/versatiles-org/versatiles-style/commit/b515c9ef67d88180a6830971621af41e09aa16aa))
+- enhance documentation for color manipulation methods in Color, HSL, HSV, and RGB classes ([061f6a5](https://github.com/versatiles-org/versatiles-style/commit/061f6a54fce6ea46fe2982cd3348368842070068))
+
+### Documentation
+
+- add recommended icon sources to README, close #96 ([147328c](https://github.com/versatiles-org/versatiles-style/commit/147328cdcd4b3785fa1c84efb3df16a44de2738e))
+
+### Chores
+
+- update dependencies to latest versions ([d9ee972](https://github.com/versatiles-org/versatiles-style/commit/d9ee9722e12201a4693f88ec8282e580391787fc))
+
 ## [5.11.0] - 2026-05-08
 
 ### Features
