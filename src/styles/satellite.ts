@@ -16,6 +16,8 @@ export interface SatelliteStyleOptions {
 	language?: Language;
 	/** Multiplier applied to overlay symbol layer text sizes. Default 1. */
 	textScale?: number;
+	/** Multiplier applied to overlay symbol layer icon sizes. Default 1. */
+	iconScale?: number;
 	/** URL template for glyphs. Defaults to `/assets/glyphs/{fontstack}/{range}.pbf`. */
 	glyphs?: string;
 	/** Sprite URL or sprite list. Defaults to `[{ id: 'basics', url: '/assets/sprites/basics/sprites' }]`. */
@@ -52,6 +54,7 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 			tiles: options.overlayTiles,
 			language: options.language,
 			textScale: options.textScale,
+			iconScale: options.iconScale,
 		});
 
 		// Filter out background, fill layers, and unwanted layer groups

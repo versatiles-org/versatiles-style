@@ -32,6 +32,7 @@ export abstract class StyleBuilder {
 		const bounds = options.bounds ?? defaults.bounds;
 		const hideLabels = options.hideLabels ?? defaults.hideLabels;
 		const textScale = options.textScale ?? defaults.textScale;
+		const iconScale = options.iconScale ?? defaults.iconScale;
 		const language = options.language ?? defaults.language;
 		const recolorOptions = options.recolor ?? defaults.recolor;
 
@@ -93,6 +94,9 @@ export abstract class StyleBuilder {
 		// scale text-size on all symbol layers
 		if (textScale !== 1) scaleTextSize(layers, textScale);
 
+		// scale icon-size on all symbol layers
+		if (iconScale !== 1) scaleIconSize(layers, iconScale);
+
 		style.layers = layers;
 		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(baseUrl, glyphs);
@@ -127,6 +131,7 @@ export abstract class StyleBuilder {
 			tiles: ['/tiles/osm/{z}/{x}/{y}'],
 			hideLabels: false,
 			textScale: 1,
+			iconScale: 1,
 			language: '',
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
@@ -160,6 +165,30 @@ function scaleTextSize(layers: MaplibreLayer[], scale: number): void {
 		if (size == null) continue;
 		if (typeof size === 'number') {
 			(layer.layout as Record<string, unknown>)['text-size'] = size * scale;
+		} else if (typeof size === 'object' && size !== null && 'stops' in size) {
+			const stops = (size as { stops: [number, number][] }).stops;
+			for (const stop of stops) stop[1] *= scale;
+		}
+	}
+}
+
+/**
+ * Multiplies every symbol layer's `icon-size` by the given factor.
+ * Layers with `icon-image` but no explicit `icon-size` get `icon-size: scale`
+ * (MapLibre's spec default for icon-size is 1).
+ * Layers without `icon-image` are skipped.
+ * Mutates the layers in place.
+ */
+function scaleIconSize(layers: MaplibreLayer[], scale: number): void {
+	for (const layer of layers) {
+		if (layer.type !== 'symbol') continue;
+		if (!layer.layout) continue;
+		if (layer.layout['icon-image'] == null) continue;
+		const size = layer.layout['icon-size'] as unknown;
+		if (size == null) {
+			(layer.layout as Record<string, unknown>)['icon-size'] = scale;
+		} else if (typeof size === 'number') {
+			(layer.layout as Record<string, unknown>)['icon-size'] = size * scale;
 		} else if (typeof size === 'object' && size !== null && 'stops' in size) {
 			const stops = (size as { stops: [number, number][] }).stops;
 			for (const stop of stops) stop[1] *= scale;

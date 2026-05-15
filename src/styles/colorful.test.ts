@@ -59,6 +59,7 @@ describe('Colorful Styles', () => {
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			hideLabels: false,
 			hillshade: false,
+			iconScale: 1,
 			language: '',
 			terrain: false,
 			textScale: 1,

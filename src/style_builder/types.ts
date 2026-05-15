@@ -56,6 +56,14 @@ export interface StyleBuilderOptions {
 	textScale?: number;
 
 	/**
+	 * Multiplier applied to every symbol layer's `icon-size`.
+	 * Symbol layers that have an `icon-image` but no explicit `icon-size` get `icon-size: iconScale`
+	 * (MapLibre's spec default is 1).
+	 * @default 1
+	 */
+	iconScale?: number;
+
+	/**
 	 * Set the language ('en', 'de', ...) of all map labels.
 	 * A null value means that the language of the country in which the label is drawn will be used.
 	 * See also: {@link Language}

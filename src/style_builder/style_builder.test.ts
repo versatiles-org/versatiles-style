@@ -109,6 +109,7 @@ describe('StyleBuilder', () => {
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			hideLabels: false,
 			hillshade: false,
+			iconScale: 1,
 			language: '',
 			terrain: false,
 			textScale: 1,
@@ -189,6 +190,73 @@ describe('StyleBuilder', () => {
 					expect(afterStops[j][0]).toBe(beforeStops[j][0]); // zoom unchanged
 					expect(afterStops[j][1]).toBe(beforeStops[j][1] * 2); // value doubled
 				}
+			}
+		});
+
+		it('should leave icon-size unchanged when iconScale is 1', () => {
+			const colorful = new Colorful();
+			const baseline = colorful.build();
+			const scaled = colorful.build({ iconScale: 1 });
+
+			const baselineSizes = baseline.layers
+				.filter((l) => l.type === 'symbol')
+				.map((l) => (l.layout as Record<string, unknown>)?.['icon-size']);
+			const scaledSizes = scaled.layers
+				.filter((l) => l.type === 'symbol')
+				.map((l) => (l.layout as Record<string, unknown>)?.['icon-size']);
+
+			expect(scaledSizes).toStrictEqual(baselineSizes);
+		});
+
+		it('should scale icon-size on symbol layers when iconScale is set', () => {
+			const colorful = new Colorful();
+			const baseline = colorful.build();
+			const scaled = colorful.build({ iconScale: 2 });
+
+			const iconLayers = baseline.layers.filter(
+				(l) => l.type === 'symbol' && (l.layout as Record<string, unknown>)?.['icon-image'] != null
+			);
+			expect(iconLayers.length).toBeGreaterThan(0);
+
+			for (const beforeLayer of iconLayers) {
+				const afterLayer = scaled.layers.find((l) => l.id === beforeLayer.id);
+				const before = (beforeLayer.layout as Record<string, unknown>)?.['icon-size'];
+				const after = (afterLayer?.layout as Record<string, unknown>)?.['icon-size'];
+
+				if (before == null) {
+					// Implicit MapLibre default of 1, scaled to 2
+					expect(after).toBe(2);
+					continue;
+				}
+				if (typeof before === 'number') {
+					expect(after).toBe(before * 2);
+					continue;
+				}
+				const beforeStops = (before as { stops: [number, number][] }).stops;
+				const afterStops = (after as { stops: [number, number][] }).stops;
+				expect(afterStops).toHaveLength(beforeStops.length);
+				for (let j = 0; j < beforeStops.length; j++) {
+					expect(afterStops[j][0]).toBe(beforeStops[j][0]);
+					expect(afterStops[j][1]).toBe(beforeStops[j][1] * 2);
+				}
+			}
+		});
+
+		it('should not touch icon-size on layers without icon-image when iconScale is set', () => {
+			const colorful = new Colorful();
+			const baseline = colorful.build();
+			const scaled = colorful.build({ iconScale: 2 });
+
+			const noIconSymbols = baseline.layers.filter(
+				(l) => l.type === 'symbol' && (l.layout as Record<string, unknown>)?.['icon-image'] == null
+			);
+			expect(noIconSymbols.length).toBeGreaterThan(0);
+
+			for (const beforeLayer of noIconSymbols) {
+				const afterLayer = scaled.layers.find((l) => l.id === beforeLayer.id);
+				const before = (beforeLayer.layout as Record<string, unknown>)?.['icon-size'];
+				const after = (afterLayer?.layout as Record<string, unknown>)?.['icon-size'];
+				expect(after).toStrictEqual(before);
 			}
 		});
 
