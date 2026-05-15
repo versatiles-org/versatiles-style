@@ -136,6 +136,9 @@ export default class Colorful extends StyleBuilder {
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
+		const bg = colors.land.saturate(-1).contrast(100);
+		const fg = bg.invertLuminosity();
+
 		return {
 			// background
 			background: {
@@ -144,7 +147,7 @@ export default class Colorful extends StyleBuilder {
 
 			// boundary
 			'boundary-{country,state}:outline': {
-				color: colors.land.lighten(0.1),
+				color: colors.land.blend(0.1, bg),
 				lineBlur: 1,
 				lineCap: 'round',
 				lineJoin: 'round',
@@ -157,7 +160,7 @@ export default class Colorful extends StyleBuilder {
 			'boundary-country{-disputed,}:outline': {
 				size: { 2: 0, 3: 2, 10: 8 },
 				opacity: 0.75,
-				color: colors.land.lighten(0.05),
+				color: colors.land.blend(0.05, bg),
 			},
 			'boundary-country{-disputed,}': {
 				size: { 2: 0, 3: 1, 10: 4 },
@@ -339,7 +342,7 @@ export default class Colorful extends StyleBuilder {
 			// bridge
 
 			bridge: {
-				color: colors.land.darken(0.02),
+				color: colors.land.blend(0.02, fg),
 				fillAntialias: true,
 				opacity: 0.8,
 			},
@@ -356,13 +359,13 @@ export default class Colorful extends StyleBuilder {
 				lineJoin: 'round',
 			},
 			'tunnel-street-*:outline': {
-				color: colors.street.darken(0.13),
+				color: colors.street.blend(0.13, fg),
 			},
 			'tunnel-street-*': {
-				color: colors.street.darken(0.03),
+				color: colors.street.blend(0.03, fg),
 			},
 			'bridge-street-*:outline': {
-				color: colors.street.darken(0.15),
+				color: colors.street.blend(0.15, fg),
 			},
 
 			// streets and ways, line caps
@@ -383,7 +386,7 @@ export default class Colorful extends StyleBuilder {
 			'bridge-{street,way}-*:bridge': {
 				lineCap: 'butt',
 				lineJoin: 'round',
-				color: colors.land.darken(0.02),
+				color: colors.land.blend(0.02, fg),
 				fillAntialias: true,
 				opacity: 0.5,
 			},
@@ -435,19 +438,19 @@ export default class Colorful extends StyleBuilder {
 				color: colors.trunk,
 			},
 			'tunnel-street-motorway{-link,}:outline': {
-				color: colors.motorwaybg.lighten(0.05),
+				color: colors.motorwaybg.blend(0.05, bg),
 				lineDasharray: [1, 0.3],
 			},
 			'tunnel-street-motorway{-link,}': {
-				color: colors.motorway.lighten(0.1),
+				color: colors.motorway.blend(0.1, bg),
 				lineCap: 'butt',
 			},
 			'tunnel-street-{trunk,primary,secondary}{-link,}:outline': {
-				color: colors.trunkbg.lighten(0.05),
+				color: colors.trunkbg.blend(0.05, bg),
 				lineDasharray: [1, 0.3],
 			},
 			'tunnel-street-{trunk,primary,secondary}{-link,}': {
-				color: colors.trunk.lighten(0.1),
+				color: colors.trunk.blend(0.1, bg),
 				lineCap: 'butt',
 			},
 
@@ -534,12 +537,12 @@ export default class Colorful extends StyleBuilder {
 			'{bridge-,tunnel-,}street-{service,busway,busguideway}:outline': {
 				size: { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 },
 				opacity: { 15: 0, 16: 1 },
-				color: colors.streetbg.lighten(0.3),
+				color: colors.streetbg.blend(0.3, bg),
 			},
 			'{bridge-,tunnel-,}street-{service,busway,busguideway}': {
 				size: { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 },
 				opacity: { 15: 0, 16: 1 },
-				color: colors.street.darken(0.03),
+				color: colors.street.blend(0.03, fg),
 			},
 
 			// ways
@@ -554,31 +557,31 @@ export default class Colorful extends StyleBuilder {
 
 			// foot
 			'{bridge-,}way-{footway,path,steps}:outline': {
-				color: colors.foot.darken(0.1),
+				color: colors.foot.blend(0.1, fg),
 			},
 			'{bridge-,}way-{footway,path,steps}': {
-				color: colors.foot.lighten(0.02),
+				color: colors.foot.blend(0.02, bg),
 			},
 			'tunnel-way-{footway,path,steps}:outline': {
-				color: colors.foot.darken(0.1).saturate(-0.5),
+				color: colors.foot.blend(0.1, fg).saturate(-0.5),
 			},
 			'tunnel-way-{footway,path,steps}': {
-				color: colors.foot.darken(0.02).saturate(-0.5),
+				color: colors.foot.blend(0.02, fg).saturate(-0.5),
 				lineDasharray: [1, 0.2],
 			},
 
 			// cycleway
 			'{bridge-,}way-cycleway:outline': {
-				color: colors.cycle.darken(0.1),
+				color: colors.cycle.blend(0.1, fg),
 			},
 			'{bridge-,}way-cycleway': {
 				color: colors.cycle,
 			},
 			'tunnel-way-cycleway:outline': {
-				color: colors.cycle.darken(0.1).saturate(-0.5),
+				color: colors.cycle.blend(0.1, fg).saturate(-0.5),
 			},
 			'tunnel-way-cycleway': {
-				color: colors.cycle.darken(0.02).saturate(-0.5),
+				color: colors.cycle.blend(0.02, fg).saturate(-0.5),
 				lineDasharray: [1, 0.2],
 			},
 
@@ -596,7 +599,7 @@ export default class Colorful extends StyleBuilder {
 				color: colors.foot,
 			},
 			'street-pedestrian-zone': {
-				color: colors.foot.lighten(0.02).fade(0.75),
+				color: colors.foot.blend(0.02, bg).fade(0.75),
 				opacity: { 14: 0, 15: 1 },
 			},
 
@@ -607,7 +610,7 @@ export default class Colorful extends StyleBuilder {
 				size: { 8: 1, 13: 1, 15: 1, 20: 14 },
 			},
 			'{tunnel-,bridge-,}transport-{rail,lightrail}': {
-				color: colors.rail.lighten(0.25),
+				color: colors.rail.blend(0.25, bg),
 				minzoom: 14,
 				size: { 14: 0, 15: 1, 20: 10 },
 				lineDasharray: [2, 2],
@@ -620,7 +623,7 @@ export default class Colorful extends StyleBuilder {
 				size: { 14: 0, 15: 1, 16: 1, 20: 14 },
 			},
 			'{tunnel-,bridge-,}transport-{rail,lightrail}-service': {
-				color: colors.rail.lighten(0.25),
+				color: colors.rail.blend(0.25, bg),
 				minzoom: 15,
 				size: { 15: 0, 16: 1, 20: 10 },
 				lineDasharray: [2, 2],
@@ -632,7 +635,7 @@ export default class Colorful extends StyleBuilder {
 				size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 },
 			},
 			'{tunnel-,bridge-,}transport-subway': {
-				color: colors.subway.lighten(0.25),
+				color: colors.subway.blend(0.25, bg),
 				size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
 				lineDasharray: [2, 2],
 			},
@@ -680,7 +683,7 @@ export default class Colorful extends StyleBuilder {
 			// ferry
 			'transport-ferry': {
 				minzoom: 10,
-				color: colors.water.darken(0.1),
+				color: colors.water.blend(0.1, fg),
 				size: { 10: 1, 13: 2, 14: 3, 16: 4, 17: 6 },
 				opacity: { 10: 0, 11: 1 },
 				lineDasharray: [1, 1],
@@ -713,11 +716,11 @@ export default class Colorful extends StyleBuilder {
 			},
 			'label-boundary-state': {
 				minzoom: 5,
-				color: colors.label.lighten(0.05),
+				color: colors.label.blend(0.05, bg),
 				size: { 5: 8, 8: 12 },
 			},
 			'label-place-*': {
-				color: colors.label.rotateHue(-15).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-15).saturate(1).blend(0.05, fg),
 				font: fonts.regular,
 				textHaloColor: colors.labelHalo,
 				textHaloWidth: 2,
@@ -752,19 +755,19 @@ export default class Colorful extends StyleBuilder {
 				minzoom: 11,
 				size: { 11: 11, 13: 14 },
 				textTransform: 'uppercase',
-				color: colors.label.rotateHue(-30).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-30).saturate(1).blend(0.05, fg),
 			},
 			'label-place-quarter': {
 				minzoom: 13,
 				size: { 13: 13 },
 				textTransform: 'uppercase',
-				color: colors.label.rotateHue(-40).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-40).saturate(1).blend(0.05, fg),
 			},
 			'label-place-neighbourhood': {
 				minzoom: 14,
 				size: { 14: 12 },
 				textTransform: 'uppercase',
-				color: colors.label.rotateHue(-50).saturate(1).darken(0.05),
+				color: colors.label.rotateHue(-50).saturate(1).blend(0.05, fg),
 			},
 			'label-motorway-shield': {
 				color: colors.shield,
