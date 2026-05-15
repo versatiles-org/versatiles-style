@@ -23,7 +23,12 @@ describe('layers', () => {
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toStrictEqual(['get', 'name']);
+		expect(labelLayer.layout?.['text-field']).toStrictEqual([
+			'coalesce',
+			['get', 'name'],
+			['get', 'name_en'],
+			['get', 'name_de'],
+		]);
 	});
 
 	it('should handle language suffix en correctly', () => {
@@ -33,12 +38,7 @@ describe('layers', () => {
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			'case',
-			['to-boolean', ['get', 'name_en']],
-			['get', 'name_en'],
-			['get', 'name'],
-		]);
+		expect(labelLayer.layout?.['text-field']).toStrictEqual(['coalesce', ['get', 'name_en'], ['get', 'name']]);
 	});
 
 	it('should handle language suffix fr correctly', () => {
@@ -49,10 +49,10 @@ describe('layers', () => {
 		expect(labelLayer).toBeDefined();
 
 		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			'case',
-			['to-boolean', ['get', 'name_fr']],
+			'coalesce',
 			['get', 'name_fr'],
 			['get', 'name'],
+			['get', 'name_en'],
 		]);
 	});
 

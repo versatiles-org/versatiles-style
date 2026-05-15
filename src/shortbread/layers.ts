@@ -8,9 +8,13 @@ import { Language } from '../style_builder/types.js';
 
 export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
 	const { language } = option;
-	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification> = ['get', 'name'];
-	if (language) {
-		nameField = ['case', ['to-boolean', ['get', 'name_' + language]], ['get', 'name_' + language], ['get', 'name']];
+	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification>;
+	if (!language) {
+		nameField = ['coalesce', ['get', 'name'], ['get', 'name_en'], ['get', 'name_de']];
+	} else if (language === 'en') {
+		nameField = ['coalesce', ['get', 'name_en'], ['get', 'name']];
+	} else {
+		nameField = ['coalesce', ['get', 'name_' + language], ['get', 'name'], ['get', 'name_en']];
 	}
 
 	return [
