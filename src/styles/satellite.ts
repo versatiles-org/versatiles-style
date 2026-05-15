@@ -1,7 +1,8 @@
 import Graybeard from './graybeard.js';
 import type { StyleSpecification } from '../types/maplibre.js';
+import type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { Language } from '../style_builder/types.js';
-import { resolveUrl } from '../lib/utils.js';
+import { basename, resolveUrl } from '../lib/utils.js';
 import { TileJSONSpecification } from '../types/tilejson.js';
 import { applyElevation, type HillshadeOption, type TerrainOption } from '../lib/elevation.js';
 
@@ -13,6 +14,10 @@ export interface SatelliteStyleOptions {
 	overlayTiles?: string[];
 	overlay?: boolean;
 	language?: Language;
+	/** URL template for glyphs. Defaults to `/assets/glyphs/{fontstack}/{range}.pbf`. */
+	glyphs?: string;
+	/** Sprite URL or sprite list. Defaults to `[{ id: 'basics', url: '/assets/sprites/basics/sprites' }]`. */
+	sprite?: SpriteSpecification;
 	rasterOpacity?: number;
 	rasterHueRotate?: number;
 	rasterBrightnessMin?: number;
@@ -31,6 +36,8 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 	options ??= {};
 	const baseUrl = options.baseUrl ?? 'https://tiles.versatiles.org';
 	const overlay = options.overlay ?? true;
+	const glyphs = options.glyphs ?? '/assets/glyphs/{fontstack}/{range}.pbf';
+	const sprite = options.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }];
 
 	let style: StyleSpecification;
 
@@ -38,6 +45,8 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 		// Generate graybeard style for overlay
 		style = new Graybeard().build({
 			baseUrl,
+			glyphs,
+			sprite,
 			tiles: options.overlayTiles,
 			language: options.language,
 		});
@@ -78,7 +87,17 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 		}
 	} else {
 		// Minimal style with no overlay
-		style = { version: 8, sources: {}, layers: [] } as unknown as StyleSpecification;
+		const resolvedSprite =
+			typeof sprite === 'string'
+				? [{ id: basename(sprite), url: resolveUrl(baseUrl, sprite) }]
+				: sprite.map(({ id, url }) => ({ id, url: resolveUrl(baseUrl, url) }));
+		style = {
+			version: 8,
+			sources: {},
+			layers: [],
+			glyphs: resolveUrl(baseUrl, glyphs),
+			sprite: resolvedSprite,
+		} as unknown as StyleSpecification;
 	}
 
 	// Build raster paint properties

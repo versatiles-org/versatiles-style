@@ -119,6 +119,34 @@ describe('satellite style', () => {
 		expect(Object.keys(style.sources)).toEqual(['satellite']);
 	});
 
+	it('should set default glyphs and sprite when overlay is false', async () => {
+		const style = await buildSatelliteStyle({ overlay: false });
+
+		expect(style.glyphs).toBe('https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf');
+		expect(style.sprite).toEqual([{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }]);
+	});
+
+	it('should accept custom glyphs and sprite when overlay is false', async () => {
+		const style = await buildSatelliteStyle({
+			overlay: false,
+			glyphs: 'https://example.org/fonts/{fontstack}/{range}.pbf',
+			sprite: [{ id: 'custom', url: 'https://example.org/sprites/custom' }],
+		});
+
+		expect(style.glyphs).toBe('https://example.org/fonts/{fontstack}/{range}.pbf');
+		expect(style.sprite).toEqual([{ id: 'custom', url: 'https://example.org/sprites/custom' }]);
+	});
+
+	it('should accept custom glyphs and sprite when overlay is true', async () => {
+		const style = await buildSatelliteStyle({
+			glyphs: 'https://example.org/fonts/{fontstack}/{range}.pbf',
+			sprite: [{ id: 'custom', url: 'https://example.org/sprites/custom' }],
+		});
+
+		expect(style.glyphs).toBe('https://example.org/fonts/{fontstack}/{range}.pbf');
+		expect(style.sprite).toEqual([{ id: 'custom', url: 'https://example.org/sprites/custom' }]);
+	});
+
 	it('should accept custom rasterTilejson', async () => {
 		const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json(fakeTilejson));
 
