@@ -790,14 +790,14 @@ export default class Colorful extends StyleBuilder {
 			},
 			'label-address-housenumber': {
 				font: fonts.regular,
-				textHaloColor: colors.building.lighten(0.05),
+				color: colors.building.blend(0.3, colors.land.invertLuminosity()),
+				textHaloColor: colors.building.blend(0.5, colors.land),
 				textHaloWidth: 2,
 				textHaloBlur: 1,
 				symbolPlacement: 'point',
 				textAnchor: 'center',
 				minzoom: 17,
 				size: { 17: 8, 19: 10 },
-				color: colors.building.darken(0.3),
 			},
 
 			// markings
