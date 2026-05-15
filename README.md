@@ -124,6 +124,10 @@ To build new sprites, ensure `optipng` is installed.
 - Styles and colors within the SVG are ignored.
 - All length values must be specified in pixels without units.
 
+### Recommended icon sources
+
+When adding new icons, [Pinhead Map Icons](https://pinhead.ink/) ([source](https://github.com/waysidemapping/pinhead)) is a useful starting point — a CC0-licensed collection of 1000+ cartographic SVGs designed to be legible at pin-marker scale, unifying icons from Maki, Temaki, OSM Carto, and NPMap.
+
 ### Configuration
 
 Define icon sets in the configuration file: [`scripts/config-sprites.ts`](./scripts/config-sprites.ts)
