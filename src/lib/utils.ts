@@ -121,3 +121,21 @@ export function basename(url: string): string {
 	url = url.replace(/\/+$/, '');
 	return url.split('/').pop() ?? '';
 }
+
+/**
+ * Canonicalizes an attribution string so that two semantically identical attributions
+ * (e.g. one with single-quoted attributes, the other double-quoted) become byte-identical.
+ * MapLibre's attribution control deduplicates by exact string equality, so applying this
+ * before writing into a style source lets the control collapse cosmetic duplicates.
+ *
+ * Three transformations:
+ *   - trim leading/trailing whitespace
+ *   - collapse internal whitespace runs to single spaces
+ *   - rewrite `attr='value'` to `attr="value"` (HTML standard form)
+ */
+export function normalizeAttribution(s: string): string {
+	return s
+		.trim()
+		.replace(/\s+/g, ' ')
+		.replace(/(\w+)='([^']*)'/g, '$1="$2"');
+}

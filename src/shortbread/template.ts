@@ -1,5 +1,6 @@
 import { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { VectorLayer } from '../types/vector_layer.js';
+import { normalizeAttribution } from '../lib/utils.js';
 
 const maxzoom = 14;
 
@@ -14,7 +15,9 @@ export function getShortbreadTemplate(): StyleSpecification {
 		sprite: [{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }],
 		sources: {
 			'versatiles-shortbread': {
-				attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				attribution: normalizeAttribution(
+					'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				),
 				tiles: ['https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'],
 				type: 'vector',
 				scheme: 'xyz',

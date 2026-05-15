@@ -2,7 +2,7 @@ import Graybeard from './graybeard.js';
 import type { StyleSpecification } from '../types/maplibre.js';
 import type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { Language } from '../style_builder/types.js';
-import { basename, resolveUrl } from '../lib/utils.js';
+import { basename, normalizeAttribution, resolveUrl } from '../lib/utils.js';
 import { TileJSONSpecification } from '../types/tilejson.js';
 import { applyElevation, type HillshadeOption, type TerrainOption } from '../lib/elevation.js';
 
@@ -114,6 +114,9 @@ export async function buildSatelliteStyle(options?: SatelliteStyleOptions): Prom
 	const rasterTilejson = (await fetch(rasterTilejsonUrl).then((res) => res.json())) as TileJSONSpecification;
 	if (rasterTilejson.tiles) {
 		rasterTilejson.tiles = rasterTilejson.tiles.map((url) => resolveUrl(baseUrl, url));
+	}
+	if (rasterTilejson.attribution) {
+		rasterTilejson.attribution = normalizeAttribution(rasterTilejson.attribution);
 	}
 	style.sources.satellite = { ...rasterTilejson, type: 'raster' };
 

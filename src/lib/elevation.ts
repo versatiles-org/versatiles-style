@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '../types/maplibre.js';
 import type { TileJSONSpecification } from '../types/tilejson.js';
-import { resolveUrl } from './utils.js';
+import { normalizeAttribution, resolveUrl } from './utils.js';
 
 export type TerrainOption = boolean | { exaggeration?: number };
 
@@ -61,7 +61,7 @@ export async function applyElevation(
 	}
 
 	style.sources.elevation = {
-		attribution: elevationTilejson.attribution,
+		attribution: elevationTilejson.attribution ? normalizeAttribution(elevationTilejson.attribution) : undefined,
 		bounds: elevationTilejson.bounds,
 		minzoom: elevationTilejson.minzoom,
 		maxzoom: elevationTilejson.maxzoom,

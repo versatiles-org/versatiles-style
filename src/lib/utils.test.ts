@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { Color } from '../color/index.js';
-import { deepClone, isSimpleObject, isBasicType, deepMerge, resolveUrl, basename } from './utils.js';
+import {
+	deepClone,
+	isSimpleObject,
+	isBasicType,
+	deepMerge,
+	resolveUrl,
+	basename,
+	normalizeAttribution,
+} from './utils.js';
 
 describe('deepClone', () => {
 	it('clones primitive types correctly', () => {
@@ -280,5 +288,33 @@ describe('basename', () => {
 		expect(basename('/path/to/resource-name')).toBe('resource-name');
 		expect(basename('http://example.com/resource_name/')).toBe('resource_name');
 		expect(basename('/path/to/resource+name')).toBe('resource+name');
+	});
+});
+
+describe('normalizeAttribution', () => {
+	it('returns canonical strings unchanged', () => {
+		expect(normalizeAttribution('<a href="https://example.com">Example</a>')).toBe(
+			'<a href="https://example.com">Example</a>'
+		);
+	});
+
+	it('rewrites single-quoted attributes to double-quoted', () => {
+		expect(normalizeAttribution("<a href='https://example.com'>Example</a>")).toBe(
+			'<a href="https://example.com">Example</a>'
+		);
+	});
+
+	it('trims leading and trailing whitespace', () => {
+		expect(normalizeAttribution('  Example  ')).toBe('Example');
+	});
+
+	it('collapses internal whitespace runs', () => {
+		expect(normalizeAttribution('a   b\tc\nd')).toBe('a b c d');
+	});
+
+	it('produces byte-identical output for cosmetically equivalent inputs', () => {
+		const a = normalizeAttribution("<a href='https://versatiles.org/sources/'>VersaTiles sources</a>");
+		const b = normalizeAttribution('<a href="https://versatiles.org/sources/">VersaTiles sources</a>');
+		expect(a).toBe(b);
 	});
 });
