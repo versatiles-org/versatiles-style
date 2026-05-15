@@ -31,6 +31,7 @@ export abstract class StyleBuilder {
 		const tiles = options.tiles ?? defaults.tiles;
 		const bounds = options.bounds ?? defaults.bounds;
 		const hideLabels = options.hideLabels ?? defaults.hideLabels;
+		const textScale = options.textScale ?? defaults.textScale;
 		const language = options.language ?? defaults.language;
 		const recolorOptions = options.recolor ?? defaults.recolor;
 
@@ -89,6 +90,9 @@ export abstract class StyleBuilder {
 		// hide labels, if wanted
 		if (hideLabels) layers = layers.filter((l) => l.type !== 'symbol');
 
+		// scale text-size on all symbol layers
+		if (textScale !== 1) scaleTextSize(layers, textScale);
+
 		style.layers = layers;
 		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(baseUrl, glyphs);
@@ -122,6 +126,7 @@ export abstract class StyleBuilder {
 			sprite: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }],
 			tiles: ['/tiles/osm/{z}/{x}/{y}'],
 			hideLabels: false,
+			textScale: 1,
 			language: '',
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
@@ -140,4 +145,24 @@ export abstract class StyleBuilder {
 	}
 
 	protected abstract getStyleRules(options: StyleRulesOptions): StyleRules;
+}
+
+/**
+ * Multiplies every symbol layer's `text-size` by the given factor.
+ * Handles two value forms produced by the decorator: a plain number, or a `{ stops: [[zoom, value]] }` object.
+ * Mutates the layers in place.
+ */
+function scaleTextSize(layers: MaplibreLayer[], scale: number): void {
+	for (const layer of layers) {
+		if (layer.type !== 'symbol') continue;
+		if (!layer.layout) continue;
+		const size = layer.layout['text-size'] as unknown;
+		if (size == null) continue;
+		if (typeof size === 'number') {
+			(layer.layout as Record<string, unknown>)['text-size'] = size * scale;
+		} else if (typeof size === 'object' && size !== null && 'stops' in size) {
+			const stops = (size as { stops: [number, number][] }).stops;
+			for (const stop of stops) stop[1] *= scale;
+		}
+	}
 }

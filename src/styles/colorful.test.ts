@@ -61,6 +61,7 @@ describe('Colorful Styles', () => {
 			hillshade: false,
 			language: '',
 			terrain: false,
+			textScale: 1,
 			recolor: {
 				blend: 0,
 				blendColor: '#000000',

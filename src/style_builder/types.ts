@@ -49,6 +49,13 @@ export interface StyleBuilderOptions {
 	hideLabels?: boolean;
 
 	/**
+	 * Multiplier applied to every symbol layer's `text-size`.
+	 * Halo width, padding, line widths, and other non-text dimensions are not affected.
+	 * @default 1
+	 */
+	textScale?: number;
+
+	/**
 	 * Set the language ('en', 'de', ...) of all map labels.
 	 * A null value means that the language of the country in which the label is drawn will be used.
 	 * See also: {@link Language}

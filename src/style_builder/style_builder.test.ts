@@ -111,6 +111,7 @@ describe('StyleBuilder', () => {
 			hillshade: false,
 			language: '',
 			terrain: false,
+			textScale: 1,
 			recolor: {
 				brightness: 0,
 				contrast: 1,
@@ -146,6 +147,63 @@ describe('StyleBuilder', () => {
 			const source = style.sources['versatiles-shortbread'] as VectorSourceSpecification;
 			expect(source).toHaveProperty('tiles');
 			expect(source.tiles).toStrictEqual(['https://my.base.url/tiles/osm/{z}/{x}/{y}']);
+		});
+
+		it('should leave text-size unchanged when textScale is 1', () => {
+			const baseline = builder.build();
+			const scaled = builder.build({ textScale: 1 });
+
+			const baselineSizes = baseline.layers
+				.filter((l) => l.type === 'symbol')
+				.map((l) => (l.layout as Record<string, unknown>)?.['text-size']);
+			const scaledSizes = scaled.layers
+				.filter((l) => l.type === 'symbol')
+				.map((l) => (l.layout as Record<string, unknown>)?.['text-size']);
+
+			expect(scaledSizes).toStrictEqual(baselineSizes);
+		});
+
+		it('should scale text-size on symbol layers when textScale is set', () => {
+			const baseline = builder.build();
+			const scaled = builder.build({ textScale: 2 });
+
+			const baselineSymbols = baseline.layers.filter((l) => l.type === 'symbol');
+			const scaledSymbols = scaled.layers.filter((l) => l.type === 'symbol');
+			expect(scaledSymbols).toHaveLength(baselineSymbols.length);
+
+			for (let i = 0; i < baselineSymbols.length; i++) {
+				const before = (baselineSymbols[i].layout as Record<string, unknown>)?.['text-size'];
+				const after = (scaledSymbols[i].layout as Record<string, unknown>)?.['text-size'];
+				if (before == null) {
+					expect(after).toBe(before);
+					continue;
+				}
+				if (typeof before === 'number') {
+					expect(after).toBe(before * 2);
+					continue;
+				}
+				const beforeStops = (before as { stops: [number, number][] }).stops;
+				const afterStops = (after as { stops: [number, number][] }).stops;
+				expect(afterStops).toHaveLength(beforeStops.length);
+				for (let j = 0; j < beforeStops.length; j++) {
+					expect(afterStops[j][0]).toBe(beforeStops[j][0]); // zoom unchanged
+					expect(afterStops[j][1]).toBe(beforeStops[j][1] * 2); // value doubled
+				}
+			}
+		});
+
+		it('should not affect line-width when textScale is set', () => {
+			const baseline = builder.build();
+			const scaled = builder.build({ textScale: 2 });
+
+			const baselineLines = baseline.layers.filter((l) => l.type === 'line');
+			const scaledLines = scaled.layers.filter((l) => l.type === 'line');
+
+			for (let i = 0; i < baselineLines.length; i++) {
+				const before = (baselineLines[i].paint as Record<string, unknown>)?.['line-width'];
+				const after = (scaledLines[i].paint as Record<string, unknown>)?.['line-width'];
+				expect(after).toStrictEqual(before);
+			}
 		});
 	});
 });
