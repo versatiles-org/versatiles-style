@@ -246,7 +246,16 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				});
 
 				// no links
-				['track', 'pedestrian', 'service', 'living_street', 'residential', 'unclassified'].forEach((t) => {
+				[
+					'track',
+					'pedestrian',
+					'service',
+					'living_street',
+					'residential',
+					'unclassified',
+					'busway',
+					'bus_guideway',
+				].forEach((t) => {
 					results.push({
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
@@ -309,7 +318,7 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				});
 
 				// other transport
-				['funicular', 'monorail', 'bus_guideway', 'busway'].reverse().forEach((t) => {
+				['funicular', 'monorail'].reverse().forEach((t) => {
 					results.push({
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',

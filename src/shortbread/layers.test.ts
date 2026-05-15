@@ -56,6 +56,18 @@ describe('layers', () => {
 		]);
 	});
 
+	it('should render busway and bus_guideway as streets', () => {
+		const layers = getShortbreadLayers({ language: '' });
+		const ids = new Set(layers.map((l) => l.id));
+
+		expect(ids.has('street-busway')).toBe(true);
+		expect(ids.has('street-busguideway')).toBe(true);
+		expect(ids.has('bridge-street-busway')).toBe(true);
+		expect(ids.has('tunnel-street-busway')).toBe(true);
+		expect(ids.has('transport-busway')).toBe(false);
+		expect(ids.has('transport-bus_guideway')).toBe(false);
+	});
+
 	it('should sort place labels by population', () => {
 		const layers = getShortbreadLayers({ language: '' });
 		const cityLayer = layers.find((layer) => layer.id === 'label-place-city') as SymbolLayerSpecification;
