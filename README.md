@@ -167,7 +167,7 @@ subgraph 1["color"]
 end
 subgraph 9["guess_style"]
 A["guess_style.ts"]
-12["index.ts"]
+Y["index.ts"]
 end
 subgraph B["lib"]
 C["utils.ts"]
@@ -196,13 +196,13 @@ L["layers.ts"]
 M["template.ts"]
 O["properties.ts"]
 end
-subgraph Y["types"]
 Z["index.ts"]
-10["tilejson.ts"]
-11["vector_layer.ts"]
+subgraph 10["types"]
+11["index.ts"]
+12["tilejson.ts"]
+13["vector_layer.ts"]
 14["maplibre.ts"]
 end
-13["index.ts"]
 end
 3-->2
 3-->4
@@ -226,8 +226,6 @@ end
 A-->5
 A-->C
 A-->E
-A-->Z
-A-->10
 C-->8
 E-->F
 E-->G
@@ -263,14 +261,14 @@ V-->T
 W-->G
 X-->E
 X-->V
-Z-->10
-Z-->11
-12-->A
-13-->8
-13-->12
-13-->E
+Y-->A
+Z-->8
+Z-->Y
+Z-->E
+11-->12
+11-->13
 
-class 0,1,9,B,D,H,J,Y subgraphs;
+class 0,1,9,B,D,H,J,10 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
