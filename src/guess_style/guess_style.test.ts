@@ -1,8 +1,16 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { TileJSONSpecification, VectorLayer } from '../types/index.js';
 import { guessStyle } from './guess_style.js';
 import { getShortbreadVectorLayers } from '../shortbread/template.js';
-import { SourceSpecification, StyleSpecification, VectorSourceSpecification } from '@maplibre/maplibre-gl-style-spec';
+import {
+	SourceSpecification,
+	StyleSpecification,
+	validateStyleMin,
+	VectorSourceSpecification,
+} from '@maplibre/maplibre-gl-style-spec';
 
 describe('guessStyle', () => {
 	const tiles = ['https://example.com/tiles/{z}/{x}/{y}'];
@@ -112,6 +120,17 @@ describe('guessStyle', () => {
 			it(type, () => {
 				expect(getSource(guessStyle({ ...tilejson, maxzoom: 5 }))).toHaveProperty('maxzoom', 5);
 			});
+		});
+	});
+
+	describe('real-world TileJSONs from tiles.versatiles.org', () => {
+		const fixtureDir = join(dirname(fileURLToPath(import.meta.url)), '../types/fixtures/tilejson');
+		const fixtures = readdirSync(fixtureDir).filter((f) => f.endsWith('.json'));
+
+		it.each(fixtures)('should build a valid MapLibre style for %s', (file) => {
+			const tilejson = JSON.parse(readFileSync(join(fixtureDir, file), 'utf8')) as TileJSONSpecification;
+			const style = guessStyle(tilejson, { baseUrl: 'https://tiles.versatiles.org/' });
+			expect(validateStyleMin(style)).toStrictEqual([]);
 		});
 	});
 
