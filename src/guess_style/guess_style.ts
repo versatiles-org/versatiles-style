@@ -4,8 +4,7 @@ import type {
 	TileJSONSpecificationVector,
 	VectorLayer,
 } from '../types/index.js';
-import { isTileJSONSpecification } from '../types/index.js';
-import { deepClone, resolveUrl } from '../lib/utils.js';
+import { resolveUrl } from '../lib/utils.js';
 import type {
 	BackgroundLayerSpecification,
 	CircleLayerSpecification,
@@ -18,7 +17,6 @@ import type {
 	VectorSourceSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { colorful } from '../styles/index.js';
-import { isRasterTileJSONSpecification } from '../types/tilejson.js';
 import randomColor from '../color/random.js';
 
 /**
@@ -42,42 +40,104 @@ export interface GuessStyleOptions {
 /**
  * Generates a style specification based on the provided TileJSON specification and optional parameters.
  *
+ * This function is intentionally fault-tolerant: a TileJSON that is partially invalid never causes it
+ * to throw. Every field is validated independently and silently dropped if it does not conform, so the
+ * remaining valid fields are still used to build a valid style. Even completely invalid input (e.g.
+ * `null` or a TileJSON without usable tiles) yields a valid — if empty — style.
+ *
  * @param {TileJSONSpecification} tileJSON - The TileJSON specification to generate the style from.
  * @param {GuessStyleOptions} [options] - Optional parameters to customize the style generation.
  * @param {string} [options.baseUrl] - Base URL to resolve tile URLs.
  * @param {string} [options.glyphs] - URL template for glyphs.
  * @param {string} [options.sprite] - URL template for sprites.
  * @returns {StyleSpecification} The generated style specification.
- * @throws {Error} If the provided TileJSON specification is invalid.
  */
 export function guessStyle(tileJSON: TileJSONSpecification, options?: GuessStyleOptions): StyleSpecification {
-	tileJSON = deepClone(tileJSON);
+	const spec = sanitizeTileJSON(tileJSON);
 
 	if (options && options.baseUrl) {
 		const { baseUrl } = options;
-		tileJSON.tiles = tileJSON.tiles.map((url) => resolveUrl(baseUrl, url));
-	}
-
-	if (!isTileJSONSpecification(tileJSON)) {
-		throw new Error('guessStyle: Invalid TileJSON specification (this error should never be reached)');
+		spec.tiles = spec.tiles.map((url) => resolveUrl(baseUrl, url));
 	}
 
 	let style: StyleSpecification;
-	if (isRasterTileJSONSpecification(tileJSON)) {
-		style = getRasterStyle(tileJSON);
-	} else {
-		if (isShortbread(tileJSON)) {
-			style = getShortbreadStyle(tileJSON, {
+	if ('vector_layers' in spec && Array.isArray(spec.vector_layers)) {
+		if (isShortbread(spec)) {
+			style = getShortbreadStyle(spec, {
 				baseUrl: options?.baseUrl,
 				glyphs: options?.glyphs,
 				sprite: options?.sprite,
 			});
 		} else {
-			style = getInspectorStyle(tileJSON);
+			style = getInspectorStyle(spec);
 		}
+	} else {
+		style = getRasterStyle(spec);
 	}
 
 	return style;
+}
+
+/**
+ * Builds a best-effort, valid TileJSON specification from arbitrary input.
+ *
+ * Each field is validated on its own and dropped if invalid, so a single malformed property never
+ * discards the rest of the TileJSON. The result always has a `tiles` array (possibly empty) and only
+ * carries `vector_layers` when at least one valid layer is present. The input is never mutated.
+ */
+function sanitizeTileJSON(raw: unknown): TileJSONSpecification {
+	const input: Record<string, unknown> =
+		typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
+
+	const spec: TileJSONSpecificationRaster = { tiles: [] };
+
+	if (Array.isArray(input.tiles)) {
+		spec.tiles = input.tiles.filter((tile): tile is string => typeof tile === 'string');
+	}
+
+	if (typeof input.attribution === 'string') spec.attribution = input.attribution;
+	if (input.scheme === 'xyz' || input.scheme === 'tms') spec.scheme = input.scheme;
+	if (typeof input.minzoom === 'number' && Number.isFinite(input.minzoom) && input.minzoom >= 0)
+		spec.minzoom = input.minzoom;
+	if (typeof input.maxzoom === 'number' && Number.isFinite(input.maxzoom) && input.maxzoom >= 0)
+		spec.maxzoom = input.maxzoom;
+
+	const vectorLayers = sanitizeVectorLayers(input.vector_layers);
+	if (vectorLayers) (spec as TileJSONSpecificationVector).vector_layers = vectorLayers;
+
+	return spec;
+}
+
+/**
+ * Returns the valid vector layers from arbitrary input, or `undefined` if none are valid.
+ * Invalid layers (and invalid fields within a layer) are dropped individually.
+ */
+function sanitizeVectorLayers(raw: unknown): VectorLayer[] | undefined {
+	if (!Array.isArray(raw)) return undefined;
+
+	const layers: VectorLayer[] = [];
+	for (const entry of raw) {
+		if (typeof entry !== 'object' || entry === null) continue;
+		const layer = entry as Record<string, unknown>;
+		if (typeof layer.id !== 'string') continue;
+
+		const fields: Record<string, 'Boolean' | 'Number' | 'String'> = {};
+		if (typeof layer.fields === 'object' && layer.fields !== null) {
+			for (const [key, value] of Object.entries(layer.fields)) {
+				if (value === 'Boolean' || value === 'Number' || value === 'String') fields[key] = value;
+			}
+		}
+
+		const clean: VectorLayer = { id: layer.id, fields };
+		if (typeof layer.description === 'string') clean.description = layer.description;
+		if (typeof layer.minzoom === 'number' && Number.isFinite(layer.minzoom) && layer.minzoom >= 0)
+			clean.minzoom = layer.minzoom;
+		if (typeof layer.maxzoom === 'number' && Number.isFinite(layer.maxzoom) && layer.maxzoom >= 0)
+			clean.maxzoom = layer.maxzoom;
+		layers.push(clean);
+	}
+
+	return layers.length > 0 ? layers : undefined;
 }
 
 function isShortbread(spec: TileJSONSpecificationVector): boolean {
