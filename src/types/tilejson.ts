@@ -7,7 +7,7 @@ export interface TileJSONSpecificationRaster {
 
 	attribution?: string;
 	bounds?: [number, number, number, number];
-	center?: [number, number];
+	center?: [number, number] | [number, number, number];
 	data?: string[];
 	description?: string;
 	fillzoom?: number;
@@ -80,16 +80,22 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 	}
 
 	if (obj.center != null) {
-		if (!Array.isArray(obj.center) || obj.center.length !== 2 || obj.center.some((num) => typeof num !== 'number')) {
+		if (
+			!Array.isArray(obj.center) ||
+			(obj.center.length !== 2 && obj.center.length !== 3) ||
+			obj.center.some((num) => typeof num !== 'number')
+		) {
 			throw new Error(
-				`TileJSON validation: spec.center must be an array of two numbers if present, but got ${JSON.stringify(obj.center)}`
+				`TileJSON validation: spec.center must be an array of two or three numbers if present, but got ${JSON.stringify(obj.center)}`
 			);
 		}
-		const a = obj.center as [number, number];
+		const a = obj.center as [number, number] | [number, number, number];
 		if (a[0] < -180 || a[0] > 180)
 			throw new Error(`TileJSON validation: spec.center[0] (longitude) must be between -180 and 180, but got ${a[0]}`);
 		if (a[1] < -90 || a[1] > 90)
 			throw new Error(`TileJSON validation: spec.center[1] (latitude) must be between -90 and 90, but got ${a[1]}`);
+		if (a.length === 3 && (a[2] < 0 || !Number.isInteger(a[2])))
+			throw new Error(`TileJSON validation: spec.center[2] (zoom) must be a non-negative integer, but got ${a[2]}`);
 	}
 
 	if (obj.data != null && (!Array.isArray(obj.data) || obj.data.some((url) => typeof url !== 'string'))) {
