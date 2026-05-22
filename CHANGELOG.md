@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.12.1] - 2026-05-22
+
+### Features
+
+- add TileJSON files for various vector and raster layers ([67311b3](https://github.com/versatiles-org/versatiles-style/commit/67311b389706a18c3e43508b69a4619e16521ea6))
+- update center property to accept three numbers in TileJSON specification ([6a6ba6f](https://github.com/versatiles-org/versatiles-style/commit/6a6ba6fa2590643c702baf7cc6f7c7939bf463fb))
+- add tests for real-world TileJSONs and validate generated MapLibre styles ([14670ab](https://github.com/versatiles-org/versatiles-style/commit/14670ab7bd3520c430db6f4197db7d176337e0db))
+- enhance guessStyle function with improved TileJSON sanitization and validation ([2d0bc63](https://github.com/versatiles-org/versatiles-style/commit/2d0bc63be0f4288aefe9fdd5c464bab6a09332cd))
+- add tests for handling partially invalid TileJSONs and validate vector layer filtering ([35e73c2](https://github.com/versatiles-org/versatiles-style/commit/35e73c253a7967b6dcd1447254e37411133a90a6))
+
+### Bug Fixes
+
+- update diagram structure in README for clarity and organization ([275733a](https://github.com/versatiles-org/versatiles-style/commit/275733a51a43e7dd7e9fec1838afeb3ecde69d52))
+
+### Chores
+
+- update dependencies to latest versions ([e6f8f15](https://github.com/versatiles-org/versatiles-style/commit/e6f8f15fe3375ba5a0898d65f27d636d03a58f2c))
+
 ## [5.12.0] - 2026-05-15
 
 ### Features
