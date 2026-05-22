@@ -134,6 +134,44 @@ describe('guessStyle', () => {
 		});
 	});
 
+	describe('stays valid for partially invalid TileJSONs', () => {
+		const invalidInputs: [string, unknown][] = [
+			['null', null],
+			['a string', 'garbage'],
+			['an empty object', {}],
+			['no tiles', { minzoom: 3 }],
+			['an empty tiles array', { tiles: [] }],
+			['non-string tiles entries', { tiles: ['https://example.com/{z}/{x}/{y}', 42, null] }],
+			['an out-of-range center', { tiles, center: [999, 999] }],
+			['malformed bounds', { tiles, bounds: [1, 2, 3] }],
+			['a negative minzoom', { tiles, minzoom: -5 }],
+			['vector_layers that is not an array', { tiles, vector_layers: 'oops' }],
+			['only invalid vector layers', { tiles, vector_layers: [{ id: 42 }, 'nope'] }],
+		];
+
+		it.each(invalidInputs)('returns a valid style for %s', (_label, input) => {
+			let style: StyleSpecification;
+			expect(() => (style = guessStyle(input as TileJSONSpecification))).not.toThrow();
+			expect(validateStyleMin(style!)).toStrictEqual([]);
+		});
+
+		it('keeps valid vector layers and drops invalid ones', () => {
+			const style = guessStyle({
+				tiles,
+				vector_layers: [
+					{ id: 'good_a', fields: { label: 'String' } },
+					{ id: 42 } as unknown as VectorLayer,
+					{ nope: 1 } as unknown as VectorLayer,
+					{ id: 'good_b', fields: { bad: 'Bogus', ok: 'Number' } as unknown as VectorLayer['fields'] },
+				],
+			});
+			const sourceLayers = style.layers
+				.filter((l) => 'source-layer' in l)
+				.map((l) => (l as { 'source-layer': string })['source-layer']);
+			expect(new Set(sourceLayers)).toStrictEqual(new Set(['good_a', 'good_b']));
+		});
+	});
+
 	describe('absolute tile urls override baseUrl', () => {
 		cases.forEach(({ type, tilejson }) => {
 			it(type, () => {
