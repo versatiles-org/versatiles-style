@@ -1,0 +1,15 @@
+{
+	"attribution": "<a href='https://versatiles.org/sources/'>VersaTiles sources</a>",
+	"bounds": [-180, -85.051129, 180, 85.051129],
+	"description": "High-resolution satellite and orthophoto imagery from various providers, merged by VersaTiles.",
+	"maxzoom": 17,
+	"minzoom": 0,
+	"name": "VersaTiles - Satellite + Orthophotos",
+	"tile_format": "image/webp",
+	"tile_schema": "rgb",
+	"tile_type": "raster",
+	"tilejson": "3.0.0",
+	"tiles": ["/tiles/satellite/{z}/{x}/{y}"],
+	"type": "baselayer",
+	"version": "3.0"
+}

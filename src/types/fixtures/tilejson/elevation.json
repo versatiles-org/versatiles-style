@@ -1,0 +1,11 @@
+{
+	"attribution": "<a href=\"https://mapterhorn.com/attribution\">© Mapterhorn</a>",
+	"bounds": [-180, -85.051129, 180, 85.051129],
+	"maxzoom": 12,
+	"minzoom": 0,
+	"tile_format": "image/webp",
+	"tile_schema": "dem/terrarium",
+	"tile_type": "raster",
+	"tilejson": "3.0.0",
+	"tiles": ["/tiles/elevation/{z}/{x}/{y}"]
+}

@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { isTileJSONSpecification } from './tilejson.js';
 
@@ -54,8 +57,24 @@ describe('isTileJSONSpecification', () => {
 			{ center: [181, 0], errorMessage: 'spec.center[0]' },
 			{ center: [0, -91], errorMessage: 'spec.center[1]' },
 			{ center: [0, 91], errorMessage: 'spec.center[1]' },
+			{ center: [0, 0, -1], errorMessage: 'spec.center[2]' },
+			{ center: [0, 0, 2.5], errorMessage: 'spec.center[2]' },
 		].forEach(({ center, errorMessage }) => {
 			expect(() => isTileJSONSpecification({ ...validVectorSpec, center })).toThrow(errorMessage);
+		});
+	});
+
+	it('should accept a three-element center with a zoom value', () => {
+		expect(isTileJSONSpecification({ ...validVectorSpec, center: [0, 0, 7] })).toBe(true);
+	});
+
+	describe('real-world TileJSONs from tiles.versatiles.org', () => {
+		const fixtureDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/tilejson');
+		const fixtures = readdirSync(fixtureDir).filter((f) => f.endsWith('.json'));
+
+		it.each(fixtures)('should accept %s', (file) => {
+			const spec = JSON.parse(readFileSync(join(fixtureDir, file), 'utf8')) as unknown;
+			expect(isTileJSONSpecification(spec)).toBe(true);
 		});
 	});
 
@@ -64,7 +83,7 @@ describe('isTileJSONSpecification', () => {
 			['tiles', 'a non-empty array of strings', ['url'], 'url', [], [1], 1],
 			['attribution', 'a string if present', 'valid', 1],
 			['bounds', 'an array of four numbers if present', [1, 2, 3, 4], ['1', '2', '3', '4'], [1, 2, 3], [], 'invalid'],
-			['center', 'an array of two numbers if present', [1, 2], ['1', '2'], [1, 2, 3], [], 'invalid'],
+			['center', 'an array of two or three numbers if present', [1, 2], ['1', '2'], [1, 2, 3, 4], [], 'invalid'],
 			['data', 'an array of strings if present', ['url'], 'url', [1], 1],
 			['description', 'a string if present', 'valid', 1],
 			['fillzoom', 'a positive integer if present', 5, 'invalid', -1],
