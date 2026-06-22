@@ -81,6 +81,7 @@ export default class Neutrino extends Colorful {
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		const landcover = options.experimental.landcover === true;
+		const buildingHeights = options.experimental.buildingHeights === true;
 		return {
 			background: {
 				color: colors.land,
@@ -155,10 +156,20 @@ export default class Neutrino extends Colorful {
 			'site-{bicycleparking,parking}': {
 				color: colors.commercial,
 			},
-			building: {
-				color: colors.building,
-				opacity: { 14: 0, 15: 1 },
-			},
+			building: buildingHeights
+				? undefined
+				: {
+						color: colors.building,
+						opacity: { 14: 0, 15: 1 },
+					},
+			'building-3d': buildingHeights
+				? {
+						color: colors.building,
+						opacity: { 14: 0, 15: 1 },
+						fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
+						fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
+					}
+				: undefined,
 			bridge: {
 				color: colors.land.darken(0.01),
 			},

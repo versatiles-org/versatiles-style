@@ -18,6 +18,15 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	landcover?: boolean;
+
+	/**
+	 * Render buildings as true 3D extrusions using `height` and `min_height` attributes
+	 * from the `building_heights` / `building_parts` Shortbread extensions.
+	 * Replaces the flat fake-2.5D building style with `fill-extrusion` layers.
+	 * See: https://docs.versatiles.org/compendium/specification_shortbread_extensions.html
+	 * @default false
+	 */
+	buildingHeights?: boolean;
 }
 
 /**

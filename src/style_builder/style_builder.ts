@@ -77,6 +77,7 @@ export abstract class StyleBuilder {
 				case 'background':
 					return layer;
 				case 'fill':
+				case 'fill-extrusion':
 				case 'line':
 				case 'symbol':
 					return {
@@ -85,7 +86,7 @@ export abstract class StyleBuilder {
 					};
 			}
 			throw new Error(
-				`StyleBuilder: Unknown layer type "${type}" for layer "${id}". Expected "background", "fill", "line", or "symbol".`
+				`StyleBuilder: Unknown layer type "${type}" for layer "${id}". Expected "background", "fill", "fill-extrusion", "line", or "symbol".`
 			);
 		});
 		// apply layer rules

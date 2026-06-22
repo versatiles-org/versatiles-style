@@ -137,6 +137,7 @@ export default class Colorful extends StyleBuilder {
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
 		const landcover = options.experimental.landcover === true;
+		const buildingHeights = options.experimental.buildingHeights === true;
 		const bg = colors.land.saturate(-1).contrast(100);
 		const fg = bg.invertLuminosity();
 
@@ -303,16 +304,28 @@ export default class Colorful extends StyleBuilder {
 
 			// building
 
-			'building:outline': {
-				color: colors.buildingbg,
-				opacity: { 14: 0, 15: 1 },
-			},
-			building: {
-				// fake 2.5d with translate
-				color: colors.building,
-				opacity: { 14: 0, 15: 1 },
-				fillTranslate: [-2, -2],
-			},
+			'building:outline': buildingHeights
+				? undefined
+				: {
+						color: colors.buildingbg,
+						opacity: { 14: 0, 15: 1 },
+					},
+			building: buildingHeights
+				? undefined
+				: {
+						// fake 2.5d with translate
+						color: colors.building,
+						opacity: { 14: 0, 15: 1 },
+						fillTranslate: [-2, -2],
+					},
+			'building-3d': buildingHeights
+				? {
+						color: colors.building,
+						opacity: { 14: 0, 15: 1 },
+						fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
+						fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
+					}
+				: undefined,
 
 			// airport
 			'airport-area': {
@@ -796,10 +809,7 @@ export default class Colorful extends StyleBuilder {
 			},
 			'label-address-housenumber': {
 				font: fonts.regular,
-				color: colors.building.blend(0.3, colors.land.invertLuminosity()),
-				textHaloColor: colors.building.blend(0.5, colors.land),
-				textHaloWidth: 2,
-				textHaloBlur: 1,
+				color: colors.land.invertLuminosity().fade(0.7),
 				symbolPlacement: 'point',
 				textAnchor: 'center',
 				minzoom: 17,

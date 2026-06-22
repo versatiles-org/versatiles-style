@@ -8,11 +8,11 @@ describe('propertyLookup', () => {
 	});
 
 	it('should contain keys for each type and property', () => {
-		const expectedTypes = ['background', 'fill', 'line', 'symbol'];
+		const expectedTypes = ['background', 'fill', 'fill-extrusion', 'line', 'symbol'];
 
 		expectedTypes.forEach((type) => {
 			propertyLookup.forEach((value, key) => {
-				if (key.startsWith(type)) {
+				if (key.startsWith(type + '/')) {
 					expect(key).toMatch(new RegExp(`^${type}/`));
 				}
 			});

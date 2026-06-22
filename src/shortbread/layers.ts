@@ -181,7 +181,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			type: 'fill',
 			'source-layer': 'buildings',
 		},
-
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayerDefinition[] => {
 			let filter: LegacyFilterSpecification[];
@@ -352,17 +351,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			return results;
 		}),
 
-		// poi, one layer per type
-		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map(
-			(key): MaplibreLayerDefinition => ({
-				id: 'poi-' + key,
-
-				type: 'symbol',
-				'source-layer': 'pois',
-				filter: ['to-boolean', ['get', key]],
-			})
-		),
-
 		// boundary
 		...[':outline', ''].flatMap((suffix): MaplibreLayerDefinition[] => [
 			{
@@ -414,15 +402,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 				],
 			},
 		]),
-
-		// label-address
-		{
-			id: 'label-address-housenumber',
-			type: 'symbol',
-			'source-layer': 'addresses',
-			filter: ['has', 'housenumber'],
-			layout: { 'text-field': '{housenumber}' },
-		},
 
 		// label-motorway
 		{
@@ -626,6 +605,36 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			'source-layer': 'public_transport',
 			filter: ['all', ['==', 'kind', 'aerodrome'], ['has', 'iata']],
 			layout: { 'text-field': nameField },
+		},
+
+		// 3D building (fill-extrusion, used with experimental.buildingHeights)
+		// Placed after streets/bridges so extrusions render on top of roads.
+		// hide_3d filter suppresses footprints covered by building:parts
+		{
+			id: 'building-3d',
+			type: 'fill-extrusion',
+			'source-layer': 'buildings',
+			filter: ['!=', 'hide_3d', true],
+		},
+
+		// poi, one layer per type
+		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map(
+			(key): MaplibreLayerDefinition => ({
+				id: 'poi-' + key,
+
+				type: 'symbol',
+				'source-layer': 'pois',
+				filter: ['to-boolean', ['get', key]],
+			})
+		),
+
+		// label-address
+		{
+			id: 'label-address-housenumber',
+			type: 'symbol',
+			'source-layer': 'addresses',
+			filter: ['has', 'housenumber'],
+			layout: { 'text-field': '{housenumber}' },
 		},
 	];
 }

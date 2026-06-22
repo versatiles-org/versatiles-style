@@ -2,7 +2,15 @@ import { getStyleVariants, colorful } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 
 const variants = getStyleVariants();
-variants.push({ name: 'custom', build: () => colorful({ experimental: { landcover: true } }) });
+variants.push({
+	name: 'custom',
+	build: () =>
+		colorful({
+			experimental: { landcover: true, buildingHeights: true },
+			terrain: true,
+			hillshade: true,
+		}),
+});
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
 
 // Populate select from variants
@@ -33,6 +41,7 @@ async function loadStyle(name: string) {
 			style,
 			maxZoom: 20,
 			hash: true,
+			minPitch: 0,
 		});
 		map.addControl(new maplibregl.NavigationControl(), 'top-right');
 	}
