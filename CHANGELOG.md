@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.13.0] - 2026-06-22
+
+### Features
+
+- add experimental options for landcover rendering in style rules, fixes #114 and fixes #115 ([b0c8eaa](https://github.com/versatiles-org/versatiles-style/commit/b0c8eaa149be75d8f7e1a81f9ca1b1fec3258d86))
+- enhance style rendering with 3D building support and experimental options, fixes #116 ([affb796](https://github.com/versatiles-org/versatiles-style/commit/affb7962c85dbffe42c1b3442830b49d5f05fc15))
+- add support for 3D building heights and synchronize light settings with hillshade ([e574ef2](https://github.com/versatiles-org/versatiles-style/commit/e574ef29b76966d17f02d05bc10c7c2099870254))
+- reorganize and enhance label definitions for place and boundary layers ([7080674](https://github.com/versatiles-org/versatiles-style/commit/7080674bb5cf6896c6993b70d28e31f809500a75))
+- adjust building opacity for 3D rendering in style rules ([8edfcb1](https://github.com/versatiles-org/versatiles-style/commit/8edfcb13d0fc21c6fd8bdf3ce4ee7fd23b9fa201))
+- add languageStrict option for enhanced language handling in style rules, fixes #117 ([4ebe7d4](https://github.com/versatiles-org/versatiles-style/commit/4ebe7d4e0abe3cff3f92fa6f95a295c4a7231ab9))
+- increase maxzoom for satellite style to enhance detail in imagery ([f5d6b9d](https://github.com/versatiles-org/versatiles-style/commit/f5d6b9dd44bcea19f60f8a3ab1afbbb078e98a05))
+
+### Build System
+
+- **deps-dev:** bump the npm group with 10 updates ([2478712](https://github.com/versatiles-org/versatiles-style/commit/247871246ab0dc899296684de47a7d6b78ebcea9))
+
+### Chores
+
+- update dependencies in package.json ([03590b0](https://github.com/versatiles-org/versatiles-style/commit/03590b07d99fdc0b5decab8d64698da132253c50))
+
 ## [5.12.1] - 2026-05-22
 
 ### Features
