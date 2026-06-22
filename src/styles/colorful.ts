@@ -136,6 +136,7 @@ export default class Colorful extends StyleBuilder {
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
+		const landcover = options.experimental.landcover === true;
 		const bg = colors.land.saturate(-1).contrast(100);
 		const fg = bg.invertLuminosity();
 
@@ -185,9 +186,11 @@ export default class Colorful extends StyleBuilder {
 				lineCap: 'round',
 				lineJoin: 'round',
 			},
-			'water-area': {
-				opacity: { 4: 0, 6: 1 },
-			},
+			'water-area': landcover
+				? undefined
+				: {
+						opacity: { 4: 0, 6: 1 },
+					},
 			'water-area-*': {
 				opacity: { 4: 0, 6: 1 },
 			},
@@ -221,23 +224,23 @@ export default class Colorful extends StyleBuilder {
 			},
 			'land-forest': {
 				color: colors.wood,
-				opacity: { 7: 0, 8: 0.1 },
+				opacity: landcover ? 0.1 : { 7: 0, 8: 0.1 },
 			},
 			'land-grass': {
 				color: colors.grass,
-				opacity: { 11: 0, 12: 1 },
+				opacity: landcover ? undefined : { 11: 0, 12: 1 },
 			},
 			'land-{park,garden,vegetation}': {
 				color: colors.park,
-				opacity: { 11: 0, 12: 1 },
+				opacity: landcover ? undefined : { 11: 0, 12: 1 },
 			},
 			'land-agriculture': {
 				color: colors.agriculture,
-				opacity: { 10: 0, 11: 1 },
+				opacity: landcover ? undefined : { 10: 0, 11: 1 },
 			},
 			'land-residential': {
 				color: colors.residential,
-				opacity: { 10: 0, 11: 1 },
+				opacity: landcover ? undefined : { 10: 0, 11: 1 },
 			},
 			'land-commercial': {
 				color: colors.commercial,

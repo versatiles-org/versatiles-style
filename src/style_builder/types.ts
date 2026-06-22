@@ -7,6 +7,20 @@ import { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
 export type Language = string | null;
 
 /**
+ * Options for activating experimental features.
+ */
+export interface ExperimentalOptions {
+	/**
+	 * Enable rendering of ESA WorldCover land cover data at low zoom levels (z0–z10),
+	 * filling the gap before OSM `land` and `water_polygons` features appear.
+	 * Requires a tileset that merges ESA WorldCover into those layers.
+	 * See: https://github.com/versatiles-org/landcover-vectors
+	 * @default false
+	 */
+	landcover?: boolean;
+}
+
+/**
  * Options for configuring the style builder.
  */
 export interface StyleBuilderOptions {
@@ -107,6 +121,12 @@ export interface StyleBuilderOptions {
 	 * When set, the returned style is a Promise because the elevation TileJSON must be fetched.
 	 */
 	hillshade?: HillshadeOption;
+
+	/**
+	 * Options for activating experimental features.
+	 * @default {}
+	 */
+	experimental?: ExperimentalOptions;
 }
 
 export const styleBuilderColorKeys = [
@@ -179,6 +199,11 @@ export interface StyleRulesOptions {
 	 * The language used for map labels.
 	 */
 	language: Language;
+
+	/**
+	 * Active experimental features.
+	 */
+	experimental: ExperimentalOptions;
 }
 
 /** Defines the value type for a style rule. */

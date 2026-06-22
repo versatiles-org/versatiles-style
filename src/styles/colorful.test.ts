@@ -52,6 +52,7 @@ describe('Colorful Styles', () => {
 				wood: '#66AA44',
 			},
 			elevationTilejson: '/tiles/elevation/tiles.json',
+			experimental: {},
 			fonts: {
 				bold: 'noto_sans_bold',
 				regular: 'noto_sans_regular',

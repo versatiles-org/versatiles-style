@@ -1,7 +1,8 @@
-import { getStyleVariants } from '@versatiles/style';
+import { getStyleVariants, colorful } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 
 const variants = getStyleVariants();
+variants.push({ name: 'custom', build: () => colorful({ experimental: { landcover: true } }) });
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
 
 // Populate select from variants

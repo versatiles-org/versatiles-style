@@ -57,10 +57,13 @@ export abstract class StyleBuilder {
 		// get empty shortbread style
 		const style = getShortbreadTemplate();
 
+		const experimental = options.experimental ?? defaults.experimental;
+
 		const styleRuleOptions: StyleRulesOptions = {
 			colors,
 			fonts,
 			language,
+			experimental,
 		};
 
 		// get layer style rules from child class
@@ -139,6 +142,7 @@ export abstract class StyleBuilder {
 			elevationTilejson: '/tiles/elevation/tiles.json',
 			terrain: false,
 			hillshade: false,
+			experimental: {},
 		};
 	}
 

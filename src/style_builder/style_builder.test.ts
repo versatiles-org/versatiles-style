@@ -105,6 +105,7 @@ describe('StyleBuilder', () => {
 				wood: '#66AA44',
 			},
 			elevationTilejson: '/tiles/elevation/tiles.json',
+			experimental: {},
 			fonts: { regular: 'Arial', bold: 'Courier' },
 			glyphs: '/assets/glyphs/{fontstack}/{range}.pbf',
 			hideLabels: false,

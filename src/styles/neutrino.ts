@@ -80,6 +80,7 @@ export default class Neutrino extends Colorful {
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
+		const landcover = options.experimental.landcover === true;
 		return {
 			background: {
 				color: colors.land,
@@ -113,9 +114,11 @@ export default class Neutrino extends Colorful {
 			'water-*': {
 				color: colors.water,
 			},
-			'water-area': {
-				opacity: { 4: 0, 6: 1 },
-			},
+			'water-area': landcover
+				? undefined
+				: {
+						opacity: { 4: 0, 6: 1 },
+					},
 			'water-area-*': {
 				opacity: { 4: 0, 6: 1 },
 			},
@@ -131,23 +134,23 @@ export default class Neutrino extends Colorful {
 			},
 			'land-forest': {
 				color: colors.wood,
-				opacity: { 7: 0, 8: 1 },
+				opacity: landcover ? undefined : { 7: 0, 8: 1 },
 			},
 			'land-grass': {
 				color: colors.grass,
-				opacity: { 11: 0, 12: 1 },
+				opacity: landcover ? undefined : { 11: 0, 12: 1 },
 			},
 			'land-{park,garden,vegetation}': {
 				color: colors.grass.darken(0.05).saturate(0.05),
-				opacity: { 11: 0, 12: 1 },
+				opacity: landcover ? undefined : { 11: 0, 12: 1 },
 			},
 			'land-agriculture': {
 				color: colors.agriculture,
-				opacity: { 10: 0, 11: 1 },
+				opacity: landcover ? undefined : { 10: 0, 11: 1 },
 			},
 			'land-{commercial,industrial,residential}': {
 				color: colors.land.darken(0.03),
-				opacity: { 10: 0, 11: 1 },
+				opacity: landcover ? undefined : { 10: 0, 11: 1 },
 			},
 			'site-{bicycleparking,parking}': {
 				color: colors.commercial,
