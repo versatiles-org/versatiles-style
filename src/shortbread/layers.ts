@@ -442,72 +442,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			})
 		),
 
-		// label-place of small places
-		...[
-			/*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood',
-			'quarter',
-			'suburb',
-			'hamlet',
-			'village',
-			'town',
-		].map(
-			(id: string): MaplibreLayerDefinition => ({
-				id: 'label-place-' + id.replace(/_/g, ''),
-				type: 'symbol',
-				'source-layer': 'place_labels',
-				filter: ['==', 'kind', id],
-				layout: {
-					'text-field': nameField,
-					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
-				},
-			})
-		),
-
-		// label-boundary
-		{
-			id: 'label-boundary-state',
-			type: 'symbol',
-			'source-layer': 'boundary_labels',
-			filter: ['in', 'admin_level', 4, '4'],
-			layout: { 'text-field': nameField },
-		},
-
-		// label-place-* of large places
-		...['city', 'state_capital', 'capital'].map(
-			(id: string): MaplibreLayerDefinition => ({
-				id: 'label-place-' + id.replace(/_/g, ''),
-				type: 'symbol',
-				'source-layer': 'place_labels',
-				filter: ['==', 'kind', id],
-				layout: {
-					'text-field': nameField,
-					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
-				},
-			})
-		),
-
-		{
-			id: 'label-boundary-country-small',
-			type: 'symbol',
-			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['<=', 'way_area', 10000000]],
-			layout: { 'text-field': nameField },
-		},
-		{
-			id: 'label-boundary-country-medium',
-			type: 'symbol',
-			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['<', 'way_area', 90000000], ['>', 'way_area', 10000000]],
-			layout: { 'text-field': nameField },
-		},
-		{
-			id: 'label-boundary-country-large',
-			type: 'symbol',
-			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['>=', 'way_area', 90000000]],
-			layout: { 'text-field': nameField },
-		},
-
 		// marking
 		{
 			id: 'marking-oneway', // streets → oneway
@@ -635,6 +569,73 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			'source-layer': 'addresses',
 			filter: ['has', 'housenumber'],
 			layout: { 'text-field': '{housenumber}' },
+		},
+
+
+		// label-place of small places
+		...[
+			/*'locality', 'island', 'farm', 'dwelling',*/ 'neighbourhood',
+			'quarter',
+			'suburb',
+			'hamlet',
+			'village',
+			'town',
+		].map(
+			(id: string): MaplibreLayerDefinition => ({
+				id: 'label-place-' + id.replace(/_/g, ''),
+				type: 'symbol',
+				'source-layer': 'place_labels',
+				filter: ['==', 'kind', id],
+				layout: {
+					'text-field': nameField,
+					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+				},
+			})
+		),
+
+		// label-boundary
+		{
+			id: 'label-boundary-state',
+			type: 'symbol',
+			'source-layer': 'boundary_labels',
+			filter: ['in', 'admin_level', 4, '4'],
+			layout: { 'text-field': nameField },
+		},
+
+		// label-place-* of large places
+		...['city', 'state_capital', 'capital'].map(
+			(id: string): MaplibreLayerDefinition => ({
+				id: 'label-place-' + id.replace(/_/g, ''),
+				type: 'symbol',
+				'source-layer': 'place_labels',
+				filter: ['==', 'kind', id],
+				layout: {
+					'text-field': nameField,
+					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+				},
+			})
+		),
+
+		{
+			id: 'label-boundary-country-small',
+			type: 'symbol',
+			'source-layer': 'boundary_labels',
+			filter: ['all', ['in', 'admin_level', 2, '2'], ['<=', 'way_area', 10000000]],
+			layout: { 'text-field': nameField },
+		},
+		{
+			id: 'label-boundary-country-medium',
+			type: 'symbol',
+			'source-layer': 'boundary_labels',
+			filter: ['all', ['in', 'admin_level', 2, '2'], ['<', 'way_area', 90000000], ['>', 'way_area', 10000000]],
+			layout: { 'text-field': nameField },
+		},
+		{
+			id: 'label-boundary-country-large',
+			type: 'symbol',
+			'source-layer': 'boundary_labels',
+			filter: ['all', ['in', 'admin_level', 2, '2'], ['>=', 'way_area', 90000000]],
+			layout: { 'text-field': nameField },
 		},
 	];
 }
