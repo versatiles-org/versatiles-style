@@ -1,7 +1,7 @@
 import type {
 	DataDrivenPropertyValueSpecification,
+	FilterSpecification,
 	FormattedSpecification,
-	LegacyFilterSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import { Language } from '../style_builder/types.js';
@@ -32,7 +32,7 @@ export function getShortbreadLayers(option: {
 			id: 'land-glacier',
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['all', ['==', 'kind', 'glacier']],
+			filter: ['==', ['get', 'kind'], 'glacier'],
 		},
 
 		...[
@@ -68,7 +68,7 @@ export function getShortbreadLayers(option: {
 				id: 'land-' + id,
 				type: 'fill',
 				'source-layer': 'land',
-				filter: ['all', ['in', 'kind', ...kinds]],
+				filter: ['in', ['get', 'kind'], ['literal', [...kinds]]],
 			})
 		),
 
@@ -78,7 +78,7 @@ export function getShortbreadLayers(option: {
 				id: 'water-' + t,
 				type: 'line',
 				'source-layer': 'water_lines',
-				filter: ['all', ['in', 'kind', t], ['!=', 'tunnel', true], ['!=', 'bridge', true]],
+				filter: ['all', ['==', ['get', 'kind'], t], ['!=', ['get', 'tunnel'], true], ['!=', ['get', 'bridge'], true]],
 			})
 		),
 
@@ -87,37 +87,37 @@ export function getShortbreadLayers(option: {
 			id: 'water-area',
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['==', 'kind', 'water'],
+			filter: ['==', ['get', 'kind'], 'water'],
 		},
 		{
 			id: 'water-area-river',
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['==', 'kind', 'river'],
+			filter: ['==', ['get', 'kind'], 'river'],
 		},
 		{
 			id: 'water-area-small',
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['in', 'kind', 'reservoir', 'basin', 'dock'],
+			filter: ['in', ['get', 'kind'], ['literal', ['reservoir', 'basin', 'dock']]],
 		},
 
 		// dam
-		{ id: 'water-dam-area', type: 'fill', 'source-layer': 'dam_polygons', filter: ['==', 'kind', 'dam'] },
-		{ id: 'water-dam', type: 'line', 'source-layer': 'dam_lines', filter: ['==', 'kind', 'dam'] },
+		{ id: 'water-dam-area', type: 'fill', 'source-layer': 'dam_polygons', filter: ['==', ['get', 'kind'], 'dam'] },
+		{ id: 'water-dam', type: 'line', 'source-layer': 'dam_lines', filter: ['==', ['get', 'kind'], 'dam'] },
 
 		// pier
 		{
 			id: 'water-pier-area',
 			type: 'fill',
 			'source-layer': 'pier_polygons',
-			filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'],
+			filter: ['in', ['get', 'kind'], ['literal', ['pier', 'breakwater', 'groyne']]],
 		},
 		{
 			id: 'water-pier',
 			type: 'line',
 			'source-layer': 'pier_lines',
-			filter: ['in', 'kind', 'pier', 'breakwater', 'groyne'],
+			filter: ['in', ['get', 'kind'], ['literal', ['pier', 'breakwater', 'groyne']]],
 		},
 
 		// site
@@ -137,7 +137,7 @@ export function getShortbreadLayers(option: {
 				id: 'site-' + t.replace(/_/g, ''),
 				type: 'fill',
 				'source-layer': 'sites',
-				filter: ['in', 'kind', t],
+				filter: ['==', ['get', 'kind'], t],
 			})
 		),
 
@@ -146,31 +146,31 @@ export function getShortbreadLayers(option: {
 			id: 'airport-area',
 			type: 'fill',
 			'source-layer': 'street_polygons',
-			filter: ['in', 'kind', 'runway', 'taxiway'],
+			filter: ['in', ['get', 'kind'], ['literal', ['runway', 'taxiway']]],
 		},
 		{
 			id: 'airport-taxiway:outline',
 			type: 'line',
 			'source-layer': 'streets',
-			filter: ['==', 'kind', 'taxiway'],
+			filter: ['==', ['get', 'kind'], 'taxiway'],
 		},
 		{
 			id: 'airport-runway:outline',
 			type: 'line',
 			'source-layer': 'streets',
-			filter: ['==', 'kind', 'runway'],
+			filter: ['==', ['get', 'kind'], 'runway'],
 		},
 		{
 			id: 'airport-taxiway',
 			type: 'line',
 			'source-layer': 'streets',
-			filter: ['==', 'kind', 'taxiway'],
+			filter: ['==', ['get', 'kind'], 'taxiway'],
 		},
 		{
 			id: 'airport-runway',
 			type: 'line',
 			'source-layer': 'streets',
-			filter: ['==', 'kind', 'runway'],
+			filter: ['==', ['get', 'kind'], 'runway'],
 		},
 
 		// building
@@ -186,26 +186,26 @@ export function getShortbreadLayers(option: {
 		},
 		// tunnel-, street-, bridges-bridge
 		...['tunnel', 'street', 'bridge'].flatMap((c): MaplibreLayerDefinition[] => {
-			let filter: LegacyFilterSpecification[];
+			let filter: FilterSpecification[];
 			let prefix: string;
 			let suffixes: Array<string> = [];
 			const results: MaplibreLayerDefinition[] = [];
 			switch (c) {
 				case 'tunnel':
-					filter = [['==', 'tunnel', true]];
+					filter = [['==', ['get', 'tunnel'], true] as FilterSpecification];
 					prefix = 'tunnel-';
 					suffixes = [':outline', ''];
 					break;
 				case 'street':
 					filter = [
-						['!=', 'bridge', true],
-						['!=', 'tunnel', true],
+						['!=', ['get', 'bridge'], true] as FilterSpecification,
+						['!=', ['get', 'tunnel'], true] as FilterSpecification,
 					];
 					prefix = '';
 					suffixes = [':outline', ''];
 					break;
 				case 'bridge':
-					filter = [['==', 'bridge', true]];
+					filter = [['==', ['get', 'bridge'], true] as FilterSpecification];
 					prefix = 'bridge-';
 					suffixes = [':bridge', ':outline', ''];
 					break;
@@ -234,7 +234,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'street-pedestrian-zone',
 						type: 'fill',
 						'source-layer': 'street_polygons',
-						filter: ['all', ...filter, ['==', 'kind', 'pedestrian']],
+						filter: ['all', ...filter, ['==', ['get', 'kind'], 'pedestrian']] as FilterSpecification,
 					});
 
 				// non-car streets
@@ -243,7 +243,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'way-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ...filter, ['in', 'kind', t]],
+						filter: ['all', ...filter, ['==', ['get', 'kind'], t]] as FilterSpecification,
 					});
 				});
 
@@ -262,7 +262,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ['==', 'kind', t], ...filter],
+						filter: ['all', ['==', ['get', 'kind'], t], ...filter] as FilterSpecification,
 					});
 				});
 
@@ -273,7 +273,12 @@ export function getShortbreadLayers(option: {
 							id: prefix + 'street-' + t.replace(/_/g, '') + '-bicycle',
 							type: 'line',
 							'source-layer': 'streets',
-							filter: ['all', ['==', 'kind', t], ['==', 'bicycle', 'designated'], ...filter],
+							filter: [
+								'all',
+								['==', ['get', 'kind'], t],
+								['==', ['get', 'bicycle'], 'designated'],
+								...filter,
+							] as FilterSpecification,
 						});
 					});
 
@@ -283,7 +288,12 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'street-' + t.replace(/_/g, '') + '-link' + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ...filter, ['in', 'kind', t], ['==', 'link', true]],
+						filter: [
+							'all',
+							...filter,
+							['==', ['get', 'kind'], t],
+							['==', ['get', 'link'], true],
+						] as FilterSpecification,
 					});
 				});
 
@@ -293,7 +303,12 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ...filter, ['in', 'kind', t], ['!=', 'link', true]],
+						filter: [
+							'all',
+							...filter,
+							['==', ['get', 'kind'], t],
+							['!=', ['get', 'link'], true],
+						] as FilterSpecification,
 					});
 				});
 			});
@@ -307,7 +322,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ['in', 'kind', t], ['!has', 'service'], ...filter],
+						filter: ['all', ['==', ['get', 'kind'], t], ['!', ['has', 'service']], ...filter] as FilterSpecification,
 					});
 
 					// service rail (crossover, siding, spur, yard)
@@ -315,7 +330,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'transport-' + t.replace(/_/g, '') + '-service' + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ['in', 'kind', t], ['has', 'service'], ...filter],
+						filter: ['all', ['==', ['get', 'kind'], t], ['has', 'service'], ...filter] as FilterSpecification,
 					});
 				});
 
@@ -325,7 +340,7 @@ export function getShortbreadLayers(option: {
 						id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'streets',
-						filter: ['all', ['in', 'kind', t], ...filter],
+						filter: ['all', ['==', ['get', 'kind'], t], ...filter] as FilterSpecification,
 					});
 				});
 
@@ -338,7 +353,7 @@ export function getShortbreadLayers(option: {
 								id: 'aerialway-' + t.replace(/[_-]+/g, '') + suffix,
 								type: 'line',
 								'source-layer': 'aerialways',
-								filter: ['all', ...filter, ['in', 'kind', t]],
+								filter: ['all', ...filter, ['==', ['get', 'kind'], t]] as FilterSpecification,
 							});
 						});
 
@@ -354,6 +369,27 @@ export function getShortbreadLayers(option: {
 			return results;
 		}),
 
+		// 3D building (fill-extrusion, used with experimental.buildingHeights)
+		// Placed after streets/bridges so extrusions render on top of roads.
+		// hide_3d filter suppresses footprints covered by building:parts
+		{
+			id: 'building-3d',
+			type: 'fill-extrusion',
+			'source-layer': 'buildings',
+			filter: ['!=', ['get', 'hide_3d'], true],
+		},
+
+		// poi, one layer per type
+		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map(
+			(key): MaplibreLayerDefinition => ({
+				id: 'poi-' + key,
+
+				type: 'symbol',
+				'source-layer': 'pois',
+				filter: ['to-boolean', ['get', key]],
+			})
+		),
+
 		// boundary
 		...[':outline', ''].flatMap((suffix): MaplibreLayerDefinition[] => [
 			{
@@ -362,10 +398,10 @@ export function getShortbreadLayers(option: {
 				'source-layer': 'boundaries',
 				filter: [
 					'all',
-					['==', 'admin_level', 2],
-					['!=', 'maritime', true],
-					['!=', 'disputed', true],
-					['!=', 'coastline', true],
+					['==', ['get', 'admin_level'], 2],
+					['!=', ['get', 'maritime'], true],
+					['!=', ['get', 'disputed'], true],
+					['!=', ['get', 'coastline'], true],
 				],
 			},
 			{
@@ -374,10 +410,10 @@ export function getShortbreadLayers(option: {
 				'source-layer': 'boundaries',
 				filter: [
 					'all',
-					['==', 'admin_level', 2],
-					['==', 'disputed', true],
-					['!=', 'maritime', true],
-					['!=', 'coastline', true],
+					['==', ['get', 'admin_level'], 2],
+					['==', ['get', 'disputed'], true],
+					['!=', ['get', 'maritime'], true],
+					['!=', ['get', 'coastline'], true],
 				],
 			},
 			{
@@ -386,10 +422,10 @@ export function getShortbreadLayers(option: {
 				'source-layer': 'boundaries',
 				filter: [
 					'all',
-					['==', 'admin_level', 2],
-					['==', 'maritime', true],
-					['!=', 'disputed', true],
-					['!=', 'coastline', true],
+					['==', ['get', 'admin_level'], 2],
+					['==', ['get', 'maritime'], true],
+					['!=', ['get', 'disputed'], true],
+					['!=', ['get', 'coastline'], true],
 				],
 			},
 			{
@@ -398,20 +434,29 @@ export function getShortbreadLayers(option: {
 				'source-layer': 'boundaries',
 				filter: [
 					'all',
-					['==', 'admin_level', 4],
-					['!=', 'maritime', true],
-					['!=', 'disputed', true],
-					['!=', 'coastline', true],
+					['==', ['get', 'admin_level'], 4],
+					['!=', ['get', 'maritime'], true],
+					['!=', ['get', 'disputed'], true],
+					['!=', ['get', 'coastline'], true],
 				],
 			},
 		]),
+
+		// label-address
+		{
+			id: 'label-address-housenumber',
+			type: 'symbol',
+			'source-layer': 'addresses',
+			filter: ['has', 'housenumber'],
+			layout: { 'text-field': '{housenumber}' },
+		},
 
 		// label-motorway
 		{
 			id: 'label-motorway-exit',
 			type: 'symbol',
 			'source-layer': 'street_labels_points', // docs say `streets_labels_points`, but layer is actually called `street_labels_points`
-			filter: ['==', 'kind', 'motorway_junction'],
+			filter: ['==', ['get', 'kind'], 'motorway_junction'],
 			layout: { 'text-field': '{ref}' },
 			// FIXME shield
 		},
@@ -419,7 +464,7 @@ export function getShortbreadLayers(option: {
 			id: 'label-motorway-shield',
 			type: 'symbol',
 			'source-layer': 'street_labels',
-			filter: ['==', 'kind', 'motorway'],
+			filter: ['==', ['get', 'kind'], 'motorway'],
 			layout: { 'text-field': '{ref}' },
 			// FIXME shield
 		},
@@ -440,7 +485,7 @@ export function getShortbreadLayers(option: {
 				id: 'label-street-' + t.replace(/_/g, ''),
 				type: 'symbol',
 				'source-layer': 'street_labels',
-				filter: ['==', 'kind', t],
+				filter: ['==', ['get', 'kind'], t],
 				layout: { 'text-field': nameField },
 			})
 		),
@@ -452,8 +497,12 @@ export function getShortbreadLayers(option: {
 			'source-layer': 'streets',
 			filter: [
 				'all',
-				['==', 'oneway', true],
-				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street'],
+				['==', ['get', 'oneway'], true],
+				[
+					'in',
+					['get', 'kind'],
+					['literal', ['trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street']],
+				],
 			],
 			layout: {
 				'symbol-placement': 'line',
@@ -470,8 +519,12 @@ export function getShortbreadLayers(option: {
 			'source-layer': 'streets',
 			filter: [
 				'all',
-				['==', 'oneway_reverse', true],
-				['in', 'kind', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street'],
+				['==', ['get', 'oneway_reverse'], true],
+				[
+					'in',
+					['get', 'kind'],
+					['literal', ['trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street']],
+				],
 			],
 			layout: {
 				'symbol-placement': 'line',
@@ -486,7 +539,7 @@ export function getShortbreadLayers(option: {
 			id: 'marking-bicycle', // bicycle=designated or kind=cycleway
 			type: 'symbol',
 			'source-layer': 'streets',
-			filter: ['all', ['==', 'bicycle', 'designated'], ['==', 'kind', 'cycleway']],
+			filter: ['all', ['==', ['get', 'bicycle'], 'designated'], ['==', ['get', 'kind'], 'cycleway']],
 			layout: {
 				'symbol-placement': 'line',
 				'symbol-spacing': 50,
@@ -498,80 +551,58 @@ export function getShortbreadLayers(option: {
 			id: 'symbol-transit-bus',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['==', 'kind', 'bus_stop'],
+			filter: ['==', ['get', 'kind'], 'bus_stop'],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-tram',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['==', 'kind', 'tram_stop'],
+			filter: ['==', ['get', 'kind'], 'tram_stop'],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-subway',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['all', ['in', 'kind', 'station', 'halt'], ['==', 'station', 'subway']],
+			filter: ['all', ['in', ['get', 'kind'], ['literal', ['station', 'halt']]], ['==', ['get', 'station'], 'subway']],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-lightrail',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['all', ['in', 'kind', 'station', 'halt'], ['==', 'station', 'light_rail']],
+			filter: [
+				'all',
+				['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
+				['==', ['get', 'station'], 'light_rail'],
+			],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-station',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['all', ['in', 'kind', 'station', 'halt'], ['!in', 'station', 'light_rail', 'subway']],
+			filter: [
+				'all',
+				['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
+				['!', ['in', ['get', 'station'], ['literal', ['light_rail', 'subway']]]],
+			],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-airfield',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['all', ['==', 'kind', 'aerodrome'], ['!has', 'iata']],
+			filter: ['all', ['==', ['get', 'kind'], 'aerodrome'], ['!', ['has', 'iata']]],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'symbol-transit-airport',
 			type: 'symbol',
 			'source-layer': 'public_transport',
-			filter: ['all', ['==', 'kind', 'aerodrome'], ['has', 'iata']],
+			filter: ['all', ['==', ['get', 'kind'], 'aerodrome'], ['has', 'iata']],
 			layout: { 'text-field': nameField },
-		},
-
-		// 3D building (fill-extrusion, used with experimental.buildingHeights)
-		// Placed after streets/bridges so extrusions render on top of roads.
-		// hide_3d filter suppresses footprints covered by building:parts
-		{
-			id: 'building-3d',
-			type: 'fill-extrusion',
-			'source-layer': 'buildings',
-			filter: ['!=', 'hide_3d', true],
-		},
-
-		// poi, one layer per type
-		...['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'].map(
-			(key): MaplibreLayerDefinition => ({
-				id: 'poi-' + key,
-
-				type: 'symbol',
-				'source-layer': 'pois',
-				filter: ['to-boolean', ['get', key]],
-			})
-		),
-
-		// label-address
-		{
-			id: 'label-address-housenumber',
-			type: 'symbol',
-			'source-layer': 'addresses',
-			filter: ['has', 'housenumber'],
-			layout: { 'text-field': '{housenumber}' },
 		},
 
 		// label-place of small places
@@ -587,7 +618,7 @@ export function getShortbreadLayers(option: {
 				id: 'label-place-' + id.replace(/_/g, ''),
 				type: 'symbol',
 				'source-layer': 'place_labels',
-				filter: ['==', 'kind', id],
+				filter: ['==', ['get', 'kind'], id],
 				layout: {
 					'text-field': nameField,
 					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
@@ -600,7 +631,7 @@ export function getShortbreadLayers(option: {
 			id: 'label-boundary-state',
 			type: 'symbol',
 			'source-layer': 'boundary_labels',
-			filter: ['in', 'admin_level', 4, '4'],
+			filter: ['in', ['get', 'admin_level'], ['literal', [4, '4']]],
 			layout: { 'text-field': nameField },
 		},
 
@@ -610,7 +641,7 @@ export function getShortbreadLayers(option: {
 				id: 'label-place-' + id.replace(/_/g, ''),
 				type: 'symbol',
 				'source-layer': 'place_labels',
-				filter: ['==', 'kind', id],
+				filter: ['==', ['get', 'kind'], id],
 				layout: {
 					'text-field': nameField,
 					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
@@ -622,21 +653,26 @@ export function getShortbreadLayers(option: {
 			id: 'label-boundary-country-small',
 			type: 'symbol',
 			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['<=', 'way_area', 10000000]],
+			filter: ['all', ['in', ['get', 'admin_level'], ['literal', [2, '2']]], ['<=', ['get', 'way_area'], 10000000]],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'label-boundary-country-medium',
 			type: 'symbol',
 			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['<', 'way_area', 90000000], ['>', 'way_area', 10000000]],
+			filter: [
+				'all',
+				['in', ['get', 'admin_level'], ['literal', [2, '2']]],
+				['<', ['get', 'way_area'], 90000000],
+				['>', ['get', 'way_area'], 10000000],
+			],
 			layout: { 'text-field': nameField },
 		},
 		{
 			id: 'label-boundary-country-large',
 			type: 'symbol',
 			'source-layer': 'boundary_labels',
-			filter: ['all', ['in', 'admin_level', 2, '2'], ['>=', 'way_area', 90000000]],
+			filter: ['all', ['in', ['get', 'admin_level'], ['literal', [2, '2']]], ['>=', ['get', 'way_area'], 90000000]],
 			layout: { 'text-field': nameField },
 		},
 	];

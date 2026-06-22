@@ -23,12 +23,7 @@ describe('layers', () => {
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			'coalesce',
-			['get', 'name'],
-			['get', 'name_en'],
-			['get', 'name_de'],
-		]);
+		expect(labelLayer.layout?.['text-field']).toStrictEqual(['get', 'name']);
 	});
 
 	it('should handle language suffix en correctly', () => {
@@ -48,12 +43,7 @@ describe('layers', () => {
 
 		expect(labelLayer).toBeDefined();
 
-		expect(labelLayer.layout?.['text-field']).toStrictEqual([
-			'coalesce',
-			['get', 'name_fr'],
-			['get', 'name'],
-			['get', 'name_en'],
-		]);
+		expect(labelLayer.layout?.['text-field']).toStrictEqual(['coalesce', ['get', 'name_fr'], ['get', 'name']]);
 	});
 
 	it('should render busway and bus_guideway as streets', () => {
@@ -83,18 +73,20 @@ describe('layers', () => {
 
 		expect(landLayer).toBeDefined();
 		expect(landLayer.filter).toEqual([
-			'all',
+			'in',
+			['get', 'kind'],
 			[
-				'in',
-				'kind',
-				'brownfield',
-				'farmland',
-				'farmyard',
-				'greenfield',
-				'greenhouse_horticulture',
-				'orchard',
-				'plant_nursery',
-				'vineyard',
+				'literal',
+				[
+					'brownfield',
+					'farmland',
+					'farmyard',
+					'greenfield',
+					'greenhouse_horticulture',
+					'orchard',
+					'plant_nursery',
+					'vineyard',
+				],
 			],
 		]);
 	});

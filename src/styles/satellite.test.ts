@@ -22,7 +22,7 @@ describe('satellite style', () => {
 			attribution: '<a href="https://versatiles.org/sources/">VersaTiles sources</a>',
 			bounds: [-180, -85.051129, 180, 85.051129],
 			description: 'High-resolution satellite and orthophoto imagery from various providers, merged by VersaTiles.',
-			maxzoom: 17,
+			maxzoom: 19,
 			minzoom: 0,
 			name: 'VersaTiles - Satellite + Orthophotos',
 			tile_format: 'image/webp',
