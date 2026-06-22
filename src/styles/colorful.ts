@@ -321,7 +321,7 @@ export default class Colorful extends StyleBuilder {
 			'building-3d': buildingHeights
 				? {
 						color: colors.building,
-						opacity: { 14: 0, 15: 1 },
+						opacity: { 14: 0, 15: 0.7 },
 						fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
 						fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
 					}
