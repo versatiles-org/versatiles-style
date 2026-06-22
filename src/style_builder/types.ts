@@ -27,6 +27,22 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	buildingHeights?: boolean;
+
+	/**
+	 * Compass bearing of the light source for 3D building extrusions, in degrees clockwise from north.
+	 * Only used when `buildingHeights` is enabled.
+	 * When `hillshade` is also active and no explicit direction is set, the hillshade illumination
+	 * direction is used automatically to keep both in sync.
+	 * @default 315
+	 */
+	lightDirection?: number;
+
+	/**
+	 * Altitude of the light source for 3D building extrusions, in degrees above the horizon (0–90).
+	 * Only used when `buildingHeights` is enabled.
+	 * @default 45
+	 */
+	lightAltitude?: number;
 }
 
 /**

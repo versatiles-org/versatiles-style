@@ -102,6 +102,13 @@ export abstract class StyleBuilder {
 		if (iconScale !== 1) scaleIconSize(layers, iconScale);
 
 		style.layers = layers;
+
+		if (experimental.buildingHeights) {
+			const direction = experimental.lightDirection ?? 315;
+			const altitude = experimental.lightAltitude ?? 90;
+			style.light = { anchor: 'map', position: [1, direction, 90 - altitude] };
+		}
+
 		style.name = 'versatiles-' + this.name.toLowerCase();
 		style.glyphs = resolveUrl(baseUrl, glyphs);
 

@@ -87,14 +87,21 @@ export async function applyElevation(
 	if (options.hillshade) {
 		const hsConfig = typeof options.hillshade === 'object' ? options.hillshade : {};
 		const paint: Record<string, unknown> = {};
+		const illuminationDirection = hsConfig.illuminationDirection ?? 315;
+		const illuminationAltitude = hsConfig.illuminationAltitude ?? 45;
+		const illuminationAnchor = hsConfig.illuminationAnchor ?? 'map';
 		paint['hillshade-exaggeration'] = hsConfig.exaggeration ?? 0.1;
 		paint['hillshade-shadow-color'] = hsConfig.shadowColor ?? '#000000';
 		paint['hillshade-highlight-color'] = hsConfig.highlightColor ?? '#ffffff';
 		paint['hillshade-accent-color'] = hsConfig.accentColor ?? '#000000';
-		paint['hillshade-illumination-direction'] = hsConfig.illuminationDirection ?? 315;
-		paint['hillshade-illumination-altitude'] = hsConfig.illuminationAltitude ?? 45;
-		paint['hillshade-illumination-anchor'] = hsConfig.illuminationAnchor ?? 'map';
+		paint['hillshade-illumination-direction'] = illuminationDirection;
+		paint['hillshade-illumination-altitude'] = illuminationAltitude;
+		paint['hillshade-illumination-anchor'] = illuminationAnchor;
 		paint['hillshade-method'] = 'standard';
+
+		// Sync the root light to match hillshade direction so fill-extrusion buildings and terrain shade consistently.
+		// polar = 90 - altitude (MapLibre polar is from zenith; hillshade altitude is from horizon).
+		style.light = { anchor: illuminationAnchor, position: [1.15, illuminationDirection, 90 - illuminationAltitude] };
 
 		const insertAt = options.hillshadeLayerIndex ?? defaultHillshadeIndex(style.layers);
 		style.layers.splice(insertAt, 0, {
