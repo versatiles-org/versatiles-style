@@ -112,6 +112,7 @@ describe('StyleBuilder', () => {
 			hillshade: false,
 			iconScale: 1,
 			language: '',
+			languageStrict: false,
 			terrain: false,
 			textScale: 1,
 			recolor: {

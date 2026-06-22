@@ -34,6 +34,7 @@ export abstract class StyleBuilder {
 		const textScale = options.textScale ?? defaults.textScale;
 		const iconScale = options.iconScale ?? defaults.iconScale;
 		const language = options.language ?? defaults.language;
+		const languageStrict = options.languageStrict ?? defaults.languageStrict;
 		const recolorOptions = options.recolor ?? defaults.recolor;
 
 		const colors = this.getColors(this.defaultColors);
@@ -70,7 +71,7 @@ export abstract class StyleBuilder {
 		const layerStyleRules = this.getStyleRules(styleRuleOptions);
 
 		// get shortbread layers
-		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language });
+		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language, languageStrict });
 		let layers: MaplibreLayer[] = layerDefinitions.map((layer) => {
 			const { type, id } = layer;
 			switch (type) {
@@ -144,6 +145,7 @@ export abstract class StyleBuilder {
 			textScale: 1,
 			iconScale: 1,
 			language: '',
+			languageStrict: false,
 			colors: deepClone(this.defaultColors),
 			fonts: deepClone(this.defaultFonts),
 			recolor: getDefaultRecolorFlags(),

@@ -6,9 +6,8 @@ variants.push({
 	name: 'custom',
 	build: () =>
 		colorful({
-			experimental: { landcover: true, buildingHeights: true },
-			terrain: true,
-			hillshade: true,
+			language: 'de',
+			languageStrict: true,
 		}),
 });
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;

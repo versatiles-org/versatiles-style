@@ -111,6 +111,15 @@ export interface StyleBuilderOptions {
 	language?: Language;
 
 	/**
+	 * When `true`, labels are shown only in the language set by `language` and left blank
+	 * for features that have no translation in that language.
+	 * When `false` (default), falls back to the local name and then English.
+	 * Has no effect when `language` is null/empty.
+	 * @default false
+	 */
+	languageStrict?: boolean;
+
+	/**
 	 * An object specifying overrides for default color values, keyed by the color names.
 	 * See also: {@link StyleBuilderColors}
 	 */

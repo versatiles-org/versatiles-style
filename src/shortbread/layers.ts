@@ -6,15 +6,18 @@ import type {
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import { Language } from '../style_builder/types.js';
 
-export function getShortbreadLayers(option: { readonly language: Language }): MaplibreLayerDefinition[] {
-	const { language } = option;
+export function getShortbreadLayers(option: {
+	readonly language: Language;
+	readonly languageStrict?: boolean;
+}): MaplibreLayerDefinition[] {
+	const { language, languageStrict = false } = option;
 	let nameField: DataDrivenPropertyValueSpecification<FormattedSpecification>;
 	if (!language) {
-		nameField = ['coalesce', ['get', 'name'], ['get', 'name_en'], ['get', 'name_de']];
-	} else if (language === 'en') {
-		nameField = ['coalesce', ['get', 'name_en'], ['get', 'name']];
+		nameField = ['get', 'name'];
+	} else if (languageStrict) {
+		nameField = ['get', 'name_' + language];
 	} else {
-		nameField = ['coalesce', ['get', 'name_' + language], ['get', 'name'], ['get', 'name_en']];
+		nameField = ['coalesce', ['get', 'name_' + language], ['get', 'name']];
 	}
 
 	return [
@@ -570,7 +573,6 @@ export function getShortbreadLayers(option: { readonly language: Language }): Ma
 			filter: ['has', 'housenumber'],
 			layout: { 'text-field': '{housenumber}' },
 		},
-
 
 		// label-place of small places
 		...[
