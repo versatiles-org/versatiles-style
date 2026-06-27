@@ -1,5 +1,23 @@
 # API Design
 
+## Table of Contents
+
+- [API Design](#api-design)
+  - [Core Principles](#core-principles)
+  - [Shared Types](#shared-types)
+    - [Layer visibility](#layer-visibility)
+    - [Text & icons](#text-icons)
+    - [Colors](#colors)
+    - [Atmosphere & lighting](#atmosphere-lighting)
+    - [Function options](#function-options)
+  - [`osm()`](#osmoptions-stylespecification)
+  - [`satellite()`](#satelliteoptions-stylespecification)
+  - [`guessStyle()`](#guessstyletilejson-options-stylespecification)
+  - [`isDarkMode()`](#isdarkmode-boolean)
+  - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
+  - [`Color`](#color)
+  - [Migration from v5](#migration-from-v5)
+
 ## Core Principles
 
 - All style functions are **synchronous** — no hidden I/O
@@ -11,163 +29,209 @@
 
 ## Shared Types
 
-```ts
-type LayerGroupOptions = {  // number values set opacity 0–1; false = hide, true = show at full opacity
-  land?: boolean | number | {
-    forest?:      boolean | number  // land-forest
-    vegetation?:  boolean | number  // land-grass, land-vegetation (heath, scrub), land-rock
-    wetland?:     boolean | number  // land-wetland (bog, marsh, swamp)
-    sand?:        boolean | number  // land-sand (beach, sand)
-    agriculture?: boolean | number  // land-agriculture (farmland, orchards, vineyards)
-    urban?:       boolean | number  // land-commercial, land-industrial, land-residential, land-park, land-garden, etc.
-  }
-  water?: boolean | number | {
-    ocean?:  boolean | number  // water-ocean
-    rivers?: boolean | number  // river/canal/stream/ditch lines and wide river polygons
-    lakes?:  boolean | number  // lakes, reservoirs, basins, docks
-    piers?:  boolean | number  // piers, dams, breakwaters, groynes
-  }
-  roads?: boolean | number | {
-    motorways?: boolean | number  // motorway + trunk (surface, tunnel, bridge, links, outlines)
-    highways?:  boolean | number  // primary, secondary, tertiary (all variants)
-    streets?:   boolean | number  // residential, living_street, service, unclassified, track, busway, pedestrian zones
-    paths?:     boolean | number  // footway, steps, path, cycleway
-  }
-  transit?: boolean | number | {
-    rail?:       boolean | number  // rail, light_rail, subway, tram, narrow_gauge, monorail, funicular
-    aerialways?: boolean | number  // cable car, gondola, chair lift, drag lift, etc.
-    ferries?:    boolean | number  // ferry routes
-    stops?:      boolean | number  // bus stops, tram stops, train stations, airports as symbols
-  }
-  buildings?:  boolean | number
-  sites?:      boolean | number  // schools, hospitals, parking, construction, etc.
-  airport?:    boolean | number  // runways, taxiways
-  pois?:       boolean | number  // points of interest symbols
-  boundaries?: boolean | number  // boundary lines only
-  markings?:   boolean | number  // oneway arrows and bicycle lane markings
-  labels?: boolean | number | {
-    places?:    boolean | number  // label-place-* (neighbourhood → capital)
-    streets?:   boolean | number  // label-street-* + label-motorway-*
-    states?:    boolean | number  // label-boundary-state
-    countries?: boolean | number  // label-boundary-country-small/medium/large
-    addresses?: boolean | number  // label-address-housenumber
-  }
-  icons?: boolean | number  // false = convenience for { pois: false, transit: { stops: false }, markings: false }
-}
+### Layer visibility
 
+Each key in `LayerGroupOptions` accepts `true`/`false` to show or hide, a `number` (0–1) to set opacity, or — for grouped keys — an object to configure sub-groups individually.
+
+```ts
+type LayerGroupOptions = {
+	land?:
+		| boolean
+		| number
+		| {
+				forest?: boolean | number; // land-forest
+				vegetation?: boolean | number; // land-grass, land-vegetation (heath, scrub), land-rock
+				wetland?: boolean | number; // land-wetland (bog, marsh, swamp)
+				sand?: boolean | number; // land-sand (beach, sand)
+				agriculture?: boolean | number; // land-agriculture (farmland, orchards, vineyards)
+				urban?: boolean | number; // land-commercial, land-industrial, land-residential, land-park, land-garden, etc.
+		  };
+	water?:
+		| boolean
+		| number
+		| {
+				ocean?: boolean | number; // water-ocean
+				rivers?: boolean | number; // river/canal/stream/ditch lines and wide river polygons
+				lakes?: boolean | number; // lakes, reservoirs, basins, docks
+				piers?: boolean | number; // piers, dams, breakwaters, groynes
+		  };
+	roads?:
+		| boolean
+		| number
+		| {
+				motorways?: boolean | number; // motorway + trunk (surface, tunnel, bridge, links, outlines)
+				highways?: boolean | number; // primary, secondary, tertiary (all variants)
+				streets?: boolean | number; // residential, living_street, service, unclassified, track, busway, pedestrian zones
+				paths?: boolean | number; // footway, steps, path, cycleway
+		  };
+	transit?:
+		| boolean
+		| number
+		| {
+				rail?: boolean | number; // rail, light_rail, subway, tram, narrow_gauge, monorail, funicular
+				aerialways?: boolean | number; // cable car, gondola, chair lift, drag lift, etc.
+				ferries?: boolean | number; // ferry routes
+				stops?: boolean | number; // bus stops, tram stops, train stations, airports as symbols
+		  };
+	buildings?: boolean | number;
+	sites?: boolean | number; // schools, hospitals, parking, construction, etc.
+	airport?: boolean | number; // runways, taxiways
+	pois?: boolean | number; // points of interest symbols
+	boundaries?: boolean | number; // boundary lines only
+	markings?: boolean | number; // oneway arrows and bicycle lane markings
+	labels?:
+		| boolean
+		| number
+		| {
+				places?: boolean | number; // label-place-* (neighbourhood → capital)
+				streets?: boolean | number; // label-street-* + label-motorway-*
+				states?: boolean | number; // label-boundary-state
+				countries?: boolean | number; // label-boundary-country-small/medium/large
+				addresses?: boolean | number; // label-address-housenumber
+		  };
+	icons?: boolean | number; // convenience alias for { pois, transit.stops, markings } together
+};
+```
+
+### Text & icons
+
+`LabelsOptions` sets the language and fonts for all text labels. `LayoutOptions` controls the size and density of both labels and icons.
+
+```ts
 type LabelsOptions = {
-  language?:       string   // 'local', 'user', 'de', 'en', …; default: 'local'
-  languageStrict?: boolean  // omit labels with no translation; default: false
-  fontNormal?:     string   // regular font name
-  fontBold?:       string   // bold font name
-}
+	language?: string; // 'local', 'user', 'de', 'en', …; default: 'local'
+	languageStrict?: boolean; // omit labels with no translation; default: false
+	fontNormal?: string; // regular font name
+	fontBold?: string; // bold font name
+};
 
 type LayoutOptions = {
-  labels?: { scale?: number; spacing?: number }  // size multiplier and exclusion-radius multiplier (>1 = fewer)
-  icons?:  { scale?: number; spacing?: number }
-}
-
-type ColorsOptions = {
-  background?: string  // canvas color and anchor for derived computations; default: white (light) / black (dark)
-  land?:       string  // land surface color (slightly offset from background)
-  water?:      string  // 41 keys total: water, wood, grass, street, motorway, building, label, …
-  // …
-}
-
-type SunOptions = {
-  direction?: number  // azimuth in degrees; 0 = north, 90 = east; default: 315
-  altitude?:  number  // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
-  color?:     string  // light color; default: '#ffffff'
-  intensity?: number  // 0–1; default: 0.5
-}
-
-type SkyOptions = {
-  skyColor?:         string  // color of the sky above the horizon; default: '#87CEEB'
-  horizonColor?:     string  // color at the horizon; default: '#ffffff'
-  skyHorizonBlend?:  number  // 0–1; blend between sky and horizon; default: 0.5
-  horizonFogBlend?:  number  // 0–1; blend between horizon and fog; default: 0.5
-  atmosphereBlend?:  number  // 0–1; atmospheric haze intensity; default: 0
-}
-
-type HillshadeOptions = boolean | {
-  exaggeration?:   number              // default: 0.1
-  shadowColor?:    string              // default: '#000000'
-  highlightColor?: string              // default: '#ffffff'
-  accentColor?:    string              // default: '#000000'
-  anchor?:         'map' | 'viewport'  // default: 'map'
-}
-
-type RecolorOptions = {
-  // mode-independent (same visual effect on light and dark palettes):
-  invertBrightness?: boolean                         // flip lightness of all colors
-  rotateHue?:        number                          // hue rotation in degrees; 0 = no change
-  saturate?:         number                          // -1 = greyscale, 0 = no change, +1 = double
-  tint?:             { color: string; amount?: number }  // amount 0–1; default: 1
-  // mode-dependent (absolute operations; effect differs between light and dark palettes):
-  adjustGamma?:      number                          // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
-  adjustContrast?:   number                          // > 0; 1 = no change, < 1 = flatten, > 1 = increase
-  adjustBrightness?: number                          // 0 = no change; positive = brighter, negative = darker
-  blend?:            { color: string; amount?: number }  // amount 0–1; default: 1
-}
-
-type OsmContentOptions = {
-  theme?: {
-    darkMode?: boolean | 'auto'                                     // default: false; 'auto' = system preference (browser only)
-    palette?:  'colorful' | 'natural' | 'muted' | 'gray' | 'toner'  // default: 'colorful'
-  }
-  layers?:  LayerGroupOptions
-  labels?:  LabelsOptions
-  layout?:  LayoutOptions
-  colors?:  ColorsOptions
-  recolor?: RecolorOptions
-}
-
-type OsmOptions = OsmContentOptions & {
-  urls?: {
-    base?:          string  // defaults to hostname (browser) or required in Node.js
-    osm?:           string | TileJSONSpecification  // defaults to "/tiles/osm/tiles.json"
-    elevation?:     string | TileJSONSpecification  // defaults to "/tiles/elevation/tiles.json"
-    glyphsPattern?: string  // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
-    sprite?:        string | Array<{ id: string; url: string }>  // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
-  }
-  features?: {
-    terrain?:   boolean | { exaggeration?: number }
-    hillshade?: HillshadeOptions
-    landcover?: boolean              // ESA WorldCover at z0–z10; default: false
-    buildings?: 'flat' | 'extruded'  // default: 'flat'
-  }
-  sun?: SunOptions
-  sky?: SkyOptions
-}
-
-type SatelliteOptions = {
-  urls?: {
-    base?:          string                          // defaults to hostname (browser) or required in Node.js
-    satellite?:     string | TileJSONSpecification  // defaults to "/tiles/satellite/tiles.json"
-    osm?:           string | TileJSONSpecification  // defaults to "/tiles/osm/tiles.json"
-    elevation?:     string | TileJSONSpecification  // defaults to "/tiles/elevation/tiles.json"
-    glyphsPattern?: string                          // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
-    sprite?:        string | Array<{ id: string; url: string }>  // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
-  }
-  osmOverlay?: false | OsmContentOptions  // default: false
-  raster?: {  // keys mirror MapLibre's raster-* paint properties
-    opacity?:       number
-    hueRotate?:     number
-    brightnessMin?: number
-    brightnessMax?: number
-    saturation?:    number
-    contrast?:      number
-  }
-  features?: {
-    terrain?:   boolean | { exaggeration?: number }
-    hillshade?: HillshadeOptions
-  }
-  sun?: SunOptions
-  sky?: SkyOptions
-}
+	labels?: { scale?: number; spacing?: number }; // size multiplier; exclusion-radius multiplier (>1 = fewer)
+	icons?: { scale?: number; spacing?: number };
+};
 ```
 
 `'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` at call time (falls back to `'local'` in Node.js). Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
+
+### Colors
+
+`ColorsOptions` sets named color values for the palette. `RecolorOptions` applies post-processing transforms on top of the resolved palette — useful for tinting, greyscale, or contrast adjustments without redefining individual colors.
+
+```ts
+type ColorsOptions = {
+	background?: string; // canvas color and anchor for derived computations; default: white (light) / black (dark)
+	land?: string; // land surface color (slightly offset from background)
+	water?: string; // 41 keys total: water, wood, grass, street, motorway, building, label, …
+	// …
+};
+
+type RecolorOptions = {
+	// mode-independent (same visual effect on light and dark palettes):
+	invertBrightness?: boolean; // flip lightness of all colors
+	rotateHue?: number; // hue rotation in degrees; 0 = no change
+	saturate?: number; // -1 = greyscale, 0 = no change, +1 = double
+	tint?: { color: string; amount?: number }; // amount 0–1; default: 1
+	// mode-dependent (absolute operations; effect differs between light and dark palettes):
+	adjustGamma?: number; // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
+	adjustContrast?: number; // > 0; 1 = no change, < 1 = flatten, > 1 = increase
+	adjustBrightness?: number; // 0 = no change; positive = brighter, negative = darker
+	blend?: { color: string; amount?: number }; // amount 0–1; default: 1
+};
+```
+
+### Atmosphere & lighting
+
+Used by both `osm()` and `satellite()`. Require `features.terrain: true` to have any visible effect.
+
+```ts
+type SunOptions = {
+	direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 315
+	altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
+	color?: string; // light color; default: '#ffffff'
+	intensity?: number; // 0–1; default: 0.5
+};
+
+type SkyOptions = {
+	skyColor?: string; // color of the sky above the horizon; default: '#87CEEB'
+	horizonColor?: string; // color at the horizon; default: '#ffffff'
+	skyHorizonBlend?: number; // 0–1; blend between sky and horizon; default: 0.5
+	horizonFogBlend?: number; // 0–1; blend between horizon and fog; default: 0.5
+	atmosphereBlend?: number; // 0–1; atmospheric haze intensity; default: 0
+};
+
+type HillshadeOptions =
+	| boolean
+	| {
+			exaggeration?: number; // default: 0.1
+			shadowColor?: string; // default: '#000000'
+			highlightColor?: string; // default: '#ffffff'
+			accentColor?: string; // default: '#000000'
+			anchor?: 'map' | 'viewport'; // default: 'map'
+	  };
+```
+
+### Function options
+
+`OsmContentOptions` is the shared base used by both `osm()` and `satellite({ osmOverlay })`. `OsmOptions` and `SatelliteOptions` extend it with their respective URL and feature configurations.
+
+```ts
+type OsmContentOptions = {
+	theme?: {
+		darkMode?: boolean | 'auto'; // default: false; 'auto' = system preference (browser only)
+		palette?: 'colorful' | 'natural' | 'muted' | 'gray' | 'toner'; // default: 'colorful'
+	};
+	layers?: LayerGroupOptions;
+	labels?: LabelsOptions;
+	layout?: LayoutOptions;
+	colors?: ColorsOptions;
+	recolor?: RecolorOptions;
+};
+
+type OsmOptions = OsmContentOptions & {
+	urls?: {
+		base?: string; // defaults to hostname (browser) or required in Node.js
+		osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
+		elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
+		glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
+		sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
+	};
+	features?: {
+		terrain?: boolean | { exaggeration?: number };
+		hillshade?: HillshadeOptions;
+		landcover?: boolean; // ESA WorldCover at z0–z10; default: false
+		buildings?: 'flat' | 'extruded'; // default: 'flat'
+	};
+	sun?: SunOptions;
+	sky?: SkyOptions;
+};
+
+type SatelliteOptions = {
+	urls?: {
+		base?: string; // defaults to hostname (browser) or required in Node.js
+		satellite?: string | TileJSONSpecification; // defaults to "/tiles/satellite/tiles.json"
+		osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
+		elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
+		glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
+		sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
+	};
+	osmOverlay?: false | OsmContentOptions; // default: false
+	raster?: {
+		// keys mirror MapLibre's raster-* paint properties
+		opacity?: number;
+		hueRotate?: number;
+		brightnessMin?: number;
+		brightnessMax?: number;
+		saturation?: number;
+		contrast?: number;
+	};
+	features?: {
+		terrain?: boolean | { exaggeration?: number };
+		hillshade?: HillshadeOptions;
+	};
+	sun?: SunOptions;
+	sky?: SkyOptions;
+};
+```
 
 ---
 
@@ -292,7 +356,7 @@ color.fade(amount: number): Color                // 0–1; reduce alpha
 ## Migration from v5
 
 | v5                                                      | v6                                                                |
-|---------------------------------------------------------|-------------------------------------------------------------------|
+| ------------------------------------------------------- | ----------------------------------------------------------------- |
 | `colorful(options)`                                     | `osm(options)`                                                    |
 | `colorful({ baseUrl: 'https://…' })`                    | `osm({ urls: { base: 'https://…' } })`                            |
 | `colorful({ tiles: ['https://…'] })`                    | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
@@ -305,6 +369,6 @@ color.fade(amount: number): Color                // 0–1; reduce alpha
 | `colorful({ elevationTilejson: '…' })`                  | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
 | `shadow(options)`                                       | `osm({ ...options, theme: { palette: 'gray', darkMode: true } })` |
 | `graybeard(options)`                                    | `osm({ ...options, theme: { palette: 'gray' } })`                 |
-| `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })` *(approximate)*  |
+| `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })` _(approximate)_  |
 | `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
