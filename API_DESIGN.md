@@ -40,11 +40,13 @@ type LayerGroupOptions = {
     | number
     | {
         forest?: boolean | number; // land-forest
-        vegetation?: boolean | number; // land-grass, land-vegetation (heath, scrub), land-rock
-        wetland?: boolean | number; // land-wetland (bog, marsh, swamp)
+        vegetation?: boolean | number; // land-grass (grass, grassland, meadow, wet_meadow), land-vegetation (heath, scrub)
+        rock?: boolean | number; // land-rock (bare_rock, scree, shingle)
+        wetland?: boolean | number; // land-wetland (bog, marsh, string_bog, swamp)
         sand?: boolean | number; // land-sand (beach, sand)
+        glacier?: boolean | number; // land-glacier
         agriculture?: boolean | number; // land-agriculture (farmland, orchards, vineyards)
-        urban?: boolean | number; // land-commercial, land-industrial, land-residential, land-park, land-garden, etc.
+        urban?: boolean | number; // land-commercial, land-industrial, land-residential, land-park, land-garden, land-burial, land-leisure, land-waste
       };
   water?:
     | boolean
@@ -61,7 +63,16 @@ type LayerGroupOptions = {
     | {
         motorways?: boolean | number; // motorway + trunk (surface, tunnel, bridge, links, outlines)
         highways?: boolean | number; // primary, secondary, tertiary (all variants)
-        streets?: boolean | number; // residential, living_street, service, unclassified, track, busway, pedestrian zones
+        streets?:
+          | boolean
+          | number
+          | {
+              residential?: boolean | number; // street-residential, street-livingstreet, street-unclassified
+              service?: boolean | number; // street-service (driveways, parking aisles, access roads)
+              pedestrian?: boolean | number; // street-pedestrian, street-pedestrian-zone
+              track?: boolean | number; // street-track
+              bus?: boolean | number; // street-busway, street-busguideway
+            };
         paths?: boolean | number; // footway, steps, path, cycleway
       };
   transit?:
@@ -77,7 +88,13 @@ type LayerGroupOptions = {
   sites?: boolean | number; // schools, hospitals, parking, construction, etc.
   airport?: boolean | number; // runways, taxiways
   pois?: boolean | number; // points of interest symbols
-  boundaries?: boolean | number; // boundary lines only
+  boundaries?:
+    | boolean
+    | number
+    | {
+        country?: boolean | number; // boundary-country, -disputed, -maritime (admin_level=2)
+        state?: boolean | number; // boundary-state (admin_level=4)
+      };
   markings?: boolean | number; // oneway arrows and bicycle lane markings
   labels?:
     | boolean
@@ -106,8 +123,8 @@ type LabelsOptions = {
 };
 
 type LayoutOptions = {
-  labels?: { scale?: number; spacing?: number }; // size multiplier; exclusion-radius multiplier (>1 = fewer)
-  icons?: { scale?: number; spacing?: number };
+  scale?: number | { labels?: number; icons?: number }; // size multiplier
+  spacing?: number | { labels?: number; icons?: number }; // exclusion-radius multiplier (>1 = fewer)
 };
 ```
 
@@ -132,9 +149,9 @@ type RecolorOptions = {
   saturate?: number; // -1 = greyscale, 0 = no change, +1 = double
   tint?: { color: string; amount?: number }; // amount 0–1; default: 1
   // mode-dependent (absolute operations; effect differs between light and dark palettes):
-  adjustGamma?: number; // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
-  adjustContrast?: number; // > 0; 1 = no change, < 1 = flatten, > 1 = increase
-  adjustBrightness?: number; // 0 = no change; positive = brighter, negative = darker
+  gamma?: number; // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
+  contrast?: number; // > 0; 1 = no change, < 1 = flatten, > 1 = increase
+  brightness?: number; // 0 = no change; positive = brighter, negative = darker
   blend?: { color: string; amount?: number }; // amount 0–1; default: 1
 };
 ```
