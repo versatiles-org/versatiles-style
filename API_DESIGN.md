@@ -139,6 +139,32 @@ type OsmOptions = OsmContentOptions & {
   sun?: SunOptions
   sky?: SkyOptions
 }
+
+type SatelliteOptions = {
+  urls?: {
+    base?:          string                          // defaults to hostname (browser) or required in Node.js
+    satellite?:     string | TileJSONSpecification  // defaults to "/tiles/satellite/tiles.json"
+    osm?:           string | TileJSONSpecification  // defaults to "/tiles/osm/tiles.json"
+    elevation?:     string | TileJSONSpecification  // defaults to "/tiles/elevation/tiles.json"
+    glyphsPattern?: string                          // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
+    sprite?:        string | Array<{ id: string; url: string }>  // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
+  }
+  osmOverlay?: false | OsmContentOptions  // default: false
+  raster?: {  // keys mirror MapLibre's raster-* paint properties
+    opacity?:       number
+    hueRotate?:     number
+    brightnessMin?: number
+    brightnessMax?: number
+    saturation?:    number
+    contrast?:      number
+  }
+  features?: {
+    terrain?:   boolean | { exaggeration?: number }
+    hillshade?: HillshadeOptions
+  }
+  sun?: SunOptions
+  sky?: SkyOptions
+}
 ```
 
 `'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` at call time (falls back to `'local'` in Node.js). Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
@@ -176,31 +202,7 @@ osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
 ## `satellite(options?): StyleSpecification`
 
 ```ts
-satellite({
-  urls?: {
-    base?:          string                          // defaults to hostname (browser) or required in Node.js
-    satellite?:     string | TileJSONSpecification  // defaults to "/tiles/satellite/tiles.json"
-    osm?:           string | TileJSONSpecification  // defaults to "/tiles/osm/tiles.json"
-    elevation?:     string | TileJSONSpecification  // defaults to "/tiles/elevation/tiles.json"
-    glyphsPattern?: string                          // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
-    sprite?:        string | Array<{ id: string; url: string }>  // defaults to [{ id: "basics", url: "/assets/sprites/basics/sprites" }]
-  }
-  osmOverlay?: false | OsmContentOptions  // default: false
-  raster?: { // keys mirror MapLibre's raster-* paint properties
-    opacity?:       number
-    hueRotate?:     number
-    brightnessMin?: number
-    brightnessMax?: number
-    saturation?:    number
-    contrast?:      number
-  }
-  features?: {
-    terrain?:   boolean | { exaggeration?: number }
-    hillshade?: HillshadeOptions
-  }
-  sun?: SunOptions
-  sky?: SkyOptions
-})
+satellite(options?: SatelliteOptions)
 ```
 
 Static properties for introspection:
