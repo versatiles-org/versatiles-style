@@ -53,16 +53,16 @@ Integrate it into your HTML application:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-	const style = VersaTilesStyle.graybeard({
-		language: 'de',
-		colors: { label: '#222' },
-		recolor: { gamma: 0.5 },
-	});
+  const style = VersaTilesStyle.graybeard({
+    language: 'de',
+    colors: { label: '#222' },
+    recolor: { gamma: 0.5 },
+  });
 
-	const map = new maplibregl.Map({
-		container: 'map',
-		style,
-	});
+  const map = new maplibregl.Map({
+    container: 'map',
+    style,
+  });
 </script>
 ```
 
@@ -81,7 +81,7 @@ import { colorful } from '@versatiles/style';
 import { writeFileSync } from 'node:fs';
 
 const style = colorful({
-	language: 'en',
+  language: 'en',
 });
 writeFileSync('style.json', JSON.stringify(style));
 ```

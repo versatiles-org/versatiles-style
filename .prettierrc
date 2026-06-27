@@ -3,5 +3,14 @@
 	"singleQuote": true,
 	"trailingComma": "es5",
 	"printWidth": 120,
-	"singleAttributePerLine": false
+	"singleAttributePerLine": false,
+	"overrides": [
+		{
+			"files": "*.md",
+			"options": {
+				"useTabs": false,
+				"tabWidth": 2
+			}
+		}
+	]
 }
