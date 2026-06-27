@@ -267,9 +267,9 @@ Static properties for introspection:
 ```ts
 osm.palettes:     Palette[]           // ['colorful', 'natural', 'muted', 'gray', 'toner']
 osm.colorKeys:    string[]            // all 41 color key names
-osm.layerGroups:  Record<string, string[]>  // maps each LayerGroupOptions key to its layer IDs
+osm.layerGroups:  LayerGroupOptions   // maps each LayerGroupOptions key to its layer IDs
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
-osm.colors(theme?: { palette?: Palette; darkMode?: boolean }): Record<string, string>
+osm.colors(palette: Palette, darkMode: boolean): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
 osm.slots: {
   belowLabels:  string  // below text labels, above icons/symbols
