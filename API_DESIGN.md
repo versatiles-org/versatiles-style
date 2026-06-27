@@ -132,7 +132,7 @@ type LayoutOptions = {
 
 ### Colors
 
-`ColorsOptions` sets named color values for the palette. `RecolorOptions` applies post-processing transforms on top of the resolved palette — useful for tinting, greyscale, or contrast adjustments without redefining individual colors.
+`ColorsOptions` sets named color values for the palette. `RecolorOptions` applies post-processing transforms on top of the resolved palette — useful for tinting, grayscale, or contrast adjustments without redefining individual colors.
 
 ```ts
 type ColorsOptions = {
@@ -201,7 +201,7 @@ type RecolorOptions = {
   // mode-independent (same visual effect on light and dark palettes):
   invertBrightness?: boolean; // flip lightness of all colors
   rotateHue?: number; // hue rotation in degrees; 0 = no change
-  saturate?: number; // -1 = greyscale, 0 = no change, +1 = double
+  saturate?: number; // -1 = grayscale, 0 = no change, +1 = double
   tint?: { color: string; amount?: number }; // amount 0–1; default: 1
   // mode-dependent (absolute operations; effect differs between light and dark palettes):
   gamma?: number; // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
@@ -418,7 +418,7 @@ color.asHSV(): Color.HSV  // { h, s, v, a }
 // Transformations (all return a new Color instance)
 color.invertLuminosity(): Color
 color.rotateHue(degrees: number): Color
-color.saturate(ratio: number): Color             // -1 = greyscale, 0 = identity, +1 = double
+color.saturate(ratio: number): Color             // -1 = grayscale, 0 = identity, +1 = double
 color.gamma(value: number): Color                // < 1 = brighten midtones, > 1 = darken
 color.contrast(value: number): Color             // > 1 = more contrast
 color.brightness(value: number): Color           // -1 to +1
