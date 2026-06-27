@@ -136,10 +136,65 @@ type LayoutOptions = {
 
 ```ts
 type ColorsOptions = {
-  background?: string; // canvas color and anchor for derived computations; default: white (light) / black (dark)
-  land?: string; // land surface color (slightly offset from background)
-  water?: string; // 41 keys total: water, wood, grass, street, motorway, building, label, …
-  // …
+  // base
+  background?: string; // canvas color behind all layers
+  land?: string; // land surface
+  water?: string; // water bodies (lakes, rivers, ocean)
+  glacier?: string; // glaciers
+
+  // natural land cover  (nature*)
+  natureWood?: string; // forests
+  natureGrass?: string; // grassland, meadow, wet meadow
+  naturePark?: string; // parks, gardens, heath, scrub
+  natureAgriculture?: string; // farmland, orchards, vineyards
+  natureSand?: string; // beaches and sand
+  natureRock?: string; // bare rock, scree, shingle
+  natureWetland?: string; // marshes, bogs, swamps
+  natureLeisure?: string; // playgrounds, golf courses
+
+  // urban land use  (area*)
+  areaResidential?: string; // residential areas
+  areaCommercial?: string; // commercial and retail areas
+  areaIndustrial?: string; // industrial areas, quarries
+  areaWaste?: string; // landfill
+  areaBurial?: string; // cemeteries
+
+  // sites  (site*)
+  siteConstruction?: string; // construction sites
+  siteEducation?: string; // schools, colleges, universities
+  siteHospital?: string; // hospitals
+  siteDanger?: string; // danger areas
+  sitePrison?: string; // prisons
+  siteParking?: string; // parking areas
+
+  // buildings  (building*)
+  building?: string; // building fill
+  buildingBg?: string; // building outline / shadow
+
+  // roads  (road*)
+  roadStreet?: string; // local street fill
+  roadStreetBg?: string; // local street casing
+  roadMotorway?: string; // motorway fill
+  roadMotorwayBg?: string; // motorway casing
+  roadTrunk?: string; // trunk, primary, secondary fill
+  roadTrunkBg?: string; // trunk, primary, secondary casing
+
+  // transit  (transit*)
+  transitRail?: string; // railways (main, light rail, tram)
+  transitSubway?: string; // subways
+  transitCycle?: string; // cycleways
+  transitFoot?: string; // footways, paths, steps, pedestrian streets
+
+  // boundaries  (boundary*)
+  boundary?: string; // country and state boundaries
+  boundaryDisputed?: string; // disputed boundaries
+
+  // labels & symbols  (label*)
+  label?: string; // label text
+  labelHalo?: string; // label halo
+  labelShield?: string; // motorway shield background
+  labelSymbol?: string; // transit icon tint
+  labelPoi?: string; // POI icon and label tint
 };
 
 type RecolorOptions = {
@@ -266,7 +321,7 @@ Static properties for introspection:
 
 ```ts
 osm.palettes:     Palette[]           // ['colorful', 'natural', 'muted', 'gray', 'toner']
-osm.colorKeys:    string[]            // all 41 color key names
+osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupOptions   // maps each LayerGroupOptions key to its layer IDs
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
 osm.colors(palette: Palette, darkMode: boolean): Record<string, string>
