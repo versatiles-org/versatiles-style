@@ -192,11 +192,15 @@ type HillshadeOptions =
 `OsmContentOptions` is the shared base used by both `osm()` and `satellite({ osmOverlay })`. `OsmOptions` and `SatelliteOptions` extend it with their respective URL and feature configurations.
 
 ```ts
+type Palette = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
+
 type OsmContentOptions = {
-  theme?: {
-    darkMode?: boolean | 'auto'; // default: false; 'auto' = system preference (browser only)
-    palette?: 'colorful' | 'natural' | 'muted' | 'gray' | 'toner'; // default: 'colorful'
-  };
+  theme?:
+    | Palette // shorthand for { palette }
+    | {
+        darkMode?: boolean | 'auto'; // default: false; 'auto' = system preference (browser only)
+        palette?: Palette; // default: 'colorful'
+      };
   layers?: LayerGroupOptions;
   labels?: LabelsOptions;
   layout?: LayoutOptions;
@@ -261,11 +265,11 @@ osm(options?: OsmOptions)
 Static properties for introspection:
 
 ```ts
-osm.palettes:     string[]            // ['colorful', 'natural', 'muted', 'gray', 'toner']
+osm.palettes:     Palette[]           // ['colorful', 'natural', 'muted', 'gray', 'toner']
 osm.colorKeys:    string[]            // all 41 color key names
 osm.layerGroups:  Record<string, string[]>  // maps each LayerGroupOptions key to its layer IDs
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
-osm.colors(theme?: { palette?: string; darkMode?: boolean }): Record<string, string>
+osm.colors(theme?: { palette?: Palette; darkMode?: boolean }): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
 osm.slots: {
   belowLabels:  string  // below text labels, above icons/symbols
