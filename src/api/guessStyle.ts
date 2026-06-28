@@ -1,4 +1,5 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
+import { isTileJSONSpecification } from '../types/index.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 
@@ -166,6 +167,7 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  */
 export function guessStyle(tileJSON: TileJSONSpecification): StyleSpecification {
 	try {
+		isTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
 				return osm({ urls: { osm: tileJSON } });
