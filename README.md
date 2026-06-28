@@ -157,18 +157,18 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 8["osm.ts"]
-1O["satellite.ts"]
-1P["index.ts"]
+1N["satellite.ts"]
+1O["index.ts"]
 end
 subgraph 3["types"]
 4["index.ts"]
 5["colors.ts"]
 6["tilejson.ts"]
 7["vector_layer.ts"]
-1T["layer-groups.ts"]
-1U["maplibre.ts"]
-1V["options.ts"]
-1W["resolved.ts"]
+1S["layer-groups.ts"]
+1T["maplibre.ts"]
+1U["options.ts"]
+1V["resolved.ts"]
 end
 subgraph 9["color"]
 A["recolor.ts"]
@@ -204,7 +204,7 @@ S["gray.ts"]
 T["muted.ts"]
 U["natural.ts"]
 V["toner.ts"]
-1S["types.ts"]
+1R["types.ts"]
 end
 subgraph X["shortbread"]
 Y["index.ts"]
@@ -212,29 +212,28 @@ Z["context.ts"]
 16["groups.ts"]
 subgraph 17["layers"]
 18["index.ts"]
-1B["airport.ts"]
-1C["background.ts"]
-1D["boundaries.ts"]
-1E["buildings.ts"]
-1F["labels.ts"]
-1G["landcover.ts"]
-1H["markings.ts"]
-1I["pois.ts"]
-1J["roads.ts"]
-1K["sites.ts"]
-1L["transitstops.ts"]
-1M["water.ts"]
+1A["airport.ts"]
+1B["background.ts"]
+1C["boundaries.ts"]
+1D["buildings.ts"]
+1E["labels.ts"]
+1F["landcover.ts"]
+1G["markings.ts"]
+1H["pois.ts"]
+1I["roads.ts"]
+1J["sites.ts"]
+1K["transitstops.ts"]
+1L["water.ts"]
 end
 19["build.ts"]
-1A["properties.ts"]
-1N["template.ts"]
+1M["template.ts"]
 end
-1Q["index.ts"]
-1R["variants.ts"]
+1P["index.ts"]
+1Q["variants.ts"]
 end
 2-->4
 2-->8
-2-->1O
+2-->1N
 4-->5
 4-->6
 4-->7
@@ -269,7 +268,7 @@ W-->M
 Y-->Z
 Y-->16
 Y-->18
-Y-->1N
+Y-->1M
 Z-->10
 Z-->4
 10-->B
@@ -296,6 +295,7 @@ Z-->4
 16-->Z
 16-->18
 18-->19
+18-->1A
 18-->1B
 18-->1C
 18-->1D
@@ -307,9 +307,8 @@ Z-->4
 18-->1J
 18-->1K
 18-->1L
-18-->1M
 19-->10
-19-->1A
+1A-->19
 1B-->19
 1C-->19
 1D-->19
@@ -321,25 +320,24 @@ Z-->4
 1J-->19
 1K-->19
 1L-->19
-1M-->19
-1N-->O
-1O-->D
-1O-->K
-1O-->Y
-1O-->4
+1M-->O
+1N-->D
+1N-->K
+1N-->Y
+1N-->4
+1N-->8
+1O-->2
 1O-->8
+1O-->1N
 1P-->2
 1P-->8
-1P-->1O
-1Q-->2
+1P-->1N
+1P-->10
+1P-->5
+1P-->4
+1P-->1Q
 1Q-->8
-1Q-->1O
-1Q-->10
-1Q-->5
-1Q-->4
-1Q-->1R
-1R-->8
-1R-->1O
+1Q-->1N
 
 class 0,1,3,9,C,J,N,P,X,17 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
