@@ -1,7 +1,7 @@
 import type { TileJSONSpecification } from './tilejson.js';
 import type { ColorsOptions, RecolorOptions } from './colors.js';
 import type { LayerGroupOptions } from './layer-groups.js';
-import type { Palette, SunOptions, SkyOptions, SpriteInput, OsmContentOptions, SatelliteOptions } from './options.js';
+import type { Palette, SunOptions, SkyOptions, SpriteInput, SatelliteOptions } from './options.js';
 
 export type ResolvedTheme = {
 	palette: Palette;

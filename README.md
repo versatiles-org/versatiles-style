@@ -164,45 +164,50 @@ subgraph 1["color"]
 6["utils.ts"]
 7["rgb.ts"]
 8["index.ts"]
+9["recolor.ts"]
 end
-subgraph 9["guess_style"]
-A["guess_style.ts"]
-Z["index.ts"]
-end
-subgraph B["lib"]
-C["utils.ts"]
-F["elevation.ts"]
-end
-subgraph D["styles"]
-E["index.ts"]
-G["colorful.ts"]
-S["eclipse.ts"]
-T["empty.ts"]
-U["graybeard.ts"]
-V["neutrino.ts"]
-W["satellite.ts"]
-X["shadow.ts"]
-Y["variants.ts"]
-end
-subgraph H["shortbread"]
-I["zoom.ts"]
-L["index.ts"]
-M["layers.ts"]
-N["template.ts"]
-P["properties.ts"]
-end
-subgraph J["style_builder"]
-K["style_builder.ts"]
-O["decorator.ts"]
-Q["recolor.ts"]
-R["types.ts"]
-end
+subgraph A["guess_style"]
+B["guess_style.ts"]
 10["index.ts"]
-subgraph 11["types"]
-12["index.ts"]
-13["tilejson.ts"]
-14["vector_layer.ts"]
-15["maplibre.ts"]
+end
+subgraph C["lib"]
+D["utils.ts"]
+G["elevation.ts"]
+end
+subgraph E["styles"]
+F["index.ts"]
+H["colorful.ts"]
+T["eclipse.ts"]
+U["empty.ts"]
+V["graybeard.ts"]
+W["neutrino.ts"]
+X["satellite.ts"]
+Y["shadow.ts"]
+Z["variants.ts"]
+end
+subgraph I["style_builder"]
+J["style_builder.ts"]
+P["decorator.ts"]
+R["recolor.ts"]
+S["types.ts"]
+end
+subgraph K["shortbread"]
+L["index.ts"]
+M["groups.ts"]
+N["layers.ts"]
+O["template.ts"]
+Q["properties.ts"]
+end
+11["index.ts"]
+subgraph 12["types"]
+13["colors.ts"]
+14["index.ts"]
+15["tilejson.ts"]
+16["vector_layer.ts"]
+17["layer-groups.ts"]
+18["maplibre.ts"]
+19["options.ts"]
+1A["resolved.ts"]
 end
 end
 3-->2
@@ -223,57 +228,58 @@ end
 8-->2
 8-->3
 8-->4
+8-->9
 8-->7
-A-->5
-A-->C
-A-->E
-C-->8
-E-->F
-E-->G
-E-->S
-E-->T
-E-->U
-E-->V
-E-->W
-E-->X
-E-->Y
-F-->C
-G-->I
-G-->K
-K-->8
-K-->C
-K-->L
-K-->O
-K-->Q
-K-->R
+9-->2
+B-->5
+B-->D
+B-->F
+D-->8
+F-->G
+F-->H
+F-->T
+F-->U
+F-->V
+F-->W
+F-->X
+F-->Y
+F-->Z
+G-->D
+H-->J
+J-->8
+J-->D
+J-->L
+J-->P
+J-->R
+J-->S
 L-->M
 L-->N
-L-->I
-M-->I
-N-->C
-O-->8
-O-->C
-O-->P
-Q-->8
-S-->G
-T-->G
-U-->G
-V-->I
-V-->G
-W-->F
-W-->C
-W-->U
+L-->O
+M-->N
+O-->D
+P-->8
+P-->D
+P-->Q
+R-->8
+T-->H
+U-->H
+V-->H
+W-->H
 X-->G
-Y-->E
-Y-->W
-Z-->A
-10-->8
-10-->Z
-10-->E
-12-->13
-12-->14
+X-->D
+X-->V
+Y-->H
+Z-->F
+Z-->X
+10-->B
+11-->8
+11-->10
+11-->F
+14-->13
+14-->15
+14-->16
 
-class 0,1,9,B,D,H,J,11 subgraphs;
+class 0,1,A,C,E,I,K,12 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
