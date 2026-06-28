@@ -1,7 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
-import propertyLookup from './properties.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
@@ -14,7 +13,7 @@ type ColorValue = Color | string;
 export type TaggedLayer = { layer: MaplibreLayer; group?: string };
 
 // Style overrides authored as camelCase keys; each is mapped to its MapLibre paint/layout
-// property (per layer type) via properties.ts.
+// property (per layer type) by the PROPERTY_DEFS table below.
 export type StyleProps = {
 	color?: ColorValue;
 	size?: SizeValue;
@@ -60,6 +59,88 @@ type StructuralProps = {
 };
 
 export type BuildOpts = StyleProps & StructuralProps;
+
+// ── MapLibre property metadata ────────────────────────────────────────────────
+//
+// Maps each StyleProps key (and the type-dependent shorthands color/size/opacity/image/text/font)
+// to its MapLibre property: which `parent` (paint/layout/layer) it lives under and how its value
+// is processed (`color` → parse, `fonts` → wrap in array, `plain` → passthrough / zoom-stops).
+// Scoped to exactly the keys the builders support.
+
+type PropParent = 'layer' | 'layout' | 'paint';
+type PropValueType = 'color' | 'fonts' | 'plain';
+type PropDef = { parent: PropParent; types: string; key: string; short?: string; valueType: PropValueType };
+
+const PROPERTY_DEFS: PropDef[] = [
+	// layer
+	{ parent: 'layer', types: 'background,fill,fill-extrusion,line,symbol', key: 'minzoom', valueType: 'plain' },
+	{ parent: 'layer', types: 'background,fill,fill-extrusion,line,symbol', key: 'maxzoom', valueType: 'plain' },
+	// layout — line
+	{ parent: 'layout', types: 'line', key: 'line-cap', valueType: 'plain' },
+	{ parent: 'layout', types: 'line', key: 'line-join', valueType: 'plain' },
+	// layout — symbol
+	{ parent: 'layout', types: 'symbol', key: 'icon-anchor', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'icon-image', short: 'image', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'icon-keep-upright', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'icon-optional', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'icon-size', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'symbol-placement', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-anchor', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-field', short: 'text', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-font', short: 'font', valueType: 'fonts' },
+	{ parent: 'layout', types: 'symbol', key: 'text-offset', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-optional', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-padding', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-size', short: 'size', valueType: 'plain' },
+	{ parent: 'layout', types: 'symbol', key: 'text-transform', valueType: 'plain' },
+	// paint — background
+	{ parent: 'paint', types: 'background', key: 'background-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'background', key: 'background-opacity', short: 'opacity', valueType: 'plain' },
+	{ parent: 'paint', types: 'background', key: 'background-pattern', short: 'image', valueType: 'plain' },
+	// paint — fill
+	{ parent: 'paint', types: 'fill', key: 'fill-antialias', valueType: 'plain' },
+	{ parent: 'paint', types: 'fill', key: 'fill-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'fill', key: 'fill-opacity', short: 'opacity', valueType: 'plain' },
+	{ parent: 'paint', types: 'fill', key: 'fill-outline-color', valueType: 'color' },
+	{ parent: 'paint', types: 'fill', key: 'fill-pattern', short: 'image', valueType: 'plain' },
+	{ parent: 'paint', types: 'fill', key: 'fill-translate', valueType: 'plain' },
+	// paint — fill-extrusion
+	{ parent: 'paint', types: 'fill-extrusion', key: 'fill-extrusion-base', valueType: 'plain' },
+	{ parent: 'paint', types: 'fill-extrusion', key: 'fill-extrusion-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'fill-extrusion', key: 'fill-extrusion-height', valueType: 'plain' },
+	{ parent: 'paint', types: 'fill-extrusion', key: 'fill-extrusion-opacity', short: 'opacity', valueType: 'plain' },
+	// paint — line
+	{ parent: 'paint', types: 'line', key: 'line-blur', valueType: 'plain' },
+	{ parent: 'paint', types: 'line', key: 'line-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'line', key: 'line-dasharray', valueType: 'plain' },
+	{ parent: 'paint', types: 'line', key: 'line-opacity', short: 'opacity', valueType: 'plain' },
+	{ parent: 'paint', types: 'line', key: 'line-pattern', short: 'image', valueType: 'plain' },
+	{ parent: 'paint', types: 'line', key: 'line-width', short: 'size', valueType: 'plain' },
+	// paint — symbol
+	{ parent: 'paint', types: 'symbol', key: 'icon-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'symbol', key: 'icon-opacity', short: 'opacity', valueType: 'plain' },
+	{ parent: 'paint', types: 'symbol', key: 'text-color', short: 'color', valueType: 'color' },
+	{ parent: 'paint', types: 'symbol', key: 'text-halo-blur', valueType: 'plain' },
+	{ parent: 'paint', types: 'symbol', key: 'text-halo-color', valueType: 'color' },
+	{ parent: 'paint', types: 'symbol', key: 'text-halo-width', valueType: 'plain' },
+	{ parent: 'paint', types: 'symbol', key: 'text-opacity', short: 'opacity', valueType: 'plain' },
+];
+
+type PropTarget = { key: string; parent: PropParent; valueType: PropValueType };
+
+// `${layerType}/${key|short}` → target property descriptors (a symbol `color`/`opacity` hits two).
+const PROPERTY_LOOKUP = new Map<string, PropTarget[]>();
+for (const def of PROPERTY_DEFS) {
+	for (const type of def.types.split(',')) {
+		for (const name of def.short ? [def.key, def.short] : [def.key]) {
+			const lookupKey = type + '/' + name;
+			const target: PropTarget = { key: def.key, parent: def.parent, valueType: def.valueType };
+			const list = PROPERTY_LOOKUP.get(lookupKey);
+			if (list) list.push(target);
+			else PROPERTY_LOOKUP.set(lookupKey, [target]);
+		}
+	}
+}
 
 // ── Value processing (color → string, zoom-stops → interpolate), applied to ONE known layer ──
 
@@ -114,7 +195,7 @@ function applyProps(layer: MaplibreLayer, props: StyleProps): void {
 	for (const [camelKey, raw] of Object.entries(props)) {
 		if (raw == null) continue;
 		const ruleKey = camelToKebab(camelKey);
-		const defs = propertyLookup.get(layer.type + '/' + ruleKey);
+		const defs = PROPERTY_LOOKUP.get(layer.type + '/' + ruleKey);
 		if (!defs) continue;
 		for (const def of defs) {
 			let value: RuleValue;
