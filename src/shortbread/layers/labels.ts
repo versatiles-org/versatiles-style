@@ -1,0 +1,199 @@
+import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { LayerContext } from '../context.js';
+import type { Color } from '../../color/index.js';
+import * as b from '../build.js';
+
+// Text labels: house numbers, motorway refs/shields, street names, place names, and
+// administrative (state/country) names. Rendered topmost, above icons.
+
+const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
+
+type PlaceDef = {
+	kind: string;
+	minzoom: number;
+	size: Record<number, number>;
+	color?: (ctx: LayerContext) => Color;
+	uppercase?: boolean;
+};
+
+// small place labels (render order), then state boundary, then large place labels
+const PLACES_SMALL: PlaceDef[] = [
+	{ kind: 'neighbourhood', minzoom: 14, size: { 14: 12 }, color: (c) => placeHue(c, -50), uppercase: true },
+	{ kind: 'quarter', minzoom: 13, size: { 13: 13 }, color: (c) => placeHue(c, -40), uppercase: true },
+	{ kind: 'suburb', minzoom: 11, size: { 11: 11, 13: 14 }, color: (c) => placeHue(c, -30), uppercase: true },
+	{ kind: 'hamlet', minzoom: 13, size: { 10: 11, 12: 14 } },
+	{ kind: 'village', minzoom: 11, size: { 9: 11, 12: 14 } },
+	{ kind: 'town', minzoom: 9, size: { 8: 11, 12: 14 } },
+];
+const PLACES_LARGE: PlaceDef[] = [
+	{ kind: 'city', minzoom: 7, size: { 7: 11, 10: 14 } },
+	{ kind: 'state_capital', minzoom: 6, size: { 6: 11, 10: 15 } },
+	{ kind: 'capital', minzoom: 5, size: { 5: 12, 10: 16 } },
+];
+
+function placeHue(ctx: LayerContext, deg: number): Color {
+	return ctx.c.label.rotateHue(deg).saturate(1).blend(0.05, ctx.fg);
+}
+
+const STREET_KINDS = [
+	'pedestrian',
+	'living_street',
+	'residential',
+	'unclassified',
+	'tertiary',
+	'secondary',
+	'primary',
+	'trunk',
+	'track',
+];
+
+const ADMIN2: FilterSpecification = ['in', ['get', 'admin_level'], ['literal', [2, '2']]];
+
+export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
+	const { c, bg } = ctx;
+
+	const placeBase: b.StyleProps = {
+		color: placeHue(ctx, -15),
+		font: ctx.fonts.normal,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+	};
+	const boundaryBase: b.StyleProps = {
+		color: c.label,
+		font: ctx.fonts.normal,
+		textTransform: 'uppercase',
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		textAnchor: 'top',
+		textOffset: [0, 0.2],
+		textPadding: 0,
+		textOptional: true,
+	};
+	const streetBase: b.StyleProps = {
+		color: c.label,
+		font: ctx.fonts.normal,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		symbolPlacement: 'line',
+		textAnchor: 'center',
+		minzoom: 12,
+		size: { 12: 10, 15: 13 },
+	};
+
+	// house numbers
+	yield b.symbol('label-address-housenumber', {
+		sourceLayer: 'addresses',
+		filter: ['has', 'housenumber'],
+		layout: { 'text-field': '{housenumber}' },
+		font: ctx.fonts.normal,
+		color: c.land.invertLuminosity().fade(0.7),
+		symbolPlacement: 'point',
+		textAnchor: 'center',
+		minzoom: 17,
+		size: { 17: 8, 19: 10 },
+		group: 'labels.addresses',
+	});
+
+	// motorway exit (structural only) + shield
+	yield b.symbol('label-motorway-exit', {
+		sourceLayer: 'street_labels_points',
+		filter: ['==', ['get', 'kind'], 'motorway_junction'],
+		layout: { 'text-field': '{ref}' },
+		group: 'labels.streets',
+	});
+	yield b.symbol('label-motorway-shield', {
+		sourceLayer: 'street_labels',
+		filter: ['==', ['get', 'kind'], 'motorway'],
+		layout: { 'text-field': '{ref}' },
+		color: c.labelShield,
+		font: ctx.fonts.bold,
+		textHaloColor: c.roadMotorway,
+		textHaloWidth: 0.1,
+		textHaloBlur: 1,
+		symbolPlacement: 'line',
+		textAnchor: 'center',
+		minzoom: 14,
+		size: { 14: 10, 18: 12, 20: 16 },
+		group: 'labels.streets',
+	});
+
+	// street name labels
+	for (const kind of STREET_KINDS) {
+		yield b.symbol('label-street-' + kind.replace(/_/g, ''), {
+			sourceLayer: 'street_labels',
+			filter: ['==', ['get', 'kind'], kind],
+			layout: { 'text-field': ctx.nameField },
+			...streetBase,
+			group: 'labels.streets',
+		});
+	}
+
+	// small place labels
+	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
+
+	// state boundary label
+	yield b.symbol('label-boundary-state', {
+		sourceLayer: 'boundary_labels',
+		filter: ['in', ['get', 'admin_level'], ['literal', [4, '4']]],
+		layout: { 'text-field': ctx.nameField },
+		...boundaryBase,
+		minzoom: 5,
+		color: c.label.blend(0.05, bg),
+		size: { 5: 8, 8: 12 },
+		group: 'labels.states',
+	});
+
+	// large place labels
+	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p);
+
+	// country boundary labels
+	yield b.symbol('label-boundary-country-small', {
+		sourceLayer: 'boundary_labels',
+		filter: ['all', ADMIN2, ['<=', ['get', 'way_area'], 10000000]] as FilterSpecification,
+		layout: { 'text-field': ctx.nameField },
+		...boundaryBase,
+		minzoom: 4,
+		size: { 4: 8, 5: 11 },
+		group: 'labels.countries',
+	});
+	yield b.symbol('label-boundary-country-medium', {
+		sourceLayer: 'boundary_labels',
+		filter: [
+			'all',
+			ADMIN2,
+			['<', ['get', 'way_area'], 90000000],
+			['>', ['get', 'way_area'], 10000000],
+		] as FilterSpecification,
+		layout: { 'text-field': ctx.nameField },
+		...boundaryBase,
+		minzoom: 3,
+		size: { 3: 8, 5: 12 },
+		group: 'labels.countries',
+	});
+	yield b.symbol('label-boundary-country-large', {
+		sourceLayer: 'boundary_labels',
+		filter: ['all', ADMIN2, ['>=', ['get', 'way_area'], 90000000]] as FilterSpecification,
+		layout: { 'text-field': ctx.nameField },
+		...boundaryBase,
+		minzoom: 2,
+		size: { 2: 8, 5: 13 },
+		group: 'labels.countries',
+	});
+}
+
+function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.TaggedLayer {
+	return b.symbol('label-place-' + p.kind.replace(/_/g, ''), {
+		sourceLayer: 'place_labels',
+		filter: ['==', ['get', 'kind'], p.kind],
+		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': POP_SORT_KEY },
+		...base,
+		minzoom: p.minzoom,
+		size: p.size,
+		...(p.color ? { color: p.color(ctx) } : {}),
+		...(p.uppercase ? { textTransform: 'uppercase' } : {}),
+		group: 'labels.places',
+	});
+}

@@ -6,8 +6,7 @@ import { natural } from './natural.js';
 import { toner } from './toner.js';
 import type { PaletteDefinition } from './types.js';
 
-export { buildThemeRules } from './rules.js';
-export type { LayerOverride, PaletteDefinition, SizeStops, SizeValue, ThemeRules } from './types.js';
+export type { PaletteDefinition } from './types.js';
 export { colorful, gray, muted, natural, toner };
 
 export const PALETTES: ReadonlyArray<Palette> = ['colorful', 'natural', 'muted', 'gray', 'toner'] as const;
