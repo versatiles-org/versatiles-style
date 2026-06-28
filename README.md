@@ -207,25 +207,31 @@ V["template.ts"]
 X["properties.ts"]
 end
 18["index.ts"]
-subgraph 19["themes"]
-1A["colorful.ts"]
-1B["gray.ts"]
-1C["index.ts"]
-1D["muted.ts"]
-1E["natural.ts"]
-1F["rules.ts"]
-1G["toner.ts"]
-1H["types.ts"]
+subgraph 19["resolve"]
+1A["index.ts"]
+1B["isDarkMode.ts"]
+1C["resolveOsmOptions.ts"]
+1Q["resolveSatelliteOptions.ts"]
 end
-subgraph 1I["types"]
-1J["colors.ts"]
-1K["index.ts"]
-1L["tilejson.ts"]
-1M["vector_layer.ts"]
-1N["layer-groups.ts"]
-1O["maplibre.ts"]
-1P["options.ts"]
-1Q["resolved.ts"]
+subgraph 1D["themes"]
+1E["index.ts"]
+1F["colorful.ts"]
+1G["gray.ts"]
+1H["muted.ts"]
+1I["natural.ts"]
+1J["rules.ts"]
+1K["toner.ts"]
+1R["types.ts"]
+end
+subgraph 1L["types"]
+1M["index.ts"]
+1N["colors.ts"]
+1O["tilejson.ts"]
+1P["vector_layer.ts"]
+1S["layer-groups.ts"]
+1T["maplibre.ts"]
+1U["options.ts"]
+1V["resolved.ts"]
 end
 end
 3-->2
@@ -300,18 +306,27 @@ Y-->8
 18-->8
 18-->17
 18-->M
-1C-->1A
-1C-->1B
-1C-->1D
+1A-->1B
+1A-->1C
+1A-->1Q
+1C-->K
 1C-->1E
-1C-->1F
-1C-->1G
-1F-->8
-1K-->1J
-1K-->1L
-1K-->1M
+1C-->1M
+1C-->1B
+1E-->1F
+1E-->1G
+1E-->1H
+1E-->1I
+1E-->1J
+1E-->1K
+1J-->8
+1M-->1N
+1M-->1O
+1M-->1P
+1Q-->K
+1Q-->1C
 
-class 0,1,A,H,J,L,P,R,19,1I subgraphs;
+class 0,1,A,H,J,L,P,R,19,1D,1L subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
