@@ -139,12 +139,13 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 		function processZoomStops(
 			obj: Record<string, StyleRuleValue>,
 			cbValue?: (value: StyleRuleValue) => StyleRuleValue
-		): { stops: StyleRuleValue[] } {
-			return {
-				stops: Object.entries(obj)
-					.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
-					.sort((a, b) => a[0] - b[0]),
-			};
+		): StyleRuleValue[] {
+			const pairs = Object.entries(obj)
+				.map(([z, v]) => [parseInt(z, 10), cbValue ? cbValue(v) : v] as [number, StyleRuleValue])
+				.sort((a, b) => a[0] - b[0]);
+			const expr: StyleRuleValue[] = ['interpolate', ['linear'] as unknown as StyleRuleValue, ['zoom'] as unknown as StyleRuleValue];
+			for (const [z, v] of pairs) expr.push(z, v);
+			return expr;
 		}
 	}
 }
