@@ -1,13 +1,11 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { MaplibreLayer } from '../types/index.js';
 import type { OsmOptions } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { ResolvedLayout, ResolvedOsmOptions } from '../types/index.js';
 import type { LayerGroupOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
-import { getShortbreadTemplate, getShortbreadLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
-import { buildThemeRules, PALETTES, getPaletteColors } from '../themes/index.js';
-import { decorate, type StyleRules } from '../shortbread/decorator.js';
+import { getShortbreadTemplate, buildContext, buildStyleLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
+import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, addBuildings3D } from '../features/index.js';
 import { resolveOsmOptions } from '../resolve/index.js';
@@ -35,30 +33,6 @@ function buildBase(resolved: ResolvedOsmOptions): StyleSpecification {
 	}
 
 	return style;
-}
-
-// ── Build layer list with source name ─────────────────────────────────────────
-
-function buildLayers(resolved: ResolvedOsmOptions): MaplibreLayer[] {
-	const { language, languageStrict } = resolved.text;
-	return getShortbreadLayers({ language, languageStrict }).map((def) => {
-		if (def.type === 'background') return def as MaplibreLayer;
-		return { source: SOURCE_NAME, ...def } as MaplibreLayer;
-	});
-}
-
-// ── Apply theme rules (colors + fonts) to layers ─────────────────────────────
-
-function applyTheme(style: StyleSpecification, resolved: ResolvedOsmOptions): StyleSpecification {
-	const rules = buildThemeRules(resolved.colors, {
-		normal: resolved.text.fontNormal,
-		bold: resolved.text.fontBold,
-	});
-	const result = structuredClone(style);
-	// decorate mutates matched layers in place; unmatched layers are left unchanged.
-	// Recolor is applied later as a separate post-processing step (applyRecolor).
-	decorate(result.layers as MaplibreLayer[], rules as unknown as StyleRules);
-	return result;
 }
 
 // ── Apply layer group visibility / opacity ────────────────────────────────────
@@ -224,11 +198,9 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	// 1. Base style (template + URL configuration)
 	let style = buildBase(resolved);
 
-	// 2. Layer list with source name and language-aware name fields
-	style.layers = buildLayers(resolved) as StyleSpecification['layers'];
-
-	// 3. Theme: apply colors and fonts from the resolved palette
-	style = applyTheme(style, resolved);
+	// 2+3. Build the decorated layer list (structure + theme colors/fonts) from per-group modules
+	const ctx = buildContext(resolved);
+	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
 	// 4. Layer group visibility / opacity
 	style = applyLayerGroups(style, resolved.layers);

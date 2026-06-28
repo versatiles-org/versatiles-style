@@ -1,10 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { getShortbreadLayers } from './layers.js';
+import { osm } from '../api/osm.js';
 import { layerGroups, SLOT_IDS } from './groups.js';
+
+// Typed view of the (runtime-derived) registry for convenient assertions.
+type Groups = {
+	land: Record<string, string[]>;
+	water: Record<string, string[]>;
+	roads: { motorways: string[]; highways: string[]; streets: Record<string, string[]>; paths: string[] };
+	transit: { rail: string[]; aerialways: string[]; ferries: string[]; stops: string[] };
+	buildings: string[];
+	sites: string[];
+	airport: string[];
+	pois: string[];
+	boundaries: Record<string, string[]>;
+	markings: string[];
+	labels: Record<string, string[]>;
+	icons: string[];
+};
+const G = layerGroups as unknown as Groups;
 
 describe('layerGroups', () => {
 	// Build the full set of real layer IDs once for cross-checks.
-	const realLayerIds = new Set(getShortbreadLayers({ language: 'local' }).map((l) => l.id));
+	const realLayerIds = new Set(osm({ text: { language: 'local' } }).layers.map((l) => l.id));
 
 	function collectLeafIds(node: unknown): string[] {
 		if (Array.isArray(node)) return node as string[];
@@ -13,18 +30,14 @@ describe('layerGroups', () => {
 	}
 
 	it('every group ID should exist in the generated layer list', () => {
-		// icons is a convenience alias; its entries already appear in pois/stops/markings.
-		const { icons: _, ...coreGroups } = layerGroups;
-		const allGroupIds = collectLeafIds(coreGroups);
-
-		const missing = allGroupIds.filter((id) => !realLayerIds.has(id));
+		const { icons: _icons, ...coreGroups } = layerGroups;
+		const missing = collectLeafIds(coreGroups).filter((id) => !realLayerIds.has(id));
 		expect(missing).toEqual([]);
 	});
 
 	it('icons should be the union of pois, transit.stops, and markings', () => {
-		const expected = new Set([...layerGroups.pois, ...layerGroups.transit.stops, ...layerGroups.markings]);
-		const actual = new Set(layerGroups.icons);
-		expect(actual).toEqual(expected);
+		const expected = new Set([...G.pois, ...G.transit.stops, ...G.markings]);
+		expect(new Set(G.icons)).toEqual(expected);
 	});
 
 	it('SLOT_IDS should reference valid slot layer IDs', () => {
@@ -34,27 +47,27 @@ describe('layerGroups', () => {
 	});
 
 	it('no group should contain duplicate IDs (excluding icons alias)', () => {
-		const { icons: _, ...coreGroups } = layerGroups;
+		const { icons: _icons, ...coreGroups } = layerGroups;
 		const allGroupIds = collectLeafIds(coreGroups);
 		expect(allGroupIds.length).toBe(new Set(allGroupIds).size);
 	});
 
 	it('land sub-groups should cover expected layer IDs', () => {
-		expect(layerGroups.land.forest).toContain('land-forest');
-		expect(layerGroups.land.glacier).toContain('land-glacier');
-		expect(layerGroups.land.urban).toContain('land-residential');
-		expect(layerGroups.land.urban).toContain('land-commercial');
+		expect(G.land.forest).toContain('land-forest');
+		expect(G.land.glacier).toContain('land-glacier');
+		expect(G.land.urban).toContain('land-residential');
+		expect(G.land.urban).toContain('land-commercial');
 	});
 
 	it('water sub-groups should cover expected layer IDs', () => {
-		expect(layerGroups.water.ocean).toContain('water-ocean');
-		expect(layerGroups.water.rivers).toContain('water-river');
-		expect(layerGroups.water.lakes).toContain('water-area');
-		expect(layerGroups.water.piers).toContain('water-pier');
+		expect(G.water.ocean).toContain('water-ocean');
+		expect(G.water.rivers).toContain('water-river');
+		expect(G.water.lakes).toContain('water-area');
+		expect(G.water.piers).toContain('water-pier');
 	});
 
 	it('roads.motorways should include tunnel and bridge variants', () => {
-		const ids = layerGroups.roads.motorways;
+		const ids = G.roads.motorways;
 		expect(ids).toContain('street-motorway');
 		expect(ids).toContain('tunnel-street-motorway');
 		expect(ids).toContain('bridge-street-motorway');
@@ -64,7 +77,7 @@ describe('layerGroups', () => {
 	});
 
 	it('roads.streets.pedestrian should include zone fill layers', () => {
-		const ids = layerGroups.roads.streets.pedestrian;
+		const ids = G.roads.streets.pedestrian;
 		expect(ids).toContain('street-pedestrian-zone');
 		expect(ids).toContain('tunnel-street-pedestrian-zone');
 		expect(ids).toContain('bridge-street-pedestrian-zone');
@@ -72,7 +85,7 @@ describe('layerGroups', () => {
 	});
 
 	it('transit.rail should include service variants for main rail types', () => {
-		const ids = layerGroups.transit.rail;
+		const ids = G.transit.rail;
 		expect(ids).toContain('transport-rail');
 		expect(ids).toContain('transport-rail-service');
 		expect(ids).toContain('transport-subway');
@@ -81,7 +94,7 @@ describe('layerGroups', () => {
 	});
 
 	it('transit.rail should include funicular/monorail without service variants', () => {
-		const ids = layerGroups.transit.rail;
+		const ids = G.transit.rail;
 		expect(ids).toContain('transport-funicular');
 		expect(ids).toContain('transport-monorail');
 		expect(ids).not.toContain('transport-funicular-service');
@@ -89,8 +102,8 @@ describe('layerGroups', () => {
 	});
 
 	it('transit.aerialways should include cablecar and gondola', () => {
-		expect(layerGroups.transit.aerialways).toContain('aerialway-cablecar');
-		expect(layerGroups.transit.aerialways).toContain('aerialway-gondola');
-		expect(layerGroups.transit.aerialways).toContain('aerialway-cablecar:outline');
+		expect(G.transit.aerialways).toContain('aerialway-cablecar');
+		expect(G.transit.aerialways).toContain('aerialway-gondola');
+		expect(G.transit.aerialways).toContain('aerialway-cablecar:outline');
 	});
 });

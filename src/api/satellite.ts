@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { SatelliteOptions } from '../types/index.js';
 import type { ResolvedOsmOptions, ResolvedSatelliteOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
-import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/layers.js';
+import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade } from '../features/index.js';
 import { resolveSatelliteOptions } from '../resolve/index.js';
 import { osm } from './osm.js';
