@@ -7,7 +7,7 @@ import type { LayerGroupOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
 import { getShortbreadTemplate, getShortbreadLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
 import { buildThemeRules, PALETTES, getPaletteColors } from '../themes/index.js';
-import { decorate, type StyleRules } from '../themes/decorator.js';
+import { decorate, type StyleRules } from '../shortbread/decorator.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, addBuildings3D } from '../features/index.js';
 import { resolveOsmOptions } from '../resolve/index.js';

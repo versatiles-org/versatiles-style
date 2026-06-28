@@ -1,6 +1,6 @@
 import { Color } from '../color/index.js';
 import { expand } from 'brace-expansion';
-import maplibreProperties from '../shortbread/properties.js';
+import maplibreProperties from './properties.js';
 import { deepMerge } from '../lib/utils.js';
 import type { MaplibreLayer } from '../types/index.js';
 
