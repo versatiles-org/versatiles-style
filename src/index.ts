@@ -10,7 +10,7 @@
  *   <body>
  *     <!-- ... -->
  *     <script>
- *       const style = VersaTilesStyle.colorful();
+ *       const style = VersaTilesStyle.osm();
  *       // ...
  *     </script>
  *   </body>
@@ -22,47 +22,45 @@
  * npm i @versatiles/style
  * ```
  * ```
- * import { colorful } from '@versatiles/style';
- * // OR: const { colorful } = require('@versatiles/style');
- * const style = colorful();
+ * import { osm } from '@versatiles/style';
+ * const style = osm({ theme: 'colorful' });
  * ```
- *
- * You probably want to use one of the following functions:
  *
  * ---
  *
  * ## Generate a style for OpenStreetMap data:
  *
- * To generate a style from scratch you can use on of the prepared style functions:
- * - {@link colorful}
- * - {@link eclipse}
- * - {@link graybeard}
- * - {@link neutrino}
- * - {@link shadow}
+ * {@link osm} accepts an {@link OsmOptions} object and returns a synchronous MapLibre style.
  *
- * Each function accepts optional {@link StyleBuilderOptions} as argument to customize the style.
- *
- * Example:
- * ```
- * import { colorful } from 'versatiles-style';
- * const style = colorful({
- *   baseUrl: 'https://tiles.example.org',
- *   recolor: {
- *     blend: 0.5,
- *     blendColor: '#FFF', // make all colors lighter
- *   }
+ * ```ts
+ * import { osm } from '@versatiles/style';
+ * const style = osm({
+ *   theme: { palette: 'colorful', darkMode: false },
+ *   urls: { base: 'https://tiles.example.org' },
  * });
+ * ```
+ *
+ * Available palettes: `'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`
+ *
+ * ---
+ *
+ * ## Generate a satellite / raster style:
+ *
+ * {@link satellite} wraps a raster tile source and optionally adds an OSM vector overlay.
+ *
+ * ```ts
+ * import { satellite } from '@versatiles/style';
+ * const style = satellite({ osmOverlay: { theme: 'toner' } });
  * ```
  *
  * ---
  *
- * ## Guess a style based on a TileJSON:
+ * ## Guess a style from a TileJSON:
  *
- * To guess a style from a TileJSON you can use {@link guessStyle}.
- * This function needs a {@link TileJSONSpecification} and an optional {@link GuessStyleOptions} object.
- * Example:
- * ```
- * import { guessStyle } from 'versatiles-style';
+ * {@link guessStyle} inspects a {@link TileJSONSpecification} and returns the most appropriate style.
+ *
+ * ```ts
+ * import { guessStyle } from '@versatiles/style';
  * const style = guessStyle(tilejson);
  * ```
  *
@@ -70,46 +68,77 @@
  *
  * ## Please help us to improve this library:
  *
- * This library is used in quite some projects of the VersaTiles ecosystem but it is still in an early stage.
- * We are always looking for feedback, contributions, ideas, bug reports and help with the documentation.
- *
  * If you have any suggestions, please [open an issue](https://github.com/versatiles-org/versatiles-style/issues) or a pull request on [GitHub](https://github.com/versatiles-org/versatiles-style).
- *
- * If you want to know more about the VersaTiles project, please visit [versatiles.org](https://versatiles.org).
  *
  * @module
  */
 
-export {
+// ── v6 API (new) ──────────────────────────────────────────────────────────────
+
+export { osm } from './api/osm.js';
+export { satellite } from './api/satellite.js';
+export { guessStyle } from './api/guessStyle.js';
+
+// ── v6 types ──────────────────────────────────────────────────────────────────
+
+export type {
+	OsmOptions,
+	OsmContentOptions,
+	SatelliteOptions,
+	Palette,
+	TextOptions,
+	LayoutOptions,
+	SunOptions,
+	SkyOptions,
+	HillshadeOptions,
+	SpriteEntry,
+	SpriteInput,
+} from './types/options.js';
+
+export type { ColorsOptions, RecolorOptions } from './types/colors.js';
+export { colorOptionsKeys } from './types/colors.js';
+export type { LayerGroupOptions } from './types/layer-groups.js';
+
+export type { ResolvedOsmOptions, ResolvedSatelliteOptions } from './types/resolved.js';
+
+export type {
+	StyleSpecification,
+	TileJSONSpecification,
+	TileJSONSpecificationRaster,
+	TileJSONSpecificationVector,
+	VectorLayer,
+} from './types/index.js';
+export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/index.js';
+
+export { Color } from './color/index.js';
+export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
+
+// ── v5 API (kept for backward compatibility) ──────────────────────────────────
+
+import {
 	colorful,
 	eclipse,
 	graybeard,
 	neutrino,
 	shadow,
-	satellite,
-	type StyleBuilderFunction,
-	type SatelliteStyleOptions,
+	satellite as satelliteV5,
 	getStyleVariants,
-	type StyleVariant,
 } from './styles/index.js';
-import { colorful, eclipse, graybeard, neutrino, shadow, satellite } from './styles/index.js';
+
+export { colorful, eclipse, graybeard, neutrino, shadow, getStyleVariants };
+export type { StyleBuilderFunction, SatelliteStyleOptions, StyleVariant } from './styles/index.js';
+
+/** @deprecated Use `satellite()` from the v6 API instead. */
 export const styles = {
 	colorful,
 	eclipse,
 	graybeard,
 	shadow,
 	neutrino,
-	satellite,
+	satellite: satelliteV5,
 };
 
 export type { GuessStyleOptions } from './guess_style/index.js';
-export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
-export type {
-	TileJSONSpecification,
-	TileJSONSpecificationRaster,
-	TileJSONSpecificationVector,
-} from './types/tilejson.js';
-export type { VectorLayer } from './types/index.js';
 export type {
 	StyleBuilderOptions,
 	Language,
@@ -117,9 +146,5 @@ export type {
 	StyleBuilderColorKey,
 	StyleBuilderFonts,
 } from './style_builder/types.js';
-export type { RecolorOptions } from './style_builder/recolor.js';
-
-export { guessStyle } from './guess_style/index.js';
-export { Color } from './color/index.js';
 
 export type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
