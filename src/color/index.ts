@@ -35,3 +35,4 @@ export type { HSL } from './hsl.js';
 export type { HSV } from './hsv.js';
 export type { RGB } from './rgb.js';
 export { Color };
+export { applyRecolor } from './recolor.js';
