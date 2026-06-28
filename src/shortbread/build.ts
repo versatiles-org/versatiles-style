@@ -13,8 +13,8 @@ type ColorValue = Color | string;
  *  assembler records the path into the visibility registry and drops it from the output. */
 export type TaggedLayer = { layer: MaplibreLayer; group?: string };
 
-// Style overrides — the same camelCase keys the old decorator/ThemeRules used. Each is
-// mapped to its MapLibre paint/layout property (per type) via properties.ts.
+// Style overrides authored as camelCase keys; each is mapped to its MapLibre paint/layout
+// property (per layer type) via properties.ts.
 export type StyleProps = {
 	color?: ColorValue;
 	size?: SizeValue;
@@ -61,7 +61,7 @@ type StructuralProps = {
 
 export type BuildOpts = StyleProps & StructuralProps;
 
-// ── Value processing (ported from the old decorator, applied to ONE known layer) ──
+// ── Value processing (color → string, zoom-stops → interpolate), applied to ONE known layer ──
 
 type RuleValue = boolean | number | object | string;
 
@@ -109,7 +109,7 @@ function assign(layer: MaplibreLayer, parent: 'layer' | 'layout' | 'paint', key:
 
 // Apply a set of camelCase style overrides to a single layer, dispatching each to the
 // correct paint/layout property for the layer's type. Keys with no mapping for this type
-// are silently ignored (matching the old decorator).
+// are silently ignored.
 function applyProps(layer: MaplibreLayer, props: StyleProps): void {
 	for (const [camelKey, raw] of Object.entries(props)) {
 		if (raw == null) continue;
