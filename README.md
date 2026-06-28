@@ -347,9 +347,13 @@ W-->12
 1T-->1I
 1T-->1R
 1U-->1G
+1V-->2
+1V-->8
+1V-->1D
 1V-->P
-1V-->1U
 1V-->1I
+1V-->5
+1V-->4
 
 class 0,1,3,9,C,J,N,V,14,19,1F,1H subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;

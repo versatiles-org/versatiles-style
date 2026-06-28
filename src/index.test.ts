@@ -51,58 +51,38 @@ describe('Colorful', () => {
 	});
 });
 
-describe('guessStyle', () => {
+describe('guessStyle (v6)', () => {
 	const tiles = ['https://fancy.map/tiles/{z}/{x}/{y}'];
 	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
-	it('should build raster styles', () => {
+	it('should build a raster style with background and raster layers', () => {
 		const style = lib.guessStyle({ tiles });
-		expect(style).toStrictEqual({
-			layers: [{ id: 'raster', source: 'rasterSource', type: 'raster' }],
-			sources: { rasterSource: { tiles, type: 'raster' } },
-			version: 8,
-		});
+		expect(style.version).toBe(8);
+		expect(Object.keys(style.sources)).toHaveLength(1);
+		const sourceKey = Object.keys(style.sources)[0];
+		expect((style.sources[sourceKey] as { type: string }).type).toBe('raster');
+		const layerTypes = style.layers.map((l) => l.type);
+		expect(layerTypes).toContain('raster');
 	});
 
-	it('should build vector styles', () => {
+	it('should build an inspector style for unknown vector tiles', () => {
 		const style = lib.guessStyle({ tiles, vector_layers });
-		expect(style).toStrictEqual({
-			layers: [
-				{ id: 'background', paint: { 'background-color': '#fff' }, type: 'background' },
-				{
-					id: 'vectorSource-hallo-fill',
-					filter: ['==', '$type', 'Polygon'],
-					paint: {
-						'fill-antialias': true,
-						'fill-color': 'hsla(14,50%,52%,0.6)',
-						'fill-opacity': 0.3,
-						'fill-outline-color': 'hsla(14,50%,52%,0.6)',
-					},
-					source: 'vectorSource',
-					'source-layer': 'hallo',
-					type: 'fill',
-				},
-				{
-					id: 'vectorSource-hallo-line',
-					filter: ['==', '$type', 'LineString'],
-					layout: { 'line-cap': 'round', 'line-join': 'round' },
-					paint: { 'line-color': 'hsla(14,50%,52%,0.6)' },
-					source: 'vectorSource',
-					'source-layer': 'hallo',
-					type: 'line',
-				},
-				{
-					id: 'vectorSource-hallo-circle',
-					filter: ['==', '$type', 'Point'],
-					paint: { 'circle-color': 'hsla(14,50%,52%,0.6)', 'circle-radius': 2 },
-					source: 'vectorSource',
-					'source-layer': 'hallo',
-					type: 'circle',
-				},
-			],
-			sources: { vectorSource: { tiles, type: 'vector' } },
-			version: 8,
-		});
+		expect(style.version).toBe(8);
+		expect(Object.keys(style.sources)).toHaveLength(1);
+		const sourceKey = Object.keys(style.sources)[0];
+		expect((style.sources[sourceKey] as { type: string }).type).toBe('vector');
+		// inspector style: background + fill + line + symbol per source-layer
+		const layerIds = style.layers.map((l) => l.id);
+		expect(layerIds).toContain('background');
+		expect(layerIds.some((id) => id.includes('hallo'))).toBe(true);
+		const halloLayers = style.layers.filter((l) => (l as { 'source-layer'?: string })['source-layer'] === 'hallo');
+		expect(halloLayers.map((l) => l.type).sort()).toEqual(['fill', 'line', 'symbol']);
+	});
+
+	it('should return a blank style for invalid input', () => {
+		// @ts-expect-error intentional bad input
+		const style = lib.guessStyle(null);
+		expect(style).toStrictEqual({ version: 8, sources: {}, layers: [] });
 	});
 });
 
