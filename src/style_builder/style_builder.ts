@@ -71,7 +71,10 @@ export abstract class StyleBuilder {
 		const layerStyleRules = this.getStyleRules(styleRuleOptions);
 
 		// get shortbread layers
-		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({ language, languageStrict });
+		const layerDefinitions: MaplibreLayerDefinition[] = getShortbreadLayers({
+			language: language ?? 'local',
+			languageStrict,
+		});
 		let layers: MaplibreLayer[] = layerDefinitions.map((layer) => {
 			const { type, id } = layer;
 			switch (type) {
