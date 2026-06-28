@@ -112,10 +112,10 @@ type LayerGroupOptions = {
 
 ### Text & icons
 
-`LabelsOptions` sets the language and fonts for all text labels. `LayoutOptions` controls the size and density of both labels and icons.
+`TextOptions` sets the language and fonts for all text labels. `LayoutOptions` controls the size and density of both labels and icons.
 
 ```ts
-type LabelsOptions = {
+type TextOptions = {
   language?: string; // 'local', 'user', 'de', 'en', …; default: 'local'
   languageStrict?: boolean; // omit labels with no translation; default: false
   fontNormal?: string; // regular font name
@@ -257,7 +257,7 @@ type OsmContentOptions = {
         palette?: Palette; // default: 'colorful'
       };
   layers?: LayerGroupOptions;
-  labels?: LabelsOptions;
+  text?: TextOptions;
   layout?: LayoutOptions;
   colors?: ColorsOptions;
   recolor?: RecolorOptions;
@@ -437,7 +437,7 @@ color.fade(amount: number): Color                // 0–1; reduce alpha
 | `colorful({ baseUrl: 'https://…' })`                    | `osm({ urls: { base: 'https://…' } })`                            |
 | `colorful({ tiles: ['https://…'] })`                    | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
 | `colorful({ hideLabels: true })`                        | `osm({ layers: { labels: false } })`                              |
-| `colorful({ textScale: 1.2 })`                          | `osm({ layout: { labels: { scale: 1.2 } } })`                     |
+| `colorful({ textScale: 1.2 })`                          | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
 | `colorful({ language: null })`                          | `osm({ labels: { language: 'local' } })`                          |
 | `colorful({ language: 'de', languageStrict: true })`    | `osm({ labels: { language: 'de', languageStrict: true } })`       |
 | `await colorful({ terrain: true })`                     | `osm({ features: { terrain: true } })`                            |
