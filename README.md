@@ -173,12 +173,12 @@ end
 subgraph 9["color"]
 A["recolor.ts"]
 B["abstract.ts"]
-P["index.ts"]
-Q["hsl.ts"]
-R["hsv.ts"]
-S["random.ts"]
-T["utils.ts"]
-U["rgb.ts"]
+W["index.ts"]
+X["hsl.ts"]
+Y["hsv.ts"]
+Z["random.ts"]
+10["utils.ts"]
+11["rgb.ts"]
 end
 subgraph C["features"]
 D["index.ts"]
@@ -197,13 +197,13 @@ end
 subgraph N["lib"]
 O["utils.ts"]
 end
-subgraph V["themes"]
-W["index.ts"]
-X["colorful.ts"]
-Y["gray.ts"]
-Z["muted.ts"]
-10["natural.ts"]
-11["rules.ts"]
+subgraph P["themes"]
+Q["index.ts"]
+R["colorful.ts"]
+S["gray.ts"]
+T["muted.ts"]
+U["natural.ts"]
+V["rules.ts"]
 12["toner.ts"]
 1F["types.ts"]
 end
@@ -229,7 +229,7 @@ end
 8-->K
 8-->15
 8-->17
-8-->W
+8-->Q
 8-->4
 A-->B
 D-->E
@@ -243,40 +243,39 @@ K-->L
 K-->M
 K-->13
 M-->O
-M-->W
+M-->Q
 M-->4
 M-->L
-O-->P
-P-->B
-P-->Q
-P-->R
-P-->A
-P-->U
-Q-->B
 Q-->R
-Q-->U
+Q-->S
 Q-->T
-R-->B
-R-->Q
-R-->S
-R-->U
-R-->T
-S-->R
-S-->T
-U-->B
-U-->Q
-U-->R
-U-->T
+Q-->U
+Q-->V
+Q-->12
+V-->W
+W-->B
 W-->X
 W-->Y
-W-->Z
-W-->10
+W-->A
 W-->11
-W-->12
-11-->P
+X-->B
+X-->Y
+X-->11
+X-->10
+Y-->B
+Y-->X
+Y-->Z
+Y-->11
+Y-->10
+Z-->Y
+Z-->10
+11-->B
+11-->X
+11-->Y
+11-->10
 13-->O
 13-->M
-15-->P
+15-->W
 15-->O
 15-->16
 17-->18
@@ -295,14 +294,14 @@ W-->12
 1D-->2
 1D-->8
 1D-->1B
-1D-->P
+1D-->W
 1D-->5
 1D-->4
 1D-->1E
 1E-->8
 1E-->1B
 
-class 0,1,3,9,C,J,N,V,14 subgraphs;
+class 0,1,3,9,C,J,N,P,14 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

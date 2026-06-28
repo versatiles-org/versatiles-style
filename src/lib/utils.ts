@@ -1,4 +1,8 @@
-import { Color } from '../color/index.js';
+// A value object that knows how to deep-copy itself (e.g. a Color instance).
+// Duck-typed so this utility stays a dependency-free leaf and never imports domain types.
+function isCloneable(value: unknown): value is { clone(): unknown } {
+	return typeof value === 'object' && value !== null && typeof (value as { clone?: unknown }).clone === 'function';
+}
 
 // Utility function to deep clone an object
 export function deepClone<T>(obj: T): T {
@@ -23,7 +27,7 @@ export function deepClone<T>(obj: T): T {
 		return obj.map((e: unknown) => deepClone(e)) as T;
 	}
 
-	if (obj instanceof Color) {
+	if (isCloneable(obj)) {
 		return obj.clone() as T;
 	}
 
@@ -82,8 +86,8 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 				continue;
 			}
 
-			// Handle Color instances - clone the source color
-			if (sourceValue instanceof Color) {
+			// Handle self-cloning value objects (e.g. Color) - clone rather than merge
+			if (isCloneable(sourceValue)) {
 				target[key] = sourceValue.clone() as T[typeof key];
 				continue;
 			}
