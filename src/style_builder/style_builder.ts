@@ -171,7 +171,7 @@ export abstract class StyleBuilder {
 
 /**
  * Multiplies every symbol layer's `text-size` by the given factor.
- * Handles two value forms produced by the decorator: a plain number, or a `{ stops: [[zoom, value]] }` object.
+ * Handles two value forms produced by the decorator: a plain number, or an interpolate expression array.
  * Mutates the layers in place.
  */
 function scaleTextSize(layers: MaplibreLayer[], scale: number): void {
@@ -182,9 +182,10 @@ function scaleTextSize(layers: MaplibreLayer[], scale: number): void {
 		if (size == null) continue;
 		if (typeof size === 'number') {
 			(layer.layout as Record<string, unknown>)['text-size'] = size * scale;
-		} else if (typeof size === 'object' && size !== null && 'stops' in size) {
-			const stops = (size as { stops: [number, number][] }).stops;
-			for (const stop of stops) stop[1] *= scale;
+		} else if (Array.isArray(size) && size[0] === 'interpolate') {
+			for (let i = 4; i < size.length; i += 2) {
+				if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * scale;
+			}
 		}
 	}
 }
@@ -206,9 +207,10 @@ function scaleIconSize(layers: MaplibreLayer[], scale: number): void {
 			(layer.layout as Record<string, unknown>)['icon-size'] = scale;
 		} else if (typeof size === 'number') {
 			(layer.layout as Record<string, unknown>)['icon-size'] = size * scale;
-		} else if (typeof size === 'object' && size !== null && 'stops' in size) {
-			const stops = (size as { stops: [number, number][] }).stops;
-			for (const stop of stops) stop[1] *= scale;
+		} else if (Array.isArray(size) && size[0] === 'interpolate') {
+			for (let i = 4; i < size.length; i += 2) {
+				if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * scale;
+			}
 		}
 	}
 }

@@ -185,12 +185,14 @@ describe('StyleBuilder', () => {
 					expect(after).toBe(before * 2);
 					continue;
 				}
-				const beforeStops = (before as { stops: [number, number][] }).stops;
-				const afterStops = (after as { stops: [number, number][] }).stops;
-				expect(afterStops).toHaveLength(beforeStops.length);
-				for (let j = 0; j < beforeStops.length; j++) {
-					expect(afterStops[j][0]).toBe(beforeStops[j][0]); // zoom unchanged
-					expect(afterStops[j][1]).toBe(beforeStops[j][1] * 2); // value doubled
+				// interpolate expression: ['interpolate', ['linear'], ['zoom'], z1, v1, z2, v2, ...]
+				const beforeExpr = before as unknown[];
+				const afterExpr = after as unknown[];
+				expect(beforeExpr[0]).toBe('interpolate');
+				expect(afterExpr.length).toBe(beforeExpr.length);
+				for (let j = 3; j < beforeExpr.length; j += 2) {
+					expect(afterExpr[j]).toBe(beforeExpr[j]); // zoom unchanged
+					expect(afterExpr[j + 1]).toBe((beforeExpr[j + 1] as number) * 2); // value doubled
 				}
 			}
 		});
@@ -234,12 +236,14 @@ describe('StyleBuilder', () => {
 					expect(after).toBe(before * 2);
 					continue;
 				}
-				const beforeStops = (before as { stops: [number, number][] }).stops;
-				const afterStops = (after as { stops: [number, number][] }).stops;
-				expect(afterStops).toHaveLength(beforeStops.length);
-				for (let j = 0; j < beforeStops.length; j++) {
-					expect(afterStops[j][0]).toBe(beforeStops[j][0]);
-					expect(afterStops[j][1]).toBe(beforeStops[j][1] * 2);
+				// interpolate expression: ['interpolate', ['linear'], ['zoom'], z1, v1, z2, v2, ...]
+				const beforeExpr = before as unknown[];
+				const afterExpr = after as unknown[];
+				expect(beforeExpr[0]).toBe('interpolate');
+				expect(afterExpr.length).toBe(beforeExpr.length);
+				for (let j = 3; j < beforeExpr.length; j += 2) {
+					expect(afterExpr[j]).toBe(beforeExpr[j]); // zoom unchanged
+					expect(afterExpr[j + 1]).toBe((beforeExpr[j + 1] as number) * 2); // value doubled
 				}
 			}
 		});

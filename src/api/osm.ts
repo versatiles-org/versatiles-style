@@ -182,8 +182,10 @@ function applyScale(style: StyleSpecification, layout: ResolvedLayout): StyleSpe
 			const size = lyt['text-size'] as unknown;
 			if (typeof size === 'number') {
 				lyt['text-size'] = size * labelScale;
-			} else if (typeof size === 'object' && size !== null && 'stops' in size) {
-				for (const stop of (size as { stops: [number, number][] }).stops) stop[1] *= labelScale;
+			} else if (Array.isArray(size) && size[0] === 'interpolate') {
+				for (let i = 4; i < size.length; i += 2) {
+					if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * labelScale;
+				}
 			}
 		}
 
@@ -193,8 +195,10 @@ function applyScale(style: StyleSpecification, layout: ResolvedLayout): StyleSpe
 				lyt['icon-size'] = iconScale;
 			} else if (typeof size === 'number') {
 				lyt['icon-size'] = size * iconScale;
-			} else if (typeof size === 'object' && size !== null && 'stops' in size) {
-				for (const stop of (size as { stops: [number, number][] }).stops) stop[1] *= iconScale;
+			} else if (Array.isArray(size) && size[0] === 'interpolate') {
+				for (let i = 4; i < size.length; i += 2) {
+					if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * iconScale;
+				}
 			}
 		}
 	}
