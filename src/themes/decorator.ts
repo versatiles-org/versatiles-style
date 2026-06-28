@@ -3,10 +3,17 @@ import { expand } from 'brace-expansion';
 import maplibreProperties from '../shortbread/properties.js';
 import { deepMerge } from '../lib/utils.js';
 import type { MaplibreLayer } from '../types/index.js';
-import type { StyleRule, StyleRuleValue, StyleRules } from './types.js';
-import type { CachedRecolor } from './recolor.js';
 
-export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: CachedRecolor): MaplibreLayer[] {
+/** Defines the value type for a style rule. */
+export type StyleRuleValue = boolean | number | object | string;
+
+/** Defines the structure of a style rule, which is a record of properties to style values. */
+export type StyleRule = Record<string, StyleRuleValue | undefined>;
+
+/** Defines the structure of style rules, which is a record of selectors to style rules. */
+export type StyleRules = Record<string, StyleRule | undefined>;
+
+export function decorate(layers: MaplibreLayer[], rules: StyleRules): MaplibreLayer[] {
 	const layerIds = layers.map((l) => l.id);
 	const layerIdSet = new Set(layerIds);
 
@@ -108,8 +115,7 @@ export function decorate(layers: MaplibreLayer[], rules: StyleRules, recolor: Ca
 		function processColor(value: StyleRuleValue): string {
 			if (typeof value === 'string') value = Color.parse(value);
 			if (value instanceof Color) {
-				const color = recolor.do(value as Color);
-				return color.asString();
+				return value.asString();
 			}
 			throw new Error(
 				`decorator.processColor: Expected a color string or Color instance, but got ${typeof value}. Value: ${JSON.stringify(value)}`

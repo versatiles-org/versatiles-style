@@ -1,6 +1,6 @@
 import mbgl from '@maplibre/maplibre-gl-native';
 import sharp from 'sharp';
-import { styles } from '../src/index.js';
+import { osm, satellite } from '../src/index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { mkdirSync } from 'fs';
 
@@ -14,12 +14,12 @@ mkdirSync('docs', { recursive: true });
  * of predefined styles and saves them in the `screenshots` directory.
  */
 Promise.all([
-	draw('colorful', styles.colorful({})),
-	draw('eclipse', styles.eclipse({})),
-	draw('graybeard', styles.graybeard({})),
-	draw('neutrino', styles.neutrino({})),
-	draw('shadow', styles.shadow({})),
-	draw('satellite', await styles.satellite({})),
+	draw('colorful', osm({ theme: 'colorful' })),
+	draw('natural', osm({ theme: 'natural' })),
+	draw('muted', osm({ theme: 'muted' })),
+	draw('gray', osm({ theme: 'gray' })),
+	draw('toner', osm({ theme: 'toner' })),
+	draw('satellite', satellite()),
 ]);
 
 /**

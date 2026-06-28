@@ -1,13 +1,13 @@
-import { getStyleVariants, colorful } from '@versatiles/style';
+import { getStyleVariants, osm } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 
 const variants = getStyleVariants();
 variants.push({
 	name: 'custom',
 	build: () =>
-		colorful({
-			language: 'de',
-			languageStrict: true,
+		osm({
+			theme: 'colorful',
+			text: { language: 'de', languageStrict: true },
 		}),
 });
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;

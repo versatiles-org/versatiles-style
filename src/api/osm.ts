@@ -4,12 +4,10 @@ import type { OsmOptions } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { ResolvedLayout, ResolvedOsmOptions } from '../types/index.js';
 import type { LayerGroupOptions } from '../types/index.js';
-import type { StyleRules } from '../style_builder/types.js';
 import { colorOptionsKeys } from '../types/index.js';
 import { getShortbreadTemplate, getShortbreadLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
 import { buildThemeRules, PALETTES, getPaletteColors } from '../themes/index.js';
-import { decorate } from '../style_builder/decorator.js';
-import { CachedRecolor } from '../style_builder/recolor.js';
+import { decorate, type StyleRules } from '../themes/decorator.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, addBuildings3D } from '../features/index.js';
 import { resolveOsmOptions } from '../resolve/index.js';
@@ -58,8 +56,8 @@ function applyTheme(style: StyleSpecification, resolved: ResolvedOsmOptions): St
 	});
 	const result = structuredClone(style);
 	// decorate mutates matched layers in place; unmatched layers are left unchanged.
-	// CachedRecolor with no args is a no-op — recolor is applied as a separate step.
-	decorate(result.layers as MaplibreLayer[], rules as unknown as StyleRules, new CachedRecolor());
+	// Recolor is applied later as a separate post-processing step (applyRecolor).
+	decorate(result.layers as MaplibreLayer[], rules as unknown as StyleRules);
 	return result;
 }
 

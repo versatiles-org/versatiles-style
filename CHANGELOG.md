@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2026-06-28
+
+### ⚠ BREAKING CHANGES
+
+- Rewrote the public API around three synchronous functions: `osm()`, `satellite()`, and `guessStyle()`.
+- Removed the v5 `StyleBuilder` class hierarchy and the palette builder functions
+  `colorful`, `eclipse`, `graybeard`, `neutrino`, `shadow`, the deprecated `styles` object, and the
+  related `StyleBuilderOptions` / `StyleBuilderColors` / `SatelliteStyleOptions` / `GuessStyleOptions` types.
+  Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
+  flag) instead. See the migration table in `API_DESIGN.md`.
+- Removed the old `guess_style` module; `guessStyle()` is now synchronous and never throws.
+
 ## [5.13.0] - 2026-06-22
 
 ### Features
