@@ -157,9 +157,10 @@ flowchart TB
 
 subgraph 0["src"]
 subgraph 1["api"]
-2["index.ts"]
+2["guessStyle.ts"]
 3["osm.ts"]
 1D["satellite.ts"]
+1E["index.ts"]
 end
 subgraph 4["color"]
 5["recolor.ts"]
@@ -187,7 +188,7 @@ H["resolveOsmOptions.ts"]
 end
 subgraph I["lib"]
 J["utils.ts"]
-1I["elevation.ts"]
+1J["elevation.ts"]
 end
 subgraph Q["themes"]
 R["index.ts"]
@@ -197,17 +198,17 @@ U["muted.ts"]
 V["natural.ts"]
 W["rules.ts"]
 X["toner.ts"]
-1V["types.ts"]
+1W["types.ts"]
 end
 subgraph Y["types"]
 Z["index.ts"]
 10["colors.ts"]
 11["tilejson.ts"]
 12["vector_layer.ts"]
-1W["layer-groups.ts"]
-1X["maplibre.ts"]
-1Y["options.ts"]
-1Z["resolved.ts"]
+1X["layer-groups.ts"]
+1Y["maplibre.ts"]
+1Z["options.ts"]
+20["resolved.ts"]
 end
 subgraph 14["shortbread"]
 15["index.ts"]
@@ -219,25 +220,25 @@ end
 subgraph 19["style_builder"]
 1A["decorator.ts"]
 1C["recolor.ts"]
-1K["style_builder.ts"]
-1L["types.ts"]
+1L["style_builder.ts"]
+1M["types.ts"]
 end
-subgraph 1E["guess_style"]
-1F["guess_style.ts"]
-1T["index.ts"]
-end
-subgraph 1G["styles"]
-1H["index.ts"]
-1J["colorful.ts"]
-1M["eclipse.ts"]
-1N["empty.ts"]
-1O["graybeard.ts"]
-1P["neutrino.ts"]
-1Q["satellite.ts"]
-1R["shadow.ts"]
-1S["variants.ts"]
-end
+subgraph 1F["guess_style"]
+1G["guess_style.ts"]
 1U["index.ts"]
+end
+subgraph 1H["styles"]
+1I["index.ts"]
+1K["colorful.ts"]
+1N["eclipse.ts"]
+1O["empty.ts"]
+1P["graybeard.ts"]
+1Q["neutrino.ts"]
+1R["satellite.ts"]
+1S["shadow.ts"]
+1T["variants.ts"]
+end
+1V["index.ts"]
 end
 2-->3
 2-->1D
@@ -311,42 +312,45 @@ Z-->12
 1D-->17
 1D-->Z
 1D-->3
-1F-->N
-1F-->J
-1F-->1H
-1H-->1I
-1H-->1J
-1H-->1M
-1H-->1N
-1H-->1O
-1H-->1P
-1H-->1Q
-1H-->1R
-1H-->1S
-1I-->J
-1J-->1K
-1K-->K
-1K-->J
-1K-->15
-1K-->1A
-1K-->1C
+1E-->2
+1E-->3
+1E-->1D
+1G-->N
+1G-->J
+1G-->1I
+1I-->1J
+1I-->1K
+1I-->1N
+1I-->1O
+1I-->1P
+1I-->1Q
+1I-->1R
+1I-->1S
+1I-->1T
+1J-->J
 1K-->1L
-1M-->1J
-1N-->1J
-1O-->1J
-1P-->1J
-1Q-->1I
-1Q-->J
-1Q-->1O
+1L-->K
+1L-->J
+1L-->15
+1L-->1A
+1L-->1C
+1L-->1M
+1N-->1K
+1O-->1K
+1P-->1K
+1Q-->1K
 1R-->1J
-1S-->1H
-1S-->1Q
-1T-->1F
-1U-->K
-1U-->1T
-1U-->1H
+1R-->J
+1R-->1P
+1S-->1K
+1T-->1I
+1T-->1R
+1U-->1G
+1V-->K
+1V-->1U
+1V-->1I
 
-class 0,1,4,7,E,I,Q,Y,14,19,1E,1G subgraphs;
+class 0,1,4,7,E,I,Q,Y,14,19,1F,1H subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
