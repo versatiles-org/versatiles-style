@@ -1,6 +1,6 @@
 import { createWriteStream, mkdirSync } from 'fs';
 import { resolve } from 'path';
-import { getStyleVariants } from '../src/styles/variants.js';
+import { getStyleVariants } from '../src/variants.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'zlib';

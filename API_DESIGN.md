@@ -335,7 +335,7 @@ osm.slots: {
 osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
 ```
 
-`colorful`, `shadow`, `graybeard`, `eclipse`, and `neutrino` are deprecated aliases. Prefer `osm()` with an explicit `theme.palette` and `theme.darkMode` in new code.
+The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with an explicit `theme.palette` and `theme.darkMode` instead — see [Migration from v5](#migration-from-v5) below.
 
 ---
 

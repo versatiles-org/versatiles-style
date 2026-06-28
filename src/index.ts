@@ -113,38 +113,9 @@ export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
 
-// ── v5 API (kept for backward compatibility) ──────────────────────────────────
+// ── Style variants (used by the build pipeline and the dev playground) ────────
 
-import {
-	colorful,
-	eclipse,
-	graybeard,
-	neutrino,
-	shadow,
-	satellite as satelliteV5,
-	getStyleVariants,
-} from './styles/index.js';
-
-export { colorful, eclipse, graybeard, neutrino, shadow, getStyleVariants };
-export type { StyleBuilderFunction, SatelliteStyleOptions, StyleVariant } from './styles/index.js';
-
-/** @deprecated Use `satellite()` from the v6 API instead. */
-export const styles = {
-	colorful,
-	eclipse,
-	graybeard,
-	shadow,
-	neutrino,
-	satellite: satelliteV5,
-};
-
-export type { GuessStyleOptions } from './guess_style/index.js';
-export type {
-	StyleBuilderOptions,
-	Language,
-	StyleBuilderColors,
-	StyleBuilderColorKey,
-	StyleBuilderFonts,
-} from './style_builder/types.js';
+export { getStyleVariants } from './variants.js';
+export type { StyleVariant } from './variants.js';
 
 export type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';

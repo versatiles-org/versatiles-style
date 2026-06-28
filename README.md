@@ -12,13 +12,17 @@
 
 ## Styles Overview
 
-| Style Name    | Preview                                                                                               |
+The `osm()` function renders OpenStreetMap vector tiles using one of five built-in color palettes,
+each available in light and dark mode. `satellite()` renders raster/satellite tiles with an optional
+vector overlay.
+
+| Palette       | Preview                                                                                               |
 | ------------- | ----------------------------------------------------------------------------------------------------- |
 | **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   |
-| **graybeard** | <img width="384" src="https://versatiles.org/versatiles-style/graybeard.png" alt="graybeard style" /> |
-| **eclipse**   | <img width="384" src="https://versatiles.org/versatiles-style/eclipse.png" alt="eclipse style" />     |
-| **neutrino**  | <img width="384" src="https://versatiles.org/versatiles-style/neutrino.png" alt="neutrino style" />   |
-| **shadow**    | <img width="384" src="https://versatiles.org/versatiles-style/shadow.png" alt="shadow style" />       |
+| **natural**   | <img width="384" src="https://versatiles.org/versatiles-style/natural.png" alt="natural style" />     |
+| **muted**     | <img width="384" src="https://versatiles.org/versatiles-style/muted.png" alt="muted style" />         |
+| **gray**      | <img width="384" src="https://versatiles.org/versatiles-style/gray.png" alt="gray style" />           |
+| **toner**     | <img width="384" src="https://versatiles.org/versatiles-style/toner.png" alt="toner style" />         |
 | **satellite** | <img width="384" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> |
 
 ---
@@ -53,9 +57,9 @@ Integrate it into your HTML application:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-  const style = VersaTilesStyle.graybeard({
-    language: 'de',
-    colors: { label: '#222' },
+  const style = VersaTilesStyle.osm({
+    theme: { palette: 'colorful', darkMode: true },
+    text: { language: 'de' },
     recolor: { gamma: 0.5 },
   });
 
@@ -77,11 +81,12 @@ npm install @versatiles/style
 Generate styles programmatically:
 
 ```javascript
-import { colorful } from '@versatiles/style';
+import { osm } from '@versatiles/style';
 import { writeFileSync } from 'node:fs';
 
-const style = colorful({
-  language: 'en',
+const style = osm({
+  theme: 'colorful',
+  text: { language: 'en' },
 });
 writeFileSync('style.json', JSON.stringify(style));
 ```
@@ -90,25 +95,18 @@ writeFileSync('style.json', JSON.stringify(style));
 
 ## Style Generation Methods
 
-The library offers the following style generation methods:
+All three functions are synchronous and return a MapLibre `StyleSpecification`:
 
-- `colorful(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/colorful.html)
-- `eclipse(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/eclipse.html)
-- `graybeard(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/graybeard.html)
-- `neutrino(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/neutrino.html)
-- `shadow(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/shadow.html)
-- `satellite(options)` - [Documentation](https://versatiles.org/versatiles-style/functions/satellite.html)
-
-**`options`**: An optional object to customize the styles. [Learn more](https://versatiles.org/versatiles-style/interfaces/StyleBuilderOptions.html)
-`satellite` uses a different options type: [SatelliteStyleOptions](https://versatiles.org/versatiles-style/interfaces/SatelliteStyleOptions.html)
-
-### Guess Style Method
+- `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/functions/osm.html)
+  - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`) or `{ palette, darkMode }`.
+  - `text`, `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/interfaces/OsmOptions.html).
+- `satellite(options)` - raster/satellite style with an optional OSM overlay. [Documentation](https://versatiles.org/versatiles-style/functions/satellite.html) — see [SatelliteOptions](https://versatiles.org/versatiles-style/interfaces/SatelliteOptions.html).
+- `guessStyle(tileJSON)` - inspect a TileJSON and return the most appropriate style. [Documentation](https://versatiles.org/versatiles-style/functions/guessStyle.html)
 
 ```javascript
-const style = guessStyle(options);
+import { guessStyle } from '@versatiles/style';
+const style = guessStyle(tileJSON);
 ```
-
-[Documentation](https://versatiles.org/versatiles-style/functions/guessStyle.html)
 
 ---
 
@@ -142,7 +140,7 @@ Run the project in development mode:
 npm run dev
 ```
 
-A local server will be available at <http://localhost:8080>. Use it to select a style, edit definitions in `src/styles/...`, and reload the page to view the changes.
+A local server will be available at <http://localhost:8080>. Use it to select a style, edit definitions in `src/themes/...` and `src/shortbread/...`, and reload the page to view the changes.
 
 ### Dependency Graph
 
@@ -159,18 +157,18 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 8["osm.ts"]
-1D["satellite.ts"]
-1E["index.ts"]
+1B["satellite.ts"]
+1C["index.ts"]
 end
 subgraph 3["types"]
 4["index.ts"]
 5["colors.ts"]
 6["tilejson.ts"]
 7["vector_layer.ts"]
-1X["layer-groups.ts"]
-1Y["maplibre.ts"]
-1Z["options.ts"]
-20["resolved.ts"]
+1G["layer-groups.ts"]
+1H["maplibre.ts"]
+1I["options.ts"]
+1J["resolved.ts"]
 end
 subgraph 9["color"]
 A["recolor.ts"]
@@ -198,7 +196,6 @@ M["resolveOsmOptions.ts"]
 end
 subgraph N["lib"]
 O["utils.ts"]
-1J["elevation.ts"]
 end
 subgraph V["themes"]
 W["index.ts"]
@@ -208,41 +205,22 @@ Z["muted.ts"]
 10["natural.ts"]
 11["rules.ts"]
 12["toner.ts"]
-1W["types.ts"]
+19["decorator.ts"]
+1F["types.ts"]
 end
 subgraph 14["shortbread"]
 15["index.ts"]
 16["groups.ts"]
 17["layers.ts"]
 18["template.ts"]
-1B["properties.ts"]
+1A["properties.ts"]
 end
-subgraph 19["style_builder"]
-1A["decorator.ts"]
-1C["recolor.ts"]
-1L["style_builder.ts"]
-1M["types.ts"]
-end
-subgraph 1F["guess_style"]
-1G["guess_style.ts"]
-1U["index.ts"]
-end
-subgraph 1H["styles"]
-1I["index.ts"]
-1K["colorful.ts"]
-1N["eclipse.ts"]
-1O["empty.ts"]
-1P["graybeard.ts"]
-1Q["neutrino.ts"]
-1R["satellite.ts"]
-1S["shadow.ts"]
-1T["variants.ts"]
-end
-1V["index.ts"]
+1D["index.ts"]
+1E["variants.ts"]
 end
 2-->4
 2-->8
-2-->1D
+2-->1B
 4-->5
 4-->6
 4-->7
@@ -250,8 +228,7 @@ end
 8-->D
 8-->K
 8-->15
-8-->1A
-8-->1C
+8-->19
 8-->W
 8-->4
 A-->B
@@ -304,58 +281,28 @@ W-->12
 15-->18
 16-->17
 18-->O
-1A-->P
-1A-->O
-1A-->1B
-1C-->P
-1D-->D
-1D-->K
-1D-->17
-1D-->4
+19-->P
+19-->O
+19-->1A
+1B-->D
+1B-->K
+1B-->17
+1B-->4
+1B-->8
+1C-->2
+1C-->8
+1C-->1B
+1D-->2
 1D-->8
-1E-->2
+1D-->1B
+1D-->P
+1D-->5
+1D-->4
+1D-->1E
 1E-->8
-1E-->1D
-1G-->S
-1G-->O
-1G-->1I
-1I-->1J
-1I-->1K
-1I-->1N
-1I-->1O
-1I-->1P
-1I-->1Q
-1I-->1R
-1I-->1S
-1I-->1T
-1J-->O
-1K-->1L
-1L-->P
-1L-->O
-1L-->15
-1L-->1A
-1L-->1C
-1L-->1M
-1N-->1K
-1O-->1K
-1P-->1K
-1Q-->1K
-1R-->1J
-1R-->O
-1R-->1P
-1S-->1K
-1T-->8
-1T-->1D
-1U-->1G
-1V-->2
-1V-->8
-1V-->1D
-1V-->P
-1V-->1I
-1V-->5
-1V-->4
+1E-->1B
 
-class 0,1,3,9,C,J,N,V,14,19,1F,1H subgraphs;
+class 0,1,3,9,C,J,N,V,14 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
