@@ -199,15 +199,25 @@ O["template.ts"]
 Q["properties.ts"]
 end
 11["index.ts"]
-subgraph 12["types"]
-13["colors.ts"]
-14["index.ts"]
-15["tilejson.ts"]
-16["vector_layer.ts"]
-17["layer-groups.ts"]
-18["maplibre.ts"]
-19["options.ts"]
-1A["resolved.ts"]
+subgraph 12["themes"]
+13["colorful.ts"]
+14["gray.ts"]
+15["index.ts"]
+16["muted.ts"]
+17["natural.ts"]
+18["rules.ts"]
+19["toner.ts"]
+1A["types.ts"]
+end
+subgraph 1B["types"]
+1C["colors.ts"]
+1D["index.ts"]
+1E["tilejson.ts"]
+1F["vector_layer.ts"]
+1G["layer-groups.ts"]
+1H["maplibre.ts"]
+1I["options.ts"]
+1J["resolved.ts"]
 end
 end
 3-->2
@@ -275,11 +285,18 @@ Z-->X
 11-->8
 11-->10
 11-->F
-14-->13
-14-->15
-14-->16
+15-->13
+15-->14
+15-->16
+15-->17
+15-->18
+15-->19
+18-->8
+1D-->1C
+1D-->1E
+1D-->1F
 
-class 0,1,A,C,E,I,K,12 subgraphs;
+class 0,1,A,C,E,I,K,12,1B subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
