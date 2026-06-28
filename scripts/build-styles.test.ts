@@ -49,7 +49,7 @@ describe('Sprite Generation and Packaging', () => {
 		const { calls } = vi.mocked(packInstance.entry).mock;
 		const generatedFiles = calls.map((call) => call[0].name).sort();
 
-		const expectedFiles = ['colorful', 'eclipse', 'graybeard', 'neutrino', 'shadow'].flatMap((style) => [
+		const expectedFiles = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((style) => [
 			`${style}/style.json`,
 			`${style}/en.json`,
 			`${style}/de.json`,
@@ -58,7 +58,6 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}-terrain/en.json`,
 			`${style}-terrain/de.json`,
 		]);
-		expectedFiles.push('empty/style.json');
 		['satellite', 'terrain'].forEach((style) => {
 			expectedFiles.push(`${style}/style.json`, `${style}/en.json`, `${style}/de.json`, `${style}/nooverlay.json`);
 		});

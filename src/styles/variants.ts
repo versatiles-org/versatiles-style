@@ -1,44 +1,52 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { colorful, eclipse, empty, graybeard, neutrino, shadow } from './index.js';
-import { buildSatelliteStyle as satellite } from './satellite.js';
+import { osm } from '../api/osm.js';
+import { satellite as satelliteFn } from '../api/satellite.js';
+import type { Palette } from '../types/options.js';
 
 export interface StyleVariant {
 	name: string;
-	build: () => StyleSpecification | Promise<StyleSpecification>;
+	build: () => StyleSpecification;
 }
 
 export function getStyleVariants(): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
-	const terrainOpts = { terrain: true, hillshade: true } as const;
+	const palettes: Palette[] = ['colorful', 'natural', 'muted', 'gray', 'toner'];
 
-	for (const { name, builder } of [
-		{ name: 'colorful', builder: colorful },
-		{ name: 'eclipse', builder: eclipse },
-		{ name: 'empty', builder: empty },
-		{ name: 'graybeard', builder: graybeard },
-		{ name: 'neutrino', builder: neutrino },
-		{ name: 'shadow', builder: shadow },
-	]) {
-		variants.push({ name: name + '/style', build: () => builder({ language: undefined }) });
-		if (name === 'empty') continue;
-		variants.push({ name: name + '/en', build: () => builder({ language: 'en' }) });
-		variants.push({ name: name + '/de', build: () => builder({ language: 'de' }) });
-		variants.push({ name: name + '/nolabel', build: () => builder({ hideLabels: true }) });
-		variants.push({ name: name + '-terrain/style', build: () => builder({ ...terrainOpts, language: undefined }) });
-		variants.push({ name: name + '-terrain/en', build: () => builder({ ...terrainOpts, language: 'en' }) });
-		variants.push({ name: name + '-terrain/de', build: () => builder({ ...terrainOpts, language: 'de' }) });
+	for (const palette of palettes) {
+		variants.push({ name: `${palette}/style`, build: () => osm({ theme: palette }) });
+		variants.push({ name: `${palette}/en`, build: () => osm({ theme: palette, text: { language: 'en' } }) });
+		variants.push({ name: `${palette}/de`, build: () => osm({ theme: palette, text: { language: 'de' } }) });
+		variants.push({ name: `${palette}/nolabel`, build: () => osm({ theme: palette, layers: { labels: false } }) });
+
+		const terrain = { features: { terrain: true, hillshade: true } } as const;
+		variants.push({ name: `${palette}-terrain/style`, build: () => osm({ theme: palette, ...terrain }) });
+		variants.push({
+			name: `${palette}-terrain/en`,
+			build: () => osm({ theme: palette, text: { language: 'en' }, ...terrain }),
+		});
+		variants.push({
+			name: `${palette}-terrain/de`,
+			build: () => osm({ theme: palette, text: { language: 'de' }, ...terrain }),
+		});
 	}
 
-	variants.push({ name: 'satellite/style', build: () => satellite({ language: undefined }) });
-	variants.push({ name: 'satellite/en', build: () => satellite({ language: 'en' }) });
-	variants.push({ name: 'satellite/de', build: () => satellite({ language: 'de' }) });
-	variants.push({ name: 'satellite/nooverlay', build: () => satellite({ overlay: false }) });
+	variants.push({ name: 'satellite/style', build: () => satelliteFn() });
+	variants.push({ name: 'satellite/en', build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } } }) });
+	variants.push({ name: 'satellite/de', build: () => satelliteFn({ osmOverlay: { text: { language: 'de' } } }) });
+	variants.push({ name: 'satellite/nooverlay', build: () => satelliteFn({ osmOverlay: false }) });
 
-	variants.push({ name: 'terrain/style', build: () => satellite({ ...terrainOpts, language: undefined }) });
-	variants.push({ name: 'terrain/en', build: () => satellite({ ...terrainOpts, language: 'en' }) });
-	variants.push({ name: 'terrain/de', build: () => satellite({ ...terrainOpts, language: 'de' }) });
-	variants.push({ name: 'terrain/nooverlay', build: () => satellite({ ...terrainOpts, overlay: false }) });
+	const terrainSat = { features: { terrain: true, hillshade: true } } as const;
+	variants.push({ name: 'terrain/style', build: () => satelliteFn({ ...terrainSat }) });
+	variants.push({
+		name: 'terrain/en',
+		build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } }, ...terrainSat }),
+	});
+	variants.push({
+		name: 'terrain/de',
+		build: () => satelliteFn({ osmOverlay: { text: { language: 'de' } }, ...terrainSat }),
+	});
+	variants.push({ name: 'terrain/nooverlay', build: () => satelliteFn({ osmOverlay: false, ...terrainSat }) });
 
 	return variants;
 }
