@@ -10,7 +10,7 @@
  *   <body>
  *     <!-- ... -->
  *     <script>
- *       const style = VersaTilesStyle.osm();
+ *       const style = await VersaTilesStyle.osm();
  *       // ...
  *     </script>
  *   </body>
@@ -23,18 +23,20 @@
  * ```
  * ```
  * import { osm } from '@versatiles/style';
- * const style = osm({ theme: 'colorful' });
+ * const style = await osm({ theme: 'colorful' });
  * ```
  *
  * ---
  *
  * ## Generate a style for OpenStreetMap data:
  *
- * {@link osm} accepts an {@link OsmOptions} object and returns a synchronous MapLibre style.
+ * {@link osm} accepts an {@link OsmOptions} object and resolves to a MapLibre style.
+ * It is async because TileJSON sources (any `*.json` source URL) are downloaded and
+ * their relative tile paths are made absolute before being embedded into the style.
  *
  * ```ts
  * import { osm } from '@versatiles/style';
- * const style = osm({
+ * const style = await osm({
  *   theme: { palette: 'colorful', darkMode: false },
  *   urls: { base: 'https://tiles.example.org' },
  * });
@@ -50,7 +52,7 @@
  *
  * ```ts
  * import { satellite } from '@versatiles/style';
- * const style = satellite({ osmOverlay: { theme: 'toner' } });
+ * const style = await satellite({ osmOverlay: { theme: 'toner' } });
  * ```
  *
  * ---
@@ -61,7 +63,7 @@
  *
  * ```ts
  * import { guessStyle } from '@versatiles/style';
- * const style = guessStyle(tilejson);
+ * const style = await guessStyle(tilejson);
  * ```
  *
  * ---

@@ -5,7 +5,7 @@ import type { Palette } from './types/options.js';
 
 export interface StyleVariant {
 	name: string;
-	build: () => StyleSpecification;
+	build: () => Promise<StyleSpecification>;
 }
 
 export function getStyleVariants(): StyleVariant[] {

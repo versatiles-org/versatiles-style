@@ -21,6 +21,7 @@ function resolveSatelliteUrls(base: string, urls?: SatelliteOptions['urls']): Re
 		elevation: urls?.elevation ?? resolveUrl(base, '/tiles/elevation/{z}/{x}/{y}'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite),
+		fetch: urls?.fetch,
 	};
 }
 
@@ -48,6 +49,7 @@ export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSat
 		elevation: urls.elevation,
 		glyphsPattern: urls.glyphsPattern,
 		sprite: urls.sprite,
+		fetch: urls.fetch,
 	};
 
 	const osmOverlay =

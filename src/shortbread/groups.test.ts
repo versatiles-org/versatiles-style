@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { osm } from '../api/osm.js';
 import { layerGroups, SLOT_IDS } from './groups.js';
 
@@ -21,7 +21,10 @@ const G = layerGroups as unknown as Groups;
 
 describe('layerGroups', () => {
 	// Build the full set of real layer IDs once for cross-checks.
-	const realLayerIds = new Set(osm({ text: { language: 'local' } }).layers.map((l) => l.id));
+	let realLayerIds: Set<string>;
+	beforeAll(async () => {
+		realLayerIds = new Set((await osm({ text: { language: 'local' } })).layers.map((l) => l.id));
+	});
 
 	function collectLeafIds(node: unknown): string[] {
 		if (Array.isArray(node)) return node as string[];

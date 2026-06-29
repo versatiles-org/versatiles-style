@@ -13,6 +13,7 @@ export default defineConfig({
 					name: 'unit',
 					include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
 					exclude: ['**/*.e2e.test.ts'],
+					setupFiles: ['./vitest.setup.ts'],
 				},
 			},
 			{

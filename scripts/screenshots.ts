@@ -29,7 +29,10 @@ Promise.all([
  * @param style - The style specification to render.
  * @returns A promise that resolves when the image has been successfully saved.
  */
-async function draw(name: string, style: StyleSpecification): Promise<void> {
+async function draw(name: string, styleInput: StyleSpecification | Promise<StyleSpecification>): Promise<void> {
+	// osm()/satellite() are async, so accept a style or a promise of one.
+	const style = await styleInput;
+
 	// Create a new MapLibre GL map instance
 	const map = new mbgl.Map();
 

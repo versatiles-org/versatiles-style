@@ -8,6 +8,7 @@ export type { ColorsOptions, RecolorOptions } from './colors.js';
 export { colorOptionsKeys } from './colors.js';
 export type { LayerGroupOptions } from './layer-groups.js';
 export type {
+	FetchLike,
 	HillshadeOptions,
 	LayoutOptions,
 	OsmContentOptions,
