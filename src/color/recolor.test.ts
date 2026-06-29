@@ -1,18 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { applyRecolor } from './index.js';
+import { applyRecolor, Color } from './index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { RecolorOptions } from '../types/index.js';
 import { resolveRecolor } from '../resolve/resolveOsmOptions.js';
+
+// applyRecolor() mutates the style in place (returns void), rewriting every paint `*-color`
+// value through the resolved recolor transform. Colors are re-emitted via Color.asString()
+// (so a no-op recolor still reformats #rrggbb → rgb()/hsl()), hence assertions compare the
+// canonical RGB value rather than the exact string.
 
 function makeStyle(bgColor: string, fillColor: string): StyleSpecification {
 	return {
 		version: 8,
 		sources: {},
 		layers: [
-			{
-				id: 'background',
-				type: 'background',
-				paint: { 'background-color': bgColor },
-			},
+			{ id: 'background', type: 'background', paint: { 'background-color': bgColor } },
 			{
 				id: 'fill',
 				type: 'fill',
@@ -24,121 +26,121 @@ function makeStyle(bgColor: string, fillColor: string): StyleSpecification {
 	} as unknown as StyleSpecification;
 }
 
-function bgColor(style: StyleSpecification): string {
-	return (style.layers[0].paint as Record<string, string>)['background-color'];
-}
+const bgColor = (style: StyleSpecification): string =>
+	(style.layers[0].paint as Record<string, string>)['background-color'];
+const fillColor = (style: StyleSpecification): string =>
+	(style.layers[1].paint as Record<string, string>)['fill-color'];
 
-function fillColor(style: StyleSpecification): string {
-	return (style.layers[1].paint as Record<string, string>)['fill-color'];
+// Canonical [r,g,b] of any color string, for value comparisons.
+function toRGB(s: string): [number, number, number] {
+	const str = Color.parse(s).asRGB().round().asString();
+	const m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+	if (!m) throw new Error(`not an rgb string: ${str}`);
+	return [Number(m[1]), Number(m[2]), Number(m[3])];
 }
+const sameColor = (a: string, b: string): boolean => toRGB(a).join() === toRGB(b).join();
 
-// ── No-op ──────────────────────────────────────────────────────────────────────
+// Recolor a single bg color and return the resulting string.
+function recolored(input: string, opt: RecolorOptions = {}): string {
+	const style = makeStyle(input, '#000000');
+	applyRecolor(style, resolveRecolor(opt));
+	return bgColor(style);
+}
 
 describe('applyRecolor()', () => {
-	it('returns a new style object (does not mutate input)', () => {
-		const original = makeStyle('#ffffff', '#aabbcc');
-		const result = applyRecolor(original, resolveRecolor({ invertBrightness: false }));
-		expect(result).not.toBe(original);
-		expect(bgColor(original)).toBe('#ffffff');
+	it('mutates the style in place and returns nothing', () => {
+		const style = makeStyle('#ffffff', '#aabbcc');
+		const ret = applyRecolor(style, resolveRecolor({ invertBrightness: true }));
+		expect(ret).toBeUndefined();
+		expect(sameColor(bgColor(style), '#ffffff')).toBe(false); // input was changed in place
 	});
 
-	it('empty options leave colors unchanged', () => {
+	it('leaves color values unchanged with empty options (only reformats)', () => {
 		const style = makeStyle('#aabbcc', '#112233');
-		const result = applyRecolor(style, resolveRecolor({}));
-		// parse+re-stringify may change format but value should be equivalent
-		expect(bgColor(result)).toBeDefined();
-		expect(fillColor(result)).toBeDefined();
+		applyRecolor(style, resolveRecolor({}));
+		expect(sameColor(bgColor(style), '#aabbcc')).toBe(true);
+		expect(sameColor(fillColor(style), '#112233')).toBe(true);
 	});
 
-	// ── invertBrightness ────────────────────────────────────────────────────────
+	// ── invertBrightness ──────────────────────────────────────────────────────────
 
-	it('invertBrightness changes the background and fill colors', () => {
+	it('invertBrightness changes both background and fill colors', () => {
 		const style = makeStyle('#ffffff', '#112233');
-		const result = applyRecolor(style, resolveRecolor({ invertBrightness: true }));
-		// Both colors should have changed
-		expect(bgColor(result)).not.toBe('#ffffff');
-		expect(fillColor(result)).not.toBe('#112233');
+		applyRecolor(style, resolveRecolor({ invertBrightness: true }));
+		expect(sameColor(bgColor(style), '#ffffff')).toBe(false);
+		expect(sameColor(fillColor(style), '#112233')).toBe(false);
 	});
 
-	it('invertBrightness changes background color', () => {
-		const original = makeStyle('#ff8800', '#000000');
-		const result = applyRecolor(original, resolveRecolor({ invertBrightness: true }));
-		expect(bgColor(result)).not.toBe(bgColor(original));
+	it('invertBrightness inverts white toward black', () => {
+		const [r, g, b] = toRGB(recolored('#ffffff', { invertBrightness: true }));
+		expect(Math.max(r, g, b)).toBeLessThan(64);
 	});
 
-	// ── rotateHue ──────────────────────────────────────────────────────────────
+	// ── rotateHue ────────────────────────────────────────────────────────────────
 
 	it('rotateHue changes a saturated color', () => {
-		const style = makeStyle('#ff0000', '#00ff00');
-		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
-		expect(bgColor(result)).not.toBe(bgColor(makeStyle('#ff0000', '#00ff00')));
+		expect(sameColor(recolored('#ff0000', { rotateHue: 120 }), '#ff0000')).toBe(false);
 	});
 
-	it('rotateHue by different amounts produces different colors', () => {
-		const style = makeStyle('#ff8800', '#00ff00');
-		const result60 = applyRecolor(style, resolveRecolor({ rotateHue: 60 }));
-		const result120 = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
-		expect(bgColor(result60)).not.toBe(bgColor(result120));
+	it('rotateHue by different amounts yields different colors', () => {
+		expect(sameColor(recolored('#ff8800', { rotateHue: 60 }), recolored('#ff8800', { rotateHue: 120 }))).toBe(false);
 	});
 
-	// ── saturate ──────────────────────────────────────────────────────────────
-
-	it('saturate with -1 removes saturation from the output string', () => {
-		const style = makeStyle('#ff0000', '#0000ff');
-		const result = applyRecolor(style, resolveRecolor({ saturate: -1 }));
-		// The Color class returns hsl(h,s%,l%) format; after -1 saturation, s should be 0
-		expect(bgColor(result)).toMatch(/hsl\(\d+,0%/);
+	it('rotateHue by 360° is a no-op on the value', () => {
+		expect(sameColor(recolored('#ff8800', { rotateHue: 360 }), '#ff8800')).toBe(true);
 	});
 
-	// ── tint ──────────────────────────────────────────────────────────────────
+	// ── saturate ──────────────────────────────────────────────────────────────────
 
-	it('tint shifts a saturated color toward the tint hue', () => {
-		// Use a saturated blue (#0000ff) tinted toward red — the hue should shift
-		const style = makeStyle('#0000ff', '#00ff00');
-		const resultNone = applyRecolor(style, resolveRecolor({}));
-		const resultTinted = applyRecolor(style, resolveRecolor({ tint: { color: '#ff0000', amount: 0.5 } }));
-		expect(bgColor(resultTinted)).not.toBe(bgColor(resultNone));
+	it('saturate -1 desaturates to gray (r=g=b)', () => {
+		const [r, g, b] = toRGB(recolored('#ff0000', { saturate: -1 }));
+		expect(r).toBe(g);
+		expect(g).toBe(b);
 	});
 
-	// ── blend ─────────────────────────────────────────────────────────────────
+	// ── tint ────────────────────────────────────────────────────────────────────
 
-	it('blend with amount=1 replaces color entirely', () => {
-		const style = makeStyle('#ff0000', '#00ff00');
-		const result = applyRecolor(style, resolveRecolor({ blend: { color: '#0000ff', amount: 1 } }));
-		// After full blend → should be (close to) blue
-		const bg = bgColor(result);
-		const match = bg.match(/(\d+)[^0-9]+(\d+)[^0-9]+(\d+)/);
-		if (match) {
-			const b = Number(match[3]);
-			expect(b).toBeGreaterThan(200);
-		}
+	it('tint shifts a saturated color toward the tint color', () => {
+		const none = recolored('#0000ff');
+		const tinted = recolored('#0000ff', { tint: { color: '#ff0000', amount: 0.5 } });
+		expect(sameColor(tinted, none)).toBe(false);
+		// red channel should increase as we tint toward red
+		expect(toRGB(tinted)[0]).toBeGreaterThan(toRGB(none)[0]);
 	});
 
-	// ── non-color paint values are untouched ──────────────────────────────────
+	// ── blend ─────────────────────────────────────────────────────────────────────
+
+	it('blend with amount=1 replaces the color with the blend color', () => {
+		const [r, g, b] = toRGB(recolored('#ff0000', { blend: { color: '#0000ff', amount: 1 } }));
+		expect(b).toBeGreaterThan(200);
+		expect(r).toBeLessThan(64);
+		expect(g).toBeLessThan(64);
+	});
+
+	// ── non-color paint values are untouched ──────────────────────────────────────
 
 	it('does not alter fill-opacity (not a color key)', () => {
 		const style = makeStyle('#ffffff', '#000000');
-		const result = applyRecolor(style, resolveRecolor({ invertBrightness: true }));
-		const opacity = (result.layers[1].paint as Record<string, unknown>)['fill-opacity'];
-		expect(opacity).toBe(1);
+		applyRecolor(style, resolveRecolor({ invertBrightness: true }));
+		expect((style.layers[1].paint as Record<string, unknown>)['fill-opacity']).toBe(1);
 	});
 
-	// ── color string formats ──────────────────────────────────────────────────
+	// ── color string formats ────────────────────────────────────────────────────
 
-	it('handles rgb() color strings', () => {
-		const style = makeStyle('rgb(255,0,0)', '#000000');
-		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
-		expect(bgColor(result)).toBeDefined();
+	it('handles rgb() input strings', () => {
+		expect(sameColor(recolored('rgb(255,0,0)', { rotateHue: 120 }), recolored('#ff0000', { rotateHue: 120 }))).toBe(
+			true
+		);
 	});
 
-	it('handles hsl() color strings', () => {
-		const style = makeStyle('hsl(0,100%,50%)', '#000000');
-		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
-		expect(bgColor(result)).toBeDefined();
+	it('handles hsl() input strings', () => {
+		expect(sameColor(recolored('hsl(0,100%,50%)', { rotateHue: 120 }), recolored('#ff0000', { rotateHue: 120 }))).toBe(
+			true
+		);
 	});
 
 	it('ignores non-color strings (passes them through)', () => {
-		const style: StyleSpecification = {
+		const style = {
 			version: 8,
 			sources: {},
 			layers: [
@@ -152,14 +154,14 @@ describe('applyRecolor()', () => {
 				},
 			],
 		} as unknown as StyleSpecification;
-		// Should not throw
 		expect(() => applyRecolor(style, resolveRecolor({ invertBrightness: true }))).not.toThrow();
+		expect((style.layers[0].layout as Record<string, unknown>)['text-field']).toBe('not-a-color');
 	});
 
-	// ── array paint values (expressions) ──────────────────────────────────────
+	// ── array paint values (expressions) ──────────────────────────────────────────
 
-	it('handles array paint values containing color strings', () => {
-		const style: StyleSpecification = {
+	it('recolors color strings inside array paint expressions', () => {
+		const style = {
 			version: 8,
 			sources: {},
 			layers: [
@@ -168,43 +170,25 @@ describe('applyRecolor()', () => {
 					type: 'fill',
 					source: 'src',
 					'source-layer': 'land',
-					paint: {
-						'fill-color': ['case', ['==', ['get', 'kind'], 'forest'], '#008000', '#aaaaaa'],
-					},
+					paint: { 'fill-color': ['case', ['==', ['get', 'kind'], 'forest'], '#008000', '#aaaaaa'] },
 				},
 			],
 		} as unknown as StyleSpecification;
-		const result = applyRecolor(style, resolveRecolor({ saturate: -1 }));
-		const fillExpr = (result.layers[0].paint as Record<string, unknown>)['fill-color'];
-		expect(Array.isArray(fillExpr)).toBe(true);
+		applyRecolor(style, resolveRecolor({ saturate: -1 }));
+		const expr = (style.layers[0].paint as Record<string, unknown>)['fill-color'] as unknown[];
+		expect(Array.isArray(expr)).toBe(true);
+		expect(expr[0]).toBe('case');
+		// the embedded colors are desaturated to gray
+		const [r, g, b] = toRGB(expr[3] as string);
+		expect(r).toBe(g);
+		expect(g).toBe(b);
 	});
 
-	// ── caching ───────────────────────────────────────────────────────────────
+	// ── caching ───────────────────────────────────────────────────────────────────
 
 	it('produces identical output for the same color used multiple times', () => {
-		const style: StyleSpecification = {
-			version: 8,
-			sources: {},
-			layers: [
-				{
-					id: 'a',
-					type: 'fill',
-					source: 's',
-					'source-layer': 'l',
-					paint: { 'fill-color': '#ff0000' },
-				},
-				{
-					id: 'b',
-					type: 'fill',
-					source: 's',
-					'source-layer': 'l',
-					paint: { 'fill-color': '#ff0000' },
-				},
-			],
-		} as unknown as StyleSpecification;
-		const result = applyRecolor(style, resolveRecolor({ rotateHue: 60 }));
-		const c1 = (result.layers[0].paint as Record<string, string>)['fill-color'];
-		const c2 = (result.layers[1].paint as Record<string, string>)['fill-color'];
-		expect(c1).toBe(c2);
+		const style = makeStyle('#ff0000', '#ff0000');
+		applyRecolor(style, resolveRecolor({ rotateHue: 60 }));
+		expect(bgColor(style)).toBe(fillColor(style));
 	});
 });

@@ -17,7 +17,6 @@ function hillshadeInsertIndex(layers: StyleSpecification['layers']): number {
 // Adds a raster-dem elevation source and a hillshade layer to the style.
 // Also syncs style.light to match the sun direction so fill-extrusion buildings
 // shade consistently with the hillshade.
-// Returns a structuredClone of the style with hillshade added.
 export function addHillshade(
 	style: StyleSpecification,
 	options: {

@@ -115,7 +115,7 @@ function setLayerOpacity(layer: { type: string; paint?: unknown }, opacity: numb
 	layer.paint = paint as typeof layer.paint;
 }
 
-function applyLayerGroups(style: StyleSpecification, opts: LayerGroupOptions): StyleSpecification {
+function applyLayerGroups(style: StyleSpecification, opts: LayerGroupOptions) {
 	if (!opts || Object.keys(opts).length === 0) return style;
 
 	const overrides = new Map<string, LayerOverride>();
@@ -141,10 +141,9 @@ function applyLayerGroups(style: StyleSpecification, opts: LayerGroupOptions): S
 		if (key in optsObj) collectGroupOverrides(groups[key], optsObj[key], overrides);
 	}
 
-	if (overrides.size === 0) return style;
+	if (overrides.size === 0) return;
 
-	const result = structuredClone(style);
-	for (const layer of result.layers as Array<{ id: string; type: string; layout?: unknown; paint?: unknown }>) {
+	for (const layer of style.layers as Array<{ id: string; type: string; layout?: unknown; paint?: unknown }>) {
 		const override = overrides.get(layer.id);
 		if (!override) continue;
 
@@ -154,18 +153,16 @@ function applyLayerGroups(style: StyleSpecification, opts: LayerGroupOptions): S
 			setLayerOpacity(layer, override.opacity);
 		}
 	}
-	return result;
 }
 
 // ── Apply text/icon scale ─────────────────────────────────────────────────────
 
-function applyScale(style: StyleSpecification, layout: ResolvedLayout): StyleSpecification {
+function applyScale(style: StyleSpecification, layout: ResolvedLayout) {
 	const labelScale = layout.labels.scale;
 	const iconScale = layout.icons.scale;
-	if (labelScale === 1 && iconScale === 1) return style;
+	if (labelScale === 1 && iconScale === 1) return;
 
-	const result = structuredClone(style);
-	for (const layer of result.layers) {
+	for (const layer of style.layers) {
 		if (layer.type !== 'symbol') continue;
 		const lyt = layer.layout as Record<string, unknown> | undefined;
 		if (!lyt) continue;
@@ -194,7 +191,6 @@ function applyScale(style: StyleSpecification, layout: ResolvedLayout): StyleSpe
 			}
 		}
 	}
-	return result;
 }
 
 // ── Languages introspection helper ────────────────────────────────────────────
@@ -216,17 +212,17 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	const resolved = resolveOsmOptions(options);
 
 	// 1. Base style (template + URL configuration)
-	let style = buildBase(resolved);
+	const style = buildBase(resolved);
 
 	// 2+3. Build the decorated layer list (structure + theme colors/fonts) from per-group modules
 	const ctx = buildContext(resolved);
 	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
 	// 4. Layer group visibility / opacity
-	style = applyLayerGroups(style, resolved.layers);
+	applyLayerGroups(style, resolved.layers);
 
 	// 5. Text and icon size scaling
-	style = applyScale(style, resolved.layout);
+	applyScale(style, resolved.layout);
 
 	// 6. Optional features
 	if (resolved.features.terrain !== false) {
@@ -245,7 +241,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 
 	// 7. Post-process: recolor
 	if (resolved.recolor) {
-		style = applyRecolor(style, resolved.recolor);
+		applyRecolor(style, resolved.recolor);
 	}
 
 	return style;
