@@ -30,7 +30,22 @@ describe('resolveOsmOptions', () => {
 		expect(r.features.landcover).toBe(false);
 		expect(r.features.buildings).toBe('flat');
 		expect(r.layers).toEqual({});
-		expect(r.recolor).toBeUndefined();
+		expect(r.recolor).toEqual({
+			blend: {
+				amount: 0,
+				color: '#ff0000',
+			},
+			brightness: 0,
+			contrast: 1,
+			gamma: 1,
+			invertBrightness: false,
+			rotateHue: 0,
+			saturate: 0,
+			tint: {
+				amount: 0,
+				color: '#ff0000',
+			},
+		});
 	});
 
 	it('resolves palette shorthand in theme', () => {

@@ -4,6 +4,7 @@ import type {
 	LayoutOptions,
 	OsmContentOptions,
 	OsmOptions,
+	RecolorOptions,
 	SkyOptions,
 	SpriteEntry,
 	SpriteInput,
@@ -25,6 +26,7 @@ import { colorOptionsKeys } from '../types/index.js';
 import { getPaletteColors } from '../themes/index.js';
 import { resolveUrl, basename } from '../lib/utils.js';
 import { isDarkMode } from './isDarkMode.js';
+import { ResolvedRecolorOptions } from '../types/resolved.js';
 
 const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 
@@ -61,6 +63,19 @@ export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions): 
 		if (val != null) result[key] = val;
 	}
 	return result;
+}
+
+export function resolveRecolor(recolor?: RecolorOptions): ResolvedRecolorOptions {
+	return {
+		invertBrightness: recolor?.invertBrightness ?? false,
+		rotateHue: recolor?.rotateHue ?? 0,
+		saturate: recolor?.saturate ?? 0,
+		brightness: recolor?.brightness ?? 0,
+		contrast: recolor?.contrast ?? 1,
+		gamma: recolor?.gamma ?? 1,
+		tint: { color: recolor?.tint?.color ?? '#ff0000', amount: recolor?.tint ? (recolor?.tint?.amount ?? 0.5) : 0 },
+		blend: { color: recolor?.blend?.color ?? '#ff0000', amount: recolor?.blend ? (recolor?.blend?.amount ?? 0.5) : 0 },
+	};
 }
 
 export function resolveSun(sun?: SunOptions): ResolvedSun {
@@ -156,7 +171,7 @@ export function resolveOsmContentOptions(content: OsmContentOptions, urls: Resol
 		text: resolveText(content.text),
 		layout: resolveLayout(content.layout),
 		colors: resolveColors(theme, content.colors),
-		recolor: content.recolor,
+		recolor: resolveRecolor(content.recolor),
 	};
 }
 
@@ -175,6 +190,6 @@ export function resolveOsmOptions(options?: OsmOptions): ResolvedOsmOptions {
 		text: resolveText(options?.text),
 		layout: resolveLayout(options?.layout),
 		colors: resolveColors(theme, options?.colors),
-		recolor: options?.recolor,
+		recolor: resolveRecolor(options?.recolor),
 	};
 }

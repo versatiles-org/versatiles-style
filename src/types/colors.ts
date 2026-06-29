@@ -106,14 +106,12 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 ] as const;
 
 export type RecolorOptions = {
-	// mode-independent (same visual effect on light and dark palettes)
 	invertBrightness?: boolean;
 	rotateHue?: number;
 	saturate?: number;
-	tint?: { color: string; amount?: number };
-	// mode-dependent (absolute operations; effect differs on light vs dark)
+	tint?: { color?: string; amount?: number };
 	gamma?: number;
 	contrast?: number;
 	brightness?: number;
-	blend?: { color: string; amount?: number };
+	blend?: { color?: string; amount?: number };
 };
