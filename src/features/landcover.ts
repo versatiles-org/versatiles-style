@@ -21,9 +21,8 @@ const LANDCOVER_AFFECTED = new Set([
 	'land-burial',
 ]);
 
-export function addLandcover(style: StyleSpecification): StyleSpecification {
-	const result = structuredClone(style);
-	for (const layer of result.layers) {
+export function addLandcover(style: StyleSpecification) {
+	for (const layer of style.layers) {
 		if (!LANDCOVER_AFFECTED.has(layer.id)) continue;
 		if (layer.type !== 'fill') continue;
 		// Remove zoom-dependent opacity so the layer appears at full opacity immediately,
@@ -33,5 +32,4 @@ export function addLandcover(style: StyleSpecification): StyleSpecification {
 			delete paint['fill-opacity'];
 		}
 	}
-	return result;
 }

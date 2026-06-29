@@ -29,18 +29,9 @@ export function addHillshade(
 	},
 	sun: ResolvedSun,
 	elevation: string | TileJSONSpecification
-): StyleSpecification {
-	const result = structuredClone(style);
-	result.sources ??= {};
-	result.sources['elevation'] = buildElevationSource(elevation) as StyleSpecification['sources'][string];
-
-	// MapLibre polar angle = 90° − altitude (polar is from zenith; altitude is from horizon).
-	result.light = {
-		anchor: options.anchor,
-		position: [1.15, sun.direction, 90 - sun.altitude],
-		...(sun.color && { color: sun.color }),
-		...(sun.intensity !== undefined && { intensity: sun.intensity }),
-	};
+) {
+	style.sources ??= {};
+	style.sources['elevation'] = buildElevationSource(elevation) as StyleSpecification['sources'][string];
 
 	const layer = {
 		id: 'hillshade',
@@ -58,7 +49,6 @@ export function addHillshade(
 		},
 	};
 
-	const insertAt = hillshadeInsertIndex(result.layers);
-	result.layers.splice(insertAt, 0, layer as StyleSpecification['layers'][number]);
-	return result;
+	const insertAt = hillshadeInsertIndex(style.layers);
+	style.layers.splice(insertAt, 0, layer as StyleSpecification['layers'][number]);
 }

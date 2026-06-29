@@ -7,10 +7,8 @@ export function addTerrain(
 	style: StyleSpecification,
 	options: { exaggeration: number },
 	elevation: string | TileJSONSpecification
-): StyleSpecification {
-	const result = structuredClone(style);
-	result.sources ??= {};
-	result.sources['elevation'] = buildElevationSource(elevation) as StyleSpecification['sources'][string];
-	result.terrain = { source: 'elevation', exaggeration: options.exaggeration };
-	return result;
+) {
+	style.sources ??= {};
+	style.sources['elevation'] = buildElevationSource(elevation) as StyleSpecification['sources'][string];
+	style.terrain = { source: 'elevation', exaggeration: options.exaggeration };
 }
