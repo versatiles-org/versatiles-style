@@ -1,7 +1,23 @@
-import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
+import type {
+	FetchLike,
+	StyleSpecification,
+	TileJSONSpecification,
+	TileJSONSpecificationVector,
+} from '../types/index.js';
 import { isTileJSONSpecification } from '../types/index.js';
+import { resolveTileJSONTiles } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
+
+/** Options for {@link guessStyle}. */
+export type GuessStyleOptions = {
+	/** Base URL that relative `tiles[]` entries are resolved against. Defaults to the page origin. */
+	base?: string;
+	/** Custom `fetch` used to download any nested TileJSON sources. Defaults to the global `fetch`. */
+	fetch?: FetchLike;
+};
+
+const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 
 // The canonical set of Shortbread 1.0 source-layer IDs.
 // If a TileJSON has vector_layers and enough of them match, we treat it as Shortbread.
@@ -54,11 +70,11 @@ function stringToHue(s: string): number {
 
 // Build a simple inspector style: one fill + one line + one symbol layer per source-layer,
 // each with a unique hue derived from the layer name. Useful for visualising unknown vector tiles.
-function buildInspectorStyle(tj: TileJSONSpecificationVector): StyleSpecification {
+function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): StyleSpecification {
 	const sourceName = 'tiles';
 	const sourceSpec: Record<string, unknown> = {
 		type: 'vector',
-		tiles: tj.tiles,
+		tiles: resolveTileJSONTiles(tj, base).tiles,
 		scheme: tj.scheme ?? 'xyz',
 	};
 	if (tj.minzoom !== undefined) sourceSpec['minzoom'] = tj.minzoom;
@@ -117,11 +133,12 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector): StyleSpecificatio
 }
 
 // Build a minimal raster style for a raster TileJSON.
-function buildRasterStyle(tj: TileJSONSpecification): StyleSpecification {
+async function buildRasterStyle(tj: TileJSONSpecification, options?: GuessStyleOptions): Promise<StyleSpecification> {
+	const base = options?.base ?? DEFAULT_BASE;
 	const sourceName = isSatelliteHint(tj) ? 'satellite' : 'raster';
 	const sourceSpec: Record<string, unknown> = {
 		type: 'raster',
-		tiles: tj.tiles,
+		tiles: resolveTileJSONTiles(tj, base).tiles,
 		tileSize: (tj as TileJSONSpecification & { tile_size?: number }).tile_size ?? 256,
 	};
 	if (tj.minzoom !== undefined) sourceSpec['minzoom'] = tj.minzoom;
@@ -130,7 +147,7 @@ function buildRasterStyle(tj: TileJSONSpecification): StyleSpecification {
 	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
 
 	if (isSatelliteHint(tj)) {
-		return satellite({ urls: { satellite: tj } });
+		return satellite({ urls: { satellite: tj, base: options?.base, fetch: options?.fetch } });
 	}
 
 	return {
@@ -165,16 +182,19 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  *
  * Never throws — always returns a valid StyleSpecification.
  */
-export function guessStyle(tileJSON: TileJSONSpecification): StyleSpecification {
+export async function guessStyle(
+	tileJSON: TileJSONSpecification,
+	options?: GuessStyleOptions
+): Promise<StyleSpecification> {
 	try {
 		isTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
-				return osm({ urls: { osm: tileJSON } });
+				return await osm({ urls: { osm: tileJSON, base: options?.base, fetch: options?.fetch } });
 			}
-			return buildInspectorStyle(tileJSON);
+			return buildInspectorStyle(tileJSON, options?.base ?? DEFAULT_BASE);
 		}
-		return buildRasterStyle(tileJSON);
+		return await buildRasterStyle(tileJSON, options);
 	} catch {
 		// Fallback: return a blank style rather than throwing
 		return { version: 8, sources: {}, layers: [] };

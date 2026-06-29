@@ -6,8 +6,8 @@ describe('guessStyle (v6)', () => {
 	const tiles = ['https://fancy.map/tiles/{z}/{x}/{y}'];
 	const vector_layers: VectorLayer[] = [{ id: 'hallo', fields: { label: 'String' } }];
 
-	it('should build a raster style with background and raster layers', () => {
-		const style = lib.guessStyle({ tiles });
+	it('should build a raster style with background and raster layers', async () => {
+		const style = await lib.guessStyle({ tiles });
 		expect(style.version).toBe(8);
 		expect(Object.keys(style.sources)).toHaveLength(1);
 		const sourceKey = Object.keys(style.sources)[0];
@@ -16,8 +16,8 @@ describe('guessStyle (v6)', () => {
 		expect(layerTypes).toContain('raster');
 	});
 
-	it('should build an inspector style for unknown vector tiles', () => {
-		const style = lib.guessStyle({ tiles, vector_layers });
+	it('should build an inspector style for unknown vector tiles', async () => {
+		const style = await lib.guessStyle({ tiles, vector_layers });
 		expect(style.version).toBe(8);
 		expect(Object.keys(style.sources)).toHaveLength(1);
 		const sourceKey = Object.keys(style.sources)[0];
@@ -30,9 +30,9 @@ describe('guessStyle (v6)', () => {
 		expect(halloLayers.map((l) => l.type).sort()).toEqual(['fill', 'line', 'symbol']);
 	});
 
-	it('should return a blank style for invalid input', () => {
+	it('should return a blank style for invalid input', async () => {
 		// @ts-expect-error intentional bad input
-		const style = lib.guessStyle(null);
+		const style = await lib.guessStyle(null);
 		expect(style).toStrictEqual({ version: 8, sources: {}, layers: [] });
 	});
 });

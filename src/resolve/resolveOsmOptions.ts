@@ -151,17 +151,21 @@ export function resolveFeatures(features?: OsmOptions['features']): ResolvedFeat
 }
 
 export function resolveOsmUrls(base: string, urls?: OsmOptions['urls']): ResolvedUrls {
-	function resolveSource(source: string | TileJSONSpecification | undefined): string | TileJSONSpecification {
-		if (!source) return resolveUrl(base, '/tiles/osm/tiles.json');
+	function resolveSource(
+		source: string | TileJSONSpecification | undefined,
+		defaultPath: string
+	): string | TileJSONSpecification {
+		if (!source) return resolveUrl(base, defaultPath);
 		if (typeof source === 'string') return resolveUrl(base, source);
 		return source;
 	}
 	return {
 		base,
-		osm: resolveSource(urls?.osm),
-		elevation: resolveSource(urls?.elevation),
+		osm: resolveSource(urls?.osm, '/tiles/osm/tiles.json'),
+		elevation: resolveSource(urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite),
+		fetch: urls?.fetch,
 	};
 }
 

@@ -4,6 +4,9 @@ import type { LayerGroupOptions } from './layer-groups.js';
 
 export type Palette = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
 
+/** A `fetch`-compatible function, used to download TileJSON documents. */
+export type FetchLike = typeof fetch;
+
 export type TextOptions = {
 	language?: string;
 	languageStrict?: boolean;
@@ -65,6 +68,8 @@ export type OsmOptions = OsmContentOptions & {
 		elevation?: string | TileJSONSpecification;
 		glyphsPattern?: string;
 		sprite?: SpriteInput;
+		/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
+		fetch?: FetchLike;
 	};
 	features?: {
 		terrain?: boolean | { exaggeration?: number };
@@ -84,6 +89,8 @@ export type SatelliteOptions = {
 		elevation?: string | TileJSONSpecification;
 		glyphsPattern?: string;
 		sprite?: SpriteInput;
+		/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
+		fetch?: FetchLike;
 	};
 	osmOverlay?: false | OsmContentOptions;
 	raster?: {

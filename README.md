@@ -156,156 +156,160 @@ flowchart TB
 subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
-8["osm.ts"]
-1C["satellite.ts"]
-1D["index.ts"]
-end
-subgraph 3["types"]
-4["index.ts"]
-5["colors.ts"]
-6["tilejson.ts"]
-7["vector_layer.ts"]
-1H["layer-groups.ts"]
-1I["maplibre.ts"]
-1J["options.ts"]
-1K["resolved.ts"]
-end
-subgraph 9["color"]
-A["recolor.ts"]
-B["abstract.ts"]
-10["index.ts"]
-11["hsl.ts"]
-12["hsv.ts"]
-13["random.ts"]
-14["utils.ts"]
-15["rgb.ts"]
-end
-subgraph C["features"]
-D["index.ts"]
-E["elevation-source.ts"]
-F["hillshade.ts"]
-G["landcover.ts"]
-H["sun.ts"]
-I["terrain.ts"]
-end
-subgraph J["lib"]
-K["utils.ts"]
-end
-subgraph L["resolve"]
-M["index.ts"]
-N["isDarkMode.ts"]
-O["resolveOsmOptions.ts"]
-W["resolveSatelliteOptions.ts"]
-end
-subgraph P["themes"]
-Q["index.ts"]
-R["colorful.ts"]
-S["gray.ts"]
-T["muted.ts"]
-U["natural.ts"]
-V["toner.ts"]
-1G["types.ts"]
-end
-subgraph X["shortbread"]
-Y["index.ts"]
-Z["context.ts"]
-16["groups.ts"]
-1B["build.ts"]
-end
+B["osm.ts"]
+1D["satellite.ts"]
 1E["index.ts"]
-1F["variants.ts"]
 end
-subgraph 17["**"]
-subgraph 18["shortbread"]
-subgraph 19["layers"]
-1A["* (13 files)"]
+subgraph 3["lib"]
+4["loadTileSource.ts"]
+5["utils.ts"]
+end
+subgraph 6["types"]
+7["index.ts"]
+8["colors.ts"]
+9["tilejson.ts"]
+A["vector_layer.ts"]
+1I["layer-groups.ts"]
+1J["maplibre.ts"]
+1K["options.ts"]
+1L["resolved.ts"]
+end
+subgraph C["color"]
+D["recolor.ts"]
+E["abstract.ts"]
+11["index.ts"]
+12["hsl.ts"]
+13["hsv.ts"]
+14["random.ts"]
+15["utils.ts"]
+16["rgb.ts"]
+end
+subgraph F["features"]
+G["index.ts"]
+H["elevation-source.ts"]
+I["hillshade.ts"]
+J["landcover.ts"]
+K["sun.ts"]
+L["terrain.ts"]
+end
+subgraph M["resolve"]
+N["index.ts"]
+O["isDarkMode.ts"]
+P["resolveOsmOptions.ts"]
+X["resolveSatelliteOptions.ts"]
+end
+subgraph Q["themes"]
+R["index.ts"]
+S["colorful.ts"]
+T["gray.ts"]
+U["muted.ts"]
+V["natural.ts"]
+W["toner.ts"]
+1H["types.ts"]
+end
+subgraph Y["shortbread"]
+Z["index.ts"]
+10["context.ts"]
+17["groups.ts"]
+1C["build.ts"]
+end
+1F["index.ts"]
+1G["variants.ts"]
+end
+subgraph 18["**"]
+subgraph 19["shortbread"]
+subgraph 1A["layers"]
+1B["* (13 files)"]
 end
 end
 end
 2-->4
-2-->8
-2-->1C
+2-->7
+2-->B
+2-->1D
 4-->5
-4-->6
-4-->7
-8-->A
-8-->D
-8-->K
-8-->M
-8-->Y
-8-->Q
-8-->4
-A-->B
+7-->8
+7-->9
+7-->A
+B-->D
+B-->G
+B-->4
+B-->N
+B-->Z
+B-->R
+B-->7
 D-->E
-D-->F
-D-->G
-D-->H
-D-->I
-F-->E
-I-->E
-M-->N
-M-->O
-M-->W
-O-->K
-O-->Q
-O-->4
-O-->N
-Q-->R
-Q-->S
-Q-->T
-Q-->U
-Q-->V
-W-->K
-W-->O
-Y-->Z
-Y-->16
-Y-->1A
+G-->H
+G-->I
+G-->J
+G-->K
+G-->L
+I-->H
+L-->H
+N-->O
+N-->P
+N-->X
+P-->5
+P-->R
+P-->7
+P-->O
+R-->S
+R-->T
+R-->U
+R-->V
+R-->W
+X-->5
+X-->P
 Z-->10
-Z-->4
-10-->B
+Z-->17
+Z-->1B
 10-->11
-10-->12
-10-->A
-10-->15
-11-->B
+10-->7
+11-->E
 11-->12
-11-->15
-11-->14
-12-->B
-12-->11
+11-->13
+11-->D
+11-->16
+12-->E
 12-->13
+12-->16
 12-->15
-12-->14
+13-->E
 13-->12
 13-->14
-15-->B
-15-->11
-15-->12
-15-->14
-16-->M
-16-->Z
-16-->1A
-1A-->1B
-1B-->10
-1C-->D
-1C-->M
-1C-->Y
-1C-->4
-1C-->8
-1D-->2
-1D-->8
-1D-->1C
+13-->16
+13-->15
+14-->13
+14-->15
+16-->E
+16-->12
+16-->13
+16-->15
+17-->N
+17-->10
+17-->1B
+1B-->1C
+1C-->11
+1D-->G
+1D-->4
+1D-->N
+1D-->Z
+1D-->7
+1D-->B
 1E-->2
-1E-->8
-1E-->1C
-1E-->10
-1E-->5
-1E-->4
-1E-->1F
+1E-->B
+1E-->1D
+1F-->2
+1F-->B
+1F-->1D
+1F-->11
 1F-->8
-1F-->1C
+1F-->7
+1F-->1G
+1G-->B
+1G-->1D
 
-class 0,1,3,9,C,J,L,P,X,17,18,19 subgraphs;
+class 0,1,3,6,C,F,M,Q,Y,18,19,1A subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

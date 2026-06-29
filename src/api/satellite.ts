@@ -5,6 +5,7 @@ import { colorOptionsKeys } from '../types/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { resolveSatelliteOptions } from '../resolve/index.js';
+import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 
 // Stable slot IDs for satellite styles
@@ -52,14 +53,19 @@ function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<st
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOptions): StyleSpecification['layers'] {
+async function buildOsmOverlayLayers(
+	overlayResolved: ResolvedOsmOptions,
+	osmSource: string | TileJSONSpecification
+): Promise<StyleSpecification['layers']> {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
 	// (including URL configuration that was inherited from the satellite options).
-	const overlayStyle = osm({
+	// `osmSource` is the already-prefetched OSM source, passed through so osm() reuses it
+	// (a resolved TileJSON object is used as-is, avoiding a second download).
+	const overlayStyle = await osm({
 		urls: {
 			base: overlayResolved.urls.base,
-			osm: overlayResolved.urls.osm,
+			osm: osmSource,
 			glyphsPattern: overlayResolved.urls.glyphsPattern,
 			sprite: overlayResolved.urls.sprite,
 			elevation: overlayResolved.urls.elevation,
@@ -95,8 +101,23 @@ function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOptions): StyleSpecif
 
 // ── Main satellite() function ─────────────────────────────────────────────────
 
-function satelliteFn(options?: SatelliteOptions): StyleSpecification {
+async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecification> {
 	const resolved = resolveSatelliteOptions(options);
+
+	// Prefetch the TileJSON sources actually used by this style, in parallel.
+	// The OSM source is reused by both the vector source and the overlay layers;
+	// elevation is fetched once and reused for terrain + hillshade.
+	const needOverlay = resolved.osmOverlay !== false;
+	const needElevation = resolved.features.terrain !== false || resolved.features.hillshade !== false;
+	const [satelliteSource, osmSource, elevationSource] = await Promise.all([
+		loadTileSource(resolved.urls.satellite, resolved.urls.base, resolved.urls.fetch),
+		needOverlay
+			? loadTileSource(resolved.urls.osm, resolved.urls.base, resolved.urls.fetch)
+			: Promise.resolve(undefined),
+		needElevation
+			? loadTileSource(resolved.urls.elevation, resolved.urls.base, resolved.urls.fetch)
+			: Promise.resolve(undefined),
+	]);
 
 	// Base style shell
 	const style: StyleSpecification = {
@@ -108,7 +129,7 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	};
 
 	// Satellite raster source
-	(style.sources as Record<string, unknown>)['satellite'] = buildSatelliteSource(resolved.urls.satellite);
+	(style.sources as Record<string, unknown>)['satellite'] = buildSatelliteSource(satelliteSource);
 
 	// Layer stack
 	const rasterPaint = buildRasterPaint(resolved.raster);
@@ -134,12 +155,11 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 
 	if (resolved.osmOverlay !== false) {
 		// OSM vector overlay: roads, labels, boundaries on top of satellite
-		const overlayLayers = buildOsmOverlayLayers(resolved.osmOverlay);
+		const overlayLayers = await buildOsmOverlayLayers(resolved.osmOverlay, osmSource!);
 		layers.push(...overlayLayers);
 
-		// Also add the OSM vector source (inherited from overlay resolution)
-		const osmSource = buildOsmVectorSource(resolved.urls.osm);
-		(style.sources as Record<string, unknown>)['versatiles-shortbread'] = osmSource;
+		// Also add the OSM vector source (reusing the already-prefetched OSM source)
+		(style.sources as Record<string, unknown>)['versatiles-shortbread'] = buildOsmVectorSource(osmSource!);
 	} else {
 		// No overlay: still provide slot anchors so satellite.slots references are valid
 		layers.push(slotLayer(SLOT_BELOW_SYMBOLS));
@@ -150,12 +170,12 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 
 	// Optional terrain
 	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
+		addTerrain(style, resolved.features.terrain, elevationSource!);
 	}
 
 	// Optional hillshade
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.sun, elevationSource!);
 		configure3DLighting(style, resolved.sun);
 	}
 
