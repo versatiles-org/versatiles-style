@@ -18,6 +18,7 @@ export type LayerContext = {
 	fg: Color;
 	/** Resolved font names. */
 	fonts: { normal: string; bold: string };
+	features: ResolvedOsmOptions['features'];
 	/** Language-aware `text-field` expression for label/symbol layers. */
 	nameField: DataDrivenPropertyValueSpecification<FormattedSpecification>;
 };
@@ -45,6 +46,7 @@ export function buildContext(resolved: ResolvedOsmOptions): LayerContext {
 		c,
 		bg,
 		fg,
+		features: resolved.features,
 		fonts: { normal: resolved.text.fontNormal, bold: resolved.text.fontBold },
 		nameField: buildNameField(resolved.text.language, resolved.text.languageStrict),
 	};

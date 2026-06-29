@@ -6,30 +6,29 @@ import * as b from '../build.js';
 export function* buildings(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
-	yield b.fill('building:outline', {
-		sourceLayer: 'buildings',
-		color: c.buildingBg,
-		opacity: { 14: 0, 15: 1 },
-		group: 'buildings',
-	});
-	yield b.fill('building', {
-		sourceLayer: 'buildings',
-		color: c.building,
-		opacity: { 14: 0, 15: 1 },
-		fillTranslate: [-2, -2],
-		group: 'buildings',
-	});
-}
-
-// 3D extruded buildings (used when features.buildings = 'extruded'); rendered above roads.
-export function* buildings3d(ctx: LayerContext): Generator<b.TaggedLayer> {
-	yield b.fillExtrusion('building-3d', {
-		sourceLayer: 'buildings',
-		filter: ['!=', ['get', 'hide_3d'], true],
-		color: ctx.c.building,
-		opacity: { 14: 0, 15: 0.7 },
-		fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
-		fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
-		group: 'buildings',
-	});
+	if (ctx.features.buildings === 'extruded') {
+		yield b.fillExtrusion('building-3d', {
+			sourceLayer: 'buildings',
+			filter: ['!=', ['get', 'hide_3d'], true],
+			color: c.building,
+			opacity: { 14: 0, 15: 0.7 },
+			fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
+			fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
+			group: 'buildings',
+		});
+	} else {
+		yield b.fill('building:outline', {
+			sourceLayer: 'buildings',
+			color: c.buildingBg,
+			opacity: { 14: 0, 15: 1 },
+			group: 'buildings',
+		});
+		yield b.fill('building', {
+			sourceLayer: 'buildings',
+			color: c.building,
+			opacity: { 14: 0, 15: 1 },
+			fillTranslate: [-2, -2],
+			group: 'buildings',
+		});
+	}
 }

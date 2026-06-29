@@ -6,7 +6,7 @@ import { landcover } from './landcover.js';
 import { water } from './water.js';
 import { sites } from './sites.js';
 import { airport } from './airport.js';
-import { buildings, buildings3d } from './buildings.js';
+import { buildings } from './buildings.js';
 import { roads } from './roads.js';
 import { pois } from './pois.js';
 import { boundaries } from './boundaries.js';
@@ -32,7 +32,6 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
 	yield* roads(ctx);
-	yield* buildings3d(ctx);
 	yield slot(SLOT_BELOW_SYMBOLS);
 	yield* pois(ctx);
 	yield* boundaries(ctx);
