@@ -1,4 +1,3 @@
-export { getShortbreadTemplate } from './template.js';
 export { buildContext } from './context.js';
 export type { LayerContext } from './context.js';
 export {

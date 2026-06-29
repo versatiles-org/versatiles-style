@@ -157,18 +157,18 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 8["osm.ts"]
-1N["satellite.ts"]
-1O["index.ts"]
+1M["satellite.ts"]
+1N["index.ts"]
 end
 subgraph 3["types"]
 4["index.ts"]
 5["colors.ts"]
 6["tilejson.ts"]
 7["vector_layer.ts"]
-1S["layer-groups.ts"]
-1T["maplibre.ts"]
-1U["options.ts"]
-1V["resolved.ts"]
+1R["layer-groups.ts"]
+1S["maplibre.ts"]
+1T["options.ts"]
+1U["resolved.ts"]
 end
 subgraph 9["color"]
 A["recolor.ts"]
@@ -188,14 +188,14 @@ G["hillshade.ts"]
 H["landcover.ts"]
 I["terrain.ts"]
 end
-subgraph J["resolve"]
-K["index.ts"]
-L["isDarkMode.ts"]
-M["resolveOsmOptions.ts"]
-W["resolveSatelliteOptions.ts"]
+subgraph J["lib"]
+K["utils.ts"]
 end
-subgraph N["lib"]
-O["utils.ts"]
+subgraph L["resolve"]
+M["index.ts"]
+N["isDarkMode.ts"]
+O["resolveOsmOptions.ts"]
+W["resolveSatelliteOptions.ts"]
 end
 subgraph P["themes"]
 Q["index.ts"]
@@ -204,7 +204,7 @@ S["gray.ts"]
 T["muted.ts"]
 U["natural.ts"]
 V["toner.ts"]
-1R["types.ts"]
+1Q["types.ts"]
 end
 subgraph X["shortbread"]
 Y["index.ts"]
@@ -226,20 +226,20 @@ subgraph 17["layers"]
 1L["water.ts"]
 end
 19["build.ts"]
-1M["template.ts"]
 end
-1P["index.ts"]
-1Q["variants.ts"]
+1O["index.ts"]
+1P["variants.ts"]
 end
 2-->4
 2-->8
-2-->1N
+2-->1M
 4-->5
 4-->6
 4-->7
 8-->A
 8-->D
 8-->K
+8-->M
 8-->Y
 8-->Q
 8-->4
@@ -251,24 +251,23 @@ D-->H
 D-->I
 G-->F
 I-->F
-K-->L
-K-->M
-K-->W
+M-->N
 M-->O
-M-->Q
-M-->4
-M-->L
+M-->W
+O-->K
+O-->Q
+O-->4
+O-->N
 Q-->R
 Q-->S
 Q-->T
 Q-->U
 Q-->V
+W-->K
 W-->O
-W-->M
 Y-->Z
 Y-->16
 Y-->18
-Y-->1M
 Z-->10
 Z-->4
 10-->B
@@ -291,7 +290,7 @@ Z-->4
 15-->11
 15-->12
 15-->14
-16-->K
+16-->M
 16-->Z
 16-->18
 18-->19
@@ -320,26 +319,25 @@ Z-->4
 1J-->19
 1K-->19
 1L-->19
-1M-->O
-1N-->D
-1N-->K
-1N-->Y
-1N-->4
+1M-->D
+1M-->M
+1M-->Y
+1M-->4
+1M-->8
+1N-->2
 1N-->8
+1N-->1M
 1O-->2
 1O-->8
-1O-->1N
-1P-->2
+1O-->1M
+1O-->10
+1O-->5
+1O-->4
+1O-->1P
 1P-->8
-1P-->1N
-1P-->10
-1P-->5
-1P-->4
-1P-->1Q
-1Q-->8
-1Q-->1N
+1P-->1M
 
-class 0,1,3,9,C,J,N,P,X,17 subgraphs;
+class 0,1,3,9,C,J,L,P,X,17 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

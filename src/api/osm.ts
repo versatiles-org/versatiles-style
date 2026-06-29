@@ -4,21 +4,41 @@ import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { ResolvedLayout, ResolvedOsmOptions } from '../types/index.js';
 import type { LayerGroupOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
-import { getShortbreadTemplate, buildContext, buildStyleLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
+import { buildContext, buildStyleLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, addBuildings3D } from '../features/index.js';
 import { resolveOsmOptions } from '../resolve/index.js';
+import { normalizeAttribution } from '../lib/utils.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
 // ── Build base style from resolved options ────────────────────────────────────
 
+// The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
+// The source tiles/bounds/zoom are then taken from the resolved OSM url (string or TileJSON).
 function buildBase(resolved: ResolvedOsmOptions): StyleSpecification {
-	const style = getShortbreadTemplate();
-
-	style.glyphs = resolved.urls.glyphsPattern;
-	style.sprite = resolved.urls.sprite as StyleSpecification['sprite'];
+	const style: StyleSpecification = {
+		version: 8,
+		name: 'versatiles',
+		metadata: { license: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+		glyphs: resolved.urls.glyphsPattern,
+		sprite: resolved.urls.sprite as StyleSpecification['sprite'],
+		sources: {
+			[SOURCE_NAME]: {
+				type: 'vector',
+				scheme: 'xyz',
+				attribution: normalizeAttribution(
+					'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				),
+				tiles: ['https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'],
+				bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
+				minzoom: 0,
+				maxzoom: 14,
+			},
+		},
+		layers: [],
+	};
 
 	const source = style.sources[SOURCE_NAME] as Record<string, unknown>;
 	if (typeof resolved.urls.osm === 'string') {
