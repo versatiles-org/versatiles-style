@@ -25,7 +25,7 @@ function walkValue(value: unknown, recolorFn: (s: string) => string): unknown {
 	return value;
 }
 
-export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolorOptions): StyleSpecification {
+export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolorOptions) {
 	const cache = new Map<string, string>();
 
 	const recolorString = (input: string): string => {
@@ -37,13 +37,11 @@ export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolorOpti
 		return result;
 	};
 
-	const result = structuredClone(style);
-	for (const layer of result.layers) {
+	for (const layer of style.layers) {
 		const paint = (layer as Record<string, unknown>).paint as Record<string, unknown> | undefined;
 		if (!paint) continue;
 		for (const key of Object.keys(paint)) {
 			if (key.endsWith('-color')) paint[key] = walkValue(paint[key], recolorString);
 		}
 	}
-	return result;
 }

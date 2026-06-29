@@ -165,10 +165,10 @@ subgraph 3["types"]
 5["colors.ts"]
 6["tilejson.ts"]
 7["vector_layer.ts"]
-1S["layer-groups.ts"]
-1T["maplibre.ts"]
-1U["options.ts"]
-1V["resolved.ts"]
+1R["layer-groups.ts"]
+1S["maplibre.ts"]
+1T["options.ts"]
+1U["resolved.ts"]
 end
 subgraph 9["color"]
 A["recolor.ts"]
@@ -187,7 +187,6 @@ F["hillshade.ts"]
 G["landcover.ts"]
 H["sun.ts"]
 I["terrain.ts"]
-1O["buildings.ts"]
 end
 subgraph J["lib"]
 K["utils.ts"]
@@ -205,7 +204,7 @@ S["gray.ts"]
 T["muted.ts"]
 U["natural.ts"]
 V["toner.ts"]
-1R["types.ts"]
+1Q["types.ts"]
 end
 subgraph X["shortbread"]
 Y["index.ts"]
@@ -228,8 +227,8 @@ subgraph 17["layers"]
 end
 19["build.ts"]
 end
-1P["index.ts"]
-1Q["variants.ts"]
+1O["index.ts"]
+1P["variants.ts"]
 end
 2-->4
 2-->8
@@ -328,15 +327,15 @@ Z-->4
 1N-->2
 1N-->8
 1N-->1M
-1P-->2
+1O-->2
+1O-->8
+1O-->1M
+1O-->10
+1O-->5
+1O-->4
+1O-->1P
 1P-->8
 1P-->1M
-1P-->10
-1P-->5
-1P-->4
-1P-->1Q
-1Q-->8
-1Q-->1M
 
 class 0,1,3,9,C,J,L,P,X,17 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
