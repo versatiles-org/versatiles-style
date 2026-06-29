@@ -19,7 +19,7 @@
     "build-sprites": "tsx scripts/build-sprites.ts",
     "dev": "vite",
     "doc": "npm run doc-graph",
-    "doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
+    "doc-graph": "vrt deps-graph --collapse-dir \"**/shortbread/layers/*\" | vrt doc-insert README.md '### Dependency Graph'",
     "doc-screenshots": "tsx scripts/screenshots.ts",
     "doc-typescript": "vrt doc-typescript -f html",
     "format": "prettier --write --log-level warn .",

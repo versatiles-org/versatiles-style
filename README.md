@@ -157,18 +157,18 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 8["osm.ts"]
-1M["satellite.ts"]
-1N["index.ts"]
+1C["satellite.ts"]
+1D["index.ts"]
 end
 subgraph 3["types"]
 4["index.ts"]
 5["colors.ts"]
 6["tilejson.ts"]
 7["vector_layer.ts"]
-1R["layer-groups.ts"]
-1S["maplibre.ts"]
-1T["options.ts"]
-1U["resolved.ts"]
+1H["layer-groups.ts"]
+1I["maplibre.ts"]
+1J["options.ts"]
+1K["resolved.ts"]
 end
 subgraph 9["color"]
 A["recolor.ts"]
@@ -204,35 +204,27 @@ S["gray.ts"]
 T["muted.ts"]
 U["natural.ts"]
 V["toner.ts"]
-1Q["types.ts"]
+1G["types.ts"]
 end
 subgraph X["shortbread"]
 Y["index.ts"]
 Z["context.ts"]
 16["groups.ts"]
-subgraph 17["layers"]
-18["index.ts"]
-1A["airport.ts"]
-1B["background.ts"]
-1C["boundaries.ts"]
-1D["buildings.ts"]
-1E["labels.ts"]
-1F["landcover.ts"]
-1G["markings.ts"]
-1H["pois.ts"]
-1I["roads.ts"]
-1J["sites.ts"]
-1K["transitstops.ts"]
-1L["water.ts"]
+1B["build.ts"]
 end
-19["build.ts"]
+1E["index.ts"]
+1F["variants.ts"]
 end
-1O["index.ts"]
-1P["variants.ts"]
+subgraph 17["**"]
+subgraph 18["shortbread"]
+subgraph 19["layers"]
+1A["* (13 files)"]
+end
+end
 end
 2-->4
 2-->8
-2-->1M
+2-->1C
 4-->5
 4-->6
 4-->7
@@ -267,7 +259,7 @@ W-->K
 W-->O
 Y-->Z
 Y-->16
-Y-->18
+Y-->1A
 Z-->10
 Z-->4
 10-->B
@@ -292,52 +284,28 @@ Z-->4
 15-->14
 16-->M
 16-->Z
-16-->18
-18-->19
-18-->1A
-18-->1B
-18-->1C
-18-->1D
-18-->1E
-18-->1F
-18-->1G
-18-->1H
-18-->1I
-18-->1J
-18-->1K
-18-->1L
-19-->10
-1A-->19
-1B-->19
-1C-->19
-1D-->19
-1E-->19
-1F-->19
-1G-->19
-1H-->19
-1I-->19
-1J-->19
-1K-->19
-1L-->19
-1M-->D
-1M-->M
-1M-->Y
-1M-->4
-1M-->8
-1N-->2
-1N-->8
-1N-->1M
-1O-->2
-1O-->8
-1O-->1M
-1O-->10
-1O-->5
-1O-->4
-1O-->1P
-1P-->8
-1P-->1M
+16-->1A
+1A-->1B
+1B-->10
+1C-->D
+1C-->M
+1C-->Y
+1C-->4
+1C-->8
+1D-->2
+1D-->8
+1D-->1C
+1E-->2
+1E-->8
+1E-->1C
+1E-->10
+1E-->5
+1E-->4
+1E-->1F
+1F-->8
+1F-->1C
 
-class 0,1,3,9,C,J,L,P,X,17 subgraphs;
+class 0,1,3,9,C,J,L,P,X,17,18,19 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
