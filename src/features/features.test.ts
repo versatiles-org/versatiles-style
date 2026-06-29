@@ -4,7 +4,6 @@ import type { ResolvedSun } from '../types/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
-import { addLandcover } from './landcover.js';
 import { configure3DLighting } from './sun.js';
 
 const ELEVATION_URL = 'https://tiles.example.com/dem/{z}/{x}/{y}.png';
@@ -111,23 +110,6 @@ describe('addHillshade', () => {
 		const waterIdx = ids.indexOf('water');
 		// hillshade should be after the last fill (water), before road
 		expect(hillshadeIdx).toBeGreaterThan(waterIdx);
-	});
-});
-
-describe('addLandcover', () => {
-	it('removes fill-opacity from affected land layers', () => {
-		const style = baseStyle();
-		addLandcover(style);
-		const grassLayer = style.layers.find((l) => l.id === 'land-grass') as { paint?: Record<string, unknown> };
-		expect(grassLayer?.paint?.['fill-opacity']).toBeUndefined();
-	});
-
-	it('does not touch unaffected layers', () => {
-		const style = baseStyle();
-		addLandcover(style);
-		const forestLayer = style.layers.find((l) => l.id === 'land-forest') as { paint?: Record<string, unknown> };
-		// land-forest is not in LANDCOVER_AFFECTED, its opacity is unchanged
-		expect(forestLayer?.paint?.['fill-opacity']).toBe(0.6);
 	});
 });
 

@@ -10,6 +10,7 @@ import type {
 	SpriteInput,
 	SunOptions,
 	TextOptions,
+	TileJSONSpecification,
 } from '../types/index.js';
 import type {
 	ResolvedFeatures,
@@ -150,10 +151,15 @@ export function resolveFeatures(features?: OsmOptions['features']): ResolvedFeat
 }
 
 export function resolveOsmUrls(base: string, urls?: OsmOptions['urls']): ResolvedUrls {
+	function resolveSource(source: string | TileJSONSpecification | undefined): string | TileJSONSpecification {
+		if (!source) return resolveUrl(base, '/tiles/osm/tiles.json');
+		if (typeof source === 'string') return resolveUrl(base, source);
+		return source;
+	}
 	return {
 		base,
-		osm: urls?.osm ?? resolveUrl(base, '/tiles/osm/{z}/{x}/{y}'),
-		elevation: urls?.elevation ?? resolveUrl(base, '/tiles/elevation/{z}/{x}/{y}'),
+		osm: resolveSource(urls?.osm),
+		elevation: resolveSource(urls?.elevation),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite),
 	};
