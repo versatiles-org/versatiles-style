@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyRecolor } from './index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
+import { resolveRecolor } from '../resolve/resolveOsmOptions.js';
 
 function makeStyle(bgColor: string, fillColor: string): StyleSpecification {
 	return {
@@ -36,14 +37,14 @@ function fillColor(style: StyleSpecification): string {
 describe('applyRecolor()', () => {
 	it('returns a new style object (does not mutate input)', () => {
 		const original = makeStyle('#ffffff', '#aabbcc');
-		const result = applyRecolor(original, { invertBrightness: false });
+		const result = applyRecolor(original, resolveRecolor({ invertBrightness: false }));
 		expect(result).not.toBe(original);
 		expect(bgColor(original)).toBe('#ffffff');
 	});
 
 	it('empty options leave colors unchanged', () => {
 		const style = makeStyle('#aabbcc', '#112233');
-		const result = applyRecolor(style, {});
+		const result = applyRecolor(style, resolveRecolor({}));
 		// parse+re-stringify may change format but value should be equivalent
 		expect(bgColor(result)).toBeDefined();
 		expect(fillColor(result)).toBeDefined();
@@ -53,7 +54,7 @@ describe('applyRecolor()', () => {
 
 	it('invertBrightness changes the background and fill colors', () => {
 		const style = makeStyle('#ffffff', '#112233');
-		const result = applyRecolor(style, { invertBrightness: true });
+		const result = applyRecolor(style, resolveRecolor({ invertBrightness: true }));
 		// Both colors should have changed
 		expect(bgColor(result)).not.toBe('#ffffff');
 		expect(fillColor(result)).not.toBe('#112233');
@@ -61,7 +62,7 @@ describe('applyRecolor()', () => {
 
 	it('invertBrightness changes background color', () => {
 		const original = makeStyle('#ff8800', '#000000');
-		const result = applyRecolor(original, { invertBrightness: true });
+		const result = applyRecolor(original, resolveRecolor({ invertBrightness: true }));
 		expect(bgColor(result)).not.toBe(bgColor(original));
 	});
 
@@ -69,14 +70,14 @@ describe('applyRecolor()', () => {
 
 	it('rotateHue changes a saturated color', () => {
 		const style = makeStyle('#ff0000', '#00ff00');
-		const result = applyRecolor(style, { rotateHue: 120 });
+		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
 		expect(bgColor(result)).not.toBe(bgColor(makeStyle('#ff0000', '#00ff00')));
 	});
 
 	it('rotateHue by different amounts produces different colors', () => {
 		const style = makeStyle('#ff8800', '#00ff00');
-		const result60 = applyRecolor(style, { rotateHue: 60 });
-		const result120 = applyRecolor(style, { rotateHue: 120 });
+		const result60 = applyRecolor(style, resolveRecolor({ rotateHue: 60 }));
+		const result120 = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
 		expect(bgColor(result60)).not.toBe(bgColor(result120));
 	});
 
@@ -84,7 +85,7 @@ describe('applyRecolor()', () => {
 
 	it('saturate with -1 removes saturation from the output string', () => {
 		const style = makeStyle('#ff0000', '#0000ff');
-		const result = applyRecolor(style, { saturate: -1 });
+		const result = applyRecolor(style, resolveRecolor({ saturate: -1 }));
 		// The Color class returns hsl(h,s%,l%) format; after -1 saturation, s should be 0
 		expect(bgColor(result)).toMatch(/hsl\(\d+,0%/);
 	});
@@ -94,8 +95,8 @@ describe('applyRecolor()', () => {
 	it('tint shifts a saturated color toward the tint hue', () => {
 		// Use a saturated blue (#0000ff) tinted toward red — the hue should shift
 		const style = makeStyle('#0000ff', '#00ff00');
-		const resultNone = applyRecolor(style, {});
-		const resultTinted = applyRecolor(style, { tint: { color: '#ff0000', amount: 0.5 } });
+		const resultNone = applyRecolor(style, resolveRecolor({}));
+		const resultTinted = applyRecolor(style, resolveRecolor({ tint: { color: '#ff0000', amount: 0.5 } }));
 		expect(bgColor(resultTinted)).not.toBe(bgColor(resultNone));
 	});
 
@@ -103,7 +104,7 @@ describe('applyRecolor()', () => {
 
 	it('blend with amount=1 replaces color entirely', () => {
 		const style = makeStyle('#ff0000', '#00ff00');
-		const result = applyRecolor(style, { blend: { color: '#0000ff', amount: 1 } });
+		const result = applyRecolor(style, resolveRecolor({ blend: { color: '#0000ff', amount: 1 } }));
 		// After full blend → should be (close to) blue
 		const bg = bgColor(result);
 		const match = bg.match(/(\d+)[^0-9]+(\d+)[^0-9]+(\d+)/);
@@ -117,7 +118,7 @@ describe('applyRecolor()', () => {
 
 	it('does not alter fill-opacity (not a color key)', () => {
 		const style = makeStyle('#ffffff', '#000000');
-		const result = applyRecolor(style, { invertBrightness: true });
+		const result = applyRecolor(style, resolveRecolor({ invertBrightness: true }));
 		const opacity = (result.layers[1].paint as Record<string, unknown>)['fill-opacity'];
 		expect(opacity).toBe(1);
 	});
@@ -126,13 +127,13 @@ describe('applyRecolor()', () => {
 
 	it('handles rgb() color strings', () => {
 		const style = makeStyle('rgb(255,0,0)', '#000000');
-		const result = applyRecolor(style, { rotateHue: 120 });
+		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
 		expect(bgColor(result)).toBeDefined();
 	});
 
 	it('handles hsl() color strings', () => {
 		const style = makeStyle('hsl(0,100%,50%)', '#000000');
-		const result = applyRecolor(style, { rotateHue: 120 });
+		const result = applyRecolor(style, resolveRecolor({ rotateHue: 120 }));
 		expect(bgColor(result)).toBeDefined();
 	});
 
@@ -152,7 +153,7 @@ describe('applyRecolor()', () => {
 			],
 		} as unknown as StyleSpecification;
 		// Should not throw
-		expect(() => applyRecolor(style, { invertBrightness: true })).not.toThrow();
+		expect(() => applyRecolor(style, resolveRecolor({ invertBrightness: true }))).not.toThrow();
 	});
 
 	// ── array paint values (expressions) ──────────────────────────────────────
@@ -173,7 +174,7 @@ describe('applyRecolor()', () => {
 				},
 			],
 		} as unknown as StyleSpecification;
-		const result = applyRecolor(style, { saturate: -1 });
+		const result = applyRecolor(style, resolveRecolor({ saturate: -1 }));
 		const fillExpr = (result.layers[0].paint as Record<string, unknown>)['fill-color'];
 		expect(Array.isArray(fillExpr)).toBe(true);
 	});
@@ -201,7 +202,7 @@ describe('applyRecolor()', () => {
 				},
 			],
 		} as unknown as StyleSpecification;
-		const result = applyRecolor(style, { rotateHue: 60 });
+		const result = applyRecolor(style, resolveRecolor({ rotateHue: 60 }));
 		const c1 = (result.layers[0].paint as Record<string, string>)['fill-color'];
 		const c2 = (result.layers[1].paint as Record<string, string>)['fill-color'];
 		expect(c1).toBe(c2);

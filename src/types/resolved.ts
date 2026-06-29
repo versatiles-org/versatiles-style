@@ -1,5 +1,5 @@
 import type { TileJSONSpecification } from './tilejson.js';
-import type { ColorsOptions, RecolorOptions } from './colors.js';
+import type { ColorsOptions } from './colors.js';
 import type { LayerGroupOptions } from './layer-groups.js';
 import type { Palette, SunOptions, SkyOptions, SpriteInput, SatelliteOptions } from './options.js';
 
@@ -50,6 +50,17 @@ export type ResolvedLayout = {
 export type ResolvedSun = Required<SunOptions>;
 export type ResolvedSky = Required<SkyOptions>;
 
+export type ResolvedRecolorOptions = {
+	invertBrightness: boolean;
+	rotateHue: number;
+	saturate: number;
+	tint: { color: string; amount: number };
+	gamma: number;
+	contrast: number;
+	brightness: number;
+	blend: { color: string; amount: number };
+};
+
 export type ResolvedOsmOptions = {
 	urls: ResolvedUrls;
 	features: ResolvedFeatures;
@@ -60,7 +71,7 @@ export type ResolvedOsmOptions = {
 	text: ResolvedText;
 	layout: ResolvedLayout;
 	colors: Required<ColorsOptions>;
-	recolor: RecolorOptions | undefined;
+	recolor: ResolvedRecolorOptions;
 };
 
 export type ResolvedSatelliteOptions = {
