@@ -230,16 +230,18 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 
 	// 6. Optional features
 	if (resolved.features.terrain !== false) {
-		style = addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.hillshade !== false) {
-		style = addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
-		style = addLandcover(style);
+		addLandcover(style);
 	}
 
-	style = configure3DLighting(style, resolved.sun);
+	if (resolved.features.hillshade !== false || resolved.features.buildings === 'extruded') {
+		configure3DLighting(style, resolved.sun);
+	}
 
 	// 7. Post-process: recolor
 	if (resolved.recolor) {

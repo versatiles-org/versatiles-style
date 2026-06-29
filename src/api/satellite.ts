@@ -3,7 +3,7 @@ import type { SatelliteOptions } from '../types/index.js';
 import type { ResolvedOsmOptions, ResolvedSatelliteOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
-import { addTerrain, addHillshade } from '../features/index.js';
+import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { resolveSatelliteOptions } from '../resolve/index.js';
 import { osm } from './osm.js';
 
@@ -99,7 +99,7 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	const resolved = resolveSatelliteOptions(options);
 
 	// Base style shell
-	let style: StyleSpecification = {
+	const style: StyleSpecification = {
 		version: 8,
 		sources: {},
 		layers: [],
@@ -150,12 +150,13 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 
 	// Optional terrain
 	if (resolved.features.terrain !== false) {
-		style = addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 
 	// Optional hillshade
 	if (resolved.features.hillshade !== false) {
-		style = addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		configure3DLighting(style, resolved.sun);
 	}
 
 	return style;
