@@ -141,9 +141,22 @@ describe('resolveOsmOptions', () => {
 	});
 
 	it('passes recolor through', () => {
-		const recolor = { rotateHue: 120 };
-		const r = resolveOsmOptions({ recolor });
-		expect(r.recolor).toBe(recolor);
+		expect(resolveOsmOptions({ recolor: { rotateHue: 120 } }).recolor).toStrictEqual({
+			blend: {
+				amount: 0,
+				color: '#ff0000',
+			},
+			brightness: 0,
+			contrast: 1,
+			gamma: 1,
+			invertBrightness: false,
+			rotateHue: 120,
+			saturate: 0,
+			tint: {
+				amount: 0,
+				color: '#ff0000',
+			},
+		});
 	});
 });
 
