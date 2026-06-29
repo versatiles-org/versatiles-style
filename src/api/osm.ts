@@ -7,7 +7,7 @@ import { colorOptionsKeys } from '../types/index.js';
 import { buildContext, buildStyleLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
-import { addTerrain, addHillshade, addLandcover, addBuildings3D } from '../features/index.js';
+import { addTerrain, addHillshade, addLandcover, configure3DLighting } from '../features/index.js';
 import { resolveOsmOptions } from '../resolve/index.js';
 import { normalizeAttribution } from '../lib/utils.js';
 
@@ -238,9 +238,8 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	if (resolved.features.landcover) {
 		style = addLandcover(style);
 	}
-	if (resolved.features.buildings === 'extruded') {
-		style = addBuildings3D(style, {}, resolved.sun);
-	}
+
+	style = configure3DLighting(style, resolved.sun);
 
 	// 7. Post-process: recolor
 	if (resolved.recolor) {

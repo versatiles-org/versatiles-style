@@ -213,10 +213,16 @@ describe('osm()', () => {
 
 	it('adds 3D buildings when features.buildings = extruded', () => {
 		const style = osm({ features: { buildings: 'extruded' } });
-		const flat = layerById(style, 'building');
-		const b3d = layerById(style, 'building-3d');
-		expect((flat?.layout as Record<string, unknown>)?.visibility).toBe('none');
-		expect((b3d?.layout as Record<string, unknown>)?.visibility).toBe('visible');
+		expect(layerById(style, 'building')).toBeUndefined();
+		expect(layerById(style, 'building:outline')).toBeUndefined();
+		expect(layerById(style, 'building-3d')).toBeDefined();
+	});
+
+	it('has no 3D buildings when features.buildings = flat', () => {
+		const style = osm({ features: { buildings: 'flat' } });
+		expect(layerById(style, 'building')).toBeDefined();
+		expect(layerById(style, 'building:outline')).toBeDefined();
+		expect(layerById(style, 'building-3d')).toBeUndefined();
 	});
 
 	it('applies recolor', () => {

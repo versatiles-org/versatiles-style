@@ -5,7 +5,6 @@ import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
 import { addLandcover } from './landcover.js';
-import { addBuildings3D } from './buildings.js';
 
 const ELEVATION_URL = 'https://tiles.example.com/dem/{z}/{x}/{y}.png';
 
@@ -150,39 +149,5 @@ describe('addLandcover', () => {
 		addLandcover(original);
 		const grassLayer = original.layers.find((l) => l.id === 'land-grass') as { paint?: Record<string, unknown> };
 		expect(grassLayer?.paint?.['fill-opacity']).toBeDefined();
-	});
-});
-
-describe('addBuildings3D', () => {
-	it('hides flat building layers', () => {
-		const result = addBuildings3D(baseStyle(), {}, MOCK_SUN);
-		const flat = result.layers.find((l) => l.id === 'building') as { layout?: Record<string, unknown> };
-		expect(flat?.layout?.visibility).toBe('none');
-		const outline = result.layers.find((l) => l.id === 'building:outline') as { layout?: Record<string, unknown> };
-		expect(outline?.layout?.visibility).toBe('none');
-	});
-
-	it('shows 3D building layer', () => {
-		const result = addBuildings3D(baseStyle(), {}, MOCK_SUN);
-		const b3d = result.layers.find((l) => l.id === 'building-3d') as { layout?: Record<string, unknown> };
-		expect(b3d?.layout?.visibility).toBe('visible');
-	});
-
-	it('sets fill-extrusion-opacity when provided', () => {
-		const result = addBuildings3D(baseStyle(), { opacity: 0.8 }, MOCK_SUN);
-		const b3d = result.layers.find((l) => l.id === 'building-3d') as { paint?: Record<string, unknown> };
-		expect(b3d?.paint?.['fill-extrusion-opacity']).toBe(0.8);
-	});
-
-	it('sets style.light from sun', () => {
-		const result = addBuildings3D(baseStyle(), {}, MOCK_SUN);
-		expect(result.light).toBeDefined();
-	});
-
-	it('does not mutate the input style', () => {
-		const original = baseStyle();
-		addBuildings3D(original, {}, MOCK_SUN);
-		const b3d = original.layers.find((l) => l.id === 'building-3d') as { layout?: Record<string, unknown> };
-		expect(b3d?.layout?.visibility).toBe('none');
 	});
 });
