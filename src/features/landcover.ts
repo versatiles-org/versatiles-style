@@ -1,35 +1,48 @@
 import type { StyleSpecification } from '../types/index.js';
 
-// In "landcover mode" the user is expected to have a raster landcover layer underneath
-// the OSM vector layers. This function removes zoom-based fade-in opacity on land fill
-// layers so the raster shows through uniformly — rather than the vector fills fading in
-// at specific zoom levels, they are set to a constant low opacity from the start.
+// Low-zoom landcover (https://docs.versatiles.org/compendium/specification_shortbread_landcover.html).
 //
-// Affected layers: land-forest (already has low opacity), land-grass, land-vegetation,
-// land-park, land-garden, land-agriculture, land-residential, land-commercial, land-industrial,
-// land-waste, land-burial.
-const LANDCOVER_AFFECTED = new Set([
+// The landcover tileset writes ESA WorldCover data into the EXISTING `land` and `water_polygons`
+// source-layers, reusing existing `kind` values, only *below* the zoom where OSM introduces each
+// kind. So no extra source or layers are needed — the matching fill layers already render those
+// kinds. They are merely hidden at low zoom by their zoom-based fade-in.
+//
+// `addLandcover` removes that fade-in on exactly the layers whose `kind` carries landcover data,
+// replacing the zoom ramp with its fully-faded-in (max) opacity. This keeps each layer's high-zoom
+// appearance identical while making it visible at low zoom.
+//
+// kind → layer:  forest→land-forest (z0–6), grassland→land-grass (z0–10), scrub→land-vegetation
+// (z0–10), farmland→land-agriculture (z0–9), residential→land-residential (z0–9), water→water-area
+// (z0–3). The remaining landcover kinds (sand, marsh/swamp, glacier) map to layers that already
+// render at all zooms (constant opacity), so they need no change.
+const LANDCOVER_DEFADE = new Set([
+	'land-forest',
 	'land-grass',
 	'land-vegetation',
-	'land-park',
-	'land-garden',
 	'land-agriculture',
 	'land-residential',
-	'land-commercial',
-	'land-industrial',
-	'land-waste',
-	'land-burial',
+	'water-area',
 ]);
+
+// The fully-faded-in opacity of a fill-opacity value that may be a constant number or a
+// ['interpolate', ['linear'], ['zoom'], z0, v0, …] zoom ramp.
+function fadedInOpacity(value: unknown): number {
+	if (typeof value === 'number') return value;
+	if (Array.isArray(value) && value[0] === 'interpolate') {
+		let max = 0;
+		for (let i = 4; i < value.length; i += 2) {
+			if (typeof value[i] === 'number') max = Math.max(max, value[i] as number);
+		}
+		return max;
+	}
+	return 1; // no opacity set → fully opaque
+}
 
 export function addLandcover(style: StyleSpecification) {
 	for (const layer of style.layers) {
-		if (!LANDCOVER_AFFECTED.has(layer.id)) continue;
+		if (!LANDCOVER_DEFADE.has(layer.id)) continue;
 		if (layer.type !== 'fill') continue;
-		// Remove zoom-dependent opacity so the layer appears at full opacity immediately,
-		// letting the raster landcover control the visual at all zoom levels.
-		const paint = layer.paint as Record<string, unknown> | undefined;
-		if (paint && 'fill-opacity' in paint) {
-			delete paint['fill-opacity'];
-		}
+		const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+		paint['fill-opacity'] = fadedInOpacity(paint['fill-opacity']);
 	}
 }

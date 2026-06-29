@@ -18,6 +18,21 @@ const SOURCE_NAME = 'versatiles-shortbread';
 // The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
 // The source tiles/bounds/zoom are then taken from the resolved OSM url (string or TileJSON).
 function buildBase(resolved: ResolvedOsmOptions): StyleSpecification {
+	let source: StyleSpecification['sources'][string] = { type: 'vector' };
+
+
+
+	if (typeof resolved.urls.osm === 'string') {
+		source.url = resolved.urls.osm;
+	} else {
+		const tj = resolved.urls.osm as TileJSONSpecification;
+		source.tiles = tj.tiles;
+		if (tj.minzoom !== undefined) source.minzoom = tj.minzoom;
+		if (tj.maxzoom !== undefined) source.maxzoom = tj.maxzoom;
+		if (tj.bounds) source.bounds = tj.bounds;
+		if (tj.attribution) source.attribution = tj.attribution;
+	}
+
 	const style: StyleSpecification = {
 		version: 8,
 		name: 'versatiles',
@@ -25,32 +40,10 @@ function buildBase(resolved: ResolvedOsmOptions): StyleSpecification {
 		glyphs: resolved.urls.glyphsPattern,
 		sprite: resolved.urls.sprite as StyleSpecification['sprite'],
 		sources: {
-			[SOURCE_NAME]: {
-				type: 'vector',
-				scheme: 'xyz',
-				attribution: normalizeAttribution(
-					'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				),
-				tiles: ['https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'],
-				bounds: [-180, -85.0511287798066, 180, 85.0511287798066],
-				minzoom: 0,
-				maxzoom: 14,
-			},
+			[SOURCE_NAME]: source,
 		},
 		layers: [],
 	};
-
-	const source = style.sources[SOURCE_NAME] as Record<string, unknown>;
-	if (typeof resolved.urls.osm === 'string') {
-		source['tiles'] = [resolved.urls.osm];
-	} else {
-		const tj = resolved.urls.osm as TileJSONSpecification;
-		source['tiles'] = tj.tiles;
-		if (tj.minzoom !== undefined) source['minzoom'] = tj.minzoom;
-		if (tj.maxzoom !== undefined) source['maxzoom'] = tj.maxzoom;
-		if (tj.bounds) source['bounds'] = tj.bounds;
-		if (tj.attribution) source['attribution'] = tj.attribution;
-	}
 
 	return style;
 }

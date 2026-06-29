@@ -6,8 +6,7 @@ variants.push({
 	name: 'custom',
 	build: () =>
 		osm({
-			theme: 'colorful',
-			text: { language: 'de', languageStrict: true },
+			features: { landcover: true },
 		}),
 });
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
@@ -30,7 +29,12 @@ let map: maplibregl.Map | undefined;
 async function loadStyle(name: string) {
 	const variant = variants.find((v) => v.name === name);
 	if (!variant) return;
-	const style = await variant.build();
+	//const style = variant.build();
+	const style = osm({
+		urls: { base: 'https://tiles.versatiles.org' },
+		features: { landcover: true },
+	});
+	console.log(style);
 
 	if (map) {
 		map.setStyle(style);
