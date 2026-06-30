@@ -175,7 +175,9 @@ function processZoomStops(
 	base?: number
 ): RuleValue[] {
 	const pairs = Object.entries(obj)
-		.map(([z, v]) => [parseInt(z, 10), cb ? cb(v) : v] as [number, RuleValue])
+		// parseFloat (not parseInt) so fractional zoom stops like 6.5 / 13.5 are preserved rather
+		// than truncated — truncation collides with integer stops and yields invalid interpolations.
+		.map(([z, v]) => [parseFloat(z), cb ? cb(v) : v] as [number, RuleValue])
 		.sort((a, b) => a[0] - b[0]);
 	const interp: RuleValue = base == null ? ['linear'] : ['exponential', base];
 	const expr: RuleValue[] = ['interpolate', interp, ['zoom'] as unknown as RuleValue];
@@ -267,17 +269,21 @@ function evalStops(base: number, stops: Record<number, number>, z: number): numb
 	return stops[lo] + (stops[hi] - stops[lo]) * t;
 }
 
-/** Grow a line's width from 0 → its natural value over `appear`→`appear+span`, so it fades in by
- *  thinning rather than going transparent. The natural curve is preserved EXACTLY from `appear+span`
- *  upward — exponential interpolation is self-similar when re-anchored at an interior point — so only
- *  the appearance is animated. (MapLibre forbids nesting `["zoom"]` inside `*`, hence the splice.) */
-export function fadeInWidth(appear: number, size: SizeValue, span = 1): ExpStops {
+/** Grow a line's width from `floor`×natural → its natural value over `appear`→`appear+span`, so it
+ *  fades in by thinning rather than going transparent. `floor` (0–1) sets the starting width as a
+ *  fraction of the value at `appear+span`: 0 starts from nothing; a small positive value keeps the
+ *  line visible at the appearance zoom while it still grows. The natural curve is preserved EXACTLY
+ *  from `appear+span` upward — exponential interpolation is self-similar when re-anchored at an
+ *  interior point — so only the appearance is animated. (MapLibre forbids nesting `["zoom"]` inside
+ *  `*`, hence the splice.) */
+export function fadeInWidth(appear: number, size: SizeValue, span = 1, floor = 0): ExpStops {
 	const top = appear + span;
-	if (typeof size === 'number') return { base: 1, stops: { [appear]: 0, [top]: size } };
+	if (typeof size === 'number') return { base: 1, stops: { [appear]: floor * size, [top]: size } };
 	const isExp = 'stops' in size;
 	const base = isExp ? size.base : 1;
 	const stops = isExp ? size.stops : (size as Record<number, number>);
-	const out: Record<number, number> = { [appear]: 0, [top]: evalStops(base, stops, top) };
+	const topVal = evalStops(base, stops, top);
+	const out: Record<number, number> = { [appear]: floor * topVal, [top]: topVal };
 	for (const [z, v] of Object.entries(stops)) if (Number(z) > top) out[Number(z)] = v;
 	return { base, stops: out };
 }

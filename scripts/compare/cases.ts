@@ -341,27 +341,27 @@ export const CASES: Case[] = [
 // Surface / bridge / tunnel × road class, generated to keep the catalog DRY.
 // minZoom = the Shortbread `streets` minzoom for that road kind.
 function roadCases(): Case[] {
-	// `fadeIn`: colorful ramps secondary/tertiary opacity 0→1 over their first zoom (see roads.ts).
-	const classes: { omt: string; sb: string; band: string; minZoom: number; fadeIn?: boolean }[] = [
+	// Roads draw at their natural (OSM-Bright) width as soon as their data appears and fade in only by
+	// opacity, which the harness doesn't compare — so every class's width matches from its minZoom.
+	const classes: { omt: string; sb: string; band: string; minZoom: number }[] = [
 		{ omt: 'motorway', sb: 'motorway', band: 'roads.motorway', minZoom: 5 },
 		{ omt: 'trunk', sb: 'trunk', band: 'roads.trunk', minZoom: 6 },
 		{ omt: 'primary', sb: 'primary', band: 'roads.primary', minZoom: 8 },
-		{ omt: 'secondary', sb: 'secondary', band: 'roads.secondary', minZoom: 9, fadeIn: true },
-		{ omt: 'tertiary', sb: 'tertiary', band: 'roads.tertiary', minZoom: 10, fadeIn: true },
+		{ omt: 'secondary', sb: 'secondary', band: 'roads.secondary', minZoom: 9 },
+		{ omt: 'tertiary', sb: 'tertiary', band: 'roads.tertiary', minZoom: 10 },
 		{ omt: 'minor', sb: 'residential', band: 'roads.minor', minZoom: 12 },
 		{ omt: 'service', sb: 'service', band: 'roads.service', minZoom: 13 },
 		{ omt: 'track', sb: 'track', band: 'roads.track', minZoom: 13 },
 		{ omt: 'path', sb: 'path', band: 'roads.path', minZoom: 13 },
 	];
 	const out: Case[] = [];
-	for (const { omt, sb, band, minZoom, fadeIn } of classes) {
+	for (const { omt, sb, band, minZoom } of classes) {
 		out.push({
 			name: `${omt} (surface)`,
 			band,
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb } },
 			minZoom,
-			...(fadeIn ? { fadeIn } : {}),
 		});
 		out.push({
 			name: `${omt} (bridge)`,
@@ -369,7 +369,6 @@ function roadCases(): Case[] {
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt, brunnel: 'bridge' } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb, bridge: true } },
 			minZoom,
-			...(fadeIn ? { fadeIn } : {}),
 		});
 		out.push({
 			name: `${omt} (tunnel)`,
@@ -377,7 +376,6 @@ function roadCases(): Case[] {
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt, brunnel: 'tunnel' } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb, tunnel: true } },
 			minZoom,
-			...(fadeIn ? { fadeIn } : {}),
 		});
 	}
 	// motorway ramp / link — both styles gate the link rendering at zoom 12
