@@ -99,7 +99,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 17,
-		appear: 17,
 		size: { 17: 8, 19: 10 },
 		group: 'labels.addresses',
 	});
@@ -117,7 +116,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 14,
-		appear: 14,
 		size: { 14: 9, 18: 11 },
 		group: 'labels.streets',
 	});
@@ -133,7 +131,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		textAnchor: 'center',
 		minzoom: 14,
-		appear: 14,
 		size: { 14: 10, 18: 12, 20: 16 },
 		group: 'labels.streets',
 	});
@@ -145,7 +142,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['==', ['get', 'kind'], kind],
 			layout: { 'text-field': ctx.nameField },
 			...streetBase,
-			appear: 12,
 			group: 'labels.streets',
 		});
 	}
@@ -160,7 +156,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 3,
-		appear: 3,
 		color: placeWarm(ctx),
 		size: { 5: 10, 8: 12 },
 		group: 'labels.states',
@@ -176,7 +171,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 4,
-		appear: 4,
 		size: { 4: 11, 5: 13 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -192,7 +186,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 2,
-		appear: 2,
 		size: { 3: 11, 5: 14 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -203,7 +196,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 2,
-		appear: 2,
 		size: { 2: 11, 5: 15 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -217,7 +209,6 @@ function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.Tagge
 		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': POP_SORT_KEY },
 		...base,
 		minzoom: p.minzoom,
-		appear: p.minzoom,
 		size: p.size,
 		...(p.color ? { color: p.color(ctx) } : {}),
 		...(p.uppercase ? { textTransform: 'uppercase' } : {}),

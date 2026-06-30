@@ -79,6 +79,7 @@ export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// Shared base style (the old `symbol-*` wildcard).
 	const base: b.StyleProps = {
 		symbolPlacement: 'point',
+		iconOpacity: 0.7,
 		iconKeepUpright: true,
 		font: ctx.fonts.normal,
 		size: 10,
@@ -97,9 +98,6 @@ export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
 			layout: { 'text-field': ctx.nameField },
 			...base,
 			minzoom: stop.minzoom,
-			// fade in at the stop's appearance zoom: text to full, icons to their subtle 0.7
-			textOpacity: b.fadeIn(stop.minzoom, 1),
-			iconOpacity: b.fadeIn(stop.minzoom, 0.7),
 			image: stop.image,
 			iconSize: stop.iconSize,
 			group: 'transit.stops',

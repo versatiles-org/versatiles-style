@@ -254,7 +254,6 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			sourceLayer: 'pois',
 			filter: ['to-boolean', ['get', key]],
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
-			appear: 14, // fade in over z14→15, up to the target opacity below
 			iconSize: { 16: 0.5, 19: 0.5, 20: 1 },
 			opacity: 0.4,
 			symbolPlacement: 'point',
