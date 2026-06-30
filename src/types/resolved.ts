@@ -8,7 +8,6 @@ export type ResolvedTheme = {
 };
 
 export type ResolvedUrls = {
-	base: string;
 	osm: string;
 	elevation: string;
 	glyphsPattern: string;

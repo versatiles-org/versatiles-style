@@ -101,10 +101,8 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 	// Elevation is only needed (and fetched once, then reused) for terrain/hillshade.
 	const needElevation = resolved.features.terrain !== false || resolved.features.hillshade !== false;
 	const [osmSource, elevationSource] = await Promise.all([
-		loadTileSource(resolved.urls.osm, resolved.urls.base, resolved.urls.fetch),
-		needElevation
-			? loadTileSource(resolved.urls.elevation, resolved.urls.base, resolved.urls.fetch)
-			: Promise.resolve(undefined),
+		loadTileSource(resolved.urls.osm, resolved.urls.fetch),
+		needElevation ? loadTileSource(resolved.urls.elevation, resolved.urls.fetch) : Promise.resolve(undefined),
 	]);
 
 	// 1. Base style (template + URL configuration)

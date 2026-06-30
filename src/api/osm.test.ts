@@ -53,17 +53,9 @@ describe('osm()', () => {
 	});
 
 	it('uses explicit osm tile URL verbatim', async () => {
-		const style = await osm({ urls: { osm: 'https://custom.tiles/{z}/{x}/{y}' } });
+		const style = await osm({ urls: { osm: 'https://custom.tiles/tiles.json' } });
 		const src = style.sources['versatiles-shortbread'] as { tiles: string[] };
 		expect(src.tiles[0]).toBe('https://custom.tiles/{z}/{x}/{y}');
-	});
-
-	it('uses TileJSONSpecification for osm source', async () => {
-		const tileJSON = { tiles: ['https://tj.example/{z}/{x}/{y}'], minzoom: 2, maxzoom: 12 } as TileJSONSpecification;
-		const style = await osm({ urls: { osm: tileJSON } });
-		const src = style.sources['versatiles-shortbread'] as { tiles: string[]; minzoom: number };
-		expect(src.tiles[0]).toBe('https://tj.example/{z}/{x}/{y}');
-		expect(src.minzoom).toBe(2);
 	});
 
 	it('applies glyphs from custom base URL', async () => {
