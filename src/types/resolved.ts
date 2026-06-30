@@ -1,4 +1,3 @@
-import type { TileJSONSpecification } from './tilejson.js';
 import type { ColorsOptions } from './colors.js';
 import type { LayerGroupOptions } from './layer-groups.js';
 import type { FetchLike, Palette, SunOptions, SkyOptions, SpriteInput, SatelliteOptions } from './options.js';
@@ -10,8 +9,8 @@ export type ResolvedTheme = {
 
 export type ResolvedUrls = {
 	base: string;
-	osm: string | TileJSONSpecification;
-	elevation: string | TileJSONSpecification;
+	osm: string;
+	elevation: string;
 	glyphsPattern: string;
 	sprite: SpriteInput;
 	/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
@@ -19,7 +18,7 @@ export type ResolvedUrls = {
 };
 
 export type ResolvedSatelliteUrls = ResolvedUrls & {
-	satellite: string | TileJSONSpecification;
+	satellite: string;
 };
 
 export type ResolvedFeatures = {

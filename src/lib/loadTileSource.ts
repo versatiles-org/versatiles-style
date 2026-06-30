@@ -2,21 +2,6 @@ import type { FetchLike, TileJSONSpecification } from '../types/index.js';
 import { resolveUrl } from './utils.js';
 
 /**
- * A string source URL points to a TileJSON document (to be downloaded) if its
- * path ends in `.json`. Anything else (e.g. `…/{z}/{x}/{y}`) is a tile URL
- * template that is used directly.
- */
-export function isTileJSONUrl(url: string): boolean {
-	let pathname = url;
-	try {
-		pathname = new URL(url, 'http://example.org').pathname;
-	} catch {
-		// not a parseable URL — fall back to the raw string
-	}
-	return /\.json$/i.test(pathname);
-}
-
-/**
  * Rewrite a TileJSON's `tiles[]` entries to absolute URLs against `base`,
  * preserving `{z}/{x}/{y}` placeholders. Absolute entries are left unchanged
  * by `resolveUrl`. Returns a shallow copy; the input is not mutated.
@@ -38,18 +23,9 @@ export function resolveTileJSONTiles(tj: TileJSONSpecification, base: string): T
  * `fetchFn` defaults to the global `fetch`. If a `.json` source must be loaded
  * and no fetch implementation is available, an error is thrown.
  */
-export async function loadTileSource(
-	src: string | TileJSONSpecification,
-	base: string,
-	fetchFn?: FetchLike
-): Promise<string | TileJSONSpecification> {
+export async function loadTileSource(src: string, base: string, fetchFn?: FetchLike): Promise<TileJSONSpecification> {
 	if (typeof src !== 'string') {
 		return resolveTileJSONTiles(src, base);
-	}
-
-	if (!isTileJSONUrl(src)) {
-		// A tile URL template (e.g. `…/{z}/{x}/{y}`) — use it directly.
-		return src;
 	}
 
 	const doFetch = fetchFn ?? (globalThis.fetch as FetchLike | undefined);
