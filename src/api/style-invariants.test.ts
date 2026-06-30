@@ -27,6 +27,12 @@ const layout = (l: LayerSpecification): Record<string, unknown> =>
 const isSlotAnchor = (l: LayerSpecification): boolean =>
 	l.type === 'background' && paint(l)['background-opacity'] === 0;
 
+// Vector data layers — those that read features from a `source` + `source-layer`.
+// (background carries no source; raster/hillshade have a source but no source-layer.)
+const DATA_LAYER_TYPES = new Set(['fill', 'line', 'symbol', 'fill-extrusion', 'circle', 'heatmap']);
+const isDataLayer = (l: LayerSpecification): boolean => DATA_LAYER_TYPES.has(l.type);
+const prop = (l: LayerSpecification, key: string): unknown => (l as unknown as Record<string, unknown>)[key];
+
 // Collect "<variant> / <layer> (<type>)" for every layer matching `predicate` but failing `ok`.
 function offenders(predicate: (l: LayerSpecification) => boolean, ok: (l: LayerSpecification) => boolean): string[] {
 	const out: string[] = [];
@@ -101,6 +107,14 @@ describe('generated style invariants', () => {
 				(l) => paint(l)['background-color'] != null
 			)
 		);
+	});
+
+	it('every data layer references a source', () => {
+		expectNoOffenders(offenders(isDataLayer, (l) => prop(l, 'source') != null));
+	});
+
+	it('every data layer references a source-layer', () => {
+		expectNoOffenders(offenders(isDataLayer, (l) => prop(l, 'source-layer') != null));
 	});
 
 	it('every layer has a unique id within its style', () => {
