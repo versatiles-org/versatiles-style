@@ -46,7 +46,8 @@ export type StyleProps = {
 	textOptional?: boolean;
 	symbolPlacement?: string;
 	iconSize?: SizeValue;
-	iconOpacity?: number;
+	iconOpacity?: number | Record<number, number>;
+	textOpacity?: number | Record<number, number>;
 	iconKeepUpright?: boolean;
 	iconAnchor?: string;
 	iconOptional?: boolean;
