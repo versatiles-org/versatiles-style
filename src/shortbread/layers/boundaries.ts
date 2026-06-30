@@ -41,7 +41,7 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const COUNTRY_WIDTH: b.ExpStops = { base: 1, stops: { 0: 0.6, 4: 1.4, 5: 2, 12: 8 } };
 
 	// state / province (admin 3–8): dashed, drawn beneath the country line. Shortbread serves
-	// these from z7, so grow the width in from 0 over z7→8 instead of popping.
+	// these from z7, so fade them in by opacity over z7→8 instead of popping.
 	yield b.line('boundary-state', {
 		sourceLayer: 'boundaries',
 		filter: fState,
@@ -78,7 +78,7 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'boundaries.country',
 	});
 
-	// maritime: deeper-blue solid line over the water; grows in from z4→5 as it appears
+	// maritime: deeper-blue solid line over the water; fades in by opacity over z4→5 as it appears
 	yield b.line('boundary-country-maritime', {
 		sourceLayer: 'boundaries',
 		filter: fMaritime,
