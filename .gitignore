@@ -1,10 +1,10 @@
 
-.claude
+.claude/
 .DS_Store
-.vscode
-coverage
+.vscode/
+/style.*.json
+coverage/
 dist/
 docs/
-node_modules
-release
-test
+node_modules/
+release/
