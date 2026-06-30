@@ -12,11 +12,15 @@ import { osm } from '../../api/osm.js';
 // `z0` is taken from the schema below — NOT read back from the style — so a fade wired to the wrong
 // zoom fails here. `target` is the element's own resolved opacity (1 for roads/buildings, but e.g.
 // 0.1 for forest, 0.3 for danger areas), read from the layer.
+//
+// The low-zoom landcover extension (features.landcover) is the exception: it supplies certain land
+// kinds from z0, so with it enabled those fills must be visible at EVERY zoom (constant, no fade).
 
-let style: StyleSpecification;
+let style: StyleSpecification; // default colorful
+let landcoverStyle: StyleSpecification; // colorful + features.landcover
 
 beforeAll(async () => {
-	style = await osm();
+	[style, landcoverStyle] = await Promise.all([osm(), osm({ features: { landcover: true } })]);
 });
 
 const OPACITY_PROPS: Record<string, string[]> = {
@@ -40,9 +44,15 @@ function evalLinearStops(stops: number[], zoom: number): number {
 	return stops[n - 1];
 }
 
+function paintOf(s: StyleSpecification, layerId: string): Record<string, unknown> | null {
+	const layer = s.layers.find((l) => l.id === layerId);
+	if (!layer) return null;
+	return (layer as { paint?: Record<string, unknown> }).paint ?? {};
+}
+
 // The opacity fade-in (a linear interpolate ramping from 0) on a layer, or null if it has none.
-function opacityFade(layerId: string): { prop: string; stops: number[] } | null {
-	const layer = style.layers.find((l) => l.id === layerId);
+function opacityFade(s: StyleSpecification, layerId: string): { prop: string; stops: number[] } | null {
+	const layer = s.layers.find((l) => l.id === layerId);
 	if (!layer) return null;
 	const paint = (layer as { paint?: Record<string, unknown> }).paint ?? {};
 	for (const prop of OPACITY_PROPS[layer.type] ?? []) {
@@ -55,8 +65,8 @@ function opacityFade(layerId: string): { prop: string; stops: number[] } | null 
 }
 
 // Assert a layer fades 0 → its own target over exactly z0 → z0+1.
-function expectFadeInAt(layerId: string, z0: number): void {
-	const fade = opacityFade(layerId);
+function expectFadeInAt(s: StyleSpecification, layerId: string, z0: number): void {
+	const fade = opacityFade(s, layerId);
 	expect(fade, `${layerId} must fade in by opacity`).not.toBeNull();
 	const stops = fade!.stops;
 	const target = Math.max(...stops.filter((_, i) => i % 2 === 1));
@@ -92,7 +102,7 @@ const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 describe('roads fade in at their Shortbread streets minzoom', () => {
 	for (const { id, z, outline } of ROAD_TYPES) {
 		for (const layerId of outline ? [id, `${id}:outline`] : [id]) {
-			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(layerId, z));
+			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(style, layerId, z));
 		}
 	}
 });
@@ -108,7 +118,7 @@ const BOUNDARIES: { id: string; z: number }[] = [
 
 describe('boundaries fade in at their appearance zoom', () => {
 	for (const { id, z } of BOUNDARIES) {
-		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(id, z));
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
 	}
 });
 
@@ -121,7 +131,7 @@ const RAIL_Z = 14;
 describe('rail tracks fade in at z14 (their OSM-Bright drawing zoom)', () => {
 	for (const kind of RAIL_KINDS) {
 		for (const layerId of [`transport-${kind}`, `transport-${kind}:outline`]) {
-			it(`${layerId} over z${RAIL_Z}–${RAIL_Z + 1}`, () => expectFadeInAt(layerId, RAIL_Z));
+			it(`${layerId} over z${RAIL_Z}–${RAIL_Z + 1}`, () => expectFadeInAt(style, layerId, RAIL_Z));
 		}
 	}
 });
@@ -148,14 +158,14 @@ const LAND_FILLS: { id: string; z: number }[] = [
 
 describe('land fills fade in at their Shortbread land minzoom', () => {
 	for (const { id, z } of LAND_FILLS) {
-		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(id, z));
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
 	}
 });
 
 // ── Buildings & sites (all at Shortbread z14) ─────────────────────────────────────
 describe('buildings fade in at Shortbread z14', () => {
 	for (const id of ['building', 'building:outline']) {
-		it(`${id} over z14–15`, () => expectFadeInAt(id, 14));
+		it(`${id} over z14–15`, () => expectFadeInAt(style, id, 14));
 	}
 });
 
@@ -174,13 +184,71 @@ const SITE_KINDS = [
 
 describe('sites fade in at Shortbread z14', () => {
 	for (const kind of SITE_KINDS) {
-		it(`site-${kind} over z14–15`, () => expectFadeInAt(`site-${kind}`, 14));
+		it(`site-${kind} over z14–15`, () => expectFadeInAt(style, `site-${kind}`, 14));
 	}
 });
 
 // ── Ferries (Shortbread z10) ──────────────────────────────────────────────────────
 describe('ferries fade in at Shortbread z10', () => {
-	it('transport-ferry over z10–11', () => expectFadeInAt('transport-ferry', 10));
+	it('transport-ferry over z10–11', () => expectFadeInAt(style, 'transport-ferry', 10));
+});
+
+// ── Low-zoom landcover extension (features.landcover) ──────────────────────────────
+// https://docs.versatiles.org/compendium/specification_shortbread_landcover.html
+// The extension fills these land kinds from z0, so with it enabled the layers must be VISIBLE AT
+// EVERY ZOOM — constant opacity, NOT a fade — at the same target they otherwise reach. Land kinds
+// the extension does not cover keep fading in at their normal Shortbread minzoom.
+const LANDCOVER_COVERED = [
+	'land-forest',
+	'land-grass',
+	'land-vegetation',
+	'land-agriculture',
+	'land-residential',
+	'land-sand',
+	'land-wetland',
+];
+const LANDCOVER_UNCOVERED: { id: string; z: number }[] = [
+	{ id: 'land-commercial', z: 10 },
+	{ id: 'land-industrial', z: 10 },
+	{ id: 'land-waste', z: 10 },
+	{ id: 'land-park', z: 11 },
+	{ id: 'land-garden', z: 11 },
+	{ id: 'land-leisure', z: 11 },
+	{ id: 'land-rock', z: 11 },
+	{ id: 'land-burial', z: 13 },
+];
+
+// The fully-shown opacity of a fill layer: the constant, or the max of its fade.
+function targetOpacity(s: StyleSpecification, layerId: string): number {
+	const op = paintOf(s, layerId)?.['fill-opacity'];
+	if (op === undefined || op === null) return 1;
+	if (typeof op === 'number') return op;
+	if (Array.isArray(op)) return Math.max(...(op.slice(3) as number[]).filter((_, i) => i % 2 === 1));
+	return 1;
+}
+
+describe('with features.landcover, covered land kinds are visible at every zoom (no fade)', () => {
+	for (const id of LANDCOVER_COVERED) {
+		it(`${id} has constant opacity from z0`, () => {
+			// Sanity: without the extension this same layer fades in (proven by the default block above).
+			expect(opacityFade(style, id), `${id} should fade in by default`).not.toBeNull();
+
+			const layer = landcoverStyle.layers.find((l) => l.id === id);
+			expect(layer, `${id} must exist with landcover`).toBeDefined();
+			expect((layer as { minzoom?: number }).minzoom ?? 0, `${id} must render from z0`).toBeLessThanOrEqual(0);
+
+			const op = paintOf(landcoverStyle, id)?.['fill-opacity'] ?? 1;
+			expect(typeof op, `${id} must have a constant (non-fading) opacity with landcover`).toBe('number');
+			expect(op as number, `${id} must stay visible (opacity > 0)`).toBeGreaterThan(0);
+			expect(op as number, `${id} keeps its default target opacity`).toBeCloseTo(targetOpacity(style, id), 3);
+		});
+	}
+});
+
+describe('with features.landcover, uncovered land kinds still fade at their Shortbread minzoom', () => {
+	for (const { id, z } of LANDCOVER_UNCOVERED) {
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(landcoverStyle, id, z));
+	}
 });
 
 // ── Backstop: every remaining fade must still be a clean ramp ──────────────────────
