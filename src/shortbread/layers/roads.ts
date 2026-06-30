@@ -293,6 +293,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: bool
 			lineJoin: 'round',
 			lineCap: 'round',
 			size: { base: 1.2, stops: { 15: 1.2, 20: 18 } },
+			opacity: { 14: 0, 15: 1 },
 		};
 	}
 	return {
@@ -301,6 +302,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: bool
 		lineCap: prefix === 'bridge-' ? 'butt' : 'round',
 		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
 		lineDasharray: [1.5, 0.75],
+		opacity: { 13: 0, 14: 1 },
 	};
 }
 
@@ -315,13 +317,13 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 		return isOutline
 			? null
 			: {
-					minzoom: 10,
-					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
-					color: c.water.saturate(0.8).darken(0.3),
-					size: 1.1,
-					opacity: { 10: 0, 11: 1 },
-					lineDasharray: [2, 2],
-				};
+				minzoom: 10,
+				// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
+				color: c.water.saturate(0.8).darken(0.3),
+				size: 1.1,
+				opacity: { 10: 0, 11: 1 },
+				lineDasharray: [2, 2],
+			};
 
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;
