@@ -60,6 +60,12 @@ type StructuralProps = {
 	layout?: Record<string, unknown>;
 	/** Semantic group path for the derived visibility registry. */
 	group?: string;
+	/** Smoothly fade this layer in (opacity 0 → target) over `appear`→`appear+1`, so it doesn't
+	 *  pop in when its features first appear in the tiles. The target is the layer's own `opacity`
+	 *  if that is a constant (e.g. 0.1, 0.8), otherwise 1. Mutually exclusive with a zoom-stops
+	 *  `opacity`. Sets opacity only — never `minzoom` — so the `landcover` feature can still reveal
+	 *  faded land fills at low zoom by flattening their opacity. */
+	appear?: number;
 };
 
 export type BuildOpts = StyleProps & StructuralProps;
@@ -235,12 +241,25 @@ function applyProps(layer: MaplibreLayer, props: StyleProps): void {
 
 // ── Builders ──────────────────────────────────────────────────────────────────
 
+/** Opacity ramp 0 → `target` over `appear`→`appear+span` (then held). A smooth fade-in that
+ *  replaces hand-written `{ z: 0, z+1: 1 }` stops; pass a `target` below 1 for translucent fills. */
+export function fadeIn(appear: number, target = 1, span = 1): Record<number, number> {
+	return { [appear]: 0, [appear + span]: target };
+}
+
 function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedLayer {
-	const { sourceLayer, filter, layout, group, ...style } = opts;
+	const { sourceLayer, filter, layout, group, appear, ...style } = opts;
 	const layer = { id, type } as MaplibreLayer;
 	if (sourceLayer != null) (layer as Record<string, unknown>)['source-layer'] = sourceLayer;
 	if (filter != null) (layer as Record<string, unknown>).filter = filter;
 	if (layout != null) (layer as Record<string, unknown>).layout = { ...layout };
+
+	if (appear != null) {
+		if (style.opacity != null && typeof style.opacity !== 'number')
+			throw new Error(`build: layer "${id}" combines \`appear\` with a zoom-stops \`opacity\` — use one or the other`);
+		style.opacity = fadeIn(appear, style.opacity ?? 1);
+	}
+
 	applyProps(layer, style as StyleProps);
 	return { layer, group };
 }

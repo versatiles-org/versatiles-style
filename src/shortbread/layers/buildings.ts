@@ -11,7 +11,8 @@ export function* buildings(ctx: LayerContext): Generator<b.TaggedLayer> {
 			sourceLayer: 'buildings',
 			filter: ['!=', ['get', 'hide_3d'], true],
 			color: c.building,
-			opacity: { 14: 0, 15: 0.7 },
+			appear: 14,
+			opacity: 0.7,
 			fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
 			fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
 			group: 'buildings',
@@ -20,13 +21,13 @@ export function* buildings(ctx: LayerContext): Generator<b.TaggedLayer> {
 		yield b.fill('building:outline', {
 			sourceLayer: 'buildings',
 			color: c.buildingBg,
-			opacity: { 14: 0, 15: 1 }, // matches OSM Bright `building-top` fade-in
+			appear: 14, // fade in over z14→15 (matches OSM Bright `building-top`)
 			group: 'buildings',
 		});
 		yield b.fill('building', {
 			sourceLayer: 'buildings',
 			color: c.building,
-			opacity: { 14: 0, 15: 1 },
+			appear: 14,
 			fillTranslate: [-2, -2],
 			group: 'buildings',
 		});

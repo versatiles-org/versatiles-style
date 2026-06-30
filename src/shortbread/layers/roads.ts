@@ -215,7 +215,7 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: 
 			// The width curve is already non-zero before these classes' data appears in Shortbread
 			// (secondary at z9, tertiary at z10), so without an opacity ramp they pop in at full
 			// width. Fade them in smoothly over the zoom level after they first appear.
-			const opacity: Record<number, number> = base === 'tertiary' ? { 10: 0, 11: 1 } : { 9: 0, 10: 1 };
+			const opacity = b.fadeIn(base === 'tertiary' ? 10 : 9);
 			return isOutline
 				? { opacity, size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
 				: { opacity, size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };

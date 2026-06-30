@@ -12,7 +12,10 @@ type LandDef = {
 	id: string;
 	kinds: string[];
 	color: (c: ColorSet) => Color;
-	opacity?: Record<number, number>;
+	/** Shortbread schema zoom at which this kind appears; the fill fades in over appear→appear+1. */
+	appear: number;
+	/** Target opacity once faded in (default 1; e.g. translucent forest at 0.1). */
+	opacity?: number;
 	group: string;
 };
 
@@ -21,21 +24,21 @@ const LAND: LandDef[] = [
 		id: 'commercial',
 		kinds: ['commercial', 'retail'],
 		color: (c) => c.areaCommercial,
-		opacity: { 10: 0, 11: 1 },
+		appear: 10,
 		group: 'land.urban',
 	},
 	{
 		id: 'industrial',
 		kinds: ['industrial', 'quarry', 'railway'],
 		color: (c) => c.areaIndustrial,
-		opacity: { 10: 0, 11: 1 },
+		appear: 10,
 		group: 'land.urban',
 	},
 	{
 		id: 'residential',
 		kinds: ['garages', 'residential'],
 		color: (c) => c.areaResidential,
-		opacity: { 10: 0, 11: 1 },
+		appear: 10,
 		group: 'land.urban',
 	},
 	{
@@ -51,66 +54,42 @@ const LAND: LandDef[] = [
 			'vineyard',
 		],
 		color: (c) => c.natureAgriculture,
-		opacity: { 10: 0, 11: 1 },
+		appear: 10,
 		group: 'land.agriculture',
 	},
-	{ id: 'waste', kinds: ['landfill'], color: (c) => c.areaWaste, opacity: { 10: 0, 11: 1 }, group: 'land.urban' },
+	{ id: 'waste', kinds: ['landfill'], color: (c) => c.areaWaste, appear: 10, group: 'land.urban' },
 	{
 		id: 'park',
 		kinds: ['park', 'village_green', 'recreation_ground'],
 		color: (c) => c.naturePark,
-		opacity: { 11: 0, 12: 1 },
+		appear: 11,
 		group: 'land.urban',
 	},
-	{
-		id: 'garden',
-		kinds: ['allotments', 'garden'],
-		color: (c) => c.naturePark,
-		opacity: { 11: 0, 12: 1 },
-		group: 'land.urban',
-	},
-	{
-		id: 'burial',
-		kinds: ['cemetery', 'grave_yard'],
-		color: (c) => c.areaBurial,
-		opacity: { 13: 0, 14: 1 },
-		group: 'land.urban',
-	},
+	{ id: 'garden', kinds: ['allotments', 'garden'], color: (c) => c.naturePark, appear: 11, group: 'land.urban' },
+	{ id: 'burial', kinds: ['cemetery', 'grave_yard'], color: (c) => c.areaBurial, appear: 13, group: 'land.urban' },
 	{
 		id: 'leisure',
 		kinds: ['miniature_golf', 'playground', 'golf_course'],
 		color: (c) => c.natureLeisure,
-		opacity: { 11: 0, 12: 1 },
+		appear: 11,
 		group: 'land.urban',
 	},
-	{
-		id: 'rock',
-		kinds: ['bare_rock', 'scree', 'shingle'],
-		color: (c) => c.natureRock,
-		opacity: { 11: 0, 12: 1 },
-		group: 'land.rock',
-	},
-	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, opacity: { 7: 0, 8: 0.1 }, group: 'land.forest' },
+	{ id: 'rock', kinds: ['bare_rock', 'scree', 'shingle'], color: (c) => c.natureRock, appear: 11, group: 'land.rock' },
+	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, opacity: 0.1, group: 'land.forest' },
 	{
 		id: 'grass',
 		kinds: ['grass', 'grassland', 'meadow', 'wet_meadow'],
 		color: (c) => c.natureGrass,
-		opacity: { 11: 0, 12: 1 },
+		appear: 11,
 		group: 'land.vegetation',
 	},
-	{
-		id: 'vegetation',
-		kinds: ['heath', 'scrub'],
-		color: (c) => c.naturePark,
-		opacity: { 11: 0, 12: 1 },
-		group: 'land.vegetation',
-	},
-	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, opacity: { 10: 0, 11: 1 }, group: 'land.sand' },
+	{ id: 'vegetation', kinds: ['heath', 'scrub'], color: (c) => c.naturePark, appear: 11, group: 'land.vegetation' },
+	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, appear: 10, group: 'land.sand' },
 	{
 		id: 'wetland',
 		kinds: ['bog', 'marsh', 'string_bog', 'swamp'],
 		color: (c) => c.natureWetland,
-		opacity: { 11: 0, 12: 1 },
+		appear: 11,
 		group: 'land.wetland',
 	},
 ];
@@ -129,13 +108,14 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'land.glacier',
 	});
 
-	// land kinds
+	// land kinds — each fades in smoothly at its Shortbread appearance zoom
 	for (const def of LAND) {
 		yield b.fill('land-' + def.id, {
 			sourceLayer: 'land',
 			filter: ['in', ['get', 'kind'], ['literal', [...def.kinds]]] as FilterSpecification,
 			color: def.color(c),
-			opacity: def.opacity,
+			appear: def.appear,
+			...(def.opacity != null ? { opacity: def.opacity } : {}),
 			group: def.group,
 		});
 	}

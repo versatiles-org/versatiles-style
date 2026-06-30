@@ -4,9 +4,11 @@ import * as b from '../build.js';
 
 // Site polygons (schools, hospitals, parking, danger areas, …). All in the `sites` group.
 // Every site must define a color (a bare fill would render black), so `style` is required.
+// Sites appear at Shortbread zoom 14; each fades in over z14→15 — its `opacity` is the fade target.
+
+const APPEAR = 14;
 
 type SiteDef = { kind: string; style: (c: ColorSet) => b.ColoredStyleProps };
-const opacity = { 14: 0, 15: 1 };
 
 const SITES: SiteDef[] = [
 	{
@@ -18,21 +20,18 @@ const SITES: SiteDef[] = [
 			image: 'basics:pattern-warning',
 		}),
 	},
-	{ kind: 'sports_center', style: (c) => ({ color: c.natureLeisure, opacity: { 14: 0, 15: 0.1 } }) },
+	{ kind: 'sports_center', style: (c) => ({ color: c.natureLeisure, opacity: 0.1 }) },
 	// OSM Bright renders education/hospital areas as flat pastel fills.
-	{ kind: 'university', style: (c) => ({ color: c.siteEducation, opacity }) },
-	{ kind: 'college', style: (c) => ({ color: c.siteEducation, opacity }) },
-	{ kind: 'school', style: (c) => ({ color: c.siteEducation, opacity }) },
-	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital, opacity }) },
-	{
-		kind: 'prison',
-		style: (c) => ({ color: c.sitePrison, image: 'basics:pattern-striped', opacity: { 14: 0, 15: 0.1 } }),
-	},
-	{ kind: 'parking', style: (c) => ({ color: c.siteParking, opacity }) },
-	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking, opacity }) },
+	{ kind: 'university', style: (c) => ({ color: c.siteEducation }) },
+	{ kind: 'college', style: (c) => ({ color: c.siteEducation }) },
+	{ kind: 'school', style: (c) => ({ color: c.siteEducation }) },
+	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital }) },
+	{ kind: 'prison', style: (c) => ({ color: c.sitePrison, image: 'basics:pattern-striped', opacity: 0.1 }) },
+	{ kind: 'parking', style: (c) => ({ color: c.siteParking }) },
+	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking }) },
 	{
 		kind: 'construction',
-		style: (c) => ({ color: c.siteConstruction, image: 'basics:pattern-hatched_thin', opacity: { 14: 0, 15: 0.1 } }),
+		style: (c) => ({ color: c.siteConstruction, image: 'basics:pattern-hatched_thin', opacity: 0.1 }),
 	},
 ];
 
@@ -42,6 +41,7 @@ export function* sites(ctx: LayerContext): Generator<b.TaggedLayer> {
 			sourceLayer: 'sites',
 			filter: ['==', ['get', 'kind'], kind],
 			...style(ctx.c),
+			appear: APPEAR,
 			group: 'sites',
 		});
 	}
