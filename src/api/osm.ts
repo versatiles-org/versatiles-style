@@ -17,19 +17,14 @@ const SOURCE_NAME = 'versatiles-shortbread';
 // The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
 // `osmSource` is the resolved OSM source: a tile URL template, or a TileJSON whose
 // `tiles[]` have already been made absolute.
-function buildBase(resolved: ResolvedOsmOptions, osmSource: string | TileJSONSpecification): StyleSpecification {
-	const source: StyleSpecification['sources'][string] = { type: 'vector' };
+function buildBase(resolved: ResolvedOsmOptions, osmSource: TileJSONSpecification): StyleSpecification {
+	const tj = osmSource;
+	const source: StyleSpecification['sources'][string] = { type: 'vector', tiles: tj.tiles, url: resolved.urls.osm };
 
-	if (typeof osmSource === 'string') {
-		source.tiles = [osmSource];
-	} else {
-		const tj = osmSource;
-		source.tiles = tj.tiles;
-		if (tj.minzoom !== undefined) source.minzoom = tj.minzoom;
-		if (tj.maxzoom !== undefined) source.maxzoom = tj.maxzoom;
-		if (tj.bounds) source.bounds = tj.bounds;
-		if (tj.attribution) source.attribution = tj.attribution;
-	}
+	if (tj.minzoom !== undefined) source.minzoom = tj.minzoom;
+	if (tj.maxzoom !== undefined) source.maxzoom = tj.maxzoom;
+	if (tj.bounds) source.bounds = tj.bounds;
+	if (tj.attribution) source.attribution = tj.attribution;
 
 	const style: StyleSpecification = {
 		version: 8,

@@ -1,4 +1,3 @@
-import type { TileJSONSpecification } from './tilejson.js';
 import type { ColorsOptions, RecolorOptions } from './colors.js';
 import type { LayerGroupOptions } from './layer-groups.js';
 
@@ -64,8 +63,8 @@ export type OsmContentOptions = {
 export type OsmOptions = OsmContentOptions & {
 	urls?: {
 		base?: string;
-		osm?: string | TileJSONSpecification;
-		elevation?: string | TileJSONSpecification;
+		osm?: string;
+		elevation?: string;
 		glyphsPattern?: string;
 		sprite?: SpriteInput;
 		/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
@@ -84,9 +83,9 @@ export type OsmOptions = OsmContentOptions & {
 export type SatelliteOptions = {
 	urls?: {
 		base?: string;
-		satellite?: string | TileJSONSpecification;
-		osm?: string | TileJSONSpecification;
-		elevation?: string | TileJSONSpecification;
+		satellite?: string;
+		osm?: string;
+		elevation?: string;
 		glyphsPattern?: string;
 		sprite?: SpriteInput;
 		/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
