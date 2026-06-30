@@ -8,3 +8,4 @@ dist/
 docs/
 node_modules/
 release/
+scripts/compare/report.md

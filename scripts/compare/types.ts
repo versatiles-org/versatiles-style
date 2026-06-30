@@ -26,6 +26,9 @@ export interface Case {
 	shortbread: Rep;
 	/** Zoom levels to compare at; defaults to DEFAULT_ZOOMS. */
 	zooms?: number[];
+	/** Diff substrings to treat as accepted divergences (out-of-scope per project decisions),
+	 *  e.g. a feature Shortbread can't represent without new sprites/sources. Reported, not failed. */
+	ignore?: string[];
 }
 
 export const DEFAULT_ZOOMS = [5, 8, 12, 15, 18];

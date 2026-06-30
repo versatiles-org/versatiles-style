@@ -99,9 +99,11 @@ export function buildSignature(geom: Geom, draws: Draw[], bg: string): Signature
 			opacity: num(d.props['line-opacity'], 1),
 			dash: Array.isArray(d.props['line-dasharray']) ? (d.props['line-dasharray'] as number[]) : null,
 		});
-		// Render order: casing/outline is emitted under the fill. So first = casing, last = fill.
+		// Render order is bottom→top. The fill is the topmost band; the casing is the band directly
+		// beneath it. (Shortbread bridges add a third, bottom-most "deck" band that OMT has no
+		// equivalent for — it is near-invisible land-color and is intentionally not compared here.)
 		const fill = toBand(lines[lines.length - 1]);
-		const casing = lines.length > 1 ? toBand(lines[0]) : null;
+		const casing = lines.length > 1 ? toBand(lines[lines.length - 2]) : null;
 		return { kind: 'line', casing, fill, count: lines.length };
 	}
 
@@ -198,7 +200,8 @@ export function compare(omt: Signature, sb: Signature, tol: Tol = DEFAULT_TOL): 
 		);
 		if (cd > tol.color)
 			out.push(`fill composite Δ${cd.toFixed(0)} (omt ${fmt(omt.composite)} / sb ${fmt(sb.composite)})`);
-		if (omt.pattern !== sb.pattern) out.push(`fill pattern omt ${omt.pattern} / sb ${sb.pattern}`);
+		// fill-pattern parity (e.g. water wave) is out of scope — see project decisions — so it is
+		// intentionally not diffed here.
 	} else if (omt.kind === 'line' && sb.kind === 'line') {
 		cmpBand('line fill', omt.fill, sb.fill, tol, out);
 		cmpBand('line casing', omt.casing, sb.casing, tol, out);
