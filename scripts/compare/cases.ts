@@ -66,16 +66,16 @@ export const CASES: Case[] = [
 		band: 'landcover',
 		omt: { sourceLayer: 'park', geom: 'Polygon', properties: { class: 'public_park' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'park' } },
-		// data appears at z11 but colorful fades it in over z11→12; compare once fully visible
-		minZoom: 12,
+		minZoom: 11,
+		fadeIn: true,
 	},
 	{
 		name: 'sand / beach',
 		band: 'landcover',
 		omt: { sourceLayer: 'landcover', geom: 'Polygon', properties: { class: 'sand' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'sand' } },
-		// data appears at z10 but colorful fades it in over z10→11; compare once fully visible
-		minZoom: 11,
+		minZoom: 10,
+		fadeIn: true,
 	},
 
 	// ── Landuse areas ────────────────────────────────────────────────────────────
@@ -92,6 +92,7 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'commercial' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'commercial' } },
 		minZoom: 10,
+		fadeIn: true,
 	},
 	{
 		name: 'industrial area',
@@ -99,30 +100,31 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'industrial' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'industrial' } },
 		minZoom: 10,
+		fadeIn: true,
 	},
 	{
 		name: 'cemetery',
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'cemetery' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'cemetery' } },
-		// data appears at z13 but colorful fades it in over z13→14; compare once fully visible
-		minZoom: 14,
+		minZoom: 13,
+		fadeIn: true,
 	},
 	{
 		name: 'hospital area',
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'hospital' } },
 		shortbread: { sourceLayer: 'sites', geom: 'Polygon', properties: { kind: 'hospital' } },
-		// data appears at z14 but colorful fades sites in over z14→15; compare once fully visible
-		minZoom: 15,
+		minZoom: 14,
+		fadeIn: true,
 	},
 	{
 		name: 'school area',
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'school' } },
 		shortbread: { sourceLayer: 'sites', geom: 'Polygon', properties: { kind: 'school' } },
-		// data appears at z14 but colorful fades sites in over z14→15; compare once fully visible
-		minZoom: 15,
+		minZoom: 14,
+		fadeIn: true,
 	},
 
 	// ── Buildings ─────────────────────────────────────────────────────────────────
@@ -131,8 +133,8 @@ export const CASES: Case[] = [
 		band: 'buildings',
 		omt: { sourceLayer: 'building', geom: 'Polygon', properties: {} },
 		shortbread: { sourceLayer: 'buildings', geom: 'Polygon', properties: {} },
-		// data appears at z14 but colorful fades buildings in over z14→15; compare once fully visible
-		minZoom: 15,
+		minZoom: 14,
+		fadeIn: true,
 	},
 
 	// ── Water lines ────────────────────────────────────────────────────────────────
@@ -337,25 +339,27 @@ export const CASES: Case[] = [
 // Surface / bridge / tunnel × road class, generated to keep the catalog DRY.
 // minZoom = the Shortbread `streets` minzoom for that road kind.
 function roadCases(): Case[] {
-	const classes: { omt: string; sb: string; band: string; minZoom: number }[] = [
+	// `fadeIn`: colorful ramps secondary/tertiary opacity 0→1 over their first zoom (see roads.ts).
+	const classes: { omt: string; sb: string; band: string; minZoom: number; fadeIn?: boolean }[] = [
 		{ omt: 'motorway', sb: 'motorway', band: 'roads.motorway', minZoom: 5 },
 		{ omt: 'trunk', sb: 'trunk', band: 'roads.trunk', minZoom: 6 },
 		{ omt: 'primary', sb: 'primary', band: 'roads.primary', minZoom: 8 },
-		{ omt: 'secondary', sb: 'secondary', band: 'roads.secondary', minZoom: 9 },
-		{ omt: 'tertiary', sb: 'tertiary', band: 'roads.tertiary', minZoom: 10 },
+		{ omt: 'secondary', sb: 'secondary', band: 'roads.secondary', minZoom: 9, fadeIn: true },
+		{ omt: 'tertiary', sb: 'tertiary', band: 'roads.tertiary', minZoom: 10, fadeIn: true },
 		{ omt: 'minor', sb: 'residential', band: 'roads.minor', minZoom: 12 },
 		{ omt: 'service', sb: 'service', band: 'roads.service', minZoom: 13 },
 		{ omt: 'track', sb: 'track', band: 'roads.track', minZoom: 13 },
 		{ omt: 'path', sb: 'path', band: 'roads.path', minZoom: 13 },
 	];
 	const out: Case[] = [];
-	for (const { omt, sb, band, minZoom } of classes) {
+	for (const { omt, sb, band, minZoom, fadeIn } of classes) {
 		out.push({
 			name: `${omt} (surface)`,
 			band,
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb } },
 			minZoom,
+			...(fadeIn ? { fadeIn } : {}),
 		});
 		out.push({
 			name: `${omt} (bridge)`,
@@ -363,6 +367,7 @@ function roadCases(): Case[] {
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt, brunnel: 'bridge' } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb, bridge: true } },
 			minZoom,
+			...(fadeIn ? { fadeIn } : {}),
 		});
 		out.push({
 			name: `${omt} (tunnel)`,
@@ -370,6 +375,7 @@ function roadCases(): Case[] {
 			omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: omt, brunnel: 'tunnel' } },
 			shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: sb, tunnel: true } },
 			minZoom,
+			...(fadeIn ? { fadeIn } : {}),
 		});
 	}
 	// motorway ramp / link — both styles gate the link rendering at zoom 12

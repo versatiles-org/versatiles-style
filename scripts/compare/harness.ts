@@ -42,9 +42,12 @@ export async function compareAll(): Promise<CaseResult[]> {
 	const results: CaseResult[] = [];
 	for (const c of CASES) {
 		const ignore = c.ignore ?? [];
+		// A faded-in feature is still transparent at its minzoom, so only start comparing once the
+		// opacity transition (minZoom → minZoom+1) has completed.
+		const fromZoom = (c.minZoom ?? 0) + (c.fadeIn ? 1 : 0);
 		const zr: ZoomResult[] = [];
 		for (let z = 0; z <= 14; z++) {
-			if ((c.minZoom ?? 0) > z) continue;
+			if (fromZoom > z) continue;
 			const omtSig = buildSignature(c.omt.geom, evaluateStyle(osmBright, c.omt, z), backgroundColor(osmBright, z));
 			const sbSig = buildSignature(
 				c.shortbread.geom,

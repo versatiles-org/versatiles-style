@@ -27,6 +27,9 @@ export interface Case {
 	/** Lowest zoom to compare at — the Shortbread schema minzoom at which this feature first
 	 *  appears. Zooms below it are skipped (the feature isn't in the tiles there). Defaults to 0. */
 	minZoom?: number;
+	/** Set when the colorful style fades this feature in (opacity 0→1) over `minZoom`→`minZoom+1`.
+	 *  At `minZoom` the feature is still transparent, so the harness only compares from `minZoom+1`. */
+	fadeIn?: boolean;
 	/** Diff substrings to treat as accepted divergences (out-of-scope per project decisions),
 	 *  e.g. a feature Shortbread can't represent without new sprites/sources. Reported, not failed. */
 	ignore?: string[];
