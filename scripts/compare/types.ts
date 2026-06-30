@@ -31,4 +31,4 @@ export interface Case {
 	ignore?: string[];
 }
 
-export const DEFAULT_ZOOMS = [5, 8, 12, 15, 18];
+export const DEFAULT_ZOOMS = [4, 6, 8, 10, 12, 14, 16];
