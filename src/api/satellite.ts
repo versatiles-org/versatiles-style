@@ -53,10 +53,7 @@ function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<st
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-async function buildOsmOverlayLayers(
-	overlayResolved: ResolvedOsmOptions,
-	osmSource: string | TileJSONSpecification
-): Promise<StyleSpecification['layers']> {
+async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOptions): Promise<StyleSpecification['layers']> {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
 	// (including URL configuration that was inherited from the satellite options).
@@ -65,7 +62,7 @@ async function buildOsmOverlayLayers(
 	const overlayStyle = await osm({
 		urls: {
 			base: overlayResolved.urls.base,
-			osm: osmSource,
+			osm: overlayResolved.urls.osm,
 			glyphsPattern: overlayResolved.urls.glyphsPattern,
 			sprite: overlayResolved.urls.sprite,
 			elevation: overlayResolved.urls.elevation,
@@ -110,13 +107,9 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 	const needOverlay = resolved.osmOverlay !== false;
 	const needElevation = resolved.features.terrain !== false || resolved.features.hillshade !== false;
 	const [satelliteSource, osmSource, elevationSource] = await Promise.all([
-		loadTileSource(resolved.urls.satellite, resolved.urls.base, resolved.urls.fetch),
-		needOverlay
-			? loadTileSource(resolved.urls.osm, resolved.urls.base, resolved.urls.fetch)
-			: Promise.resolve(undefined),
-		needElevation
-			? loadTileSource(resolved.urls.elevation, resolved.urls.base, resolved.urls.fetch)
-			: Promise.resolve(undefined),
+		loadTileSource(resolved.urls.satellite, resolved.urls.fetch),
+		needOverlay ? loadTileSource(resolved.urls.osm, resolved.urls.fetch) : Promise.resolve(undefined),
+		needElevation ? loadTileSource(resolved.urls.elevation, resolved.urls.fetch) : Promise.resolve(undefined),
 	]);
 
 	// Base style shell
@@ -155,7 +148,7 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 
 	if (resolved.osmOverlay !== false) {
 		// OSM vector overlay: roads, labels, boundaries on top of satellite
-		const overlayLayers = await buildOsmOverlayLayers(resolved.osmOverlay, osmSource!);
+		const overlayLayers = await buildOsmOverlayLayers(resolved.osmOverlay);
 		layers.push(...overlayLayers);
 
 		// Also add the OSM vector source (reusing the already-prefetched OSM source)

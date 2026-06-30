@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { satellite } from './satellite.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
+import { jsonResponse } from '../lib/loadTileSource.test.js';
 
 function layerIds(style: StyleSpecification): string[] {
 	return style.layers.map((l) => l.id);
@@ -75,18 +76,14 @@ describe('satellite()', () => {
 	});
 
 	it('accepts explicit satellite URL string', async () => {
-		const style = await satellite({ urls: { satellite: 'https://sat.tiles/{z}/{x}/{y}' } });
-		const src = style.sources['satellite'] as { tiles: string[] };
-		expect(src.tiles[0]).toBe('https://sat.tiles/{z}/{x}/{y}');
-	});
-
-	it('accepts satellite TileJSONSpecification', async () => {
-		const tileJSON = {
-			tiles: ['https://sat/{z}/{x}/{y}'],
-			minzoom: 0,
-			maxzoom: 18,
-		} as TileJSONSpecification;
-		const style = await satellite({ urls: { satellite: tileJSON } });
+		const fetchFn = vi.fn(async () =>
+			jsonResponse({
+				tiles: ['https://sat/{z}/{x}/{y}'],
+				minzoom: 0,
+				maxzoom: 18,
+			})
+		);
+		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
 		const src = style.sources['satellite'] as { tiles: string[]; minzoom: number };
 		expect(src.tiles[0]).toBe('https://sat/{z}/{x}/{y}');
 		expect(src.minzoom).toBe(0);

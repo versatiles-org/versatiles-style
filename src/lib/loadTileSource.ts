@@ -23,11 +23,7 @@ export function resolveTileJSONTiles(tj: TileJSONSpecification, base: string): T
  * `fetchFn` defaults to the global `fetch`. If a `.json` source must be loaded
  * and no fetch implementation is available, an error is thrown.
  */
-export async function loadTileSource(src: string, base: string, fetchFn?: FetchLike): Promise<TileJSONSpecification> {
-	if (typeof src !== 'string') {
-		return resolveTileJSONTiles(src, base);
-	}
-
+export async function loadTileSource(src: string, fetchFn?: FetchLike): Promise<TileJSONSpecification> {
 	const doFetch = fetchFn ?? (globalThis.fetch as FetchLike | undefined);
 	if (!doFetch) {
 		throw new Error(`Cannot load TileJSON from "${src}": no fetch implementation available. Pass a \`fetch\` option.`);

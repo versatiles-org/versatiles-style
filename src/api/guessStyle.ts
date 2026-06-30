@@ -5,9 +5,10 @@ import type {
 	TileJSONSpecificationVector,
 } from '../types/index.js';
 import { isTileJSONSpecification } from '../types/index.js';
-import { resolveTileJSONTiles } from '../lib/loadTileSource.js';
+import { loadTileSource, resolveTileJSONTiles } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
+import { resolveUrl } from '../lib/utils.js';
 
 /** Options for {@link guessStyle}. */
 export type GuessStyleOptions = {
@@ -133,7 +134,11 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): Sty
 }
 
 // Build a minimal raster style for a raster TileJSON.
-async function buildRasterStyle(tj: TileJSONSpecification, options?: GuessStyleOptions): Promise<StyleSpecification> {
+async function buildRasterStyle(
+	url: string,
+	tj: TileJSONSpecification,
+	options?: GuessStyleOptions
+): Promise<StyleSpecification> {
 	const base = options?.base ?? DEFAULT_BASE;
 	const sourceName = isSatelliteHint(tj) ? 'satellite' : 'raster';
 	const sourceSpec: Record<string, unknown> = {
@@ -147,7 +152,7 @@ async function buildRasterStyle(tj: TileJSONSpecification, options?: GuessStyleO
 	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
 
 	if (isSatelliteHint(tj)) {
-		return satellite({ urls: { satellite: tj, base: options?.base, fetch: options?.fetch } });
+		return satellite({ urls: { satellite: url, base: options?.base, fetch: options?.fetch } });
 	}
 
 	return {
@@ -182,19 +187,22 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  *
  * Never throws — always returns a valid StyleSpecification.
  */
-export async function guessStyle(
-	tileJSON: TileJSONSpecification,
-	options?: GuessStyleOptions
-): Promise<StyleSpecification> {
+export async function guessStyle(url: string, options?: GuessStyleOptions): Promise<StyleSpecification> {
+	if (!url || typeof url !== 'string') {
+		throw new TypeError('guessStyle: url must be a non-empty string');
+	}
+
+	url = resolveUrl(options?.base ?? DEFAULT_BASE, url);
+	const tileJSON = await loadTileSource(url, options?.fetch);
 	try {
 		isTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
-				return await osm({ urls: { osm: tileJSON, base: options?.base, fetch: options?.fetch } });
+				return await osm({ urls: { osm: url, base: options?.base, fetch: options?.fetch } });
 			}
 			return buildInspectorStyle(tileJSON, options?.base ?? DEFAULT_BASE);
 		}
-		return await buildRasterStyle(tileJSON, options);
+		return await buildRasterStyle(url, tileJSON, options);
 	} catch {
 		// Fallback: return a blank style rather than throwing
 		return { version: 8, sources: {}, layers: [] };
