@@ -227,11 +227,24 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	return { layer, group };
 }
 
-export const background = (id: string, opts: BuildOpts = {}): TaggedLayer => make('background', id, opts);
-export const fill = (id: string, opts: BuildOpts = {}): TaggedLayer => make('fill', id, opts);
-export const line = (id: string, opts: BuildOpts = {}): TaggedLayer => make('line', id, opts);
-export const symbol = (id: string, opts: BuildOpts = {}): TaggedLayer => make('symbol', id, opts);
-export const fillExtrusion = (id: string, opts: BuildOpts = {}): TaggedLayer => make('fill-extrusion', id, opts);
+// `color` is mandatory wherever a missing color would render solid black in MapLibre
+// (fill, line, fill-extrusion and background all default their color to black).
+export type ColoredBuildOpts = BuildOpts & { color: ColorValue };
+
+// Data layers must name the vector `source-layer` they read from; without it the layer
+// silently renders nothing. (background and slot anchors carry no source and are exempt.)
+type DataBuildOpts = BuildOpts & { sourceLayer: string };
+type ColoredDataBuildOpts = ColoredBuildOpts & { sourceLayer: string };
+
+/** StyleProps that are guaranteed to carry a color — the return shape for style
+ *  helpers feeding the mandatory-color builders. */
+export type ColoredStyleProps = StyleProps & { color: ColorValue };
+
+export const background = (id: string, opts: ColoredBuildOpts): TaggedLayer => make('background', id, opts);
+export const fill = (id: string, opts: ColoredDataBuildOpts): TaggedLayer => make('fill', id, opts);
+export const line = (id: string, opts: ColoredDataBuildOpts): TaggedLayer => make('line', id, opts);
+export const symbol = (id: string, opts: DataBuildOpts): TaggedLayer => make('symbol', id, opts);
+export const fillExtrusion = (id: string, opts: ColoredDataBuildOpts): TaggedLayer => make('fill-extrusion', id, opts);
 
 /** An invisible background anchor layer used as a MapLibre `beforeId` slot. */
 export const slot = (id: string): TaggedLayer => ({

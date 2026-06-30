@@ -318,11 +318,13 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 	return r;
 }
 
-function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps {
+// Returns null for variants that should not be drawn at all (e.g. ferry casing,
+// service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
+function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, bg, fg } = ctx;
 	if (t === 'ferry')
 		return isOutline
-			? {}
+			? null
 			: {
 					minzoom: 10,
 					color: c.water.blend(0.1, fg),
@@ -377,7 +379,7 @@ function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline:
 	}
 
 	if (rt === 'subway') {
-		if (isService) return {};
+		if (isService) return null;
 		const r: b.StyleProps = {};
 		if (isOutline)
 			Object.assign(r, { color: c.transitSubway, size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 } });
@@ -399,7 +401,7 @@ function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline:
 	}
 
 	// tram / narrowgauge / funicular / monorail
-	if (isService) return {};
+	if (isService) return null;
 	return isOutline
 		? { minzoom: 15, color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
 		: { minzoom: 13, size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
@@ -451,7 +453,10 @@ function bridgeDeckStyle(ctx: LayerContext, s: string): b.StyleProps {
 }
 
 // Compute the fully-resolved style for a road layer from its id.
-function roadStyle(ctx: LayerContext, id: string): b.StyleProps {
+// Returns the resolved style for a road layer, or null when the layer should not be
+// drawn (no styling rule). Every non-null result carries a color, so the caller can
+// safely treat it as a colored style for the mandatory-color fill/line builders.
+function roadStyle(ctx: LayerContext, id: string): b.StyleProps | null {
 	if (id === 'bridge') return { color: ctx.c.land.blend(0.02, ctx.fg), fillAntialias: true, opacity: 0.8 };
 
 	let prefix: Prefix = '';
@@ -474,7 +479,17 @@ function roadStyle(ctx: LayerContext, id: string): b.StyleProps {
 	}
 
 	if (suffix === ':bridge') return bridgeDeckStyle(ctx, s);
-	if (s.startsWith('aerialway-')) return {};
+	if (s.startsWith('aerialway-')) {
+		// Aerialways (cable cars / lifts): a single thin dashed line, no casing.
+		if (suffix === ':outline') return null;
+		return {
+			color: ctx.c.transitRail.blend(0.2, ctx.bg),
+			size: { 13: 0, 14: 1, 20: 2 },
+			opacity: { 13: 0, 14: 0.6 },
+			lineDasharray: [2, 2],
+			lineJoin: 'round',
+		};
+	}
 	if (s.startsWith('transport-'))
 		return transportStyle(ctx, prefix, s.slice('transport-'.length), suffix === ':outline');
 	if (s.startsWith('way-')) return wayStyle(ctx, prefix, s.slice('way-'.length), suffix === ':outline');
@@ -484,7 +499,7 @@ function roadStyle(ctx: LayerContext, id: string): b.StyleProps {
 		if (t.endsWith('-bicycle')) return bicycleStyle(ctx, prefix, t.slice(0, -'-bicycle'.length));
 		return streetLineStyle(ctx, prefix, t, suffix === ':outline');
 	}
-	return {};
+	return null;
 }
 
 // ── Group tagging (mirrors the old groups.ts road membership) ──────────────────
@@ -528,12 +543,15 @@ function roadGroup(id: string): string | undefined {
 export function* roads(ctx: LayerContext): Generator<b.TaggedLayer> {
 	for (const def of buildStructures()) {
 		// every road structure is a fill or line layer (never background)
-		const d = def as { id: string; type: string; 'source-layer'?: string; filter?: FilterSpecification };
+		const d = def as { id: string; type: string; 'source-layer': string; filter?: FilterSpecification };
+		const style = roadStyle(ctx, d.id);
+		if (!style) continue; // no styling rule → don't emit a bare (black) layer
 		const make = d.type === 'fill' ? b.fill : b.line;
+		// roadStyle guarantees a color for every non-null result (see its contract).
 		yield make(d.id, {
 			sourceLayer: d['source-layer'],
 			filter: d.filter,
-			...roadStyle(ctx, d.id),
+			...(style as b.ColoredStyleProps),
 			group: roadGroup(d.id),
 		});
 	}

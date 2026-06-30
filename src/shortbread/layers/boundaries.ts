@@ -8,7 +8,7 @@ import * as b from '../build.js';
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
-	const {boundary}=c;
+	const { boundary } = c;
 	const fCountry: FilterSpecification = [
 		'all',
 		['==', ['get', 'admin_level'], 2],
@@ -37,7 +37,6 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		['!=', ['get', 'disputed'], true],
 		['!=', ['get', 'coastline'], true],
 	];
-
 
 	yield b.line('boundary-state:outline', {
 		sourceLayer: 'boundaries',

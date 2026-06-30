@@ -87,13 +87,14 @@ describe('layerGroups', () => {
 		expect(ids).toContain('street-pedestrian');
 	});
 
-	it('transit.rail should include service variants for main rail types', () => {
+	it('transit.rail should include rail service variants but not the undrawn subway service', () => {
 		const ids = G.transit.rail;
 		expect(ids).toContain('transport-rail');
 		expect(ids).toContain('transport-rail-service');
 		expect(ids).toContain('transport-subway');
-		expect(ids).toContain('transport-subway-service');
 		expect(ids).toContain('tunnel-transport-rail');
+		// subway/tram service tracks carry no styling rule, so they are not emitted.
+		expect(ids).not.toContain('transport-subway-service');
 	});
 
 	it('transit.rail should include funicular/monorail without service variants', () => {
@@ -104,9 +105,10 @@ describe('layerGroups', () => {
 		expect(ids).not.toContain('transport-monorail-service');
 	});
 
-	it('transit.aerialways should include cablecar and gondola', () => {
+	it('transit.aerialways should include cablecar and gondola (single line, no casing)', () => {
 		expect(G.transit.aerialways).toContain('aerialway-cablecar');
 		expect(G.transit.aerialways).toContain('aerialway-gondola');
-		expect(G.transit.aerialways).toContain('aerialway-cablecar:outline');
+		// aerialways are drawn as a single line; the casing variant is not emitted.
+		expect(G.transit.aerialways).not.toContain('aerialway-cablecar:outline');
 	});
 });
