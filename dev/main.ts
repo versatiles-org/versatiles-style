@@ -1,5 +1,7 @@
 import { getStyleVariants, osm } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
+// maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
+declare const MaplibreInspect: new (options?: Record<string, unknown>) => maplibregl.IControl;
 
 const variants = getStyleVariants();
 variants.push({
@@ -34,7 +36,7 @@ async function loadStyle(name: string) {
 		urls: { base: 'https://tiles.versatiles.org' },
 		features: { landcover: true },
 	});
-	console.log(style);
+	console.log(style.layers.length);
 
 	if (map) {
 		map.setStyle(style);
@@ -47,6 +49,13 @@ async function loadStyle(name: string) {
 			minPitch: 0,
 		});
 		map.addControl(new maplibregl.NavigationControl(), 'top-right');
+		// Inspect control: toggles a debug view of the vector tile layers/features.
+		map.addControl(
+			new MaplibreInspect({
+				popup: new maplibregl.Popup({ closeButton: false, closeOnClick: false }),
+			}),
+			'top-right'
+		);
 	}
 
 	// Persist style choice in query parameter
