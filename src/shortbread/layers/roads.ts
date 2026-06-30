@@ -1,5 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
+import type { Color } from '../../color/index.js';
 import type { MaplibreLayerDefinition } from '../../types/index.js';
 import * as b from '../build.js';
 
@@ -167,104 +168,87 @@ function buildStructures(): MaplibreLayerDefinition[] {
 
 type Prefix = '' | 'tunnel-' | 'bridge-';
 
+// OpenMapTiles / OSM Bright interpolate widths exponentially with base 1.2.
+const BASE = 1.2;
+const exp = (stops: Record<number, number>): b.ExpStops => ({ base: BASE, stops });
+
 const MINOR_WIDTH = {
 	outline: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
 	main: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 };
 
-// width (and link min-zoom) by base street type
-function streetWidth(base: string, isLink: boolean, isOutline: boolean): b.StyleProps {
+const ARTERIAL = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary']);
+
+// Line width (and link/class min-zoom) by base street type and prefix, matching OSM Bright.
+// OSM Bright widens casings on bridges and thins service/track in tunnels, so widths are
+// resolved per (base × prefix × outline/fill).
+function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: Prefix): b.StyleProps {
 	if (isLink) {
-		if (base === 'motorway')
-			return isOutline
-				? { minzoom: 12, size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 } }
-				: { minzoom: 12, size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 } };
-		if (base === 'trunk' || base === 'primary' || base === 'secondary')
-			return isOutline
-				? { minzoom: 13, size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 } }
-				: { minzoom: 13, size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 } };
-		// tertiary-link → minor
-		return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main, opacity: { 12: 0, 13: 1 } };
+		// motorway-link uses minzoom 12, all other links minzoom 13 (OSM Bright highway-link)
+		const minzoom = base === 'motorway' ? 12 : 13;
+		return isOutline
+			? { minzoom, size: exp({ 12: 1, 13: 3, 14: 4, 20: 15 }) }
+			: { minzoom, size: exp({ 12.5: 0, 13: 1.5, 14: 2.5, 20: 11.5 }) };
 	}
+	const bridge = prefix === 'bridge-';
 	switch (base) {
 		case 'motorway':
 			return isOutline
-				? { size: { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 } }
-				: { size: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 }, opacity: { 5: 0, 6: 1 } };
+				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 4: 0, 5: 0.4, 6: 0.6, 7: 1.5, 20: 22 }) }
+				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 		case 'trunk':
 			return isOutline
-				? { size: { 6: 0, 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
-				: { size: { 6: 0, 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 }, opacity: { 6: 0, 7: 1 } };
+				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 5: 0, 6: 0.6, 7: 1.5, 20: 22 }) }
+				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 		case 'primary':
 			return isOutline
-				? { size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
-				: { size: { 8: 0, 9: 2, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 }, opacity: { 8: 0, 9: 1 } };
+				? { minzoom: 5, size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
+				: { size: exp({ 8.5: 0, 9: 0.5, 20: 18 }) };
 		case 'secondary':
+		case 'tertiary':
 			return isOutline
-				? { size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 }, opacity: { 11: 0, 12: 1 } }
-				: { size: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 }, opacity: { 11: 0, 12: 1 } };
-		case 'track':
+				? { size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
+				: { size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
+		default: // minor / service / track / residential / unclassified / living_street / pedestrian / busway
+			// OSM Bright draws service/track thinner inside tunnels.
+			if (prefix === 'tunnel-' && (base === 'service' || base === 'track'))
+				return isOutline ? { size: exp({ 15: 1, 16: 4, 20: 11 }) } : { size: exp({ 15.5: 0, 16: 2, 20: 7.5 }) };
 			return isOutline
-				? { size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 }, opacity: { 14: 0, 15: 1 } }
-				: { size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 }, opacity: { 14: 0, 15: 1 } };
-		case 'service':
-		case 'busway':
-		case 'busguideway':
-			return isOutline
-				? { size: { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 }, opacity: { 15: 0, 16: 1 } }
-				: { size: { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 }, opacity: { 15: 0, 16: 1 } };
-		default: // tertiary, unclassified, residential, livingstreet, pedestrian
-			return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main, opacity: { 12: 0, 13: 1 } };
+				? { size: exp(bridge ? { 12: 0.5, 13: 1, 14: 6, 20: 24 } : { 12: 0.5, 13: 1, 14: 4, 20: 15 }) }
+				: { size: exp({ 13.5: 0, 14: 2.5, 20: 11.5 }) };
 	}
 }
 
+// Fill (main) + casing (:outline) colors per class, matching OSM Bright.
+function classColors(c: LayerContext['c'], base: string): { main: Color; casing: Color } {
+	if (base === 'motorway') return { main: c.roadMotorway, casing: c.roadMotorwayBg };
+	if (ARTERIAL.has(base)) return { main: c.roadTrunk, casing: c.roadTrunkBg };
+	return { main: c.roadStreet, casing: c.roadStreetBg };
+}
+
 function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps {
-	const { c, bg, fg } = ctx;
+	const { c, bg } = ctx;
 	const isLink = t.endsWith('-link');
 	const base = isLink ? t.slice(0, -5) : t;
-	const r: b.StyleProps = {};
+	const { main, casing } = classColors(c, base);
+	const isArterial = ARTERIAL.has(base);
 
-	// base street color + join
-	r.color = isOutline ? c.roadStreetBg : c.roadStreet;
-	r.lineJoin = 'round';
-	// tunnel / bridge color blends
-	if (prefix === 'tunnel-') r.color = isOutline ? c.roadStreet.blend(0.13, fg) : c.roadStreet.blend(0.03, fg);
-	else if (prefix === 'bridge-' && isOutline) r.color = c.roadStreet.blend(0.15, fg);
-	// line cap
-	r.lineCap = prefix === 'bridge-' ? 'butt' : 'round';
+	const r: b.StyleProps = { lineJoin: 'round', lineCap: prefix === 'bridge-' ? 'butt' : 'round' };
 
-	// arterial color overrides (motorway / trunk-class), incl. -link
-	if (base === 'motorway') {
-		if (isOutline) {
-			r.color = prefix === 'tunnel-' ? c.roadMotorwayBg.blend(0.05, bg) : c.roadMotorwayBg;
-			if (prefix === 'tunnel-') r.lineDasharray = [1, 0.3];
-		} else {
-			r.color = prefix === 'tunnel-' ? c.roadMotorway.blend(0.1, bg) : c.roadMotorway;
-			if (prefix === 'tunnel-') r.lineCap = 'butt';
-		}
-	} else if (base === 'trunk' || base === 'primary' || base === 'secondary') {
-		if (isOutline) {
-			r.color = prefix === 'tunnel-' ? c.roadTrunkBg.blend(0.05, bg) : c.roadTrunkBg;
-			if (prefix === 'tunnel-') r.lineDasharray = [1, 0.3];
-		} else {
-			r.color = prefix === 'tunnel-' ? c.roadTrunk.blend(0.1, bg) : c.roadTrunk;
-			if (prefix === 'tunnel-') r.lineCap = 'butt';
+	if (isOutline) {
+		r.color = casing;
+		// OSM Bright dashes tunnel casings for every class EXCEPT trunk and primary.
+		if (prefix === 'tunnel-' && base !== 'trunk' && base !== 'primary') r.lineDasharray = [0.5, 0.25];
+	} else {
+		r.color = main;
+		// OSM Bright tunnels render a lighter fill (the arterial classes only; minor stays white).
+		if (prefix === 'tunnel-') {
+			if (base === 'motorway') r.color = main.blend(0.2, bg);
+			else if (isArterial) r.color = main.blend(0.33, bg);
 		}
 	}
 
-	// service / bus color
-	if (base === 'service' || base === 'busway' || base === 'busguideway')
-		r.color = isOutline ? c.roadStreetBg.blend(0.3, bg) : c.roadStreet.blend(0.03, fg);
-
-	// pedestrian surface main color
-	const isPedSurfaceMain = base === 'pedestrian' && !isLink && prefix === '' && !isOutline;
-	if (isPedSurfaceMain) r.color = c.transitFoot;
-
-	// width + opacity
-	Object.assign(r, streetWidth(base, isLink, isOutline));
-	// surface pedestrian: the minor-width opacity {12:0,13:1} is overlaid by {13:0,14:1}
-	if (isPedSurfaceMain) r.opacity = { ...(r.opacity as Record<number, number>), 13: 0, 14: 1 };
-
+	Object.assign(r, streetWidth(base, isLink, isOutline, prefix));
 	return r;
 }
 
@@ -291,113 +275,69 @@ function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleP
 	return r;
 }
 
-function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps {
-	const { c, bg, fg } = ctx;
-	const r: b.StyleProps = {
-		minzoom: 15,
-		lineCap: prefix === 'bridge-' ? 'butt' : 'round',
-		size: isOutline ? { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 } : { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
-	};
-	if (t === 'cycleway') {
-		if (prefix === 'tunnel-') {
-			r.color = isOutline
-				? c.transitCycle.blend(0.1, fg).saturate(-0.5)
-				: c.transitCycle.blend(0.02, fg).saturate(-0.5);
-			if (!isOutline) r.lineDasharray = [1, 0.2];
-		} else {
-			r.color = isOutline ? c.transitCycle.blend(0.1, fg) : c.transitCycle;
-		}
-	} else {
-		if (prefix === 'tunnel-') {
-			r.color = isOutline ? c.transitFoot.blend(0.1, fg).saturate(-0.5) : c.transitFoot.blend(0.02, fg).saturate(-0.5);
-			if (!isOutline) r.lineDasharray = [1, 0.2];
-		} else {
-			r.color = isOutline ? c.transitFoot.blend(0.1, fg) : c.transitFoot.blend(0.02, bg);
-		}
+// OSM Bright renders all path-class ways (footway/path/cycleway/steps) as a single dashed tan
+// line with no casing. `_t` (way type) is kept for signature symmetry with the other builders.
+function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: boolean): b.StyleProps | null {
+	const { c } = ctx;
+	if (isOutline) {
+		// OSM Bright gives bridge paths a casing; surface/tunnel paths have none.
+		if (prefix !== 'bridge-') return null;
+		return {
+			color: c.roadStreetBg,
+			lineJoin: 'round',
+			lineCap: 'round',
+			size: { base: 1.2, stops: { 15: 1.2, 20: 18 } },
+		};
 	}
-	return r;
+	return {
+		color: c.land.darken(0.18).blend(0.22, c.roadMotorwayBg), // ≈ #cba
+		lineJoin: 'round',
+		lineCap: prefix === 'bridge-' ? 'butt' : 'round',
+		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
+		lineDasharray: [1.5, 0.75],
+	};
 }
 
 // Returns null for variants that should not be drawn at all (e.g. ferry casing,
 // service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
-function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
-	const { c, bg, fg } = ctx;
+function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
+	const { c } = ctx;
+	// railways interpolate with base 1.4 in OSM Bright
+	const w14 = (stops: Record<number, number>): b.ExpStops => ({ base: 1.4, stops });
+
 	if (t === 'ferry')
 		return isOutline
 			? null
 			: {
 					minzoom: 10,
-					color: c.water.blend(0.1, fg),
-					size: { 10: 1, 13: 2, 14: 3, 16: 4, 17: 6 },
+					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
+					color: c.water.saturate(0.8).darken(0.3),
+					size: 1.1,
 					opacity: { 10: 0, 11: 1 },
-					lineDasharray: [1, 1],
+					lineDasharray: [2, 2],
 				};
 
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;
 
 	if (rt === 'rail' || rt === 'lightrail') {
-		const r: b.StyleProps = {};
-		if (isService) {
-			if (isOutline) Object.assign(r, { color: c.transitRail, minzoom: 14, size: { 14: 0, 15: 1, 16: 1, 20: 14 } });
-			else
-				Object.assign(r, {
-					color: c.transitRail.blend(0.25, bg),
-					minzoom: 15,
-					size: { 15: 0, 16: 1, 20: 10 },
-					lineDasharray: [2, 2],
-				});
-			return r; // service variants carry no opacity rule
-		}
-		if (isOutline) Object.assign(r, { color: c.transitRail, minzoom: 8, size: { 8: 1, 13: 1, 15: 1, 20: 14 } });
-		else
-			Object.assign(r, {
-				color: c.transitRail.blend(0.25, bg),
-				minzoom: 14,
-				size: { 14: 0, 15: 1, 20: 10 },
-				lineDasharray: [2, 2],
-			});
-		if (rt === 'rail')
-			r.opacity =
-				prefix === 'tunnel-'
-					? isOutline
-						? { 8: 0, 9: 0.3 }
-						: { 14: 0, 15: 0.3 }
-					: isOutline
-						? { 8: 0, 9: 1 }
-						: { 14: 0, 15: 1 };
-		else
-			r.opacity =
-				prefix === 'tunnel-'
-					? isOutline
-						? { 11: 0, 12: 0.5 }
-						: { 14: 0, 15: 1 }
-					: isOutline
-						? { 11: 0, 12: 1 }
-						: { 14: 0, 15: 1 };
-		return r;
+		// OSM Bright railways: a thin solid base line (:outline) with a wider dashed "hatching"
+		// line on top (the fill), producing the cross-tie look.
+		if (isService)
+			return isOutline
+				? { color: c.transitRail, size: w14({ 14: 0.4, 20: 1 }) }
+				: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
+		return isOutline
+			? { color: c.transitRail, size: w14({ 14: 0.4, 15: 0.75, 20: 2 }) }
+			: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 3, 20: 8 }) };
 	}
 
 	if (rt === 'subway') {
 		if (isService) return null;
-		const r: b.StyleProps = {};
-		if (isOutline)
-			Object.assign(r, { color: c.transitSubway, size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 } });
-		else
-			Object.assign(r, {
-				color: c.transitSubway.blend(0.25, bg),
-				size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
-				lineDasharray: [2, 2],
-			});
-		r.opacity =
-			prefix === 'tunnel-'
-				? isOutline
-					? { 11: 0, 12: 0.5 }
-					: { 14: 0, 15: 1 }
-				: isOutline
-					? { 11: 0, 12: 1 }
-					: { 14: 0, 15: 1 };
-		return r;
+		// transit/subway: same hatching technique, in a slightly translucent grey.
+		return isOutline
+			? { color: c.transitSubway.fade(0.23), size: w14({ 14: 0.4, 20: 1 }) }
+			: { color: c.transitSubway.fade(0.32), lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
 	}
 
 	// tram / narrowgauge / funicular / monorail
@@ -480,13 +420,15 @@ function roadStyle(ctx: LayerContext, id: string): b.StyleProps | null {
 
 	if (suffix === ':bridge') return bridgeDeckStyle(ctx, s);
 	if (s.startsWith('aerialway-')) {
-		// Aerialways (cable cars / lifts): a single thin dashed line, no casing.
-		if (suffix === ':outline') return null;
+		// Aerialways (cable cars / lifts), OSM Bright style: a thin solid base line (:outline)
+		// with a wider dashed line on top (the fill) giving the cable-tick pattern.
+		if (suffix === ':outline')
+			return { color: ctx.c.transitRail, minzoom: 13, size: { base: 1, stops: { 11: 1, 19: 2.5 } }, lineJoin: 'round' };
 		return {
-			color: ctx.c.transitRail.blend(0.2, ctx.bg),
-			size: { 13: 0, 14: 1, 20: 2 },
-			opacity: { 13: 0, 14: 0.6 },
-			lineDasharray: [2, 2],
+			color: ctx.c.transitRail,
+			minzoom: 13,
+			size: { base: 1, stops: { 11: 3, 19: 5.5 } },
+			lineDasharray: [2, 3],
 			lineJoin: 'round',
 		};
 	}

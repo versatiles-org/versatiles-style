@@ -16,23 +16,28 @@ type PlaceDef = {
 	uppercase?: boolean;
 };
 
-// small place labels (render order), then state boundary, then large place labels
+// OSM Bright settlement labels are neutral dark grey; districts/quarters (place-other) are a
+// warm dark red and uppercased. Sizes mirror OSM Bright's place layers.
 const PLACES_SMALL: PlaceDef[] = [
-	{ kind: 'neighbourhood', minzoom: 14, size: { 14: 12 }, color: (c) => placeHue(c, -50), uppercase: true },
-	{ kind: 'quarter', minzoom: 13, size: { 13: 13 }, color: (c) => placeHue(c, -40), uppercase: true },
-	{ kind: 'suburb', minzoom: 11, size: { 11: 11, 13: 14 }, color: (c) => placeHue(c, -30), uppercase: true },
-	{ kind: 'hamlet', minzoom: 13, size: { 10: 11, 12: 14 } },
-	{ kind: 'village', minzoom: 11, size: { 9: 11, 12: 14 } },
-	{ kind: 'town', minzoom: 9, size: { 8: 11, 12: 14 } },
+	{ kind: 'neighbourhood', minzoom: 14, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'quarter', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'suburb', minzoom: 11, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'hamlet', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'village', minzoom: 11, size: { 10: 12, 15: 22 } },
+	{ kind: 'town', minzoom: 9, size: { 10: 14, 15: 24 } },
 ];
 const PLACES_LARGE: PlaceDef[] = [
-	{ kind: 'city', minzoom: 7, size: { 7: 11, 10: 14 } },
-	{ kind: 'state_capital', minzoom: 6, size: { 6: 11, 10: 15 } },
-	{ kind: 'capital', minzoom: 5, size: { 5: 12, 10: 16 } },
+	{ kind: 'city', minzoom: 7, size: { 7: 14, 11: 24 } },
+	{ kind: 'state_capital', minzoom: 6, size: { 7: 14, 11: 24 } },
+	{ kind: 'capital', minzoom: 5, size: { 7: 14, 11: 24 } },
 ];
 
-function placeHue(ctx: LayerContext, deg: number): Color {
-	return ctx.c.label.rotateHue(deg).saturate(1).blend(0.05, ctx.fg);
+// Neutral settlement text (~#333) and warm district/state text (~#633), derived from the palette.
+function placeText(ctx: LayerContext): Color {
+	return ctx.c.label.saturate(-1);
+}
+function placeWarm(ctx: LayerContext): Color {
+	return ctx.c.label.rotateHue(120).saturate(1.6).lighten(0.08);
 }
 
 const STREET_KINDS = [
@@ -50,13 +55,13 @@ const STREET_KINDS = [
 const ADMIN2: FilterSpecification = ['in', ['get', 'admin_level'], ['literal', [2, '2']]];
 
 export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c, bg } = ctx;
+	const { c } = ctx;
 
 	const placeBase: b.StyleProps = {
-		color: placeHue(ctx, -15),
+		color: placeText(ctx),
 		font: ctx.fonts.normal,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
+		textHaloWidth: 1.2,
 		textHaloBlur: 1,
 	};
 	const boundaryBase: b.StyleProps = {
@@ -64,7 +69,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		font: ctx.fonts.normal,
 		textTransform: 'uppercase',
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
+		textHaloWidth: 1.2,
 		textHaloBlur: 1,
 		textAnchor: 'top',
 		textOffset: [0, 0.2],
@@ -75,7 +80,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.label,
 		font: ctx.fonts.normal,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
+		textHaloWidth: 1.2,
 		textHaloBlur: 1,
 		symbolPlacement: 'line',
 		textAnchor: 'center',
@@ -141,8 +146,8 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 5,
-		color: c.label.blend(0.05, bg),
-		size: { 5: 8, 8: 12 },
+		color: placeWarm(ctx),
+		size: { 5: 10, 8: 12 },
 		group: 'labels.states',
 	});
 
@@ -156,7 +161,8 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 4,
-		size: { 4: 8, 5: 11 },
+		size: { 4: 11, 5: 13 },
+		textHaloWidth: 2,
 		group: 'labels.countries',
 	});
 	yield b.symbol('label-boundary-country-medium', {
@@ -170,7 +176,8 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 3,
-		size: { 3: 8, 5: 12 },
+		size: { 3: 11, 5: 14 },
+		textHaloWidth: 2,
 		group: 'labels.countries',
 	});
 	yield b.symbol('label-boundary-country-large', {
@@ -179,7 +186,8 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 2,
-		size: { 2: 8, 5: 13 },
+		size: { 2: 11, 5: 15 },
+		textHaloWidth: 2,
 		group: 'labels.countries',
 	});
 }
