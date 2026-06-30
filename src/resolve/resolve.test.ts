@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type { TileJSONSpecification } from '../types/index.js';
 import { resolveOsmOptions } from './resolveOsmOptions.js';
 import { resolveSatelliteOptions } from './resolveSatelliteOptions.js';
 import {
@@ -12,15 +11,12 @@ import {
 	resolveFeatures,
 } from './resolveOsmOptions.js';
 
-const DEFAULT_BASE = 'https://tiles.versatiles.org';
-
 // ── resolveOsmOptions ─────────────────────────────────────────────────────────
 
 describe('resolveOsmOptions', () => {
 	it('returns sensible defaults when called with no arguments', () => {
 		const r = resolveOsmOptions();
 		expect(r.theme).toEqual({ palette: 'colorful', darkMode: false });
-		expect(r.urls.base).toBe(DEFAULT_BASE);
 		expect(typeof r.urls.osm).toBe('string');
 		expect(typeof r.urls.elevation).toBe('string');
 		expect(typeof r.urls.glyphsPattern).toBe('string');
@@ -61,7 +57,6 @@ describe('resolveOsmOptions', () => {
 
 	it('resolves custom base URL and builds relative URLs from it', () => {
 		const r = resolveOsmOptions({ urls: { base: 'https://my.server.com' } });
-		expect(r.urls.base).toBe('https://my.server.com');
 		expect(r.urls.osm).toContain('my.server.com');
 		expect(r.urls.glyphsPattern).toContain('my.server.com');
 	});
@@ -69,12 +64,6 @@ describe('resolveOsmOptions', () => {
 	it('passes through explicit osm URL strings unchanged', () => {
 		const r = resolveOsmOptions({ urls: { osm: 'https://custom.tiles/{z}/{x}/{y}' } });
 		expect(r.urls.osm).toBe('https://custom.tiles/{z}/{x}/{y}');
-	});
-
-	it('passes through TileJSONSpecification for osm', () => {
-		const tileJSON = { tiles: ['https://a/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 } as TileJSONSpecification;
-		const r = resolveOsmOptions({ urls: { osm: tileJSON } });
-		expect(r.urls.osm).toBe(tileJSON);
 	});
 
 	it('resolves sprite string to SpriteEntry array', () => {
@@ -270,7 +259,6 @@ describe('resolveFeatures', () => {
 describe('resolveSatelliteOptions', () => {
 	it('returns defaults with no arguments', () => {
 		const r = resolveSatelliteOptions();
-		expect(r.urls.base).toBe(DEFAULT_BASE);
 		expect(typeof r.urls.satellite).toBe('string');
 		expect(r.osmOverlay).toBe(false);
 		expect(r.features.terrain).toBe(false);

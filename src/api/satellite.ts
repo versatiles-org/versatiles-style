@@ -61,7 +61,6 @@ async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOptions): Promi
 	// (a resolved TileJSON object is used as-is, avoiding a second download).
 	const overlayStyle = await osm({
 		urls: {
-			base: overlayResolved.urls.base,
 			osm: overlayResolved.urls.osm,
 			glyphsPattern: overlayResolved.urls.glyphsPattern,
 			sprite: overlayResolved.urls.sprite,
