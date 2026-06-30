@@ -29,6 +29,7 @@ export async function compareAll(): Promise<CaseResult[]> {
 	const colorful = (await osm({
 		theme: 'colorful',
 		urls: { osm: 'https://example.org/{z}/{x}/{y}' },
+		features: { landcover: true }
 	})) as StyleSpecification;
 	const osmBright = JSON.parse(readFileSync(osmBrightPath, 'utf8')) as StyleSpecification;
 
