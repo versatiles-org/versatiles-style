@@ -21,15 +21,16 @@ type PlaceDef = {
 const PLACES_SMALL: PlaceDef[] = [
 	{ kind: 'neighbourhood', minzoom: 14, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
 	{ kind: 'quarter', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
-	{ kind: 'suburb', minzoom: 11, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'suburb', minzoom: 10, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
 	{ kind: 'hamlet', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
-	{ kind: 'village', minzoom: 11, size: { 10: 12, 15: 22 } },
-	{ kind: 'town', minzoom: 9, size: { 10: 14, 15: 24 } },
+	{ kind: 'village', minzoom: 10, size: { 10: 12, 15: 22 } },
+	{ kind: 'town', minzoom: 7, size: { 10: 14, 15: 24 } },
 ];
+// minzoom = the Shortbread place_labels schema minzoom for each kind (matches OSM Bright).
 const PLACES_LARGE: PlaceDef[] = [
-	{ kind: 'city', minzoom: 7, size: { 7: 14, 11: 24 } },
-	{ kind: 'state_capital', minzoom: 6, size: { 7: 14, 11: 24 } },
-	{ kind: 'capital', minzoom: 5, size: { 7: 14, 11: 24 } },
+	{ kind: 'city', minzoom: 6, size: { 7: 14, 11: 24 } },
+	{ kind: 'state_capital', minzoom: 4, size: { 7: 14, 11: 24 } },
+	{ kind: 'capital', minzoom: 4, size: { 7: 14, 11: 24 } },
 ];
 
 // Neutral settlement text (~#333) and warm district/state text (~#633), derived from the palette.
@@ -145,7 +146,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		filter: ['in', ['get', 'admin_level'], ['literal', [4, '4']]],
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
-		minzoom: 5,
+		minzoom: 3,
 		color: placeWarm(ctx),
 		size: { 5: 10, 8: 12 },
 		group: 'labels.states',
@@ -175,7 +176,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		] as FilterSpecification,
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
-		minzoom: 3,
+		minzoom: 2,
 		size: { 3: 11, 5: 14 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
