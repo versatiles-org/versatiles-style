@@ -302,7 +302,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: bool
 		lineCap: prefix === 'bridge-' ? 'butt' : 'round',
 		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
 		lineDasharray: [1.5, 0.75],
-		opacity: { 13: 0, 14: 1 },
+		opacity: { 13: 0, 14: 0.2, 15: 1 },
 	};
 }
 
