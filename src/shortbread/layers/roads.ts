@@ -179,12 +179,41 @@ const MINOR_WIDTH = {
 
 const ARTERIAL = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary']);
 
-// Line width (and link/class min-zoom) by base street type and prefix, matching OSM Bright.
-// OSM Bright widens casings on bridges and thins service/track in tunnels, so widths are
-// resolved per (base × prefix × outline/fill).
-function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: Prefix): b.StyleProps {
+// Shortbread `streets` schema minzoom per road kind — the zoom at which each kind first appears
+// in the tiles (https://shortbread-tiles.org/schema/1.0/). Roads blend in from 0 width here.
+const STREET_APPEAR: Record<string, number> = {
+	motorway: 5,
+	trunk: 6,
+	primary: 8,
+	secondary: 9,
+	tertiary: 10,
+	residential: 12,
+	unclassified: 12,
+	busway: 12,
+	busguideway: 12,
+	livingstreet: 13,
+	pedestrian: 13,
+	service: 13,
+	track: 13,
+};
+
+function streetAppear(base: string, isLink: boolean): number {
+	// The `link` flag is only populated from z11; OSM Bright renders motorway ramps from z12, the rest z13.
+	if (isLink) return base === 'motorway' ? 12 : 13;
+	return STREET_APPEAR[base] ?? 12;
+}
+
+// Line width by base street type and prefix — the OSM-Bright-matched curves. Roads draw at their
+// natural width as soon as their data appears and fade in by opacity (see `streetLineStyle`), so no
+// width blend is applied here. OSM Bright widens casings on bridges and thins service/track in
+// tunnels, so widths resolve per (base × prefix × outline/fill).
+function streetWidth(
+	base: string,
+	isLink: boolean,
+	isOutline: boolean,
+	prefix: Prefix
+): { minzoom?: number; size: b.ExpStops } {
 	if (isLink) {
-		// motorway-link uses minzoom 12, all other links minzoom 13 (OSM Bright highway-link)
 		const minzoom = base === 'motorway' ? 12 : 13;
 		return isOutline
 			? { minzoom, size: exp({ 12: 1, 13: 3, 14: 4, 20: 15 }) }
@@ -201,8 +230,7 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: 
 				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 5: 0, 6: 0.6, 7: 1.5, 20: 22 }) }
 				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 		case 'primary':
-			// OSM Bright groups primary BRIDGES/TUNNELS with trunk (they appear from ~z6.5), while
-			// primary at the surface uses a later curve (from z8.5).
+			// OSM Bright groups primary BRIDGES/TUNNELS with trunk (a wider/earlier curve) vs the surface.
 			if (prefix !== '')
 				return isOutline
 					? { size: exp({ 5: 0.4, 6: 0.6, 7: 1.5, 20: bridge ? 26 : 22 }) }
@@ -211,22 +239,17 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: 
 				? { minzoom: 5, size: exp({ 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
 				: { size: exp({ 8.5: 0, 9: 0.5, 20: 18 }) };
 		case 'secondary':
-		case 'tertiary': {
-			// The width curve is already non-zero before these classes' data appears in Shortbread
-			// (secondary at z9, tertiary at z10), so without an opacity ramp they pop in at full
-			// width. Fade them in smoothly over the zoom level after they first appear.
-			const opacity = b.fadeIn(base === 'tertiary' ? 10 : 9);
+		case 'tertiary':
 			return isOutline
-				? { opacity, size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
-				: { opacity, size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
-		}
+				? { size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
+				: { size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
 		default: // minor / service / track / residential / unclassified / living_street / pedestrian / busway
 			// OSM Bright draws service/track thinner inside tunnels.
 			if (prefix === 'tunnel-' && (base === 'service' || base === 'track'))
 				return isOutline ? { size: exp({ 15: 1, 16: 4, 20: 11 }) } : { size: exp({ 15.5: 0, 16: 2, 20: 7.5 }) };
 			return isOutline
 				? { size: exp(bridge ? { 12: 0.5, 13: 1, 14: 6, 20: 24 } : { 12: 0.5, 13: 1, 14: 4, 20: 15 }) }
-				: { size: exp({ 13.5: 0, 14: 2.5, 20: 11.5 }) };
+				: { size: exp({ 13: 0, 14: 2.5, 20: 11.5 }) };
 	}
 }
 
@@ -260,6 +283,11 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 	}
 
 	Object.assign(r, streetWidth(base, isLink, isOutline, prefix));
+
+	// Every road type fades in by opacity (0 → 1) over its Shortbread appearance zoom z → z+1, so it
+	// materializes smoothly instead of popping. Applies to both the casing (:outline) and the fill.
+	r.opacity = b.fadeIn(streetAppear(base, isLink));
+
 	return r;
 }
 
@@ -289,6 +317,9 @@ function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleP
 // line with no casing. `_t` (way type) is kept for signature symmetry with the other builders.
 function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: boolean): b.StyleProps | null {
 	const { c } = ctx;
+	// Paths (footway/steps/path/cycleway) appear in Shortbread at z13. They're thin dashed lines, so a
+	// width grow-in makes the dashes scale and reads as a snap; instead they keep their full width and
+	// fade in via opacity over z13→14 — drawn the moment their data appears, materializing smoothly.
 	if (isOutline) {
 		// OSM Bright gives bridge paths a casing; surface/tunnel paths have none.
 		if (prefix !== 'bridge-') return null;
@@ -297,7 +328,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: bool
 			lineJoin: 'round',
 			lineCap: 'round',
 			size: { base: 1.2, stops: { 15: 1.2, 20: 18 } },
-			opacity: { 14: 0, 15: 1 },
+			opacity: b.fadeIn(13),
 		};
 	}
 	return {
@@ -306,7 +337,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, _t: string, isOutline: bool
 		lineCap: prefix === 'bridge-' ? 'butt' : 'round',
 		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
 		lineDasharray: [1.5, 0.75],
-		opacity: { 13: 0, 14: 0.2, 15: 1 },
+		opacity: b.fadeIn(13),
 	};
 }
 
