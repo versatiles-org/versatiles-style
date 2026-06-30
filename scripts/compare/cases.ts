@@ -113,14 +113,16 @@ export const CASES: Case[] = [
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'hospital' } },
 		shortbread: { sourceLayer: 'sites', geom: 'Polygon', properties: { kind: 'hospital' } },
-		minZoom: 14,
+		// data appears at z14 but colorful fades sites in over z14→15; compare once fully visible
+		minZoom: 15,
 	},
 	{
 		name: 'school area',
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'school' } },
 		shortbread: { sourceLayer: 'sites', geom: 'Polygon', properties: { kind: 'school' } },
-		minZoom: 14,
+		// data appears at z14 but colorful fades sites in over z14→15; compare once fully visible
+		minZoom: 15,
 	},
 
 	// ── Buildings ─────────────────────────────────────────────────────────────────
@@ -129,7 +131,8 @@ export const CASES: Case[] = [
 		band: 'buildings',
 		omt: { sourceLayer: 'building', geom: 'Polygon', properties: {} },
 		shortbread: { sourceLayer: 'buildings', geom: 'Polygon', properties: {} },
-		minZoom: 14,
+		// data appears at z14 but colorful fades buildings in over z14→15; compare once fully visible
+		minZoom: 15,
 	},
 
 	// ── Water lines ────────────────────────────────────────────────────────────────
