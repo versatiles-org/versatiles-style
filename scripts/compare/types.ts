@@ -24,11 +24,10 @@ export interface Case {
 	omt: Rep;
 	/** Shortbread representation (matched against the generated `colorful` style). */
 	shortbread: Rep;
-	/** Zoom levels to compare at; defaults to DEFAULT_ZOOMS. */
-	zooms?: number[];
+	/** Lowest zoom to compare at — the Shortbread schema minzoom at which this feature first
+	 *  appears. Zooms below it are skipped (the feature isn't in the tiles there). Defaults to 0. */
+	minZoom?: number;
 	/** Diff substrings to treat as accepted divergences (out-of-scope per project decisions),
 	 *  e.g. a feature Shortbread can't represent without new sprites/sources. Reported, not failed. */
 	ignore?: string[];
 }
-
-export const DEFAULT_ZOOMS = [4, 6, 8, 10, 12, 14, 16];
