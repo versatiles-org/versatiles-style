@@ -8,7 +8,6 @@ import * as b from '../build.js';
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
-	const { boundary } = c;
 	const fCountry: FilterSpecification = [
 		'all',
 		['==', ['get', 'admin_level'], 2],
@@ -38,78 +37,54 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		['!=', ['get', 'coastline'], true],
 	];
 
-	yield b.line('boundary-state:outline', {
-		sourceLayer: 'boundaries',
-		filter: fState,
-		color: c.land.blend(0.1, boundary),
-		lineBlur: 1,
-		lineCap: 'round',
-		lineJoin: 'round',
-		size: { 7: 0, 8: 2, 10: 4 },
-		opacity: 0.75,
-		group: 'boundaries.state',
-	});
+	// OSM Bright draws boundaries as single lines (no casing). Widths interpolate with base 1.
+	const COUNTRY_WIDTH: b.ExpStops = { base: 1, stops: { 0: 0.6, 4: 1.4, 5: 2, 12: 8 } };
+
+	// state / province (admin 3–8): dashed, drawn beneath the country line
 	yield b.line('boundary-state', {
 		sourceLayer: 'boundaries',
 		filter: fState,
 		color: c.boundary,
 		lineCap: 'round',
 		lineJoin: 'round',
-		size: { 7: 0, 8: 1, 10: 2 },
+		minzoom: 2,
+		size: { base: 1.4, stops: { 4: 0.4, 5: 1, 12: 3 } },
+		lineDasharray: [3, 1, 1, 1],
 		group: 'boundaries.state',
 	});
 
-	// ── casing (:outline) pass ──
-	yield b.line('boundary-country:outline', {
-		sourceLayer: 'boundaries',
-		filter: fCountry,
-		color: c.land.blend(0.05, boundary),
-		lineBlur: 1,
-		lineCap: 'round',
-		lineJoin: 'round',
-		size: { 2: 0, 3: 2, 10: 8 },
-		opacity: 0.75,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-country-disputed:outline', {
-		sourceLayer: 'boundaries',
-		filter: fDisputed,
-		color: c.land.blend(0.05, boundary),
-		size: { 2: 0, 3: 2, 10: 8 },
-		lineCap: 'round',
-		lineJoin: 'round',
-		opacity: 0.75,
-		group: 'boundaries.country',
-	});
-
-	// ── main pass ──
+	// country (admin 2): solid
 	yield b.line('boundary-country', {
 		sourceLayer: 'boundaries',
 		filter: fCountry,
 		color: c.boundary,
 		lineCap: 'round',
 		lineJoin: 'round',
-		size: { 2: 0, 3: 1, 10: 4 },
+		size: COUNTRY_WIDTH,
 		group: 'boundaries.country',
 	});
+
+	// disputed: dashed
 	yield b.line('boundary-country-disputed', {
 		sourceLayer: 'boundaries',
 		filter: fDisputed,
-		size: { 2: 0, 3: 1, 10: 4 },
 		color: c.boundaryDisputed,
-		lineDasharray: [2, 1],
-		lineCap: 'square',
+		lineDasharray: [1, 3],
+		lineCap: 'round',
+		lineJoin: 'round',
+		size: COUNTRY_WIDTH,
 		group: 'boundaries.country',
 	});
+
+	// maritime: deeper-blue solid line over the water, faded in at low zoom
 	yield b.line('boundary-country-maritime', {
 		sourceLayer: 'boundaries',
 		filter: fMaritime,
-		color: c.boundary,
-		lineDasharray: [1, 4],
+		color: c.water.darken(0.13),
 		lineCap: 'round',
 		lineJoin: 'round',
-		size: { 2: 0, 3: 1, 10: 2 },
-		opacity: { 5: 0, 6: 0.5 },
+		size: COUNTRY_WIDTH,
+		opacity: { 6: 0.6, 10: 1 },
 		group: 'boundaries.country',
 	});
 }

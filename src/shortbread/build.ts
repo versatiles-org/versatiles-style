@@ -4,8 +4,12 @@ import type { MaplibreLayer } from '../types/index.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
-/** A scalar, or zoom-stops `{ z: value }` that become an `interpolate` expression. */
-export type SizeValue = number | Record<number, number>;
+/** Exponential zoom-stops: `{ base, stops: { z: value } }` → `interpolate ['exponential', base]`.
+ *  Used to match OpenMapTiles/OSM Bright curves (which interpolate width with `base: 1.2`). */
+export type ExpStops = { base: number; stops: Record<number, number> };
+
+/** A scalar, linear zoom-stops `{ z: value }`, or exponential zoom-stops `{ base, stops }`. */
+export type SizeValue = number | Record<number, number> | ExpStops;
 type ColorValue = Color | string;
 
 /** A built layer plus its semantic group path (e.g. 'roads.streets.residential'); the
@@ -157,20 +161,34 @@ function processFont(value: RuleValue): string[] {
 	throw new Error(`build.processFont: expected a font name string, got ${typeof value}`);
 }
 
-// Zoom-stops object `{ z: v }` → ['interpolate', ['linear'], ['zoom'], z1, v1, …] (zooms sorted).
-function processZoomStops(obj: Record<string, RuleValue>, cb?: (v: RuleValue) => RuleValue): RuleValue[] {
+// Zoom-stops object `{ z: v }` → ['interpolate', <interp>, ['zoom'], z1, v1, …] (zooms sorted).
+// `base` selects the interpolation: linear by default, ['exponential', base] when given.
+function processZoomStops(
+	obj: Record<string, RuleValue>,
+	cb?: (v: RuleValue) => RuleValue,
+	base?: number
+): RuleValue[] {
 	const pairs = Object.entries(obj)
 		.map(([z, v]) => [parseInt(z, 10), cb ? cb(v) : v] as [number, RuleValue])
 		.sort((a, b) => a[0] - b[0]);
-	const expr: RuleValue[] = ['interpolate', ['linear'] as unknown as RuleValue, ['zoom'] as unknown as RuleValue];
+	const interp: RuleValue = base == null ? ['linear'] : ['exponential', base];
+	const expr: RuleValue[] = ['interpolate', interp, ['zoom'] as unknown as RuleValue];
 	for (const [z, v] of pairs) expr.push(z, v);
 	return expr;
+}
+
+function isExpStops(o: Record<string, unknown>): o is { base: number; stops: Record<string, RuleValue> } {
+	return typeof o.base === 'number' && typeof o.stops === 'object' && o.stops !== null && !Array.isArray(o.stops);
 }
 
 function processExpression(value: RuleValue, cb?: (v: RuleValue) => RuleValue): RuleValue {
 	if (typeof value === 'object') {
 		if (value instanceof Color) return processColor(value);
-		if (!Array.isArray(value)) return processZoomStops(value as Record<string, RuleValue>, cb);
+		if (!Array.isArray(value)) {
+			const o = value as Record<string, RuleValue>;
+			if (isExpStops(o)) return processZoomStops(o.stops, cb, o.base);
+			return processZoomStops(o, cb);
+		}
 	}
 	return cb ? cb(value) : value;
 }

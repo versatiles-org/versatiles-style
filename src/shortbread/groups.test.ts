@@ -105,10 +105,10 @@ describe('layerGroups', () => {
 		expect(ids).not.toContain('transport-monorail-service');
 	});
 
-	it('transit.aerialways should include cablecar and gondola (single line, no casing)', () => {
+	it('transit.aerialways should include cablecar and gondola (base line + dashed overlay)', () => {
 		expect(G.transit.aerialways).toContain('aerialway-cablecar');
 		expect(G.transit.aerialways).toContain('aerialway-gondola');
-		// aerialways are drawn as a single line; the casing variant is not emitted.
-		expect(G.transit.aerialways).not.toContain('aerialway-cablecar:outline');
+		// OSM Bright draws aerialways as a thin base line (:outline) with a dashed line on top.
+		expect(G.transit.aerialways).toContain('aerialway-cablecar:outline');
 	});
 });

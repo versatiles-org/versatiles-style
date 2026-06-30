@@ -5,22 +5,25 @@ import * as b from '../build.js';
 // Inland water: rivers/canals/streams/ditches (lines), water polygons, dams and piers.
 // These sit ABOVE the land fills (which is why ocean lives in the landcover band instead).
 
-const LINE_SIZES: Record<string, Record<number, number>> = {
-	river: { 9: 0, 10: 3, 15: 5, 17: 9, 18: 20, 20: 60 },
-	canal: { 9: 0, 10: 2, 15: 4, 17: 8, 18: 17, 20: 50 },
-	stream: { 13: 0, 14: 1, 15: 2, 17: 6, 18: 12, 20: 30 },
-	ditch: { 14: 0, 15: 1, 17: 4, 18: 8, 20: 20 },
+// OSM Bright waterway line widths (base ~1.2–1.3). river is wider and starts earlier.
+const LINE_SIZES: Record<string, b.ExpStops> = {
+	river: { base: 1.2, stops: { 10: 0.8, 20: 6 } },
+	canal: { base: 1.3, stops: { 13: 0.5, 20: 6 } },
+	stream: { base: 1.3, stops: { 13: 0.5, 20: 6 } },
+	ditch: { base: 1.3, stops: { 13: 0.5, 20: 2 } },
 };
 
 export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
+	// OSM Bright draws waterway lines in a slightly deeper blue than the water fill (#a0c8f0).
+	const waterLine = c.water.saturate(0.5).darken(0.07);
 
 	// flowing water (lines)
 	for (const kind of ['river', 'canal', 'stream', 'ditch'] as const) {
 		yield b.line('water-' + kind, {
 			sourceLayer: 'water_lines',
 			filter: ['all', ['==', ['get', 'kind'], kind], ['!=', ['get', 'tunnel'], true], ['!=', ['get', 'bridge'], true]],
-			color: c.water,
+			color: waterLine,
 			lineCap: 'round',
 			lineJoin: 'round',
 			size: LINE_SIZES[kind],
@@ -28,26 +31,23 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 
-	// water polygons
+	// water polygons (OSM Bright renders water at full opacity, no zoom fade-in)
 	yield b.fill('water-area', {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'water'],
 		color: c.water,
-		opacity: { 4: 0, 6: 1 },
 		group: 'water.lakes',
 	});
 	yield b.fill('water-area-river', {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'river'],
 		color: c.water,
-		opacity: { 4: 0, 6: 1 },
 		group: 'water.rivers',
 	});
 	yield b.fill('water-area-small', {
 		sourceLayer: 'water_polygons',
 		filter: ['in', ['get', 'kind'], ['literal', ['reservoir', 'basin', 'dock']]],
 		color: c.water,
-		opacity: { 4: 0, 6: 1 },
 		group: 'water.lakes',
 	});
 
