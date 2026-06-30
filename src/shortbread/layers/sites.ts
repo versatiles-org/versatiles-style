@@ -3,9 +3,9 @@ import type { ColorSet } from '../context.js';
 import * as b from '../build.js';
 
 // Site polygons (schools, hospitals, parking, danger areas, …). All in the `sites` group.
-// Note: `sports_center` has no styling rule — it is emitted as a bare fill (filter only).
+// Every site must define a color (a bare fill would render black), so `style` is required.
 
-type SiteDef = { kind: string; style?: (c: ColorSet) => b.StyleProps };
+type SiteDef = { kind: string; style: (c: ColorSet) => b.ColoredStyleProps };
 
 const SITES: SiteDef[] = [
 	{
@@ -17,7 +17,7 @@ const SITES: SiteDef[] = [
 			image: 'basics:pattern-warning',
 		}),
 	},
-	{ kind: 'sports_center' },
+	{ kind: 'sports_center', style: (c) => ({ color: c.natureLeisure, opacity: 0.1 }) },
 	{ kind: 'university', style: (c) => ({ color: c.siteEducation, opacity: 0.1 }) },
 	{ kind: 'college', style: (c) => ({ color: c.siteEducation, opacity: 0.1 }) },
 	{ kind: 'school', style: (c) => ({ color: c.siteEducation, opacity: 0.1 }) },
@@ -36,7 +36,7 @@ export function* sites(ctx: LayerContext): Generator<b.TaggedLayer> {
 		yield b.fill('site-' + kind.replace(/_/g, ''), {
 			sourceLayer: 'sites',
 			filter: ['==', ['get', 'kind'], kind],
-			...(style ? style(ctx.c) : {}),
+			...style(ctx.c),
 			group: 'sites',
 		});
 	}
