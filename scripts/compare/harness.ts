@@ -22,12 +22,19 @@ export interface CaseResult {
 }
 
 const osmBrightPath = new URL('./styles/style.osm-bright.json', import.meta.url).pathname;
+const tilesJsonPath = new URL('../../src/types/fixtures/tilejson/osm.json', import.meta.url).pathname;
 
 export async function compareAll(): Promise<CaseResult[]> {
+	const tilesJson = JSON.parse(readFileSync(tilesJsonPath, 'utf8')) as StyleSpecification;
+	const fetchFn = async (_url: string | URL | RequestInfo) =>
+		({
+			ok: true,
+			json: async () => tilesJson,
+		}) as Response;
 	// Literal tile-URL template → generated fully offline (no TileJSON fetch).
 	const colorful = (await osm({
 		theme: 'colorful',
-		urls: { osm: 'https://example.org/{z}/{x}/{y}' },
+		urls: { osm: 'https://example.org/tiles.json', fetch: fetchFn },
 		features: { landcover: true },
 	})) as StyleSpecification;
 	const osmBright = JSON.parse(readFileSync(osmBrightPath, 'utf8')) as StyleSpecification;

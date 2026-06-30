@@ -13,21 +13,20 @@ function resolveSprite(base: string, sprite?: SpriteInput): SpriteEntry[] {
 	return input.map(({ id, url }) => ({ id, url: resolveUrl(base, url) }));
 }
 
-function resolveSatelliteUrls(base: string, urls?: SatelliteOptions['urls']): ResolvedSatelliteUrls {
+function resolveSatelliteUrls(urls?: SatelliteOptions['urls']): ResolvedSatelliteUrls {
+	const base = urls?.base ?? DEFAULT_BASE;
 	return {
-		base,
-		satellite: urls?.satellite ?? resolveUrl(base, '/tiles/satellite/{z}/{x}/{y}'),
-		osm: urls?.osm ?? resolveUrl(base, '/tiles/osm/{z}/{x}/{y}'),
-		elevation: urls?.elevation ?? resolveUrl(base, '/tiles/elevation/{z}/{x}/{y}'),
+		satellite: resolveUrl(base, urls?.satellite ?? '/tiles/satellite/tiles.json'),
+		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
+		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite),
+		sprite: resolveSprite(base, urls?.sprite ?? '/assets/sprites/basics/sprites'),
 		fetch: urls?.fetch,
 	};
 }
 
 export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSatelliteOptions {
-	const base = options?.urls?.base ?? DEFAULT_BASE;
-	const urls = resolveSatelliteUrls(base, options?.urls);
+	const urls = resolveSatelliteUrls(options?.urls);
 
 	const features = {
 		terrain: resolveFeatures({ terrain: options?.features?.terrain }).terrain,
@@ -44,7 +43,6 @@ export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSat
 	};
 
 	const osmUrls = {
-		base: urls.base,
 		osm: urls.osm,
 		elevation: urls.elevation,
 		glyphsPattern: urls.glyphsPattern,

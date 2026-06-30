@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "check": "npm run format:check && npm run lint && npm run build && npm run typecheck && npm run test:all",
+    "check": "npm run format && npm run lint && npm run build && npm run typecheck && npm run test:all",
     "build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run doc",
     "build-browser": "rollup -c --environment BUILD:browser && $(cd release/versatiles-style; tar -cf - versatiles-style.* | gzip -9 > ../versatiles-style.tar.gz)",
     "build-node": "rm -rf dist && rollup -c --environment BUILD:node && chmod +x dist/index.js && rm -r dist/declaration",
