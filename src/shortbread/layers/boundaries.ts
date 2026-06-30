@@ -3,11 +3,12 @@ import type { LayerContext } from '../context.js';
 import * as b from '../build.js';
 
 // Administrative boundary lines (country / state, with disputed + maritime variants).
-// Each is drawn as a casing (`:outline`) pass then a main pass. `maritime` variants carry
-// no styling rule in any palette, so they are emitted as bare (invisible) lines.
+// Country/state are drawn as a casing (`:outline`) pass then a main pass. `maritime`
+// variants render as a single faint dashed line (no casing) over the water.
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c, bg } = ctx;
+	const { c } = ctx;
+	const {boundary}=c;
 	const fCountry: FilterSpecification = [
 		'all',
 		['==', ['get', 'admin_level'], 2],
@@ -37,11 +38,33 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		['!=', ['get', 'coastline'], true],
 	];
 
+
+	yield b.line('boundary-state:outline', {
+		sourceLayer: 'boundaries',
+		filter: fState,
+		color: c.land.blend(0.1, boundary),
+		lineBlur: 1,
+		lineCap: 'round',
+		lineJoin: 'round',
+		size: { 7: 0, 8: 2, 10: 4 },
+		opacity: 0.75,
+		group: 'boundaries.state',
+	});
+	yield b.line('boundary-state', {
+		sourceLayer: 'boundaries',
+		filter: fState,
+		color: c.boundary,
+		lineCap: 'round',
+		lineJoin: 'round',
+		size: { 7: 0, 8: 1, 10: 2 },
+		group: 'boundaries.state',
+	});
+
 	// ── casing (:outline) pass ──
 	yield b.line('boundary-country:outline', {
 		sourceLayer: 'boundaries',
 		filter: fCountry,
-		color: c.land.blend(0.05, bg),
+		color: c.land.blend(0.05, boundary),
 		lineBlur: 1,
 		lineCap: 'round',
 		lineJoin: 'round',
@@ -52,26 +75,12 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	yield b.line('boundary-country-disputed:outline', {
 		sourceLayer: 'boundaries',
 		filter: fDisputed,
-		color: c.land.blend(0.05, bg),
+		color: c.land.blend(0.05, boundary),
 		size: { 2: 0, 3: 2, 10: 8 },
-		opacity: 0.75,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-country-maritime:outline', {
-		sourceLayer: 'boundaries',
-		filter: fMaritime,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-state:outline', {
-		sourceLayer: 'boundaries',
-		filter: fState,
-		color: c.land.blend(0.1, bg),
-		lineBlur: 1,
 		lineCap: 'round',
 		lineJoin: 'round',
-		size: { 7: 0, 8: 2, 10: 4 },
 		opacity: 0.75,
-		group: 'boundaries.state',
+		group: 'boundaries.country',
 	});
 
 	// ── main pass ──
@@ -96,15 +105,12 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	yield b.line('boundary-country-maritime', {
 		sourceLayer: 'boundaries',
 		filter: fMaritime,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-state', {
-		sourceLayer: 'boundaries',
-		filter: fState,
 		color: c.boundary,
+		lineDasharray: [1, 4],
 		lineCap: 'round',
 		lineJoin: 'round',
-		size: { 7: 0, 8: 1, 10: 2 },
-		group: 'boundaries.state',
+		size: { 2: 0, 3: 1, 10: 2 },
+		opacity: { 5: 0, 6: 0.5 },
+		group: 'boundaries.country',
 	});
 }
