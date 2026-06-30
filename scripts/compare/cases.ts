@@ -66,14 +66,16 @@ export const CASES: Case[] = [
 		band: 'landcover',
 		omt: { sourceLayer: 'park', geom: 'Polygon', properties: { class: 'public_park' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'park' } },
-		minZoom: 11,
+		// data appears at z11 but colorful fades it in over z11→12; compare once fully visible
+		minZoom: 12,
 	},
 	{
 		name: 'sand / beach',
 		band: 'landcover',
 		omt: { sourceLayer: 'landcover', geom: 'Polygon', properties: { class: 'sand' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'sand' } },
-		minZoom: 10,
+		// data appears at z10 but colorful fades it in over z10→11; compare once fully visible
+		minZoom: 11,
 	},
 
 	// ── Landuse areas ────────────────────────────────────────────────────────────
@@ -103,7 +105,8 @@ export const CASES: Case[] = [
 		band: 'landuse',
 		omt: { sourceLayer: 'landuse', geom: 'Polygon', properties: { class: 'cemetery' } },
 		shortbread: { sourceLayer: 'land', geom: 'Polygon', properties: { kind: 'cemetery' } },
-		minZoom: 13,
+		// data appears at z13 but colorful fades it in over z13→14; compare once fully visible
+		minZoom: 14,
 	},
 	{
 		name: 'hospital area',

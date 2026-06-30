@@ -201,8 +201,14 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: 
 				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 5: 0, 6: 0.6, 7: 1.5, 20: 22 }) }
 				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 		case 'primary':
+			// OSM Bright groups primary BRIDGES/TUNNELS with trunk (they appear from ~z6.5), while
+			// primary at the surface uses a later curve (from z8.5).
+			if (prefix !== '')
+				return isOutline
+					? { size: exp({ 5: 0.4, 6: 0.6, 7: 1.5, 20: bridge ? 26 : 22 }) }
+					: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 			return isOutline
-				? { minzoom: 5, size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
+				? { minzoom: 5, size: exp({ 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
 				: { size: exp({ 8.5: 0, 9: 0.5, 20: 18 }) };
 		case 'secondary':
 		case 'tertiary':
