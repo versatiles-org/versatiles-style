@@ -103,11 +103,20 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'labels.addresses',
 	});
 
-	// motorway exit (structural only) + shield
+	// motorway exit number + shield
 	yield b.symbol('label-motorway-exit', {
 		sourceLayer: 'street_labels_points',
 		filter: ['==', ['get', 'kind'], 'motorway_junction'],
 		layout: { 'text-field': '{ref}' },
+		font: ctx.fonts.normal,
+		color: c.label,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 1,
+		textHaloBlur: 1,
+		symbolPlacement: 'point',
+		textAnchor: 'center',
+		minzoom: 14,
+		size: { 14: 9, 18: 11 },
 		group: 'labels.streets',
 	});
 	yield b.symbol('label-motorway-shield', {
