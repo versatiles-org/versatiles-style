@@ -171,10 +171,8 @@ describe('satellite()', () => {
 
 	it('osmOverlay layer group hiding works', async () => {
 		const style = await satellite({ osmOverlay: { layers: { labels: false } } });
-		const placeLabel = layerById(style, 'label-place-village');
-		if (placeLabel) {
-			expect((placeLabel?.layout as Record<string, unknown>)?.visibility).toBe('none');
-		}
+		// Hidden layer groups are dropped from the overlay entirely.
+		expect(layerById(style, 'label-place-village')).toBeUndefined();
 	});
 
 	// ── Features ─────────────────────────────────────────────────────────────
