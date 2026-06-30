@@ -11,16 +11,19 @@ import type { StyleSpecification } from '../types/index.js';
 // replacing the zoom ramp with its fully-faded-in (max) opacity. This keeps each layer's high-zoom
 // appearance identical while making it visible at low zoom.
 //
-// kind → layer:  forest→land-forest (z0–6), grassland→land-grass (z0–10), scrub→land-vegetation
-// (z0–10), farmland→land-agriculture (z0–9), residential→land-residential (z0–9), water→water-area
-// (z0–3). The remaining landcover kinds (sand, marsh/swamp, glacier) map to layers that already
-// render at all zooms (constant opacity), so they need no change.
+// kind → layer:  forest→land-forest, grassland→land-grass, scrub→land-vegetation,
+// farmland→land-agriculture, residential→land-residential, sand→land-sand, marsh/swamp→land-wetland,
+// water→water-area. (glacier→land-glacier already renders at all zooms with constant opacity, so it
+// needs no change.) The extension provides every kind below the zoom where OSM introduces it, so the
+// fill must be visible from z0 onward — not fade in — which is why the zoom ramp is removed entirely.
 const LANDCOVER_DEFADE = new Set([
 	'land-forest',
 	'land-grass',
 	'land-vegetation',
 	'land-agriculture',
 	'land-residential',
+	'land-sand',
+	'land-wetland',
 	'water-area',
 ]);
 
