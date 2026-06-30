@@ -363,31 +363,36 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;
 
+	let r: b.StyleProps | null;
 	if (rt === 'rail' || rt === 'lightrail') {
 		// OSM Bright railways: a thin solid base line (:outline) with a wider dashed "hatching"
 		// line on top (the fill), producing the cross-tie look.
 		if (isService)
-			return isOutline
+			r = isOutline
 				? { color: c.transitRail, size: w14({ 14: 0.4, 20: 1 }) }
 				: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
-		return isOutline
-			? { color: c.transitRail, size: w14({ 14: 0.4, 15: 0.75, 20: 2 }) }
-			: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 3, 20: 8 }) };
-	}
-
-	if (rt === 'subway') {
+		else
+			r = isOutline
+				? { color: c.transitRail, size: w14({ 14: 0.4, 15: 0.75, 20: 2 }) }
+				: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 3, 20: 8 }) };
+	} else if (rt === 'subway') {
 		if (isService) return null;
 		// transit/subway: same hatching technique, in a slightly translucent grey.
-		return isOutline
+		r = isOutline
 			? { color: c.transitSubway.fade(0.23), size: w14({ 14: 0.4, 20: 1 }) }
 			: { color: c.transitSubway.fade(0.32), lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
+	} else {
+		// tram / narrowgauge / funicular / monorail
+		if (isService) return null;
+		r = isOutline
+			? { minzoom: 15, color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
+			: { minzoom: 13, size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
 	}
 
-	// tram / narrowgauge / funicular / monorail
-	if (isService) return null;
-	return isOutline
-		? { minzoom: 15, color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
-		: { minzoom: 13, size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
+	// Rail tracks fade in by opacity over z14→15 — the zoom at which OSM Bright starts drawing rail
+	// (the width curves are ~0 below 14) — for both the base (:outline) and the hatching (fill).
+	r.opacity = b.fadeIn(14);
+	return r;
 }
 
 function bridgeDeckStyle(ctx: LayerContext, s: string): b.StyleProps {

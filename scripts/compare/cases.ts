@@ -226,7 +226,6 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'boundary', geom: 'LineString', properties: { admin_level: 4 } },
 		shortbread: { sourceLayer: 'boundaries', geom: 'LineString', properties: { admin_level: 4 } },
 		minZoom: 7,
-		fadeIn: true, // width grows in over z7→8
 	},
 	{
 		name: 'maritime boundary',
@@ -234,7 +233,6 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'boundary', geom: 'LineString', properties: { admin_level: 2, maritime: 1 } },
 		shortbread: { sourceLayer: 'boundaries', geom: 'LineString', properties: { admin_level: 2, maritime: true } },
 		minZoom: 4,
-		fadeIn: true, // width grows in over z4→5
 	},
 	{
 		name: 'disputed boundary',
