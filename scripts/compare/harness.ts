@@ -24,7 +24,8 @@ export interface CaseResult {
 const osmBrightPath = new URL('./styles/osm-bright.json', import.meta.url).pathname;
 const tilesJsonPath = new URL('../../src/types/fixtures/tilejson/osm.json', import.meta.url).pathname;
 
-export async function compareAll(): Promise<CaseResult[]> {
+/** Generate both styles offline: the `colorful` Shortbread style and the reference `osm-bright.json`. */
+export async function buildStyles(): Promise<{ colorful: StyleSpecification; osmBright: StyleSpecification }> {
 	const tilesJson = JSON.parse(readFileSync(tilesJsonPath, 'utf8')) as StyleSpecification;
 	const fetchFn = async (_url: string | URL | RequestInfo) =>
 		({
@@ -38,7 +39,15 @@ export async function compareAll(): Promise<CaseResult[]> {
 		features: { landcover: true },
 	})) as StyleSpecification;
 	const osmBright = JSON.parse(readFileSync(osmBrightPath, 'utf8')) as StyleSpecification;
+	return { colorful, osmBright };
+}
 
+export async function compareAll(): Promise<CaseResult[]> {
+	const { colorful, osmBright } = await buildStyles();
+	return compareCases(colorful, osmBright);
+}
+
+export function compareCases(colorful: StyleSpecification, osmBright: StyleSpecification): CaseResult[] {
 	const results: CaseResult[] = [];
 	for (const c of CASES) {
 		const ignore = c.ignore ?? [];
