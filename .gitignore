@@ -2,10 +2,10 @@
 .claude/
 .DS_Store
 .vscode/
-/style.*.json
 coverage/
 dist/
 docs/
 node_modules/
 release/
 scripts/compare/report.md
+scripts/compare/styles/style.*.json
