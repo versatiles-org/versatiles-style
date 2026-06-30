@@ -106,9 +106,9 @@ function evalLegacy(f: unknown, feature: EvalFeature): boolean {
 		case 'none':
 			return !args.some((a) => evalLegacy(a, feature));
 		case '==':
-			return get(args[0]) == args[1];
+			return get(args[0]) === args[1];
 		case '!=':
-			return get(args[0]) != args[1];
+			return get(args[0]) !== args[1];
 		case '>':
 			return (get(args[0]) as number) > (args[1] as number);
 		case '>=':
@@ -118,9 +118,9 @@ function evalLegacy(f: unknown, feature: EvalFeature): boolean {
 		case '<=':
 			return (get(args[0]) as number) <= (args[1] as number);
 		case 'in':
-			return args.slice(1).some((v) => v == get(args[0]));
+			return args.slice(1).some((v) => v === get(args[0]));
 		case '!in':
-			return !args.slice(1).some((v) => v == get(args[0]));
+			return !args.slice(1).some((v) => v === get(args[0]));
 		case 'has':
 			return get(args[0]) != null;
 		case '!has':
