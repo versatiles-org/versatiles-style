@@ -139,27 +139,22 @@ describe('osm()', () => {
 
 	// ── Layer groups ─────────────────────────────────────────────────────────────
 
-	it('hides all buildings when layers.buildings = false', async () => {
+	it('removes all buildings when layers.buildings = false', async () => {
 		const style = await osm({ layers: { buildings: false } });
-		const buildingLayer = layerById(style, 'building');
-		const layout = buildingLayer?.layout as Record<string, unknown> | undefined;
-		expect(layout?.visibility).toBe('none');
+		// Invisible layers are dropped entirely, not shipped as hidden no-ops.
+		expect(layerById(style, 'building')).toBeUndefined();
 	});
 
-	it('hides labels when layers.labels = false', async () => {
+	it('removes labels when layers.labels = false', async () => {
 		const style = await osm({ layers: { labels: false } });
-		const placeLayer = layerById(style, 'label-place-village');
-		const layout = placeLayer?.layout as Record<string, unknown> | undefined;
-		expect(layout?.visibility).toBe('none');
+		expect(layerById(style, 'label-place-village')).toBeUndefined();
 	});
 
-	it('hides sub-group: layers.labels.places = false', async () => {
+	it('removes sub-group: layers.labels.places = false', async () => {
 		const style = await osm({ layers: { labels: { places: false } } });
-		const placeLayer = layerById(style, 'label-place-village');
-		expect((placeLayer?.layout as Record<string, unknown>)?.visibility).toBe('none');
-		// street labels should remain visible (not hidden)
-		const streetLabel = layerById(style, 'label-street');
-		expect((streetLabel?.layout as Record<string, unknown>)?.visibility).not.toBe('none');
+		expect(layerById(style, 'label-place-village')).toBeUndefined();
+		// street labels should remain (untouched by the places override)
+		expect(layerById(style, 'label-street-residential')).toBeDefined();
 	});
 
 	it('sets opacity on a layer group', async () => {
@@ -168,17 +163,15 @@ describe('osm()', () => {
 		expect((buildingLayer?.paint as Record<string, unknown>)?.['fill-opacity']).toBe(0.5);
 	});
 
-	it('icons alias hides pois and transit stops', async () => {
+	it('icons alias removes pois and transit stops', async () => {
 		const style = await osm({ layers: { icons: false } });
-		const poi = layerById(style, 'poi-amenity');
-		expect((poi?.layout as Record<string, unknown>)?.visibility).toBe('none');
+		expect(layerById(style, 'poi-amenity')).toBeUndefined();
 	});
 
 	it('specific group overrides icons alias', async () => {
 		const style = await osm({ layers: { icons: false, pois: true } });
-		const poi = layerById(style, 'poi-amenity');
-		// pois: true should override icons: false
-		expect((poi?.layout as Record<string, unknown>)?.visibility).not.toBe('none');
+		// pois: true should override icons: false, so the layer remains
+		expect(layerById(style, 'poi-amenity')).toBeDefined();
 	});
 
 	// ── Scale ────────────────────────────────────────────────────────────────────

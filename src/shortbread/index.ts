@@ -8,5 +8,5 @@ export {
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
 } from './layers/index.js';
-export { layerGroups, SLOT_IDS } from './groups.js';
-export type { LayerGroups } from './groups.js';
+export { layerGroups, resolveLayerOverrides, SLOT_IDS } from './groups.js';
+export type { LayerGroups, LayerOverride } from './groups.js';

@@ -2,9 +2,8 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { OsmOptions } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { ResolvedLayout, ResolvedOsmOptions } from '../types/index.js';
-import type { LayerGroupOptions } from '../types/index.js';
 import { colorOptionsKeys } from '../types/index.js';
-import { buildContext, buildStyleLayers, layerGroups, SLOT_IDS } from '../shortbread/index.js';
+import { buildContext, buildStyleLayers, layerGroups, resolveLayerOverrides, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting } from '../features/index.js';
@@ -45,106 +44,6 @@ function buildBase(resolved: ResolvedOsmOptions, osmSource: string | TileJSONSpe
 	};
 
 	return style;
-}
-
-// ── Apply layer group visibility / opacity ────────────────────────────────────
-
-type LayerOverride = { visible: boolean; opacity?: number };
-
-function collectGroupOverrides(group: unknown, opt: unknown, result: Map<string, LayerOverride>): void {
-	if (opt === undefined) return;
-
-	if (Array.isArray(group)) {
-		const ids = group as string[];
-		if (opt === false || opt === 0) {
-			ids.forEach((id) => result.set(id, { visible: false }));
-		} else if (opt === true || opt === 1) {
-			ids.forEach((id) => result.delete(id));
-		} else if (typeof opt === 'number') {
-			ids.forEach((id) => result.set(id, { visible: true, opacity: opt }));
-		}
-		return;
-	}
-
-	if (typeof group === 'object' && group !== null) {
-		const groupObj = group as Record<string, unknown>;
-		if (typeof opt === 'boolean' || typeof opt === 'number') {
-			for (const child of Object.values(groupObj)) {
-				collectGroupOverrides(child, opt, result);
-			}
-		} else if (typeof opt === 'object' && opt !== null) {
-			const optObj = opt as Record<string, unknown>;
-			for (const [key, child] of Object.entries(groupObj)) {
-				if (key in optObj) collectGroupOverrides(child, optObj[key], result);
-			}
-		}
-	}
-}
-
-function setLayerOpacity(layer: { type: string; paint?: unknown }, opacity: number): void {
-	const paint = (layer.paint ?? {}) as Record<string, unknown>;
-	switch (layer.type) {
-		case 'fill':
-			paint['fill-opacity'] = opacity;
-			break;
-		case 'line':
-			paint['line-opacity'] = opacity;
-			break;
-		case 'symbol':
-			paint['text-opacity'] = opacity;
-			paint['icon-opacity'] = opacity;
-			break;
-		case 'background':
-			paint['background-opacity'] = opacity;
-			break;
-		case 'fill-extrusion':
-			paint['fill-extrusion-opacity'] = opacity;
-			break;
-		case 'raster':
-			paint['raster-opacity'] = opacity;
-			break;
-	}
-	layer.paint = paint as typeof layer.paint;
-}
-
-function applyLayerGroups(style: StyleSpecification, opts: LayerGroupOptions) {
-	if (!opts || Object.keys(opts).length === 0) return style;
-
-	const overrides = new Map<string, LayerOverride>();
-
-	// Process icons alias first (least specific), then individual groups override it
-	if (opts.icons !== undefined) collectGroupOverrides(layerGroups.icons, opts.icons, overrides);
-
-	const groups = layerGroups as unknown as Record<string, unknown>;
-	const optsObj = opts as Record<string, unknown>;
-	for (const key of [
-		'land',
-		'water',
-		'roads',
-		'transit',
-		'buildings',
-		'sites',
-		'airport',
-		'pois',
-		'boundaries',
-		'markings',
-		'labels',
-	]) {
-		if (key in optsObj) collectGroupOverrides(groups[key], optsObj[key], overrides);
-	}
-
-	if (overrides.size === 0) return;
-
-	for (const layer of style.layers as Array<{ id: string; type: string; layout?: unknown; paint?: unknown }>) {
-		const override = overrides.get(layer.id);
-		if (!override) continue;
-
-		if (!override.visible) {
-			layer.layout = { ...(layer.layout as Record<string, unknown>), visibility: 'none' };
-		} else if (override.opacity !== undefined) {
-			setLayerOpacity(layer, override.opacity);
-		}
-	}
 }
 
 // ── Apply text/icon scale ─────────────────────────────────────────────────────
@@ -216,12 +115,11 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 	// 1. Base style (template + URL configuration)
 	const style = buildBase(resolved, osmSource);
 
-	// 2+3. Build the decorated layer list (structure + theme colors/fonts) from per-group modules
+	// 2+3+4. Build the decorated layer list (structure + theme colors/fonts) from per-group modules,
+	// applying the `layers:` option as they are created: invisible layers are dropped, opacity is baked in.
 	const ctx = buildContext(resolved);
-	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
-
-	// 4. Layer group visibility / opacity
-	applyLayerGroups(style, resolved.layers);
+	const layerOverrides = resolveLayerOverrides(resolved.layers);
+	style.layers = buildStyleLayers(ctx, layerOverrides) as StyleSpecification['layers'];
 
 	// 5. Text and icon size scaling
 	applyScale(style, resolved.layout);
