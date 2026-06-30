@@ -20,13 +20,13 @@ export function* buildings(ctx: LayerContext): Generator<b.TaggedLayer> {
 		yield b.fill('building:outline', {
 			sourceLayer: 'buildings',
 			color: c.buildingBg,
-			opacity: { 13: 0, 16: 1 }, // matches OSM Bright `building-top` fade-in
+			opacity: { 14: 0, 15: 1 }, // matches OSM Bright `building-top` fade-in
 			group: 'buildings',
 		});
 		yield b.fill('building', {
 			sourceLayer: 'buildings',
 			color: c.building,
-			opacity: { 13: 0, 16: 1 },
+			opacity: { 14: 0, 15: 1 },
 			fillTranslate: [-2, -2],
 			group: 'buildings',
 		});
