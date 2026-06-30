@@ -211,10 +211,15 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, prefix: 
 				? { minzoom: 5, size: exp({ 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
 				: { size: exp({ 8.5: 0, 9: 0.5, 20: 18 }) };
 		case 'secondary':
-		case 'tertiary':
+		case 'tertiary': {
+			// The width curve is already non-zero before these classes' data appears in Shortbread
+			// (secondary at z9, tertiary at z10), so without an opacity ramp they pop in at full
+			// width. Fade them in smoothly over the zoom level after they first appear.
+			const opacity: Record<number, number> = base === 'tertiary' ? { 10: 0, 11: 1 } : { 9: 0, 10: 1 };
 			return isOutline
-				? { size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
-				: { size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
+				? { opacity, size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
+				: { opacity, size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
+		}
 		default: // minor / service / track / residential / unclassified / living_street / pedestrian / busway
 			// OSM Bright draws service/track thinner inside tunnels.
 			if (prefix === 'tunnel-' && (base === 'service' || base === 'track'))
@@ -259,10 +264,9 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 }
 
 function zoneStyle(ctx: LayerContext, prefix: Prefix): b.StyleProps {
-	const { c, bg, fg } = ctx;
+	const { c, fg } = ctx;
 	// surface: minor-width opacity {12:0,13:1} overlaid by the zone's {14:0,15:1}
-	if (prefix === '')
-		return { color: c.transitFoot, opacity: { 14: 0, 15: 0.5 } };
+	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 0.5 } };
 	if (prefix === 'tunnel-') return { color: c.roadStreet.blend(0.03, fg), opacity: { 12: 0, 13: 1 } };
 	return { color: c.roadStreet, opacity: { 12: 0, 13: 1 } };
 }
@@ -317,13 +321,13 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 		return isOutline
 			? null
 			: {
-				minzoom: 10,
-				// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
-				color: c.water.saturate(0.8).darken(0.3),
-				size: 1.1,
-				opacity: { 10: 0, 11: 1 },
-				lineDasharray: [2, 2],
-			};
+					minzoom: 10,
+					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
+					color: c.water.saturate(0.8).darken(0.3),
+					size: 1.1,
+					opacity: { 10: 0, 11: 1 },
+					lineDasharray: [2, 2],
+				};
 
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;

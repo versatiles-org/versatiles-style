@@ -8,7 +8,6 @@ import * as b from '../build.js';
 type SiteDef = { kind: string; style: (c: ColorSet) => b.ColoredStyleProps };
 const opacity = { 14: 0, 15: 1 };
 
-
 const SITES: SiteDef[] = [
 	{
 		kind: 'danger_area',
@@ -25,7 +24,10 @@ const SITES: SiteDef[] = [
 	{ kind: 'college', style: (c) => ({ color: c.siteEducation, opacity }) },
 	{ kind: 'school', style: (c) => ({ color: c.siteEducation, opacity }) },
 	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital, opacity }) },
-	{ kind: 'prison', style: (c) => ({ color: c.sitePrison, image: 'basics:pattern-striped', opacity: { 14: 0, 15: 0.1 } }) },
+	{
+		kind: 'prison',
+		style: (c) => ({ color: c.sitePrison, image: 'basics:pattern-striped', opacity: { 14: 0, 15: 0.1 } }),
+	},
 	{ kind: 'parking', style: (c) => ({ color: c.siteParking, opacity }) },
 	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking, opacity }) },
 	{
