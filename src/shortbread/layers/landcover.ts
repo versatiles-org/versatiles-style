@@ -80,9 +80,16 @@ const LAND: LandDef[] = [
 		id: 'leisure',
 		kinds: ['miniature_golf', 'playground', 'golf_course'],
 		color: (c) => c.natureLeisure,
+		opacity: { 11: 0, 12: 1 },
 		group: 'land.urban',
 	},
-	{ id: 'rock', kinds: ['bare_rock', 'scree', 'shingle'], color: (c) => c.natureRock, group: 'land.rock' },
+	{
+		id: 'rock',
+		kinds: ['bare_rock', 'scree', 'shingle'],
+		color: (c) => c.natureRock,
+		opacity: { 11: 0, 12: 1 },
+		group: 'land.rock',
+	},
 	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, opacity: { 7: 0, 8: 0.1 }, group: 'land.forest' },
 	{
 		id: 'grass',
@@ -98,11 +105,12 @@ const LAND: LandDef[] = [
 		opacity: { 11: 0, 12: 1 },
 		group: 'land.vegetation',
 	},
-	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, group: 'land.sand' },
+	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, opacity: { 10: 0, 11: 1 }, group: 'land.sand' },
 	{
 		id: 'wetland',
 		kinds: ['bog', 'marsh', 'string_bog', 'swamp'],
 		color: (c) => c.natureWetland,
+		opacity: { 11: 0, 12: 1 },
 		group: 'land.wetland',
 	},
 ];
