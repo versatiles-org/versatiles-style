@@ -22,7 +22,7 @@ export interface CaseResult {
 	pass: boolean;
 }
 
-const osmBrightPath = new URL('../../style.osm-bright.json', import.meta.url).pathname;
+const osmBrightPath = new URL('./styles/style.osm-bright.json', import.meta.url).pathname;
 
 export async function compareAll(): Promise<CaseResult[]> {
 	// Literal tile-URL template → generated fully offline (no TileJSON fetch).
