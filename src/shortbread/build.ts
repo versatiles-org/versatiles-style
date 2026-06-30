@@ -46,8 +46,7 @@ export type StyleProps = {
 	textOptional?: boolean;
 	symbolPlacement?: string;
 	iconSize?: SizeValue;
-	iconOpacity?: number | Record<number, number>;
-	textOpacity?: number | Record<number, number>;
+	iconOpacity?: number;
 	iconKeepUpright?: boolean;
 	iconAnchor?: string;
 	iconOptional?: boolean;
@@ -61,11 +60,11 @@ type StructuralProps = {
 	layout?: Record<string, unknown>;
 	/** Semantic group path for the derived visibility registry. */
 	group?: string;
-	/** Smoothly fade this layer in (opacity 0 → target) over `appear`→`appear+1`, so it doesn't
-	 *  pop in when its features first appear in the tiles. The target is the layer's own `opacity`
-	 *  if that is a constant (e.g. 0.1, 0.8), otherwise 1. Mutually exclusive with a zoom-stops
-	 *  `opacity`. Sets opacity only — never `minzoom` — so the `landcover` feature can still reveal
-	 *  faded land fills at low zoom by flattening their opacity. */
+	/** Smoothly fade this layer in over `appear`→`appear+1`, so it doesn't pop in when its features
+	 *  first appear in the tiles. Line layers fade by growing their `size` (width) from 0; all other
+	 *  types ramp opacity 0 → target (the layer's own constant `opacity`, e.g. 0.1/0.8, else 1).
+	 *  Opacity fade is mutually exclusive with a zoom-stops `opacity`. Never sets `minzoom`, so the
+	 *  `landcover` feature can still reveal faded land fills at low zoom by flattening their opacity. */
 	appear?: number;
 };
 
@@ -248,6 +247,41 @@ export function fadeIn(appear: number, target = 1, span = 1): Record<number, num
 	return { [appear]: 0, [appear + span]: target };
 }
 
+/** Evaluate a piecewise zoom curve (linear when `base` is 1, else exponential) at zoom `z`, clamped. */
+function evalStops(base: number, stops: Record<number, number>, z: number): number {
+	const zs = Object.keys(stops)
+		.map(Number)
+		.sort((a, b) => a - b);
+	if (z <= zs[0]) return stops[zs[0]];
+	if (z >= zs[zs.length - 1]) return stops[zs[zs.length - 1]];
+	let lo = zs[0];
+	let hi = zs[zs.length - 1];
+	for (let i = 0; i < zs.length - 1; i++) {
+		if (zs[i] <= z && z <= zs[i + 1]) {
+			lo = zs[i];
+			hi = zs[i + 1];
+			break;
+		}
+	}
+	const t = base === 1 ? (z - lo) / (hi - lo) : (base ** (z - lo) - 1) / (base ** (hi - lo) - 1);
+	return stops[lo] + (stops[hi] - stops[lo]) * t;
+}
+
+/** Grow a line's width from 0 → its natural value over `appear`→`appear+span`, so it fades in by
+ *  thinning rather than going transparent. The natural curve is preserved EXACTLY from `appear+span`
+ *  upward — exponential interpolation is self-similar when re-anchored at an interior point — so only
+ *  the appearance is animated. (MapLibre forbids nesting `["zoom"]` inside `*`, hence the splice.) */
+export function fadeInWidth(appear: number, size: SizeValue, span = 1): ExpStops {
+	const top = appear + span;
+	if (typeof size === 'number') return { base: 1, stops: { [appear]: 0, [top]: size } };
+	const isExp = 'stops' in size;
+	const base = isExp ? size.base : 1;
+	const stops = isExp ? size.stops : (size as Record<number, number>);
+	const out: Record<number, number> = { [appear]: 0, [top]: evalStops(base, stops, top) };
+	for (const [z, v] of Object.entries(stops)) if (Number(z) > top) out[Number(z)] = v;
+	return { base, stops: out };
+}
+
 function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedLayer {
 	const { sourceLayer, filter, layout, group, appear, ...style } = opts;
 	const layer = { id, type } as MaplibreLayer;
@@ -256,9 +290,16 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	if (layout != null) (layer as Record<string, unknown>).layout = { ...layout };
 
 	if (appear != null) {
-		if (style.opacity != null && typeof style.opacity !== 'number')
-			throw new Error(`build: layer "${id}" combines \`appear\` with a zoom-stops \`opacity\` — use one or the other`);
-		style.opacity = fadeIn(appear, style.opacity ?? 1);
+		if (type === 'line') {
+			// Line layers fade in by growing their width from 0, not by ramping opacity.
+			style.size = fadeInWidth(appear, style.size ?? 1);
+		} else {
+			if (style.opacity != null && typeof style.opacity !== 'number')
+				throw new Error(
+					`build: layer "${id}" combines \`appear\` with a zoom-stops \`opacity\` — use one or the other`
+				);
+			style.opacity = fadeIn(appear, style.opacity ?? 1);
+		}
 	}
 
 	applyProps(layer, style as StyleProps);

@@ -40,7 +40,8 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// OSM Bright draws boundaries as single lines (no casing). Widths interpolate with base 1.
 	const COUNTRY_WIDTH: b.ExpStops = { base: 1, stops: { 0: 0.6, 4: 1.4, 5: 2, 12: 8 } };
 
-	// state / province (admin 3–8): dashed, drawn beneath the country line
+	// state / province (admin 3–8): dashed, drawn beneath the country line. Shortbread serves
+	// these from z7, so grow the width in from 0 over z7→8 instead of popping.
 	yield b.line('boundary-state', {
 		sourceLayer: 'boundaries',
 		filter: fState,
@@ -48,6 +49,7 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		lineCap: 'round',
 		lineJoin: 'round',
 		minzoom: 2,
+		appear: 7,
 		size: { base: 1.4, stops: { 4: 0.4, 5: 1, 12: 3 } },
 		lineDasharray: [3, 1, 1, 1],
 		group: 'boundaries.state',
@@ -76,15 +78,15 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'boundaries.country',
 	});
 
-	// maritime: deeper-blue solid line over the water, faded in at low zoom
+	// maritime: deeper-blue solid line over the water; grows in from z4→5 as it appears
 	yield b.line('boundary-country-maritime', {
 		sourceLayer: 'boundaries',
 		filter: fMaritime,
 		color: c.water.darken(0.13),
 		lineCap: 'round',
 		lineJoin: 'round',
+		appear: 4,
 		size: COUNTRY_WIDTH,
-		opacity: { 6: 0.6, 10: 1 },
 		group: 'boundaries.country',
 	});
 }
