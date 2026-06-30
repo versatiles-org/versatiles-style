@@ -1,15 +1,17 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { normalizePropertyExpression, latest } from '@maplibre/maplibre-gl-style-spec';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../../api/osm.js';
 
 // Specification under test (independent of the implementation):
 //
-// Line layers that fade in must do so by OPACITY over the zoom level `z` at which they appear:
-//   • invisible        — line-opacity 0   at z
-//   • half transparent — line-opacity 0.5 at z + 0.5
-//   • fully opaque      — line-opacity 1   at z + 1
-// This holds for each layer's main line AND its casing (`:outline`) where it has one.
+// Every element fades in by OPACITY over the zoom `z0` at which it appears in Shortbread tiles
+// (https://shortbread-tiles.org/schema/1.0/):
+//   • invisible        — opacity 0          at z0
+//   • half transparent — opacity target/2   at z0 + 0.5
+//   • fully shown       — opacity target     at z0 + 1
+// `z0` is taken from the schema below — NOT read back from the style — so a fade wired to the wrong
+// zoom fails here. `target` is the element's own resolved opacity (1 for roads/buildings, but e.g.
+// 0.1 for forest, 0.3 for danger areas), read from the layer.
 
 let style: StyleSpecification;
 
@@ -17,29 +19,56 @@ beforeAll(async () => {
 	style = await osm();
 });
 
-// Resolved line-opacity of a layer at a zoom; `null` if the layer is absent. A layer with no
-// line-opacity is fully opaque (1) at every zoom.
-function lineOpacity(id: string, zoom: number): number | null {
-	const layer = style.layers.find((l) => l.id === id);
-	if (!layer) return null;
-	const value = (layer as { paint?: Record<string, unknown> }).paint?.['line-opacity'] ?? 1;
-	const expr = normalizePropertyExpression(
-		value as Parameters<typeof normalizePropertyExpression>[0],
-		latest.paint_line['line-opacity'] as Parameters<typeof normalizePropertyExpression>[1]
-	);
-	return expr.evaluate({ zoom } as never, { type: 2, properties: {} } as never) as number;
+const OPACITY_PROPS: Record<string, string[]> = {
+	fill: ['fill-opacity'],
+	line: ['line-opacity'],
+	symbol: ['text-opacity', 'icon-opacity'],
+	'fill-extrusion': ['fill-extrusion-opacity'],
+};
+
+// Evaluate a linear `[z0, v0, z1, v1, …]` stop list at a zoom, clamped at the ends.
+function evalLinearStops(stops: number[], zoom: number): number {
+	const n = stops.length;
+	if (zoom <= stops[0]) return stops[1];
+	if (zoom >= stops[n - 2]) return stops[n - 1];
+	for (let i = 0; i < n - 2; i += 2) {
+		if (zoom >= stops[i] && zoom <= stops[i + 2]) {
+			const t = (zoom - stops[i]) / (stops[i + 2] - stops[i]);
+			return stops[i + 1] + (stops[i + 3] - stops[i + 1]) * t;
+		}
+	}
+	return stops[n - 1];
 }
 
-function expectFadeIn(layerId: string, z: number): void {
-	expect(lineOpacity(layerId, z), `${layerId} must exist`).not.toBeNull();
-	expect(lineOpacity(layerId, z), `${layerId} must be invisible at z${z}`).toBe(0);
-	expect(lineOpacity(layerId, z + 0.5), `${layerId} must be half transparent at z${z + 0.5}`).toBeCloseTo(0.5, 2);
-	expect(lineOpacity(layerId, z + 1), `${layerId} must be fully opaque at z${z + 1}`).toBe(1);
+// The opacity fade-in (a linear interpolate ramping from 0) on a layer, or null if it has none.
+function opacityFade(layerId: string): { prop: string; stops: number[] } | null {
+	const layer = style.layers.find((l) => l.id === layerId);
+	if (!layer) return null;
+	const paint = (layer as { paint?: Record<string, unknown> }).paint ?? {};
+	for (const prop of OPACITY_PROPS[layer.type] ?? []) {
+		const value = paint[prop];
+		if (!Array.isArray(value) || value[0] !== 'interpolate' || (value[1] as unknown[])[0] !== 'linear') continue;
+		const stops = value.slice(3) as number[];
+		if (stops[1] === 0) return { prop, stops };
+	}
+	return null;
+}
+
+// Assert a layer fades 0 → its own target over exactly z0 → z0+1.
+function expectFadeInAt(layerId: string, z0: number): void {
+	const fade = opacityFade(layerId);
+	expect(fade, `${layerId} must fade in by opacity`).not.toBeNull();
+	const stops = fade!.stops;
+	const target = Math.max(...stops.filter((_, i) => i % 2 === 1));
+	const at = (zoom: number): number => evalLinearStops(stops, zoom);
+	expect(at(z0), `${layerId} must be invisible at z${z0}`).toBe(0);
+	expect(at(z0 + 0.5), `${layerId} must be at half its target at z${z0 + 0.5}`).toBeCloseTo(target / 2, 3);
+	expect(at(z0 + 1), `${layerId} must reach its target at z${z0 + 1}`).toBeCloseTo(target, 3);
 }
 
 // ── Roads ───────────────────────────────────────────────────────────────────────
-// kind → first zoom level `z` (Shortbread `streets` schema minzoom). `outline` marks the road types
-// drawn with a casing (`:outline`) layer; path-class ways (footway/steps/path/cycleway) have none.
+// Shortbread `streets` schema minzoom per kind. `outline` marks the road types drawn with a casing
+// (`:outline`); path-class ways (footway/steps/path/cycleway) have none.
 const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-motorway', z: 5, outline: true },
 	{ id: 'street-trunk', z: 6, outline: true },
@@ -60,38 +89,131 @@ const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'way-cycleway', z: 13, outline: false },
 ];
 
-describe('roads fade in by opacity at their Shortbread appearance zoom', () => {
+describe('roads fade in at their Shortbread streets minzoom', () => {
 	for (const { id, z, outline } of ROAD_TYPES) {
 		for (const layerId of outline ? [id, `${id}:outline`] : [id]) {
-			it(`${layerId} fades 0 → 0.5 → 1 over z${z}–${z + 1}`, () => expectFadeIn(layerId, z));
+			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(layerId, z));
 		}
 	}
 });
 
 // ── Boundaries ──────────────────────────────────────────────────────────────────
-// Boundaries that appear above z0 fade in over their appearance zoom. (Country/disputed boundaries
-// exist from z0 and are always drawn, so they are not faded.)
+// admin-level 4 (states) appears at z7. Maritime borders are admin-2 (data from z0) but, like OSM
+// Bright, colorful only draws them from z4 — so that's where they fade. (Country/disputed admin-2
+// borders exist from z0 and are always drawn, so they don't fade.)
 const BOUNDARIES: { id: string; z: number }[] = [
-	{ id: 'boundary-state', z: 7 }, // Shortbread admin level 4 appears at z7
-	{ id: 'boundary-country-maritime', z: 4 }, // maritime borders are drawn from z4
+	{ id: 'boundary-state', z: 7 },
+	{ id: 'boundary-country-maritime', z: 4 },
 ];
 
-describe('boundaries fade in by opacity at their appearance zoom', () => {
+describe('boundaries fade in at their appearance zoom', () => {
 	for (const { id, z } of BOUNDARIES) {
-		it(`${id} fades 0 → 0.5 → 1 over z${z}–${z + 1}`, () => expectFadeIn(id, z));
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(id, z));
 	}
 });
 
 // ── Rail tracks ─────────────────────────────────────────────────────────────────
-// Rail tracks fade in over z14 → z15 — the zoom at which OSM Bright starts drawing rail (its width
-// curves are ~0 below 14) — for both the base (:outline) and the hatching (fill) of every kind.
+// Shortbread serves rail from z8–10, but its OSM-Bright width curves are ~0 below z14, so colorful
+// only starts drawing rail at z14 — and that's where it fades in (base + hatching, every kind).
 const RAIL_KINDS = ['rail', 'lightrail', 'subway', 'tram', 'narrowgauge', 'funicular', 'monorail'];
 const RAIL_Z = 14;
 
-describe('rail tracks fade in by opacity at z14', () => {
+describe('rail tracks fade in at z14 (their OSM-Bright drawing zoom)', () => {
 	for (const kind of RAIL_KINDS) {
 		for (const layerId of [`transport-${kind}`, `transport-${kind}:outline`]) {
-			it(`${layerId} fades 0 → 0.5 → 1 over z${RAIL_Z}–${RAIL_Z + 1}`, () => expectFadeIn(layerId, RAIL_Z));
+			it(`${layerId} over z${RAIL_Z}–${RAIL_Z + 1}`, () => expectFadeInAt(layerId, RAIL_Z));
 		}
 	}
+});
+
+// ── Land cover & landuse fills ────────────────────────────────────────────────────
+// Shortbread `land` schema minzoom per kind.
+const LAND_FILLS: { id: string; z: number }[] = [
+	{ id: 'land-forest', z: 7 },
+	{ id: 'land-commercial', z: 10 },
+	{ id: 'land-industrial', z: 10 },
+	{ id: 'land-residential', z: 10 },
+	{ id: 'land-agriculture', z: 10 },
+	{ id: 'land-waste', z: 10 },
+	{ id: 'land-sand', z: 10 },
+	{ id: 'land-park', z: 11 },
+	{ id: 'land-garden', z: 11 },
+	{ id: 'land-leisure', z: 11 },
+	{ id: 'land-rock', z: 11 },
+	{ id: 'land-grass', z: 11 },
+	{ id: 'land-vegetation', z: 11 },
+	{ id: 'land-wetland', z: 11 },
+	{ id: 'land-burial', z: 13 },
+];
+
+describe('land fills fade in at their Shortbread land minzoom', () => {
+	for (const { id, z } of LAND_FILLS) {
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(id, z));
+	}
+});
+
+// ── Buildings & sites (all at Shortbread z14) ─────────────────────────────────────
+describe('buildings fade in at Shortbread z14', () => {
+	for (const id of ['building', 'building:outline']) {
+		it(`${id} over z14–15`, () => expectFadeInAt(id, 14));
+	}
+});
+
+const SITE_KINDS = [
+	'dangerarea',
+	'sportscenter',
+	'university',
+	'college',
+	'school',
+	'hospital',
+	'prison',
+	'parking',
+	'bicycleparking',
+	'construction',
+];
+
+describe('sites fade in at Shortbread z14', () => {
+	for (const kind of SITE_KINDS) {
+		it(`site-${kind} over z14–15`, () => expectFadeInAt(`site-${kind}`, 14));
+	}
+});
+
+// ── Ferries (Shortbread z10) ──────────────────────────────────────────────────────
+describe('ferries fade in at Shortbread z10', () => {
+	it('transport-ferry over z10–11', () => expectFadeInAt('transport-ferry', 10));
+});
+
+// ── Backstop: every remaining fade must still be a clean ramp ──────────────────────
+// Whatever else fades (bicycle overlays, pedestrian zones, markings, links …) must also ramp
+// linearly 0 → its target over exactly one zoom — invisible at z, half at z+0.5, target at z+1.
+describe('every opacity fade-in ramps 0 → its target linearly over one zoom', () => {
+	it('is invisible at z, half at z+0.5, and at its target by z+1', () => {
+		const problems: string[] = [];
+		let checked = 0;
+		for (const layer of style.layers) {
+			const paint = (layer as { paint?: Record<string, unknown> }).paint ?? {};
+			for (const prop of OPACITY_PROPS[layer.type] ?? []) {
+				const value = paint[prop];
+				if (!Array.isArray(value) || value[0] !== 'interpolate') continue;
+				const stops = value.slice(3) as number[]; // z0, v0, z1, v1, …
+				if (stops[1] !== 0) continue; // doesn't start transparent ⇒ not a fade-in
+				checked++;
+				const where = `${layer.id}.${prop}`;
+				if ((value[1] as unknown[])[0] !== 'linear') {
+					problems.push(`${where}: fade must be linear`);
+					continue;
+				}
+				const z = stops[0];
+				const target = Math.max(...stops.filter((_, i) => i % 2 === 1));
+				const at = (zoom: number): number => evalLinearStops(stops, zoom);
+				if (at(z) !== 0) problems.push(`${where}: ${at(z)} ≠ 0 at z${z}`);
+				if (Math.abs(at(z + 0.5) - target / 2) > 0.01)
+					problems.push(`${where}: ${at(z + 0.5).toFixed(3)} ≠ ${target / 2} (half) at z${z + 0.5}`);
+				if (Math.abs(at(z + 1) - target) > 0.001)
+					problems.push(`${where}: ${at(z + 1).toFixed(3)} ≠ ${target} (target) at z${z + 1}`);
+			}
+		}
+		expect(checked, 'expected to find many opacity fade-ins to verify').toBeGreaterThan(30);
+		expect(problems, `\n${problems.join('\n')}\n`).toEqual([]);
+	});
 });
