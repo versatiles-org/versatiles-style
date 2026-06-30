@@ -8,7 +8,7 @@ import { buildSignature, compare } from './signature.js';
 
 // Core of the OMT↔Shortbread equivalence harness, shared by the CLI reporter (run.ts) and the
 // e2e regression test. Generates the `colorful` style offline and compares every catalog case
-// against style.osm-bright.json across zooms.
+// against osm-bright.json across zooms.
 
 export interface ZoomResult {
 	zoom: number;
@@ -21,7 +21,7 @@ export interface CaseResult {
 	pass: boolean;
 }
 
-const osmBrightPath = new URL('./styles/style.osm-bright.json', import.meta.url).pathname;
+const osmBrightPath = new URL('./styles/osm-bright.json', import.meta.url).pathname;
 const tilesJsonPath = new URL('../../src/types/fixtures/tilejson/osm.json', import.meta.url).pathname;
 
 export async function compareAll(): Promise<CaseResult[]> {

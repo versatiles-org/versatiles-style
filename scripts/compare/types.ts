@@ -20,7 +20,7 @@ export interface Rep {
 export interface Case {
 	name: string;
 	band: string;
-	/** OpenMapTiles representation (matched against `style.osm-bright.json`). */
+	/** OpenMapTiles representation (matched against `osm-bright.json`). */
 	omt: Rep;
 	/** Shortbread representation (matched against the generated `colorful` style). */
 	shortbread: Rep;

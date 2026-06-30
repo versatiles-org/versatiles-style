@@ -10,7 +10,7 @@ import type { Case } from './types.js';
 // (https://shortbread-tiles.org/schema/1.0/) — the harness skips zooms below it, where the
 // feature isn't in the tiles. Omitted ⇒ 0.
 //
-// OMT props feed `style.osm-bright.json` (source-layers: landcover/landuse/water/waterway/
+// OMT props feed `osm-bright.json` (source-layers: landcover/landuse/water/waterway/
 // transportation/building/boundary/place/poi/aeroway/transportation_name/…; keyed on
 // class/subclass/brunnel/ramp/admin_level).
 // Shortbread props feed the generated colorful style (source-layers: land/ocean/

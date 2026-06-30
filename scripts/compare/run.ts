@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { compareAll } from './harness.js';
 import type { CaseResult } from './harness.js';
 
-// Compare the generated `colorful` style (Shortbread) against `style.osm-bright.json` (OMT),
+// Compare the generated `colorful` style (Shortbread) against `osm-bright.json` (OMT),
 // case by case, zoom by zoom — purely by resolving filters + paint/layout expressions.
 //
 // Run:  npx tsx scripts/compare/run.ts            (console report)
