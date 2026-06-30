@@ -141,6 +141,24 @@ function matchFilter(filter: unknown, zoom: number, feature: EvalFeature): boole
 	}
 }
 
+/** Indices into `style.layers` of every (non-background) layer that paints `rep` at `zoom`.
+ *  Draw order is the array order, so the largest index is the topmost layer covering the feature. */
+export function matchingLayerIndices(style: StyleSpecification, rep: Rep, zoom: number): number[] {
+	const feature: EvalFeature = { type: GEOM_NUM[rep.geom], properties: rep.properties ?? {}, id: 1 };
+	const out: number[] = [];
+	style.layers.forEach((layer, i) => {
+		if (layer.type === 'background') return;
+		const lr = layer as unknown as Record<string, unknown>;
+		if (lr['source-layer'] !== rep.sourceLayer) return;
+		const minz = (lr.minzoom as number) ?? 0;
+		const maxz = (lr.maxzoom as number) ?? 24;
+		if (zoom < minz || zoom >= maxz) return;
+		if (lr.filter && !matchFilter(lr.filter, zoom, feature)) return;
+		out.push(i);
+	});
+	return out;
+}
+
 export function evaluateStyle(style: StyleSpecification, rep: Rep, zoom: number): Draw[] {
 	const feature: EvalFeature = { type: GEOM_NUM[rep.geom], properties: rep.properties ?? {}, id: 1 };
 	const draws: Draw[] = [];
