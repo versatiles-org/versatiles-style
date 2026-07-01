@@ -27,16 +27,19 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
 	yield* landcover(ctx);
-	yield* water(ctx);
+	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
-	yield* airport(ctx);
+	yield* water(ctx);
 	yield* buildings(ctx);
+	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
+	yield* airport(ctx);
 	yield slot(SLOT_BELOW_STREETS);
 	yield* roads(ctx);
 	yield slot(SLOT_BELOW_SYMBOLS);
-	yield* pois(ctx);
+	// OSM Bright overlay order is boundaries → markings → POIs (POIs sit above road markings).
 	yield* boundaries(ctx);
 	yield* markings(ctx);
+	yield* pois(ctx);
 	yield* transitStops(ctx);
 	yield slot(SLOT_BELOW_LABELS);
 	yield* labels(ctx);

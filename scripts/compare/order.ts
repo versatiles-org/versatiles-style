@@ -24,11 +24,11 @@ export const ACCEPTED_ORDER_DIFFS = new Set([
 	'landcover|landuse',
 	'landcover|water',
 	'landuse|landuse',
-	'landuse|water',
 	'water|water',
-	// Bridge / tunnel / surface interleaving differs (OMT `brunnel` ordering vs Shortbread's
-	// bridge/tunnel flags), so road/rail/aeroway/ferry layers interleave differently.
-	'aeroway|buildings',
+	// Bridge / tunnel / surface interleaving: OSM Bright slots ferry + aeroway BETWEEN the road
+	// tunnels and the surface network, and cable-cars above the bridges, whereas colorful emits a
+	// single tunnel→surface→bridge block — so these transit/aeroway/rail layers interleave differently
+	// (chiefly aeroway vs. road tunnels, ferries vs. surface roads, cable-cars vs. bridges).
 	'aeroway|roads',
 	'aeroway|transit',
 	'rail|rail',
@@ -36,10 +36,8 @@ export const ACCEPTED_ORDER_DIFFS = new Set([
 	'roads|roads',
 	'roads|transit',
 	'transit|transit',
-	// Overlay & label ordering (POI markers, boundaries, name labels, road markings).
-	'boundaries|pois',
+	// Label ordering within the symbol band.
 	'labels|labels',
-	'markings|pois',
 ]);
 
 function bandPair(a: Case, b: Case): string {
