@@ -204,8 +204,8 @@ Z["osm-content.ts"]
 15["sun.ts"]
 16["urls.ts"]
 17["sprite.ts"]
-18["satellite.ts"]
-19["satellite-raster.ts"]
+18["satellite-raster.ts"]
+19["satellite.ts"]
 1T["layer-groups.ts"]
 end
 subgraph O["themes"]
@@ -264,6 +264,7 @@ M-->Z
 M-->13
 M-->10
 M-->18
+M-->19
 M-->14
 M-->17
 M-->15
@@ -295,12 +296,12 @@ Z-->12
 16-->5
 16-->17
 17-->5
-18-->X
-18-->Z
-18-->19
-18-->14
-18-->15
-18-->16
+19-->X
+19-->Z
+19-->18
+19-->14
+19-->15
+19-->16
 1B-->1C
 1B-->1J
 1B-->1N
