@@ -1,33 +1,42 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from './api/osm.js';
 import { satellite as satelliteFn } from './api/satellite.js';
-import type { Palette } from './types/options.js';
+import type { OsmFeaturesOptions, Palette } from './types/options.js';
 
 export interface StyleVariant {
 	name: string;
 	build: () => Promise<StyleSpecification>;
 }
 
-export function getStyleVariants(): StyleVariant[] {
+export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
 	const palettes: Palette[] = ['colorful', 'natural', 'muted', 'gray', 'toner'];
 
 	for (const palette of palettes) {
-		variants.push({ name: `${palette}/style`, build: () => osm({ theme: palette }) });
-		variants.push({ name: `${palette}/en`, build: () => osm({ theme: palette, text: { language: 'en' } }) });
-		variants.push({ name: `${palette}/de`, build: () => osm({ theme: palette, text: { language: 'de' } }) });
-		variants.push({ name: `${palette}/nolabel`, build: () => osm({ theme: palette, layers: { labels: false } }) });
+		variants.push({ name: `${palette}/style`, build: () => osm({ theme: palette, ...features }) });
+		variants.push({
+			name: `${palette}/en`,
+			build: () => osm({ theme: palette, text: { language: 'en' }, ...features }),
+		});
+		variants.push({
+			name: `${palette}/de`,
+			build: () => osm({ theme: palette, text: { language: 'de' }, ...features }),
+		});
+		variants.push({
+			name: `${palette}/nolabel`,
+			build: () => osm({ theme: palette, layers: { labels: false }, ...features }),
+		});
 
 		const terrain = { features: { terrain: true, hillshade: true } } as const;
-		variants.push({ name: `${palette}-terrain/style`, build: () => osm({ theme: palette, ...terrain }) });
+		variants.push({ name: `${palette}-terrain/style`, build: () => osm({ theme: palette, ...terrain, ...features }) });
 		variants.push({
 			name: `${palette}-terrain/en`,
-			build: () => osm({ theme: palette, text: { language: 'en' }, ...terrain }),
+			build: () => osm({ theme: palette, text: { language: 'en' }, ...terrain, ...features }),
 		});
 		variants.push({
 			name: `${palette}-terrain/de`,
-			build: () => osm({ theme: palette, text: { language: 'de' }, ...terrain }),
+			build: () => osm({ theme: palette, text: { language: 'de' }, ...terrain, ...features }),
 		});
 	}
 

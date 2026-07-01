@@ -31,11 +31,7 @@ let map: maplibregl.Map | undefined;
 async function loadStyle(name: string) {
 	const variant = variants.find((v) => v.name === name);
 	if (!variant) return;
-	//const style = await variant.build();
-	const style = await osm({
-		urls: { base: 'https://tiles.versatiles.org' },
-		features: { landcover: true },
-	});
+	const style = await variant.build();
 	console.log(style.layers.length);
 
 	if (map) {
