@@ -16,23 +16,30 @@ export type ResolvedUrls = {
 	fetch?: FetchLike;
 };
 
+export type ResolvedHillshade =
+	| false
+	| {
+			exaggeration: number;
+			shadowColor: string;
+			highlightColor: string;
+			accentColor: string;
+			anchor: 'map' | 'viewport';
+	  };
+
 export type ResolvedSatelliteUrls = ResolvedUrls & {
 	satellite: string;
 };
 
-export type ResolvedFeatures = {
+export type ResolvedOsmFeatures = {
 	terrain: false | { exaggeration: number };
-	hillshade:
-		| false
-		| {
-				exaggeration: number;
-				shadowColor: string;
-				highlightColor: string;
-				accentColor: string;
-				anchor: 'map' | 'viewport';
-		  };
+	hillshade: ResolvedHillshade;
 	landcover: boolean;
 	buildings: 'flat' | 'extruded';
+};
+
+export type ResolvedSatelliteFeatures = {
+	terrain: false | { exaggeration: number };
+	hillshade: ResolvedHillshade;
 };
 
 export type ResolvedText = {
@@ -63,7 +70,7 @@ export type ResolvedRecolorOptions = {
 
 export type ResolvedOsmOptions = {
 	urls: ResolvedUrls;
-	features: ResolvedFeatures;
+	features: ResolvedOsmFeatures;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
 	theme: ResolvedTheme;
@@ -76,7 +83,7 @@ export type ResolvedOsmOptions = {
 
 export type ResolvedSatelliteOptions = {
 	urls: ResolvedSatelliteUrls;
-	features: Pick<ResolvedFeatures, 'terrain' | 'hillshade'>;
+	features: Pick<ResolvedOsmFeatures, 'terrain' | 'hillshade'>;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
 	osmOverlay: false | ResolvedOsmOptions;

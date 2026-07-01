@@ -355,14 +355,14 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 		return isOutline
 			? null
 			: {
-				minzoom: 10,
-				// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
-				color: c.water.saturate(0.8).darken(0.3),
-				size: 1.1,
-				opacity: { 10: 0, 11: 1 },
-				lineDasharray: [2, 2],
-				lineJoin, // OSM Bright: ferry cap butt (default) / join round
-			};
+					minzoom: 10,
+					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
+					color: c.water.saturate(0.8).darken(0.3),
+					size: 1.1,
+					opacity: { 10: 0, 11: 1 },
+					lineDasharray: [2, 2],
+					lineJoin, // OSM Bright: ferry cap butt (default) / join round
+				};
 
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;

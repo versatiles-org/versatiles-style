@@ -22,7 +22,7 @@ export type {
 	TextOptions,
 } from './options.js';
 export type {
-	ResolvedFeatures,
+	ResolvedOsmFeatures,
 	ResolvedLayout,
 	ResolvedOsmOptions,
 	ResolvedSatelliteOptions,

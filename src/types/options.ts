@@ -18,6 +18,18 @@ export type LayoutOptions = {
 	spacing?: number | { labels?: number; icons?: number };
 };
 
+export type OsmFeaturesOptions = {
+	terrain?: boolean | { exaggeration?: number };
+	hillshade?: HillshadeOptions;
+	landcover?: boolean;
+	buildings?: 'flat' | 'extruded';
+};
+
+export type SatelliteFeaturesOptions = {
+	terrain?: boolean | { exaggeration?: number };
+	hillshade?: HillshadeOptions;
+};
+
 export type SunOptions = {
 	direction?: number;
 	altitude?: number;
@@ -70,12 +82,7 @@ export type OsmOptions = OsmContentOptions & {
 		/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
 		fetch?: FetchLike;
 	};
-	features?: {
-		terrain?: boolean | { exaggeration?: number };
-		hillshade?: HillshadeOptions;
-		landcover?: boolean;
-		buildings?: 'flat' | 'extruded';
-	};
+	features?: OsmFeaturesOptions;
 	sun?: SunOptions;
 	sky?: SkyOptions;
 };
@@ -100,10 +107,7 @@ export type SatelliteOptions = {
 		saturation?: number;
 		contrast?: number;
 	};
-	features?: {
-		terrain?: boolean | { exaggeration?: number };
-		hillshade?: HillshadeOptions;
-	};
+	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
 	sky?: SkyOptions;
 };

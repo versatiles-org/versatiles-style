@@ -2,6 +2,7 @@ import type { DataDrivenPropertyValueSpecification, FormattedSpecification } fro
 import { Color } from '../color/index.js';
 import { colorOptionsKeys } from '../types/index.js';
 import type { ColorsOptions, ResolvedOsmOptions } from '../types/index.js';
+import { ResolvedOsmFeatures } from '../types/resolved.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;
 
@@ -18,7 +19,7 @@ export type LayerContext = {
 	fg: Color;
 	/** Resolved font names. */
 	fonts: { normal: string; bold: string };
-	features: ResolvedOsmOptions['features'];
+	features: ResolvedOsmFeatures;
 	/** Language-aware `text-field` expression for label/symbol layers. */
 	nameField: DataDrivenPropertyValueSpecification<FormattedSpecification>;
 };

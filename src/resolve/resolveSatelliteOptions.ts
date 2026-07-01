@@ -1,7 +1,7 @@
 import type { SatelliteOptions, SpriteEntry, SpriteInput } from '../types/index.js';
 import type { ResolvedSatelliteOptions, ResolvedSatelliteUrls } from '../types/index.js';
 import { resolveUrl, basename } from '../lib/utils.js';
-import { resolveFeatures, resolveOsmContentOptions, resolveSky, resolveSun } from './resolveOsmOptions.js';
+import { resolveOsmFeatures, resolveOsmContentOptions, resolveSky, resolveSun } from './resolveOsmOptions.js';
 
 const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 
@@ -29,8 +29,8 @@ export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSat
 	const urls = resolveSatelliteUrls(options?.urls);
 
 	const features = {
-		terrain: resolveFeatures({ terrain: options?.features?.terrain }).terrain,
-		hillshade: resolveFeatures({ hillshade: options?.features?.hillshade }).hillshade,
+		terrain: resolveOsmFeatures({ terrain: options?.features?.terrain }).terrain,
+		hillshade: resolveOsmFeatures({ hillshade: options?.features?.hillshade }).hillshade,
 	};
 
 	const raster = {
