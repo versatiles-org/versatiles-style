@@ -6,7 +6,7 @@ import * as b from '../build.js';
 // variants render as a single faint dashed line (no casing) over the water.
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
+	const { c, fg } = ctx;
 
 	// state / province (admin 3–8): dashed, drawn beneath the country line. Shortbread serves
 	// these from z7, so fade them in by opacity over z7→8 instead of popping.
@@ -75,7 +75,7 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 			['!=', ['get', 'disputed'], true],
 			['!=', ['get', 'coastline'], true],
 		],
-		color: c.water.darken(0.13),
+		color: c.water.blend(0.13, fg),
 		appear: 4,
 	});
 }

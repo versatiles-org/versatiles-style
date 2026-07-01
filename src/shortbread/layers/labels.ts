@@ -38,7 +38,9 @@ function placeText(ctx: LayerContext): Color {
 	return ctx.c.label.saturate(-1);
 }
 function placeWarm(ctx: LayerContext): Color {
-	return ctx.c.label.rotateHue(120).saturate(1.6).lighten(0.08);
+	// Blend toward `bg` (pure white in light mode / black in dark mode) instead of an absolute
+	// lighten, so the warm district/state text lightens in light mode and darkens in dark mode.
+	return ctx.c.label.rotateHue(120).saturate(1.6).blend(0.08, ctx.bg);
 }
 
 const STREET_KINDS = [

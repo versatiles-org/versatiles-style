@@ -3,9 +3,10 @@ import * as b from '../build.js';
 
 // Airport runways and taxiways (area fill + casing/fill lines). All in the `airport` group.
 export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
-	// OSM Bright aeroway casings are a mid grey (~#999); fills are white. Widths use base 1.5.
-	const casing = c.roadStreetBg.darken(0.26);
+	const { c, fg } = ctx;
+	// OSM Bright aeroway casings are a mid grey (~#999); fills are white. Blend toward `fg`
+	// (pure black in light mode / white in dark mode) so the casing keeps its contrast in both modes.
+	const casing = c.roadStreetBg.blend(0.26, fg);
 
 	yield b.fill('airport-area', {
 		sourceLayer: 'street_polygons',
