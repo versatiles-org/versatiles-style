@@ -157,7 +157,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		...boundaryBase,
 		minzoom: 3,
 		color: placeWarm(ctx),
-		size: { 5: 10, 8: 12 },
+		size: { 13: 10, 14: 11 },
 		group: 'labels.states',
 	});
 
