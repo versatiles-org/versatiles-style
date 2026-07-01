@@ -1,16 +1,9 @@
-import { getStyleVariants, osm } from '@versatiles/style';
+import { getStyleVariants } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => maplibregl.IControl;
 
-const variants = getStyleVariants();
-variants.push({
-	name: 'custom',
-	build: () =>
-		osm({
-			features: { landcover: true },
-		}),
-});
+const variants = getStyleVariants({ landcover: true });
 const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
 
 // Populate select from variants
