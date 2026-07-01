@@ -53,6 +53,8 @@ export interface Band {
 	width: number;
 	opacity: number;
 	dash: number[] | null;
+	cap: string;
+	join: string;
 }
 
 export type Signature =
@@ -98,6 +100,9 @@ export function buildSignature(geom: Geom, draws: Draw[], bg: string): Signature
 			width: num(d.props['line-width']),
 			opacity: num(d.props['line-opacity'], 1),
 			dash: Array.isArray(d.props['line-dasharray']) ? (d.props['line-dasharray'] as number[]) : null,
+			// MapLibre defaults when unset: line-cap 'butt', line-join 'miter'.
+			cap: typeof d.props['line-cap'] === 'string' ? (d.props['line-cap'] as string) : 'butt',
+			join: typeof d.props['line-join'] === 'string' ? (d.props['line-join'] as string) : 'miter',
 		});
 		// Render order is bottom→top. The fill is the topmost band; the casing is the band directly
 		// beneath it. (Shortbread bridges add a third, bottom-most "deck" band that OMT has no
@@ -145,7 +150,7 @@ export interface Tol {
 	sizeRel: number; // relative text-size tolerance
 }
 
-export const DEFAULT_TOL: Tol = { color: 16, widthRel: 0.25, widthAbs: 0.75, halo: 0.75, sizeRel: 0.2 };
+export const DEFAULT_TOL: Tol = { color: 16, widthRel: 0.2, widthAbs: 0.5, halo: 0.5, sizeRel: 0.2 };
 
 function colorDist(a: string, b: string): number {
 	const x = parseRGBA(a);
@@ -160,6 +165,14 @@ function widthClose(a: number, b: number, tol: Tol): boolean {
 	return m > 0 && Math.abs(a - b) / m <= tol.widthRel;
 }
 
+// Two dash patterns match when both are absent, or both present with the same length and
+// element-wise-close values (dash units are line-widths, so a small absolute tolerance is enough).
+function dashClose(a: number[] | null, b: number[] | null): boolean {
+	if (!a && !b) return true;
+	if (!a || !b || a.length !== b.length) return false;
+	return a.every((v, i) => Math.abs(v - b[i]) <= 0.25);
+}
+
 function cmpBand(label: string, a: Band | null, b: Band | null, tol: Tol, out: string[]): void {
 	if (!a && !b) return;
 	if (!a || !b) {
@@ -170,9 +183,10 @@ function cmpBand(label: string, a: Band | null, b: Band | null, tol: Tol, out: s
 	if (cd > tol.color) out.push(`${label} color Δ${cd.toFixed(0)} (omt ${a.color} / sb ${b.color})`);
 	if (!widthClose(a.width, b.width, tol))
 		out.push(`${label} width omt ${a.width.toFixed(1)} / sb ${b.width.toFixed(1)}`);
-	const ad = a.dash ? a.dash.join(',') : '';
-	const bd = b.dash ? b.dash.join(',') : '';
-	if (!!a.dash !== !!b.dash) out.push(`${label} dash omt [${ad}] / sb [${bd}]`);
+	if (!dashClose(a.dash, b.dash))
+		out.push(`${label} dash omt [${a.dash ? a.dash.join(',') : ''}] / sb [${b.dash ? b.dash.join(',') : ''}]`);
+	//	if (a.cap !== b.cap) out.push(`${label} line-cap omt ${a.cap} / sb ${b.cap}`);
+	//	if (a.join !== b.join) out.push(`${label} line-join omt ${a.join} / sb ${b.join}`);
 }
 
 /** Compare OMT vs Shortbread signatures; returns a list of human-readable difference strings. */
