@@ -95,13 +95,13 @@ export type {
 	HillshadeOptions,
 	SpriteEntry,
 	SpriteInput,
-} from './types/options.js';
-
-export type { ColorsOptions, RecolorOptions } from './types/colors.js';
-export { colorOptionsKeys } from './types/colors.js';
-export type { LayerGroupOptions } from './types/layer-groups.js';
-
-export type { ResolvedOsmOptions, ResolvedSatelliteOptions } from './types/resolved.js';
+	ColorsOptions,
+	RecolorOptions,
+	LayerGroupOptions,
+	ResolvedOsmOptions,
+	ResolvedSatelliteOptions,
+} from './options/index.js';
+export { colorOptionsKeys } from './options/index.js';
 
 export type {
 	StyleSpecification,

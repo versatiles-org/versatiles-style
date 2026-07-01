@@ -1,10 +1,6 @@
-import type {
-	FetchLike,
-	StyleSpecification,
-	TileJSONSpecification,
-	TileJSONSpecificationVector,
-} from '../types/index.js';
+import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { isTileJSONSpecification } from '../types/index.js';
+import type { FetchLike } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';

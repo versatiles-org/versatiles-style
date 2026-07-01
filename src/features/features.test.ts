@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../types/index.js';
+import type { ResolvedSun } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';

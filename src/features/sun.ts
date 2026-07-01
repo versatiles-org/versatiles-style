@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../types/index.js';
+import type { ResolvedSun } from '../options/index.js';
 
 export function configure3DLighting(style: StyleSpecification, sun: ResolvedSun) {
 	// Sync light so 3D extrusions shade consistently with hillshade (if active).

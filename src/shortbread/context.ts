@@ -1,8 +1,7 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
-import { colorOptionsKeys } from '../types/index.js';
-import type { ColorsOptions, ResolvedOsmOptions } from '../types/index.js';
-import { ResolvedOsmFeatures } from '../types/resolved.js';
+import { colorOptionsKeys } from '../options/index.js';
+import type { ColorsOptions, ResolvedOsmOptions, ResolvedOsmFeatures } from '../options/index.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;
 

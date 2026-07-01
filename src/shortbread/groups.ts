@@ -1,5 +1,5 @@
-import type { LayerGroupOptions } from '../types/index.js';
-import { resolveOsmOptions } from '../resolve/index.js';
+import type { LayerGroupOptions } from '../options/index.js';
+import { resolveOsmOptions } from '../options/index.js';
 import { buildContext } from './context.js';
 import {
 	shortbreadLayers,
