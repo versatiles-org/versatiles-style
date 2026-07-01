@@ -24,7 +24,7 @@ jobs:
         run: brew install optipng
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Use Node
         uses: actions/setup-node@v6
@@ -51,6 +51,6 @@ jobs:
         run: npm run test-coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
