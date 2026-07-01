@@ -1,0 +1,21 @@
+export type SatelliteRasterOptions = {
+	opacity?: number;
+	hueRotate?: number;
+	brightnessMin?: number;
+	brightnessMax?: number;
+	saturation?: number;
+	contrast?: number;
+};
+
+export type ResolvedSatelliteRasterOptions = Required<SatelliteRasterOptions>;
+
+export function resolveSatelliteRasterOptions(options?: SatelliteRasterOptions): ResolvedSatelliteRasterOptions {
+	return {
+		opacity: options?.opacity ?? 1,
+		hueRotate: options?.hueRotate ?? 0,
+		brightnessMin: options?.brightnessMin ?? 0,
+		brightnessMax: options?.brightnessMax ?? 1,
+		saturation: options?.saturation ?? 0,
+		contrast: options?.contrast ?? 0,
+	};
+}

@@ -1,4 +1,4 @@
-import type { OsmContentOptions } from './osm.js';
+import type { OsmContentOptions } from './osm-content.js';
 
 export type Palette = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
 
