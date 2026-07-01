@@ -19,7 +19,17 @@ type LandDef = {
 	group: string;
 };
 
+// Render order (bottom → top) mirrors OSM Bright's land stacking: developed `landuse` fills first,
+// then natural `landcover` on top (so parks/greens read over the urban fill), then beach/sand last.
 const LAND: LandDef[] = [
+	// Developed / modified land — OSM Bright's `landuse` fills, drawn lowest.
+	{
+		id: 'residential',
+		kinds: ['garages', 'residential'],
+		color: (c) => c.areaResidential,
+		appear: 10,
+		group: 'land.urban',
+	},
 	{
 		id: 'commercial',
 		kinds: ['commercial', 'retail'],
@@ -31,13 +41,6 @@ const LAND: LandDef[] = [
 		id: 'industrial',
 		kinds: ['industrial', 'quarry', 'railway'],
 		color: (c) => c.areaIndustrial,
-		appear: 10,
-		group: 'land.urban',
-	},
-	{
-		id: 'residential',
-		kinds: ['garages', 'residential'],
-		color: (c) => c.areaResidential,
 		appear: 10,
 		group: 'land.urban',
 	},
@@ -58,22 +61,8 @@ const LAND: LandDef[] = [
 		group: 'land.agriculture',
 	},
 	{ id: 'waste', kinds: ['landfill'], color: (c) => c.areaWaste, appear: 10, group: 'land.urban' },
-	{
-		id: 'park',
-		kinds: ['park', 'village_green', 'recreation_ground'],
-		color: (c) => c.naturePark,
-		appear: 11,
-		group: 'land.urban',
-	},
-	{ id: 'garden', kinds: ['allotments', 'garden'], color: (c) => c.naturePark, appear: 11, group: 'land.urban' },
 	{ id: 'burial', kinds: ['cemetery', 'grave_yard'], color: (c) => c.areaBurial, appear: 13, group: 'land.urban' },
-	{
-		id: 'leisure',
-		kinds: ['miniature_golf', 'playground', 'golf_course'],
-		color: (c) => c.natureLeisure,
-		appear: 11,
-		group: 'land.urban',
-	},
+	// Natural land cover — OSM Bright's `landcover` fills, drawn over the developed land.
 	{ id: 'rock', kinds: ['bare_rock', 'scree', 'shingle'], color: (c) => c.natureRock, appear: 11, group: 'land.rock' },
 	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, opacity: 0.1, group: 'land.forest' },
 	{
@@ -84,7 +73,6 @@ const LAND: LandDef[] = [
 		group: 'land.vegetation',
 	},
 	{ id: 'vegetation', kinds: ['heath', 'scrub'], color: (c) => c.naturePark, appear: 11, group: 'land.vegetation' },
-	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, appear: 10, group: 'land.sand' },
 	{
 		id: 'wetland',
 		kinds: ['bog', 'marsh', 'string_bog', 'swamp'],
@@ -92,6 +80,23 @@ const LAND: LandDef[] = [
 		appear: 11,
 		group: 'land.wetland',
 	},
+	// Managed green space reads highest among the land fills (parks on top), then beach/sand.
+	{
+		id: 'leisure',
+		kinds: ['miniature_golf', 'playground', 'golf_course'],
+		color: (c) => c.natureLeisure,
+		appear: 11,
+		group: 'land.urban',
+	},
+	{ id: 'garden', kinds: ['allotments', 'garden'], color: (c) => c.naturePark, appear: 11, group: 'land.urban' },
+	{
+		id: 'park',
+		kinds: ['park', 'village_green', 'recreation_ground'],
+		color: (c) => c.naturePark,
+		appear: 11,
+		group: 'land.urban',
+	},
+	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, appear: 10, group: 'land.sand' },
 ];
 
 export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
