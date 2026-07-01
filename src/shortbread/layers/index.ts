@@ -7,7 +7,7 @@ import { landcover } from './landcover.js';
 import { water } from './water.js';
 import { sites } from './sites.js';
 import { airport } from './airport.js';
-import { buildings } from './buildings.js';
+import { buildings, buildings3d } from './buildings.js';
 import { roads } from './roads.js';
 import { pois } from './pois.js';
 import { boundaries } from './boundaries.js';
@@ -30,9 +30,9 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
 	yield* water(ctx);
-	yield* buildings(ctx);
 	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
 	yield* airport(ctx);
+	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
 	yield* roads(ctx);
 	yield slot(SLOT_BELOW_SYMBOLS);
@@ -43,6 +43,8 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* transitStops(ctx);
 	yield slot(SLOT_BELOW_LABELS);
 	yield* labels(ctx);
+	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
+	yield* buildings3d(ctx);
 }
 
 // Set the type-appropriate opacity paint property on a single layer.

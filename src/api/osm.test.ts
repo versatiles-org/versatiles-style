@@ -203,6 +203,13 @@ describe('osm()', () => {
 		expect(layerById(style, 'building-3d')).toBeDefined();
 	});
 
+	it('renders 3D buildings as the last (topmost) layer', async () => {
+		const ids = layerIds(await osm({ features: { buildings: 'extruded' } }));
+		expect(ids[ids.length - 1]).toBe('building-3d');
+		// The flat footprints and every label sit below it.
+		expect(ids.indexOf('label-place-village')).toBeLessThan(ids.indexOf('building-3d'));
+	});
+
 	it('has no 3D buildings when features.buildings = flat', async () => {
 		const style = await osm({ features: { buildings: 'flat' } });
 		expect(layerById(style, 'building')).toBeDefined();
