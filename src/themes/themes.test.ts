@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PALETTES, getPaletteColors, getPaletteDefinition } from './index.js';
-import { colorOptionsKeys } from '../types/index.js';
-import type { Palette } from '../types/index.js';
+import { colorOptionsKeys } from '../options/index.js';
+import type { Palette } from '../options/index.js';
 
 const ALL_KEYS = colorOptionsKeys as ReadonlyArray<string>;
 

@@ -1,10 +1,8 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { SatelliteOptions } from '../types/index.js';
-import type { ResolvedOsmOptions, ResolvedSatelliteOptions } from '../types/index.js';
-import { colorOptionsKeys } from '../types/index.js';
+import type { SatelliteOptions, ResolvedOsmOptions, ResolvedSatelliteOptions } from '../options/index.js';
+import { colorOptionsKeys, resolveSatelliteOptions } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
-import { resolveSatelliteOptions } from '../resolve/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 

@@ -1,4 +1,4 @@
-import type { ColorsOptions, Palette } from '../types/index.js';
+import type { ColorsOptions, Palette } from '../options/index.js';
 import { colorful } from './colorful.js';
 import { gray } from './gray.js';
 import { muted } from './muted.js';

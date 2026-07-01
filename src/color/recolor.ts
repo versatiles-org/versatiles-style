@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from './abstract.js';
-import { ResolvedRecolorOptions } from '../types/resolved.js';
+import type { ResolvedRecolorOptions } from '../options/index.js';
 
 function isColorString(s: string): boolean {
 	const t = s.trim().toLowerCase();

@@ -1,4 +1,5 @@
-import type { FetchLike, TileJSONSpecification } from '../types/index.js';
+import type { TileJSONSpecification } from '../types/index.js';
+import type { FetchLike } from '../options/index.js';
 import { resolveUrl } from './utils.js';
 
 /**

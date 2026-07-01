@@ -1,3 +1,6 @@
+import type { ResolvedTheme } from './theme.js';
+import { getPaletteColors } from '../themes/index.js';
+
 export type ColorsOptions = {
 	// base
 	background?: string;
@@ -60,6 +63,8 @@ export type ColorsOptions = {
 	labelPoi?: string;
 };
 
+export type ResolvedColors = Required<ColorsOptions>;
+
 export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'background',
 	'land',
@@ -105,13 +110,13 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'labelPoi',
 ] as const;
 
-export type RecolorOptions = {
-	invertBrightness?: boolean;
-	rotateHue?: number;
-	saturate?: number;
-	tint?: { color?: string; amount?: number };
-	gamma?: number;
-	contrast?: number;
-	brightness?: number;
-	blend?: { color?: string; amount?: number };
-};
+export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions): ResolvedColors {
+	const base = getPaletteColors(theme.palette, theme.darkMode);
+	if (!overrides) return { ...base };
+	const result = { ...base };
+	for (const key of colorOptionsKeys) {
+		const val = overrides[key];
+		if (val != null) result[key] = val;
+	}
+	return result;
+}

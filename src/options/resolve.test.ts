@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { resolveOsmOptions } from './resolveOsmOptions.js';
-import { resolveSatelliteOptions } from './resolveSatelliteOptions.js';
-import {
-	resolveTheme,
-	resolveColors,
-	resolveSun,
-	resolveSky,
-	resolveText,
-	resolveLayout,
-	resolveOsmFeatures,
-} from './resolveOsmOptions.js';
+import { resolveOsmOptions } from './osm.js';
+import { resolveSatelliteOptions } from './satellite.js';
+import { resolveTheme } from './theme.js';
+import { resolveColors } from './colors.js';
+import { resolveSun } from './sun.js';
+import { resolveSky } from './sky.js';
+import { resolveText } from './text.js';
+import { resolveLayout } from './layout.js';
+import { resolveOsmFeatures } from './features.js';
 
 // ── resolveOsmOptions ─────────────────────────────────────────────────────────
 

@@ -1,13 +1,11 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { OsmOptions } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
-import type { ResolvedLayout, ResolvedOsmOptions } from '../types/index.js';
-import { colorOptionsKeys } from '../types/index.js';
+import type { OsmOptions, ResolvedLayout, ResolvedOsmOptions } from '../options/index.js';
+import { colorOptionsKeys, resolveOsmOptions } from '../options/index.js';
 import { buildContext, buildStyleLayers, layerGroups, resolveLayerOverrides, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting } from '../features/index.js';
-import { resolveOsmOptions } from '../resolve/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
