@@ -96,8 +96,7 @@ function record(sym: ts.Symbol, via: string): void {
 
 function isReferenceType(type: ts.Type): boolean {
 	return (
-		(type.flags & ts.TypeFlags.Object) !== 0 &&
-		((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference) !== 0
+		(type.flags & ts.TypeFlags.Object) !== 0 && ((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference) !== 0
 	);
 }
 
