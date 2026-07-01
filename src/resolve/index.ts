@@ -9,6 +9,6 @@ export {
 	resolveSky,
 	resolveText,
 	resolveLayout,
-	resolveFeatures,
+	resolveOsmFeatures,
 } from './resolveOsmOptions.js';
 export { resolveSatelliteOptions } from './resolveSatelliteOptions.js';

@@ -8,7 +8,7 @@ import {
 	resolveSky,
 	resolveText,
 	resolveLayout,
-	resolveFeatures,
+	resolveOsmFeatures,
 } from './resolveOsmOptions.js';
 
 // ── resolveOsmOptions ─────────────────────────────────────────────────────────
@@ -246,7 +246,7 @@ describe('resolveLayout', () => {
 
 describe('resolveFeatures', () => {
 	it('defaults all features off', () => {
-		const f = resolveFeatures();
+		const f = resolveOsmFeatures();
 		expect(f.terrain).toBe(false);
 		expect(f.hillshade).toBe(false);
 		expect(f.landcover).toBe(false);

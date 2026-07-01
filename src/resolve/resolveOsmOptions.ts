@@ -12,7 +12,6 @@ import type {
 	TextOptions,
 } from '../types/index.js';
 import type {
-	ResolvedFeatures,
 	ResolvedLayout,
 	ResolvedOsmOptions,
 	ResolvedSky,
@@ -26,7 +25,8 @@ import { colorOptionsKeys } from '../types/index.js';
 import { getPaletteColors } from '../themes/index.js';
 import { resolveUrl, basename } from '../lib/utils.js';
 import { isDarkMode } from './isDarkMode.js';
-import { ResolvedRecolorOptions } from '../types/resolved.js';
+import { ResolvedHillshade, ResolvedOsmFeatures, ResolvedRecolorOptions } from '../types/resolved.js';
+import { OsmFeaturesOptions } from '../types/options.js';
 
 const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 
@@ -123,12 +123,12 @@ export function resolveLayout(layout?: LayoutOptions): ResolvedLayout {
 	};
 }
 
-function resolveTerrainFeature(terrain?: boolean | { exaggeration?: number }): ResolvedFeatures['terrain'] {
+function resolveTerrainFeature(terrain?: boolean | { exaggeration?: number }): ResolvedOsmFeatures['terrain'] {
 	if (!terrain) return false;
 	return { exaggeration: (typeof terrain === 'object' ? terrain.exaggeration : undefined) ?? 1.0 };
 }
 
-function resolveHillshadeFeature(hillshade?: HillshadeOptions): ResolvedFeatures['hillshade'] {
+function resolveHillshadeFeature(hillshade?: HillshadeOptions): ResolvedHillshade {
 	if (!hillshade) return false;
 	const h = typeof hillshade === 'object' ? hillshade : {};
 	return {
@@ -140,7 +140,7 @@ function resolveHillshadeFeature(hillshade?: HillshadeOptions): ResolvedFeatures
 	};
 }
 
-export function resolveFeatures(features?: OsmOptions['features']): ResolvedFeatures {
+export function resolveOsmFeatures(features?: OsmFeaturesOptions): ResolvedOsmFeatures {
 	return {
 		terrain: resolveTerrainFeature(features?.terrain),
 		hillshade: resolveHillshadeFeature(features?.hillshade),
@@ -182,7 +182,7 @@ export function resolveOsmOptions(options?: OsmOptions): ResolvedOsmOptions {
 
 	return {
 		urls,
-		features: resolveFeatures(options?.features),
+		features: resolveOsmFeatures(options?.features),
 		sun: resolveSun(options?.sun),
 		sky: resolveSky(options?.sky),
 		theme,
