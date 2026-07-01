@@ -37,8 +37,10 @@ function buildNameField(
 export function buildContext(resolved: ResolvedOsmOptions): LayerContext {
 	const c = Object.fromEntries(colorOptionsKeys.map((key) => [key, Color.parse(resolved.colors[key])])) as ColorSet;
 
-	// bg ≈ white in light mode / black in dark mode; fg is its inverse.
-	const bg = c.land.saturate(-1).contrast(100);
+	// `bg` is the pure "background" reference — fully white in light mode, fully black in dark mode —
+	// and `fg` is its inverse. Derived colors blend toward bg/fg (instead of absolute lighten/darken)
+	// so they adapt to both light and dark palettes; keeping bg/fg pure makes those blends predictable.
+	const bg = Color.parse(resolved.theme.darkMode ? '#000000' : '#ffffff');
 	const fg = bg.invertLuminosity();
 
 	return {
