@@ -45,4 +45,26 @@ export default [
 			],
 		},
 	},
+	{
+		// Ban the absolute `.darken()` / `.lighten()` Color methods in style-building code: they
+		// shift luminosity in a fixed direction and therefore break under dark-mode palettes.
+		// Use `.blend(x, fg)` (toward the pure-black/white foreground) to darken and `.blend(x, bg)`
+		// (toward the pure-white/black background) to lighten, so both palettes work. The Color
+		// library itself (which defines/tests these methods) is exempt.
+		files: ['**/scripts/**/*.ts', '**/src/**/*.ts'],
+		ignores: ['**/src/color/**/*.ts'],
+		rules: {
+			'no-restricted-properties': [
+				'error',
+				{
+					property: 'darken',
+					message: 'Do not use .darken() — it breaks dark mode. Use .blend(x, fg) instead.',
+				},
+				{
+					property: 'lighten',
+					message: 'Do not use .lighten() — it breaks dark mode. Use .blend(x, bg) instead.',
+				},
+			],
+		},
+	},
 ];

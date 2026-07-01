@@ -14,9 +14,11 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 };
 
 export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
+	const { c, fg } = ctx;
 	// OSM Bright draws waterway lines in a slightly deeper blue than the water fill (#a0c8f0).
-	const waterLine = c.water.saturate(0.5).darken(0.07);
+	// Blend toward `fg` (pure black in light mode / white in dark mode) instead of an absolute
+	// darken, so the line stays a contrasting deeper tone in both light and dark palettes.
+	const waterLine = c.water.saturate(0.5).blend(0.07, fg);
 
 	// flowing water (lines)
 	for (const kind of ['river', 'canal', 'stream', 'ditch'] as const) {

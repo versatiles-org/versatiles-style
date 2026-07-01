@@ -319,7 +319,7 @@ function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleP
 // OSM Bright renders all path-class ways (footway/path/cycleway/steps) as a single dashed tan
 // line with no casing. `_t` (way type) is kept for signature symmetry with the other builders.
 function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
-	const { c } = ctx;
+	const { c, fg } = ctx;
 	// Paths (footway/steps/path/cycleway) appear in Shortbread at z13. They're thin dashed lines, so a
 	// width grow-in makes the dashes scale and reads as a snap; instead they keep their full width and
 	// fade in via opacity over z13→14 — drawn the moment their data appears, materializing smoothly.
@@ -335,7 +335,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 		};
 	}
 	return {
-		color: c.land.darken(0.18).blend(0.22, c.roadMotorwayBg), // ≈ #cba
+		color: c.land.blend(0.18, fg).blend(0.22, c.roadMotorwayBg), // ≈ #cba (light mode)
 		lineJoin,
 		lineCap,
 		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
@@ -347,7 +347,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 // Returns null for variants that should not be drawn at all (e.g. ferry casing,
 // service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
 function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
-	const { c } = ctx;
+	const { c, fg } = ctx;
 	// railways interpolate with base 1.4 in OSM Bright
 	const w14 = (stops: Record<number, number>): b.ExpStops => ({ base: 1.4, stops });
 
@@ -356,8 +356,9 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 			? null
 			: {
 					minzoom: 10,
-					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color
-					color: c.water.saturate(0.8).darken(0.3),
+					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color;
+					// blend toward `fg` (black in light mode / white in dark mode) rather than absolute darken
+					color: c.water.saturate(0.8).blend(0.3, fg),
 					size: 1.1,
 					opacity: { 10: 0, 11: 1 },
 					lineDasharray: [2, 2],
