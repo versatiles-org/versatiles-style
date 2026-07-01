@@ -50,8 +50,8 @@ export { DEFAULT_BASE, resolveBase, resolveOsmUrls, resolveSatelliteUrls } from 
 export type { OsmOptions, ResolvedOsmOptions } from './osm.js';
 export { resolveOsmOptions } from './osm.js';
 
-export type { OsmContentOptions, ResolvedOsmContentOptions } from './osm-content.js';
-export { resolveOsmContentOptions } from './osm-content.js';
+export type { OsmOverlayOptions, ResolvedOsmOverlayOptions } from './osm-overlay.js';
+export { resolveOsmOverlayOptions } from './osm-overlay.js';
 
 export type { SatelliteRasterOptions, ResolvedSatelliteRasterOptions } from './satellite-raster.js';
 export { resolveSatelliteRasterOptions } from './satellite-raster.js';

@@ -5,7 +5,7 @@ import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shor
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
-import { ResolvedOsmContentOptions } from '../options/osm-content.js';
+import { ResolvedOsmOverlayOptions } from '../options/osm-overlay.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -53,7 +53,7 @@ function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<st
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
 async function buildOsmOverlayLayers(
-	overlayResolved: ResolvedOsmContentOptions
+	overlayResolved: ResolvedOsmOverlayOptions
 ): Promise<StyleSpecification['layers']> {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it

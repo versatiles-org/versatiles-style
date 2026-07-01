@@ -10,7 +10,7 @@ import type { LayoutOptions, ResolvedLayout } from './layout.js';
 import { resolveLayout } from './layout.js';
 import type { LayerGroupOptions } from './layer-groups.js';
 
-export type OsmContentOptions = {
+export type OsmOverlayOptions = {
 	theme?:
 		| Palette
 		| {
@@ -24,7 +24,7 @@ export type OsmContentOptions = {
 	recolor?: RecolorOptions;
 };
 
-export type ResolvedOsmContentOptions = {
+export type ResolvedOsmOverlayOptions = {
 	theme: ResolvedTheme;
 	layers: LayerGroupOptions;
 	text: ResolvedText;
@@ -33,7 +33,7 @@ export type ResolvedOsmContentOptions = {
 	recolor: ResolvedRecolorOptions;
 };
 
-export function resolveOsmContentOptions(content: OsmContentOptions): ResolvedOsmContentOptions {
+export function resolveOsmOverlayOptions(content: OsmOverlayOptions): ResolvedOsmOverlayOptions {
 	const theme = resolveTheme(content.theme);
 	return {
 		theme,
