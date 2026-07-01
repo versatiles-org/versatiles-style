@@ -87,7 +87,7 @@ export type { GuessStyleOptions } from './api/guessStyle.js';
 export type {
 	// ── Input option types ──
 	OsmOptions,
-	OsmContentOptions,
+	OsmOverlayOptions,
 	SatelliteOptions,
 	Palette,
 	TextOptions,
@@ -109,7 +109,7 @@ export type {
 	LayerGroupOptions,
 	// ── Resolved option types ──
 	ResolvedOsmOptions,
-	ResolvedOsmContentOptions,
+	ResolvedOsmOverlayOptions,
 	ResolvedSatelliteOptions,
 	ResolvedTheme,
 	ResolvedText,

@@ -11,11 +11,11 @@ import {
 	resolveSatelliteRasterOptions,
 	SatelliteRasterOptions,
 } from './satellite-raster.js';
-import { OsmContentOptions, ResolvedOsmContentOptions, resolveOsmContentOptions } from './osm-content.js';
+import { OsmOverlayOptions, ResolvedOsmOverlayOptions, resolveOsmOverlayOptions } from './osm-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
-	osmOverlay?: false | OsmContentOptions;
+	osmOverlay?: false | OsmOverlayOptions;
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
@@ -27,12 +27,12 @@ export type ResolvedSatelliteOptions = {
 	features: ResolvedSatelliteFeatures;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
-	osmOverlay: false | ResolvedOsmContentOptions;
+	osmOverlay: false | ResolvedOsmOverlayOptions;
 	raster: ResolvedSatelliteRasterOptions;
 };
 
 export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSatelliteOptions {
-	const osmOverlay = !options?.osmOverlay ? false : resolveOsmContentOptions(options.osmOverlay);
+	const osmOverlay = !options?.osmOverlay ? false : resolveOsmOverlayOptions(options.osmOverlay);
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls),

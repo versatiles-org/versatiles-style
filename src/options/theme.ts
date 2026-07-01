@@ -1,4 +1,4 @@
-import type { OsmContentOptions } from './osm-content.js';
+import type { OsmOverlayOptions } from './osm-overlay.js';
 
 export type Palette = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
 
@@ -17,7 +17,7 @@ export function isDarkMode(): boolean {
 	}
 }
 
-export function resolveTheme(theme?: OsmContentOptions['theme']): ResolvedTheme {
+export function resolveTheme(theme?: OsmOverlayOptions['theme']): ResolvedTheme {
 	if (theme == null) return { palette: 'colorful', darkMode: false };
 	if (typeof theme === 'string') return { palette: theme as Palette, darkMode: false };
 	return {

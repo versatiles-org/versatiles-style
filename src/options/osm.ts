@@ -11,16 +11,16 @@ import type { SkyOptions, ResolvedSky } from './sky.js';
 import { resolveSky } from './sky.js';
 import type { OsmUrlsOptions, ResolvedOsmUrls } from './urls.js';
 import { resolveOsmUrls } from './urls.js';
-import { OsmContentOptions, ResolvedOsmContentOptions } from './osm-content.js';
+import { OsmOverlayOptions, ResolvedOsmOverlayOptions } from './osm-overlay.js';
 
-export type OsmOptions = OsmContentOptions & {
+export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;
 	features?: OsmFeaturesOptions;
 	sun?: SunOptions;
 	sky?: SkyOptions;
 };
 
-export type ResolvedOsmOptions = ResolvedOsmContentOptions & {
+export type ResolvedOsmOptions = ResolvedOsmOverlayOptions & {
 	urls: ResolvedOsmUrls;
 	features: ResolvedOsmFeatures;
 	sun: ResolvedSun;
