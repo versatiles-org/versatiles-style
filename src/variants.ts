@@ -13,30 +13,36 @@ export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] 
 
 	const palettes: Palette[] = ['colorful', 'natural', 'muted', 'gray', 'toner'];
 
+	// Terrain variants enable terrain + hillshade, but let the caller's `features`
+	// override those defaults (and add landcover / buildings on top).
+	const terrainFeatures: OsmFeaturesOptions = { terrain: true, hillshade: true, ...features };
+
 	for (const palette of palettes) {
-		variants.push({ name: `${palette}/style`, build: () => osm({ theme: palette, ...features }) });
+		variants.push({ name: `${palette}/style`, build: () => osm({ theme: palette, features }) });
 		variants.push({
 			name: `${palette}/en`,
-			build: () => osm({ theme: palette, text: { language: 'en' }, ...features }),
+			build: () => osm({ theme: palette, text: { language: 'en' }, features }),
 		});
 		variants.push({
 			name: `${palette}/de`,
-			build: () => osm({ theme: palette, text: { language: 'de' }, ...features }),
+			build: () => osm({ theme: palette, text: { language: 'de' }, features }),
 		});
 		variants.push({
 			name: `${palette}/nolabel`,
-			build: () => osm({ theme: palette, layers: { labels: false }, ...features }),
+			build: () => osm({ theme: palette, layers: { labels: false }, features }),
 		});
 
-		const terrain = { features: { terrain: true, hillshade: true } } as const;
-		variants.push({ name: `${palette}-terrain/style`, build: () => osm({ theme: palette, ...terrain, ...features }) });
+		variants.push({
+			name: `${palette}-terrain/style`,
+			build: () => osm({ theme: palette, features: terrainFeatures }),
+		});
 		variants.push({
 			name: `${palette}-terrain/en`,
-			build: () => osm({ theme: palette, text: { language: 'en' }, ...terrain, ...features }),
+			build: () => osm({ theme: palette, text: { language: 'en' }, features: terrainFeatures }),
 		});
 		variants.push({
 			name: `${palette}-terrain/de`,
-			build: () => osm({ theme: palette, text: { language: 'de' }, ...terrain, ...features }),
+			build: () => osm({ theme: palette, text: { language: 'de' }, features: terrainFeatures }),
 		});
 	}
 
