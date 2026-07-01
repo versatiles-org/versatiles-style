@@ -157,8 +157,8 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 A["osm.ts"]
-1P["satellite.ts"]
-1Q["index.ts"]
+1N["satellite.ts"]
+1O["index.ts"]
 end
 subgraph 3["lib"]
 4["loadTileSource.ts"]
@@ -168,7 +168,7 @@ subgraph 6["types"]
 7["index.ts"]
 8["tilejson.ts"]
 9["vector_layer.ts"]
-1V["maplibre.ts"]
+1T["maplibre.ts"]
 end
 subgraph B["color"]
 C["recolor.ts"]
@@ -206,7 +206,7 @@ Z["osm-overlay.ts"]
 17["sprite.ts"]
 18["satellite-raster.ts"]
 19["satellite.ts"]
-1T["layer-groups.ts"]
+1R["layer-groups.ts"]
 end
 subgraph O["themes"]
 P["index.ts"]
@@ -215,29 +215,25 @@ R["gray.ts"]
 S["muted.ts"]
 T["natural.ts"]
 U["toner.ts"]
-1U["types.ts"]
+1S["types.ts"]
 end
 subgraph 1A["shortbread"]
 1B["index.ts"]
 1C["context.ts"]
 1J["groups.ts"]
-1O["build.ts"]
+subgraph 1K["layers"]
+1L["* (13 files)"]
 end
-1R["index.ts"]
-1S["variants.ts"]
+1M["build.ts"]
 end
-subgraph 1K["**"]
-subgraph 1L["shortbread"]
-subgraph 1M["layers"]
-1N["* (13 files)"]
-end
-end
+1P["index.ts"]
+1Q["variants.ts"]
 end
 2-->4
 2-->5
 2-->7
 2-->A
-2-->1P
+2-->1N
 4-->5
 7-->8
 7-->9
@@ -304,7 +300,7 @@ Z-->12
 19-->16
 1B-->1C
 1B-->1J
-1B-->1N
+1B-->1L
 1C-->1D
 1C-->M
 1D-->D
@@ -329,28 +325,28 @@ Z-->12
 1I-->1H
 1J-->M
 1J-->1C
-1J-->1N
-1N-->1O
-1O-->1D
-1P-->F
-1P-->4
-1P-->M
-1P-->1B
+1J-->1L
+1L-->1M
+1M-->1D
+1N-->F
+1N-->4
+1N-->M
+1N-->1B
+1N-->A
+1O-->2
+1O-->A
+1O-->1N
+1P-->2
 1P-->A
-1Q-->2
+1P-->1N
+1P-->1D
+1P-->M
+1P-->7
+1P-->1Q
 1Q-->A
-1Q-->1P
-1R-->2
-1R-->A
-1R-->1P
-1R-->1D
-1R-->M
-1R-->7
-1R-->1S
-1S-->A
-1S-->1P
+1Q-->1N
 
-class 0,1,3,6,B,E,L,O,1A,1K,1L,1M subgraphs;
+class 0,1,3,6,B,E,L,O,1A,1K subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
