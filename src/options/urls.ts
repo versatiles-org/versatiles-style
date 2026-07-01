@@ -19,7 +19,7 @@ export type SatelliteUrlsOptions = OsmUrlsOptions & {
 	satellite?: string;
 };
 
-export type ResolvedUrls = {
+export type ResolvedOsmUrls = {
 	osm: string;
 	elevation: string;
 	glyphsPattern: string;
@@ -28,7 +28,7 @@ export type ResolvedUrls = {
 	fetch?: FetchLike;
 };
 
-export type ResolvedSatelliteUrls = ResolvedUrls & {
+export type ResolvedSatelliteUrls = ResolvedOsmUrls & {
 	satellite: string;
 };
 
@@ -38,7 +38,8 @@ export function resolveBase(base?: string): string {
 	return base ?? DEFAULT_BASE;
 }
 
-export function resolveOsmUrls(base: string, urls?: OsmUrlsOptions): ResolvedUrls {
+export function resolveOsmUrls(urls?: OsmUrlsOptions): ResolvedOsmUrls {
+	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
 		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
@@ -57,5 +58,17 @@ export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions): ResolvedSatel
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? '/assets/sprites/basics/sprites'),
 		fetch: urls?.fetch,
+	};
+}
+
+export function convertSatelliteUrlsToOsmUrls(urls: undefined | SatelliteUrlsOptions): undefined | OsmUrlsOptions {
+	if (!urls) return undefined;
+	return {
+		base: urls.base,
+		osm: urls.osm,
+		elevation: urls.elevation,
+		glyphsPattern: urls.glyphsPattern,
+		sprite: urls.sprite,
+		fetch: urls.fetch,
 	};
 }

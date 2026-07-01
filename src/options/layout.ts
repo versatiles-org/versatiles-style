@@ -4,19 +4,21 @@ export type LayoutOptions = {
 };
 
 export type ResolvedLayout = {
-	labels: { scale: number; spacing: number };
-	icons: { scale: number; spacing: number };
+	scale: { labels: number; icons: number };
+	spacing: { labels: number; icons: number };
 };
 
 export function resolveLayout(layout?: LayoutOptions): ResolvedLayout {
 	const scale = layout?.scale;
 	const spacing = layout?.spacing;
-	const labelScale = (typeof scale === 'number' ? scale : scale?.labels) ?? 1;
-	const iconScale = (typeof scale === 'number' ? scale : scale?.icons) ?? 1;
-	const labelSpacing = (typeof spacing === 'number' ? spacing : spacing?.labels) ?? 1;
-	const iconSpacing = (typeof spacing === 'number' ? spacing : spacing?.icons) ?? 1;
 	return {
-		labels: { scale: labelScale, spacing: labelSpacing },
-		icons: { scale: iconScale, spacing: iconSpacing },
+		scale: {
+			labels: (typeof scale === 'number' ? scale : scale?.labels) ?? 1,
+			icons: (typeof scale === 'number' ? scale : scale?.icons) ?? 1,
+		},
+		spacing: {
+			labels: (typeof spacing === 'number' ? spacing : spacing?.labels) ?? 1,
+			icons: (typeof spacing === 'number' ? spacing : spacing?.icons) ?? 1,
+		},
 	};
 }

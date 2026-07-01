@@ -157,8 +157,8 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 A["osm.ts"]
-1M["satellite.ts"]
-1N["index.ts"]
+1P["satellite.ts"]
+1Q["index.ts"]
 end
 subgraph 3["lib"]
 4["loadTileSource.ts"]
@@ -168,17 +168,17 @@ subgraph 6["types"]
 7["index.ts"]
 8["tilejson.ts"]
 9["vector_layer.ts"]
-1S["maplibre.ts"]
+1V["maplibre.ts"]
 end
 subgraph B["color"]
 C["recolor.ts"]
 D["abstract.ts"]
-1A["index.ts"]
-1B["hsl.ts"]
-1C["hsv.ts"]
-1D["random.ts"]
-1E["utils.ts"]
-1F["rgb.ts"]
+1D["index.ts"]
+1E["hsl.ts"]
+1F["hsv.ts"]
+1G["random.ts"]
+1H["utils.ts"]
+1I["rgb.ts"]
 end
 subgraph E["features"]
 F["index.ts"]
@@ -191,19 +191,22 @@ end
 subgraph L["options"]
 M["index.ts"]
 N["colors.ts"]
-V["features.ts"]
-W["hillshade.ts"]
-X["layout.ts"]
-Y["osm.ts"]
-Z["recolor.ts"]
-10["sky.ts"]
-11["sun.ts"]
-12["text.ts"]
-13["theme.ts"]
-14["urls.ts"]
-15["sprite.ts"]
-16["satellite.ts"]
-1Q["layer-groups.ts"]
+V["features-hillshade.ts"]
+W["features-terrain.ts"]
+X["features.ts"]
+Y["layout.ts"]
+Z["osm-content.ts"]
+10["recolor.ts"]
+11["text.ts"]
+12["theme.ts"]
+13["osm.ts"]
+14["sky.ts"]
+15["sun.ts"]
+16["urls.ts"]
+17["sprite.ts"]
+18["satellite.ts"]
+19["satellite-raster.ts"]
+1T["layer-groups.ts"]
 end
 subgraph O["themes"]
 P["index.ts"]
@@ -212,21 +215,21 @@ R["gray.ts"]
 S["muted.ts"]
 T["natural.ts"]
 U["toner.ts"]
-1R["types.ts"]
+1U["types.ts"]
 end
-subgraph 17["shortbread"]
-18["index.ts"]
-19["context.ts"]
-1G["groups.ts"]
-1L["build.ts"]
+subgraph 1A["shortbread"]
+1B["index.ts"]
+1C["context.ts"]
+1J["groups.ts"]
+1O["build.ts"]
 end
-1O["index.ts"]
-1P["variants.ts"]
+1R["index.ts"]
+1S["variants.ts"]
 end
-subgraph 1H["**"]
-subgraph 1I["shortbread"]
-subgraph 1J["layers"]
-1K["* (13 files)"]
+subgraph 1K["**"]
+subgraph 1L["shortbread"]
+subgraph 1M["layers"]
+1N["* (13 files)"]
 end
 end
 end
@@ -234,7 +237,7 @@ end
 2-->5
 2-->7
 2-->A
-2-->1M
+2-->1P
 4-->5
 7-->8
 7-->9
@@ -242,7 +245,7 @@ A-->C
 A-->F
 A-->4
 A-->M
-A-->18
+A-->1B
 A-->P
 C-->D
 F-->G
@@ -258,86 +261,95 @@ M-->W
 M-->X
 M-->Y
 M-->Z
-M-->16
+M-->13
 M-->10
+M-->18
+M-->14
+M-->17
 M-->15
 M-->11
 M-->12
-M-->13
-M-->14
+M-->16
 N-->P
 P-->Q
 P-->R
 P-->S
 P-->T
 P-->U
-V-->W
-Y-->N
-Y-->V
-Y-->X
-Y-->Z
-Y-->10
-Y-->11
-Y-->12
-Y-->13
-Y-->14
-14-->5
-14-->15
-15-->5
-16-->V
-16-->Y
-16-->10
-16-->11
-16-->14
+X-->V
+X-->W
+Z-->N
+Z-->Y
+Z-->10
+Z-->11
+Z-->12
+13-->N
+13-->X
+13-->Y
+13-->10
+13-->14
+13-->15
+13-->11
+13-->12
+13-->16
+16-->5
+16-->17
+17-->5
+18-->X
+18-->Z
 18-->19
-18-->1G
-18-->1K
-19-->1A
-19-->M
-1A-->D
-1A-->1B
-1A-->1C
-1A-->C
-1A-->1F
-1B-->D
+18-->14
+18-->15
+18-->16
 1B-->1C
-1B-->1F
-1B-->1E
-1C-->D
-1C-->1B
+1B-->1J
+1B-->1N
 1C-->1D
-1C-->1F
-1C-->1E
-1D-->1C
+1C-->M
+1D-->D
 1D-->1E
+1D-->1F
+1D-->C
+1D-->1I
+1E-->D
+1E-->1F
+1E-->1I
+1E-->1H
 1F-->D
-1F-->1B
-1F-->1C
 1F-->1E
-1G-->M
-1G-->19
-1G-->1K
-1K-->1L
-1L-->1A
-1M-->F
-1M-->4
-1M-->M
-1M-->18
-1M-->A
-1N-->2
-1N-->A
-1N-->1M
-1O-->2
-1O-->A
-1O-->1M
-1O-->1A
-1O-->M
-1O-->7
-1O-->1P
+1F-->1G
+1F-->1I
+1F-->1H
+1G-->1F
+1G-->1H
+1I-->D
+1I-->1E
+1I-->1F
+1I-->1H
+1J-->M
+1J-->1C
+1J-->1N
+1N-->1O
+1O-->1D
+1P-->F
+1P-->4
+1P-->M
+1P-->1B
 1P-->A
-1P-->1M
+1Q-->2
+1Q-->A
+1Q-->1P
+1R-->2
+1R-->A
+1R-->1P
+1R-->1D
+1R-->M
+1R-->7
+1R-->1S
+1S-->A
+1S-->1P
 
-class 0,1,3,6,B,E,L,O,17,1H,1I,1J subgraphs;
+class 0,1,3,6,B,E,L,O,1A,1K,1L,1M subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

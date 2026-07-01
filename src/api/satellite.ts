@@ -1,10 +1,11 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { SatelliteOptions, ResolvedOsmOptions, ResolvedSatelliteOptions } from '../options/index.js';
+import type { SatelliteOptions, ResolvedSatelliteOptions } from '../options/index.js';
 import { colorOptionsKeys, resolveSatelliteOptions } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
+import { ResolvedOsmContentOptions } from '../options/osm-content.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -51,37 +52,15 @@ function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<st
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOptions): Promise<StyleSpecification['layers']> {
+async function buildOsmOverlayLayers(
+	overlayResolved: ResolvedOsmContentOptions
+): Promise<StyleSpecification['layers']> {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
 	// (including URL configuration that was inherited from the satellite options).
 	// `osmSource` is the already-prefetched OSM source, passed through so osm() reuses it
 	// (a resolved TileJSON object is used as-is, avoiding a second download).
-	const overlayStyle = await osm({
-		urls: {
-			osm: overlayResolved.urls.osm,
-			glyphsPattern: overlayResolved.urls.glyphsPattern,
-			sprite: overlayResolved.urls.sprite,
-			elevation: overlayResolved.urls.elevation,
-		},
-		theme: {
-			palette: overlayResolved.theme.palette,
-			darkMode: overlayResolved.theme.darkMode,
-		},
-		colors: overlayResolved.colors,
-		text: {
-			language: overlayResolved.text.language,
-			languageStrict: overlayResolved.text.languageStrict,
-			fontNormal: overlayResolved.text.fontNormal,
-			fontBold: overlayResolved.text.fontBold,
-		},
-		layout: {
-			scale: { labels: overlayResolved.layout.labels.scale, icons: overlayResolved.layout.icons.scale },
-			spacing: { labels: overlayResolved.layout.labels.spacing, icons: overlayResolved.layout.icons.spacing },
-		},
-		layers: overlayResolved.layers,
-		recolor: overlayResolved.recolor,
-	});
+	const overlayStyle = await osm(overlayResolved);
 
 	// Filter: remove the opaque background layer and all fill layers.
 	// Slot anchors (background type with opacity 0) are kept — they provide stable beforeId targets.

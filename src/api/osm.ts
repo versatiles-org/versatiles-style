@@ -42,8 +42,8 @@ function buildBase(resolved: ResolvedOsmOptions, osmSource: TileJSONSpecificatio
 // ── Apply text/icon scale ─────────────────────────────────────────────────────
 
 function applyScale(style: StyleSpecification, layout: ResolvedLayout) {
-	const labelScale = layout.labels.scale;
-	const iconScale = layout.icons.scale;
+	const labelScale = layout.scale.labels;
+	const iconScale = layout.scale.icons;
 	if (labelScale === 1 && iconScale === 1) return;
 
 	for (const layer of style.layers) {
