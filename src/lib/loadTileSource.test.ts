@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-import { loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
+import { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 import type { TileJSONSpecification } from '../types/index.js';
 
 export function jsonResponse(body: unknown, status = 200): Response {
@@ -64,5 +64,63 @@ describe('loadTileSource()', () => {
 		} finally {
 			globalThis.fetch = original;
 		}
+	});
+});
+
+describe('cachingFetch()', () => {
+	let fetchSpy: MockInstance<typeof fetch>;
+
+	beforeEach(() => {
+		clearTileSourceCache();
+		fetchSpy = vi.spyOn(globalThis, 'fetch');
+		fetchSpy.mockClear();
+	});
+
+	afterEach(() => {
+		clearTileSourceCache();
+		vi.restoreAllMocks();
+	});
+
+	it('serves repeated GETs of the same URL from the cache (one network call)', async () => {
+		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'], maxzoom: 5 }));
+
+		const first = await (await cachingFetch('https://cdn.example/tiles.json')).json();
+		const second = await (await cachingFetch('https://cdn.example/tiles.json')).json();
+
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+		expect(first).toStrictEqual({ tiles: ['a'], maxzoom: 5 });
+		expect(second).toStrictEqual(first);
+	});
+
+	it('dedupes concurrent requests for the same URL', async () => {
+		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'] }));
+
+		await Promise.all([cachingFetch('https://cdn.example/a.json'), cachingFetch('https://cdn.example/a.json')]);
+
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not cache failed responses (allows retry)', async () => {
+		fetchSpy
+			.mockImplementationOnce(async () => jsonResponse({}, 500))
+			.mockImplementationOnce(async () => jsonResponse({ tiles: ['ok'] }));
+
+		await expect(cachingFetch('https://cdn.example/flaky.json')).rejects.toThrow(/HTTP 500/);
+		const retried = await (await cachingFetch('https://cdn.example/flaky.json')).json();
+
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+		expect(retried).toStrictEqual({ tiles: ['ok'] });
+	});
+
+	it('is used as the default and caches across loadTileSource calls', async () => {
+		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 9 }));
+
+		const url = 'https://cdn.example/tiles/osm/tiles.json';
+		const a = await loadTileSource(url);
+		const b = await loadTileSource(url);
+
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+		expect(a.tiles[0]).toBe('https://cdn.example/tiles/osm/{z}/{x}/{y}');
+		expect(b).toStrictEqual(a);
 	});
 });
