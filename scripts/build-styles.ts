@@ -11,21 +11,53 @@ mkdirSync(dirDst, { recursive: true });
 const pack = tar.pack();
 
 const variants = getStyleVariants();
-for (const { name, build } of variants) {
+const validationIssues: { name: string; errors: ReturnType<typeof validateStyleMin> }[] = [];
+const bar = makeProgressBar(variants.length);
+
+for (let i = 0; i < variants.length; i++) {
+	const { name, build } = variants[i];
+	bar.update(i, name);
 	produce(name, await build());
 }
+bar.update(variants.length, 'done');
+bar.done();
+
+// Report any validation problems after the progress bar, so it stays intact.
+for (const { name, errors } of validationIssues) {
+	console.log(`Validation errors in ${name}:`, errors);
+}
+console.log(
+	`Saved ${variants.length} styles${validationIssues.length ? ` (${validationIssues.length} with warnings)` : ''}.`
+);
 
 pack.finalize();
 pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
 
 function produce(name: string, style: StyleSpecification): void {
-	// Validate the style and log errors if any
+	// Validate the style; collect errors to report once the progress bar finishes.
 	const errors = validateStyleMin(style);
-	if (errors.length > 0) console.log(errors);
+	if (errors.length > 0) validationIssues.push({ name, errors });
 
 	// write
 	pack.entry({ name: name + '.json' }, prettyStyleJSON(style));
-	console.log('Saved ' + name);
+}
+
+function makeProgressBar(total: number, width = 30) {
+	const isTTY = process.stdout.isTTY ?? false;
+	return {
+		update(current: number, label = ''): void {
+			if (!isTTY) return;
+			const ratio = total === 0 ? 1 : current / total;
+			const filled = Math.round(ratio * width);
+			const bar = '█'.repeat(filled) + '░'.repeat(width - filled);
+			const pct = String(Math.round(ratio * 100)).padStart(3);
+			// `\x1b[K` clears the rest of the line so shorter labels don't leave leftovers.
+			process.stdout.write(`\r[${bar}] ${pct}% ${current}/${total} ${label}\x1b[K`);
+		},
+		done(): void {
+			if (isTTY) process.stdout.write('\n');
+		},
+	};
 }
 
 export function prettyStyleJSON(inputData: unknown): string {
