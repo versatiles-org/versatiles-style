@@ -1,31 +1,87 @@
-import { getStyleVariants } from '@versatiles/style';
+import { osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => maplibregl.IControl;
 
-const variants = getStyleVariants({ landcover: true });
-const styleSelect = document.getElementById('style-select') as HTMLSelectElement;
+type Base = 'osm' | 'satellite';
 
-// Populate select from variants
-for (const { name } of variants) {
+const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
+
+const baseSelect = $<HTMLSelectElement>('base-select');
+const themeSelect = $<HTMLSelectElement>('theme-select');
+const buildingsSelect = $<HTMLSelectElement>('buildings-select');
+const darkToggle = $<HTMLInputElement>('dark-toggle');
+const terrainToggle = $<HTMLInputElement>('terrain-toggle');
+const hillshadeToggle = $<HTMLInputElement>('hillshade-toggle');
+const landcoverToggle = $<HTMLInputElement>('landcover-toggle');
+
+// Populate the theme dropdown from the library's palette list.
+for (const palette of osm.palettes) {
 	const option = document.createElement('option');
-	option.value = name;
-	option.textContent = name;
-	styleSelect.appendChild(option);
+	option.value = palette;
+	option.textContent = palette;
+	themeSelect.appendChild(option);
 }
 
-// Restore style from URL query parameter
+// ── Restore control state from URL query parameters ─────────────────────────────
 const params = new URLSearchParams(location.search);
-const initialStyle = params.get('style') ?? 'colorful/style';
-styleSelect.value = initialStyle;
+const getBool = (key: string): boolean => params.get(key) === '1';
+
+baseSelect.value = params.get('base') === 'satellite' ? 'satellite' : 'osm';
+themeSelect.value = params.get('theme') ?? 'colorful';
+buildingsSelect.value = params.get('buildings') === 'extruded' ? 'extruded' : 'flat';
+darkToggle.checked = getBool('dark');
+terrainToggle.checked = getBool('terrain');
+hillshadeToggle.checked = getBool('hillshade');
+landcoverToggle.checked = getBool('landcover');
 
 let map: maplibregl.Map | undefined;
 
-async function loadStyle(name: string) {
-	const variant = variants.find((v) => v.name === name);
-	if (!variant) return;
-	const style = await variant.build();
-	console.log(style.layers.length);
+// Build a style from the current control values. Landcover only exists for the OSM vector
+// style; for satellite, theme/dark-mode apply to the (optional) OSM overlay and terrain/hillshade
+// apply to the raster style.
+function buildStyle(): Promise<StyleSpecification> {
+	const base = baseSelect.value as Base;
+	const palette = themeSelect.value as Palette;
+	const buildings = buildingsSelect.value as 'flat' | 'extruded';
+	const darkMode = darkToggle.checked;
+	const terrain = terrainToggle.checked;
+	const hillshade = hillshadeToggle.checked;
+	const landcover = landcoverToggle.checked;
+
+	// Disable controls that have no effect on the current base map (satellite has no
+	// building or landcover layers of its own).
+	const isSatellite = base === 'satellite';
+	landcoverToggle.disabled = isSatellite;
+	buildingsSelect.disabled = isSatellite;
+
+	if (isSatellite) {
+		return satellite({
+			osmOverlay: { theme: { palette, darkMode } },
+			features: { terrain, hillshade },
+		});
+	}
+	return osm({
+		theme: { palette, darkMode },
+		features: { terrain, hillshade, landcover, buildings },
+	});
+}
+
+function persistState(): void {
+	const url = new URL(location.href);
+	const p = url.searchParams;
+	p.set('base', baseSelect.value);
+	p.set('theme', themeSelect.value);
+	p.set('buildings', buildingsSelect.value);
+	p.set('dark', darkToggle.checked ? '1' : '0');
+	p.set('terrain', terrainToggle.checked ? '1' : '0');
+	p.set('hillshade', hillshadeToggle.checked ? '1' : '0');
+	p.set('landcover', landcoverToggle.checked ? '1' : '0');
+	history.replaceState(null, '', url);
+}
+
+async function render(): Promise<void> {
+	const style = await buildStyle();
 
 	if (map) {
 		map.setStyle(style);
@@ -37,7 +93,7 @@ async function loadStyle(name: string) {
 			hash: true,
 			minPitch: 0,
 		});
-		map.addControl(new maplibregl.NavigationControl(), 'top-right');
+		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 		// Inspect control: toggles a debug view of the vector tile layers/features.
 		map.addControl(
 			new MaplibreInspect({
@@ -47,14 +103,19 @@ async function loadStyle(name: string) {
 		);
 	}
 
-	// Persist style choice in query parameter
-	const url = new URL(location.href);
-	url.searchParams.set('style', name);
-	history.replaceState(null, '', url);
+	persistState();
 }
 
-styleSelect.addEventListener('change', () => {
-	loadStyle(styleSelect.value);
-});
+for (const control of [
+	baseSelect,
+	themeSelect,
+	buildingsSelect,
+	darkToggle,
+	terrainToggle,
+	hillshadeToggle,
+	landcoverToggle,
+]) {
+	control.addEventListener('change', () => void render());
+}
 
-loadStyle(initialStyle);
+void render();

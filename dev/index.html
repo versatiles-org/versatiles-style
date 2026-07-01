@@ -25,14 +25,58 @@
 				left: 10px;
 				z-index: 1;
 				background: rgba(255, 255, 255, 0.9);
-				padding: 8px 12px;
+				padding: 10px 12px;
 				border-radius: 6px;
 				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				font-size: 14px;
+				width: 210px;
+			}
+
+			/* Two-column rows: fixed label column + control that fills the rest. */
+			#controls .row {
+				display: grid;
+				grid-template-columns: 74px 1fr;
+				align-items: center;
+				gap: 8px;
+			}
+
+			#controls .row > span {
+				color: #333;
 			}
 
 			#controls select {
 				font-size: 14px;
-				padding: 4px 8px;
+				padding: 4px 6px;
+				width: 100%;
+				/* min-width:0 lets the select shrink inside the grid cell instead of overflowing the box. */
+				min-width: 0;
+			}
+
+			#controls .check {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			#controls input[type='checkbox'] {
+				width: 16px;
+				height: 16px;
+				flex: 0 0 auto;
+			}
+
+			/* Grey out a control that does not apply to the current base map. */
+			#controls .row:has(:disabled),
+			#controls .check:has(:disabled) {
+				opacity: 0.4;
+			}
+
+			#controls hr {
+				border: none;
+				border-top: 1px solid #ddd;
+				margin: 2px 0;
 			}
 
 			#map {
@@ -46,7 +90,29 @@
 
 	<body>
 		<div id="controls">
-			<select id="style-select"></select>
+			<label class="row">
+				<span>Base</span>
+				<select id="base-select">
+					<option value="osm">OSM</option>
+					<option value="satellite">Satellite</option>
+				</select>
+			</label>
+			<label class="row">
+				<span>Theme</span>
+				<select id="theme-select"></select>
+			</label>
+			<label class="row">
+				<span>Buildings</span>
+				<select id="buildings-select">
+					<option value="flat">flat</option>
+					<option value="extruded">extruded</option>
+				</select>
+			</label>
+			<hr />
+			<label class="check"><input type="checkbox" id="dark-toggle" /> Dark mode</label>
+			<label class="check"><input type="checkbox" id="terrain-toggle" /> Terrain</label>
+			<label class="check"><input type="checkbox" id="hillshade-toggle" /> Hillshading</label>
+			<label class="check"><input type="checkbox" id="landcover-toggle" /> Landcover</label>
 		</div>
 		<div id="map"></div>
 		<script type="module" src="./main.ts"></script>
