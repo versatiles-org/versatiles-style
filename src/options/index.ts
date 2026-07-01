@@ -53,5 +53,8 @@ export { resolveOsmOptions } from './osm.js';
 export type { OsmContentOptions, ResolvedOsmContentOptions } from './osm-content.js';
 export { resolveOsmContentOptions } from './osm-content.js';
 
+export type { SatelliteRasterOptions, ResolvedSatelliteRasterOptions } from './satellite-raster.js';
+export { resolveSatelliteRasterOptions } from './satellite-raster.js';
+
 export type { SatelliteOptions, ResolvedSatelliteOptions } from './satellite.js';
 export { resolveSatelliteOptions } from './satellite.js';

@@ -80,10 +80,12 @@
 export { osm } from './api/osm.js';
 export { satellite } from './api/satellite.js';
 export { guessStyle } from './api/guessStyle.js';
+export type { GuessStyleOptions } from './api/guessStyle.js';
 
 // ── v6 types ──────────────────────────────────────────────────────────────────
 
 export type {
+	// ── Input option types ──
 	OsmOptions,
 	OsmContentOptions,
 	SatelliteOptions,
@@ -93,13 +95,33 @@ export type {
 	SunOptions,
 	SkyOptions,
 	HillshadeOptions,
+	TerrainOption,
+	OsmFeaturesOptions,
+	SatelliteFeaturesOptions,
+	OsmUrlsOptions,
+	SatelliteUrlsOptions,
+	SatelliteRasterOptions,
 	SpriteEntry,
 	SpriteInput,
+	FetchLike,
 	ColorsOptions,
 	RecolorOptions,
 	LayerGroupOptions,
+	// ── Resolved option types ──
 	ResolvedOsmOptions,
+	ResolvedOsmContentOptions,
 	ResolvedSatelliteOptions,
+	ResolvedTheme,
+	ResolvedText,
+	ResolvedLayout,
+	ResolvedHillshade,
+	ResolvedTerrain,
+	ResolvedOsmFeatures,
+	ResolvedSatelliteFeatures,
+	ResolvedRecolorOptions,
+	ResolvedSatelliteRasterOptions,
+	ResolvedUrls,
+	ResolvedSatelliteUrls,
 } from './options/index.js';
 export { colorOptionsKeys } from './options/index.js';
 
