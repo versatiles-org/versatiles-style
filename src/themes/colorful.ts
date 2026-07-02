@@ -8,7 +8,7 @@ const light: ResolvedColors = {
 	land: '#F8F4F0',
 	water: '#BFD9F2',
 	glacier: '#FFFFFF',
-	natureWood: '#66AA44',
+	natureWood: '#66AA441A',
 	natureGrass: '#D8E8C8',
 	naturePark: '#D8E8C8',
 	natureAgriculture: '#F0E7D1',

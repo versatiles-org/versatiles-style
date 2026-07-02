@@ -119,10 +119,10 @@ describe('addLandcover', () => {
 		const lc = await osm({ theme: 'colorful', features: { landcover: true } });
 		const get = (s: StyleSpecification, id: string) => op(s, id);
 
-		// forest: was hidden below z7 ({7:0,8:0.1}); now a constant 0.1 → visible at all zooms,
-		// and its high-zoom value (0.1) is unchanged.
-		expect(get(base, 'land-forest')).toEqual(['interpolate', ['linear'], ['zoom'], 7, 0, 8, 0.1]);
-		expect(get(lc, 'land-forest')).toBe(0.1);
+		// forest: translucency now lives in the token alpha (natureWood), so the layer opacity just
+		// fades 0→1 over z7→8 (base) and flattens to a constant 1 at low zoom with landcover on.
+		expect(get(base, 'land-forest')).toEqual(['interpolate', ['linear'], ['zoom'], 7, 0, 8, 1]);
+		expect(get(lc, 'land-forest')).toBe(1);
 
 		// water now renders from z0 instead of fading in at z4–6.
 		expect(get(lc, 'water-area')).toBe(1);
