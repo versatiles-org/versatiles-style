@@ -249,17 +249,22 @@ const IMAGES: Record<string, unknown> = {
 const POI_KEYS = ['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'];
 
 export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
+	// POI icons are SDF sprites: their translucency lives in the `labelPoi` token's alpha, which we
+	// route to the symbol opacity (icon-opacity) — icons/text are drawn in the opaque colour, so the
+	// text-color stays fully opaque (matching OSM Bright) while the icons fade.
+	const iconColor = ctx.c.labelPoi.opaque();
+	const iconOpacity = ctx.c.labelPoi.alpha;
 	for (const key of POI_KEYS) {
 		yield b.symbol('poi-' + key, {
 			sourceLayer: 'pois',
 			filter: ['to-boolean', ['get', key]],
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
 			iconSize: { 16: 0.5, 19: 0.5, 20: 1 },
-			opacity: 0.4,
+			opacity: iconOpacity,
 			symbolPlacement: 'point',
 			iconOptional: true,
 			font: ctx.fonts.normal,
-			color: ctx.c.labelPoi,
+			color: iconColor,
 			textHaloColor: ctx.bg, // OSM Bright POI halos are opaque (≈ white in light mode)
 			textHaloWidth: 1,
 			textHaloBlur: 0.5,
