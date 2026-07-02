@@ -55,6 +55,15 @@ export class RGB extends Color {
 	}
 
 	/**
+	 * Returns an opaque copy of this color (alpha forced to 1).
+	 *
+	 * @returns A new RGB instance with the same channels and full opacity.
+	 */
+	opaque(): RGB {
+		return new RGB(this.r, this.g, this.b);
+	}
+
+	/**
 	 * Returns the RGB color as an array.
 	 *
 	 * @returns An array containing the red, green, blue, and alpha components.
