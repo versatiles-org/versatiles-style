@@ -25,6 +25,7 @@ export function* markings(ctx: LayerContext): Generator<b.TaggedLayer> {
 		},
 		minzoom: 16,
 		image: 'basics:marking-arrow',
+		color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
 		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
 		font: ctx.fonts.normal,
 		group: 'markings',
@@ -43,6 +44,7 @@ export function* markings(ctx: LayerContext): Generator<b.TaggedLayer> {
 		},
 		minzoom: 16,
 		image: 'basics:marking-arrow',
+		color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
 		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
 		font: ctx.fonts.normal,
 		group: 'markings',
