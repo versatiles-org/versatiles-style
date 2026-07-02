@@ -85,6 +85,24 @@ export class RGB extends Color {
 	}
 
 	/**
+	 * Recolors this color with `top`'s chroma — the HSL "Color" blend mode: hue and saturation come
+	 * from `top`, lightness is kept from this (base). The recolored result is then composited back
+	 * onto this base by `top`'s alpha, so the alpha reads as the colorize strength.
+	 *
+	 * Unlike {@link over}, this has no gamut wall — any hue is reachable — and because lightness comes
+	 * from the base it adapts to light/dark palettes (a light base yields a light tint, a dark base a
+	 * dark one).
+	 *
+	 * @param top - The color whose hue/saturation (and alpha strength) recolor this base.
+	 * @returns The recolored RGB color (opaque when this base is opaque).
+	 */
+	colorize(top: Color): RGB {
+		const t = top.asHSL();
+		const recolored = new HSL(t.h, t.s, this.asHSL().l);
+		return this.blend(top.alpha, recolored);
+	}
+
+	/**
 	 * Returns the RGB color as an array.
 	 *
 	 * @returns An array containing the red, green, blue, and alpha components.
