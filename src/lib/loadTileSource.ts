@@ -59,17 +59,18 @@ export function resolveTileJSONTiles(tj: TileJSONSpecification, base: string): T
 }
 
 /**
- * Resolve a tile source into the form that gets embedded into a style source:
+ * Fetch a TileJSON document from `src` and resolve it into the form that gets
+ * embedded into a style source: the document is always downloaded, parsed as
+ * JSON, and its relative `tiles[]` entries are rewritten against the document
+ * URL (so relative paths inside the TileJSON become absolute).
  *
- * - `.json` string  → fetch the TileJSON document, then rewrite its relative
- *   `tiles[]` against the document URL (so relative paths inside the TileJSON
- *   become absolute).
- * - template string → returned unchanged (used directly as a tile URL pattern).
- * - TileJSON object → relative `tiles[]` rewritten against `base`.
+ * `src` must be a URL pointing at a TileJSON document — it is always fetched and
+ * the response is always parsed as JSON. Raw tile-template URLs (e.g.
+ * `.../{z}/{x}/{y}.png`) are not accepted here; callers that already hold a
+ * TileJSON object should skip this function.
  *
  * `fetchFn` defaults to {@link cachingFetch}, which caches response bodies in
- * memory. If a `.json` source must be loaded and no fetch implementation is
- * available, an error is thrown.
+ * memory. If no fetch implementation is available, an error is thrown.
  */
 export async function loadTileSource(src: string, fetchFn?: FetchLike): Promise<TileJSONSpecification> {
 	const doFetch = fetchFn ?? ((globalThis.fetch as FetchLike | undefined) ? cachingFetch : undefined);
