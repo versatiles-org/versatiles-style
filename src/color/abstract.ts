@@ -240,10 +240,11 @@ export abstract class Color {
 	abstract fade(value: number): Color;
 
 	/**
-	 * The alpha channel of this color, in the range [0, 1].
+	 * The alpha channel of this color, in the range [0, 1], rounded to 3 decimals
+	 * (matching the alpha precision used by {@link round} and `asString`).
 	 */
 	get alpha(): number {
-		return this.asRGB().a;
+		return Math.round(this.asRGB().a * 1000) / 1000;
 	}
 
 	/**
