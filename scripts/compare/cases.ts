@@ -177,6 +177,9 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'transportation', geom: 'LineString', properties: { class: 'transit' } },
 		shortbread: { sourceLayer: 'streets', geom: 'LineString', properties: { kind: 'subway' } },
 		minZoom: 10,
+		// `transitSubway` now carries a single translucent token alpha (~0.7) instead of the two
+		// per-element fades (0.77 casing / 0.68 line) that matched OMT. Intentional deviation (Δ17).
+		ignore: ['line casing color'],
 	},
 	{
 		name: 'ferry',
@@ -270,6 +273,9 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'place', geom: 'Point', properties: { class: 'suburb', name: 'X' } },
 		shortbread: { sourceLayer: 'place_labels', geom: 'Point', properties: { kind: 'suburb', name: 'X' } },
 		minZoom: 10,
+		// District/state text is derived as `label` blended toward `bg` (a lighter neutral), not OMT's
+		// warm brown (#663333). Intentional palette deviation (Δ50).
+		ignore: ['text color'],
 	},
 	{
 		name: 'capital label',
@@ -286,6 +292,9 @@ export const CASES: Case[] = [
 		omt: { sourceLayer: 'place', geom: 'Point', properties: { class: 'state', name: 'X' } },
 		shortbread: { sourceLayer: 'boundary_labels', geom: 'Point', properties: { admin_level: 4, name: 'X' } },
 		minZoom: 3,
+		// District/state text is derived as `label` blended toward `bg` (a lighter neutral), not OMT's
+		// warm brown (#663333). Intentional palette deviation (Δ50).
+		ignore: ['text color'],
 	},
 	{
 		name: 'country label',
