@@ -39,6 +39,19 @@ describe('RGB Class', () => {
 		expect(new RGB(1, 2, 3).alpha).toBe(1);
 	});
 
+	it('overlay composites a translucent color over an opaque base', () => {
+		const base = new RGB(248, 244, 240); // opaque
+		const top = new RGB(231, 237, 222, 0.1); // 10% overlay
+		const out = base.overlay(top);
+		expect(out.a).toBe(1);
+		expect(out.round().asArray()).toStrictEqual([246, 243, 238, 1]);
+	});
+
+	it('overlay of a fully opaque top returns that top color', () => {
+		const out = new RGB(10, 20, 30).overlay(new RGB(200, 100, 50));
+		expect(out.round().asArray()).toStrictEqual([200, 100, 50, 1]);
+	});
+
 	it('asString returns correct RGB/RGBA string', () => {
 		const color1 = new RGB(255, 128, 64);
 		expect(color1.asString()).toBe('rgb(255,128,64)');
