@@ -45,7 +45,7 @@ const light: ResolvedColors = {
 	labelHalo: '#ffffffcc',
 	labelShield: '#FFFFFF',
 	labelSymbol: '#66626A',
-	labelPoi: '#666666',
+	labelPoi: '#66666666',
 };
 
 // Light colors are taken directly from the v5 Colorful palette.
