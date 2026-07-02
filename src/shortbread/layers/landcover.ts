@@ -82,7 +82,8 @@ const LAND: LandDef[] = [
 	{
 		id: 'leisure',
 		kinds: ['miniature_golf', 'playground', 'golf_course'],
-		color: (c) => c.natureLeisure,
+		// Opaque land tinted with the translucent leisure colour, matching the `sports_center` site fill.
+		color: (c) => c.land.overlay(c.natureLeisure),
 		appear: 11,
 		group: 'land.urban',
 	},
