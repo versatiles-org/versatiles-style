@@ -297,7 +297,7 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 function zoneStyle(ctx: LayerContext, prefix: Prefix): b.StyleProps {
 	const { c, fg } = ctx;
 	// surface: minor-width opacity {12:0,13:1} overlaid by the zone's {14:0,15:1}
-	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 0.5 } };
+	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 1 } };
 	if (prefix === 'tunnel-') return { color: c.roadStreet.blend(0.03, fg), opacity: { 12: 0, 13: 1 } };
 	return { color: c.roadStreet, opacity: { 12: 0, 13: 1 } };
 }
