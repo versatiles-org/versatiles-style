@@ -61,6 +61,7 @@ export type ColorsOptions = {
 	labelShield?: string;
 	labelSymbol?: string;
 	labelPoi?: string;
+	labelHousenumber?: string;
 };
 
 export type ResolvedColors = Required<ColorsOptions>;
@@ -108,6 +109,7 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'labelShield',
 	'labelSymbol',
 	'labelPoi',
+	'labelHousenumber',
 ] as const;
 
 export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions): ResolvedColors {
