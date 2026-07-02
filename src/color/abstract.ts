@@ -238,4 +238,20 @@ export abstract class Color {
 	 * @returns A new color with reduced alpha.
 	 */
 	abstract fade(value: number): Color;
+
+	/**
+	 * The alpha channel of this color, in the range [0, 1].
+	 */
+	get alpha(): number {
+		return this.asRGB().a;
+	}
+
+	/**
+	 * Returns an opaque copy of this color (alpha forced to 1).
+	 *
+	 * @returns A new opaque color.
+	 */
+	opaque(): RGB {
+		return this.asRGB().opaque();
+	}
 }

@@ -25,6 +25,20 @@ describe('RGB Class', () => {
 		expect(clone).not.toBe(color);
 	});
 
+	it('opaque returns a copy with alpha forced to 1', () => {
+		const color = new RGB(128, 64, 255, 0.4);
+		const opaque = color.opaque();
+		expect(opaque).toBeInstanceOf(RGB);
+		expect(opaque.asArray()).toStrictEqual([128, 64, 255, 1]);
+		expect(color.a).toBe(0.4); // original unchanged
+	});
+
+	it('alpha getter exposes the alpha channel', () => {
+		expect(new RGB(1, 2, 3, 0.4).alpha).toBe(0.4);
+		expect(new HSL(120, 50, 50, 0.25).alpha).toBe(0.25);
+		expect(new RGB(1, 2, 3).alpha).toBe(1);
+	});
+
 	it('asString returns correct RGB/RGBA string', () => {
 		const color1 = new RGB(255, 128, 64);
 		expect(color1.asString()).toBe('rgb(255,128,64)');
