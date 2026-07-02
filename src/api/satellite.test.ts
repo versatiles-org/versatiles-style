@@ -89,6 +89,27 @@ describe('satellite()', () => {
 		expect(src.minzoom).toBe(0);
 	});
 
+	// ── Tile size ─────────────────────────────────────────────────────────────
+
+	it('uses tile_size from the satellite TileJSON as the raster tileSize', async () => {
+		const fetchFn = vi.fn(async () =>
+			jsonResponse({
+				tiles: ['https://sat/{z}/{x}/{y}'],
+				tile_size: 512,
+			})
+		);
+		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const src = style.sources['satellite'] as { tileSize: number };
+		expect(src.tileSize).toBe(512);
+	});
+
+	it('defaults raster tileSize to 256 when the TileJSON omits tile_size', async () => {
+		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] }));
+		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const src = style.sources['satellite'] as { tileSize: number };
+		expect(src.tileSize).toBe(256);
+	});
+
 	// ── Raster paint options ────────────────────────────────────────────────────
 
 	it('applies raster opacity', async () => {
