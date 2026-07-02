@@ -14,8 +14,6 @@ type LandDef = {
 	color: (c: ColorSet) => Color;
 	/** Shortbread schema zoom at which this kind appears; the fill fades in over appear→appear+1. */
 	appear: number;
-	/** Target opacity once faded in (default 1; e.g. translucent forest at 0.1). */
-	opacity?: number;
 	group: string;
 };
 
@@ -64,7 +62,7 @@ const LAND: LandDef[] = [
 	{ id: 'burial', kinds: ['cemetery', 'grave_yard'], color: (c) => c.areaBurial, appear: 13, group: 'land.urban' },
 	// Natural land cover — OSM Bright's `landcover` fills, drawn over the developed land.
 	{ id: 'rock', kinds: ['bare_rock', 'scree', 'shingle'], color: (c) => c.natureRock, appear: 11, group: 'land.rock' },
-	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, opacity: 0.1, group: 'land.forest' },
+	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, group: 'land.forest' },
 	{
 		id: 'grass',
 		kinds: ['grass', 'grassland', 'meadow', 'wet_meadow'],
@@ -120,7 +118,6 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['in', ['get', 'kind'], ['literal', [...def.kinds]]] as FilterSpecification,
 			color: def.color(c),
 			appear: def.appear,
-			...(def.opacity != null ? { opacity: def.opacity } : {}),
 			group: def.group,
 		});
 	}
