@@ -36,7 +36,7 @@ const light: ResolvedColors = {
 	roadTrunk: '#FFEEAA',
 	roadTrunkBg: '#E9AC77',
 	transitRail: '#BBBBBB',
-	transitSubway: '#BABABA',
+	transitSubway: '#BABABAB3',
 	transitCycle: '#EFF9FF',
 	transitFoot: '#FBEBFF80',
 	boundary: '#9E9CAB',
