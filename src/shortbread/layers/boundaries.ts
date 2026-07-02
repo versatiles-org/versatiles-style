@@ -35,7 +35,7 @@ export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 		lineCap: 'round',
 		lineJoin: 'round',
 		group: 'boundaries.country',
-		size: { base: 1, stops: { 0: 0.6, 4: 1.4, 5: 2, 12: 8 } },
+		size: { base: 1, stops: { 0: 0.5, 2: 1, 6: 2.5, 12: 7 } },
 	};
 
 	// country (admin 2): solid
