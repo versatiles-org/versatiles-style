@@ -384,8 +384,8 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 		if (isService) return null;
 		// transit/subway: same hatching technique, in a slightly translucent grey.
 		r = isOutline
-			? { color: c.transitSubway.fade(0.23), size: w14({ 14: 0.4, 20: 1 }) }
-			: { color: c.transitSubway.fade(0.32), lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
+			? { color: c.transitSubway, size: w14({ 14: 0.4, 20: 1 }) }
+			: { color: c.transitSubway, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
 	} else {
 		// tram / narrowgauge / funicular / monorail
 		if (isService) return null;
