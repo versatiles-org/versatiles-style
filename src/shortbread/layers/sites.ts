@@ -14,9 +14,9 @@ const SITES: SiteDef[] = [
 	{
 		kind: 'danger_area',
 		style: (c) => ({
-			color: c.siteDanger,
-			fillOutlineColor: c.siteDanger,
-			opacity: 0.3,
+			color: c.siteDanger.opaque(),
+			fillOutlineColor: c.siteDanger.opaque(),
+			opacity: c.siteDanger.alpha,
 			image: 'basics:pattern-warning',
 		}),
 	},
@@ -26,12 +26,19 @@ const SITES: SiteDef[] = [
 	{ kind: 'college', style: (c) => ({ color: c.siteEducation }) },
 	{ kind: 'school', style: (c) => ({ color: c.siteEducation }) },
 	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital }) },
-	{ kind: 'prison', style: (c) => ({ color: c.sitePrison, image: 'basics:pattern-striped', opacity: 0.1 }) },
+	{
+		kind: 'prison',
+		style: (c) => ({ color: c.sitePrison.opaque(), image: 'basics:pattern-striped', opacity: c.sitePrison.alpha }),
+	},
 	{ kind: 'parking', style: (c) => ({ color: c.siteParking }) },
 	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking }) },
 	{
 		kind: 'construction',
-		style: (c) => ({ color: c.siteConstruction, image: 'basics:pattern-hatched_thin', opacity: 0.1 }),
+		style: (c) => ({
+			color: c.siteConstruction.opaque(),
+			image: 'basics:pattern-hatched_thin',
+			opacity: c.siteConstruction.alpha,
+		}),
 	},
 ];
 
