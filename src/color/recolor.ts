@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from './abstract.js';
-import type { ResolvedRecolorOptions } from '../options/index.js';
+import type { ResolvedRecolorOptions, ResolvedColors } from '../options/index.js';
 
 function isColorString(s: string): boolean {
 	const t = s.trim().toLowerCase();
@@ -23,6 +23,12 @@ function walkValue(value: unknown, recolorFn: (s: string) => string): unknown {
 	if (typeof value === 'string' && isColorString(value)) return recolorFn(value);
 	if (Array.isArray(value)) return value.map((v) => walkValue(v, recolorFn));
 	return value;
+}
+
+export function calculateDarkModeColors(colors: ResolvedColors): ResolvedColors {
+	return Object.fromEntries(
+		Object.entries(colors).map(([key, value]) => [key, Color.parse(value).invertLuminosity().asHex()])
+	) as ResolvedColors;
 }
 
 export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolorOptions) {

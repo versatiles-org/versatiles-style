@@ -1,4 +1,4 @@
-import type { ColorsOptions, Palette } from '../options/index.js';
+import type { Palette, ResolvedColors } from '../options/index.js';
 import { colorful } from './colorful.js';
 import { gray } from './gray.js';
 import { muted } from './muted.js';
@@ -13,7 +13,7 @@ export const PALETTES: ReadonlyArray<Palette> = ['colorful', 'natural', 'muted',
 
 const PALETTE_MAP: Record<Palette, PaletteDefinition> = { colorful, natural, muted, gray, toner };
 
-export function getPaletteColors(palette: Palette, darkMode: boolean): Required<ColorsOptions> {
+export function getPaletteColors(palette: Palette, darkMode: boolean): ResolvedColors {
 	return darkMode ? PALETTE_MAP[palette].dark : PALETTE_MAP[palette].light;
 }
 
