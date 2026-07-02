@@ -46,6 +46,7 @@ const light: ResolvedColors = {
 	labelShield: '#FFFFFF',
 	labelSymbol: '#787880',
 	labelPoi: '#686868',
+	labelHousenumber: '#110D0B4D',
 };
 
 export const muted: PaletteDefinition = {

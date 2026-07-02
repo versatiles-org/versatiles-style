@@ -97,7 +97,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		filter: ['has', 'housenumber'],
 		layout: { 'text-field': '{housenumber}' },
 		font: ctx.fonts.normal,
-		color: c.land.invertLuminosity().fade(0.7),
+		color: c.labelHousenumber,
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 17,
