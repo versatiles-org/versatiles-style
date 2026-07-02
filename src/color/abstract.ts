@@ -255,4 +255,15 @@ export abstract class Color {
 	opaque(): RGB {
 		return this.asRGB().opaque();
 	}
+
+	/**
+	 * Composites `top` over this color using standard source-over alpha blending.
+	 * When this base color is opaque the result is opaque.
+	 *
+	 * @param top - The (typically translucent) color to draw on top of this one.
+	 * @returns The resulting composited color.
+	 */
+	overlay(top: Color): RGB {
+		return this.asRGB().overlay(top);
+	}
 }

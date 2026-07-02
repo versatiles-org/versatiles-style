@@ -64,6 +64,27 @@ export class RGB extends Color {
 	}
 
 	/**
+	 * Composites `top` over this color using standard source-over alpha blending,
+	 * accounting for both colors' alpha. When this base is opaque the result is opaque.
+	 *
+	 * @param top - The (typically translucent) color to draw on top of this one.
+	 * @returns The resulting composited RGB color.
+	 */
+	overlay(top: Color): RGB {
+		const t = top.asRGB();
+		const ta = t.a;
+		const outA = ta + this.a * (1 - ta);
+		if (outA === 0) return new RGB(0, 0, 0, 0);
+		const f = this.a * (1 - ta);
+		return new RGB(
+			(t.r * ta + this.r * f) / outA,
+			(t.g * ta + this.g * f) / outA,
+			(t.b * ta + this.b * f) / outA,
+			outA
+		);
+	}
+
+	/**
 	 * Returns the RGB color as an array.
 	 *
 	 * @returns An array containing the red, green, blue, and alpha components.
