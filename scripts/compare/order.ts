@@ -31,6 +31,11 @@ export const ACCEPTED_ORDER_DIFFS = new Set([
 	// (chiefly aeroway vs. road tunnels, ferries vs. surface roads, cable-cars vs. bridges).
 	'aeroway|roads',
 	'aeroway|transit',
+	// Same aeroway band-altitude difference vs. buildings: OSM Bright draws the whole building band
+	// before the transportation band, so runways/taxiways (like all roads) paint OVER buildings;
+	// colorful emits aeroway early with the ground fills, so buildings sit above it (the more natural
+	// rendering). Not a regression — the aeroway band simply lands at a different height.
+	'aeroway|buildings',
 	'rail|rail',
 	'rail|transit',
 	'roads|roads',
