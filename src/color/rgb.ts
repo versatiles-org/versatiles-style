@@ -70,7 +70,7 @@ export class RGB extends Color {
 	 * @param top - The (typically translucent) color to draw on top of this one.
 	 * @returns The resulting composited RGB color.
 	 */
-	overlay(top: Color): RGB {
+	over(top: Color): RGB {
 		const t = top.asRGB();
 		const ta = t.a;
 		const outA = ta + this.a * (1 - ta);
