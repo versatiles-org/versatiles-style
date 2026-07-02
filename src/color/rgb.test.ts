@@ -52,6 +52,30 @@ describe('RGB Class', () => {
 		expect(out.round().asArray()).toStrictEqual([200, 100, 50, 1]);
 	});
 
+	it('colorize takes hue+saturation from top, lightness from base (opaque top)', () => {
+		const base = new RGB(200, 200, 200); // neutral grey
+		const green = new HSL(120, 100, 40); // fully opaque, saturated green
+		const out = base.colorize(green).asHSL();
+		expect(Math.round(out.h)).toBe(120); // hue from top
+		expect(Math.round(out.s)).toBe(100); // saturation from top
+		expect(Math.round(out.l)).toBe(Math.round(base.asHSL().l)); // lightness from base
+	});
+
+	it('colorize adapts lightness to the base (dark base → dark result)', () => {
+		const top = new HSL(120, 100, 40);
+		const light = new RGB(230, 230, 230).colorize(top).asHSL();
+		const dark = new RGB(30, 30, 30).colorize(top).asHSL();
+		expect(Math.round(light.h)).toBe(120); // same hue both ways
+		expect(Math.round(dark.h)).toBe(120);
+		expect(light.l).toBeGreaterThan(dark.l + 40); // lightness tracks the base
+	});
+
+	it('colorize strength is driven by the top alpha (0 = unchanged base)', () => {
+		const base = new RGB(200, 200, 200);
+		const out = base.colorize(new HSL(120, 100, 40, 0)); // alpha 0
+		expect(out.round().asArray()).toStrictEqual([200, 200, 200, 1]);
+	});
+
 	it('asString returns correct RGB/RGBA string', () => {
 		const color1 = new RGB(255, 128, 64);
 		expect(color1.asString()).toBe('rgb(255,128,64)');

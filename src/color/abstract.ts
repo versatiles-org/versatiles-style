@@ -266,4 +266,16 @@ export abstract class Color {
 	over(top: Color): RGB {
 		return this.asRGB().over(top);
 	}
+
+	/**
+	 * Recolors this base with `top`'s chroma using the HSL "Color" blend mode (hue + saturation from
+	 * `top`, lightness from this base), composited by `top`'s alpha. Adapts to light/dark bases and
+	 * has no gamut wall, unlike {@link over}.
+	 *
+	 * @param top - The color whose hue/saturation (and alpha strength) recolor this base.
+	 * @returns The recolored color.
+	 */
+	colorize(top: Color): RGB {
+		return this.asRGB().colorize(top);
+	}
 }
