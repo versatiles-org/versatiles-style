@@ -19,10 +19,10 @@ type PlaceDef = {
 // OSM Bright settlement labels are neutral dark grey; districts/quarters (place-other) are a
 // warm dark red and uppercased. Sizes mirror OSM Bright's place layers.
 const PLACES_SMALL: PlaceDef[] = [
-	{ kind: 'neighbourhood', minzoom: 14, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
-	{ kind: 'quarter', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
-	{ kind: 'suburb', minzoom: 10, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
-	{ kind: 'hamlet', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeWarm, uppercase: true },
+	{ kind: 'neighbourhood', minzoom: 14, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
+	{ kind: 'quarter', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
+	{ kind: 'suburb', minzoom: 10, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
+	{ kind: 'hamlet', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
 	{ kind: 'village', minzoom: 10, size: { 10: 12, 15: 22 } },
 	{ kind: 'town', minzoom: 7, size: { 10: 14, 15: 24 } },
 ];
@@ -33,14 +33,14 @@ const PLACES_LARGE: PlaceDef[] = [
 	{ kind: 'capital', minzoom: 4, size: { 7: 14, 11: 24 } },
 ];
 
-// Neutral settlement text (~#333) and warm district/state text (~#633), derived from the palette.
+// Neutral settlement text (~#333) and a lighter district/state variant, both derived from the palette.
 function placeText(ctx: LayerContext): Color {
 	return ctx.c.label.saturate(-1);
 }
-function placeWarm(ctx: LayerContext): Color {
-	// Blend toward `bg` (pure white in light mode / black in dark mode) instead of an absolute
-	// lighten, so the warm district/state text lightens in light mode and darkens in dark mode.
-	return ctx.c.label.rotateHue(120).saturate(1.6).blend(0.08, ctx.bg);
+function placeSecondary(ctx: LayerContext): Color {
+	// District/state text: the label colour blended toward `bg` (pure white in light mode / black in
+	// dark mode), so it lightens in light mode and darkens in dark mode.
+	return ctx.c.label.blend(0.08, ctx.bg);
 }
 
 const STREET_KINDS = [
@@ -158,7 +158,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 3,
-		color: placeWarm(ctx),
+		color: placeSecondary(ctx),
 		size: { 13: 10, 14: 11 },
 		group: 'labels.states',
 	});
