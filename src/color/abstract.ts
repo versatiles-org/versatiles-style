@@ -263,7 +263,7 @@ export abstract class Color {
 	 * @param top - The (typically translucent) color to draw on top of this one.
 	 * @returns The resulting composited color.
 	 */
-	overlay(top: Color): RGB {
-		return this.asRGB().overlay(top);
+	over(top: Color): RGB {
+		return this.asRGB().over(top);
 	}
 }
