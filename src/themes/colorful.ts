@@ -15,7 +15,7 @@ const light: ResolvedColors = {
 	natureSand: '#F5EEBC',
 	natureRock: '#E0E4E5',
 	natureWetland: '#D3E6DB',
-	natureLeisure: '#E7EDDE',
+	natureLeisure: '#E7EDDE1A',
 	areaResidential: '#EAE6E133',
 	areaCommercial: '#F7DEED40',
 	areaIndustrial: '#FFF4C255',
