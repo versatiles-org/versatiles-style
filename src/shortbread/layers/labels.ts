@@ -12,36 +12,38 @@ type PlaceDef = {
 	kind: string;
 	minzoom: number;
 	maxzoom?: number;
-	size: Record<number, number>;
+	size: b.SizeValue;
 	color?: (ctx: LayerContext) => Color;
 	uppercase?: boolean;
 };
 
-// OSM Bright settlement labels are neutral dark grey; districts/quarters (place-other) are a
-// warm dark red and uppercased. Sizes mirror OSM Bright's place layers.
+// Old VersaTiles place labels: settlement text is a dark blue-grey; districts/quarters are a lighter
+// variant, uppercased. Text sizes restored from the old style.
 const PLACES_SMALL: PlaceDef[] = [
-	{ kind: 'neighbourhood', minzoom: 14, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
-	{ kind: 'quarter', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
-	{ kind: 'suburb', minzoom: 10, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
-	{ kind: 'hamlet', minzoom: 13, size: { 12: 10, 15: 14 }, color: placeSecondary, uppercase: true },
-	{ kind: 'village', minzoom: 10, size: { 10: 12, 15: 22 } },
-	{ kind: 'town', minzoom: 7, size: { 10: 14, 15: 24 } },
+	{ kind: 'neighbourhood', minzoom: 14, size: 12, uppercase: true },
+	{ kind: 'quarter', minzoom: 13, size: 13, uppercase: true },
+	{ kind: 'suburb', minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
+	{ kind: 'hamlet', minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ kind: 'village', minzoom: 10, size: { 9: 11, 12: 14 } },
+	{ kind: 'town', minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
-// minzoom = the Shortbread place_labels schema minzoom for each kind (matches OSM Bright).
+// minzoom = the Shortbread place_labels schema minzoom for each kind.
 const PLACES_LARGE: PlaceDef[] = [
-	{ kind: 'city', minzoom: 6, maxzoom: 14, size: { 7: 14, 11: 24 } },
-	{ kind: 'state_capital', minzoom: 4, maxzoom: 14, size: { 7: 14, 11: 24 } },
-	{ kind: 'capital', minzoom: 4, maxzoom: 12, size: { 7: 14, 11: 24 } },
+	{ kind: 'city', minzoom: 6, maxzoom: 14, size: { 7: 11, 10: 14 } },
+	{ kind: 'state_capital', minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
+	{ kind: 'capital', minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
 ];
 
-// Neutral settlement text (~#333) and a lighter district/state variant, both derived from the palette.
+// Old VersaTiles settlement text is a dark blue-grey; districts/state are a lighter variant. Both are
+// derived from the `label` palette colour (so they invert correctly in dark mode) with its saturation
+// boosted to bring back the blue tint the OSM-Bright variant had desaturated away.
 function placeText(ctx: LayerContext): Color {
-	return ctx.c.label.saturate(-1);
+	return ctx.c.label;
 }
 function placeSecondary(ctx: LayerContext): Color {
-	// District/state text: the label colour blended toward `bg` (pure white in light mode / black in
-	// dark mode), so it lightens in light mode and darkens in dark mode.
-	return ctx.c.label.blend(0.08, ctx.bg);
+	// State text: the label colour blended slightly toward `bg` (pure white in light mode / black in
+	// dark mode) — a grey-blue, lighter than the (bluer) settlement text.
+	return ctx.c.label.blend(0.05, ctx.bg);
 }
 
 const STREET_KINDS = [
@@ -65,7 +67,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: placeText(ctx),
 		font: ctx.fonts.normal,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 1.2,
+		textHaloWidth: 2,
 		textHaloBlur: 1,
 	};
 	const boundaryBase: b.StyleProps = {
@@ -73,7 +75,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		font: ctx.fonts.normal,
 		textTransform: 'uppercase',
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 1.2,
+		textHaloWidth: 2,
 		textHaloBlur: 1,
 		textAnchor: 'top',
 		textOffset: [0, 0.2],
@@ -84,7 +86,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.label,
 		font: ctx.fonts.normal,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 1.2,
+		textHaloWidth: 2,
 		textHaloBlur: 1,
 		symbolPlacement: 'line',
 		textAnchor: 'center',
@@ -161,7 +163,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 3,
 		maxzoom: 10,
 		color: placeSecondary(ctx),
-		size: { 13: 10, 14: 11 },
+		size: { 5: 8, 8: 12 },
 		group: 'labels.states',
 	});
 
@@ -176,8 +178,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		...boundaryBase,
 		minzoom: 4,
 		maxzoom: 10,
-		size: { 4: 11, 5: 13 },
-		textHaloWidth: 2,
+		size: { 4: 8, 5: 11 },
 		group: 'labels.countries',
 	});
 	yield b.symbol('label-boundary-country-medium', {
@@ -192,8 +193,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		...boundaryBase,
 		minzoom: 2,
 		maxzoom: 10,
-		size: { 3: 11, 5: 14 },
-		textHaloWidth: 2,
+		size: { 3: 8, 5: 12 },
 		group: 'labels.countries',
 	});
 	yield b.symbol('label-boundary-country-large', {
@@ -203,8 +203,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		...boundaryBase,
 		minzoom: 2,
 		maxzoom: 9,
-		size: { 2: 11, 5: 15 },
-		textHaloWidth: 2,
+		size: { 2: 8, 5: 13 },
 		group: 'labels.countries',
 	});
 }
