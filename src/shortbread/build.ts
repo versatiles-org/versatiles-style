@@ -294,8 +294,9 @@ export const slot = (id: string): TaggedLayer => ({
 //
 // Each layer names a semantic group path (e.g. 'roads.streets.residential'); `gate` resolves that
 // path against the fully-resolved `layers:` options and either drops the layer (hidden), dims it by
-// merging a fractional opacity into its existing paint, or passes it through. This replaces the old
-// post-hoc override registry — every group generator gates its own layers as it yields them.
+// merging a fractional opacity into its existing paint, or passes it through. It runs as a single
+// post-processing pass over all assembled layers (see `buildStyleLayers`), so the group generators
+// stay free of visibility concerns — the group tag they attach is the only input it needs.
 
 // The opacity paint property (or properties, for symbols) of each layer type.
 const OPACITY_PROPS: Partial<Record<MaplibreLayer['type'], string[]>> = {
@@ -344,10 +345,10 @@ function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): 
 	return typeof node === 'boolean' || typeof node === 'number' ? node : true;
 }
 
-/** Emit each tagged layer gated on its group's resolved option: dropped entirely when hidden
- *  (`false`/`0`) rather than emitted at zero opacity, dimmed (opacity scaled) when fractional, and
- *  passed through unchanged when fully visible (`true`/`1`). */
-export function* gate(layers: ResolvedLayerGroupOptions, ...tagged: TaggedLayer[]): Generator<TaggedLayer> {
+/** Filter/dim a stream of tagged layers by their group's resolved option: each layer is dropped
+ *  entirely when hidden (`false`/`0`) rather than emitted at zero opacity, dimmed (opacity scaled)
+ *  when fractional, and passed through unchanged when fully visible (`true`/`1`). */
+export function* gate(layers: ResolvedLayerGroupOptions, tagged: Iterable<TaggedLayer>): Generator<TaggedLayer> {
 	for (const tl of tagged) {
 		const opt = layerOpt(layers, tl.group);
 		if (opt === false || opt === 0) continue; // invisible → filtered out, not emitted

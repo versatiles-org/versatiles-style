@@ -123,27 +123,26 @@ const LAND: LandDef[] = [
 
 export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
-	const layers: b.TaggedLayer[] = [
-		// ocean
-		b.fill('water-ocean', { sourceLayer: 'ocean', color: c.water, group: 'water.ocean' }),
-		// glacier
-		b.fill('land-glacier', {
-			sourceLayer: 'water_polygons',
-			filter: ['==', ['get', 'kind'], 'glacier'],
-			color: c.glacier,
-			group: 'land.glacier',
-		}),
-		// land kinds — each fades in smoothly at its Shortbread appearance zoom
-		...LAND.map((def) =>
-			b.fill('land-' + def.id, {
-				sourceLayer: 'land',
-				filter: ['in', ['get', 'kind'], ['literal', [...def.kinds]]] as FilterSpecification,
-				color: def.color(c),
-				appear: def.appear,
-				group: def.group,
-			})
-		),
-	];
 
-	yield* b.gate(ctx.layers, ...layers);
+	// ocean
+	yield b.fill('water-ocean', { sourceLayer: 'ocean', color: c.water, group: 'water.ocean' });
+
+	// glacier
+	yield b.fill('land-glacier', {
+		sourceLayer: 'water_polygons',
+		filter: ['==', ['get', 'kind'], 'glacier'],
+		color: c.glacier,
+		group: 'land.glacier',
+	});
+
+	// land kinds — each fades in smoothly at its Shortbread appearance zoom
+	for (const def of LAND) {
+		yield b.fill('land-' + def.id, {
+			sourceLayer: 'land',
+			filter: ['in', ['get', 'kind'], ['literal', [...def.kinds]]] as FilterSpecification,
+			color: def.color(c),
+			appear: def.appear,
+			group: def.group,
+		});
+	}
 }

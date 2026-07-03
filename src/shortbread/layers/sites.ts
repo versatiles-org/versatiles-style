@@ -43,15 +43,13 @@ const SITES: SiteDef[] = [
 ];
 
 export function* sites(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const layers = SITES.map(({ kind, style }) =>
-		b.fill('site-' + kind.replace(/_/g, ''), {
+	for (const { kind, style } of SITES) {
+		yield b.fill('site-' + kind.replace(/_/g, ''), {
 			sourceLayer: 'sites',
 			filter: ['==', ['get', 'kind'], kind],
 			...style(ctx.c),
 			appear: APPEAR,
 			group: 'sites',
-		})
-	);
-
-	yield* b.gate(ctx.layers, ...layers);
+		});
+	}
 }

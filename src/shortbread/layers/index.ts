@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
-import { slot, type TaggedLayer } from '../build.js';
+import { slot, gate, type TaggedLayer } from '../build.js';
 import { background } from './background.js';
 import { landcover } from './landcover.js';
 import { water } from './water.js';
@@ -46,12 +46,13 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* buildings3d(ctx);
 }
 
-// Materialize the assembled layers, adding the source to every non-background layer
-// (background + slot anchors carry no source), ready to drop into a style. Per-group
-// visibility/opacity is already applied by each generator (see `gate` in build.ts).
+// Materialize the assembled layers, adding the source to every non-background layer (background +
+// slot anchors carry no source), ready to drop into a style. Per-group visibility/opacity from the
+// `layers:` option is applied here in a single pass by `gate`: hidden groups are dropped, fractional
+// opacity is merged into each affected layer.
 export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
 	const layers: MaplibreLayer[] = [];
-	for (const { layer } of shortbreadLayers(ctx)) {
+	for (const { layer } of gate(ctx.layers, shortbreadLayers(ctx))) {
 		layers.push(layer.type === 'background' ? layer : ({ ...layer, source: ctx.source } as MaplibreLayer));
 	}
 	return layers;
