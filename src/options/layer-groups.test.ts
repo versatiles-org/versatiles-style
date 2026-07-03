@@ -206,11 +206,22 @@ describe('resolveLayerGroups', () => {
 		expect(r.pois).toBe(false); // pois still hidden by the alias
 	});
 
-	// ── falsy-but-meaningful values ────────────────────────────────────────────────
+	// ── opacity normalization ──────────────────────────────────────────────────────
 
-	it('preserves 0 (full transparency) rather than falling back to a default', () => {
-		const r = resolveLayerGroups({ roads: { motorways: 0 }, buildings: 0 });
-		expect(r.roads.motorways).toBe(0);
-		expect(r.buildings).toBe(0);
+	it('normalizes a non-fractional opacity to a boolean, keeping fractional values', () => {
+		const r = resolveLayerGroups({
+			roads: { motorways: 0, highways: 1, paths: 0.5, steps: 2 },
+			buildings: -1,
+		});
+		expect(r.roads.motorways).toBe(false); // 0 → hidden
+		expect(r.roads.highways).toBe(true); // 1 → fully visible
+		expect(r.roads.paths).toBe(0.5); // fractional stays a number
+		expect(r.roads.steps).toBe(true); // 2 → fully visible
+		expect(r.buildings).toBe(false); // negative → hidden
+	});
+
+	it('normalizes a cascaded scalar too', () => {
+		expect(resolveLayerGroups({ roads: 0 }).roads.motorways).toBe(false);
+		expect(resolveLayerGroups({ land: 5 }).land.forest).toBe(true);
 	});
 });

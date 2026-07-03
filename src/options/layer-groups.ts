@@ -140,8 +140,19 @@ type Scalar = boolean | number;
 
 const scalarOf = (v: unknown): Scalar | undefined => (typeof v === 'boolean' || typeof v === 'number' ? v : undefined);
 
+// Collapse a non-fractional opacity to a boolean: ≤ 0 is fully hidden (→ false), ≥ 1 is fully
+// visible (→ true). Only a fractional value in the open interval (0, 1) stays a number.
+const normalize = (v: Scalar): Scalar => {
+	if (typeof v === 'number') {
+		if (v <= 0) return false;
+		if (v >= 1) return true;
+	}
+	return v;
+};
+
 // Resolve a leaf: an explicit value wins, else a scalar inherited from an ancestor, else the default.
-const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar): Scalar => scalarOf(opt) ?? inherited ?? def;
+const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar): Scalar =>
+	normalize(scalarOf(opt) ?? inherited ?? def);
 
 // Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
 // every child; an object `opt` sets them individually (unset children fall back to `true`).
