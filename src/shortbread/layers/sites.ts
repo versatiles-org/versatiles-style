@@ -21,7 +21,6 @@ const SITES: SiteDef[] = [
 		}),
 	},
 	{ kind: 'sports_centre', style: (c) => ({ color: c.siteSports }) },
-	// OSM Bright renders education/hospital areas as flat pastel fills.
 	{ kind: 'university', style: (c) => ({ color: c.siteEducation }) },
 	{ kind: 'college', style: (c) => ({ color: c.siteEducation }) },
 	{ kind: 'school', style: (c) => ({ color: c.siteEducation }) },
