@@ -36,7 +36,8 @@ export { resolveSky } from './sky.js';
 export type { SpriteEntries } from './sprite.js';
 export { resolveSprite } from './sprite.js';
 
-export type { LayerGroupOptions } from './layer-groups.js';
+export type { LayerGroupOptions, ResolvedLayerGroupOptions } from './layer-groups.js';
+export { resolveLayerGroups } from './layer-groups.js';
 
 export type {
 	FetchLike,

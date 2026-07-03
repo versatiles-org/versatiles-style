@@ -163,6 +163,12 @@ export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroup
 	const streetsInherited = scalarOf(roads?.streets) ?? roadsInherited;
 	const streets = roads?.streets && typeof roads.streets === 'object' ? roads.streets : undefined;
 
+	// `icons` is a cross-cutting alias for the icon symbol groups (POIs, road markings, transit stops):
+	// it acts as their fallback default, overridden by a more specific option on any of those groups.
+	const icons = scalarOf(o.icons);
+	const transitInherited = scalarOf(o.transit);
+	const transit = o.transit && typeof o.transit === 'object' ? o.transit : undefined;
+
 	return {
 		land: resolveFlat(o.land, ['forest', 'vegetation', 'rock', 'wetland', 'sand', 'glacier', 'agriculture', 'urban']),
 		water: resolveFlat(o.water, ['ocean', 'rivers', 'lakes', 'piers']),
@@ -180,13 +186,19 @@ export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroup
 			// Steps are hidden unless explicitly enabled (or re-enabled by a scalar set on `roads`).
 			steps: leaf(roads?.steps, roadsInherited, false),
 		},
-		transit: resolveFlat(o.transit, ['rail', 'aerialways', 'ferries', 'stops']),
+		transit: {
+			rail: leaf(transit?.rail, transitInherited, true),
+			aerialways: leaf(transit?.aerialways, transitInherited, true),
+			ferries: leaf(transit?.ferries, transitInherited, true),
+			// stops are icons: an explicit setting wins, else the `transit` scalar, else the `icons` alias.
+			stops: leaf(transit?.stops, transitInherited ?? icons, true),
+		},
 		buildings: leaf(o.buildings, undefined, true),
 		sites: leaf(o.sites, undefined, true),
 		airport: leaf(o.airport, undefined, true),
-		pois: leaf(o.pois, undefined, true),
+		pois: leaf(o.pois, icons, true),
 		boundaries: resolveFlat(o.boundaries, ['country', 'state']),
-		markings: leaf(o.markings, undefined, true),
+		markings: leaf(o.markings, icons, true),
 		labels: resolveFlat(o.labels, ['places', 'streets', 'states', 'countries', 'addresses']),
 		icons: leaf(o.icons, undefined, true),
 	};
