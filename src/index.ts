@@ -107,6 +107,7 @@ export type {
 	RecolorOptions,
 	LayerGroupOptions,
 	// ── Resolved option types ──
+	ResolvedLayerGroupOptions,
 	ResolvedOsmOptions,
 	ResolvedOsmOverlayOptions,
 	ResolvedSatelliteOptions,
