@@ -91,117 +91,115 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		size: { 12: 10, 15: 13 },
 	};
 
-	// house numbers
-	yield b.symbol('label-address-housenumber', {
-		sourceLayer: 'addresses',
-		filter: ['has', 'housenumber'],
-		layout: { 'text-field': '{housenumber}' },
-		font: ctx.fonts.normal,
-		color: c.labelHousenumber,
-		symbolPlacement: 'point',
-		textAnchor: 'center',
-		minzoom: 17,
-		size: { 17: 8, 19: 10 },
-		group: 'labels.addresses',
-	});
-
-	// motorway exit number + shield
-	yield b.symbol('label-motorway-exit', {
-		sourceLayer: 'street_labels_points',
-		filter: ['==', ['get', 'kind'], 'motorway_junction'],
-		layout: { 'text-field': '{ref}' },
-		font: ctx.fonts.normal,
-		color: c.label,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 1,
-		textHaloBlur: 1,
-		symbolPlacement: 'point',
-		textAnchor: 'center',
-		minzoom: 14,
-		size: { 14: 9, 18: 11 },
-		group: 'labels.streets',
-	});
-	yield b.symbol('label-motorway-shield', {
-		sourceLayer: 'street_labels',
-		filter: ['==', ['get', 'kind'], 'motorway'],
-		layout: { 'text-field': '{ref}' },
-		color: c.labelShield,
-		font: ctx.fonts.bold,
-		textHaloColor: c.roadMotorway,
-		textHaloWidth: 0.1,
-		textHaloBlur: 1,
-		symbolPlacement: 'line',
-		textAnchor: 'center',
-		minzoom: 14,
-		size: { 14: 10, 18: 12, 20: 16 },
-		group: 'labels.streets',
-	});
-
-	// street name labels
-	for (const kind of STREET_KINDS) {
-		yield b.symbol('label-street-' + kind.replace(/_/g, ''), {
-			sourceLayer: 'street_labels',
-			filter: ['==', ['get', 'kind'], kind],
-			layout: { 'text-field': ctx.nameField },
-			...streetBase,
+	const layers: b.TaggedLayer[] = [
+		// house numbers
+		b.symbol('label-address-housenumber', {
+			sourceLayer: 'addresses',
+			filter: ['has', 'housenumber'],
+			layout: { 'text-field': '{housenumber}' },
+			font: ctx.fonts.normal,
+			color: c.labelHousenumber,
+			symbolPlacement: 'point',
+			textAnchor: 'center',
+			minzoom: 17,
+			size: { 17: 8, 19: 10 },
+			group: 'labels.addresses',
+		}),
+		// motorway exit number + shield
+		b.symbol('label-motorway-exit', {
+			sourceLayer: 'street_labels_points',
+			filter: ['==', ['get', 'kind'], 'motorway_junction'],
+			layout: { 'text-field': '{ref}' },
+			font: ctx.fonts.normal,
+			color: c.label,
+			textHaloColor: c.labelHalo,
+			textHaloWidth: 1,
+			textHaloBlur: 1,
+			symbolPlacement: 'point',
+			textAnchor: 'center',
+			minzoom: 14,
+			size: { 14: 9, 18: 11 },
 			group: 'labels.streets',
-		});
-	}
+		}),
+		b.symbol('label-motorway-shield', {
+			sourceLayer: 'street_labels',
+			filter: ['==', ['get', 'kind'], 'motorway'],
+			layout: { 'text-field': '{ref}' },
+			color: c.labelShield,
+			font: ctx.fonts.bold,
+			textHaloColor: c.roadMotorway,
+			textHaloWidth: 0.1,
+			textHaloBlur: 1,
+			symbolPlacement: 'line',
+			textAnchor: 'center',
+			minzoom: 14,
+			size: { 14: 10, 18: 12, 20: 16 },
+			group: 'labels.streets',
+		}),
+		// street name labels
+		...STREET_KINDS.map((kind) =>
+			b.symbol('label-street-' + kind.replace(/_/g, ''), {
+				sourceLayer: 'street_labels',
+				filter: ['==', ['get', 'kind'], kind],
+				layout: { 'text-field': ctx.nameField },
+				...streetBase,
+				group: 'labels.streets',
+			})
+		),
+		// small place labels
+		...PLACES_SMALL.map((p) => placeLabel(ctx, placeBase, p)),
+		// state boundary label
+		b.symbol('label-boundary-state', {
+			sourceLayer: 'boundary_labels',
+			filter: ['in', ['get', 'admin_level'], ['literal', [4, '4']]],
+			layout: { 'text-field': ctx.nameField },
+			...boundaryBase,
+			minzoom: 3,
+			color: placeSecondary(ctx),
+			size: { 13: 10, 14: 11 },
+			group: 'labels.states',
+		}),
+		// large place labels
+		...PLACES_LARGE.map((p) => placeLabel(ctx, placeBase, p)),
+		// country boundary labels
+		b.symbol('label-boundary-country-small', {
+			sourceLayer: 'boundary_labels',
+			filter: ['all', ADMIN2, ['<=', ['get', 'way_area'], 10000000]] as FilterSpecification,
+			layout: { 'text-field': ctx.nameField },
+			...boundaryBase,
+			minzoom: 4,
+			size: { 4: 11, 5: 13 },
+			textHaloWidth: 2,
+			group: 'labels.countries',
+		}),
+		b.symbol('label-boundary-country-medium', {
+			sourceLayer: 'boundary_labels',
+			filter: [
+				'all',
+				ADMIN2,
+				['<', ['get', 'way_area'], 90000000],
+				['>', ['get', 'way_area'], 10000000],
+			] as FilterSpecification,
+			layout: { 'text-field': ctx.nameField },
+			...boundaryBase,
+			minzoom: 2,
+			size: { 3: 11, 5: 14 },
+			textHaloWidth: 2,
+			group: 'labels.countries',
+		}),
+		b.symbol('label-boundary-country-large', {
+			sourceLayer: 'boundary_labels',
+			filter: ['all', ADMIN2, ['>=', ['get', 'way_area'], 90000000]] as FilterSpecification,
+			layout: { 'text-field': ctx.nameField },
+			...boundaryBase,
+			minzoom: 2,
+			size: { 2: 11, 5: 15 },
+			textHaloWidth: 2,
+			group: 'labels.countries',
+		}),
+	];
 
-	// small place labels
-	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
-
-	// state boundary label
-	yield b.symbol('label-boundary-state', {
-		sourceLayer: 'boundary_labels',
-		filter: ['in', ['get', 'admin_level'], ['literal', [4, '4']]],
-		layout: { 'text-field': ctx.nameField },
-		...boundaryBase,
-		minzoom: 3,
-		color: placeSecondary(ctx),
-		size: { 13: 10, 14: 11 },
-		group: 'labels.states',
-	});
-
-	// large place labels
-	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p);
-
-	// country boundary labels
-	yield b.symbol('label-boundary-country-small', {
-		sourceLayer: 'boundary_labels',
-		filter: ['all', ADMIN2, ['<=', ['get', 'way_area'], 10000000]] as FilterSpecification,
-		layout: { 'text-field': ctx.nameField },
-		...boundaryBase,
-		minzoom: 4,
-		size: { 4: 11, 5: 13 },
-		textHaloWidth: 2,
-		group: 'labels.countries',
-	});
-	yield b.symbol('label-boundary-country-medium', {
-		sourceLayer: 'boundary_labels',
-		filter: [
-			'all',
-			ADMIN2,
-			['<', ['get', 'way_area'], 90000000],
-			['>', ['get', 'way_area'], 10000000],
-		] as FilterSpecification,
-		layout: { 'text-field': ctx.nameField },
-		...boundaryBase,
-		minzoom: 2,
-		size: { 3: 11, 5: 14 },
-		textHaloWidth: 2,
-		group: 'labels.countries',
-	});
-	yield b.symbol('label-boundary-country-large', {
-		sourceLayer: 'boundary_labels',
-		filter: ['all', ADMIN2, ['>=', ['get', 'way_area'], 90000000]] as FilterSpecification,
-		layout: { 'text-field': ctx.nameField },
-		...boundaryBase,
-		minzoom: 2,
-		size: { 2: 11, 5: 15 },
-		textHaloWidth: 2,
-		group: 'labels.countries',
-	});
+	yield* b.gate(ctx.layers, ...layers);
 }
 
 function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.TaggedLayer {

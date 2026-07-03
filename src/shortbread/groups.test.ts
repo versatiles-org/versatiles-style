@@ -1,114 +1,86 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../api/osm.js';
-import { layerGroups, SLOT_IDS } from './groups.js';
+import type { LayerGroupOptions } from '../options/index.js';
+import { SLOT_IDS } from './groups.js';
 
-// Typed view of the (runtime-derived) registry for convenient assertions.
-type Groups = {
-	land: Record<string, string[]>;
-	water: Record<string, string[]>;
-	roads: { motorways: string[]; highways: string[]; streets: Record<string, string[]>; paths: string[] };
-	transit: { rail: string[]; aerialways: string[]; ferries: string[]; stops: string[] };
-	buildings: string[];
-	sites: string[];
-	airport: string[];
-	pois: string[];
-	boundaries: Record<string, string[]>;
-	markings: string[];
-	labels: Record<string, string[]>;
-	icons: string[];
-};
-const G = layerGroups as unknown as Groups;
+// Per-group visibility/opacity is applied by each layer generator via `gate` (build.ts), driven by
+// the resolved `layers:` option carried in the context. These end-to-end checks exercise that path
+// through the public osm() API: hidden groups drop out, fractional values bake in opacity.
 
-describe('layerGroups', () => {
-	// Build the full set of real layer IDs once for cross-checks.
-	let realLayerIds: Set<string>;
-	beforeAll(async () => {
-		realLayerIds = new Set((await osm({ text: { language: 'local' } })).layers.map((l) => l.id));
+async function idsFor(layers?: LayerGroupOptions): Promise<Set<string>> {
+	const style = await osm(layers ? { layers } : undefined);
+	return new Set(style.layers.map((l) => l.id));
+}
+
+const paintOf = (style: StyleSpecification, id: string): Record<string, unknown> =>
+	(style.layers.find((l) => l.id === id) as { paint?: Record<string, unknown> })?.paint ?? {};
+
+describe('SLOT_IDS', () => {
+	it('references slot layer IDs present in the default style', async () => {
+		const ids = await idsFor();
+		for (const id of Object.values(SLOT_IDS)) expect(ids.has(id)).toBe(true);
+	});
+});
+
+describe('layer visibility gating', () => {
+	it('hides steps by default but keeps the other path classes', async () => {
+		const ids = await idsFor();
+		expect(ids.has('way-steps')).toBe(false);
+		expect(ids.has('way-footway')).toBe(true);
+		expect(ids.has('way-path')).toBe(true);
+		expect(ids.has('way-cycleway')).toBe(true);
 	});
 
-	function collectLeafIds(node: unknown): string[] {
-		if (Array.isArray(node)) return node as string[];
-		if (typeof node === 'object' && node !== null) return Object.values(node).flatMap(collectLeafIds);
-		return [];
-	}
-
-	it('every group ID should exist in the generated layer list', () => {
-		const { icons: _icons, ...coreGroups } = layerGroups;
-		const missing = collectLeafIds(coreGroups).filter((id) => !realLayerIds.has(id));
-		expect(missing).toEqual([]);
+	it('shows steps when explicitly enabled', async () => {
+		expect((await idsFor({ roads: { steps: true } })).has('way-steps')).toBe(true);
 	});
 
-	it('icons should be the union of pois, transit.stops, and markings', () => {
-		const expected = new Set([...G.pois, ...G.transit.stops, ...G.markings]);
-		expect(new Set(G.icons)).toEqual(expected);
+	it('drops every layer of a top-level group set to false', async () => {
+		const ids = await idsFor({ buildings: false });
+		expect([...ids].some((id) => id.startsWith('building'))).toBe(false);
 	});
 
-	it('SLOT_IDS should reference valid slot layer IDs', () => {
-		for (const id of Object.values(SLOT_IDS)) {
-			expect(realLayerIds.has(id)).toBe(true);
-		}
+	it('drops a nested sub-group while keeping its siblings', async () => {
+		const full = await idsFor();
+		expect(full.has('street-residential')).toBe(true);
+
+		const ids = await idsFor({ roads: { streets: { residential: false } } });
+		expect(ids.has('street-residential')).toBe(false);
+		expect(ids.has('tunnel-street-residential')).toBe(false);
+		expect(ids.has('street-service')).toBe(true); // sibling street kind
+		expect(ids.has('street-motorway')).toBe(true); // sibling road group
 	});
 
-	it('no group should contain duplicate IDs (excluding icons alias)', () => {
-		const { icons: _icons, ...coreGroups } = layerGroups;
-		const allGroupIds = collectLeafIds(coreGroups);
-		expect(allGroupIds.length).toBe(new Set(allGroupIds).size);
+	it('cascades a scalar to hide all road layers', async () => {
+		const ids = await idsFor({ roads: false });
+		for (const id of ['street-motorway', 'street-residential', 'way-footway', 'bridge-street-motorway'])
+			expect(ids.has(id)).toBe(false);
 	});
 
-	it('land sub-groups should cover expected layer IDs', () => {
-		expect(G.land.forest).toContain('land-forest');
-		expect(G.land.glacier).toContain('land-glacier');
-		expect(G.land.urban).toContain('land-residential');
-		expect(G.land.urban).toContain('land-commercial');
+	it('bakes a fractional opacity into a group’s layers', async () => {
+		const style = await osm({ layers: { buildings: 0.5 } });
+		expect(paintOf(style, 'building')['fill-opacity']).toBe(0.5);
+		expect(paintOf(style, 'building:outline')['fill-opacity']).toBe(0.5);
 	});
 
-	it('water sub-groups should cover expected layer IDs', () => {
-		expect(G.water.ocean).toContain('water-ocean');
-		expect(G.water.rivers).toContain('water-river');
-		expect(G.water.lakes).toContain('water-area');
-		expect(G.water.piers).toContain('water-pier');
+	it('keeps layers fully visible when a group is true or 1', async () => {
+		const ids = await idsFor({ buildings: true });
+		expect(ids.has('building')).toBe(true);
 	});
 
-	it('roads.motorways should include tunnel and bridge variants', () => {
-		const ids = G.roads.motorways;
-		expect(ids).toContain('street-motorway');
-		expect(ids).toContain('tunnel-street-motorway');
-		expect(ids).toContain('bridge-street-motorway');
-		expect(ids).toContain('street-motorway:outline');
-		expect(ids).toContain('bridge-street-motorway:bridge');
-		expect(ids).toContain('street-motorway-link');
+	// ── icons alias ────────────────────────────────────────────────────────────────
+
+	it('hides POIs, road markings and transit stops via the icons alias', async () => {
+		const ids = await idsFor({ icons: false });
+		expect([...ids].some((id) => id.startsWith('poi-'))).toBe(false);
+		expect([...ids].some((id) => id.startsWith('marking-'))).toBe(false);
+		expect([...ids].some((id) => id.startsWith('symbol-transit-'))).toBe(false);
 	});
 
-	it('roads.streets.pedestrian should include zone fill layers', () => {
-		const ids = G.roads.streets.pedestrian;
-		expect(ids).toContain('street-pedestrian-zone');
-		expect(ids).toContain('tunnel-street-pedestrian-zone');
-		expect(ids).toContain('bridge-street-pedestrian-zone');
-		expect(ids).toContain('street-pedestrian');
-	});
-
-	it('transit.rail should include rail service variants but not the undrawn subway service', () => {
-		const ids = G.transit.rail;
-		expect(ids).toContain('transport-rail');
-		expect(ids).toContain('transport-rail-service');
-		expect(ids).toContain('transport-subway');
-		expect(ids).toContain('tunnel-transport-rail');
-		// subway/tram service tracks carry no styling rule, so they are not emitted.
-		expect(ids).not.toContain('transport-subway-service');
-	});
-
-	it('transit.rail should include funicular/monorail without service variants', () => {
-		const ids = G.transit.rail;
-		expect(ids).toContain('transport-funicular');
-		expect(ids).toContain('transport-monorail');
-		expect(ids).not.toContain('transport-funicular-service');
-		expect(ids).not.toContain('transport-monorail-service');
-	});
-
-	it('transit.aerialways should include cablecar and gondola (base line + dashed overlay)', () => {
-		expect(G.transit.aerialways).toContain('aerialway-cablecar');
-		expect(G.transit.aerialways).toContain('aerialway-gondola');
-		// OSM Bright draws aerialways as a thin base line (:outline) with a dashed line on top.
-		expect(G.transit.aerialways).toContain('aerialway-cablecar:outline');
+	it('lets a specific icon group override the icons alias', async () => {
+		const ids = await idsFor({ icons: false, pois: true });
+		expect([...ids].some((id) => id.startsWith('poi-'))).toBe(true);
+		expect([...ids].some((id) => id.startsWith('marking-'))).toBe(false);
 	});
 });

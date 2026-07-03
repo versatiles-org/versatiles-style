@@ -18,9 +18,14 @@ import { osm } from '../../api/osm.js';
 
 let style: StyleSpecification; // default colorful
 let landcoverStyle: StyleSpecification; // colorful + features.landcover
+let stepsStyle: StyleSpecification; // colorful + roads.steps enabled (hidden by default)
 
 beforeAll(async () => {
-	[style, landcoverStyle] = await Promise.all([osm(), osm({ features: { landcover: true } })]);
+	[style, landcoverStyle, stepsStyle] = await Promise.all([
+		osm(),
+		osm({ features: { landcover: true } }),
+		osm({ layers: { roads: { steps: true } } }),
+	]);
 });
 
 const OPACITY_PROPS: Record<string, string[]> = {
@@ -94,7 +99,6 @@ const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-service', z: 13, outline: true },
 	{ id: 'street-track', z: 13, outline: true },
 	{ id: 'way-footway', z: 13, outline: false },
-	{ id: 'way-steps', z: 13, outline: false },
 	{ id: 'way-path', z: 13, outline: false },
 	{ id: 'way-cycleway', z: 13, outline: false },
 ];
@@ -105,6 +109,9 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(style, layerId, z));
 		}
 	}
+
+	// Steps are hidden by default (roads.steps), so they fade in the same way once enabled.
+	it('way-steps over z13–14 (when enabled)', () => expectFadeInAt(stepsStyle, 'way-steps', 13));
 });
 
 // ── Boundaries ──────────────────────────────────────────────────────────────────
