@@ -199,8 +199,8 @@ export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroup
 			},
 			paths: leaf(roads?.paths, roadsInherited, true),
 			// Footways and steps are hidden unless explicitly enabled (or re-enabled by a scalar on `roads`).
-			footway: leaf(roads?.footway, roadsInherited, false),
-			steps: leaf(roads?.steps, roadsInherited, false),
+			footway: leaf(roads?.footway, roadsInherited, true),
+			steps: leaf(roads?.steps, roadsInherited, true),
 		},
 		transit: {
 			rail: leaf(transit?.rail, transitInherited, true),
