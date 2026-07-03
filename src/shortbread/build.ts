@@ -346,13 +346,15 @@ function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): 
 }
 
 /** Filter/dim a stream of tagged layers by their group's resolved option: each layer is dropped
- *  entirely when hidden (`false`/`0`) rather than emitted at zero opacity, dimmed (opacity scaled)
- *  when fractional, and passed through unchanged when fully visible (`true`/`1`). */
+ *  entirely when hidden (`false`) rather than emitted at zero opacity, dimmed (opacity scaled) when
+ *  fractional, and passed through unchanged when fully visible (`true`). Resolved options are already
+ *  normalized (see `resolveLayerGroups`), so a group value is only ever `true`, `false`, or a
+ *  fractional opacity in (0, 1). */
 export function* gate(layers: ResolvedLayerGroupOptions, tagged: Iterable<TaggedLayer>): Generator<TaggedLayer> {
 	for (const tl of tagged) {
 		const opt = layerOpt(layers, tl.group);
-		if (opt === false || opt === 0) continue; // invisible → filtered out, not emitted
-		if (typeof opt === 'number' && opt !== 1) scaleLayerOpacity(tl.layer, opt);
+		if (opt === false) continue; // invisible → filtered out, not emitted
+		if (typeof opt === 'number') scaleLayerOpacity(tl.layer, opt);
 		yield tl;
 	}
 }
