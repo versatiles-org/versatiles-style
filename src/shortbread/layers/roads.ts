@@ -507,6 +507,7 @@ function roadGroup(id: string): string | undefined {
 	if (s.startsWith('transport-')) return 'transit.rail';
 	if (id === 'bridge') return 'roads.motorways';
 	if (s.startsWith('way-steps')) return 'roads.steps';
+	if (s.startsWith('way-footway')) return 'roads.footway';
 	if (s.startsWith('way-')) return 'roads.paths';
 	if (s.startsWith('street-')) {
 		let t = s.slice('street-'.length).replace(/(:outline|:bridge)$/, '');
