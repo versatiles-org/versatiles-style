@@ -9,7 +9,7 @@ const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) 
 
 const baseSelect = $<HTMLSelectElement>('base-select');
 const themeSelect = $<HTMLSelectElement>('theme-select');
-const buildingsSelect = $<HTMLSelectElement>('buildings-select');
+const buildingsToggle = $<HTMLInputElement>('buildings-toggle');
 const darkToggle = $<HTMLInputElement>('dark-toggle');
 const terrainToggle = $<HTMLInputElement>('terrain-toggle');
 const hillshadeToggle = $<HTMLInputElement>('hillshade-toggle');
@@ -29,7 +29,7 @@ const getBool = (key: string): boolean => params.get(key) === '1';
 
 baseSelect.value = params.get('base') === 'satellite' ? 'satellite' : 'osm';
 themeSelect.value = params.get('theme') ?? 'colorful';
-buildingsSelect.value = params.get('buildings') === 'extruded' ? 'extruded' : 'flat';
+buildingsToggle.checked = getBool('buildings3d');
 darkToggle.checked = getBool('dark');
 terrainToggle.checked = getBool('terrain');
 hillshadeToggle.checked = getBool('hillshade');
@@ -43,7 +43,7 @@ let map: maplibregl.Map | undefined;
 function buildStyle(): Promise<StyleSpecification> {
 	const base = baseSelect.value as Base;
 	const palette = themeSelect.value as Palette;
-	const buildings = buildingsSelect.value as 'flat' | 'extruded';
+	const buildings = buildingsToggle.checked ? 'extruded' : 'flat';
 	const darkMode = darkToggle.checked;
 	const terrain = terrainToggle.checked;
 	const hillshade = hillshadeToggle.checked;
@@ -53,7 +53,7 @@ function buildStyle(): Promise<StyleSpecification> {
 	// building or landcover layers of its own).
 	const isSatellite = base === 'satellite';
 	landcoverToggle.disabled = isSatellite;
-	buildingsSelect.disabled = isSatellite;
+	buildingsToggle.disabled = isSatellite;
 
 	if (isSatellite) {
 		return satellite({
@@ -72,7 +72,7 @@ function persistState(): void {
 	const p = url.searchParams;
 	p.set('base', baseSelect.value);
 	p.set('theme', themeSelect.value);
-	p.set('buildings', buildingsSelect.value);
+	p.set('buildings3d', buildingsToggle.checked ? '1' : '0');
 	p.set('dark', darkToggle.checked ? '1' : '0');
 	p.set('terrain', terrainToggle.checked ? '1' : '0');
 	p.set('hillshade', hillshadeToggle.checked ? '1' : '0');
@@ -111,7 +111,7 @@ async function render(): Promise<void> {
 for (const control of [
 	baseSelect,
 	themeSelect,
-	buildingsSelect,
+	buildingsToggle,
 	darkToggle,
 	terrainToggle,
 	hillshadeToggle,
