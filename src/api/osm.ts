@@ -1,6 +1,6 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
-import type { OsmOptions, ResolvedLayout, ResolvedOsmOptions } from '../options/index.js';
+import type { OsmOptions, ResolvedLayout, ResolvedOsm } from '../options/index.js';
 import { colorOptionsKeys, resolveOsmOptions } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
@@ -15,7 +15,7 @@ const SOURCE_NAME = 'versatiles-shortbread';
 // The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
 // `osmSource` is the resolved OSM source: a tile URL template, or a TileJSON whose
 // `tiles[]` have already been made absolute.
-function buildBase(resolved: ResolvedOsmOptions, osmSource: TileJSONSpecification): StyleSpecification {
+function buildBase(resolved: ResolvedOsm, osmSource: TileJSONSpecification): StyleSpecification {
 	const tj = osmSource;
 	const source: StyleSpecification['sources'][string] = { type: 'vector', tiles: tj.tiles, url: resolved.urls.osm };
 
@@ -161,6 +161,6 @@ export const osm = Object.assign(osmFn, {
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SLOT_IDS,
 
-	/** Resolve raw OsmOptions to a fully validated ResolvedOsmOptions. */
+	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */
 	resolveOptions: resolveOsmOptions,
 } as const);

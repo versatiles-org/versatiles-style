@@ -1,13 +1,13 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from './abstract.js';
-import type { ResolvedRecolorOptions, ResolvedColors } from '../options/index.js';
+import type { ResolvedRecolor, ResolvedColors } from '../options/index.js';
 
 function isColorString(s: string): boolean {
 	const t = s.trim().toLowerCase();
 	return t.startsWith('#') || t.startsWith('rgb') || t.startsWith('hsl');
 }
 
-function transformColor(color: Color, opt: ResolvedRecolorOptions): Color {
+function transformColor(color: Color, opt: ResolvedRecolor): Color {
 	if (opt.invertBrightness) color = color.invertLuminosity();
 	if (opt.rotateHue !== 0) color = color.rotateHue(opt.rotateHue);
 	if (opt.saturate !== 0) color = color.saturate(opt.saturate);
@@ -31,7 +31,7 @@ export function calculateDarkModeColors(colors: ResolvedColors): ResolvedColors 
 	) as ResolvedColors;
 }
 
-export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolorOptions) {
+export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolor) {
 	const cache = new Map<string, string>();
 
 	const recolorString = (input: string): string => {

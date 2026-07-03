@@ -6,12 +6,8 @@ import type { SkyOptions, ResolvedSky } from './sky.js';
 import { resolveSky } from './sky.js';
 import type { SatelliteUrlsOptions, ResolvedSatelliteUrls } from './urls.js';
 import { resolveSatelliteUrls } from './urls.js';
-import {
-	ResolvedSatelliteRasterOptions,
-	resolveSatelliteRasterOptions,
-	SatelliteRasterOptions,
-} from './satellite-raster.js';
-import { OsmOverlayOptions, ResolvedOsmOverlayOptions, resolveOsmOverlayOptions } from './osm-overlay.js';
+import { ResolvedSatelliteRaster, resolveSatelliteRasterOptions, SatelliteRasterOptions } from './satellite-raster.js';
+import { OsmOverlayOptions, ResolvedOsmOverlay, resolveOsmOverlayOptions } from './osm-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -22,16 +18,16 @@ export type SatelliteOptions = {
 	sky?: SkyOptions;
 };
 
-export type ResolvedSatelliteOptions = {
+export type ResolvedSatellite = {
 	urls: ResolvedSatelliteUrls;
 	features: ResolvedSatelliteFeatures;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
-	osmOverlay: false | ResolvedOsmOverlayOptions;
-	raster: ResolvedSatelliteRasterOptions;
+	osmOverlay: false | ResolvedOsmOverlay;
+	raster: ResolvedSatelliteRaster;
 };
 
-export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSatelliteOptions {
+export function resolveSatelliteOptions(options?: SatelliteOptions): ResolvedSatellite {
 	const osmOverlay = !options?.osmOverlay ? false : resolveOsmOverlayOptions(options.osmOverlay);
 
 	return {

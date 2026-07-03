@@ -1,10 +1,10 @@
-export type { Palette, ResolvedTheme } from './theme.js';
+export type { Palette, ThemeOptions, ResolvedTheme } from './theme.js';
 export { isDarkMode, resolveTheme } from './theme.js';
 
 export type { ColorsOptions, ResolvedColors } from './colors.js';
 export { colorOptionsKeys, resolveColors } from './colors.js';
 
-export type { RecolorOptions, ResolvedRecolorOptions } from './recolor.js';
+export type { RecolorOptions, ResolvedRecolor } from './recolor.js';
 export { resolveRecolor } from './recolor.js';
 
 export type { TextOptions, ResolvedText } from './text.js';
@@ -16,7 +16,7 @@ export { resolveLayout } from './layout.js';
 export type { HillshadeOptions, ResolvedHillshade } from './features-hillshade.js';
 export { resolveHillshade } from './features-hillshade.js';
 
-export type { TerrainOption, ResolvedTerrain } from './features-terrain.js';
+export type { TerrainOptions, ResolvedTerrain } from './features-terrain.js';
 export { resolveTerrain } from './features-terrain.js';
 
 export type {
@@ -36,26 +36,26 @@ export { resolveSky } from './sky.js';
 export type { SpriteEntries } from './sprite.js';
 export { resolveSprite } from './sprite.js';
 
-export type { LayerGroupOptions, ResolvedLayerGroupOptions } from './layer-groups.js';
+export type { LayerGroupOptions, ResolvedLayerGroups } from './layer-groups.js';
 export { resolveLayerGroups } from './layer-groups.js';
 
 export type {
 	FetchLike,
 	OsmUrlsOptions,
 	SatelliteUrlsOptions,
-	ResolvedOsmUrls as ResolvedUrls,
+	ResolvedOsmUrls,
 	ResolvedSatelliteUrls,
 } from './urls.js';
 export { DEFAULT_BASE, resolveBase, resolveOsmUrls, resolveSatelliteUrls } from './urls.js';
 
-export type { OsmOptions, ResolvedOsmOptions } from './osm.js';
+export type { OsmOptions, ResolvedOsm } from './osm.js';
 export { resolveOsmOptions } from './osm.js';
 
-export type { OsmOverlayOptions, ResolvedOsmOverlayOptions } from './osm-overlay.js';
+export type { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
 export { resolveOsmOverlayOptions } from './osm-overlay.js';
 
-export type { SatelliteRasterOptions, ResolvedSatelliteRasterOptions } from './satellite-raster.js';
+export type { SatelliteRasterOptions, ResolvedSatelliteRaster } from './satellite-raster.js';
 export { resolveSatelliteRasterOptions } from './satellite-raster.js';
 
-export type { SatelliteOptions, ResolvedSatelliteOptions } from './satellite.js';
+export type { SatelliteOptions, ResolvedSatellite } from './satellite.js';
 export { resolveSatelliteOptions } from './satellite.js';

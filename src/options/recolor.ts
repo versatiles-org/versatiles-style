@@ -9,7 +9,7 @@ export type RecolorOptions = {
 	blend?: { color?: string; amount?: number };
 };
 
-export type ResolvedRecolorOptions = {
+export type ResolvedRecolor = {
 	invertBrightness: boolean;
 	rotateHue: number;
 	saturate: number;
@@ -20,7 +20,7 @@ export type ResolvedRecolorOptions = {
 	blend: { color: string; amount: number };
 };
 
-export function resolveRecolor(recolor?: RecolorOptions): ResolvedRecolorOptions {
+export function resolveRecolor(recolor?: RecolorOptions): ResolvedRecolor {
 	return {
 		invertBrightness: recolor?.invertBrightness ?? false,
 		rotateHue: recolor?.rotateHue ?? 0,
