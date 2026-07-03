@@ -83,6 +83,8 @@ function persistState(): void {
 async function render(): Promise<void> {
 	const style = await buildStyle();
 
+	console.log('Rendering style', style);
+
 	if (map) {
 		map.setStyle(style);
 	} else {

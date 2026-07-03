@@ -1,5 +1,5 @@
 import { resolveUrl } from '../lib/utils.js';
-import type { SpriteInput } from './sprite.js';
+import type { SpriteEntries } from './sprite.js';
 import { resolveSprite } from './sprite.js';
 
 /** A `fetch`-compatible function, used to download TileJSON documents. */
@@ -10,7 +10,7 @@ export type OsmUrlsOptions = {
 	osm?: string;
 	elevation?: string;
 	glyphsPattern?: string;
-	sprite?: SpriteInput;
+	sprite?: SpriteEntries;
 	/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
 	fetch?: FetchLike;
 };
@@ -23,7 +23,7 @@ export type ResolvedOsmUrls = {
 	osm: string;
 	elevation: string;
 	glyphsPattern: string;
-	sprite: SpriteInput;
+	sprite: SpriteEntries;
 	/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
 	fetch?: FetchLike;
 };
@@ -44,7 +44,7 @@ export function resolveOsmUrls(urls?: OsmUrlsOptions): ResolvedOsmUrls {
 		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
 		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? '/assets/sprites/basics/sprites'),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]),
 		fetch: urls?.fetch,
 	};
 }
@@ -56,7 +56,7 @@ export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions): ResolvedSatel
 		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
 		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? '/assets/sprites/basics/sprites'),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]),
 		fetch: urls?.fetch,
 	};
 }
