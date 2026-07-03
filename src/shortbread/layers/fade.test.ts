@@ -18,14 +18,9 @@ import { osm } from '../../api/osm.js';
 
 let style: StyleSpecification; // default colorful
 let landcoverStyle: StyleSpecification; // colorful + features.landcover
-let hiddenPathsStyle: StyleSpecification; // colorful + roads.footway/steps enabled (hidden by default)
 
 beforeAll(async () => {
-	[style, landcoverStyle, hiddenPathsStyle] = await Promise.all([
-		osm(),
-		osm({ features: { landcover: true } }),
-		osm({ layers: { roads: { footway: true, steps: true } } }),
-	]);
+	[style, landcoverStyle] = await Promise.all([osm(), osm({ features: { landcover: true } })]);
 });
 
 const OPACITY_PROPS: Record<string, string[]> = {
@@ -83,7 +78,9 @@ function expectFadeInAt(s: StyleSpecification, layerId: string, z0: number): voi
 
 // ── Roads ───────────────────────────────────────────────────────────────────────
 // Shortbread `streets` schema minzoom per kind. `outline` marks the road types drawn with a casing
-// (`:outline`); path-class ways (footway/steps/path/cycleway) have none.
+// (`:outline`). Path-class ways (footway/steps/path/cycleway) are the exception to the opacity-fade
+// rule: like the old VersaTiles style they appear by GROWING from 0 width at z15 (no opacity fade),
+// so they're verified separately below rather than here.
 const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-motorway', z: 5, outline: true },
 	{ id: 'street-trunk', z: 6, outline: true },
@@ -98,8 +95,6 @@ const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-pedestrian', z: 13, outline: true },
 	{ id: 'street-service', z: 13, outline: true },
 	{ id: 'street-track', z: 13, outline: true },
-	{ id: 'way-path', z: 13, outline: false },
-	{ id: 'way-cycleway', z: 13, outline: false },
 ];
 
 describe('roads fade in at their Shortbread streets minzoom', () => {
@@ -108,10 +103,23 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(style, layerId, z));
 		}
 	}
+});
 
-	// Footways and steps are hidden by default (roads.footway/steps); they fade in the same way once enabled.
-	it('way-footway over z13–14 (when enabled)', () => expectFadeInAt(hiddenPathsStyle, 'way-footway', 13));
-	it('way-steps over z13–14 (when enabled)', () => expectFadeInAt(hiddenPathsStyle, 'way-steps', 13));
+// Path-class ways appear by width growth (0 at z15), not opacity — so they carry no opacity fade,
+// and their fill + casing widths start at 0 at z15.
+describe('path-class ways appear by growing from 0 width at z15 (no opacity fade)', () => {
+	for (const id of ['way-footway', 'way-steps', 'way-path', 'way-cycleway']) {
+		for (const layerId of [id, `${id}:outline`]) {
+			it(`${layerId} has no opacity fade and starts at 0 width at z15`, () => {
+				expect(opacityFade(style, layerId), `${layerId} must not opacity-fade`).toBeNull();
+				const width = paintOf(style, layerId)?.['line-width'];
+				expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
+				const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
+				expect(stops[0], `${layerId} width ramp must start at z15`).toBe(15);
+				expect(stops[1], `${layerId} must start at 0 width`).toBe(0);
+			});
+		}
+	}
 });
 
 // ── Boundaries ──────────────────────────────────────────────────────────────────

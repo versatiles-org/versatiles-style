@@ -38,9 +38,7 @@ export type LayerGroupOptions = {
 							bus?: boolean | number;
 					  };
 				paths?: boolean | number;
-				/** Pedestrian footways. Hidden by default; set `true` (or an opacity) to show them. */
 				footway?: boolean | number;
-				/** Pedestrian steps / stairways. Hidden by default; set `true` (or an opacity) to show them. */
 				steps?: boolean | number;
 		  };
 	transit?:
@@ -138,7 +136,7 @@ export type ResolvedLayerGroups = {
 // A group option is either a scalar (`boolean | number`) that cascades to every child, or an object
 // that sets children individually. `resolveLayerGroups` fills in every field: a scalar set on an
 // ancestor is inherited by any child not set explicitly, otherwise the child falls back to its own
-// default. Every group defaults to visible (`true`) except `roads.steps`, which is hidden (`false`).
+// default. Every group defaults to visible (`true`).
 
 type Scalar = boolean | number;
 
@@ -198,7 +196,6 @@ export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroup
 				bus: leaf(streets?.bus, streetsInherited, true),
 			},
 			paths: leaf(roads?.paths, roadsInherited, true),
-			// Footways and steps are hidden unless explicitly enabled (or re-enabled by a scalar on `roads`).
 			footway: leaf(roads?.footway, roadsInherited, true),
 			steps: leaf(roads?.steps, roadsInherited, true),
 		},

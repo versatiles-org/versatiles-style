@@ -38,7 +38,7 @@ const light: ResolvedColors = {
 	transitRail: '#BBBBBB',
 	transitSubway: '#BABABAB3',
 	transitCycle: '#EFF9FF',
-	transitFoot: '#FBEBFF80',
+	transitFoot: '#FBEBFF',
 	boundary: '#9E9CAB',
 	boundaryDisputed: '#AFADB8',
 	label: '#333344',

@@ -316,31 +316,29 @@ function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleP
 	return r;
 }
 
-// OSM Bright renders all path-class ways (footway/path/cycleway/steps) as a single dashed tan
-// line with no casing. `_t` (way type) is kept for signature symmetry with the other builders.
+// Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
+// casing, growing in from 0 width at z15. footway/steps/path use the lavender foot color; cycleway
+// the light-blue cycle color. Tunnels dash the fill; bridges also get a deck (see bridgeDeckStyle).
 function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg } = ctx;
-	// Paths (footway/steps/path/cycleway) appear in Shortbread at z13. They're thin dashed lines, so a
-	// width grow-in makes the dashes scale and reads as a snap; instead they keep their full width and
-	// fade in via opacity over z13→14 — drawn the moment their data appears, materializing smoothly.
+	const fill = t === 'cycleway' ? c.transitCycle : c.transitFoot;
+
 	if (isOutline) {
-		// OSM Bright gives bridge paths a casing; surface/tunnel paths have none.
-		if (prefix !== 'bridge-') return null;
+		// Casing: the fill darkened ~10% (matches the old style's outline tint), solid in every prefix.
 		return {
-			color: c.roadStreetBg,
+			color: fill.blend(0.1, fg),
 			lineJoin,
 			lineCap,
-			size: { base: 1.2, stops: { 15: 1.2, 20: 18 } },
-			opacity: b.fadeIn(13),
+			size: { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
 		};
 	}
 	return {
-		color: c.land.blend(0.18, fg).blend(0.22, c.roadMotorwayBg), // ≈ #cba (light mode)
+		color: fill,
 		lineJoin,
 		lineCap,
-		size: { base: 1.2, stops: { 15: 1.2, 20: 4 } },
-		lineDasharray: [1.5, 0.75],
-		opacity: b.fadeIn(13),
+		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
+		// Tunnels dash the path fill; surface and bridge paths are solid.
+		...(prefix === 'tunnel-' ? { lineDasharray: [1, 0.2] } : {}),
 	};
 }
 

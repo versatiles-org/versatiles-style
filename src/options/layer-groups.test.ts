@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveLayerGroups } from './layer-groups.js';
 
-// The fully-resolved defaults: every group visible (`true`) except `roads.steps`, which is hidden.
+// The fully-resolved defaults: every group is visible (`true`).
 const DEFAULTS = {
 	land: {
 		forest: true,
@@ -19,8 +19,8 @@ const DEFAULTS = {
 		highways: true,
 		streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
 		paths: true,
-		footway: false,
-		steps: false,
+		footway: true,
+		steps: true,
 	},
 	transit: { rail: true, aerialways: true, ferries: true, stops: true },
 	buildings: true,
@@ -34,7 +34,7 @@ const DEFAULTS = {
 };
 
 describe('resolveLayerGroups', () => {
-	it('fills in every group with defaults, and hides steps by default', () => {
+	it('fills in every group with defaults, all visible', () => {
 		expect(resolveLayerGroups()).toStrictEqual(DEFAULTS);
 	});
 
@@ -44,15 +44,15 @@ describe('resolveLayerGroups', () => {
 
 	// ── footway / steps default ────────────────────────────────────────────────────
 
-	it('keeps footway and steps hidden by default', () => {
-		expect(resolveLayerGroups().roads.footway).toBe(false);
-		expect(resolveLayerGroups().roads.steps).toBe(false);
+	it('shows footway and steps by default', () => {
+		expect(resolveLayerGroups().roads.footway).toBe(true);
+		expect(resolveLayerGroups().roads.steps).toBe(true);
 	});
 
-	it('shows footway when explicitly enabled, leaving siblings at their defaults', () => {
-		const r = resolveLayerGroups({ roads: { footway: true } });
-		expect(r.roads.footway).toBe(true);
-		expect(r.roads.steps).toBe(false); // sibling stays hidden
+	it('hides footway when explicitly disabled, leaving siblings at their defaults', () => {
+		const r = resolveLayerGroups({ roads: { footway: false } });
+		expect(r.roads.footway).toBe(false);
+		expect(r.roads.steps).toBe(true); // sibling stays at its (visible) default
 		expect(r.roads.paths).toBe(true);
 	});
 
@@ -69,7 +69,7 @@ describe('resolveLayerGroups', () => {
 
 	// ── scalar cascade ─────────────────────────────────────────────────────────────
 
-	it('cascades a scalar on roads to every child, re-enabling footway and steps', () => {
+	it('cascades a scalar on roads to every child, including footway and steps', () => {
 		expect(resolveLayerGroups({ roads: true }).roads).toStrictEqual({
 			motorways: true,
 			highways: true,
@@ -111,7 +111,7 @@ describe('resolveLayerGroups', () => {
 		// siblings of `streets` stay at their defaults
 		expect(r.motorways).toBe(true);
 		expect(r.paths).toBe(true);
-		expect(r.steps).toBe(false);
+		expect(r.steps).toBe(true);
 	});
 
 	// ── object overrides ─────────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ describe('resolveLayerGroups', () => {
 	it('applies per-child roads overrides, leaving unset children at defaults', () => {
 		const r = resolveLayerGroups({ roads: { paths: false } }).roads;
 		expect(r.paths).toBe(false);
-		expect(r.steps).toBe(false); // unchanged default
+		expect(r.steps).toBe(true); // unchanged default
 		expect(r.motorways).toBe(true);
 	});
 

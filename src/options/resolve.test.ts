@@ -23,9 +23,9 @@ describe('resolveOsm', () => {
 		expect(r.features.hillshade).toBe(false);
 		expect(r.features.landcover).toBe(false);
 		expect(r.features.buildings).toBe('flat');
-		// layers are fully resolved: every group visible by default, except steps (hidden).
+		// layers are fully resolved: every group visible by default.
 		expect(r.layers.buildings).toBe(true);
-		expect(r.layers.roads.steps).toBe(false);
+		expect(r.layers.roads.steps).toBe(true);
 		expect(r.layers.roads.motorways).toBe(true);
 		expect(r.recolor).toEqual({
 			blend: {
