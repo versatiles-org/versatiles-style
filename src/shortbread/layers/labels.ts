@@ -11,6 +11,7 @@ const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
 type PlaceDef = {
 	kind: string;
 	minzoom: number;
+	maxzoom?: number;
 	size: Record<number, number>;
 	color?: (ctx: LayerContext) => Color;
 	uppercase?: boolean;
@@ -28,9 +29,9 @@ const PLACES_SMALL: PlaceDef[] = [
 ];
 // minzoom = the Shortbread place_labels schema minzoom for each kind (matches OSM Bright).
 const PLACES_LARGE: PlaceDef[] = [
-	{ kind: 'city', minzoom: 6, size: { 7: 14, 11: 24 } },
-	{ kind: 'state_capital', minzoom: 4, size: { 7: 14, 11: 24 } },
-	{ kind: 'capital', minzoom: 4, size: { 7: 14, 11: 24 } },
+	{ kind: 'city', minzoom: 6, maxzoom: 14, size: { 7: 14, 11: 24 } },
+	{ kind: 'state_capital', minzoom: 4, maxzoom: 14, size: { 7: 14, 11: 24 } },
+	{ kind: 'capital', minzoom: 4, maxzoom: 12, size: { 7: 14, 11: 24 } },
 ];
 
 // Neutral settlement text (~#333) and a lighter district/state variant, both derived from the palette.
@@ -158,6 +159,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 3,
+		maxzoom: 10,
 		color: placeSecondary(ctx),
 		size: { 13: 10, 14: 11 },
 		group: 'labels.states',
@@ -173,6 +175,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 4,
+		maxzoom: 10,
 		size: { 4: 11, 5: 13 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -188,6 +191,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 2,
+		maxzoom: 10,
 		size: { 3: 11, 5: 14 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -198,6 +202,7 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		...boundaryBase,
 		minzoom: 2,
+		maxzoom: 9,
 		size: { 2: 11, 5: 15 },
 		textHaloWidth: 2,
 		group: 'labels.countries',
@@ -211,6 +216,7 @@ function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.Tagge
 		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': POP_SORT_KEY },
 		...base,
 		minzoom: p.minzoom,
+		maxzoom: p.maxzoom ?? 15,
 		size: p.size,
 		...(p.color ? { color: p.color(ctx) } : {}),
 		...(p.uppercase ? { textTransform: 'uppercase' } : {}),
