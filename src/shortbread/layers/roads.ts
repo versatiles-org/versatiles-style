@@ -355,7 +355,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 
 // Returns null for variants that should not be drawn at all (e.g. ferry casing,
 // service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
-function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
+function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg, bg } = ctx;
 
 	if (t === 'ferry')
@@ -408,7 +408,10 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 
 	// Rail tracks fade in by opacity over z14→15 — the zoom at which OSM Bright starts drawing rail
 	// (the width curves are ~0 below 14) — for both the base (:outline) and the hatching (fill).
-	r.opacity = b.fadeIn(14);
+	//
+	// Underground (tunnel) rails render translucent (0.2) to read as "below ground".
+	const target = prefix === 'tunnel-' ? 0.2 : 1;
+	r.opacity = b.fadeIn(14, target);
 	return r;
 }
 
