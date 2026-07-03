@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext } from './context.js';
-import { resolveOsmOptions } from '../options/index.js';
+import { resolveOsm } from '../options/index.js';
 import { PALETTES } from '../themes/index.js';
 import type { Color } from '../color/index.js';
 
@@ -22,13 +22,13 @@ function isWhite(color: Color): boolean {
 describe('LayerContext background reference (bg / fg)', () => {
 	describe.each(PALETTES)('palette "%s"', (palette) => {
 		it('bg is pure white and fg pure black in light mode', () => {
-			const ctx = buildContext(resolveOsmOptions({ theme: { palette, darkMode: false } }));
+			const ctx = buildContext(resolveOsm({ theme: { palette, darkMode: false } }));
 			expect(isWhite(ctx.bg)).toBe(true);
 			expect(isBlack(ctx.fg)).toBe(true);
 		});
 
 		it('bg is pure black and fg pure white in dark mode', () => {
-			const ctx = buildContext(resolveOsmOptions({ theme: { palette, darkMode: true } }));
+			const ctx = buildContext(resolveOsm({ theme: { palette, darkMode: true } }));
 			expect(isBlack(ctx.bg)).toBe(true);
 			expect(isWhite(ctx.fg)).toBe(true);
 		});
@@ -37,7 +37,7 @@ describe('LayerContext background reference (bg / fg)', () => {
 	it('bg is always pure black or white across every palette and mode', () => {
 		for (const palette of PALETTES) {
 			for (const darkMode of [false, true]) {
-				const { bg } = buildContext(resolveOsmOptions({ theme: { palette, darkMode } }));
+				const { bg } = buildContext(resolveOsm({ theme: { palette, darkMode } }));
 				expect(isBlack(bg) || isWhite(bg), `bg for ${palette}/${darkMode ? 'dark' : 'light'}`).toBe(true);
 			}
 		}
@@ -49,7 +49,7 @@ describe('LayerContext background reference (bg / fg)', () => {
 		const lands = ['#808080', '#7f7f7f', '#123456', '#000000', '#ffffff', 'rgb(10,200,30)'];
 		for (const land of lands) {
 			for (const darkMode of [false, true]) {
-				const { bg } = buildContext(resolveOsmOptions({ colors: { land }, theme: { darkMode } }));
+				const { bg } = buildContext(resolveOsm({ colors: { land }, theme: { darkMode } }));
 				expect(isBlack(bg) || isWhite(bg), `bg with land=${land} dark=${darkMode}`).toBe(true);
 				expect(darkMode ? isBlack(bg) : isWhite(bg), `bg tracks mode with land=${land} dark=${darkMode}`).toBe(true);
 			}

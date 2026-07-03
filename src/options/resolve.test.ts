@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { resolveOsmOptions } from './osm.js';
-import { resolveSatelliteOptions } from './satellite.js';
+import { resolveOsm } from './osm.js';
+import { resolveSatellite } from './satellite.js';
 import { resolveTheme } from './theme.js';
 import { resolveColors } from './colors.js';
 import { resolveSun } from './sun.js';
@@ -9,11 +9,11 @@ import { resolveText } from './text.js';
 import { resolveLayout } from './layout.js';
 import { resolveOsmFeatures } from './features.js';
 
-// ── resolveOsmOptions ─────────────────────────────────────────────────────────
+// ── resolveOsm ─────────────────────────────────────────────────────────
 
-describe('resolveOsmOptions', () => {
+describe('resolveOsm', () => {
 	it('returns sensible defaults when called with no arguments', () => {
-		const r = resolveOsmOptions();
+		const r = resolveOsm();
 		expect(r.theme).toEqual({ palette: 'colorful', darkMode: false });
 		expect(typeof r.urls.osm).toBe('string');
 		expect(typeof r.urls.elevation).toBe('string');
@@ -46,35 +46,35 @@ describe('resolveOsmOptions', () => {
 	});
 
 	it('resolves palette shorthand in theme', () => {
-		const r = resolveOsmOptions({ theme: 'toner' });
+		const r = resolveOsm({ theme: 'toner' });
 		expect(r.theme.palette).toBe('toner');
 		expect(r.theme.darkMode).toBe(false);
 	});
 
 	it('resolves theme object with darkMode', () => {
-		const r = resolveOsmOptions({ theme: { palette: 'gray', darkMode: true } });
+		const r = resolveOsm({ theme: { palette: 'gray', darkMode: true } });
 		expect(r.theme).toEqual({ palette: 'gray', darkMode: true });
 	});
 
 	it('resolves custom base URL and builds relative URLs from it', () => {
-		const r = resolveOsmOptions({ urls: { base: 'https://my.server.com' } });
+		const r = resolveOsm({ urls: { base: 'https://my.server.com' } });
 		expect(r.urls.osm).toContain('my.server.com');
 		expect(r.urls.glyphsPattern).toContain('my.server.com');
 	});
 
 	it('passes through explicit osm URL strings unchanged', () => {
-		const r = resolveOsmOptions({ urls: { osm: 'https://custom.tiles/{z}/{x}/{y}' } });
+		const r = resolveOsm({ urls: { osm: 'https://custom.tiles/{z}/{x}/{y}' } });
 		expect(r.urls.osm).toBe('https://custom.tiles/{z}/{x}/{y}');
 	});
 
 	it('resolves sprite string to SpriteEntry array', () => {
-		const r = resolveOsmOptions({ urls: { sprite: 'https://cdn/sprites/basics' } });
+		const r = resolveOsm({ urls: { sprite: 'https://cdn/sprites/basics' } });
 		const sprite = r.urls.sprite as Array<{ id: string; url: string }>;
 		expect(sprite).toBe('https://cdn/sprites/basics');
 	});
 
 	it('resolves sprite array and resolves relative URLs', () => {
-		const r = resolveOsmOptions({
+		const r = resolveOsm({
 			urls: {
 				base: 'https://tiles.example.com',
 				sprite: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }],
@@ -85,30 +85,30 @@ describe('resolveOsmOptions', () => {
 	});
 
 	it('merges user color overrides on top of palette', () => {
-		const r = resolveOsmOptions({ colors: { water: '#112233' } });
+		const r = resolveOsm({ colors: { water: '#112233' } });
 		expect(r.colors.water).toBe('#112233');
 		// Other colors come from the palette
 		expect(typeof r.colors.land).toBe('string');
 	});
 
 	it('returns all 41 color keys', () => {
-		const r = resolveOsmOptions();
+		const r = resolveOsm();
 		const keys = Object.keys(r.colors);
 		expect(keys.length).toBeGreaterThanOrEqual(41);
 	});
 
 	it('resolves terrain true to default exaggeration', () => {
-		const r = resolveOsmOptions({ features: { terrain: true } });
+		const r = resolveOsm({ features: { terrain: true } });
 		expect(r.features.terrain).toEqual({ exaggeration: 1.0 });
 	});
 
 	it('resolves terrain with custom exaggeration', () => {
-		const r = resolveOsmOptions({ features: { terrain: { exaggeration: 2.5 } } });
+		const r = resolveOsm({ features: { terrain: { exaggeration: 2.5 } } });
 		expect(r.features.terrain).toEqual({ exaggeration: 2.5 });
 	});
 
 	it('resolves hillshade true to defaults', () => {
-		const r = resolveOsmOptions({ features: { hillshade: true } });
+		const r = resolveOsm({ features: { hillshade: true } });
 		expect(r.features.hillshade).toMatchObject({
 			exaggeration: 0.1,
 			shadowColor: '#000000',
@@ -119,17 +119,17 @@ describe('resolveOsmOptions', () => {
 	});
 
 	it('resolves hillshade object with partial overrides', () => {
-		const r = resolveOsmOptions({ features: { hillshade: { anchor: 'viewport', exaggeration: 0.5 } } });
+		const r = resolveOsm({ features: { hillshade: { anchor: 'viewport', exaggeration: 0.5 } } });
 		expect(r.features.hillshade).toMatchObject({ anchor: 'viewport', exaggeration: 0.5 });
 	});
 
 	it('resolves buildings extruded', () => {
-		const r = resolveOsmOptions({ features: { buildings: 'extruded' } });
+		const r = resolveOsm({ features: { buildings: 'extruded' } });
 		expect(r.features.buildings).toBe('extruded');
 	});
 
 	it('passes recolor through', () => {
-		expect(resolveOsmOptions({ recolor: { rotateHue: 120 } }).recolor).toStrictEqual({
+		expect(resolveOsm({ recolor: { rotateHue: 120 } }).recolor).toStrictEqual({
 			blend: {
 				amount: 0,
 				color: '#ff0000',
@@ -253,11 +253,11 @@ describe('resolveFeatures', () => {
 	});
 });
 
-// ── resolveSatelliteOptions ───────────────────────────────────────────────────
+// ── resolveSatellite ───────────────────────────────────────────────────
 
-describe('resolveSatelliteOptions', () => {
+describe('resolveSatellite', () => {
 	it('returns defaults with no arguments', () => {
-		const r = resolveSatelliteOptions();
+		const r = resolveSatellite();
 		expect(typeof r.urls.satellite).toBe('string');
 		expect(r.osmOverlay).toBe(false);
 		expect(r.features.terrain).toBe(false);
@@ -267,12 +267,12 @@ describe('resolveSatelliteOptions', () => {
 	});
 
 	it('resolves satellite URL against base', () => {
-		const r = resolveSatelliteOptions({ urls: { base: 'https://cdn.example.com' } });
+		const r = resolveSatellite({ urls: { base: 'https://cdn.example.com' } });
 		expect(r.urls.satellite).toContain('cdn.example.com');
 	});
 
 	it('resolves osmOverlay with content options', () => {
-		const r = resolveSatelliteOptions({ osmOverlay: { theme: 'toner' } });
+		const r = resolveSatellite({ osmOverlay: { theme: 'toner' } });
 		expect(r.osmOverlay).not.toBe(false);
 		if (r.osmOverlay !== false) {
 			expect(r.osmOverlay.theme.palette).toBe('toner');
@@ -280,18 +280,18 @@ describe('resolveSatelliteOptions', () => {
 	});
 
 	it('sets osmOverlay to false when explicitly false', () => {
-		expect(resolveSatelliteOptions({ osmOverlay: false }).osmOverlay).toBe(false);
+		expect(resolveSatellite({ osmOverlay: false }).osmOverlay).toBe(false);
 	});
 
 	it('resolves raster options with partial overrides', () => {
-		const r = resolveSatelliteOptions({ raster: { saturation: -0.3, opacity: 0.9 } });
+		const r = resolveSatellite({ raster: { saturation: -0.3, opacity: 0.9 } });
 		expect(r.raster.saturation).toBe(-0.3);
 		expect(r.raster.opacity).toBe(0.9);
 		expect(r.raster.contrast).toBe(0);
 	});
 
 	it('resolves hillshade in satellite features', () => {
-		const r = resolveSatelliteOptions({ features: { hillshade: { exaggeration: 0.3 } } });
+		const r = resolveSatellite({ features: { hillshade: { exaggeration: 0.3 } } });
 		expect(r.features.hillshade).toMatchObject({ exaggeration: 0.3 });
 	});
 });

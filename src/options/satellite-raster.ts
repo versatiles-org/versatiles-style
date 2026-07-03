@@ -9,7 +9,7 @@ export type SatelliteRasterOptions = {
 
 export type ResolvedSatelliteRaster = Required<SatelliteRasterOptions>;
 
-export function resolveSatelliteRasterOptions(options?: SatelliteRasterOptions): ResolvedSatelliteRaster {
+export function resolveSatelliteRaster(options?: SatelliteRasterOptions): ResolvedSatelliteRaster {
 	return {
 		opacity: options?.opacity ?? 1,
 		hueRotate: options?.hueRotate ?? 0,
