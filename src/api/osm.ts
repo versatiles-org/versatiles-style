@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { OsmOptions, ResolvedLayout, ResolvedOsmOptions } from '../options/index.js';
 import { colorOptionsKeys, resolveOsmOptions } from '../options/index.js';
-import { buildContext, buildStyleLayers, layerGroups, resolveLayerOverrides, SLOT_IDS } from '../shortbread/index.js';
+import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting } from '../features/index.js';
@@ -106,11 +106,11 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 	// 1. Base style (template + URL configuration)
 	const style = buildBase(resolved, osmSource);
 
-	// 2+3+4. Build the decorated layer list (structure + theme colors/fonts) from per-group modules,
-	// applying the `layers:` option as they are created: invisible layers are dropped, opacity is baked in.
+	// 2+3+4. Build the decorated layer list (structure + theme colors/fonts) from per-group modules.
+	// Each module gates its own layers on the resolved `layers:` option (carried in the context):
+	// invisible layers are dropped, opacity is baked in.
 	const ctx = buildContext(resolved);
-	const layerOverrides = resolveLayerOverrides(resolved.layers);
-	style.layers = buildStyleLayers(ctx, layerOverrides) as StyleSpecification['layers'];
+	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
 	// 5. Text and icon size scaling
 	applyScale(style, resolved.layout);
@@ -146,9 +146,6 @@ export const osm = Object.assign(osmFn, {
 
 	/** All color key names accepted by ColorsOptions. */
 	colorKeys: colorOptionsKeys,
-
-	/** Registry mapping each LayerGroupOptions key to its layer IDs. */
-	layerGroups,
 
 	/** Fully resolved defaults (palette: 'colorful', darkMode: false). */
 	get defaults() {

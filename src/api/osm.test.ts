@@ -237,16 +237,6 @@ describe('osm()', () => {
 		expect(osm.colorKeys).toContain('building');
 	});
 
-	it('osm.layerGroups has expected top-level keys', () => {
-		const keys = Object.keys(osm.layerGroups);
-		expect(keys).toContain('land');
-		expect(keys).toContain('water');
-		expect(keys).toContain('roads');
-		expect(keys).toContain('buildings');
-		expect(keys).toContain('labels');
-		expect(keys).toContain('icons');
-	});
-
 	it('osm.slots has all expected slot IDs', () => {
 		expect(osm.slots.belowFills).toBe('slot-below-fills');
 		expect(osm.slots.belowStreets).toBe('slot-below-streets');
