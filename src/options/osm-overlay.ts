@@ -28,7 +28,7 @@ export type ResolvedOsmOverlay = {
 	recolor: ResolvedRecolor;
 };
 
-export function resolveOsmOverlayOptions(content: OsmOverlayOptions): ResolvedOsmOverlay {
+export function resolveOsmOverlay(content: OsmOverlayOptions): ResolvedOsmOverlay {
 	const theme = resolveTheme(content.theme);
 	return {
 		theme,

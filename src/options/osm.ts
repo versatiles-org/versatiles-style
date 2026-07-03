@@ -28,7 +28,7 @@ export type ResolvedOsm = ResolvedOsmOverlay & {
 	sky: ResolvedSky;
 };
 
-export function resolveOsmOptions(options?: OsmOptions): ResolvedOsm {
+export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 	const theme = resolveTheme(options?.theme);
 
 	return {

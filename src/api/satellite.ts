@@ -1,6 +1,6 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
-import { colorOptionsKeys, resolveSatelliteOptions } from '../options/index.js';
+import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
@@ -73,7 +73,7 @@ async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): Promi
 // ── Main satellite() function ─────────────────────────────────────────────────
 
 async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecification> {
-	const resolved = resolveSatelliteOptions(options);
+	const resolved = resolveSatellite(options);
 
 	// Prefetch the TileJSON sources actually used by this style, in parallel.
 	// The OSM source is reused by both the vector source and the overlay layers;
@@ -178,7 +178,7 @@ export const satellite = Object.assign(satelliteFn, {
 
 	/** Fully resolved defaults. */
 	get defaults() {
-		return resolveSatelliteOptions();
+		return resolveSatellite();
 	},
 
 	/** Return language codes available in a given TileJSON. */
@@ -197,5 +197,5 @@ export const satellite = Object.assign(satelliteFn, {
 	slots: SAT_SLOT_IDS,
 
 	/** Resolve raw SatelliteOptions to a fully validated ResolvedSatellite. */
-	resolveOptions: resolveSatelliteOptions,
+	resolveOptions: resolveSatellite,
 } as const);

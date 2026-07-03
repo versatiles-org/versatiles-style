@@ -1,7 +1,7 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { OsmOptions, ResolvedLayout, ResolvedOsm } from '../options/index.js';
-import { colorOptionsKeys, resolveOsmOptions } from '../options/index.js';
+import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
@@ -93,7 +93,7 @@ function getLanguages(tileJSON: TileJSONSpecification): string[] {
 // ── Main osm() function ───────────────────────────────────────────────────────
 
 async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
-	const resolved = resolveOsmOptions(options);
+	const resolved = resolveOsm(options);
 
 	// Prefetch the TileJSON sources actually used by this style, in parallel.
 	// Elevation is only needed (and fetched once, then reused) for terrain/hillshade.
@@ -149,7 +149,7 @@ export const osm = Object.assign(osmFn, {
 
 	/** Fully resolved defaults (palette: 'colorful', darkMode: false). */
 	get defaults() {
-		return resolveOsmOptions();
+		return resolveOsm();
 	},
 
 	/** Return the palette's resolved colors for a given mode. */
@@ -162,5 +162,5 @@ export const osm = Object.assign(osmFn, {
 	slots: SLOT_IDS,
 
 	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */
-	resolveOptions: resolveOsmOptions,
+	resolveOptions: resolveOsm,
 } as const);

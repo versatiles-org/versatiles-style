@@ -49,13 +49,13 @@ export type {
 export { DEFAULT_BASE, resolveBase, resolveOsmUrls, resolveSatelliteUrls } from './urls.js';
 
 export type { OsmOptions, ResolvedOsm } from './osm.js';
-export { resolveOsmOptions } from './osm.js';
+export { resolveOsm } from './osm.js';
 
 export type { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
-export { resolveOsmOverlayOptions } from './osm-overlay.js';
+export { resolveOsmOverlay } from './osm-overlay.js';
 
 export type { SatelliteRasterOptions, ResolvedSatelliteRaster } from './satellite-raster.js';
-export { resolveSatelliteRasterOptions } from './satellite-raster.js';
+export { resolveSatelliteRaster } from './satellite-raster.js';
 
 export type { SatelliteOptions, ResolvedSatellite } from './satellite.js';
-export { resolveSatelliteOptions } from './satellite.js';
+export { resolveSatellite } from './satellite.js';
