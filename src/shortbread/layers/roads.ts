@@ -553,6 +553,11 @@ export function* roads(ctx: LayerContext): Generator<b.TaggedLayer> {
 		const d = def as { id: string; type: string; 'source-layer': string; filter?: FilterSpecification };
 		const style = roadStyle(ctx, d.id);
 		if (!style) continue; // no styling rule → don't emit a bare (black) layer
+		// A bridge is a mid-road section that must join flush to the surface road at both ends, so its
+		// line ends use butt caps (like the old VersaTiles style). Round caps would round off the bridge
+		// end into a bulge that overlaps the road it continues, making one street look like two
+		// overlapping outlined pieces. Surface and tunnel roads keep round caps.
+		if (d.type === 'line' && d.id.startsWith('bridge-')) (style as b.StyleProps).lineCap = 'butt';
 		const make = d.type === 'fill' ? b.fill : b.line;
 		// roadStyle guarantees a color for every non-null result (see its contract).
 		yield make(d.id, {
