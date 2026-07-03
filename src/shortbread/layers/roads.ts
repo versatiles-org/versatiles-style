@@ -178,7 +178,10 @@ const MINOR_WIDTH = {
 	main: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 };
 
-const ARTERIAL = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary']);
+// The arterial classes drawn in the yellow/orange palette. In the old VersaTiles style tertiary is
+// NOT arterial — it's a white minor road — so it is deliberately absent here.
+const YELLOW = new Set(['motorway', 'trunk', 'primary', 'secondary']);
+const isServiceLike = (base: string): boolean => base === 'service' || base === 'busway' || base === 'busguideway';
 
 // Shortbread `streets` schema minzoom per road kind — the zoom at which each kind first appears
 // in the tiles (https://shortbread-tiles.org/schema/1.0/). Roads blend in from 0 width here.
@@ -247,33 +250,50 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean): { size:
 	}
 }
 
-// Fill (main) + casing (:outline) colors per class, matching OSM Bright.
-function classColors(c: LayerContext['c'], base: string): { main: Color; casing: Color } {
+// Surface fill (main) + casing (:outline) colors per class — the old VersaTiles road palette.
+function classColors(c: LayerContext['c'], fg: Color, base: string): { main: Color; casing: Color } {
 	if (base === 'motorway') return { main: c.roadMotorway, casing: c.roadMotorwayBg };
-	if (ARTERIAL.has(base)) return { main: c.roadTrunk, casing: c.roadTrunkBg };
+	if (YELLOW.has(base)) return { main: c.roadTrunk, casing: c.roadTrunkBg };
+	// Pedestrian streets are drawn in the lavender foot color; service/bus in a faint off-white with a
+	// slightly lighter casing. Everything else (tertiary/residential/unclassified/livingstreet/track)
+	// is a plain white minor road with the warm-grey street casing.
+	if (base === 'pedestrian') return { main: c.transitFoot, casing: c.roadStreetBg };
+	if (isServiceLike(base))
+		return { main: c.roadStreet.blend(0.03, fg), casing: c.roadStreetBg.blend(0.3, c.roadStreet) };
 	return { main: c.roadStreet, casing: c.roadStreetBg };
 }
 
 function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps {
-	const { c, bg } = ctx;
+	const { c, fg } = ctx;
 	const isLink = t.endsWith('-link');
 	const base = isLink ? t.slice(0, -5) : t;
-	const { main, casing } = classColors(c, base);
-	const isArterial = ARTERIAL.has(base);
+	const { main, casing } = classColors(c, fg, base);
+	const isYellow = YELLOW.has(base);
 
 	const r: b.StyleProps = { lineJoin, lineCap };
 
 	if (isOutline) {
 		r.color = casing;
-		// OSM Bright dashes tunnel casings for every class EXCEPT trunk and primary.
-		if (prefix === 'tunnel-' && base !== 'trunk' && base !== 'primary') r.lineDasharray = [0.5, 0.25];
+		if (prefix === 'tunnel-') {
+			// Tunnels: yellow casings lighten a touch, service/bus casings stay as-is, the rest grey to
+			// a light neutral.
+			r.color = isYellow
+				? casing.blend(0.05, c.roadStreet)
+				: isServiceLike(base)
+					? casing
+					: c.roadStreet.blend(0.13, fg);
+			// OSM Bright dashes tunnel casings for every class EXCEPT trunk and primary.
+			if (base !== 'trunk' && base !== 'primary') r.lineDasharray = [0.5, 0.25];
+		} else if (prefix === 'bridge-' && !isYellow && !isServiceLike(base)) {
+			// Bridges lighten the white-minor / pedestrian casing to a neutral grey.
+			r.color = c.roadStreet.blend(0.15, fg);
+		}
 	} else {
 		r.color = main;
-		// OSM Bright tunnels render a lighter fill (the arterial classes only; minor stays white).
-		if (prefix === 'tunnel-') {
-			if (base === 'motorway') r.color = main.blend(0.2, bg);
-			else if (isArterial) r.color = main.blend(0.33, bg);
-		}
+		// Tunnels lighten the yellow fills toward white and grey everything else to a faint off-white.
+		if (prefix === 'tunnel-') r.color = isYellow ? main.blend(0.1, c.roadStreet) : c.roadStreet.blend(0.03, fg);
+		// Pedestrian streets are lavender only on the surface; on bridges they render white.
+		else if (prefix === 'bridge-' && base === 'pedestrian') r.color = c.roadStreet;
 	}
 
 	Object.assign(r, streetWidth(base, isLink, isOutline));

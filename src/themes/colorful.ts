@@ -30,7 +30,7 @@ const light: ResolvedColors = {
 	building: '#F2EAE2',
 	buildingBg: '#DFDBD7',
 	roadStreet: '#FFFFFF',
-	roadStreetBg: '#CFCFCF',
+	roadStreetBg: '#CFCDCA',
 	roadMotorway: '#FFCC88',
 	roadMotorwayBg: '#E9AC77',
 	roadTrunk: '#FFEEAA',
