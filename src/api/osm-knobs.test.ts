@@ -123,6 +123,33 @@ describe('osm() knob: layout.scale', () => {
 	});
 });
 
+// ── layout.spacing ─────────────────────────────────────────────────────────────
+
+describe('osm() knob: layout.spacing', () => {
+	it('spacing.icons multiplies symbol-spacing on icon (marking) layers', async () => {
+		const base = layout(await build(), 'marking-oneway')['symbol-spacing'] as number;
+		const spaced = layout(await build({ layout: { spacing: { icons: 2 } } }), 'marking-oneway')['symbol-spacing'];
+		expect(spaced).toBe(base * 2);
+	});
+
+	it('spacing.labels sets symbol-spacing on line-placed label layers (from the 250px default)', async () => {
+		// street name labels are line-placed and carry no explicit symbol-spacing → default 250.
+		const spaced = layout(await build({ layout: { spacing: { labels: 3 } } }), 'label-street-residential');
+		expect(spaced['symbol-spacing']).toBe(250 * 3);
+	});
+
+	it('spacing.labels does not touch icon (marking) spacing', async () => {
+		const s = await build({ layout: { spacing: { labels: 3 } } });
+		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175); // unchanged default
+	});
+
+	it('a scalar spacing applies to both labels and icons', async () => {
+		const s = await build({ layout: { spacing: 1.5 } });
+		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175 * 1.5);
+		expect(layout(s, 'label-street-residential')['symbol-spacing']).toBe(250 * 1.5);
+	});
+});
+
 // ── features.terrain ─────────────────────────────────────────────────────────────
 
 describe('osm() knob: features.terrain', () => {
@@ -427,22 +454,35 @@ describe('osm() static properties', () => {
 	});
 });
 
-// ── known gaps: knobs that resolve but are not (yet) applied to the output ────────
+// ── sky ────────────────────────────────────────────────────────────────────────
 
-describe('osm() knobs that are parsed but not applied to the style', () => {
-	// These options are accepted and fully resolved, but osm() never writes them into the
-	// generated MapLibre style (no `style.sky`, and layout.spacing is ignored by applyScale).
-	// Documented as todos so the gap is visible; see also resolve.test.ts which covers parsing.
-
-	it('sky is resolved from options', () => {
-		expect(osm.resolveOptions({ sky: { skyColor: '#010203' } }).sky.skyColor).toBe('#010203');
+describe('osm() knob: sky', () => {
+	it('emits a style.sky populated from the resolved defaults', async () => {
+		expect((await build()).sky).toStrictEqual({
+			'sky-color': '#87CEEB',
+			'horizon-color': '#ffffff',
+			'sky-horizon-blend': 0.5,
+			'horizon-fog-blend': 0.5,
+			'atmosphere-blend': 0,
+		});
 	});
 
-	it.todo('sky should be emitted as style.sky (currently not applied)');
-
-	it('layout.spacing is resolved from options', () => {
-		expect(osm.resolveOptions({ layout: { spacing: 2 } }).layout.spacing).toStrictEqual({ labels: 2, icons: 2 });
+	it('maps every sky option onto its style-spec property', async () => {
+		const s = await build({
+			sky: {
+				skyColor: '#010203',
+				horizonColor: '#0a0b0c',
+				skyHorizonBlend: 0.1,
+				horizonFogBlend: 0.2,
+				atmosphereBlend: 0.7,
+			},
+		});
+		expect(s.sky).toStrictEqual({
+			'sky-color': '#010203',
+			'horizon-color': '#0a0b0c',
+			'sky-horizon-blend': 0.1,
+			'horizon-fog-blend': 0.2,
+			'atmosphere-blend': 0.7,
+		});
 	});
-
-	it.todo('layout.spacing should scale symbol-spacing (currently not applied)');
 });
