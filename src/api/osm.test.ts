@@ -253,7 +253,7 @@ describe('osm()', () => {
 		expect(osm.slots.belowLabels).toBe('slot-below-labels');
 	});
 
-	it('osm.defaults returns a ResolvedOsmOptions object', () => {
+	it('osm.defaults returns a ResolvedOsm object', () => {
 		const d = osm.defaults;
 		expect(d.theme).toEqual({ palette: 'colorful', darkMode: false });
 		expect(d.features.terrain).toBe(false);

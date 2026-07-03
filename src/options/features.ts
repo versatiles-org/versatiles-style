@@ -1,14 +1,14 @@
 import type { HillshadeOptions, ResolvedHillshade } from './features-hillshade.js';
 import { resolveHillshade } from './features-hillshade.js';
-import { ResolvedTerrain, resolveTerrain, TerrainOption } from './features-terrain.js';
+import { ResolvedTerrain, resolveTerrain, TerrainOptions } from './features-terrain.js';
 
 export type SatelliteFeaturesOptions = {
-	terrain?: TerrainOption;
+	terrain?: TerrainOptions;
 	hillshade?: HillshadeOptions;
 };
 
 export type OsmFeaturesOptions = {
-	terrain?: TerrainOption;
+	terrain?: TerrainOptions;
 	hillshade?: HillshadeOptions;
 	landcover?: boolean;
 	buildings?: 'flat' | 'extruded';

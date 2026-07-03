@@ -74,7 +74,7 @@ export type LayerGroupOptions = {
 	icons?: boolean | number;
 };
 
-export type ResolvedLayerGroupOptions = {
+export type ResolvedLayerGroups = {
 	land: {
 		forest: boolean | number;
 		vegetation: boolean | number;
@@ -165,7 +165,7 @@ function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record
 }
 
 /** Fill in every layer-group option, applying scalar cascade and per-group defaults. */
-export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroupOptions {
+export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroups {
 	const o = opts ?? {};
 
 	// roads is two levels deep (roads → streets → residential/…); a scalar at either level cascades down.

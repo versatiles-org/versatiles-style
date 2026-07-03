@@ -1,11 +1,11 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { SatelliteOptions, ResolvedSatelliteOptions } from '../options/index.js';
+import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
 import { colorOptionsKeys, resolveSatelliteOptions } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
-import { ResolvedOsmOverlayOptions } from '../options/osm-overlay.js';
+import { ResolvedOsmOverlay } from '../options/osm-overlay.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -38,7 +38,7 @@ function buildSatelliteSource(url: string | TileJSONSpecification): Record<strin
 	};
 }
 
-function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<string, number> {
+function buildRasterPaint(raster: ResolvedSatellite['raster']): Record<string, number> {
 	const paint: Record<string, number> = {};
 	if (raster.opacity !== 1) paint['raster-opacity'] = raster.opacity;
 	if (raster.hueRotate !== 0) paint['raster-hue-rotate'] = raster.hueRotate;
@@ -52,9 +52,7 @@ function buildRasterPaint(raster: ResolvedSatelliteOptions['raster']): Record<st
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-async function buildOsmOverlayLayers(
-	overlayResolved: ResolvedOsmOverlayOptions
-): Promise<StyleSpecification['layers']> {
+async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): Promise<StyleSpecification['layers']> {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
 	// (including URL configuration that was inherited from the satellite options).
@@ -198,6 +196,6 @@ export const satellite = Object.assign(satelliteFn, {
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SAT_SLOT_IDS,
 
-	/** Resolve raw SatelliteOptions to a fully validated ResolvedSatelliteOptions. */
+	/** Resolve raw SatelliteOptions to a fully validated ResolvedSatellite. */
 	resolveOptions: resolveSatelliteOptions,
 } as const);

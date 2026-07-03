@@ -1,7 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
-import type { ResolvedLayerGroupOptions } from '../options/index.js';
+import type { ResolvedLayerGroups } from '../options/index.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
@@ -335,7 +335,7 @@ function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
 
 // Read a resolved group option by its dotted path. Unknown/absent paths (e.g. untagged layers)
 // resolve to `true` (visible), so only explicitly-grouped layers can be hidden or dimmed.
-function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): boolean | number {
+function layerOpt(layers: ResolvedLayerGroups, path: string | undefined): boolean | number {
 	if (!path) return true;
 	let node: unknown = layers;
 	for (const segment of path.split('.')) {
@@ -350,7 +350,7 @@ function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): 
  *  fractional, and passed through unchanged when fully visible (`true`). Resolved options are already
  *  normalized (see `resolveLayerGroups`), so a group value is only ever `true`, `false`, or a
  *  fractional opacity in (0, 1). */
-export function* gate(layers: ResolvedLayerGroupOptions, tagged: Iterable<TaggedLayer>): Generator<TaggedLayer> {
+export function* gate(layers: ResolvedLayerGroups, tagged: Iterable<TaggedLayer>): Generator<TaggedLayer> {
 	for (const tl of tagged) {
 		const opt = layerOpt(layers, tl.group);
 		if (opt === false) continue; // invisible → filtered out, not emitted

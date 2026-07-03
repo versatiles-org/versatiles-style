@@ -221,7 +221,7 @@ describe('satellite()', () => {
 		expect(satellite.slots.belowLabels).toBe('slot-below-labels');
 	});
 
-	it('satellite.defaults returns ResolvedSatelliteOptions', () => {
+	it('satellite.defaults returns ResolvedSatellite', () => {
 		const d = satellite.defaults;
 		expect(d.osmOverlay).toBe(false);
 		expect(d.features.terrain).toBe(false);
