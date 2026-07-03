@@ -124,3 +124,44 @@ describe('cachingFetch()', () => {
 		expect(b).toStrictEqual(a);
 	});
 });
+
+describe('cachingFetch() — cache key by request type', () => {
+	let fetchSpy: MockInstance<typeof fetch>;
+
+	beforeEach(() => {
+		clearTileSourceCache();
+		fetchSpy = vi.spyOn(globalThis, 'fetch');
+		fetchSpy.mockClear();
+		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'] }));
+	});
+
+	afterEach(() => {
+		clearTileSourceCache();
+		vi.restoreAllMocks();
+	});
+
+	it('caches a URL-object request by its href', async () => {
+		const url = new URL('https://cdn.example/u.json');
+		await cachingFetch(url);
+		await cachingFetch(new URL('https://cdn.example/u.json'));
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('caches a Request-object GET by its url', async () => {
+		await cachingFetch(new Request('https://cdn.example/r.json'));
+		await cachingFetch(new Request('https://cdn.example/r.json'));
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not cache non-GET requests (falls straight through)', async () => {
+		await cachingFetch('https://cdn.example/p.json', { method: 'POST' });
+		await cachingFetch('https://cdn.example/p.json', { method: 'POST' });
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+	});
+
+	it('does not cache a non-GET Request object', async () => {
+		await cachingFetch(new Request('https://cdn.example/p.json', { method: 'DELETE' }));
+		await cachingFetch(new Request('https://cdn.example/p.json', { method: 'DELETE' }));
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+	});
+});
