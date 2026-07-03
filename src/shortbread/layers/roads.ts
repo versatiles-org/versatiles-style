@@ -171,10 +171,8 @@ function buildStructures(): MaplibreLayerDefinition[] {
 
 type Prefix = '' | 'tunnel-' | 'bridge-';
 
-// OpenMapTiles / OSM Bright interpolate widths exponentially with base 1.2.
-const BASE = 1.2;
-const exp = (stops: Record<number, number>): b.ExpStops => ({ base: BASE, stops });
-
+// The old VersaTiles road widths: hand-tuned linear stops (no exponential base) that stay thin at
+// low/mid zoom and ramp up steeply past z16, reaching their full chunky width at z19–20.
 const MINOR_WIDTH = {
 	outline: { 12: 2, 14: 3, 16: 6, 18: 26, 19: 64, 20: 128 },
 	main: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
@@ -206,53 +204,46 @@ function streetAppear(base: string, isLink: boolean): number {
 	return STREET_APPEAR[base] ?? 12;
 }
 
-// Line width by base street type and prefix — the OSM-Bright-matched curves. Roads draw at their
-// natural width as soon as their data appears and fade in by opacity (see `streetLineStyle`), so no
-// width blend is applied here. OSM Bright widens casings on bridges and thins service/track in
-// tunnels, so widths resolve per (base × prefix × outline/fill).
-function streetWidth(
-	base: string,
-	isLink: boolean,
-	isOutline: boolean,
-	prefix: Prefix
-): { minzoom?: number; size: b.ExpStops } {
+// Line width by base street type — the old VersaTiles curves. These are identical across surface,
+// tunnel and bridge (the old style never varied fill/casing width by prefix; only the bridge deck,
+// handled in `bridgeDeckStyle`, differs), so `prefix` is not consulted here.
+function streetWidth(base: string, isLink: boolean, isOutline: boolean): { size: b.SizeValue } {
 	if (isLink) {
-		const minzoom = base === 'motorway' ? 12 : 13;
+		// tertiary-link follows the minor curve; every other link shares a common (thinner) curve.
+		if (base === 'tertiary') return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main };
 		return isOutline
-			? { minzoom, size: exp({ 12: 1, 13: 3, 14: 4, 20: 15 }) }
-			: { minzoom, size: exp({ 12.5: 0, 13: 1.5, 14: 2.5, 20: 11.5 }) };
+			? { size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 } }
+			: { size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 } };
 	}
-	const bridge = prefix === 'bridge-';
 	switch (base) {
 		case 'motorway':
 			return isOutline
-				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 4: 0, 5: 0.4, 6: 0.6, 7: 1.5, 20: 22 }) }
-				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
+				? { size: { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 } }
+				: { size: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 } };
 		case 'trunk':
 			return isOutline
-				? { size: exp(bridge ? { 5: 0.4, 6: 0.6, 7: 1.5, 20: 26 } : { 5: 0, 6: 0.6, 7: 1.5, 20: 22 }) }
-				: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
+				? { size: { 6: 0, 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
+				: { size: { 6: 0, 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
 		case 'primary':
-			// OSM Bright groups primary BRIDGES/TUNNELS with trunk (a wider/earlier curve) vs the surface.
-			if (prefix !== '')
-				return isOutline
-					? { size: exp({ 5: 0.4, 6: 0.6, 7: 1.5, 20: bridge ? 26 : 22 }) }
-					: { size: exp({ 6.5: 0, 7: 0.5, 20: 18 }) };
 			return isOutline
-				? { minzoom: 5, size: exp({ 7: 0, 8: 0.6, 9: 1.5, 20: 22 }) }
-				: { size: exp({ 8.5: 0, 9: 0.5, 20: 18 }) };
+				? { size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
+				: { size: { 8: 0, 9: 2, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
 		case 'secondary':
-		case 'tertiary':
 			return isOutline
-				? { size: exp(bridge ? { 5: 0.4, 7: 0.6, 8: 1.5, 20: 21 } : { 8: 1.5, 20: 17 }) }
-				: { size: exp({ 6.5: 0, 8: 0.5, 20: 13 }) };
-		default: // minor / service / track / residential / unclassified / living_street / pedestrian / busway
-			// OSM Bright draws service/track thinner inside tunnels.
-			if (prefix === 'tunnel-' && (base === 'service' || base === 'track'))
-				return isOutline ? { size: exp({ 15: 1, 16: 4, 20: 11 }) } : { size: exp({ 15.5: 0, 16: 2, 20: 7.5 }) };
+				? { size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 } }
+				: { size: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 } };
+		case 'service':
+		case 'busway':
+		case 'busguideway':
 			return isOutline
-				? { size: exp(bridge ? { 12: 0.5, 13: 1, 14: 6, 20: 24 } : { 12: 0.5, 13: 1, 14: 4, 20: 15 }) }
-				: { size: exp({ 13: 0, 14: 2.5, 20: 11.5 }) };
+				? { size: { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 } }
+				: { size: { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 } };
+		case 'track':
+			return isOutline
+				? { size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 } }
+				: { size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 } };
+		default: // tertiary / residential / unclassified / livingstreet / pedestrian — the minor curve
+			return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main };
 	}
 }
 
@@ -285,7 +276,7 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 		}
 	}
 
-	Object.assign(r, streetWidth(base, isLink, isOutline, prefix));
+	Object.assign(r, streetWidth(base, isLink, isOutline));
 
 	// Every road type fades in by opacity (0 → 1) over its Shortbread appearance zoom z → z+1, so it
 	// materializes smoothly instead of popping. Applies to both the casing (:outline) and the fill.
