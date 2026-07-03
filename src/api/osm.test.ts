@@ -149,10 +149,19 @@ describe('osm()', () => {
 		expect(layerById(style, 'label-street-residential')).toBeDefined();
 	});
 
-	it('sets opacity on a layer group', async () => {
+	it('sets opacity on a layer group, merging with the layer’s existing fade', async () => {
 		const style = await osm({ layers: { buildings: 0.5 } });
 		const buildingLayer = layerById(style, 'building');
-		expect((buildingLayer?.paint as Record<string, unknown>)?.['fill-opacity']).toBe(0.5);
+		// `building` fades in over z14→15 ({14:0, 15:1}); dimming by 0.5 scales the target to 0.5.
+		expect((buildingLayer?.paint as Record<string, unknown>)?.['fill-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			14,
+			0,
+			15,
+			0.5,
+		]);
 	});
 
 	it('icons alias removes pois and transit stops', async () => {

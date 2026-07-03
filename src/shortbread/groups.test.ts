@@ -58,10 +58,22 @@ describe('layer visibility gating', () => {
 			expect(ids.has(id)).toBe(false);
 	});
 
-	it('bakes a fractional opacity into a group’s layers', async () => {
-		const style = await osm({ layers: { buildings: 0.5 } });
-		expect(paintOf(style, 'building')['fill-opacity']).toBe(0.5);
-		expect(paintOf(style, 'building:outline')['fill-opacity']).toBe(0.5);
+	it('applies a fractional opacity as a constant to a layer with no existing fade', async () => {
+		// water-area (group water.lakes) is drawn at full opacity with no fade → dimming is a constant.
+		const style = await osm({ layers: { water: { lakes: 0.4 } } });
+		expect(paintOf(style, 'water-area')['fill-opacity']).toBe(0.4);
+	});
+
+	it('merges a fractional opacity into an existing fade instead of overwriting it', async () => {
+		// `building` fades in over z14→15 ({14:0, 15:1}); dimming by 0.5 scales the target to 0.5.
+		const op = paintOf(await osm({ layers: { buildings: 0.5 } }), 'building')['fill-opacity'];
+		expect(Array.isArray(op)).toBe(true);
+		expect(op).toStrictEqual(['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.5]);
+	});
+
+	it('drops a layer set to 0 rather than emitting it at zero opacity', async () => {
+		const ids = await idsFor({ buildings: 0 });
+		expect([...ids].some((id) => id.startsWith('building'))).toBe(false);
 	});
 
 	it('keeps layers fully visible when a group is true or 1', async () => {
