@@ -506,6 +506,7 @@ function roadGroup(id: string): string | undefined {
 	if (s.startsWith('transport-ferry')) return 'transit.ferries';
 	if (s.startsWith('transport-')) return 'transit.rail';
 	if (id === 'bridge') return 'roads.motorways';
+	if (s.startsWith('way-steps')) return 'roads.steps';
 	if (s.startsWith('way-')) return 'roads.paths';
 	if (s.startsWith('street-')) {
 		let t = s.slice('street-'.length).replace(/(:outline|:bridge)$/, '');
@@ -544,11 +545,14 @@ export function* roads(ctx: LayerContext): Generator<b.TaggedLayer> {
 		if (!style) continue; // no styling rule → don't emit a bare (black) layer
 		const make = d.type === 'fill' ? b.fill : b.line;
 		// roadStyle guarantees a color for every non-null result (see its contract).
-		yield make(d.id, {
-			sourceLayer: d['source-layer'],
-			filter: d.filter,
-			...(style as b.ColoredStyleProps),
-			group: roadGroup(d.id),
-		});
+		yield* b.gate(
+			ctx.layers,
+			make(d.id, {
+				sourceLayer: d['source-layer'],
+				filter: d.filter,
+				...(style as b.ColoredStyleProps),
+				group: roadGroup(d.id),
+			})
+		);
 	}
 }

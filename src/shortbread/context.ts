@@ -1,7 +1,12 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import { colorOptionsKeys } from '../options/index.js';
-import type { ColorsOptions, ResolvedOsmOptions, ResolvedOsmFeatures } from '../options/index.js';
+import type {
+	ColorsOptions,
+	ResolvedOsmOptions,
+	ResolvedOsmFeatures,
+	ResolvedLayerGroupOptions,
+} from '../options/index.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;
 
@@ -19,6 +24,8 @@ export type LayerContext = {
 	/** Resolved font names. */
 	fonts: { normal: string; bold: string };
 	features: ResolvedOsmFeatures;
+	/** Fully-resolved per-group visibility/opacity. Each layer gates itself on its own group. */
+	layers: ResolvedLayerGroupOptions;
 	/** Language-aware `text-field` expression for label/symbol layers. */
 	nameField: DataDrivenPropertyValueSpecification<FormattedSpecification>;
 };
@@ -49,6 +56,7 @@ export function buildContext(resolved: ResolvedOsmOptions): LayerContext {
 		bg,
 		fg,
 		features: resolved.features,
+		layers: resolved.layers,
 		fonts: { normal: resolved.text.fontNormal, bold: resolved.text.fontBold },
 		nameField: buildNameField(resolved.text.language, resolved.text.languageStrict),
 	};

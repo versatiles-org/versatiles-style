@@ -1,6 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
+import type { ResolvedLayerGroupOptions } from '../options/index.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
@@ -288,3 +289,57 @@ export const fillExtrusion = (id: string, opts: ColoredDataBuildOpts): TaggedLay
 export const slot = (id: string): TaggedLayer => ({
 	layer: { id, type: 'background', paint: { 'background-opacity': 0 } } as MaplibreLayer,
 });
+
+// ── Group visibility gating ─────────────────────────────────────────────────────
+//
+// Each layer names a semantic group path (e.g. 'roads.streets.residential'); `gate` resolves that
+// path against the fully-resolved `layers:` options and either drops the layer (hidden), bakes in a
+// constant opacity, or passes it through. This replaces the old post-hoc override registry — every
+// group generator gates its own layers as it yields them.
+
+// Bake a constant opacity into a layer's type-appropriate opacity paint property (overwriting any
+// zoom-stops fade), so a fractional `layers:` value dims the layer.
+function setLayerOpacity(layer: MaplibreLayer, opacity: number): void {
+	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+	switch (layer.type) {
+		case 'fill':
+			paint['fill-opacity'] = opacity;
+			break;
+		case 'line':
+			paint['line-opacity'] = opacity;
+			break;
+		case 'symbol':
+			paint['text-opacity'] = opacity;
+			paint['icon-opacity'] = opacity;
+			break;
+		case 'background':
+			paint['background-opacity'] = opacity;
+			break;
+		case 'fill-extrusion':
+			paint['fill-extrusion-opacity'] = opacity;
+			break;
+	}
+}
+
+// Read a resolved group option by its dotted path. Unknown/absent paths (e.g. untagged layers)
+// resolve to `true` (visible), so only explicitly-grouped layers can be hidden or dimmed.
+function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): boolean | number {
+	if (!path) return true;
+	let node: unknown = layers;
+	for (const segment of path.split('.')) {
+		if (node && typeof node === 'object') node = (node as Record<string, unknown>)[segment];
+		else return true;
+	}
+	return typeof node === 'boolean' || typeof node === 'number' ? node : true;
+}
+
+/** Emit each tagged layer gated on its group's resolved option: dropped when hidden (`false`/`0`),
+ *  opacity baked in when fractional, passed through unchanged when fully visible (`true`/`1`). */
+export function* gate(layers: ResolvedLayerGroupOptions, ...tagged: TaggedLayer[]): Generator<TaggedLayer> {
+	for (const tl of tagged) {
+		const opt = layerOpt(layers, tl.group);
+		if (opt === false || opt === 0) continue;
+		if (typeof opt === 'number' && opt !== 1) setLayerOpacity(tl.layer, opt);
+		yield tl;
+	}
+}
