@@ -38,6 +38,7 @@ export type LayerGroupOptions = {
 							bus?: boolean | number;
 					  };
 				paths?: boolean | number;
+				steps?: boolean | number;
 		  };
 	transit?:
 		| boolean
@@ -72,3 +73,121 @@ export type LayerGroupOptions = {
 		  };
 	icons?: boolean | number;
 };
+
+export type ResolvedLayerGroupOptions = {
+	land: {
+		forest: boolean | number;
+		vegetation: boolean | number;
+		rock: boolean | number;
+		wetland: boolean | number;
+		sand: boolean | number;
+		glacier: boolean | number;
+		agriculture: boolean | number;
+		urban: boolean | number;
+	};
+	water: {
+		ocean: boolean | number;
+		rivers: boolean | number;
+		lakes: boolean | number;
+		piers: boolean | number;
+	};
+	roads: {
+		motorways: boolean | number;
+		highways: boolean | number;
+		streets: {
+			residential: boolean | number;
+			service: boolean | number;
+			pedestrian: boolean | number;
+			track: boolean | number;
+			bus: boolean | number;
+		};
+		paths: boolean | number;
+		steps: boolean | number;
+	};
+	transit: {
+		rail: boolean | number;
+		aerialways: boolean | number;
+		ferries: boolean | number;
+		stops: boolean | number;
+	};
+	buildings: boolean | number;
+	sites: boolean | number;
+	airport: boolean | number;
+	pois: boolean | number;
+	boundaries: {
+		country: boolean | number;
+		state: boolean | number;
+	};
+	markings: boolean | number;
+	labels: {
+		places: boolean | number;
+		streets: boolean | number;
+		states: boolean | number;
+		countries: boolean | number;
+		addresses: boolean | number;
+	};
+	icons: boolean | number;
+};
+
+// ── Resolution ─────────────────────────────────────────────────────────────────
+//
+// A group option is either a scalar (`boolean | number`) that cascades to every child, or an object
+// that sets children individually. `resolveLayerGroups` fills in every field: a scalar set on an
+// ancestor is inherited by any child not set explicitly, otherwise the child falls back to its own
+// default. Every group defaults to visible (`true`) except `roads.steps`, which is hidden (`false`).
+
+type Scalar = boolean | number;
+
+const scalarOf = (v: unknown): Scalar | undefined => (typeof v === 'boolean' || typeof v === 'number' ? v : undefined);
+
+// Resolve a leaf: an explicit value wins, else a scalar inherited from an ancestor, else the default.
+const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar): Scalar => scalarOf(opt) ?? inherited ?? def;
+
+// Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
+// every child; an object `opt` sets them individually (unset children fall back to `true`).
+function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record<K, Scalar> {
+	const inherited = scalarOf(opt);
+	const obj = opt && typeof opt === 'object' ? (opt as Partial<Record<K, Scalar>>) : undefined;
+	const out = {} as Record<K, Scalar>;
+	for (const k of keys) out[k] = leaf(obj?.[k], inherited, true);
+	return out;
+}
+
+/** Fill in every layer-group option, applying scalar cascade and per-group defaults. */
+export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroupOptions {
+	const o = opts ?? {};
+
+	// roads is two levels deep (roads → streets → residential/…); a scalar at either level cascades down.
+	const roadsInherited = scalarOf(o.roads);
+	const roads = o.roads && typeof o.roads === 'object' ? o.roads : undefined;
+	const streetsInherited = scalarOf(roads?.streets) ?? roadsInherited;
+	const streets = roads?.streets && typeof roads.streets === 'object' ? roads.streets : undefined;
+
+	return {
+		land: resolveFlat(o.land, ['forest', 'vegetation', 'rock', 'wetland', 'sand', 'glacier', 'agriculture', 'urban']),
+		water: resolveFlat(o.water, ['ocean', 'rivers', 'lakes', 'piers']),
+		roads: {
+			motorways: leaf(roads?.motorways, roadsInherited, true),
+			highways: leaf(roads?.highways, roadsInherited, true),
+			streets: {
+				residential: leaf(streets?.residential, streetsInherited, true),
+				service: leaf(streets?.service, streetsInherited, true),
+				pedestrian: leaf(streets?.pedestrian, streetsInherited, true),
+				track: leaf(streets?.track, streetsInherited, true),
+				bus: leaf(streets?.bus, streetsInherited, true),
+			},
+			paths: leaf(roads?.paths, roadsInherited, true),
+			// Steps are hidden unless explicitly enabled (or re-enabled by a scalar set on `roads`).
+			steps: leaf(roads?.steps, roadsInherited, false),
+		},
+		transit: resolveFlat(o.transit, ['rail', 'aerialways', 'ferries', 'stops']),
+		buildings: leaf(o.buildings, undefined, true),
+		sites: leaf(o.sites, undefined, true),
+		airport: leaf(o.airport, undefined, true),
+		pois: leaf(o.pois, undefined, true),
+		boundaries: resolveFlat(o.boundaries, ['country', 'state']),
+		markings: leaf(o.markings, undefined, true),
+		labels: resolveFlat(o.labels, ['places', 'streets', 'states', 'countries', 'addresses']),
+		icons: leaf(o.icons, undefined, true),
+	};
+}
