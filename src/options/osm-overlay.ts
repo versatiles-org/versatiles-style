@@ -12,11 +12,11 @@ import { resolveLayerGroups, type LayerGroupOptions, type ResolvedLayerGroupOpti
 
 export type OsmOverlayOptions = {
 	theme?:
-	| Palette
-	| {
-		darkMode?: boolean | 'auto';
-		palette?: Palette;
-	};
+		| Palette
+		| {
+				darkMode?: boolean | 'auto';
+				palette?: Palette;
+		  };
 	layers?: LayerGroupOptions;
 	text?: TextOptions;
 	layout?: LayoutOptions;

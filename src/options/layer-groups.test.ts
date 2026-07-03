@@ -180,6 +180,32 @@ describe('resolveLayerGroups', () => {
 		expect(r.icons).toBe(true);
 	});
 
+	// ── icons alias ────────────────────────────────────────────────────────────────
+
+	it('applies the icons alias to pois, markings and transit.stops', () => {
+		const r = resolveLayerGroups({ icons: false });
+		expect(r.pois).toBe(false);
+		expect(r.markings).toBe(false);
+		expect(r.transit.stops).toBe(false);
+		expect(r.icons).toBe(false);
+		// non-icon groups are unaffected
+		expect(r.transit.rail).toBe(true);
+		expect(r.buildings).toBe(true);
+	});
+
+	it('lets a specific icon group override the icons alias', () => {
+		const r = resolveLayerGroups({ icons: false, pois: true, transit: { stops: 0.5 } });
+		expect(r.pois).toBe(true);
+		expect(r.transit.stops).toBe(0.5);
+		expect(r.markings).toBe(false); // still driven by the alias
+	});
+
+	it('lets a transit scalar override the icons alias for stops', () => {
+		const r = resolveLayerGroups({ icons: false, transit: true });
+		expect(r.transit.stops).toBe(true);
+		expect(r.pois).toBe(false); // pois still hidden by the alias
+	});
+
 	// ── falsy-but-meaningful values ────────────────────────────────────────────────
 
 	it('preserves 0 (full transparency) rather than falling back to a default', () => {
