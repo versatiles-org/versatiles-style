@@ -5,7 +5,7 @@ import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
-import { addTerrain, addHillshade, addLandcover, configure3DLighting } from '../features/index.js';
+import { addTerrain, addHillshade, addLandcover, configure3DLighting, applySky } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
@@ -39,39 +39,54 @@ function buildBase(resolved: ResolvedOsm, osmSource: TileJSONSpecification): Sty
 	return style;
 }
 
-// ── Apply text/icon scale ─────────────────────────────────────────────────────
+// ── Apply text/icon scale + spacing ───────────────────────────────────────────
 
-function applyScale(style: StyleSpecification, layout: ResolvedLayout) {
+// Multiply a size value (number or ['interpolate', …, z, v, …] ramp) in place by `factor`.
+function scaleValue(value: unknown, factor: number): unknown {
+	if (typeof value === 'number') return value * factor;
+	if (Array.isArray(value) && value[0] === 'interpolate') {
+		for (let i = 4; i < value.length; i += 2) {
+			if (typeof value[i] === 'number') (value as unknown[])[i] = (value[i] as number) * factor;
+		}
+		return value;
+	}
+	return value;
+}
+
+// MapLibre's default symbol-spacing (px) for line-placed symbols.
+const DEFAULT_SYMBOL_SPACING = 250;
+
+function applyLayout(style: StyleSpecification, layout: ResolvedLayout) {
 	const labelScale = layout.scale.labels;
 	const iconScale = layout.scale.icons;
-	if (labelScale === 1 && iconScale === 1) return;
+	const labelSpacing = layout.spacing.labels;
+	const iconSpacing = layout.spacing.icons;
+	if (labelScale === 1 && iconScale === 1 && labelSpacing === 1 && iconSpacing === 1) return;
 
 	for (const layer of style.layers) {
 		if (layer.type !== 'symbol') continue;
 		const lyt = layer.layout as Record<string, unknown> | undefined;
 		if (!lyt) continue;
 
-		if (labelScale !== 1) {
-			const size = lyt['text-size'] as unknown;
-			if (typeof size === 'number') {
-				lyt['text-size'] = size * labelScale;
-			} else if (Array.isArray(size) && size[0] === 'interpolate') {
-				for (let i = 4; i < size.length; i += 2) {
-					if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * labelScale;
-				}
-			}
+		// A layer that renders text is a "label"; otherwise it is an "icon" (marking / POI glyph).
+		const isLabel = lyt['text-field'] != null;
+
+		// ── scale ──
+		if (labelScale !== 1 && lyt['text-size'] != null) {
+			lyt['text-size'] = scaleValue(lyt['text-size'], labelScale);
+		}
+		if (iconScale !== 1 && lyt['icon-image'] != null) {
+			lyt['icon-size'] = lyt['icon-size'] == null ? iconScale : scaleValue(lyt['icon-size'], iconScale);
 		}
 
-		if (iconScale !== 1 && lyt['icon-image'] != null) {
-			const size = lyt['icon-size'] as unknown;
-			if (size == null) {
-				lyt['icon-size'] = iconScale;
-			} else if (typeof size === 'number') {
-				lyt['icon-size'] = size * iconScale;
-			} else if (Array.isArray(size) && size[0] === 'interpolate') {
-				for (let i = 4; i < size.length; i += 2) {
-					if (typeof size[i] === 'number') (size as unknown[])[i] = (size[i] as number) * iconScale;
-				}
+		// ── spacing ── (only affects line-placed symbols; labels use the label factor, icons the icon one)
+		const spacing = isLabel ? labelSpacing : iconSpacing;
+		if (spacing !== 1) {
+			const current = lyt['symbol-spacing'];
+			if (current != null) {
+				lyt['symbol-spacing'] = scaleValue(current, spacing);
+			} else if (lyt['symbol-placement'] === 'line') {
+				lyt['symbol-spacing'] = DEFAULT_SYMBOL_SPACING * spacing;
 			}
 		}
 	}
@@ -112,8 +127,8 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 	const ctx = buildContext(resolved);
 	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
-	// 5. Text and icon size scaling
-	applyScale(style, resolved.layout);
+	// 5. Text/icon size scaling + symbol spacing
+	applyLayout(style, resolved.layout);
 
 	// 6. Optional features
 	if (resolved.features.terrain !== false) {
