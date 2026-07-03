@@ -33,7 +33,7 @@ export { resolveSun } from './sun.js';
 export type { SkyOptions, ResolvedSky } from './sky.js';
 export { resolveSky } from './sky.js';
 
-export type { SpriteEntry, SpriteInput } from './sprite.js';
+export type { SpriteEntries } from './sprite.js';
 export { resolveSprite } from './sprite.js';
 
 export type { LayerGroupOptions } from './layer-groups.js';

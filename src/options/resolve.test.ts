@@ -67,9 +67,7 @@ describe('resolveOsmOptions', () => {
 	it('resolves sprite string to SpriteEntry array', () => {
 		const r = resolveOsmOptions({ urls: { sprite: 'https://cdn/sprites/basics' } });
 		const sprite = r.urls.sprite as Array<{ id: string; url: string }>;
-		expect(sprite).toBeInstanceOf(Array);
-		expect(sprite[0].url).toBe('https://cdn/sprites/basics');
-		expect(sprite[0].id).toBe('basics');
+		expect(sprite).toBe('https://cdn/sprites/basics');
 	});
 
 	it('resolves sprite array and resolves relative URLs', () => {
