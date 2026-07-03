@@ -211,12 +211,21 @@ describe('satellite() static properties', () => {
 	});
 });
 
-// ── known gap: sky resolves but is not applied ───────────────────────────────────
+// ── sky ──────────────────────────────────────────────────────────────────────────
 
-describe('satellite() knobs that are parsed but not applied', () => {
-	it('sky is resolved from options', () => {
-		expect(satellite.resolveOptions({ sky: { skyColor: '#010203' } }).sky.skyColor).toBe('#010203');
+describe('satellite() knob: sky', () => {
+	it('emits a style.sky populated from the resolved defaults', async () => {
+		expect((await build()).sky).toStrictEqual({
+			'sky-color': '#87CEEB',
+			'horizon-color': '#ffffff',
+			'sky-horizon-blend': 0.5,
+			'horizon-fog-blend': 0.5,
+			'atmosphere-blend': 0,
+		});
 	});
 
-	it.todo('sky should be emitted as style.sky (currently not applied)');
+	it('maps sky options onto style-spec properties', async () => {
+		const s = await build({ sky: { skyColor: '#010203', atmosphereBlend: 0.7 } });
+		expect(s.sky).toMatchObject({ 'sky-color': '#010203', 'atmosphere-blend': 0.7 });
+	});
 });
