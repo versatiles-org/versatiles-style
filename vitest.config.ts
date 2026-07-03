@@ -6,6 +6,14 @@ export default defineConfig({
 			provider: 'v8',
 			reporter: ['lcov', 'text'],
 			exclude: ['node_modules/**', 'dist/**', 'release/**', '**/*.test.ts', '**/*.config.*'],
+			// Regression ratchet: set a few points below the current numbers so an accidental
+			// coverage drop fails `npm run test-coverage` without being brittle. Raise over time.
+			thresholds: {
+				statements: 94,
+				branches: 90,
+				functions: 96,
+				lines: 95,
+			},
 		},
 		projects: [
 			{
