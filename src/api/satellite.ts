@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
-import { addTerrain, addHillshade, configure3DLighting } from '../features/index.js';
+import { addTerrain, addHillshade, configure3DLighting, applySky } from '../features/index.js';
 import { loadTileSource } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 import { ResolvedOsmOverlay } from '../options/osm-overlay.js';
@@ -145,6 +145,9 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 		addHillshade(style, resolved.features.hillshade, resolved.sun, elevationSource!);
 		configure3DLighting(style, resolved.sun);
 	}
+
+	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
+	applySky(style, resolved.sky);
 
 	return style;
 }

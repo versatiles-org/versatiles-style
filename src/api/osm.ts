@@ -130,6 +130,9 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 		configure3DLighting(style, resolved.sun);
 	}
 
+	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
+	applySky(style, resolved.sky);
+
 	// 7. Post-process: recolor
 	if (resolved.recolor) {
 		applyRecolor(style, resolved.recolor);
