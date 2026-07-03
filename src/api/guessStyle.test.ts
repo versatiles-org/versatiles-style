@@ -212,4 +212,25 @@ describe('guessStyle() — never throws', () => {
 		});
 		expect(style.version).toBe(8);
 	});
+
+	it('falls back to a blank style when the fetched document is not a valid TileJSON', async () => {
+		// loadTileSource returns the JSON as-is; isTileJSONSpecification then throws (no tiles[]),
+		// which guessStyle catches → blank style instead of propagating.
+		const style = await guessStyle('https://tiles.example.com/tiles.json', {
+			fetch: vi.fn(async () => jsonResponse({ not: 'a tilejson' })),
+		});
+		expect(style).toStrictEqual({ version: 8, sources: {}, layers: [] });
+	});
+});
+
+// ── Input validation (throws BEFORE the try/catch fallback) ─────────────────────
+
+describe('guessStyle() — url validation', () => {
+	it('rejects an empty string url', async () => {
+		await expect(guessStyle('')).rejects.toThrow(/must be a non-empty string/);
+	});
+
+	it('rejects a non-string url', async () => {
+		await expect(guessStyle(undefined as unknown as string)).rejects.toThrow(/must be a non-empty string/);
+	});
 });

@@ -21,4 +21,14 @@ describe('exports', () => {
 		expect(typeof lib.Color.HSV.randomColor).toBe('function');
 		expect(typeof lib.Color.RGB).toBe('function');
 	});
+
+	it('should export the TileJSON type guards', () => {
+		expect(typeof lib.isTileJSONSpecification).toBe('function');
+		expect(typeof lib.isRasterTileJSONSpecification).toBe('function');
+	});
+
+	it('the exported guards actually work', () => {
+		expect(lib.isTileJSONSpecification({ tiles: ['https://t/{z}/{x}/{y}'] })).toBe(true);
+		expect(lib.isRasterTileJSONSpecification({ tiles: ['https://t/{z}/{x}/{y}'] })).toBe(true);
+	});
 });

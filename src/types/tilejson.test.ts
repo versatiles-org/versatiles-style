@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isTileJSONSpecification } from './tilejson.js';
+import { isRasterTileJSONSpecification, isTileJSONSpecification } from './tilejson.js';
 
 describe('isTileJSONSpecification', () => {
 	const validVectorSpec = {
@@ -68,6 +68,14 @@ describe('isTileJSONSpecification', () => {
 		expect(isTileJSONSpecification({ ...validVectorSpec, center: [0, 0, 7] })).toBe(true);
 	});
 
+	it('requires tilejson "3.0.0" when a data property is present', () => {
+		expect(() => isTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '2.0.0' })).toThrow(
+			'spec.tilejson must be "3.0.0"'
+		);
+		// data present + correct version → passes the version gate
+		expect(isTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '3.0.0' })).toBe(true);
+	});
+
 	describe('real-world TileJSONs from tiles.versatiles.org', () => {
 		const fixtureDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/tilejson');
 		const fixtures = readdirSync(fixtureDir).filter((f) => f.endsWith('.json'));
@@ -111,5 +119,31 @@ describe('isTileJSONSpecification', () => {
 				}
 			});
 		});
+	});
+});
+
+describe('isRasterTileJSONSpecification', () => {
+	it('returns true for a valid raster spec (no vector_layers)', () => {
+		expect(isRasterTileJSONSpecification({ tilejson: '3.0.0', tiles: ['http://e/{z}/{x}/{y}.png'] })).toBe(true);
+	});
+
+	it('returns false when vector_layers are present', () => {
+		expect(
+			isRasterTileJSONSpecification({
+				tilejson: '3.0.0',
+				tiles: ['http://e/{z}/{x}/{y}.pbf'],
+				vector_layers: [{ id: 'l', fields: {} }],
+			})
+		).toBe(false);
+	});
+
+	it('treats a null vector_layers as raster', () => {
+		expect(
+			isRasterTileJSONSpecification({ tilejson: '3.0.0', tiles: ['http://e/{z}/{x}/{y}'], vector_layers: null })
+		).toBe(true);
+	});
+
+	it('propagates validation errors from isTileJSONSpecification', () => {
+		expect(() => isRasterTileJSONSpecification({ tiles: [] })).toThrow('spec.tiles must be a non-empty array');
 	});
 });
