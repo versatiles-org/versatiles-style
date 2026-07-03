@@ -356,9 +356,7 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 // Returns null for variants that should not be drawn at all (e.g. ferry casing,
 // service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
 function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
-	const { c, fg } = ctx;
-	// railways interpolate with base 1.4 in OSM Bright
-	const w14 = (stops: Record<number, number>): b.ExpStops => ({ base: 1.4, stops });
+	const { c, fg, bg } = ctx;
 
 	if (t === 'ferry')
 		return isOutline
@@ -379,22 +377,27 @@ function transportStyle(ctx: LayerContext, _prefix: Prefix, t: string, isOutline
 
 	let r: b.StyleProps | null;
 	if (rt === 'rail' || rt === 'lightrail') {
-		// OSM Bright railways: a thin solid base line (:outline) with a wider dashed "hatching"
-		// line on top (the fill), producing the cross-tie look.
+		// Old VersaTiles railway: a WIDE solid base line (:outline) with a slightly narrower, LIGHTER
+		// `[2, 2]`-dashed "tie" line (fill) on top. The darker base shows through the gaps, giving the
+		// alternating darker/lighter tie bands (rather than OSM Bright's thin cross-ticks).
 		if (isService)
 			r = isOutline
-				? { color: c.transitRail, size: w14({ 14: 0.4, 20: 1 }) }
-				: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
+				? { color: c.transitRail, size: { 14: 0, 15: 1, 16: 1, 20: 14 } }
+				: { color: c.transitRail.blend(0.28, bg), lineDasharray: [2, 2], size: { 15: 0, 16: 1, 20: 10 } };
 		else
 			r = isOutline
-				? { color: c.transitRail, size: w14({ 14: 0.4, 15: 0.75, 20: 2 }) }
-				: { color: c.transitRail, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 3, 20: 8 }) };
+				? { color: c.transitRail, size: { 8: 1, 13: 1, 15: 1, 20: 14 } }
+				: { color: c.transitRail.blend(0.28, bg), lineDasharray: [2, 2], size: { 14: 0, 15: 1, 20: 10 } };
 	} else if (rt === 'subway') {
 		if (isService) return null;
-		// transit/subway: same hatching technique, in a slightly translucent grey.
+		// Subway: same two-tone tie technique in its own (bluer) grey.
 		r = isOutline
-			? { color: c.transitSubway, size: w14({ 14: 0.4, 20: 1 }) }
-			: { color: c.transitSubway, lineDasharray: [0.2, 8], size: w14({ 14.5: 0, 15: 2, 20: 6 }) };
+			? { color: c.transitSubway, size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 } }
+			: {
+					color: c.transitSubway.blend(0.27, bg),
+					lineDasharray: [2, 2],
+					size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
+				};
 	} else {
 		// tram / narrowgauge / funicular / monorail
 		if (isService) return null;
