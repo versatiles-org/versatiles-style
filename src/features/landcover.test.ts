@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '../types/index.js';
 import { addLandcover } from './landcover.js';
-import { osm } from '../api/osm.js';
+import { osm } from '../api/index.js';
 
 // Build a fill layer with an optional fill-opacity (number or interpolate expression).
 function fill(id: string, opacity?: unknown): Record<string, unknown> {

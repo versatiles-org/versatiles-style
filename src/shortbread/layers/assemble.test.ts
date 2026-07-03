@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FillLayerSpecification, SymbolLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { osm } from '../../api/osm.js';
+import { osm } from '../../api/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_LABELS, SLOT_BELOW_STREETS, SLOT_BELOW_SYMBOLS } from './index.js';
 
 // End-to-end checks on the assembled layer list (structure, language handling, slot anchors,
