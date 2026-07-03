@@ -293,32 +293,43 @@ export const slot = (id: string): TaggedLayer => ({
 // ── Group visibility gating ─────────────────────────────────────────────────────
 //
 // Each layer names a semantic group path (e.g. 'roads.streets.residential'); `gate` resolves that
-// path against the fully-resolved `layers:` options and either drops the layer (hidden), bakes in a
-// constant opacity, or passes it through. This replaces the old post-hoc override registry — every
-// group generator gates its own layers as it yields them.
+// path against the fully-resolved `layers:` options and either drops the layer (hidden), dims it by
+// merging a fractional opacity into its existing paint, or passes it through. This replaces the old
+// post-hoc override registry — every group generator gates its own layers as it yields them.
 
-// Bake a constant opacity into a layer's type-appropriate opacity paint property (overwriting any
-// zoom-stops fade), so a fractional `layers:` value dims the layer.
-function setLayerOpacity(layer: MaplibreLayer, opacity: number): void {
-	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
-	switch (layer.type) {
-		case 'fill':
-			paint['fill-opacity'] = opacity;
-			break;
-		case 'line':
-			paint['line-opacity'] = opacity;
-			break;
-		case 'symbol':
-			paint['text-opacity'] = opacity;
-			paint['icon-opacity'] = opacity;
-			break;
-		case 'background':
-			paint['background-opacity'] = opacity;
-			break;
-		case 'fill-extrusion':
-			paint['fill-extrusion-opacity'] = opacity;
-			break;
+// The opacity paint property (or properties, for symbols) of each layer type.
+const OPACITY_PROPS: Partial<Record<MaplibreLayer['type'], string[]>> = {
+	fill: ['fill-opacity'],
+	line: ['line-opacity'],
+	symbol: ['text-opacity', 'icon-opacity'],
+	background: ['background-opacity'],
+	'fill-extrusion': ['fill-extrusion-opacity'],
+};
+
+// Scale an existing opacity value by `factor`, preserving any zoom-stops fade: a number is
+// multiplied directly, an `interpolate` expression has each of its output values scaled, and an
+// absent value is treated as fully opaque (→ `factor`). Any other expression is wrapped in a `*`.
+function scaleOpacity(value: unknown, factor: number): unknown {
+	if (value == null) return factor;
+	if (typeof value === 'number') return value * factor;
+	// ['interpolate', <interp>, ['zoom'], z0, v0, z1, v1, …] — output values live at 4, 6, 8, …
+	if (Array.isArray(value) && value[0] === 'interpolate') {
+		const scaled = value.slice();
+		for (let i = 4; i < scaled.length; i += 2) {
+			if (typeof scaled[i] === 'number') scaled[i] = (scaled[i] as number) * factor;
+		}
+		return scaled;
 	}
+	return ['*', value, factor];
+}
+
+// Dim a layer by `factor`, merging with its existing opacity rather than overwriting it — so a fade
+// `{14:0, 15:0.8}` scaled by 0.5 becomes `{14:0, 15:0.4}`, and a plain layer becomes a constant.
+function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
+	const props = OPACITY_PROPS[layer.type];
+	if (!props) return;
+	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+	for (const prop of props) paint[prop] = scaleOpacity(paint[prop], factor);
 }
 
 // Read a resolved group option by its dotted path. Unknown/absent paths (e.g. untagged layers)
@@ -333,13 +344,14 @@ function layerOpt(layers: ResolvedLayerGroupOptions, path: string | undefined): 
 	return typeof node === 'boolean' || typeof node === 'number' ? node : true;
 }
 
-/** Emit each tagged layer gated on its group's resolved option: dropped when hidden (`false`/`0`),
- *  opacity baked in when fractional, passed through unchanged when fully visible (`true`/`1`). */
+/** Emit each tagged layer gated on its group's resolved option: dropped entirely when hidden
+ *  (`false`/`0`) rather than emitted at zero opacity, dimmed (opacity scaled) when fractional, and
+ *  passed through unchanged when fully visible (`true`/`1`). */
 export function* gate(layers: ResolvedLayerGroupOptions, ...tagged: TaggedLayer[]): Generator<TaggedLayer> {
 	for (const tl of tagged) {
 		const opt = layerOpt(layers, tl.group);
-		if (opt === false || opt === 0) continue;
-		if (typeof opt === 'number' && opt !== 1) setLayerOpacity(tl.layer, opt);
+		if (opt === false || opt === 0) continue; // invisible → filtered out, not emitted
+		if (typeof opt === 'number' && opt !== 1) scaleLayerOpacity(tl.layer, opt);
 		yield tl;
 	}
 }
