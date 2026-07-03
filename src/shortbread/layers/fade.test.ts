@@ -186,7 +186,7 @@ describe('buildings fade in at Shortbread z14', () => {
 
 const SITE_KINDS = [
 	'dangerarea',
-	'sportscenter',
+	'sportscentre',
 	'university',
 	'college',
 	'school',

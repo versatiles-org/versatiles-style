@@ -27,6 +27,7 @@ const light: ResolvedColors = {
 	siteDanger: '#F04040',
 	sitePrison: '#ECDCF4',
 	siteParking: '#E4E0D8',
+	siteSports: '#D8ECCC',
 	building: '#ECE4D8',
 	buildingBg: '#D8D0C4',
 	roadStreet: '#FFFFFF',

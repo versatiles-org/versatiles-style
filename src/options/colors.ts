@@ -32,6 +32,7 @@ export type ColorsOptions = {
 	siteDanger?: string;
 	sitePrison?: string;
 	siteParking?: string;
+	siteSports?: string;
 
 	// buildings
 	building?: string;
@@ -90,6 +91,7 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'siteDanger',
 	'sitePrison',
 	'siteParking',
+	'siteSports',
 	'building',
 	'buildingBg',
 	'roadStreet',
