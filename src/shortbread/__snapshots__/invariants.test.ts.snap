@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`layer-generation invariants > the set of source-layers in use is stable (regression guard for new sources) 1`] = `
+[
+  "addresses",
+  "aerialways",
+  "boundaries",
+  "boundary_labels",
+  "bridges",
+  "buildings",
+  "dam_lines",
+  "dam_polygons",
+  "ferries",
+  "land",
+  "ocean",
+  "pier_lines",
+  "pier_polygons",
+  "place_labels",
+  "pois",
+  "public_transport",
+  "sites",
+  "street_labels",
+  "street_labels_points",
+  "street_polygons",
+  "streets",
+  "water_lines",
+  "water_polygons",
+]
+`;
