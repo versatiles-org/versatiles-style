@@ -24,16 +24,18 @@ describe('SLOT_IDS', () => {
 });
 
 describe('layer visibility gating', () => {
-	it('hides steps by default but keeps the other path classes', async () => {
+	it('hides footway and steps by default but keeps the other path classes', async () => {
 		const ids = await idsFor();
+		expect(ids.has('way-footway')).toBe(false);
 		expect(ids.has('way-steps')).toBe(false);
-		expect(ids.has('way-footway')).toBe(true);
 		expect(ids.has('way-path')).toBe(true);
 		expect(ids.has('way-cycleway')).toBe(true);
 	});
 
-	it('shows steps when explicitly enabled', async () => {
-		expect((await idsFor({ roads: { steps: true } })).has('way-steps')).toBe(true);
+	it('shows footway and steps when explicitly enabled', async () => {
+		const ids = await idsFor({ roads: { footway: true, steps: true } });
+		expect(ids.has('way-footway')).toBe(true);
+		expect(ids.has('way-steps')).toBe(true);
 	});
 
 	it('drops every layer of a top-level group set to false', async () => {

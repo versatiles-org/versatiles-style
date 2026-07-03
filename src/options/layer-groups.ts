@@ -38,6 +38,9 @@ export type LayerGroupOptions = {
 							bus?: boolean | number;
 					  };
 				paths?: boolean | number;
+				/** Pedestrian footways. Hidden by default; set `true` (or an opacity) to show them. */
+				footway?: boolean | number;
+				/** Pedestrian steps / stairways. Hidden by default; set `true` (or an opacity) to show them. */
 				steps?: boolean | number;
 		  };
 	transit?:
@@ -102,6 +105,7 @@ export type ResolvedLayerGroups = {
 			bus: boolean | number;
 		};
 		paths: boolean | number;
+		footway: boolean | number;
 		steps: boolean | number;
 	};
 	transit: {
@@ -194,7 +198,8 @@ export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroup
 				bus: leaf(streets?.bus, streetsInherited, true),
 			},
 			paths: leaf(roads?.paths, roadsInherited, true),
-			// Steps are hidden unless explicitly enabled (or re-enabled by a scalar set on `roads`).
+			// Footways and steps are hidden unless explicitly enabled (or re-enabled by a scalar on `roads`).
+			footway: leaf(roads?.footway, roadsInherited, false),
 			steps: leaf(roads?.steps, roadsInherited, false),
 		},
 		transit: {

@@ -19,6 +19,7 @@ const DEFAULTS = {
 		highways: true,
 		streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
 		paths: true,
+		footway: false,
 		steps: false,
 	},
 	transit: { rail: true, aerialways: true, ferries: true, stops: true },
@@ -41,10 +42,18 @@ describe('resolveLayerGroups', () => {
 		expect(resolveLayerGroups({})).toStrictEqual(resolveLayerGroups());
 	});
 
-	// ── steps default ────────────────────────────────────────────────────────────
+	// ── footway / steps default ────────────────────────────────────────────────────
 
-	it('keeps steps hidden by default', () => {
+	it('keeps footway and steps hidden by default', () => {
+		expect(resolveLayerGroups().roads.footway).toBe(false);
 		expect(resolveLayerGroups().roads.steps).toBe(false);
+	});
+
+	it('shows footway when explicitly enabled, leaving siblings at their defaults', () => {
+		const r = resolveLayerGroups({ roads: { footway: true } });
+		expect(r.roads.footway).toBe(true);
+		expect(r.roads.steps).toBe(false); // sibling stays hidden
+		expect(r.roads.paths).toBe(true);
 	});
 
 	it('shows steps when explicitly enabled, leaving siblings at their defaults', () => {
@@ -60,12 +69,13 @@ describe('resolveLayerGroups', () => {
 
 	// ── scalar cascade ─────────────────────────────────────────────────────────────
 
-	it('cascades a scalar on roads to every child, re-enabling steps', () => {
+	it('cascades a scalar on roads to every child, re-enabling footway and steps', () => {
 		expect(resolveLayerGroups({ roads: true }).roads).toStrictEqual({
 			motorways: true,
 			highways: true,
 			streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
 			paths: true,
+			footway: true,
 			steps: true,
 		});
 	});
@@ -76,6 +86,7 @@ describe('resolveLayerGroups', () => {
 			highways: 0.5,
 			streets: { residential: 0.5, service: 0.5, pedestrian: 0.5, track: 0.5, bus: 0.5 },
 			paths: 0.5,
+			footway: 0.5,
 			steps: 0.5,
 		});
 	});
