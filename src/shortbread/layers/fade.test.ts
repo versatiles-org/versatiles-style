@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { osm } from '../../api/osm.js';
+import { osm } from '../../api/index.js';
 
 // Specification under test (independent of the implementation):
 //

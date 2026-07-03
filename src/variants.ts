@@ -1,6 +1,5 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { osm } from './api/osm.js';
-import { satellite as satelliteFn } from './api/satellite.js';
+import { osm, satellite as satelliteFn } from './api/index.js';
 import type { OsmFeaturesOptions, Palette } from './options/index.js';
 
 export interface StyleVariant {

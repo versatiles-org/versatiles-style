@@ -344,15 +344,12 @@ Z-->S
 1Q-->2
 1Q-->A
 1Q-->1P
-1R-->2
-1R-->A
-1R-->1P
+1R-->1Q
 1R-->S
 1R-->N
 1R-->7
 1R-->1S
-1S-->A
-1S-->1P
+1S-->1Q
 
 class 0,1,3,6,B,E,M,P,1I,1M subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
