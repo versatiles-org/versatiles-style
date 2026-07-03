@@ -3,10 +3,9 @@ import * as b from '../build.js';
 
 // Airport runways and taxiways (area fill + casing/fill lines). All in the `airport` group.
 export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c, fg } = ctx;
-	// OSM Bright aeroway casings are a mid grey (~#999); fills are white. Blend toward `fg`
-	// (pure black in light mode / white in dark mode) so the casing keeps its contrast in both modes.
-	const casing = c.roadStreetBg.blend(0.26, fg);
+	const { c } = ctx;
+	// Old VersaTiles aeroway casing is the light warm-grey street casing; fills are white.
+	const casing = c.roadStreetBg;
 
 	yield b.fill('airport-area', {
 		sourceLayer: 'street_polygons',
@@ -20,29 +19,29 @@ export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'streets',
 		filter: ['==', ['get', 'kind'], 'taxiway'],
 		color: casing,
-		lineCap: 'round',
+		lineCap: 'butt',
 		lineJoin: 'round',
 		minzoom: 12,
-		size: { base: 1.5, stops: { 11: 2, 17: 12 } },
+		size: { 13: 0, 14: 2, 15: 10, 16: 14, 18: 20, 20: 40 },
 		group: 'airport',
 	});
 	yield b.line('airport-runway:outline', {
 		sourceLayer: 'streets',
 		filter: ['==', ['get', 'kind'], 'runway'],
 		color: casing,
-		lineCap: 'round',
+		lineCap: 'butt',
 		lineJoin: 'round',
 		minzoom: 12,
-		size: { base: 1.5, stops: { 11: 5, 17: 55 } },
+		size: { 11: 0, 12: 6, 13: 9, 14: 16, 15: 24, 16: 40, 17: 100, 18: 160, 20: 300 },
 		group: 'airport',
 	});
 	yield b.line('airport-taxiway', {
 		sourceLayer: 'streets',
 		filter: ['==', ['get', 'kind'], 'taxiway'],
 		color: c.roadStreet,
-		lineCap: 'round',
+		lineCap: 'butt',
 		lineJoin: 'round',
-		size: { base: 1.5, stops: { 11: 1, 17: 10 } },
+		size: { 13: 0, 14: 1, 15: 8, 16: 12, 18: 18, 20: 36 },
 		opacity: { 11: 0, 12: 1 },
 		group: 'airport',
 	});
@@ -50,9 +49,9 @@ export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'streets',
 		filter: ['==', ['get', 'kind'], 'runway'],
 		color: c.roadStreet,
-		lineCap: 'round',
+		lineCap: 'butt',
 		lineJoin: 'round',
-		size: { base: 1.5, stops: { 11: 4, 17: 50 } },
+		size: { 11: 0, 12: 5, 13: 8, 14: 14, 15: 22, 16: 38, 17: 98, 18: 158, 20: 298 },
 		opacity: { 11: 0, 12: 1 },
 		group: 'airport',
 	});
