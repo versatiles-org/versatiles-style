@@ -1,81 +1,123 @@
+import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import * as b from '../build.js';
 
 // Administrative boundary lines (country / state, with disputed + maritime variants).
-// Country/state are drawn as a casing (`:outline`) pass then a main pass. `maritime`
-// variants render as a single faint dashed line (no casing) over the water.
+//
+// Restored to the old VersaTiles style: each admin line is drawn as a light "casing" (halo) pass
+// first, then the coloured line on top — the casing keeps the border legible over any background.
+// Country/disputed share one (wider) casing + line width; state is narrower. Widths grow from 0 at
+// their appear zoom. `maritime` is a newer addition (not in the old style): a single blue line over
+// the water, no casing.
+
+const lineCap = 'round';
+const lineJoin = 'round';
+
+const notMaritimeCoast: FilterSpecification[] = [
+	['!=', ['get', 'maritime'], true],
+	['!=', ['get', 'coastline'], true],
+];
+const COUNTRY = [
+	'all',
+	['==', ['get', 'admin_level'], 2],
+	['!=', ['get', 'disputed'], true],
+	...notMaritimeCoast,
+] as FilterSpecification;
+const DISPUTED = [
+	'all',
+	['==', ['get', 'admin_level'], 2],
+	['==', ['get', 'disputed'], true],
+	...notMaritimeCoast,
+] as FilterSpecification;
+const STATE = [
+	'all',
+	['==', ['get', 'admin_level'], 4],
+	['!=', ['get', 'disputed'], true],
+	...notMaritimeCoast,
+] as FilterSpecification;
+const MARITIME = [
+	'all',
+	['==', ['get', 'admin_level'], 2],
+	['==', ['get', 'maritime'], true],
+	['!=', ['get', 'disputed'], true],
+	['!=', ['get', 'coastline'], true],
+] as FilterSpecification;
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c, fg } = ctx;
 
-	// state / province (admin 3–8): dashed, drawn beneath the country line. Shortbread serves
-	// these from z7, so fade them in by opacity over z7→8 instead of popping.
-	yield b.line('boundary-state', {
-		sourceLayer: 'boundaries',
-		filter: [
-			'all',
-			['==', ['get', 'admin_level'], 4],
-			['!=', ['get', 'maritime'], true],
-			['!=', ['get', 'disputed'], true],
-			['!=', ['get', 'coastline'], true],
-		],
-		color: c.boundary,
-		lineCap: 'round',
-		lineJoin: 'round',
-		minzoom: 2,
-		appear: 7,
-		size: { base: 1.4, stops: { 4: 0.4, 5: 1, 12: 3 } },
-		lineDasharray: [3, 1, 1, 1],
+	// Casing (halo) and line widths, per the old style. Country/disputed share the wide curves; state
+	// is narrower. All grow from 0 at their appear zoom.
+	const countryCasingSize = { 0: 0, 3: 2, 10: 8 };
+	const countryLineSize = { 0: 0, 3: 1, 10: 4 };
+	const stateCasingSize = { 7: 0, 8: 2, 10: 4 };
+	const stateLineSize = { 7: 0, 8: 1, 10: 2 };
+
+	// The casing is the light background colour at 0.75 opacity — a faint halo behind the line.
+	const casing = { sourceLayer: 'boundaries', color: c.background, opacity: 0.75, lineCap, lineJoin };
+
+	// ── casings (drawn beneath all the coloured lines) ──
+	yield b.line('boundary-country:outline', {
+		...casing,
+		filter: COUNTRY,
+		size: countryCasingSize,
+		group: 'boundaries.country',
+	});
+	yield b.line('boundary-country-disputed:outline', {
+		...casing,
+		filter: DISPUTED,
+		size: countryCasingSize,
+		group: 'boundaries.country',
+	});
+	yield b.line('boundary-state:outline', {
+		...casing,
+		filter: STATE,
+		size: stateCasingSize,
 		group: 'boundaries.state',
 	});
 
-	// OSM Bright draws boundaries as single lines (no casing). Widths interpolate with base 1.
-	const def = {
-		sourceLayer: 'boundaries',
-		lineCap: 'round',
-		lineJoin: 'round',
-		group: 'boundaries.country',
-		size: { base: 1, stops: { 0: 0.5, 2: 1, 6: 2.5, 12: 7 } },
-	};
-
-	// country (admin 2): solid
+	// ── coloured lines ──
+	// country: solid
 	yield b.line('boundary-country', {
-		...def,
-		filter: [
-			'all',
-			['==', ['get', 'admin_level'], 2],
-			['!=', ['get', 'maritime'], true],
-			['!=', ['get', 'disputed'], true],
-			['!=', ['get', 'coastline'], true],
-		],
+		sourceLayer: 'boundaries',
+		filter: COUNTRY,
 		color: c.boundary,
+		size: countryLineSize,
+		lineCap,
+		lineJoin,
+		group: 'boundaries.country',
 	});
-
 	// disputed: dashed
 	yield b.line('boundary-country-disputed', {
-		...def,
-		filter: [
-			'all',
-			['==', ['get', 'admin_level'], 2],
-			['==', ['get', 'disputed'], true],
-			['!=', ['get', 'maritime'], true],
-			['!=', ['get', 'coastline'], true],
-		],
+		sourceLayer: 'boundaries',
+		filter: DISPUTED,
 		color: c.boundaryDisputed,
-		lineDasharray: [1, 3],
+		size: countryLineSize,
+		lineDasharray: [2, 1],
+		lineCap,
+		lineJoin,
+		group: 'boundaries.country',
 	});
-
-	// maritime: deeper-blue solid line over the water; fades in by opacity over z4→5 as it appears
+	// state: solid, fades in over z7→8 (Shortbread serves admin-4 from z7)
+	yield b.line('boundary-state', {
+		sourceLayer: 'boundaries',
+		filter: STATE,
+		color: c.boundary,
+		size: stateLineSize,
+		appear: 7,
+		lineCap,
+		lineJoin,
+		group: 'boundaries.state',
+	});
+	// maritime: deeper-blue solid line over the water; fades in over z4→5 (newer; not in the old style)
 	yield b.line('boundary-country-maritime', {
-		...def,
-		filter: [
-			'all',
-			['==', ['get', 'admin_level'], 2],
-			['==', ['get', 'maritime'], true],
-			['!=', ['get', 'disputed'], true],
-			['!=', ['get', 'coastline'], true],
-		],
-		color: c.water.blend(0.13, fg),
+		sourceLayer: 'boundaries',
+		filter: MARITIME,
+		color: c.water.blend(0.03, fg),
+		size: countryLineSize,
 		appear: 4,
+		lineCap,
+		lineJoin,
+		group: 'boundaries.country',
 	});
 }
