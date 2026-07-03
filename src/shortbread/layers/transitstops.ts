@@ -91,8 +91,8 @@ export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textHaloBlur: 1,
 	};
 
-	const layers = STOPS.map((stop) =>
-		b.symbol('symbol-transit-' + stop.id, {
+	for (const stop of STOPS) {
+		yield b.symbol('symbol-transit-' + stop.id, {
 			sourceLayer: 'public_transport',
 			filter: stop.filter,
 			layout: { 'text-field': ctx.nameField },
@@ -101,8 +101,6 @@ export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
 			image: stop.image,
 			iconSize: stop.iconSize,
 			group: 'transit.stops',
-		})
-	);
-
-	yield* b.gate(ctx.layers, ...layers);
+		});
+	}
 }

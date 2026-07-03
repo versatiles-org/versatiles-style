@@ -254,8 +254,8 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// text-color stays fully opaque (matching OSM Bright) while the icons fade.
 	const iconColor = ctx.c.labelPoi.opaque();
 	const iconOpacity = ctx.c.labelPoi.alpha;
-	const layers = POI_KEYS.map((key) =>
-		b.symbol('poi-' + key, {
+	for (const key of POI_KEYS) {
+		yield b.symbol('poi-' + key, {
 			sourceLayer: 'pois',
 			filter: ['to-boolean', ['get', key]],
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
@@ -270,8 +270,6 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			textHaloBlur: 0.5,
 			image: IMAGES[key],
 			group: 'pois',
-		})
-	);
-
-	yield* b.gate(ctx.layers, ...layers);
+		});
+	}
 }

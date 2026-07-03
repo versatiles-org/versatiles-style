@@ -12,50 +12,48 @@ const ONEWAY_KINDS: FilterSpecification = [
 ];
 
 export function* markings(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const layers: b.TaggedLayer[] = [
-		b.symbol('marking-oneway', {
-			sourceLayer: 'streets',
-			filter: ['all', ['==', ['get', 'oneway'], true], ONEWAY_KINDS] as FilterSpecification,
-			layout: {
-				'symbol-placement': 'line',
-				'symbol-spacing': 175,
-				'icon-rotate': 90,
-				'icon-rotation-alignment': 'map',
-				'icon-padding': 5,
-				'symbol-avoid-edges': true,
-			},
-			minzoom: 16,
-			image: 'basics:marking-arrow',
-			color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
-			opacity: { 16: 0, 17: 0.4, 20: 0.4 },
-			font: ctx.fonts.normal,
-			group: 'markings',
-		}),
-		b.symbol('marking-oneway-reverse', {
-			sourceLayer: 'streets',
-			filter: ['all', ['==', ['get', 'oneway_reverse'], true], ONEWAY_KINDS] as FilterSpecification,
-			layout: {
-				'symbol-placement': 'line',
-				'symbol-spacing': 75,
-				'icon-rotate': -90,
-				'icon-rotation-alignment': 'map',
-				'icon-padding': 5,
-				'symbol-avoid-edges': true,
-			},
-			minzoom: 16,
-			image: 'basics:marking-arrow',
-			color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
-			opacity: { 16: 0, 17: 0.4, 20: 0.4 },
-			font: ctx.fonts.normal,
-			group: 'markings',
-		}),
-		b.symbol('marking-bicycle', {
-			sourceLayer: 'streets',
-			filter: ['all', ['==', ['get', 'bicycle'], 'designated'], ['==', ['get', 'kind'], 'cycleway']],
-			layout: { 'symbol-placement': 'line', 'symbol-spacing': 50 },
-			group: 'markings',
-		}),
-	];
+	yield b.symbol('marking-oneway', {
+		sourceLayer: 'streets',
+		filter: ['all', ['==', ['get', 'oneway'], true], ONEWAY_KINDS] as FilterSpecification,
+		layout: {
+			'symbol-placement': 'line',
+			'symbol-spacing': 175,
+			'icon-rotate': 90,
+			'icon-rotation-alignment': 'map',
+			'icon-padding': 5,
+			'symbol-avoid-edges': true,
+		},
+		minzoom: 16,
+		image: 'basics:marking-arrow',
+		color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
+		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
+		font: ctx.fonts.normal,
+		group: 'markings',
+	});
 
-	yield* b.gate(ctx.layers, ...layers);
+	yield b.symbol('marking-oneway-reverse', {
+		sourceLayer: 'streets',
+		filter: ['all', ['==', ['get', 'oneway_reverse'], true], ONEWAY_KINDS] as FilterSpecification,
+		layout: {
+			'symbol-placement': 'line',
+			'symbol-spacing': 75,
+			'icon-rotate': -90,
+			'icon-rotation-alignment': 'map',
+			'icon-padding': 5,
+			'symbol-avoid-edges': true,
+		},
+		minzoom: 16,
+		image: 'basics:marking-arrow',
+		color: ctx.fg, // SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode
+		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
+		font: ctx.fonts.normal,
+		group: 'markings',
+	});
+
+	yield b.symbol('marking-bicycle', {
+		sourceLayer: 'streets',
+		filter: ['all', ['==', ['get', 'bicycle'], 'designated'], ['==', ['get', 'kind'], 'cycleway']],
+		layout: { 'symbol-placement': 'line', 'symbol-spacing': 50 },
+		group: 'markings',
+	});
 }

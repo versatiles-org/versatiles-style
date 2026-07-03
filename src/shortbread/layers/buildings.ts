@@ -10,22 +10,19 @@ export function* buildings(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// Extruded mode draws `building-3d` on top instead (see buildings3d), so emit no flat footprints.
 	if (ctx.features.buildings === 'extruded') return;
 
-	yield* b.gate(
-		ctx.layers,
-		b.fill('building:outline', {
-			sourceLayer: 'buildings',
-			color: c.buildingBg,
-			appear: 14, // fade in over z14→15 (matches OSM Bright `building-top`)
-			group: 'buildings',
-		}),
-		b.fill('building', {
-			sourceLayer: 'buildings',
-			color: c.building,
-			appear: 14,
-			fillTranslate: [-2, -2],
-			group: 'buildings',
-		})
-	);
+	yield b.fill('building:outline', {
+		sourceLayer: 'buildings',
+		color: c.buildingBg,
+		appear: 14, // fade in over z14→15 (matches OSM Bright `building-top`)
+		group: 'buildings',
+	});
+	yield b.fill('building', {
+		sourceLayer: 'buildings',
+		color: c.building,
+		appear: 14,
+		fillTranslate: [-2, -2],
+		group: 'buildings',
+	});
 }
 
 // Extruded (3D) buildings, emitted as the topmost layer (above labels) so tall buildings render
@@ -36,17 +33,14 @@ export function* buildings3d(ctx: LayerContext): Generator<b.TaggedLayer> {
 
 	if (ctx.features.buildings !== 'extruded') return;
 
-	yield* b.gate(
-		ctx.layers,
-		b.fillExtrusion('building-3d', {
-			sourceLayer: 'buildings',
-			filter: ['!=', ['get', 'hide_3d'], true],
-			color: c.building,
-			appear: 14,
-			opacity: 0.7,
-			fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
-			fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
-			group: 'buildings',
-		})
-	);
+	yield b.fillExtrusion('building-3d', {
+		sourceLayer: 'buildings',
+		filter: ['!=', ['get', 'hide_3d'], true],
+		color: c.building,
+		appear: 14,
+		opacity: 0.7,
+		fillExtrusionHeight: ['coalesce', ['get', 'height'], 5],
+		fillExtrusionBase: ['coalesce', ['get', 'min_height'], 0],
+		group: 'buildings',
+	});
 }
