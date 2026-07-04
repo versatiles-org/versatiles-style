@@ -14,7 +14,7 @@ import { pois } from './pois.js';
 import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { transitStops } from './transitstops.js';
-import { labels } from './labels.js';
+import { labels, addresses } from './labels.js';
 
 // Contract tests for each layer generator in isolation (previously they were only exercised
 // via full-style builds). Each generator is a pure function of the LayerContext, yielding
@@ -38,6 +38,7 @@ const GENERATORS: [string, (ctx: LayerContext) => Generator<TaggedLayer>, LayerC
 	['boundaries', boundaries, ctx],
 	['markings', markings, ctx],
 	['transitStops', transitStops, ctx],
+	['addresses', addresses, ctx],
 	['labels', labels, ctx],
 ];
 
