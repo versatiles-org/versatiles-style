@@ -116,7 +116,7 @@ const IMAGES: Record<string, unknown> = {
 		'base:icon-veterinary',
 		'waste_basket',
 		'base:icon-waste_basket',
-		'',
+		'base:transport-information', // generic "point of interest" fallback
 	],
 	leisure: [
 		'match',
@@ -168,7 +168,7 @@ const IMAGES: Record<string, unknown> = {
 		'base:icon-viewpoint',
 		'zoo',
 		'base:icon-zoo',
-		'',
+		'base:transport-information', // generic "point of interest" fallback
 	],
 	shop: [
 		'match',
@@ -254,7 +254,7 @@ const IMAGES: Record<string, unknown> = {
 		'base:icon-watermill',
 		'windmill',
 		'base:icon-windmill',
-		'',
+		'base:transport-information', // generic "point of interest" fallback
 	],
 	historic: [
 		'match',
