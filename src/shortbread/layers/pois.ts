@@ -128,6 +128,8 @@ const IMAGES: Record<string, unknown> = {
 	tourism: [
 		'match',
 		['get', 'tourism'],
+		'artwork',
+		'basics:icon-artwork',
 		'chalet',
 		'basics:icon-chalet',
 		'information',
@@ -187,7 +189,7 @@ const IMAGES: Record<string, unknown> = {
 		'basics:icon-laundry',
 		'newsagent',
 		'basics:icon-newsagent',
-		'optican',
+		'optician',
 		'basics:icon-optician',
 		'outdoor',
 		'basics:icon-outdoor',
@@ -223,8 +225,6 @@ const IMAGES: Record<string, unknown> = {
 	historic: [
 		'match',
 		['get', 'historic'],
-		'artwork',
-		'basics:icon-artwork',
 		'castle',
 		'basics:icon-castle',
 		'monument',
