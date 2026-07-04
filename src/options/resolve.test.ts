@@ -68,20 +68,20 @@ describe('resolveOsm', () => {
 	});
 
 	it('resolves sprite string to SpriteEntry array', () => {
-		const r = resolveOsm({ urls: { sprite: 'https://cdn/sprites/basics' } });
+		const r = resolveOsm({ urls: { sprite: 'https://cdn/sprites/base' } });
 		const sprite = r.urls.sprite as Array<{ id: string; url: string }>;
-		expect(sprite).toBe('https://cdn/sprites/basics');
+		expect(sprite).toBe('https://cdn/sprites/base');
 	});
 
 	it('resolves sprite array and resolves relative URLs', () => {
 		const r = resolveOsm({
 			urls: {
 				base: 'https://tiles.example.com',
-				sprite: [{ id: 'basics', url: '/assets/sprites/basics/sprites' }],
+				sprite: [{ id: 'base', url: '/assets/sprites/base/sprites' }],
 			},
 		});
 		const sprite = r.urls.sprite as Array<{ id: string; url: string }>;
-		expect(sprite[0].url).toBe('https://tiles.example.com/assets/sprites/basics/sprites');
+		expect(sprite[0].url).toBe('https://tiles.example.com/assets/sprites/base/sprites');
 	});
 
 	it('merges user color overrides on top of palette', () => {

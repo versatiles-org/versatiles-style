@@ -44,7 +44,7 @@ export function resolveOsmUrls(urls?: OsmUrlsOptions): ResolvedOsmUrls {
 		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
 		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base/sprites' }]),
 		fetch: urls?.fetch,
 	};
 }
@@ -56,7 +56,7 @@ export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions): ResolvedSatel
 		osm: resolveUrl(base, urls?.osm ?? '/tiles/osm/tiles.json'),
 		elevation: resolveUrl(base, urls?.elevation ?? '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'basics', url: '/assets/sprites/basics/sprites' }]),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base/sprites' }]),
 		fetch: urls?.fetch,
 	};
 }

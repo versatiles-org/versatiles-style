@@ -27,7 +27,7 @@ describe('resolveOsmUrls', () => {
 			osm: 'https://tiles.versatiles.org/tiles/osm/tiles.json',
 			elevation: 'https://tiles.versatiles.org/tiles/elevation/tiles.json',
 			glyphsPattern: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
-			sprite: [{ id: 'basics', url: 'https://tiles.versatiles.org/assets/sprites/basics/sprites' }],
+			sprite: [{ id: 'base', url: 'https://tiles.versatiles.org/assets/sprites/base/sprites' }],
 			fetch: undefined,
 		});
 	});
@@ -37,7 +37,7 @@ describe('resolveOsmUrls', () => {
 		expect(r.osm).toBe('https://x.io/tiles/osm/tiles.json');
 		expect(r.elevation).toBe('https://x.io/tiles/elevation/tiles.json');
 		expect(r.glyphsPattern).toBe('https://x.io/assets/glyphs/{fontstack}/{range}.pbf');
-		expect((r.sprite as { url: string }[])[0].url).toBe('https://x.io/assets/sprites/basics/sprites');
+		expect((r.sprite as { url: string }[])[0].url).toBe('https://x.io/assets/sprites/base/sprites');
 	});
 
 	it('passes an absolute osm URL through unchanged (ignores base)', () => {
