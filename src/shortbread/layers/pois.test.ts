@@ -45,7 +45,9 @@ for (const [group, set] of Object.entries(spriteConfig.spritesheets.base)) {
 }
 
 // Parse each poi-* layer's `icon-image` match expression into { key, matches, default }.
-type ParsedPoi = { key: string; matches: Record<string, string>; fallback: string | null };
+// A match value is usually an icon string, but may be a nested `match` expression (e.g.
+// place_of_worship → match on `religion`), so values are typed `unknown`.
+type ParsedPoi = { key: string; matches: Record<string, unknown>; fallback: string | null };
 
 function parsePoiLayers(): ParsedPoi[] {
 	const out: ParsedPoi[] = [];
@@ -62,8 +64,8 @@ function parsePoiLayers(): ParsedPoi[] {
 		const hasDefault = body.length % 2 === 1;
 		const fallback = hasDefault ? (body[body.length - 1] as string) : null;
 		const pairs = hasDefault ? body.slice(0, -1) : body;
-		const matches: Record<string, string> = {};
-		for (let i = 0; i < pairs.length; i += 2) matches[pairs[i] as string] = pairs[i + 1] as string;
+		const matches: Record<string, unknown> = {};
+		for (let i = 0; i < pairs.length; i += 2) matches[pairs[i] as string] = pairs[i + 1];
 		out.push({ key, matches, fallback });
 	}
 	return out;
@@ -71,13 +73,22 @@ function parsePoiLayers(): ParsedPoi[] {
 
 const poiLayers = parsePoiLayers();
 
-// Collect every sprite reference used (per-value matches + fallbacks), skipping the empty
-// fallback ('' = "no icon, base style only").
+// Sprite references are strings containing a ':' (`<sheet>:<group>-<name>`); every other string in
+// a match expression is a keyword/tag value. Collect them recursively so nested matches (e.g. the
+// place_of_worship → religion sub-match) are covered too.
+function spriteRefsIn(value: unknown): string[] {
+	if (typeof value === 'string') return value.includes(':') ? [value] : [];
+	if (Array.isArray(value)) return value.flatMap(spriteRefsIn);
+	return [];
+}
+
+// Collect every sprite reference used (per-value matches + fallbacks).
 function iconRefs(): { key: string; value: string; ref: string }[] {
 	const refs: { key: string; value: string; ref: string }[] = [];
 	for (const { key, matches, fallback } of poiLayers) {
-		for (const [value, ref] of Object.entries(matches)) refs.push({ key, value, ref });
-		if (fallback) refs.push({ key, value: '<default>', ref: fallback });
+		for (const [value, ref] of Object.entries(matches))
+			for (const r of spriteRefsIn(ref)) refs.push({ key, value, ref: r });
+		for (const r of spriteRefsIn(fallback)) refs.push({ key, value: '<default>', ref: r });
 	}
 	return refs;
 }
