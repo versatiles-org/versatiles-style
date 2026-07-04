@@ -1,9 +1,9 @@
 import type { LayerContext } from '../context.js';
 import * as b from '../build.js';
 
-// Point-of-interest icons. All share a common base style (the old `poi-*` rule); most add an
-// icon `match` expression keyed on the relevant OSM tag. `highway` and `office` have no icon
-// rule and are emitted with the base style only.
+// Point-of-interest icons. All share a common base style (the old `poi-*` rule) and add an
+// icon `match` expression keyed on the relevant OSM tag (`highway` and `office` each carry a
+// single Shortbread value, so their match has one entry).
 
 // Icon match expressions (verbatim from the v5/old rules table), keyed by POI category.
 const IMAGES: Record<string, unknown> = {
@@ -12,6 +12,16 @@ const IMAGES: Record<string, unknown> = {
 		['get', 'amenity'],
 		'arts_centre',
 		'basics:icon-art_gallery',
+		'clinic',
+		'basics:icon-doctor',
+		'courthouse',
+		'basics:icon-justice',
+		'food_court',
+		'basics:icon-restaurant',
+		'public_building',
+		'basics:icon-town_hall',
+		'university',
+		'basics:icon-college',
 		'atm',
 		'basics:icon-atm',
 		'bank',
@@ -130,6 +140,24 @@ const IMAGES: Record<string, unknown> = {
 		['get', 'tourism'],
 		'artwork',
 		'basics:icon-artwork',
+		'alpine_hut',
+		'basics:icon-chalet',
+		'bed_and_breakfast',
+		'basics:icon-lodging',
+		'camp_site',
+		'basics:icon-campsite',
+		'caravan_site',
+		'basics:icon-caravan',
+		'guest_house',
+		'basics:icon-lodging',
+		'hostel',
+		'basics:icon-lodging',
+		'hotel',
+		'basics:icon-lodging',
+		'motel',
+		'basics:icon-lodging',
+		'theme_park',
+		'basics:icon-amusement_park',
 		'chalet',
 		'basics:icon-chalet',
 		'information',
@@ -212,6 +240,12 @@ const IMAGES: Record<string, unknown> = {
 		['get', 'man_made'],
 		'lighthouse',
 		'basics:icon-lighthouse',
+		'wastewater_plant',
+		'basics:icon-wastewater',
+		'water_well',
+		'basics:icon-drinking_water',
+		'water_works',
+		'basics:icon-waterworks',
 		'surveillance',
 		'basics:icon-surveillance',
 		'tower',
@@ -244,6 +278,8 @@ const IMAGES: Record<string, unknown> = {
 		'basics:icon-emergency_phone',
 		'',
 	],
+	highway: ['match', ['get', 'highway'], 'emergency_access_point', 'basics:icon-emergency_access', ''],
+	office: ['match', ['get', 'office'], 'diplomatic', 'basics:icon-embassy', ''],
 };
 
 const POI_KEYS = ['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'];
