@@ -6,7 +6,9 @@ under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprite
 `…/assets/sprites/<sheet>/sprites{,@2x,@3x,@4x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
-`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`).
+`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`). The source SVGs mirror
+that grammar on disk — each lives at `icons/<sheet>/<group>/<name>.svg` — so a reference maps
+directly to a file (and `config-sprites.ts` maps 1:1 to the folder tree).
 
 | Sheet    | Loaded by default | Stability                         | Purpose                                                          |
 | -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------- |
@@ -58,7 +60,7 @@ const style = await osm({
   [`extras-api` test](./scripts/extras-api.test.ts) fails if this list and the built sprite ever
   disagree, so the two cannot drift apart.
 
-> Adding an icon? Add the SVG under `icons/<group>/`, list its name in
+> Adding an icon? Add the SVG under `icons/extras/<group>/`, list its name in
 > `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add it to the list below in the
 > same change. Removing or renaming an `extras` icon is a breaking change — avoid it.
 

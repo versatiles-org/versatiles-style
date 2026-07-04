@@ -17,7 +17,8 @@ for (const [name, sets] of Object.entries(config.spritesheets)) {
 	names.push(name);
 
 	console.log('  - load icons');
-	const icons = loadIcons(sets, dirIcons);
+	// Icons live under icons/<sheet>/<group>/; loadIcons resolves <group> from the dir it's given.
+	const icons = loadIcons(sets, resolve(dirIcons, name));
 
 	console.log('  - build sprite sheet');
 	const maxScale = 12;
