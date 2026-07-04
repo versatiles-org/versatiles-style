@@ -9,7 +9,7 @@ vi.mock('./config-sprites', () => ({
 	default: {
 		ratios: [1, 2, 3, 4],
 		spritesheets: {
-			basics: {
+			base: {
 				icon: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
 				pattern: { size: 12, useSDF: true, names: ['hatched_thin', 'striped', 'warning'] },
 			},
@@ -34,15 +34,15 @@ describe('Sprite Generation and Packaging', () => {
 		expect(readCalls.length).toBe(6);
 		expect(vi.mocked(cp.spawn)).toHaveBeenCalledTimes(4);
 		expect(vi.mocked(fs.writeFileSync).mock.calls).toStrictEqual([
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@2x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@2x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@3x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@3x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@4x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/basics\/sprites@4x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/index\.json$/), '["basics"]'],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@2x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@2x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@3x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@3x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@4x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\/sprites@4x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/index\.json$/), '["base"]'],
 		]);
 	}, 20000);
 });

@@ -321,8 +321,8 @@ describe('osm() knob: urls', () => {
 	});
 
 	it('sprite as a string is passed through unchanged', async () => {
-		const s = await build({ urls: { sprite: 'https://cdn.example/sprites/basics' } });
-		expect(s.sprite).toBe('https://cdn.example/sprites/basics');
+		const s = await build({ urls: { sprite: 'https://cdn.example/sprites/base' } });
+		expect(s.sprite).toBe('https://cdn.example/sprites/base');
 	});
 
 	it('sprite as an array resolves relative URLs against base', async () => {

@@ -3,7 +3,7 @@ import { SpriteConfig } from './lib/sprites.js';
 const config: SpriteConfig = {
 	ratios: [1, 2, 3, 4],
 	spritesheets: {
-		basics: {
+		base: {
 			icon: {
 				size: 22,
 				names: [
@@ -134,7 +134,7 @@ const config: SpriteConfig = {
 				names: ['tram', 'information'],
 			},
 		},
-		markers: {
+		extras: {
 			icon: {
 				size: 22,
 				names: [

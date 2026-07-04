@@ -6,7 +6,7 @@ import spriteConfig from '../../../scripts/config-sprites.js';
 
 // Regression guard for POI icon coverage. It cross-checks three things that drifted apart before
 // (a misspelled `optican` shop key, and `artwork` filed under `historic` instead of `tourism`):
-//   1. every icon a poi-* layer references actually exists in the `basics` sprite,
+//   1. every icon a poi-* layer references actually exists in the `base` sprite,
 //   2. every value a poi-* layer matches on is a real Shortbread `pois` value for that key,
 //   3. the set of schema values we do NOT give an icon is tracked (snapshot), so coverage
 //      changes are visible in review.
@@ -38,9 +38,9 @@ const SHORTBREAD_POIS: Record<string, string[]> = {
 	office: `diplomatic`.split(/\s+/),
 };
 
-// The icons packed into the `basics` sprite sheet (referenced as `basics:<group>-<name>`).
+// The icons packed into the `base` sprite sheet (referenced as `base:<group>-<name>`).
 const SPRITE_ICONS = new Set<string>();
-for (const [group, set] of Object.entries(spriteConfig.spritesheets.basics)) {
+for (const [group, set] of Object.entries(spriteConfig.spritesheets.base)) {
 	for (const name of set.names) SPRITE_ICONS.add(`${group}-${name}`);
 }
 
@@ -89,17 +89,17 @@ describe('POI layer ↔ Shortbread schema ↔ sprite coverage', () => {
 		expect(missing).toStrictEqual([]);
 	});
 
-	it('every referenced icon exists in the basics sprite', () => {
+	it('every referenced icon exists in the base sprite', () => {
 		const broken = iconRefs()
-			.filter(({ ref }) => ref.startsWith('basics:'))
-			.filter(({ ref }) => !SPRITE_ICONS.has(ref.replace(/^basics:/, '')))
+			.filter(({ ref }) => ref.startsWith('base:'))
+			.filter(({ ref }) => !SPRITE_ICONS.has(ref.replace(/^base:/, '')))
 			.map(({ key, value, ref }) => `${key}.${value} → ${ref}`);
 		expect(broken).toStrictEqual([]);
 	});
 
-	it('every icon reference uses the basics: sprite prefix', () => {
+	it('every icon reference uses the base: sprite prefix', () => {
 		const bad = iconRefs()
-			.filter(({ ref }) => !ref.startsWith('basics:'))
+			.filter(({ ref }) => !ref.startsWith('base:'))
 			.map(({ key, value, ref }) => `${key}.${value} → ${ref}`);
 		expect(bad).toStrictEqual([]);
 	});
@@ -118,9 +118,9 @@ describe('POI layer ↔ Shortbread schema ↔ sprite coverage', () => {
 
 	it('specifically covers the two previously-broken values', () => {
 		const byKey = Object.fromEntries(poiLayers.map((l) => [l.key, l.matches]));
-		expect(byKey.shop['optician']).toBe('basics:icon-optician');
+		expect(byKey.shop['optician']).toBe('base:icon-optician');
 		expect(byKey.shop['optican']).toBeUndefined();
-		expect(byKey.tourism['artwork']).toBe('basics:icon-artwork');
+		expect(byKey.tourism['artwork']).toBe('base:icon-artwork');
 		expect(byKey.historic['artwork']).toBeUndefined();
 	});
 

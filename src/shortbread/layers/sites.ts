@@ -17,7 +17,7 @@ const SITES: SiteDef[] = [
 			color: c.siteDanger.opaque(),
 			fillOutlineColor: c.siteDanger.opaque(),
 			opacity: c.siteDanger.alpha,
-			image: 'basics:pattern-warning',
+			image: 'base:pattern-warning',
 		}),
 	},
 	{ kind: 'sports_centre', style: (c) => ({ color: c.siteSports }) },
@@ -27,7 +27,7 @@ const SITES: SiteDef[] = [
 	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital }) },
 	{
 		kind: 'prison',
-		style: (c) => ({ color: c.sitePrison.opaque(), image: 'basics:pattern-striped', opacity: c.sitePrison.alpha }),
+		style: (c) => ({ color: c.sitePrison.opaque(), image: 'base:pattern-striped', opacity: c.sitePrison.alpha }),
 	},
 	{ kind: 'parking', style: (c) => ({ color: c.siteParking }) },
 	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking }) },
@@ -35,7 +35,7 @@ const SITES: SiteDef[] = [
 		kind: 'construction',
 		style: (c) => ({
 			color: c.siteConstruction.opaque(),
-			image: 'basics:pattern-hatched_thin',
+			image: 'base:pattern-hatched_thin',
 			opacity: c.siteConstruction.alpha,
 		}),
 	},
