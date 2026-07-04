@@ -69,7 +69,7 @@ const config: SpriteConfig = {
 					'ice_rink',
 					'jewelry_store',
 					'justice',
-					'kiosk',
+					'newspaper',
 					'laundry',
 					'library',
 					'lighthouse',

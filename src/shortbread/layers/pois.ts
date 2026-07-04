@@ -212,7 +212,7 @@ const IMAGES: Record<string, unknown> = {
 		'jewelry',
 		'base:icon-jewelry_store',
 		'kiosk',
-		'base:icon-kiosk',
+		'base:icon-newspaper',
 		'laundry',
 		'base:icon-laundry',
 		'newsagent',
@@ -295,7 +295,7 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			sourceLayer: 'pois',
 			filter: ['to-boolean', ['get', key]],
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
-			iconSize: { base: 2, stops: { 16: 0.2, 20: 2 } },
+			iconSize: { base: 2, stops: { 16: 0.4, 20: 1.2 } },
 			opacity: { 16: 0, 17: iconOpacity },
 			symbolPlacement: 'point',
 			iconOptional: true,
