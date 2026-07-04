@@ -303,9 +303,10 @@ const IMAGES: Record<string, unknown> = {
 const POI_KEYS = ['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'];
 
 export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
-	// POI icons are SDF sprites: their translucency lives in the `labelPoi` token's alpha, which we
-	// route to the symbol opacity (icon-opacity) — icons/text are drawn in the opaque colour, so the
-	// text-color stays fully opaque (matching OSM Bright) while the icons fade.
+	// POI icons are SDF sprites: their translucency lives in the `labelPoi` token's alpha, applied via
+	// symbol `opacity` — which covers both the icon and the label, so they share the opaque `labelPoi`
+	// colour and the same alpha. From z19 the POI's name is drawn as a label beneath the icon, in the
+	// same colour as the icon.
 	const iconColor = ctx.c.labelPoi.opaque();
 	const iconOpacity = ctx.c.labelPoi.alpha;
 	for (const key of POI_KEYS) {
@@ -314,13 +315,22 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['to-boolean', ['get', key]],
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
 			iconSize: { base: 2, stops: { 16: 0.4, 20: 1.2 } },
-			opacity: { 16: 0, 17: iconOpacity },
+			iconOpacity: { 16: 0, 17: iconOpacity },
+			textOpacity: { 19: 0, 19.5: iconOpacity },
+			// Name label under the icon, appearing from z19+. `text-size` is 0 below z18 so the label
+			// adds no collision box at mid zoom (only icons compete there), and an empty name renders
+			// nothing. `textOptional` keeps the icon visible even when the label can't be placed.
+			text: ctx.nameField,
+			size: { 18: 0, 19: 11, 22: 13 },
+			textAnchor: 'top',
+			textOffset: [0, 1.2],
+			textOptional: true,
 			symbolPlacement: 'point',
 			iconOptional: true,
-			font: ctx.fonts.normal,
+			font: ctx.fonts.bold,
 			color: iconColor,
 			textHaloColor: ctx.bg, // OSM Bright POI halos are opaque (≈ white in light mode)
-			textHaloWidth: 1,
+			textHaloWidth: 0.5,
 			textHaloBlur: 0.5,
 			image: IMAGES[key],
 			group: 'pois',
