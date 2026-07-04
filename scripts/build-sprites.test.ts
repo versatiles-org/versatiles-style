@@ -34,14 +34,14 @@ describe('Sprite Generation and Packaging', () => {
 		expect(readCalls.length).toBe(6);
 		expect(vi.mocked(cp.spawn)).toHaveBeenCalledTimes(4);
 		expect(vi.mocked(fs.writeFileSync).mock.calls).toStrictEqual([
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@2x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@2x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@3x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@3x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@4x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base\/sprites@4x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@2x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@2x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@3x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@3x\.json$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@4x\.png$/), expect.any(Buffer)],
+			[expect.stringMatching(/\/release\/sprites\/base@4x\.json$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/index\.json$/), '["base"]'],
 		]);
 	}, 20000);
