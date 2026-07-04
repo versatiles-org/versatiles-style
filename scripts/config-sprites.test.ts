@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { join } from 'node:path';
 import config from './config-sprites.js';
 import { loadIcons } from './lib/icons.js';
 
@@ -16,8 +17,9 @@ describe('sprite config', () => {
 
 	it.each(Object.keys(config.spritesheets))('every icon referenced by "%s" exists on disk', (sheet) => {
 		const sets = config.spritesheets[sheet];
-		// loadIcons throws "icon not found: <path>" on the first missing SVG.
-		const icons = loadIcons(sets, dirIcons);
+		// Icons live under icons/<sheet>/<group>/. loadIcons throws "icon not found: <path>" on the
+		// first missing SVG.
+		const icons = loadIcons(sets, join(dirIcons, sheet));
 		const expected = Object.values(sets).reduce((n, set) => n + set.names.length, 0);
 		expect(icons).toHaveLength(expected);
 	});
