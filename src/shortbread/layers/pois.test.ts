@@ -11,16 +11,19 @@ import spriteConfig from '../../../scripts/config-sprites.js';
 //   3. the set of schema values we do NOT give an icon is tracked (snapshot), so coverage
 //      changes are visible in review.
 //
-// The Shortbread value lists below are transcribed from the schema:
-// https://shortbread-tiles.org/schema/1.0/ (pois layer — Point, zoom 14).
-
+// The COMPLETE set of pois attribute values, transcribed verbatim from the Shortbread schema:
+// https://shortbread-tiles.org/schema/1.1/ (pois layer — Point, zoom 14). Keep this in sync with the
+// schema on every version bump — a value missing here is silently excluded from the coverage checks
+// below (which is exactly how `amenity=fuel` was previously overlooked).
 const SHORTBREAD_POIS: Record<string, string[]> = {
 	amenity: `arts_centre atm bank bar bench bicycle_rental biergarten cafe car_rental car_sharing car_wash cinema clinic
-		college community_centre courthouse dentist doctors dog_park drinking_water embassy fast_food fire_station food_court
-		fountain grave_yard hospital hunting_stand library marketplace nightclub nursing_home pharmacy place_of_worship
-		playground police post_box post_office prison pub public_building recycling restaurant school shelter telephone
-		theatre toilets townhall university vending_machine veterinary waste_basket`.split(/\s+/),
-	leisure: `golf_course ice_rink pitch sports_centre stadium swimming_pool water_park`.split(/\s+/),
+		college community_centre courthouse dentist doctors drinking_water embassy fast_food fire_station food_court fountain
+		fuel grave_yard hospital hunting_stand library marketplace nightclub nursing_home pharmacy place_of_worship police
+		post_box post_office prison pub public_building recycling restaurant school shelter telephone theatre toilets townhall
+		university vending_machine veterinary waste_basket`.split(/\s+/),
+	leisure: `dog_park golf_course ice_rink park pitch playground sports_centre stadium swimming_pool water_park`.split(
+		/\s+/
+	),
 	tourism:
 		`artwork alpine_hut bed_and_breakfast camp_site caravan_site chalet guest_house hostel hotel information motel
 		picnic_site theme_park viewpoint zoo`.split(/\s+/),
@@ -135,27 +138,30 @@ describe('POI layer ↔ Shortbread schema ↔ sprite coverage', () => {
 		expect(byKey.historic['artwork']).toBeUndefined();
 	});
 
-	it('warns (does not fail) for POI kinds that have no icon', () => {
-		// A value is "iconless" when it is neither explicitly matched nor caught by a non-empty
-		// per-key default. Missing coverage is allowed, but surfaced as a console warning so it
-		// stays visible without forcing an update to a snapshot on every change.
-		const iconless: string[] = [];
+	it('warns (does not fail) for Shortbread values without a dedicated icon', () => {
+		// A value is "uncovered" when it is neither explicitly matched nor caught by a *dedicated*
+		// per-key default. The generic point-of-interest marker (`base:transport-information`) does
+		// NOT count as coverage — a value that only reaches it (e.g. `amenity=fuel`) has no real icon.
+		// Missing coverage is allowed, but surfaced as a console warning so it stays visible.
+		const GENERIC_FALLBACK = 'base:transport-information';
+		const uncovered: string[] = [];
 		for (const { key, matches, fallback } of poiLayers) {
-			const hasDefault = fallback != null && fallback !== '';
-			if (hasDefault) continue; // a non-empty default icon covers every value for this key
+			const hasDedicatedDefault = fallback != null && fallback !== '' && fallback !== GENERIC_FALLBACK;
+			if (hasDedicatedDefault) continue; // a real category default covers every value for this key
 			for (const value of SHORTBREAD_POIS[key] ?? []) {
-				if (!(value in matches)) iconless.push(`${key}=${value}`);
+				if (!(value in matches)) uncovered.push(`${key}=${value}`);
 			}
 		}
 
-		if (iconless.length > 0) {
+		if (uncovered.length > 0) {
 			console.warn(
-				`⚠ ${iconless.length} Shortbread POI kind(s) have no icon:\n  ${iconless.join('\n  ')}\n` +
+				`⚠ ${uncovered.length} Shortbread POI value(s) have no dedicated icon (fall back to the generic marker):\n  ` +
+					`${uncovered.join('\n  ')}\n` +
 					`  (add a match in src/shortbread/layers/pois.ts and, if needed, the icon to scripts/config-sprites.ts)`
 			);
 		}
 
 		// Advisory only — coverage gaps do not fail the suite.
-		expect(Array.isArray(iconless)).toBe(true);
+		expect(Array.isArray(uncovered)).toBe(true);
 	});
 });

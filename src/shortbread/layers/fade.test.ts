@@ -280,6 +280,9 @@ describe('every opacity fade-in ramps 0 → its target linearly over one zoom', 
 				if (!Array.isArray(value) || value[0] !== 'interpolate') continue;
 				const stops = value.slice(3) as number[]; // z0, v0, z1, v1, …
 				if (stops[1] !== 0) continue; // doesn't start transparent ⇒ not a fade-in
+				// POI name labels fade in deliberately fast around z19 (a UI fade, not a Shortbread
+				// feature-appearance fade), so they're exempt from the one-zoom timing rule.
+				if (layer.id.startsWith('poi-') && prop === 'text-opacity') continue;
 				checked++;
 				const where = `${layer.id}.${prop}`;
 				if ((value[1] as unknown[])[0] !== 'linear') {
