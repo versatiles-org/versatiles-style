@@ -3,7 +3,7 @@
 VersaTiles Style ships its icons as **two separate sprite sheets**. They are built from the SVGs
 under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprites.ts) (configured in
 [`scripts/config-sprites.ts`](./scripts/config-sprites.ts)) and served at
-`…/assets/sprites/<sheet>{,@2x,@3x,@4x}.{png,json}`.
+`…/assets/sprites/<sheet>{,@2x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
 `` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`). The source SVGs mirror

@@ -7,7 +7,7 @@ vi.mock('child_process', { spy: true });
 
 vi.mock('./config-sprites', () => ({
 	default: {
-		ratios: [1, 2, 3, 4],
+		ratios: [1, 2],
 		spritesheets: {
 			base: {
 				icon: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
@@ -32,16 +32,12 @@ describe('Sprite Generation and Packaging', () => {
 
 		const readCalls = vi.mocked(fs.readFileSync).mock.calls.filter((call) => /\.svg$/.test(String(call[0])));
 		expect(readCalls.length).toBe(6);
-		expect(vi.mocked(cp.spawn)).toHaveBeenCalledTimes(4);
+		expect(vi.mocked(cp.spawn)).toHaveBeenCalledTimes(2);
 		expect(vi.mocked(fs.writeFileSync).mock.calls).toStrictEqual([
 			[expect.stringMatching(/\/release\/sprites\/base\.png$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/base\.json$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/base@2x\.png$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/base@2x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base@3x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base@3x\.json$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base@4x\.png$/), expect.any(Buffer)],
-			[expect.stringMatching(/\/release\/sprites\/base@4x\.json$/), expect.any(Buffer)],
 			[expect.stringMatching(/\/release\/sprites\/index\.json$/), '["base"]'],
 		]);
 	}, 20000);
