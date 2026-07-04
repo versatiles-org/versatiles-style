@@ -12,7 +12,7 @@ import { pois } from './pois.js';
 import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { transitStops } from './transitstops.js';
-import { labels } from './labels.js';
+import { labels, addresses } from './labels.js';
 
 // Slot anchor layers — stable IDs used as MapLibre `beforeId` targets.
 export const SLOT_BELOW_FILLS = 'slot-below-fills';
@@ -37,6 +37,9 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield slot(SLOT_BELOW_SYMBOLS);
 	// OSM Bright overlay order is boundaries → markings → POIs (POIs sit above road markings).
 	yield* boundaries(ctx);
+	// House numbers sit at the very bottom of the symbol stack, so they are placed last and have the
+	// lowest collision priority — markings, POIs, transit stops and all other labels win over them.
+	yield* addresses(ctx);
 	yield* markings(ctx);
 	yield* pois(ctx);
 	yield* transitStops(ctx);

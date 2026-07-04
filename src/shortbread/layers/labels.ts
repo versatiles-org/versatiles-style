@@ -3,8 +3,9 @@ import type { LayerContext } from '../context.js';
 import type { Color } from '../../color/index.js';
 import * as b from '../build.js';
 
-// Text labels: house numbers, motorway refs/shields, street names, place names, and
-// administrative (state/country) names. Rendered topmost, above icons.
+// Text labels: motorway refs/shields, street names, place names, and administrative
+// (state/country) names. Rendered topmost, above icons. House numbers are a separate, lowest-
+// priority symbol (see `addresses`) emitted below POIs so they yield to them in collisions.
 
 const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
 
@@ -60,6 +61,24 @@ const STREET_KINDS = [
 
 const ADMIN2: FilterSpecification = ['in', ['get', 'admin_level'], ['literal', [2, '2']]];
 
+// House numbers. Emitted at the bottom of the symbol stack by the assembler (below markings/POIs),
+// so they are placed last and therefore have the lowest collision priority — a colliding POI icon,
+// transit stop, road marking or other label always wins over a house number.
+export function* addresses(ctx: LayerContext): Generator<b.TaggedLayer> {
+	yield b.symbol('label-address-housenumber', {
+		sourceLayer: 'addresses',
+		filter: ['has', 'housenumber'],
+		layout: { 'text-field': '{housenumber}' },
+		font: ctx.fonts.normal,
+		color: ctx.c.labelHousenumber,
+		symbolPlacement: 'point',
+		textAnchor: 'center',
+		minzoom: 17,
+		size: { 17: 8, 19: 10 },
+		group: 'labels.addresses',
+	});
+}
+
 export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
@@ -93,20 +112,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 12,
 		size: { 12: 10, 15: 13 },
 	};
-
-	// house numbers
-	yield b.symbol('label-address-housenumber', {
-		sourceLayer: 'addresses',
-		filter: ['has', 'housenumber'],
-		layout: { 'text-field': '{housenumber}' },
-		font: ctx.fonts.normal,
-		color: c.labelHousenumber,
-		symbolPlacement: 'point',
-		textAnchor: 'center',
-		minzoom: 17,
-		size: { 17: 8, 19: 10 },
-		group: 'labels.addresses',
-	});
 
 	// motorway exit number + shield
 	yield b.symbol('label-motorway-exit', {

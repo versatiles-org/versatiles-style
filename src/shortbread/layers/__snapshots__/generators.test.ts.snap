@@ -1,5 +1,11 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generator: addresses > yielded layer ids are stable 1`] = `
+[
+  "symbol:label-address-housenumber",
+]
+`;
+
 exports[`generator: airport > yielded layer ids are stable 1`] = `
 [
   "fill:airport-area",
@@ -43,7 +49,6 @@ exports[`generator: buildings3d > yielded layer ids are stable 1`] = `
 
 exports[`generator: labels > yielded layer ids are stable 1`] = `
 [
-  "symbol:label-address-housenumber",
   "symbol:label-motorway-exit",
   "symbol:label-motorway-shield",
   "symbol:label-street-pedestrian",
