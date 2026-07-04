@@ -67,17 +67,63 @@ const style = await osm({
 #### `icon` group
 
 `extras:icon-animal_shelter` · `extras:icon-aquarium` · `extras:icon-bbq` · `extras:icon-beach` ·
-`extras:icon-entrance1` · `extras:icon-heart` · `extras:icon-home` · `extras:icon-information` ·
+`extras:icon-entrance` · `extras:icon-heart` · `extras:icon-home` · `extras:icon-information` ·
 `extras:icon-karaoke` · `extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` ·
-`extras:icon-park` · `extras:icon-park1` · `extras:icon-roadblock` · `extras:icon-rocket` ·
+`extras:icon-park` · `extras:icon-park2` · `extras:icon-roadblock` · `extras:icon-rocket` ·
 `extras:icon-water`
 
 #### `symbol` group
 
-`extras:symbol-arrow` · `extras:symbol-arrow1` · `extras:symbol-arrow2` · `extras:symbol-circle` ·
+`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` · `extras:symbol-circle` ·
 `extras:symbol-circle_outline` · `extras:symbol-cross` · `extras:symbol-cross_outline` ·
 `extras:symbol-diamond` · `extras:symbol-diamond_outline` · `extras:symbol-hexagon` ·
 `extras:symbol-hexagon_outline` · `extras:symbol-marker` · `extras:symbol-marker_outline` ·
 `extras:symbol-square` · `extras:symbol-square_outline` · `extras:symbol-star` ·
 `extras:symbol-star_outline` · `extras:symbol-triangle` · `extras:symbol-triangle_outline` ·
 `extras:symbol-x` · `extras:symbol-x_outline`
+
+## Naming convention
+
+Every icon name — in **all** sheets and groups — follows one convention. It keeps names
+predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<name>`.
+
+1. **Characters.** Lowercase ASCII only: `a`–`z`, `0`–`9`, `_`. No uppercase, spaces, or hyphens
+   inside a name. (The `-` in a reference separates the group from the name; it never appears
+   _within_ a name.)
+2. **Words are `snake_case`.** Separate every word with a single underscore — `fire_station`,
+   `vending_machine`, `ice_rink`. Never run words together (`firestation`) and never double an
+   underscore.
+3. **Shape: `subject[_qualifier…][_modifier…]`.** Lead with the thing depicted, narrow it, then add
+   variant modifiers as trailing suffixes: `rail_metro`, `hatched_thin`, `star_outline`.
+4. **Name what it depicts, not where it's used.** Name the object, not the map feature or OSM tag
+   that references it, so an icon can be reused (`bed`, not `hotel`).
+5. **Variants.** There are two kinds:
+   - **A describable difference → a descriptive suffix.** When versions differ along a nameable
+     axis, encode it so the name carries meaning: fill — `_outline`; size — `_small`, `_large`;
+     direction — `_left`, `_right`, `_up`, `_down`. Prefer this whenever an axis exists
+     (`star` vs. `star_outline`).
+   - **Arbitrary alternates → a number.** When versions are just different drawings of the same
+     thing with no nameable axis, number them: the canonical one is **unnumbered** and alternates
+     start at **2** — `arrow`, `arrow2`, `arrow3` (never a redundant `arrow` _and_ `arrow1`).
+     Append the digit directly (`arrow2`, not `arrow_2`). Numbers are **stable**: a new drawing
+     takes the next free number and existing ones are never renumbered, and never leave an orphan
+     number (an `entrance1` with no `entrance`). This stays open for adding more versions later.
+6. **Spell it out; American English.** Prefer full words over abbreviations and use US spelling
+   (`theater`, `center`, `gray`). The only accepted abbreviations are near-universal ones: `atm`,
+   `bbq`.
+7. **Singular** unless the subject is inherently plural (`toilet`, not `toilets`).
+8. **Don't repeat the group.** The group already namespaces the icon: `icon-restaurant`, not
+   `icon-restaurant_icon`.
+
+| ✅ good           | ❌ avoid         | rule                        |
+| ----------------- | ---------------- | --------------------------- |
+| `fire_station`    | `firestation`    | separate words (2)          |
+| `vending_machine` | `vendingmachine` | separate words (2)          |
+| `star_outline`    | `star2`          | modifier, not a number (5)  |
+| `theater`         | `theatre`        | US spelling (6)             |
+| `drinking_water`  | `water1`         | describe the subject (4, 5) |
+
+### Known deviations (pre-convention)
+
+None — every icon in both sheets follows the convention. (Icon _names_ are American English; the
+OSM tag _values_ they match on, e.g. `theatre` or `garden_centre`, keep OSM's own spelling.)
