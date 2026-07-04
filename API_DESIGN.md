@@ -269,7 +269,7 @@ type OsmOptions = OsmContentOptions & {
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
     elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
-    sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base/sprites" }]
+    sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
   features?: {
     terrain?: boolean | { exaggeration?: number };
@@ -288,7 +288,7 @@ type SatelliteOptions = {
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
     elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
-    sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base/sprites" }]
+    sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
   osmOverlay?: false | OsmContentOptions; // default: false
   raster?: {

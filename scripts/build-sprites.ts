@@ -24,8 +24,8 @@ for (const [name, sets] of Object.entries(config.spritesheets)) {
 	const maxScale = 12;
 	const spriteBig = await Sprite.fromIcons(icons, maxScale, 5);
 
-	const spriteFolder = resolve(dirSprites, name);
-	mkdirSync(spriteFolder, { recursive: true });
+	// Flat layout: each sheet is `sprites/<name>{,@2x,@3x,@4x}.{png,json}` (the sheet name is the
+	// filename, so a sprite `id` maps 1:1 to its URL tail — e.g. id "base" → sprites/base).
 	for (const scale of config.ratios) {
 		console.log('  - write scale ' + scale);
 		const suffix = scale === 1 ? '' : `@${scale}x`;
@@ -34,8 +34,8 @@ for (const [name, sets] of Object.entries(config.spritesheets)) {
 		const png = await sprite.getPng();
 		const json = await sprite.getJSON();
 
-		writeFileSync(resolve(spriteFolder, `sprites${suffix}.png`), png);
-		writeFileSync(resolve(spriteFolder, `sprites${suffix}.json`), json);
+		writeFileSync(resolve(dirSprites, `${name}${suffix}.png`), png);
+		writeFileSync(resolve(dirSprites, `${name}${suffix}.json`), json);
 	}
 }
 

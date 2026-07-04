@@ -77,11 +77,11 @@ describe('resolveOsm', () => {
 		const r = resolveOsm({
 			urls: {
 				base: 'https://tiles.example.com',
-				sprite: [{ id: 'base', url: '/assets/sprites/base/sprites' }],
+				sprite: [{ id: 'base', url: '/assets/sprites/base' }],
 			},
 		});
 		const sprite = r.urls.sprite as Array<{ id: string; url: string }>;
-		expect(sprite[0].url).toBe('https://tiles.example.com/assets/sprites/base/sprites');
+		expect(sprite[0].url).toBe('https://tiles.example.com/assets/sprites/base');
 	});
 
 	it('merges user color overrides on top of palette', () => {

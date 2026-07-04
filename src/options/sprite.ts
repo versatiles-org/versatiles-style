@@ -3,7 +3,7 @@ import { resolveUrl } from '../lib/utils.js';
 export type SpriteEntries = string | { id: string; url: string }[];
 
 export function resolveSprite(base: string, sprite?: SpriteEntries): SpriteEntries {
-	const input = sprite ?? [{ id: 'base', url: '/assets/sprites/base/sprites' }];
+	const input = sprite ?? [{ id: 'base', url: '/assets/sprites/base' }];
 	if (typeof input === 'string') {
 		return resolveUrl(base, input);
 	}
