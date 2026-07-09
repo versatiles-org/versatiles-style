@@ -93,7 +93,7 @@ async function render(): Promise<void> {
 			style,
 			maxZoom: 20,
 			hash: true,
-			minPitch: 0,
+			maxPitch: 90,
 		});
 		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 		// Inspect control: toggles a debug view of the vector tile layers/features.
