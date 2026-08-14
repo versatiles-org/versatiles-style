@@ -1,5 +1,6 @@
 import { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types.js';
 import Colorful from './colorful.js';
+import { createFadeIn } from '../shortbread/zoom.js';
 
 export default class Neutrino extends Colorful {
 	public readonly name: string = 'Neutrino';
@@ -80,7 +81,9 @@ export default class Neutrino extends Colorful {
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
-		const landcover = options.experimental.landcover === true;
+		// Fades every `land` / `water_polygons` fill in at the zoom where its data starts,
+		// taking the low-zoom land cover extension into account when it is enabled.
+		const fadeIn = createFadeIn(options.experimental.landcover === true);
 		const buildingHeights = options.experimental.buildingHeights === true;
 		return {
 			background: {
@@ -115,13 +118,14 @@ export default class Neutrino extends Colorful {
 			'water-*': {
 				color: colors.water,
 			},
-			'water-area': landcover
-				? undefined
-				: {
-						opacity: { 4: 0, 6: 1 },
-					},
-			'water-area-*': {
-				opacity: { 4: 0, 6: 1 },
+			'water-area': {
+				opacity: fadeIn('water-area', { span: 2 }),
+			},
+			'water-area-river': {
+				opacity: fadeIn('water-area-river', { span: 2 }),
+			},
+			'water-area-small': {
+				opacity: fadeIn('water-area-small', { span: 2 }),
 			},
 			'water-{pier,dam}-area': {
 				color: colors.land,
@@ -135,23 +139,31 @@ export default class Neutrino extends Colorful {
 			},
 			'land-forest': {
 				color: colors.wood,
-				opacity: landcover ? undefined : { 7: 0, 8: 1 },
+				opacity: fadeIn('land-forest'),
 			},
 			'land-grass': {
 				color: colors.grass,
-				opacity: landcover ? undefined : { 11: 0, 12: 1 },
+				opacity: fadeIn('land-grass'),
 			},
-			'land-{park,garden,vegetation}': {
+			'land-vegetation': {
 				color: colors.grass.darken(0.05).saturate(0.05),
-				opacity: landcover ? undefined : { 11: 0, 12: 1 },
+				opacity: fadeIn('land-vegetation'),
+			},
+			'land-{park,garden}': {
+				color: colors.grass.darken(0.05).saturate(0.05),
+				opacity: fadeIn(['land-park', 'land-garden']),
 			},
 			'land-agriculture': {
 				color: colors.agriculture,
-				opacity: landcover ? undefined : { 10: 0, 11: 1 },
+				opacity: fadeIn('land-agriculture'),
 			},
-			'land-{commercial,industrial,residential}': {
+			'land-residential': {
 				color: colors.land.darken(0.03),
-				opacity: landcover ? undefined : { 10: 0, 11: 1 },
+				opacity: fadeIn('land-residential'),
+			},
+			'land-{commercial,industrial}': {
+				color: colors.land.darken(0.03),
+				opacity: fadeIn(['land-commercial', 'land-industrial']),
 			},
 			'site-{bicycleparking,parking}': {
 				color: colors.commercial,

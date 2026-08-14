@@ -5,6 +5,13 @@ import type {
 } from '@maplibre/maplibre-gl-style-spec';
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import { Language } from '../style_builder/types.js';
+import { LAND_KIND_GROUPS, WATER_POLYGON_KIND_GROUPS } from './zoom.js';
+
+/** Match a layer's `kind` values, the same way the hand-written filters below do. */
+function kindFilter(kinds: readonly string[]): FilterSpecification {
+	if (kinds.length === 1) return ['==', ['get', 'kind'], kinds[0]];
+	return ['in', ['get', 'kind'], ['literal', [...kinds]]];
+}
 
 export function getShortbreadLayers(option: {
 	readonly language: Language;
@@ -32,43 +39,17 @@ export function getShortbreadLayers(option: {
 			id: 'land-glacier',
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['==', ['get', 'kind'], 'glacier'],
+			filter: kindFilter(WATER_POLYGON_KIND_GROUPS['land-glacier']),
 		},
 
-		...[
-			{ id: 'commercial', kinds: ['commercial', 'retail'] },
-			{ id: 'industrial', kinds: ['industrial', 'quarry', 'railway'] },
-			{ id: 'residential', kinds: ['garages', 'residential'] },
-			{
-				id: 'agriculture',
-				kinds: [
-					'brownfield',
-					'farmland',
-					'farmyard',
-					'greenfield',
-					'greenhouse_horticulture',
-					'orchard',
-					'plant_nursery',
-					'vineyard',
-				],
-			},
-			{ id: 'waste', kinds: ['landfill'] },
-			{ id: 'park', kinds: ['park', 'village_green', 'recreation_ground'] },
-			{ id: 'garden', kinds: ['allotments', 'garden'] },
-			{ id: 'burial', kinds: ['cemetery', 'grave_yard'] },
-			{ id: 'leisure', kinds: ['miniature_golf', 'playground', 'golf_course'] },
-			{ id: 'rock', kinds: ['bare_rock', 'scree', 'shingle'] },
-			{ id: 'forest', kinds: ['forest'] },
-			{ id: 'grass', kinds: ['grass', 'grassland', 'meadow', 'wet_meadow'] },
-			{ id: 'vegetation', kinds: ['heath', 'scrub'] },
-			{ id: 'sand', kinds: ['beach', 'sand'] },
-			{ id: 'wetland', kinds: ['bog', 'marsh', 'string_bog', 'swamp'] },
-		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
-			id: 'land-' + id,
-			type: 'fill',
-			'source-layer': 'land',
-			filter: ['in', ['get', 'kind'], ['literal', [...kinds]]],
-		})),
+		...LAND_KIND_GROUPS.map(
+			({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
+				id: 'land-' + id,
+				type: 'fill',
+				'source-layer': 'land',
+				filter: ['in', ['get', 'kind'], ['literal', [...kinds]]],
+			})
+		),
 
 		// water-lines
 		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayerDefinition => ({
@@ -79,24 +60,12 @@ export function getShortbreadLayers(option: {
 		})),
 
 		// water polygons
-		{
-			id: 'water-area',
+		...['water-area', 'water-area-river', 'water-area-small'].map((id: string): MaplibreLayerDefinition => ({
+			id,
 			type: 'fill',
 			'source-layer': 'water_polygons',
-			filter: ['==', ['get', 'kind'], 'water'],
-		},
-		{
-			id: 'water-area-river',
-			type: 'fill',
-			'source-layer': 'water_polygons',
-			filter: ['==', ['get', 'kind'], 'river'],
-		},
-		{
-			id: 'water-area-small',
-			type: 'fill',
-			'source-layer': 'water_polygons',
-			filter: ['in', ['get', 'kind'], ['literal', ['reservoir', 'basin', 'dock']]],
-		},
+			filter: kindFilter(WATER_POLYGON_KIND_GROUPS[id]),
+		})),
 
 		// dam
 		{ id: 'water-dam-area', type: 'fill', 'source-layer': 'dam_polygons', filter: ['==', ['get', 'kind'], 'dam'] },

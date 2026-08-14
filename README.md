@@ -167,7 +167,7 @@ subgraph 1["color"]
 end
 subgraph 9["guess_style"]
 A["guess_style.ts"]
-Y["index.ts"]
+Z["index.ts"]
 end
 subgraph B["lib"]
 C["utils.ts"]
@@ -176,32 +176,33 @@ end
 subgraph D["styles"]
 E["index.ts"]
 G["colorful.ts"]
-R["eclipse.ts"]
-S["empty.ts"]
-T["graybeard.ts"]
-U["neutrino.ts"]
-V["satellite.ts"]
-W["shadow.ts"]
-X["variants.ts"]
+S["eclipse.ts"]
+T["empty.ts"]
+U["graybeard.ts"]
+V["neutrino.ts"]
+W["satellite.ts"]
+X["shadow.ts"]
+Y["variants.ts"]
 end
-subgraph H["style_builder"]
-I["style_builder.ts"]
-N["decorator.ts"]
-P["recolor.ts"]
-Q["types.ts"]
+subgraph H["shortbread"]
+I["zoom.ts"]
+L["index.ts"]
+M["layers.ts"]
+N["template.ts"]
+P["properties.ts"]
 end
-subgraph J["shortbread"]
-K["index.ts"]
-L["layers.ts"]
-M["template.ts"]
-O["properties.ts"]
+subgraph J["style_builder"]
+K["style_builder.ts"]
+O["decorator.ts"]
+Q["recolor.ts"]
+R["types.ts"]
 end
-Z["index.ts"]
-subgraph 10["types"]
-11["index.ts"]
-12["tilejson.ts"]
-13["vector_layer.ts"]
-14["maplibre.ts"]
+10["index.ts"]
+subgraph 11["types"]
+12["index.ts"]
+13["tilejson.ts"]
+14["vector_layer.ts"]
+15["maplibre.ts"]
 end
 end
 3-->2
@@ -229,46 +230,50 @@ A-->E
 C-->8
 E-->F
 E-->G
-E-->R
 E-->S
 E-->T
 E-->U
 E-->V
 E-->W
 E-->X
+E-->Y
 F-->C
 G-->I
-I-->8
-I-->C
-I-->K
-I-->N
-I-->P
-I-->Q
+G-->K
+K-->8
+K-->C
 K-->L
-K-->M
-M-->C
-N-->8
+K-->O
+K-->Q
+K-->R
+L-->M
+L-->N
+L-->I
+M-->I
 N-->C
-N-->O
-P-->8
-R-->G
+O-->8
+O-->C
+O-->P
+Q-->8
 S-->G
 T-->G
 U-->G
-V-->F
-V-->C
-V-->T
-W-->G
-X-->E
-X-->V
-Y-->A
-Z-->8
-Z-->Y
-Z-->E
-11-->12
-11-->13
+V-->I
+V-->G
+W-->F
+W-->C
+W-->U
+X-->G
+Y-->E
+Y-->W
+Z-->A
+10-->8
+10-->Z
+10-->E
+12-->13
+12-->14
 
-class 0,1,9,B,D,H,J,10 subgraphs;
+class 0,1,9,B,D,H,J,11 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

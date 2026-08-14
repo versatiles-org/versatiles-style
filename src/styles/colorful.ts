@@ -1,5 +1,6 @@
 import { StyleBuilder } from '../style_builder/style_builder.js';
 import type { StyleBuilderColors, StyleRules, StyleRulesOptions } from '../style_builder/types.js';
+import { createFadeIn } from '../shortbread/zoom.js';
 
 export default class Colorful extends StyleBuilder {
 	public readonly name: string = 'Colorful';
@@ -136,7 +137,9 @@ export default class Colorful extends StyleBuilder {
 
 	protected getStyleRules(options: StyleRulesOptions): StyleRules {
 		const { colors, fonts } = options;
-		const landcover = options.experimental.landcover === true;
+		// Fades every `land` / `water_polygons` fill in at the zoom where its data starts,
+		// taking the low-zoom land cover extension into account when it is enabled.
+		const fadeIn = createFadeIn(options.experimental.landcover === true);
 		const buildingHeights = options.experimental.buildingHeights === true;
 		const bg = colors.land.saturate(-1).contrast(100);
 		const fg = bg.invertLuminosity();
@@ -187,13 +190,14 @@ export default class Colorful extends StyleBuilder {
 				lineCap: 'round',
 				lineJoin: 'round',
 			},
-			'water-area': landcover
-				? undefined
-				: {
-						opacity: { 4: 0, 6: 1 },
-					},
-			'water-area-*': {
-				opacity: { 4: 0, 6: 1 },
+			'water-area': {
+				opacity: fadeIn('water-area', { span: 2 }),
+			},
+			'water-area-river': {
+				opacity: fadeIn('water-area-river', { span: 2 }),
+			},
+			'water-area-small': {
+				opacity: fadeIn('water-area-small', { span: 2 }),
 			},
 			'water-{pier,dam}-area': {
 				color: colors.land,
@@ -222,54 +226,63 @@ export default class Colorful extends StyleBuilder {
 			},
 			'land-glacier': {
 				color: colors.glacier,
+				opacity: fadeIn('land-glacier', { span: 2 }),
 			},
 			'land-forest': {
 				color: colors.wood,
-				opacity: landcover ? 0.1 : { 7: 0, 8: 0.1 },
+				opacity: fadeIn('land-forest', { target: 0.1 }),
 			},
 			'land-grass': {
 				color: colors.grass,
-				opacity: landcover ? undefined : { 11: 0, 12: 1 },
+				opacity: fadeIn('land-grass'),
 			},
-			'land-{park,garden,vegetation}': {
+			'land-vegetation': {
 				color: colors.park,
-				opacity: landcover ? undefined : { 11: 0, 12: 1 },
+				opacity: fadeIn('land-vegetation'),
+			},
+			'land-{park,garden}': {
+				color: colors.park,
+				opacity: fadeIn(['land-park', 'land-garden']),
 			},
 			'land-agriculture': {
 				color: colors.agriculture,
-				opacity: landcover ? undefined : { 10: 0, 11: 1 },
+				opacity: fadeIn('land-agriculture'),
 			},
 			'land-residential': {
 				color: colors.residential,
-				opacity: landcover ? undefined : { 10: 0, 11: 1 },
+				opacity: fadeIn('land-residential'),
 			},
 			'land-commercial': {
 				color: colors.commercial,
-				opacity: { 10: 0, 11: 1 },
+				opacity: fadeIn('land-commercial'),
 			},
 			'land-industrial': {
 				color: colors.industrial,
-				opacity: { 10: 0, 11: 1 },
+				opacity: fadeIn('land-industrial'),
 			},
 			'land-waste': {
 				color: colors.waste,
-				opacity: { 10: 0, 11: 1 },
+				opacity: fadeIn('land-waste'),
 			},
 			'land-burial': {
 				color: colors.burial,
-				opacity: { 13: 0, 14: 1 },
+				opacity: fadeIn('land-burial'),
 			},
 			'land-leisure': {
 				color: colors.leisure,
+				opacity: fadeIn('land-leisure'),
 			},
 			'land-rock': {
 				color: colors.rock,
+				opacity: fadeIn('land-rock'),
 			},
 			'land-sand': {
 				color: colors.sand,
+				opacity: fadeIn('land-sand'),
 			},
 			'land-wetland': {
 				color: colors.wetland,
+				opacity: fadeIn('land-wetland'),
 			},
 
 			// site
