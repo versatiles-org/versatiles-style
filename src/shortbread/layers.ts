@@ -63,24 +63,20 @@ export function getShortbreadLayers(option: {
 			{ id: 'vegetation', kinds: ['heath', 'scrub'] },
 			{ id: 'sand', kinds: ['beach', 'sand'] },
 			{ id: 'wetland', kinds: ['bog', 'marsh', 'string_bog', 'swamp'] },
-		].map(
-			({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
-				id: 'land-' + id,
-				type: 'fill',
-				'source-layer': 'land',
-				filter: ['in', ['get', 'kind'], ['literal', [...kinds]]],
-			})
-		),
+		].map(({ id, kinds }: { readonly id: string; readonly kinds: readonly string[] }): MaplibreLayerDefinition => ({
+			id: 'land-' + id,
+			type: 'fill',
+			'source-layer': 'land',
+			filter: ['in', ['get', 'kind'], ['literal', [...kinds]]],
+		})),
 
 		// water-lines
-		...['river', 'canal', 'stream', 'ditch'].map(
-			(t: string): MaplibreLayerDefinition => ({
-				id: 'water-' + t,
-				type: 'line',
-				'source-layer': 'water_lines',
-				filter: ['all', ['==', ['get', 'kind'], t], ['!=', ['get', 'tunnel'], true], ['!=', ['get', 'bridge'], true]],
-			})
-		),
+		...['river', 'canal', 'stream', 'ditch'].map((t: string): MaplibreLayerDefinition => ({
+			id: 'water-' + t,
+			type: 'line',
+			'source-layer': 'water_lines',
+			filter: ['all', ['==', ['get', 'kind'], t], ['!=', ['get', 'tunnel'], true], ['!=', ['get', 'bridge'], true]],
+		})),
 
 		// water polygons
 		{
@@ -132,14 +128,12 @@ export function getShortbreadLayers(option: {
 			'parking',
 			'bicycle_parking',
 			'construction',
-		].map(
-			(t): MaplibreLayerDefinition => ({
-				id: 'site-' + t.replace(/_/g, ''),
-				type: 'fill',
-				'source-layer': 'sites',
-				filter: ['==', ['get', 'kind'], t],
-			})
-		),
+		].map((t): MaplibreLayerDefinition => ({
+			id: 'site-' + t.replace(/_/g, ''),
+			type: 'fill',
+			'source-layer': 'sites',
+			filter: ['==', ['get', 'kind'], t],
+		})),
 
 		// airport
 		{
@@ -480,15 +474,13 @@ export function getShortbreadLayers(option: {
 			'primary',
 			'trunk',
 			'track',
-		].map(
-			(t: string): MaplibreLayerDefinition => ({
-				id: 'label-street-' + t.replace(/_/g, ''),
-				type: 'symbol',
-				'source-layer': 'street_labels',
-				filter: ['==', ['get', 'kind'], t],
-				layout: { 'text-field': nameField },
-			})
-		),
+		].map((t: string): MaplibreLayerDefinition => ({
+			id: 'label-street-' + t.replace(/_/g, ''),
+			type: 'symbol',
+			'source-layer': 'street_labels',
+			filter: ['==', ['get', 'kind'], t],
+			layout: { 'text-field': nameField },
+		})),
 
 		// marking
 		{
@@ -613,18 +605,16 @@ export function getShortbreadLayers(option: {
 			'hamlet',
 			'village',
 			'town',
-		].map(
-			(id: string): MaplibreLayerDefinition => ({
-				id: 'label-place-' + id.replace(/_/g, ''),
-				type: 'symbol',
-				'source-layer': 'place_labels',
-				filter: ['==', ['get', 'kind'], id],
-				layout: {
-					'text-field': nameField,
-					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
-				},
-			})
-		),
+		].map((id: string): MaplibreLayerDefinition => ({
+			id: 'label-place-' + id.replace(/_/g, ''),
+			type: 'symbol',
+			'source-layer': 'place_labels',
+			filter: ['==', ['get', 'kind'], id],
+			layout: {
+				'text-field': nameField,
+				'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+			},
+		})),
 
 		// label-boundary
 		{
@@ -636,18 +626,16 @@ export function getShortbreadLayers(option: {
 		},
 
 		// label-place-* of large places
-		...['city', 'state_capital', 'capital'].map(
-			(id: string): MaplibreLayerDefinition => ({
-				id: 'label-place-' + id.replace(/_/g, ''),
-				type: 'symbol',
-				'source-layer': 'place_labels',
-				filter: ['==', ['get', 'kind'], id],
-				layout: {
-					'text-field': nameField,
-					'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
-				},
-			})
-		),
+		...['city', 'state_capital', 'capital'].map((id: string): MaplibreLayerDefinition => ({
+			id: 'label-place-' + id.replace(/_/g, ''),
+			type: 'symbol',
+			'source-layer': 'place_labels',
+			filter: ['==', ['get', 'kind'], id],
+			layout: {
+				'text-field': nameField,
+				'symbol-sort-key': ['-', ['to-number', ['get', 'population'], 0]],
+			},
+		})),
 
 		{
 			id: 'label-boundary-country-small',
