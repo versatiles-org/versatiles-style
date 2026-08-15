@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.13.1] - 2026-08-15
+
+### Features
+
+- implement fade-in functionality for land and water layers with associated tests ([4889e4a](https://github.com/versatiles-org/versatiles-style/commit/4889e4a1b85d02094b5b9b2104b8ff2d269aee3b))
+
+### Bug Fixes
+
+- update funding information to reflect new organization details ([1c04b12](https://github.com/versatiles-org/versatiles-style/commit/1c04b1276bfc854554db3df5403c350fb72074c0))
+
+### Build System
+
+- **deps:** bump the npm group with 11 updates ([2a02579](https://github.com/versatiles-org/versatiles-style/commit/2a02579c5db351a2235de50f8222ebb064832448))
+- **deps:** bump the action group with 2 updates ([4d6c888](https://github.com/versatiles-org/versatiles-style/commit/4d6c8882d73475fbb556ec250f3f6788c3a08203))
+- **deps:** bump actions/setup-node from 6 to 7 in the action group ([4343ea5](https://github.com/versatiles-org/versatiles-style/commit/4343ea52647b72271ae036daff36d0e584e3aa10))
+
+### Chores
+
+- update dependencies and devDependencies in package.json ([4c031db](https://github.com/versatiles-org/versatiles-style/commit/4c031dbe83a06e8c4f2b26deaa0ca2ae26ff5b47))
+
+### Styles
+
+- format map function syntax in getShortbreadLayers ([61364c6](https://github.com/versatiles-org/versatiles-style/commit/61364c6dd2cf0087ea126f75c1368132b8c9a45a))
+
 ## [5.13.0] - 2026-06-22
 
 ### Features
