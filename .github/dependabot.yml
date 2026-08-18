@@ -7,6 +7,9 @@ updates:
     groups:
       npm:
         patterns: ['*']
+      security:
+        applies-to: security-updates
+        patterns: ['*']
     versioning-strategy: increase-if-necessary
 
   - package-ecosystem: github-actions
@@ -15,4 +18,7 @@ updates:
       interval: monthly
     groups:
       action:
+        patterns: ['*']
+      security:
+        applies-to: security-updates
         patterns: ['*']
