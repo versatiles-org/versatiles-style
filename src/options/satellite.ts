@@ -8,6 +8,7 @@ import type { SatelliteUrlsOptions, ResolvedSatelliteUrls } from './urls.js';
 import { resolveSatelliteUrls } from './urls.js';
 import { ResolvedSatelliteRaster, resolveSatelliteRaster, SatelliteRasterOptions } from './satellite-raster.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay, resolveOsmOverlay } from './osm-overlay.js';
+import { OVERLAY_DEFAULTS } from '../features/satellite-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -32,6 +33,19 @@ export type ResolvedSatellite = {
 	raster: ResolvedSatelliteRaster;
 };
 
+/**
+ * The overlay's imagery defaults, with the caller's own values layered on top so an explicit
+ * `colors.label` or `text.fontNormal` still wins. See `features/satellite-overlay.ts`.
+ */
+function overlayDefaults(overlay: boolean | OsmOverlayOptions | undefined): OsmOverlayOptions {
+	const o = typeof overlay === 'object' ? overlay : {};
+	return {
+		...o,
+		colors: { ...OVERLAY_DEFAULTS.colors, ...o.colors },
+		text: { ...OVERLAY_DEFAULTS.text, ...o.text },
+	};
+}
+
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
 	// The overlay is on unless explicitly disabled: a bare `satellite()` gives a usable map rather
 	// than bare imagery, matching v5. Only `false` turns it off — `undefined` must not be treated
@@ -40,7 +54,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// v5 built the satellite overlay from `graybeard`; `gray` is its successor and the least
 	// saturated palette, so roads and labels stay out of the imagery's way. An explicit
 	// `osmOverlay.theme` still wins.
-	const osmOverlay = overlay === false ? false : resolveOsmOverlay(typeof overlay === 'object' ? overlay : {}, 'gray');
+	const osmOverlay = overlay === false ? false : resolveOsmOverlay(overlayDefaults(overlay), 'gray');
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls),

@@ -4,6 +4,7 @@ import type { SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/inlineSources.js';
 import { osm } from './osm.js';
+import { Color } from '../color/index.js';
 
 // Exhaustive behavioural coverage of every satellite() option ("knob"): raster paint
 // adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/sun,
@@ -91,11 +92,40 @@ describe('satellite() knob: osmOverlay', () => {
 	});
 
 	it('forwards the theme knob to the overlay', async () => {
-		const toner = await build({ osmOverlay: { theme: 'toner' } });
-		const gray = await build({ osmOverlay: { theme: 'gray' } });
-		const shield = (s: StyleSpecification) =>
-			(layer(s, 'label-place-village')?.paint as Record<string, unknown>)['text-color'];
-		expect(shield(toner)).not.toBe(shield(gray));
+		// Label colours are fixed white-on-black for imagery regardless of palette (A2), so the
+		// theme is observed on a road colour, which still varies.
+		const roadColor = (s: StyleSpecification) =>
+			(layer(s, 'street-motorway')?.paint as Record<string, unknown>)['line-color'];
+		expect(roadColor(await build({ osmOverlay: { theme: 'toner' } }))).not.toBe(
+			roadColor(await build({ osmOverlay: { theme: 'gray' } }))
+		);
+	});
+
+	it('applies the imagery treatment to labels regardless of palette', async () => {
+		for (const theme of ['gray', 'toner', 'colorful'] as const) {
+			const paint = layer(await build({ osmOverlay: { theme } }), 'label-place-village')?.paint as Record<
+				string,
+				unknown
+			>;
+			const hex = (v: unknown) =>
+				Color.parse(v as string)
+					.asHex()
+					.toLowerCase();
+			expect(hex(paint['text-color']), `${theme} label colour`).toBe('#ffffff');
+			expect(hex(paint['text-halo-color']), `${theme} halo colour`).toBe('#000000');
+			expect(paint['text-halo-width']).toBe(1);
+			expect(paint['text-halo-blur']).toBe(0);
+		}
+	});
+
+	it('lets an explicit label colour override the imagery default', async () => {
+		const s = await build({ osmOverlay: { colors: { label: '#ff0000' } } });
+		const c = (layer(s, 'label-place-village')?.paint as Record<string, unknown>)['text-color'];
+		expect(
+			Color.parse(c as string)
+				.asHex()
+				.toLowerCase()
+		).toBe('#ff0000');
 	});
 
 	it('forwards the text.language knob to the overlay', async () => {

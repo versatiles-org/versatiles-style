@@ -327,7 +327,7 @@ function scaleOpacity(value: unknown, factor: number): unknown {
 
 // Dim a layer by `factor`, merging with its existing opacity rather than overwriting it — so a fade
 // `{14:0, 15:0.8}` scaled by 0.5 becomes `{14:0, 15:0.4}`, and a plain layer becomes a constant.
-function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
+export function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
 	const props = OPACITY_PROPS[layer.type];
 	if (!props) return;
 	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});

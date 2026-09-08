@@ -52,10 +52,7 @@ const PAIRS: Pair[] = [
 	},
 	{
 		v5: 'satellite',
-		// Bare satellite() currently emits no overlay at all (blocker A1), which would
-		// make the diff meaningless. Compare against the overlay the v5 style actually has.
-		build: () => satellite({ osmOverlay: {} }),
-		note: 'built with `osmOverlay: {}` — bare `satellite()` produces no overlay on this branch (A1)',
+		build: () => satellite(),
 	},
 ];
 

@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
-import { addTerrain, addHillshade, configure3DLighting, applySky } from '../features/index.js';
+import { addTerrain, addHillshade, configure3DLighting, applySky, toOverlayLayers } from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
 import type { TileSource } from '../options/urls.js';
 import { osm } from './osm.js';
@@ -52,12 +52,10 @@ function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecif
 
 	// Filter: remove the opaque background layer and all fill layers.
 	// Slot anchors (background type with opacity 0) are kept — they provide stable beforeId targets.
-	return overlayStyle.layers.filter((layer) => {
-		if (layer.id === 'background') return false; // opaque base background
-		if (layer.id === SLOT_BELOW_FILLS) return false; // not useful over satellite
-		if (layer.type === 'fill') return false; // land/water/site fills obscure satellite imagery
-		return true;
-	});
+	// Slot anchors are background-type layers and must survive; the opaque base background and the
+	// below-fills slot must not.
+	const candidates = overlayStyle.layers.filter((layer) => layer.id !== 'background' && layer.id !== SLOT_BELOW_FILLS);
+	return toOverlayLayers(candidates, overlayResolved.colors.labelHalo);
 }
 
 // ── Main satellite() function ─────────────────────────────────────────────────
