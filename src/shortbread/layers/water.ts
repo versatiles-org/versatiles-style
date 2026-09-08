@@ -1,6 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import * as b from '../build.js';
+import { WATER_POLYGONS_APPEAR } from './landcover.js';
 
 // Inland water: rivers/canals/streams/ditches (lines), water polygons, dams and piers.
 // These sit ABOVE the land fills (which is why ocean lives in the landcover band instead).
@@ -33,23 +34,28 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 
-	// water polygons (OSM Bright renders water at full opacity, no zoom fade-in)
+	// water polygons — Shortbread serves `water_polygons` from z4, so these fade in there rather
+	// than painting at full opacity from z0. Without the fade they leak the low-zoom landcover
+	// extension's data at z0–3 even when `features.landcover` is off (issue #124).
 	yield b.fill('water-area', {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'water'],
 		color: c.water,
+		appear: WATER_POLYGONS_APPEAR,
 		group: 'water.lakes',
 	});
 	yield b.fill('water-area-river', {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'river'],
 		color: c.water,
+		appear: WATER_POLYGONS_APPEAR,
 		group: 'water.rivers',
 	});
 	yield b.fill('water-area-small', {
 		sourceLayer: 'water_polygons',
 		filter: ['in', ['get', 'kind'], ['literal', ['reservoir', 'basin', 'dock']]],
 		color: c.water,
+		appear: WATER_POLYGONS_APPEAR,
 		group: 'water.lakes',
 	});
 

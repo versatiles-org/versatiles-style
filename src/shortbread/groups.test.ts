@@ -62,9 +62,17 @@ describe('layer visibility gating', () => {
 	});
 
 	it('applies a fractional opacity as a constant to a layer with no existing fade', async () => {
-		// water-area (group water.lakes) is drawn at full opacity with no fade → dimming is a constant.
-		const style = await osm({ layers: { water: { lakes: 0.4 } } });
-		expect(paintOf(style, 'water-area')['fill-opacity']).toBe(0.4);
+		// water-ocean (group water.ocean) reads the `ocean` source-layer, which Shortbread serves from
+		// z0, so it is drawn at full opacity with no fade → dimming is a plain constant.
+		// (water-area is no longer a valid example: it fades in at z4 with water_polygons, see #124.)
+		const style = await osm({ layers: { water: { ocean: 0.4 } } });
+		expect(paintOf(style, 'water-ocean')['fill-opacity']).toBe(0.4);
+	});
+
+	it('merges a fractional opacity into the water_polygons fade', async () => {
+		// water-area fades in over z4→5; dimming by 0.5 must scale the target, not replace the ramp.
+		const op = paintOf(await osm({ layers: { water: { lakes: 0.5 } } }), 'water-area')['fill-opacity'];
+		expect(op).toStrictEqual(['interpolate', ['linear'], ['zoom'], 4, 0, 5, 0.5]);
 	});
 
 	it('merges a fractional opacity into an existing fade instead of overwriting it', async () => {

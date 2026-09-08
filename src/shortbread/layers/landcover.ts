@@ -14,8 +14,21 @@ type LandDef = {
 	color: (c: ColorSet) => Color;
 	/** Shortbread schema zoom at which this kind appears; the fill fades in over appear→appear+1. */
 	appear: number;
+	/**
+	 * True when the low-zoom landcover extension supplies this kind *below* its Shortbread zoom,
+	 * so `features.landcover` must remove the fade and show the fill from z0.
+	 * See https://docs.versatiles.org/compendium/specification_shortbread_landcover.html
+	 */
+	landcover?: true;
 	group: string;
 };
+
+/**
+ * Shortbread serves `water_polygons` from z4, so every fill reading that source-layer fades in
+ * there — including `land-glacier`, which is a `water_polygons` kind despite its `land-` id.
+ * https://shortbread-tiles.org/schema/1.0/#layer-water_polygons
+ */
+export const WATER_POLYGONS_APPEAR = 4;
 
 // Render order (bottom → top) mirrors the old VersaTiles Colorful land stacking: developed `landuse`
 // fills and managed green space (park/garden/leisure) go lowest, then natural `landcover` — rock,
@@ -41,6 +54,7 @@ const LAND: LandDef[] = [
 		kinds: ['garages', 'residential'],
 		color: (c) => c.areaResidential,
 		appear: 10,
+		landcover: true,
 		group: 'land.urban',
 	},
 	{
@@ -57,6 +71,7 @@ const LAND: LandDef[] = [
 		],
 		color: (c) => c.natureAgriculture,
 		appear: 10,
+		landcover: true,
 		group: 'land.agriculture',
 	},
 	{ id: 'waste', kinds: ['landfill'], color: (c) => c.areaWaste, appear: 10, group: 'land.urban' },
@@ -95,14 +110,16 @@ const LAND: LandDef[] = [
 		kinds: ['bare_rock', 'scree', 'shingle'],
 		color: (c) => c.natureRock,
 		appear: 11,
+		landcover: true,
 		group: 'land.rock',
 	},
-	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, group: 'land.forest' },
+	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, landcover: true, group: 'land.forest' },
 	{
 		id: 'grass',
 		kinds: ['grass', 'grassland', 'meadow', 'wet_meadow'],
 		color: (c) => c.natureGrass,
 		appear: 11,
+		landcover: true,
 		group: 'land.vegetation',
 	},
 	{
@@ -110,6 +127,7 @@ const LAND: LandDef[] = [
 		kinds: ['heath', 'scrub'],
 		color: (c) => c.naturePark,
 		appear: 11,
+		landcover: true,
 		group: 'land.vegetation',
 	},
 	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, appear: 10, group: 'land.sand' },
@@ -118,6 +136,7 @@ const LAND: LandDef[] = [
 		kinds: ['bog', 'marsh', 'string_bog', 'swamp'],
 		color: (c) => c.natureWetland,
 		appear: 11,
+		landcover: true,
 		group: 'land.wetland',
 	},
 ];
@@ -133,6 +152,7 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'glacier'],
 		color: c.glacier,
+		appear: WATER_POLYGONS_APPEAR,
 		group: 'land.glacier',
 	});
 
@@ -147,3 +167,15 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 }
+
+/**
+ * Layer IDs whose kind the low-zoom landcover extension supplies below its Shortbread zoom.
+ * Derived from the `LAND` table plus the two `water_polygons` kinds the extension covers, so it
+ * cannot drift from the layer definitions the way a second hand-written list would.
+ */
+export const LANDCOVER_LAYERS: ReadonlySet<string> = new Set([
+	...LAND.filter((def) => def.landcover).map((def) => 'land-' + def.id),
+	// water_polygons kinds: the extension supplies `glacier` and `water` at z0–3.
+	'land-glacier',
+	'water-area',
+]);

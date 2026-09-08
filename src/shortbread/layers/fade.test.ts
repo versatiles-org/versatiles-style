@@ -177,6 +177,50 @@ describe('land fills fade in at their Shortbread land minzoom', () => {
 	}
 });
 
+// ── water_polygons fills ──────────────────────────────────────────────────────────
+// Shortbread serves `water_polygons` from z4 (https://shortbread-tiles.org/schema/1.0/#layer-water_polygons).
+// `land-glacier` belongs here despite its `land-` id: it reads `water_polygons`, not `land`.
+// Painting these from z0 leaks the low-zoom landcover extension's data even with
+// `features.landcover` off — issue #124.
+const WATER_POLYGON_FILLS: { id: string; z: number }[] = [
+	{ id: 'water-area', z: 4 },
+	{ id: 'water-area-river', z: 4 },
+	{ id: 'water-area-small', z: 4 },
+	{ id: 'land-glacier', z: 4 },
+];
+
+describe('water_polygons fills fade in at Shortbread z4', () => {
+	for (const { id, z } of WATER_POLYGON_FILLS) {
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
+	}
+});
+
+// ── Completeness ──────────────────────────────────────────────────────────────────
+// The tables above are hand-written from the Shortbread schema on purpose — reading the zooms back
+// from the style would make the tests tautological. That leaves one gap: a NEW fill could be added
+// and simply never appear in a table. This closes it.
+describe('every land / water_polygons fill is covered by a table above', () => {
+	it('no fill escapes the schema tables', () => {
+		const tabled = new Set([...LAND_FILLS, ...WATER_POLYGON_FILLS].map((f) => f.id));
+		const missing = style.layers
+			.filter((l) => l.type === 'fill')
+			.filter((l) => ['land', 'water_polygons'].includes((l as { 'source-layer'?: string })['source-layer'] ?? ''))
+			.map((l) => l.id)
+			.filter((id) => !tabled.has(id));
+		expect(missing, `untabled fills — add them to LAND_FILLS or WATER_POLYGON_FILLS`).toEqual([]);
+	});
+
+	it('no fill escapes the landcover-mode lists', () => {
+		const listed = new Set([...LANDCOVER_COVERED, ...LANDCOVER_UNCOVERED.map((f) => f.id)]);
+		const missing = landcoverStyle.layers
+			.filter((l) => l.type === 'fill')
+			.filter((l) => ['land', 'water_polygons'].includes((l as { 'source-layer'?: string })['source-layer'] ?? ''))
+			.map((l) => l.id)
+			.filter((id) => !listed.has(id));
+		expect(missing, `unlisted fills — add them to LANDCOVER_COVERED or LANDCOVER_UNCOVERED`).toEqual([]);
+	});
+});
+
 // ── Buildings & sites (all at Shortbread z14) ─────────────────────────────────────
 describe('buildings fade in at Shortbread z14', () => {
 	for (const id of ['building', 'building:outline']) {
@@ -213,24 +257,33 @@ describe('ferries fade in at Shortbread z10', () => {
 // The extension fills these land kinds from z0, so with it enabled the layers must be VISIBLE AT
 // EVERY ZOOM — constant opacity, NOT a fade — at the same target they otherwise reach. Land kinds
 // the extension does not cover keep fading in at their normal Shortbread minzoom.
+// Which kinds the extension actually supplies, per the ESA WorldCover mapping in the spec.
+// `land-sand` is NOT covered — the spec has no ESA class for beach/sand — and `land-rock` IS,
+// via "Bare/sparse vegetation → bare_rock". Both were the wrong way round (issue #124, defect 3).
 const LANDCOVER_COVERED = [
 	'land-forest',
 	'land-grass',
 	'land-vegetation',
 	'land-agriculture',
 	'land-residential',
-	'land-sand',
+	'land-rock',
 	'land-wetland',
+	// water_polygons kinds supplied at z0–3
+	'land-glacier',
+	'water-area',
 ];
 const LANDCOVER_UNCOVERED: { id: string; z: number }[] = [
 	{ id: 'land-commercial', z: 10 },
 	{ id: 'land-industrial', z: 10 },
 	{ id: 'land-waste', z: 10 },
+	{ id: 'land-sand', z: 10 },
 	{ id: 'land-park', z: 11 },
 	{ id: 'land-garden', z: 11 },
 	{ id: 'land-leisure', z: 11 },
-	{ id: 'land-rock', z: 11 },
 	{ id: 'land-burial', z: 13 },
+	// water_polygons kinds the extension does not supply
+	{ id: 'water-area-river', z: 4 },
+	{ id: 'water-area-small', z: 4 },
 ];
 
 // The fully-shown opacity of a fill layer: the constant, or the max of its fade.
