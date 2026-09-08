@@ -531,8 +531,8 @@ Two caveats worth knowing before depending on them:
 | `colorful({ tiles: ['https://…'] })`                    | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
 | `colorful({ hideLabels: true })`                        | `osm({ layers: { labels: false } })`                              |
 | `colorful({ textScale: 1.2 })`                          | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
-| `colorful({ language: null })`                          | `osm({ labels: { language: 'local' } })`                          |
-| `colorful({ language: 'de', languageStrict: true })`    | `osm({ labels: { language: 'de', languageStrict: true } })`       |
+| `colorful({ language: null })`                          | `osm({ text: { language: 'local' } })`                            |
+| `colorful({ language: 'de', languageStrict: true })`    | `osm({ text: { language: 'de', languageStrict: true } })`         |
 | `await colorful({ terrain: true })`                     | `osm({ features: { terrain: true } })`                            |
 | `colorful({ experimental: { buildingHeights: true } })` | `osm({ features: { buildings: 'extruded' } })`                    |
 | `colorful({ elevationTilejson: '…' })`                  | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
@@ -542,3 +542,20 @@ Two caveats worth knowing before depending on them:
 | `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
 | `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
+
+### Removed types
+
+Every other v5 export still resolves — `Color`, `RGB`/`HSL`/`HSV`, `RandomColorOptions`,
+`TileJSONSpecification*`, `VectorLayer`, `RecolorOptions`, `GuessStyleOptions`,
+`SpriteSpecification`, `StyleVariant`, `getStyleVariants`, `guessStyle` and `satellite`.
+
+| v5 type                 | v6                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| `StyleBuilderOptions`   | `OsmOptions`                                                                           |
+| `StyleBuilderColors`    | `ColorsOptions`                                                                        |
+| `StyleBuilderColorKey`  | `keyof ColorsOptions` (or the `osm.colorKeys` array)                                   |
+| `StyleBuilderFonts`     | `TextOptions` (`fontNormal` / `fontBold`)                                              |
+| `StyleBuilderFunction`  | — the palette builders are gone; use `osm()`                                           |
+| `SatelliteStyleOptions` | `SatelliteOptions`                                                                     |
+| `Language`              | — it was just `string \| null`; use `text.language`, with `'local'` in place of `null` |
+| `styles` (object)       | — use `osm({ theme })`, or `getStyleVariants()` for the published set                  |

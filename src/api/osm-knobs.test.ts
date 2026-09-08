@@ -498,3 +498,29 @@ describe('osm() knob: sky', () => {
 		});
 	});
 });
+
+// The v5→v6 migration table in API_DESIGN.md pointed the language rows at `labels`, which is the
+// *visibility* group — `osm({ labels: { language: 'de' } })` silently did nothing. Guard the
+// option the table now documents (F3).
+describe('osm() knob: text.language (migration table)', () => {
+	const labelField = (s: ReturnType<typeof build>) =>
+		(s.layers.find((l) => l.id === 'label-place-city') as { layout?: Record<string, unknown> } | undefined)?.layout?.[
+			'text-field'
+		];
+
+	it("'local' uses the native name", () => {
+		expect(labelField(build({ text: { language: 'local' } }))).toStrictEqual(['get', 'name']);
+	});
+
+	it('a language code falls back to the native name', () => {
+		expect(labelField(build({ text: { language: 'de' } }))).toStrictEqual([
+			'coalesce',
+			['get', 'name_de'],
+			['get', 'name'],
+		]);
+	});
+
+	it('languageStrict drops the fallback', () => {
+		expect(labelField(build({ text: { language: 'de', languageStrict: true } }))).toStrictEqual(['get', 'name_de']);
+	});
+});

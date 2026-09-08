@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `urls` keys now accept a pre-fetched `TileJSONSpecification` object as well as a URL string.
 - Removed the v5 `StyleBuilder` class hierarchy and the palette builder functions
   `colorful`, `eclipse`, `graybeard`, `neutrino`, `shadow`, the deprecated `styles` object, and the
-  related `StyleBuilderOptions` / `StyleBuilderColors` / `SatelliteStyleOptions` / `GuessStyleOptions` types.
+  related `StyleBuilderOptions` / `StyleBuilderColors` / `StyleBuilderColorKey` / `StyleBuilderFonts` /
+  `StyleBuilderFunction` / `SatelliteStyleOptions` / `Language` types. (`GuessStyleOptions` remains.)
   Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
   flag) instead. See the migration table in `API_DESIGN.md`.
 - Removed the old `guess_style` module. `guessStyle()` now takes a **URL string** instead of a
