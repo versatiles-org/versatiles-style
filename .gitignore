@@ -7,5 +7,7 @@ dist/
 docs/
 node_modules/
 release/
+scripts/compare/baseline/
+scripts/compare/report-baseline.md
 scripts/compare/report.md
 scripts/compare/styles/style.*.json
