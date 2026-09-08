@@ -24,6 +24,8 @@ describe('getStyleVariants()', () => {
 	it('every published variant that is not */nooverlay renders vector layers', () => {
 		for (const { name, build } of getStyleVariants()) {
 			if (name.endsWith('/nooverlay')) continue;
+			// `empty` is the v5 blank canvas: source and glyphs wired up, no data layers at all.
+			if (name.startsWith('empty/')) continue;
 			const style = build();
 			const symbols = style.layers.filter((l) => l.type === 'symbol');
 			expect(Object.keys(style.sources), `${name} has no vector source`).toContain('versatiles-shortbread');
@@ -51,7 +53,8 @@ describe('getStyleVariants()', () => {
 	it('returns the expected set of variant names', () => {
 		const names = getStyleVariants().map((v) => v.name);
 		// 5 palettes × 7 osm variants + 8 satellite variants
-		expect(names).toHaveLength(5 * 7 + 8);
+		// + 4 legacy v5 palettes × 7 + `empty/style` (see the deprecation block below)
+		expect(names).toHaveLength(5 * 7 + 8 + 4 * 7 + 1);
 		expect(new Set(names).size).toBe(names.length); // all unique
 
 		for (const palette of ['colorful', 'natural', 'muted', 'gray', 'toner']) {
@@ -142,5 +145,49 @@ describe('getStyleVariants()', () => {
 	it('lets the features argument override a terrain-variant default (hillshade off)', async () => {
 		const style = await build({ hillshade: false }, 'colorful-terrain/style');
 		expect(layerIds(style)).not.toContain('hillshade');
+	});
+});
+
+// tiles.versatiles.org serves these v5 URLs today. v6 removed the palettes, so without aliases
+// every one of them would 404 for anyone pointing MapLibre at a URL instead of installing the
+// package (B1). Deprecated — drop in 7.0, not before.
+describe('v5 style names are still published', () => {
+	const LEGACY_SIBLINGS = ['style', 'en', 'de', 'nolabel'];
+	const LEGACY_PALETTES = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
+
+	it('publishes every legacy URL that is currently served', () => {
+		const names = new Set(getStyleVariants().map((v) => v.name));
+		const expected: string[] = [];
+		for (const p of LEGACY_PALETTES) {
+			for (const s of LEGACY_SIBLINGS) expected.push(`${p}/${s}`);
+			for (const s of ['style', 'en', 'de']) expected.push(`${p}-terrain/${s}`);
+		}
+		// v5 published `empty` as a single style, with no language or terrain siblings.
+		expected.push('empty/style');
+		expect(expected.filter((n) => !names.has(n))).toEqual([]);
+	});
+
+	it('each legacy alias renders a real style', () => {
+		for (const p of LEGACY_PALETTES) {
+			const style = byName(getStyleVariants(), `${p}/style`).build();
+			expect(style.layers.length, `${p} layer count`).toBeGreaterThan(300);
+			expect(Object.keys(style.sources)).toContain('versatiles-shortbread');
+		}
+	});
+
+	it('the aliases are visually distinct from each other', () => {
+		const seen = new Map<string, string>();
+		for (const p of LEGACY_PALETTES) {
+			const json = JSON.stringify(byName(getStyleVariants(), `${p}/style`).build());
+			const clash = [...seen.entries()].find(([, v]) => v === json);
+			expect(clash?.[0], `${p} is identical to ${clash?.[0]}`).toBeUndefined();
+			seen.set(p, json);
+		}
+	});
+
+	it('empty/style has no data layers, matching v5', () => {
+		const style = byName(getStyleVariants(), 'empty/style').build();
+		expect(style.layers.every((l) => l.type === 'background')).toBe(true);
+		expect(Object.keys(style.sources)).toContain('versatiles-shortbread');
 	});
 });

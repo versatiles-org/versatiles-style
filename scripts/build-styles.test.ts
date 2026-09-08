@@ -49,7 +49,10 @@ describe('Sprite Generation and Packaging', () => {
 		const { calls } = vi.mocked(packInstance.entry).mock;
 		const generatedFiles = calls.map((call) => call[0].name).sort();
 
-		const expectedFiles = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((style) => [
+		// v6 palettes, plus the v5 names kept alive so their published URLs do not 404 (B1).
+		const palettes = ['colorful', 'natural', 'muted', 'gray', 'toner'];
+		const legacy = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
+		const expectedFiles = [...palettes, ...legacy].flatMap((style) => [
 			`${style}/style.json`,
 			`${style}/en.json`,
 			`${style}/de.json`,
@@ -61,6 +64,8 @@ describe('Sprite Generation and Packaging', () => {
 		['satellite', 'terrain'].forEach((style) => {
 			expectedFiles.push(`${style}/style.json`, `${style}/en.json`, `${style}/de.json`, `${style}/nooverlay.json`);
 		});
+		// v5 published `empty` as a single style.
+		expectedFiles.push('empty/style.json');
 		expectedFiles.sort();
 
 		expect(generatedFiles).toStrictEqual(expectedFiles);
