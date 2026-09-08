@@ -19,3 +19,32 @@ describe('nodejs', () => {
 		expect(style.glyphs).toContain('{fontstack}');
 	});
 });
+
+// The published package is `dist/*` only. Anything the shipped .d.ts imports must therefore be a
+// runtime `dependency` — a devDependency is not installed for consumers, so a TypeScript consumer
+// would get "Cannot find module". The test above cannot catch this: it imports dist from inside the
+// repo, where devDependencies do resolve.
+describe('published package', () => {
+	it('every module the shipped types import is a declared dependency', async () => {
+		const { readFileSync } = await import('node:fs');
+		const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
+			dependencies?: Record<string, string>;
+		};
+		const declared = new Set(Object.keys(pkg.dependencies ?? {}));
+
+		const dts = readFileSync(new URL('../dist/index.d.ts', import.meta.url), 'utf8');
+		const specifiers = [...dts.matchAll(/from\s+'([^']+)'/g)]
+			.map((m) => m[1])
+			.filter((spec) => !spec.startsWith('.') && !spec.startsWith('node:'))
+			// `@scope/name/sub` → `@scope/name`
+			.map((spec) =>
+				spec
+					.split('/')
+					.slice(0, spec.startsWith('@') ? 2 : 1)
+					.join('/')
+			);
+
+		const undeclared = [...new Set(specifiers)].filter((spec) => !declared.has(spec));
+		expect(undeclared, 'shipped types import packages that consumers will not have').toEqual([]);
+	});
+});

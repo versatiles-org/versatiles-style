@@ -10,6 +10,9 @@
       "version": ">= 20.0.0"
     }
   },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "check": "npm run format && npm run lint && npm run build && npm run typecheck && npm run check-exports && npm run test:all",
     "check-exports": "tsx scripts/check-exports.ts",
@@ -47,10 +50,12 @@
   "files": [
     "dist/*"
   ],
+  "dependencies": {
+    "@maplibre/maplibre-gl-style-spec": "^26.2.1"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@maplibre/maplibre-gl-native": "^6.4.1",
-    "@maplibre/maplibre-gl-style-spec": "^26.2.1",
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
