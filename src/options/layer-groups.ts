@@ -166,9 +166,34 @@ function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record
 	return out;
 }
 
+/**
+ * A scalar in place of the whole object cascades to every group — the same rule that already
+ * applies at every level below it. `layers: false` is the v6 equivalent of the v5 `empty` style,
+ * and `layers: 0.5` dims the entire map.
+ */
+export type LayerGroupsOption = boolean | number | LayerGroupOptions;
+
 /** Fill in every layer-group option, applying scalar cascade and per-group defaults. */
-export function resolveLayerGroups(opts?: LayerGroupOptions): ResolvedLayerGroups {
-	const o = opts ?? {};
+export function resolveLayerGroups(opts?: LayerGroupsOption): ResolvedLayerGroups {
+	// A top-level scalar cascades to every group; previously it was silently ignored, so
+	// `layers: false` returned a fully-populated style.
+	const o: LayerGroupOptions =
+		typeof opts === 'boolean' || typeof opts === 'number'
+			? {
+					land: opts,
+					water: opts,
+					roads: opts,
+					transit: opts,
+					buildings: opts,
+					sites: opts,
+					airport: opts,
+					pois: opts,
+					boundaries: opts,
+					markings: opts,
+					labels: opts,
+					icons: opts,
+				}
+			: (opts ?? {});
 
 	// roads is two levels deep (roads → streets → residential/…); a scalar at either level cascades down.
 	const roadsInherited = scalarOf(o.roads);

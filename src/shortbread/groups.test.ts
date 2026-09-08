@@ -107,3 +107,40 @@ describe('layer visibility gating', () => {
 		expect([...ids].some((id) => id.startsWith('marking-'))).toBe(false);
 	});
 });
+
+// A scalar in place of the whole `layers` object cascades to every group — the same rule that
+// already applies at each level below it. Before this, `layers: false` was silently ignored and
+// returned a fully-populated style (B5).
+describe('top-level layers scalar', () => {
+	it('layers: false hides every group — the v6 equivalent of the v5 `empty` style', async () => {
+		const style = await osm({ layers: false });
+		const ids = style.layers.map((l) => l.id);
+		// Only the background and the four slot anchors survive; they carry no data.
+		expect(ids).toStrictEqual([
+			'background',
+			'slot-below-fills',
+			'slot-below-streets',
+			'slot-below-symbols',
+			'slot-below-labels',
+		]);
+		expect(Object.keys(style.sources)).toContain('versatiles-shortbread');
+	});
+
+	it('layers: true is the same as the default', async () => {
+		expect((await osm({ layers: true })).layers.length).toBe((await osm()).layers.length);
+	});
+
+	it('layers: 0.5 dims every group', async () => {
+		const style = await osm({ layers: 0.5 });
+		expect(paintOf(style, 'water-ocean')['fill-opacity']).toBe(0.5);
+		expect(paintOf(style, 'building')['fill-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			14,
+			0,
+			15,
+			0.5,
+		]);
+	});
+});

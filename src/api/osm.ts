@@ -8,6 +8,7 @@ import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting, applySky } from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { STYLE_METADATA, styleName } from '../lib/styleMeta.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
@@ -21,8 +22,8 @@ function buildBase(resolved: ResolvedOsm): StyleSpecification {
 
 	const style: StyleSpecification = {
 		version: 8,
-		name: 'versatiles',
-		metadata: { license: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+		name: styleName(resolved.theme.palette, resolved.theme.darkMode),
+		metadata: STYLE_METADATA,
 		glyphs: resolved.urls.glyphsPattern,
 		sprite: resolved.urls.sprite as StyleSpecification['sprite'],
 		sources: {

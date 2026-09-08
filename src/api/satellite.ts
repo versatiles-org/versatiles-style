@@ -7,6 +7,7 @@ import { buildSourceDescriptor } from '../lib/tileSource.js';
 import type { TileSource } from '../options/urls.js';
 import { osm } from './osm.js';
 import { ResolvedOsmOverlay } from '../options/osm-overlay.js';
+import { STYLE_METADATA } from '../lib/styleMeta.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -67,6 +68,8 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	// Base style shell
 	const style: StyleSpecification = {
 		version: 8,
+		name: 'versatiles-satellite',
+		metadata: STYLE_METADATA,
 		sources: {},
 		layers: [],
 		glyphs: resolved.urls.glyphsPattern,

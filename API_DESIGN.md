@@ -37,6 +37,9 @@
 Each key in `LayerGroupOptions` accepts `true`/`false` to show or hide, a `number` (0–1) to set opacity, or — for grouped keys — an object to configure sub-groups individually.
 
 ```ts
+// `layers` also accepts a scalar in place of the object, cascading to every group:
+//   osm({ layers: false })  — no data layers at all (the v5 `empty` style)
+//   osm({ layers: 0.5 })    — the whole map at half opacity
 type LayerGroupOptions = {
   land?:
     | boolean
@@ -538,3 +541,4 @@ Two caveats worth knowing before depending on them:
 | `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })` _(approximate)_  |
 | `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
+| `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
