@@ -272,7 +272,7 @@ type OsmContentOptions = {
 
 type OsmOptions = OsmContentOptions & {
   urls?: {
-    base?: string; // defaults to hostname (browser) or required in Node.js
+    base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
     elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
@@ -290,7 +290,7 @@ type OsmOptions = OsmContentOptions & {
 
 type SatelliteOptions = {
   urls?: {
-    base?: string; // defaults to hostname (browser) or required in Node.js
+    base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
     satellite?: string | TileJSONSpecification; // defaults to "/tiles/satellite/tiles.json"
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
     elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
