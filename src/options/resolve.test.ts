@@ -259,7 +259,9 @@ describe('resolveSatellite', () => {
 	it('returns defaults with no arguments', () => {
 		const r = resolveSatellite();
 		expect(typeof r.urls.satellite).toBe('string');
-		expect(r.osmOverlay).toBe(false);
+		// The overlay is on unless explicitly disabled (v5 behaviour).
+		expect(r.osmOverlay).not.toBe(false);
+		expect(resolveSatellite({ osmOverlay: false }).osmOverlay).toBe(false);
 		expect(r.features.terrain).toBe(false);
 		expect(r.features.hillshade).toBe(false);
 		expect(r.raster.opacity).toBe(1);

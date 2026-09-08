@@ -11,7 +11,12 @@ import { OsmOverlayOptions, ResolvedOsmOverlay, resolveOsmOverlay } from './osm-
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
-	osmOverlay?: false | OsmOverlayOptions;
+	/**
+	 * The OSM vector overlay over the imagery. `true` (the default) uses the overlay's own
+	 * defaults, `false` disables it, an object configures it — the same shape as `features.terrain`
+	 * and `features.hillshade`.
+	 */
+	osmOverlay?: boolean | OsmOverlayOptions;
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
@@ -28,7 +33,11 @@ export type ResolvedSatellite = {
 };
 
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
-	const osmOverlay = !options?.osmOverlay ? false : resolveOsmOverlay(options.osmOverlay);
+	// The overlay is on unless explicitly disabled: a bare `satellite()` gives a usable map rather
+	// than bare imagery, matching v5. Only `false` turns it off — `undefined` must not be treated
+	// as `false`, which is the defect that shipped `satellite/style` with no labels.
+	const overlay = options?.osmOverlay;
+	const osmOverlay = overlay === false ? false : resolveOsmOverlay(typeof overlay === 'object' ? overlay : {});
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls),

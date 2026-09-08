@@ -232,7 +232,7 @@ describe('satellite()', () => {
 
 	it('satellite.defaults returns ResolvedSatellite', () => {
 		const d = satellite.defaults;
-		expect(d.osmOverlay).toBe(false);
+		expect(d.osmOverlay).not.toBe(false);
 		expect(d.features.terrain).toBe(false);
 		expect(typeof d.urls.satellite).toBe('string');
 	});

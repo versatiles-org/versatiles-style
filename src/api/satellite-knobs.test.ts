@@ -53,10 +53,16 @@ describe('satellite() knob: raster', () => {
 // ── osmOverlay ───────────────────────────────────────────────────────────────────
 
 describe('satellite() knob: osmOverlay', () => {
-	it('is disabled by default (no vector source, no overlay symbols)', async () => {
+	it('is enabled by default (vector source + overlay symbols)', async () => {
+		// A bare satellite() gives a usable map, as in v5; only `osmOverlay: false` turns it off.
 		const s = await build();
-		expect(s.sources).not.toHaveProperty('versatiles-shortbread');
-		expect(s.layers.some((l) => l.type === 'symbol')).toBe(false);
+		expect(s.sources).toHaveProperty('versatiles-shortbread');
+		expect(s.layers.some((l) => l.type === 'symbol')).toBe(true);
+	});
+
+	it('the default differs from an explicitly disabled overlay', async () => {
+		// The two were byte-identical while `undefined` was treated as `false`.
+		expect(JSON.stringify(await build())).not.toBe(JSON.stringify(await build({ osmOverlay: false })));
 	});
 
 	it('osmOverlay:false keeps the style raster-only but still exposes slot anchors', async () => {
@@ -196,9 +202,10 @@ describe('satellite() static properties', () => {
 		});
 	});
 
-	it('satellite.defaults is a fully-resolved ResolvedSatellite (overlay off)', () => {
+	it('satellite.defaults is a fully-resolved ResolvedSatellite (overlay on)', () => {
 		const d = satellite.defaults;
-		expect(d.osmOverlay).toBe(false);
+		expect(d.osmOverlay).not.toBe(false);
+		expect((d.osmOverlay as { theme: unknown }).theme).toBeDefined();
 		expect(d.features.terrain).toBe(false);
 		expect(d.raster.opacity).toBe(1);
 	});
@@ -232,5 +239,24 @@ describe('satellite() knob: sky', () => {
 	it('maps sky options onto style-spec properties', async () => {
 		const s = await build({ sky: { skyColor: '#010203', atmosphereBlend: 0.7 } });
 		expect(s.sky).toMatchObject({ 'sky-color': '#010203', 'atmosphere-blend': 0.7 });
+	});
+});
+
+// `osmOverlay` takes the same `boolean | object` shape as features.terrain / features.hillshade:
+// `true` means "on with defaults", not "not configured".
+describe('satellite() knob: osmOverlay accepts a boolean', () => {
+	it('true is identical to the default and to an empty object', () => {
+		const bare = JSON.stringify(satellite());
+		expect(JSON.stringify(satellite({ osmOverlay: true }))).toBe(bare);
+		expect(JSON.stringify(satellite({ osmOverlay: {} }))).toBe(bare);
+	});
+
+	it('false disables the overlay', () => {
+		expect(satellite({ osmOverlay: false }).sources).not.toHaveProperty('versatiles-shortbread');
+	});
+
+	it('an object still configures it', () => {
+		const toner = satellite({ osmOverlay: { theme: 'toner' } });
+		expect(JSON.stringify(toner)).not.toBe(JSON.stringify(satellite({ osmOverlay: true })));
 	});
 });
