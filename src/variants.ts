@@ -82,13 +82,19 @@ export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] 
 	// v5 published `empty` as a single style with no language or terrain siblings.
 	variants.push({ name: 'empty/style', build: () => osm({ layers: false, features }) });
 
-	variants.push({ name: 'satellite/style', build: () => satelliteFn() });
+	// The published `/style` is bare imagery: a satellite basemap people compose on top of. The
+	// overlay lives at its own name, with `/en` and `/de` as its language variants. Note this is the
+	// opposite of the library default, where `satellite()` includes the overlay — a bare published
+	// style is the more useful starting point, but a bare API default would be the less useful one.
+	// Replaces the former `/nooverlay`, which is no longer built.
+	variants.push({ name: 'satellite/style', build: () => satelliteFn({ osmOverlay: false }) });
+	variants.push({ name: 'satellite/overlay', build: () => satelliteFn() });
 	variants.push({ name: 'satellite/en', build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } } }) });
 	variants.push({ name: 'satellite/de', build: () => satelliteFn({ osmOverlay: { text: { language: 'de' } } }) });
-	variants.push({ name: 'satellite/nooverlay', build: () => satelliteFn({ osmOverlay: false }) });
 
 	const terrainSat = { features: { terrain: true, hillshade: true } } as const;
-	variants.push({ name: 'terrain/style', build: () => satelliteFn({ ...terrainSat }) });
+	variants.push({ name: 'terrain/style', build: () => satelliteFn({ osmOverlay: false, ...terrainSat }) });
+	variants.push({ name: 'terrain/overlay', build: () => satelliteFn({ ...terrainSat }) });
 	variants.push({
 		name: 'terrain/en',
 		build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } }, ...terrainSat }),
@@ -97,7 +103,6 @@ export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] 
 		name: 'terrain/de',
 		build: () => satelliteFn({ osmOverlay: { text: { language: 'de' } }, ...terrainSat }),
 	});
-	variants.push({ name: 'terrain/nooverlay', build: () => satelliteFn({ osmOverlay: false, ...terrainSat }) });
 
 	return variants;
 }

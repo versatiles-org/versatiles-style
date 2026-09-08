@@ -62,7 +62,7 @@ describe('Sprite Generation and Packaging', () => {
 			`${style}-terrain/de.json`,
 		]);
 		['satellite', 'terrain'].forEach((style) => {
-			expectedFiles.push(`${style}/style.json`, `${style}/en.json`, `${style}/de.json`, `${style}/nooverlay.json`);
+			expectedFiles.push(`${style}/style.json`, `${style}/overlay.json`, `${style}/en.json`, `${style}/de.json`);
 		});
 		// v5 published `empty` as a single style.
 		expectedFiles.push('empty/style.json');

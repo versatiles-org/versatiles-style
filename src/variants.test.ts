@@ -23,8 +23,8 @@ describe('getStyleVariants()', () => {
 	// the satellite tests only ever passed `osmOverlay` explicitly.
 	it('every published variant that is not */nooverlay renders vector layers', () => {
 		for (const { name, build } of getStyleVariants()) {
-			if (name.endsWith('/nooverlay')) continue;
-			// `empty` is the v5 blank canvas: source and glyphs wired up, no data layers at all.
+			// Deliberately layer-free published styles: bare satellite imagery and the v5 blank canvas.
+			if (name === 'satellite/style' || name === 'terrain/style') continue;
 			if (name.startsWith('empty/')) continue;
 			const style = build();
 			const symbols = style.layers.filter((l) => l.type === 'symbol');
@@ -33,18 +33,29 @@ describe('getStyleVariants()', () => {
 		}
 	});
 
-	it('*/nooverlay variants really have no overlay, and differ from their default sibling', () => {
+	it('the published satellite styles split bare imagery from the overlay', () => {
+		// `/style` is bare imagery; `/overlay`, `/en` and `/de` carry the vector overlay. The guard
+		// is that an overlay variant can never silently lose its overlay — the defect that shipped
+		// `satellite/style` identical to the bare style (A1).
 		const byName = new Map(getStyleVariants().map((v) => [v.name, v]));
 		for (const base of ['satellite', 'terrain']) {
-			const withOverlay = byName.get(`${base}/style`)!.build();
-			const without = byName.get(`${base}/nooverlay`)!.build();
-			expect(Object.keys(without.sources), `${base}/nooverlay has a vector source`).not.toContain(
-				'versatiles-shortbread'
-			);
+			const bare = byName.get(`${base}/style`)!.build();
+			expect(Object.keys(bare.sources), `${base}/style must be bare imagery`).not.toContain('versatiles-shortbread');
 			expect(
-				JSON.stringify(withOverlay) === JSON.stringify(without),
-				`${base}/style is identical to ${base}/nooverlay`
+				bare.layers.some((l) => l.type === 'symbol'),
+				`${base}/style must have no labels`
 			).toBe(false);
+
+			for (const suffix of ['overlay', 'en', 'de']) {
+				const withOverlay = byName.get(`${base}/${suffix}`)!.build();
+				expect(Object.keys(withOverlay.sources), `${base}/${suffix} lost its vector source`).toContain(
+					'versatiles-shortbread'
+				);
+				expect(
+					JSON.stringify(withOverlay) === JSON.stringify(bare),
+					`${base}/${suffix} is identical to the bare ${base}/style`
+				).toBe(false);
+			}
 		}
 	});
 
@@ -65,8 +76,9 @@ describe('getStyleVariants()', () => {
 			expect(names).toContain(`${palette}-terrain/style`);
 		}
 		expect(names).toContain('satellite/style');
-		expect(names).toContain('satellite/nooverlay');
-		expect(names).toContain('terrain/nooverlay');
+		expect(names).toContain('satellite/overlay');
+		expect(names).toContain('terrain/overlay');
+		expect(names).not.toContain('satellite/nooverlay'); // retired in favour of the bare /style
 	});
 
 	it('every variant builds a valid MapLibre style', async () => {
