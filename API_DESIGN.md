@@ -17,6 +17,7 @@
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
+  - [Other exports](#other-exports)
   - [Migration from v5](#migration-from-v5)
 
 ## Core Principles
@@ -75,7 +76,9 @@ type LayerGroupOptions = {
               track?: boolean | number; // street-track
               bus?: boolean | number; // street-busway, street-busguideway
             };
-        paths?: boolean | number; // footway, steps, path, cycleway
+        paths?: boolean | number; // path, cycleway
+        footway?: boolean | number; // footways and pedestrian paths
+        steps?: boolean | number; // stairs
       };
   transit?:
     | boolean
@@ -168,6 +171,7 @@ type ColorsOptions = {
   siteDanger?: string; // danger areas
   sitePrison?: string; // prisons
   siteParking?: string; // parking areas
+  siteSports?: string; // sports centres and pitches
 
   // buildings  (building*)
   building?: string; // building fill
@@ -197,6 +201,7 @@ type ColorsOptions = {
   labelShield?: string; // motorway shield background
   labelSymbol?: string; // transit icon tint
   labelPoi?: string; // POI icon and label tint
+  labelHousenumber?: string; // house-number labels
 };
 
 type RecolorOptions = {
@@ -274,7 +279,7 @@ type OsmOptions = OsmContentOptions & {
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
   features?: {
-    terrain?: boolean | { exaggeration?: number };
+    terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
     landcover?: boolean; // ESA WorldCover at z0–z10; default: false
     buildings?: 'flat' | 'extruded'; // default: 'flat'
@@ -303,7 +308,7 @@ type SatelliteOptions = {
     contrast?: number;
   };
   features?: {
-    terrain?: boolean | { exaggeration?: number };
+    terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
   };
   sun?: SunOptions;
@@ -489,6 +494,28 @@ color.tint(amount: number, color: Color): Color  // 0–1; shift hue toward colo
 color.blend(amount: number, color: Color): Color // 0–1; linear mix toward color
 color.fade(amount: number): Color                // 0–1; reduce alpha
 ```
+
+---
+
+## Other exports
+
+These are exported from the package but are not part of the main API surface above.
+
+```ts
+getStyleVariants(features?): StyleVariant[]  // the styles published under /assets/styles/
+colorOptionsKeys: (keyof ColorsOptions)[]    // identical to osm.colorKeys / satellite.colorKeys
+isTileJSONSpecification(spec): spec is TileJSONSpecification
+isRasterTileJSONSpecification(spec): spec is TileJSONSpecificationRaster
+```
+
+Two caveats worth knowing before depending on them:
+
+- `colorOptionsKeys` is the same array as `osm.colorKeys`. Prefer the static; the standalone
+  export is a second name for one thing.
+- **The two `is…` functions do not behave like type guards.** Despite their `spec is T` signature
+  they never return `false` — they `throw` a descriptive `Error` for every invalid input, so
+  `if (isTileJSONSpecification(x))` throws rather than branching. Use them inside a `try`/`catch`,
+  or validate the shape yourself.
 
 ---
 
