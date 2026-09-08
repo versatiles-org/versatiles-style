@@ -5,6 +5,7 @@ import { loadTileSource, resolveTileJSONTiles } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 import { resolveUrl } from '../lib/utils.js';
+import { DEFAULT_BASE } from '../options/urls.js';
 
 /** Options for {@link guessStyle}. */
 export type GuessStyleOptions = {
@@ -13,8 +14,6 @@ export type GuessStyleOptions = {
 	/** Custom `fetch` used to download any nested TileJSON sources. Defaults to the global `fetch`. */
 	fetch?: FetchLike;
 };
-
-const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
 
 // The canonical set of Shortbread 1.0 source-layer IDs.
 // If a TileJSON has vector_layers and enough of them match, we treat it as Shortbread.
