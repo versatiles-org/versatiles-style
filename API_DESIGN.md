@@ -555,10 +555,24 @@ delivering the second.
 | `colorful({ elevationTilejson: '…' })`                  | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
 | `shadow(options)`                                       | `osm({ ...options, theme: { palette: 'gray', darkMode: true } })` |
 | `graybeard(options)`                                    | `osm({ ...options, theme: { palette: 'gray' } })`                 |
-| `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })` _(approximate)_  |
+| `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })`                  |
+| `neutrino(options)`                                     | `osm({ ...options, theme: 'muted' })` _(closest match)_           |
 | `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
 | `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
+| `satellite({ overlay: false })`                         | `satellite({ osmOverlay: false })`                                |
+| `await guessStyle(tileJSON, options)`                   | `await guessStyle(url, options)` — see note below                 |
+| `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'`                                                |
+
+`guessStyle` changed more than its name suggests: it takes the tileset's **URL** where v5 took an
+already-fetched `TileJSONSpecification`, and downloads the document itself. Passing a TileJSON object
+does not fail loudly — it is stringified into a URL — so this is one to grep for rather than rely on
+the type checker. In exchange it now never throws: an invalid argument, a failed download or a
+malformed document each yield a blank but valid style.
+
+The palette mappings above were chosen by comparing per-colour RGB distance against the published v5
+styles: `graybeard`→`gray` and `eclipse`→`colorful`+dark are near-exact, `neutrino`→`muted` is the
+closest of the five, and `shadow`→`gray`+dark is approximate — `shadow` has no close v6 equivalent.
 
 ### Removed types
 
