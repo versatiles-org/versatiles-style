@@ -324,7 +324,7 @@ Static properties for introspection:
 ```ts
 osm.palettes:     Palette[]           // ['colorful', 'natural', 'muted', 'gray', 'toner']
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
-osm.layerGroups:  LayerGroupOptions   // maps each LayerGroupOptions key to its layer IDs
+osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
 osm.colors(palette: Palette, darkMode: boolean): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
@@ -336,6 +336,22 @@ osm.slots: {
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
 osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
 ```
+
+`osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
+at the leaves — useful for building a UI over the options, or for finding a layer to target with
+`beforeId`. It is derived from the layers themselves, so it cannot drift from what the options
+actually control.
+
+```ts
+osm.layerGroups.land.glacier; // ['land-glacier']
+osm.layerGroups.buildings; // ['building:outline', 'building', 'building-3d']
+Object.keys(osm.layerGroups.roads.streets); // ['pedestrian', 'track', 'service', …]
+```
+
+`buildings` lists all three footprint layers even though `features.buildings: 'flat'` and
+`'extruded'` are mutually exclusive in any one style — the group controls whichever is generated.
+`icons` is a cross-cutting alias, so it is listed as the union of `pois`, `markings` and
+`transit.stops`.
 
 The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with an explicit `theme.palette` and `theme.darkMode` instead — see [Migration from v5](#migration-from-v5) below.
 

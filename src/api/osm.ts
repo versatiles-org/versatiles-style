@@ -7,6 +7,7 @@ import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting, applySky } from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
+import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
@@ -151,6 +152,11 @@ export const osm = Object.assign(osmFn, {
 
 	/** All color key names accepted by ColorsOptions. */
 	colorKeys: colorOptionsKeys,
+
+	/** Maps each `LayerGroupOptions` key to the layer IDs it controls. */
+	get layerGroups() {
+		return getLayerGroupMap();
+	},
 
 	/** Fully resolved defaults (palette: 'colorful', darkMode: false). */
 	get defaults() {

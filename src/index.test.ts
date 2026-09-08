@@ -12,6 +12,8 @@ describe('exports', () => {
 	it('should expose osm static properties', () => {
 		expect(lib.osm.palettes).toStrictEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
 		expect(typeof lib.osm.colors).toBe('function');
+		expect(typeof lib.osm.layerGroups).toBe('object');
+		expect(lib.osm.layerGroups.buildings).toContain('building');
 	});
 
 	it('should export Color', () => {
