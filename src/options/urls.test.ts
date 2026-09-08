@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
 	DEFAULT_BASE,
 	resolveBase,
@@ -97,5 +97,41 @@ describe('convertSatelliteUrlsToOsmUrls', () => {
 		const out = convertSatelliteUrlsToOsmUrls({ sprite, fetch });
 		expect(out?.sprite).toBe(sprite);
 		expect(out?.fetch).toBe(fetch);
+	});
+});
+
+describe('DEFAULT_BASE (issue #127)', () => {
+	it('is the page origin when there is a usable one', () => {
+		expect(DEFAULT_BASE).toBe('https://tiles.versatiles.org'); // no document in Node
+	});
+
+	it('falls back to the VersaTiles host for a srcdoc "null" origin', async () => {
+		// In a srcdoc/sandboxed iframe, a data: document or a file:// page, location.origin is the
+		// *string* "null", which slips past `?? fallback` and then throws inside `new URL()`.
+		for (const origin of ['null', '', 'not a url']) {
+			vi.resetModules();
+			vi.stubGlobal('document', { location: { origin } });
+			try {
+				const fresh = await import('./urls.js');
+				expect(fresh.DEFAULT_BASE, `origin ${JSON.stringify(origin)}`).toBe('https://tiles.versatiles.org');
+				expect(() => fresh.resolveOsmUrls()).not.toThrow();
+			} finally {
+				vi.unstubAllGlobals();
+			}
+		}
+		vi.resetModules();
+	});
+
+	it('uses a real page origin when one is available', async () => {
+		vi.resetModules();
+		vi.stubGlobal('document', { location: { origin: 'https://maps.example.com' } });
+		try {
+			const fresh = await import('./urls.js');
+			expect(fresh.DEFAULT_BASE).toBe('https://maps.example.com');
+			expect(fresh.resolveOsmUrls().osm).toBe('https://maps.example.com/tiles/osm/tiles.json');
+		} finally {
+			vi.unstubAllGlobals();
+			vi.resetModules();
+		}
 	});
 });

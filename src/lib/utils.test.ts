@@ -240,8 +240,17 @@ describe('resolveUrl', () => {
 		expect(resolveUrl('http://example.com/', 'path/%7Bparam%7D')).toBe('http://example.com/path/{param}');
 	});
 
-	it('throws an error for invalid base URLs', () => {
-		expect(() => resolveUrl('invalid-base', 'path/page')).toThrow('Invalid URL');
+	it('throws an error naming urls.base for an invalid base', () => {
+		// A bare "Invalid URL" from the URL constructor names neither value; the message must
+		// point at the option that is actually wrong (issue #127).
+		expect(() => resolveUrl('invalid-base', 'path/page')).toThrow(/urls\.base/);
+		expect(() => resolveUrl('invalid-base', 'path/page')).toThrow(/invalid-base/);
+	});
+
+	it('throws a useful error for the srcdoc "null" origin', () => {
+		// In a srcdoc/sandboxed iframe, a data: document or a file:// page, location.origin is the
+		// *string* "null" — the exact case that used to reach `new URL(path, "null")`.
+		expect(() => resolveUrl('null', '/tiles/osm/tiles.json')).toThrow(/urls\.base/);
 	});
 });
 
