@@ -516,19 +516,26 @@ These are exported from the package but are not part of the main API surface abo
 
 ```ts
 getStyleVariants(features?): StyleVariant[]  // the styles published under /assets/styles/
-colorOptionsKeys: (keyof ColorsOptions)[]    // identical to osm.colorKeys / satellite.colorKeys
+
+// Validation — a predicate and an assertion for each shape.
 isTileJSONSpecification(spec): spec is TileJSONSpecification
 isRasterTileJSONSpecification(spec): spec is TileJSONSpecificationRaster
+assertTileJSONSpecification(spec): asserts spec is TileJSONSpecification
+assertRasterTileJSONSpecification(spec): asserts spec is TileJSONSpecificationRaster
 ```
 
-Two caveats worth knowing before depending on them:
+The `is…` functions return a boolean and never throw, so they read as predicates:
 
-- `colorOptionsKeys` is the same array as `osm.colorKeys`. Prefer the static; the standalone
-  export is a second name for one thing.
-- **The two `is…` functions do not behave like type guards.** Despite their `spec is T` signature
-  they never return `false` — they `throw` a descriptive `Error` for every invalid input, so
-  `if (isTileJSONSpecification(x))` throws rather than branching. Use them inside a `try`/`catch`,
-  or validate the shape yourself.
+```ts
+if (isTileJSONSpecification(x)) {
+  /* x is a TileJSONSpecification */
+}
+```
+
+The `assert…` functions throw an `Error` naming the offending field — `spec.tilejson must be
+"3.0.0", but got "2.2"` — which is what you want when validating input you expected to be valid.
+They were previously one function whose `spec is T` signature promised the first behaviour while
+delivering the second.
 
 ---
 

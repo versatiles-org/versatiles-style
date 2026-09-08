@@ -38,11 +38,14 @@ describe('exports', () => {
 
 	it('should export the TileJSON type guards', () => {
 		expect(typeof lib.isTileJSONSpecification).toBe('function');
+		expect(typeof lib.assertTileJSONSpecification).toBe('function');
+		expect(typeof lib.assertRasterTileJSONSpecification).toBe('function');
 		expect(typeof lib.isRasterTileJSONSpecification).toBe('function');
 	});
 
 	it('the exported guards actually work', () => {
 		expect(lib.isTileJSONSpecification({ tiles: ['https://t/{z}/{x}/{y}'] })).toBe(true);
+		expect(lib.isTileJSONSpecification(null)).toBe(false);
 		expect(lib.isRasterTileJSONSpecification({ tiles: ['https://t/{z}/{x}/{y}'] })).toBe(true);
 	});
 });

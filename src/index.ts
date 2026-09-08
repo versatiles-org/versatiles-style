@@ -132,7 +132,6 @@ export type {
 	ResolvedOsmUrls,
 	ResolvedSatelliteUrls,
 } from './options/index.js';
-export { colorOptionsKeys } from './options/index.js';
 
 export type {
 	StyleSpecification,
@@ -141,7 +140,12 @@ export type {
 	TileJSONSpecificationVector,
 	VectorLayer,
 } from './types/index.js';
-export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/index.js';
+export {
+	assertTileJSONSpecification,
+	assertRasterTileJSONSpecification,
+	isTileJSONSpecification,
+	isRasterTileJSONSpecification,
+} from './types/index.js';
 
 export { isDarkMode } from './options/theme.js';
 export type { LayerGroupMap } from './shortbread/layer-groups-map.js';

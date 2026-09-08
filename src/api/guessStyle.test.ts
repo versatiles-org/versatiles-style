@@ -228,11 +228,22 @@ describe('guessStyle() — never throws', () => {
 // ── Input validation (throws BEFORE the try/catch fallback) ─────────────────────
 
 describe('guessStyle() — url validation', () => {
-	it('rejects an empty string url', async () => {
-		await expect(guessStyle('')).rejects.toThrow(/must be a non-empty string/);
+	// guessStyle documents that it never throws: a bad argument, an unreachable host or a malformed
+	// document each yield a blank — but valid — style (B9).
+	const blank = { version: 8, sources: {}, layers: [] };
+
+	it('falls back to a blank style for an empty string url', async () => {
+		await expect(guessStyle('')).resolves.toStrictEqual(blank);
 	});
 
-	it('rejects a non-string url', async () => {
-		await expect(guessStyle(undefined as unknown as string)).rejects.toThrow(/must be a non-empty string/);
+	it('falls back to a blank style for a non-string url', async () => {
+		await expect(guessStyle(undefined as unknown as string)).resolves.toStrictEqual(blank);
+	});
+
+	it('falls back to a blank style when the download fails', async () => {
+		const failing = (async () => {
+			throw new Error('network down');
+		}) as unknown as typeof fetch;
+		await expect(guessStyle('https://tiles.example.com/tiles.json', { fetch: failing })).resolves.toStrictEqual(blank);
 	});
 });

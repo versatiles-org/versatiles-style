@@ -33,10 +33,14 @@ export interface TileJSONSpecificationVector extends TileJSONSpecificationRaster
 export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecificationVector;
 
 /**
- * Checks if an object adheres to the TileJSON specification.
- * Throws errors if the object does not conform to the expected structure or types.
+ * Validate an object against the TileJSON specification, throwing a descriptive error naming the
+ * offending field if it does not conform.
+ *
+ * Use {@link isTileJSONSpecification} when you want a boolean instead. These were one function
+ * whose `spec is T` signature promised a predicate but which threw for every invalid input, so
+ * `if (isTileJSONSpecification(x))` blew up rather than branching.
  */
-export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecification {
+export function assertTileJSONSpecification(spec: unknown): asserts spec is TileJSONSpecification {
 	if (typeof spec !== 'object' || spec === null) {
 		throw new Error(`TileJSON validation: spec must be an object, but got ${typeof spec}`);
 	}
@@ -145,12 +149,35 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 	if (!Array.isArray(obj.tiles) || obj.tiles.length === 0 || obj.tiles.some((url) => typeof url !== 'string')) {
 		throw new Error('TileJSON validation: spec.tiles must be a non-empty array of strings');
 	}
-
-	return true;
 }
 
+/** Whether an object adheres to the TileJSON specification. Never throws. */
+export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecification {
+	try {
+		assertTileJSONSpecification(spec);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Validate an object as a *raster* TileJSON — a TileJSON with no `vector_layers`.
+ * Throws the same descriptive errors as {@link assertTileJSONSpecification}.
+ */
+export function assertRasterTileJSONSpecification(spec: unknown): asserts spec is TileJSONSpecificationRaster {
+	assertTileJSONSpecification(spec);
+	if ('vector_layers' in spec && (spec as { vector_layers?: unknown }).vector_layers != null) {
+		throw new Error('TileJSON validation: spec.vector_layers must be absent for a raster TileJSON');
+	}
+}
+
+/** Whether an object is a raster TileJSON (no `vector_layers`). Never throws. */
 export function isRasterTileJSONSpecification(spec: unknown): spec is TileJSONSpecificationRaster {
-	if (!isTileJSONSpecification(spec)) return false;
-	if ('vector_layers' in spec && spec.vector_layers != null) return false;
-	return true;
+	try {
+		assertRasterTileJSONSpecification(spec);
+		return true;
+	} catch {
+		return false;
+	}
 }

@@ -1,5 +1,5 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
-import { isTileJSONSpecification } from '../types/index.js';
+import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles } from '../lib/loadTileSource.js';
 import { osm } from './osm.js';
@@ -180,17 +180,21 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  * - Raster tiles with satellite name hint → `satellite()` style
  * - Other raster tiles → minimal single-layer raster style
  *
- * Never throws — always returns a valid StyleSpecification.
+ * Never throws — an invalid argument, a failed download or a malformed document all yield a
+ * blank (but valid) StyleSpecification.
  */
 export async function guessStyle(url: string, options?: GuessStyleOptions): Promise<StyleSpecification> {
-	if (!url || typeof url !== 'string') {
-		throw new TypeError('guessStyle: url must be a non-empty string');
-	}
-
-	url = resolveUrl(options?.base ?? DEFAULT_BASE, url);
-	const tileJSON = await loadTileSource(url, options?.fetch);
+	// Everything is inside the try: the point of guessStyle is that it always yields a usable
+	// style. A bad argument, an unreachable host, a malformed document — each falls back to a blank
+	// style rather than surfacing. Previously the argument check and the download sat outside, so
+	// the documented "never throws" contract was false for both.
 	try {
-		isTileJSONSpecification(tileJSON);
+		if (!url || typeof url !== 'string') throw new TypeError('guessStyle: url must be a non-empty string');
+
+		url = resolveUrl(options?.base ?? DEFAULT_BASE, url);
+		const tileJSON = await loadTileSource(url, options?.fetch);
+
+		assertTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
 				return await osm({ urls: { osm: url, base: options?.base, fetch: options?.fetch } });
@@ -199,7 +203,8 @@ export async function guessStyle(url: string, options?: GuessStyleOptions): Prom
 		}
 		return await buildRasterStyle(url, tileJSON, options);
 	} catch {
-		// Fallback: return a blank style rather than throwing
+		// A blank style is still a valid style: the map loads, and the caller sees an empty map
+		// rather than an exception at style-build time.
 		return { version: 8, sources: {}, layers: [] };
 	}
 }

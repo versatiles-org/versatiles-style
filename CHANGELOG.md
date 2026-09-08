@@ -23,9 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
   flag) instead. See the migration table in `API_DESIGN.md`.
 - Removed the old `guess_style` module. `guessStyle()` now takes a **URL string** instead of a
-  `TileJSONSpecification` object, downloads the document itself, and returns a Promise. It falls back
-  to a blank style for anything it cannot classify, but still throws on an invalid `url` argument and
-  propagates network failures.
+  `TileJSONSpecification` object, downloads the document itself, and returns a Promise. It never
+  throws: an invalid argument, a failed download or a malformed document all yield a blank — but
+  valid — style.
+- `isTileJSONSpecification` / `isRasterTileJSONSpecification` now return a boolean instead of
+  throwing, so they behave like the type guards their signatures always claimed. The throwing
+  behaviour, with its descriptive validation messages, moved to the new
+  `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
+- `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
+  expose the same array.
 
 ## [5.13.1] - 2026-08-15
 

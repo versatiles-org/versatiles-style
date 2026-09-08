@@ -2,9 +2,14 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isRasterTileJSONSpecification, isTileJSONSpecification } from './tilejson.js';
+import {
+	assertRasterTileJSONSpecification,
+	assertTileJSONSpecification,
+	isRasterTileJSONSpecification,
+	isTileJSONSpecification,
+} from './tilejson.js';
 
-describe('isTileJSONSpecification', () => {
+describe('assertTileJSONSpecification / isTileJSONSpecification', () => {
 	const validVectorSpec = {
 		tilejson: '3.0.0',
 		type: 'vector',
@@ -28,12 +33,12 @@ describe('isTileJSONSpecification', () => {
 	});
 
 	it('should throw an error if not object', () => {
-		expect(() => isTileJSONSpecification(null)).toThrow('spec must be an object');
-		expect(() => isTileJSONSpecification(1)).toThrow('spec must be an object');
+		expect(() => assertTileJSONSpecification(null)).toThrow('spec must be an object');
+		expect(() => assertTileJSONSpecification(1)).toThrow('spec must be an object');
 	});
 
 	it('should throw an error if the tiles property is missing', () => {
-		expect(() => isTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow(
+		expect(() => assertTileJSONSpecification({ ...validRasterSpec, tiles: undefined })).toThrow(
 			'spec.tiles must be a non-empty array of strings'
 		);
 	});
@@ -47,7 +52,7 @@ describe('isTileJSONSpecification', () => {
 			{ bounds: [180, -90, -180, 90], errorMessage: 'spec.bounds[0] must be smaller than spec.bounds[2]' },
 			{ bounds: [-180, 90, 180, -90], errorMessage: 'spec.bounds[1] must be smaller than spec.bounds[3]' },
 		].forEach(({ bounds, errorMessage }) => {
-			expect(() => isTileJSONSpecification({ ...validVectorSpec, bounds })).toThrow(errorMessage);
+			expect(() => assertTileJSONSpecification({ ...validVectorSpec, bounds })).toThrow(errorMessage);
 		});
 	});
 
@@ -60,7 +65,7 @@ describe('isTileJSONSpecification', () => {
 			{ center: [0, 0, -1], errorMessage: 'spec.center[2]' },
 			{ center: [0, 0, 2.5], errorMessage: 'spec.center[2]' },
 		].forEach(({ center, errorMessage }) => {
-			expect(() => isTileJSONSpecification({ ...validVectorSpec, center })).toThrow(errorMessage);
+			expect(() => assertTileJSONSpecification({ ...validVectorSpec, center })).toThrow(errorMessage);
 		});
 	});
 
@@ -69,7 +74,7 @@ describe('isTileJSONSpecification', () => {
 	});
 
 	it('requires tilejson "3.0.0" when a data property is present', () => {
-		expect(() => isTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '2.0.0' })).toThrow(
+		expect(() => assertTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '2.0.0' })).toThrow(
 			'spec.tilejson must be "3.0.0"'
 		);
 		// data present + correct version → passes the version gate
@@ -112,7 +117,7 @@ describe('isTileJSONSpecification', () => {
 					if (i === 0) {
 						expect(isTileJSONSpecification({ ...validVectorSpec, [key]: value })).toBe(true);
 					} else {
-						expect(() => isTileJSONSpecification({ ...validVectorSpec, [key]: value })).toThrow(
+						expect(() => assertTileJSONSpecification({ ...validVectorSpec, [key]: value })).toThrow(
 							`spec.${key} must be ${errorMessage}`
 						);
 					}
@@ -143,7 +148,32 @@ describe('isRasterTileJSONSpecification', () => {
 		).toBe(true);
 	});
 
-	it('propagates validation errors from isTileJSONSpecification', () => {
-		expect(() => isRasterTileJSONSpecification({ tiles: [] })).toThrow('spec.tiles must be a non-empty array');
+	it('propagates validation errors from assertTileJSONSpecification', () => {
+		expect(() => assertRasterTileJSONSpecification({ tiles: [] })).toThrow('spec.tiles must be a non-empty array');
+	});
+});
+
+// The pair exists because one function cannot both be a predicate and throw: `spec is T` promises
+// a boolean, and callers write `if (isTileJSON…(x))`.
+describe('the boolean guards never throw', () => {
+	for (const [label, value] of [
+		['null', null],
+		['a number', 42],
+		['an empty object', {}],
+		['empty tiles', { tiles: [] }],
+	] as [string, unknown][]) {
+		it(`isTileJSONSpecification(${label}) returns false`, () => {
+			expect(isTileJSONSpecification(value)).toBe(false);
+		});
+		it(`isRasterTileJSONSpecification(${label}) returns false`, () => {
+			expect(isRasterTileJSONSpecification(value)).toBe(false);
+		});
+	}
+
+	it('a vector TileJSON is not a raster one, without throwing', () => {
+		const vector = { tilejson: '3.0.0', tiles: ['https://t/{z}/{x}/{y}'], vector_layers: [{ id: 'a' }] };
+		expect(isTileJSONSpecification(vector)).toBe(true);
+		expect(isRasterTileJSONSpecification(vector)).toBe(false);
+		expect(() => assertRasterTileJSONSpecification(vector)).toThrow(/vector_layers/);
 	});
 });
