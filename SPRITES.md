@@ -129,3 +129,41 @@ predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<n
 
 None — every icon in both sheets follows the convention. (Icon _names_ are American English; the
 OSM tag _values_ they match on, e.g. `theatre` or `garden_centre`, keep OSM's own spelling.)
+
+## Migrating sprite ids from v5
+
+The sheet was renamed `basics` → `base`, and the old path
+`/assets/sprites/basics/sprites` is **no longer published**. Most ids carried over unchanged, so
+`basics:icon-cafe` becomes `base:icon-cafe`.
+
+Twenty-two ids were also renamed or split, and those need more than a prefix swap. Each mapping
+below is the icon the v6 style actually uses for the same OSM feature, read out of the generated
+style rather than guessed:
+
+| v5 `basics:` id         | v6 `base:` id                                                                                                                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `icon-beer`             | `icon-beer_mug`                                                                                                                                                                                                          |
+| `icon-beergarden`       | `icon-beer_mug`                                                                                                                                                                                                          |
+| `icon-chemist`          | `icon-tube_and_toothbrush`                                                                                                                                                                                               |
+| `icon-dog_park`         | `icon-dog`                                                                                                                                                                                                               |
+| `icon-doityourself`     | `icon-do_it_yourself`                                                                                                                                                                                                    |
+| `icon-drycleaning`      | `icon-dry_cleaning`                                                                                                                                                                                                      |
+| `icon-garden_centre`    | `icon-garden_center`                                                                                                                                                                                                     |
+| `icon-hairdresser`      | `icon-scissors_and_comb`                                                                                                                                                                                                 |
+| `icon-huntingstand`     | `icon-hunting_stand`                                                                                                                                                                                                     |
+| `icon-icerink`          | `icon-ice_rink`                                                                                                                                                                                                          |
+| `icon-jewelry_store`    | `icon-ring`                                                                                                                                                                                                              |
+| `icon-kiosk`            | `icon-newspaper`                                                                                                                                                                                                         |
+| `icon-nursinghome`      | `icon-nursing_home`                                                                                                                                                                                                      |
+| `icon-pharmacy`         | `icon-pill`                                                                                                                                                                                                              |
+| `icon-playground`       | `icon-seesaw`                                                                                                                                                                                                            |
+| `icon-police`           | `icon-police_officer`                                                                                                                                                                                                    |
+| `icon-theatre`          | `icon-theater`                                                                                                                                                                                                           |
+| `icon-toilet`           | `icon-restrooms`                                                                                                                                                                                                         |
+| `icon-toys`             | `icon-rocking_horse`                                                                                                                                                                                                     |
+| `icon-vendingmachine`   | `icon-vending_machine`                                                                                                                                                                                                   |
+| `icon-waterpark`        | `icon-water_park`                                                                                                                                                                                                        |
+| `icon-place_of_worship` | **split by religion** — `icon-latin_cross`, `icon-star_and_crescent`, `icon-star_of_david`, `icon-dharma_wheel`, `icon-om`, `icon-khanda`, `icon-yin_yang`, or `icon-person_kneeling_and_praying` for an unspecified one |
+
+`icon-pub` now uses `icon-pint_glass` while `icon-biergarten` uses `icon-beer_mug`; in v5 both drew
+`icon-beer`.

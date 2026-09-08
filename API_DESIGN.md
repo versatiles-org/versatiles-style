@@ -562,7 +562,11 @@ delivering the second.
 | `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
 | `satellite({ overlay: false })`                         | `satellite({ osmOverlay: false })`                                |
 | `await guessStyle(tileJSON, options)`                   | `await guessStyle(url, options)` — see note below                 |
-| `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'`                                                |
+| `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'` — but see below                                |
+
+The sprite sheet was renamed `basics` → `base` and the old path is no longer published. Most ids
+only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → `icon-pill`,
+`icon-place_of_worship` → one of seven religion icons, …). `SPRITES.md` has the full mapping.
 
 `guessStyle` changed more than its name suggests: it takes the tileset's **URL** where v5 took an
 already-fetched `TileJSONSpecification`, and downloads the document itself. Passing a TileJSON object
