@@ -42,7 +42,31 @@ export type ResolvedSatelliteUrls = ResolvedOsmUrls & {
 	satellite: TileSource;
 };
 
-export const DEFAULT_BASE = globalThis?.document?.location?.origin ?? 'https://tiles.versatiles.org';
+/** Host that serves the default `/tiles/...` and `/assets/...` paths. */
+const VERSATILES_HOST = 'https://tiles.versatiles.org';
+
+/**
+ * Base URL for every relative path in `urls`: the page origin when there is a usable one,
+ * otherwise the VersaTiles host.
+ *
+ * `location.origin` cannot be trusted blindly. In a `srcdoc` or sandboxed iframe, a `data:`
+ * document or a `file://` page it is the *string* `"null"` — not `null` — so a plain `??` never
+ * reaches its fallback, and every `new URL(path, "null")` then throws
+ * `TypeError: Invalid base URL`, killing the whole style build. Validate it instead of
+ * defaulting on it. See issue #127.
+ */
+function resolveDefaultBase(): string {
+	const origin = globalThis?.document?.location?.origin;
+	if (!origin || origin === 'null') return VERSATILES_HOST;
+	try {
+		new URL(origin);
+		return origin;
+	} catch {
+		return VERSATILES_HOST;
+	}
+}
+
+export const DEFAULT_BASE = resolveDefaultBase();
 
 export function resolveBase(base?: string): string {
 	return base ?? DEFAULT_BASE;
