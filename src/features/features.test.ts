@@ -50,7 +50,8 @@ describe('buildElevationSource', () => {
 		expect(src.type).toBe('raster-dem');
 		expect(src.tiles).toEqual([ELEVATION_URL]);
 		expect(src.encoding).toBe('terrarium');
-		expect(src.tileSize).toBe(512);
+		// A raw tile template states no tile size, so none is declared.
+		expect(src).not.toHaveProperty('tileSize');
 	});
 
 	it('builds source from TileJSON with terrarium encoding by default', () => {

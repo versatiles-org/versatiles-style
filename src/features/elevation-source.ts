@@ -5,7 +5,7 @@ import type { TileJSONSpecification } from '../types/index.js';
 export function buildElevationSource(elevation: string | TileJSONSpecification): {
 	type: 'raster-dem';
 	tiles: string[];
-	tileSize: number;
+	tileSize?: number;
 	encoding: 'terrarium' | 'mapbox';
 	minzoom?: number;
 	maxzoom?: number;
@@ -14,7 +14,8 @@ export function buildElevationSource(elevation: string | TileJSONSpecification):
 } {
 	if (typeof elevation === 'string') {
 		// Treat the string as a direct tile URL pattern.
-		return { type: 'raster-dem', tiles: [elevation], tileSize: 512, encoding: 'terrarium' };
+		// No TileJSON, so no stated tile size — let MapLibre apply its own default.
+		return { type: 'raster-dem', tiles: [elevation], encoding: 'terrarium' };
 	}
 
 	let encoding: 'terrarium' | 'mapbox' = 'terrarium';
@@ -25,7 +26,8 @@ export function buildElevationSource(elevation: string | TileJSONSpecification):
 	return {
 		type: 'raster-dem',
 		tiles: elevation.tiles,
-		tileSize: elevation.tile_size ?? 512,
+		// Only declare `tileSize` when the TileJSON actually states one.
+		...(elevation.tile_size !== undefined && { tileSize: elevation.tile_size }),
 		encoding,
 		...(elevation.minzoom !== undefined && { minzoom: elevation.minzoom }),
 		...(elevation.maxzoom !== undefined && { maxzoom: elevation.maxzoom }),

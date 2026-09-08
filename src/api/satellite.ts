@@ -24,13 +24,17 @@ function slotLayer(id: string): StyleSpecification['layers'][number] {
 
 function buildSatelliteSource(url: string | TileJSONSpecification): Record<string, unknown> {
 	if (typeof url === 'string') {
-		return { type: 'raster', tiles: [url], tileSize: 256 };
+		// A raw tile template carries no metadata, so there is nothing to say about tile size:
+		// leave it out and let MapLibre apply its own default.
+		return { type: 'raster', tiles: [url] };
 	}
 	const tj = url as TileJSONSpecification & { tile_size?: number };
 	return {
 		type: 'raster',
 		tiles: tj.tiles,
-		tileSize: tj.tile_size ?? 256,
+		// Only declare `tileSize` when the TileJSON actually states one. Defaulting it here
+		// would silently override MapLibre's default with a guess.
+		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
 		...(tj.minzoom !== undefined && { minzoom: tj.minzoom }),
 		...(tj.maxzoom !== undefined && { maxzoom: tj.maxzoom }),
 		...(tj.bounds && { bounds: tj.bounds }),

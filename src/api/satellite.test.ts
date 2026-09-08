@@ -103,11 +103,12 @@ describe('satellite()', () => {
 		expect(src.tileSize).toBe(512);
 	});
 
-	it('defaults raster tileSize to 256 when the TileJSON omits tile_size', async () => {
+	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
+		// Declaring a guessed tileSize would silently override MapLibre's own default.
 		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] }));
 		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
-		const src = style.sources['satellite'] as { tileSize: number };
-		expect(src.tileSize).toBe(256);
+		const src = style.sources['satellite'] as Record<string, unknown>;
+		expect(src).not.toHaveProperty('tileSize');
 	});
 
 	// ── Raster paint options ────────────────────────────────────────────────────

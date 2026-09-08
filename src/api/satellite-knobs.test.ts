@@ -163,7 +163,7 @@ describe('satellite() knob: urls', () => {
 		expect(src.minzoom).toBe(0);
 	});
 
-	it('defaults raster tileSize to 256 when the TileJSON omits tile_size', async () => {
+	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
 		const fetchFn = vi.fn(
 			async () =>
 				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'] }), {
@@ -172,7 +172,7 @@ describe('satellite() knob: urls', () => {
 				})
 		);
 		const s = await build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
-		expect((s.sources['satellite'] as { tileSize: number }).tileSize).toBe(256);
+		expect(s.sources['satellite'] as Record<string, unknown>).not.toHaveProperty('tileSize');
 	});
 });
 
