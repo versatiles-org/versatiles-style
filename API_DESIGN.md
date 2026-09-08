@@ -12,18 +12,20 @@
     - [Function options](#function-options)
   - [`osm()`](#osmoptions-stylespecification)
   - [`satellite()`](#satelliteoptions-stylespecification)
-  - [`guessStyle()`](#guessstyletilejson-options-stylespecification)
+  - [`guessStyle()`](#guessstyleurl-options-promise-stylespecification)
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
+  - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
   - [Migration from v5](#migration-from-v5)
 
 ## Core Principles
 
-- All style functions are **synchronous** — no hidden I/O
+- `osm()` and `satellite()` are **synchronous** — no hidden I/O. Only `guessStyle()` is async, because it must read a TileJSON before it can decide what to build.
 - All URL configuration lives in a `urls` object; everything else in options is about rendering
-- In `urls`, each key accepts a URL string (MapLibre fetches the TileJSON at map load time) or a pre-fetched `TileJSONSpecification` object
-- `fetchTileJSON` is only needed when TileJSON metadata must be available at build time (e.g. `guessStyle`)
+- In `urls`, each key accepts a URL string (MapLibre fetches the TileJSON at map load time) or a pre-fetched `TileJSONSpecification` object. A string containing `{z}` is treated as a raw tile template rather than a TileJSON URL.
+- A source is emitted with **either** `url` **or** `tiles`, never both — MapLibre gives explicit source options precedence over the document it fetches, so emitting both means fetching a TileJSON and then discarding it.
+- `fetchTileJSON` gets a TileJSON when you need one at build time; `inlineSources` resolves an already-built style into a self-contained one.
 
 ---
 
@@ -363,11 +365,11 @@ When `osmOverlay` is omitted or `false`, no vector labels or POIs are rendered.
 
 ---
 
-## `guessStyle(tileJSON, options?): StyleSpecification`
+## `guessStyle(url, options?): Promise<StyleSpecification>`
 
 ```ts
 guessStyle(
-  tileJSON: TileJSONSpecification,
+  url: string,
   {
     urls?: {
       base?:          string
@@ -378,7 +380,14 @@ guessStyle(
 )
 ```
 
-Inspects `tileJSON` and picks an appropriate style automatically: Shortbread vector tiles get a full osm style; unknown vector tiles get an auto-colored inspector style (one color per source-layer); raster tiles get a basic raster layer. Never throws — invalid fields are silently dropped.
+Downloads the TileJSON at `url` and picks an appropriate style automatically: Shortbread vector tiles
+get a full osm style; unknown vector tiles get an auto-colored inspector style (one color per
+source-layer); raster tiles get a basic raster layer. Anything it cannot classify falls back to a blank
+style rather than throwing — but an invalid `url` argument throws, and network failures propagate.
+
+This is the only asynchronous style function: it has to read the document before it can decide what to
+build. The style it returns still _references_ its sources; pass it through
+[`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
 
 ---
 
@@ -397,7 +406,45 @@ fetchTileJSON(
 )
 ```
 
-Only needed when TileJSON metadata must be available at style-build time — primarily for `guessStyle`. For `osm` and `satellite`, passing a URL string in `urls` is simpler and keeps the call synchronous.
+Only needed when TileJSON metadata must be available at style-build time: to inline a source via `urls`, or to inspect a tileset with `osm.languages(tileJSON)`. For `osm` and `satellite`, passing a URL string in `urls` is simpler — the call stays synchronous and MapLibre resolves the document at map load.
+
+To resolve an already-built style rather than a single document, use [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification).
+
+---
+
+## `inlineSources(style, options?): Promise<StyleSpecification>`
+
+```ts
+inlineSources(
+  style: StyleSpecification,
+  { fetch?: typeof globalThis.fetch }
+)
+```
+
+Resolves every `url`-referencing source in a style into a self-contained one: fetches the
+TileJSON, inlines `tiles`, `minzoom`, `maxzoom`, `bounds` and `attribution`, and removes the
+`url`. Returns a new style; the input is not mutated. Sources without a `url` are left alone.
+
+This is the asynchronous half of the API. `osm()` and `satellite()` build a style with no I/O;
+this fetches whatever they left as a reference. It is orthogonal to style building, so it also
+works on `guessStyle()` output and on hand-written styles.
+
+Use it when the style must stand on its own:
+
+- published `style.json` artifacts,
+- offline or air-gapped deployments,
+- anywhere the first tile request should not wait for a TileJSON round-trip.
+
+It is also the only place that can set the two source properties MapLibre cannot infer from a
+TileJSON: raster `tileSize` (from `tile_size`) and raster-dem `encoding` (from `tile_schema`).
+An `encoding` you set explicitly is preserved.
+
+```ts
+import { osm, inlineSources } from '@versatiles/style';
+
+const style = osm({ theme: 'colorful' }); // { type: 'vector', url: '…/tiles.json' }
+const standalone = await inlineSources(style); // { type: 'vector', tiles: [...], bounds, … }
+```
 
 ---
 

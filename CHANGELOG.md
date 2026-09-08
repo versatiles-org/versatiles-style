@@ -9,13 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### ⚠ BREAKING CHANGES
 
-- Rewrote the public API around three synchronous functions: `osm()`, `satellite()`, and `guessStyle()`.
+- Rewrote the public API around three functions: `osm()`, `satellite()` and `guessStyle()`.
+  `osm()` and `satellite()` are **synchronous** and perform no I/O — a `*.json` source URL becomes a
+  source `url` that MapLibre resolves at map load. `guessStyle()` is asynchronous, because it has to
+  read the TileJSON before it can decide what to build.
+- Added `inlineSources(style)` to resolve a style's source references into a self-contained style,
+  and `fetchTileJSON(url)` for when a TileJSON is needed at build time.
+- `urls` keys now accept a pre-fetched `TileJSONSpecification` object as well as a URL string.
 - Removed the v5 `StyleBuilder` class hierarchy and the palette builder functions
   `colorful`, `eclipse`, `graybeard`, `neutrino`, `shadow`, the deprecated `styles` object, and the
   related `StyleBuilderOptions` / `StyleBuilderColors` / `SatelliteStyleOptions` / `GuessStyleOptions` types.
   Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
   flag) instead. See the migration table in `API_DESIGN.md`.
-- Removed the old `guess_style` module; `guessStyle()` is now synchronous and never throws.
+- Removed the old `guess_style` module. `guessStyle()` now takes a **URL string** instead of a
+  `TileJSONSpecification` object, downloads the document itself, and returns a Promise. It falls back
+  to a blank style for anything it cannot classify, but still throws on an invalid `url` argument and
+  propagates network failures.
 
 ## [5.13.1] - 2026-08-15
 
