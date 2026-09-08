@@ -524,3 +524,31 @@ describe('osm() knob: text.language (migration table)', () => {
 		expect(labelField(build({ text: { language: 'de', languageStrict: true } }))).toStrictEqual(['get', 'name_de']);
 	});
 });
+
+// `sky` takes the same `boolean | object` shape as features.terrain / features.hillshade.
+// MapLibre only draws the sky when pitched or in globe projection, so a flat map should be able
+// to drop the block entirely (issue #126).
+describe('osm() knob: sky accepts a boolean', () => {
+	it('is on by default', () => {
+		expect(build().sky).toBeDefined();
+	});
+
+	it('true is identical to the default', () => {
+		expect(JSON.stringify(build({ sky: true }))).toBe(JSON.stringify(build()));
+	});
+
+	it('false omits the sky block entirely', () => {
+		const style = build({ sky: false });
+		expect(style.sky).toBeUndefined();
+		expect(Object.keys(style)).not.toContain('sky');
+	});
+
+	it('an object still overrides individual values', () => {
+		expect(build({ sky: { skyColor: '#123456' } }).sky).toMatchObject({ 'sky-color': '#123456' });
+	});
+
+	it('resolves to false so callers can detect it', () => {
+		expect(osm.resolveOptions({ sky: false }).sky).toBe(false);
+		expect(osm.resolveOptions().sky).not.toBe(false);
+	});
+});

@@ -123,6 +123,7 @@ export type {
 	ResolvedText,
 	ResolvedLayout,
 	ResolvedHillshade,
+	ResolvedSky,
 	ResolvedTerrain,
 	ResolvedOsmFeatures,
 	ResolvedSatelliteFeatures,

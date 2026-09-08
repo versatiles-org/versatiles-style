@@ -233,6 +233,8 @@ type SunOptions = {
   intensity?: number; // 0–1; default: 0.5
 };
 
+// `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
+// MapLibre only draws the sky when pitched or in globe projection.
 type SkyOptions = {
   skyColor?: string; // color of the sky above the horizon; default: '#87CEEB'
   horizonColor?: string; // color at the horizon; default: '#ffffff'
@@ -288,7 +290,7 @@ type OsmOptions = OsmContentOptions & {
     buildings?: 'flat' | 'extruded'; // default: 'flat'
   };
   sun?: SunOptions;
-  sky?: SkyOptions;
+  sky?: boolean | SkyOptions; // default: true
 };
 
 type SatelliteOptions = {
@@ -315,7 +317,7 @@ type SatelliteOptions = {
     hillshade?: HillshadeOptions;
   };
   sun?: SunOptions;
-  sky?: SkyOptions;
+  sky?: boolean | SkyOptions; // default: true
 };
 ```
 

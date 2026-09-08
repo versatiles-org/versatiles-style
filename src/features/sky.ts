@@ -6,6 +6,8 @@ import type { ResolvedSky } from '../options/index.js';
 // map 1:1 onto the style-spec `sky` keys (fog-color / fog-ground-blend are left at
 // their MapLibre defaults — they are not exposed as options).
 export function applySky(style: StyleSpecification, sky: ResolvedSky) {
+	// `sky: false` omits the block rather than writing transparent values.
+	if (sky === false) return;
 	style.sky = {
 		'sky-color': sky.skyColor,
 		'horizon-color': sky.horizonColor,

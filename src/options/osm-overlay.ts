@@ -8,11 +8,11 @@ import type { TextOptions, ResolvedText } from './text.js';
 import { resolveText } from './text.js';
 import type { LayoutOptions, ResolvedLayout } from './layout.js';
 import { resolveLayout } from './layout.js';
-import { resolveLayerGroups, type LayerGroupsOption, type ResolvedLayerGroups } from './layer-groups.js';
+import { resolveLayerGroups, type LayerGroupOptions, type ResolvedLayerGroups } from './layer-groups.js';
 
 export type OsmOverlayOptions = {
 	theme?: ThemeOptions;
-	layers?: LayerGroupsOption;
+	layers?: boolean | number | LayerGroupOptions;
 	text?: TextOptions;
 	layout?: LayoutOptions;
 	colors?: ColorsOptions;

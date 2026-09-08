@@ -18,7 +18,7 @@ export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;
 	features?: OsmFeaturesOptions;
 	sun?: SunOptions;
-	sky?: SkyOptions;
+	sky?: boolean | SkyOptions;
 };
 
 export type ResolvedOsm = ResolvedOsmOverlay & {

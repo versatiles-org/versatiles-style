@@ -167,14 +167,13 @@ function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record
 }
 
 /**
+ * Fill in every layer-group option, applying scalar cascade and per-group defaults.
+ *
  * A scalar in place of the whole object cascades to every group — the same rule that already
  * applies at every level below it. `layers: false` is the v6 equivalent of the v5 `empty` style,
  * and `layers: 0.5` dims the entire map.
  */
-export type LayerGroupsOption = boolean | number | LayerGroupOptions;
-
-/** Fill in every layer-group option, applying scalar cascade and per-group defaults. */
-export function resolveLayerGroups(opts?: LayerGroupsOption): ResolvedLayerGroups {
+export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions): ResolvedLayerGroups {
 	// A top-level scalar cascades to every group; previously it was silently ignored, so
 	// `layers: false` returned a fully-populated style.
 	const o: LayerGroupOptions =

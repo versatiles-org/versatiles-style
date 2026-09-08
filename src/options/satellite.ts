@@ -20,7 +20,7 @@ export type SatelliteOptions = {
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
-	sky?: SkyOptions;
+	sky?: boolean | SkyOptions;
 };
 
 export type ResolvedSatellite = {
