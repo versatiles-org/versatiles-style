@@ -46,16 +46,27 @@ describe('osm()', () => {
 
 	// ── URL configuration ───────────────────────────────────────────────────────
 
-	it('applies custom base URL to osm tiles', async () => {
-		const style = await osm({ urls: { base: 'https://my.cdn.com' } });
-		const src = style.sources['versatiles-shortbread'] as { tiles: string[] };
-		expect(src.tiles[0]).toContain('my.cdn.com');
+	it('applies custom base URL to the osm source', async () => {
+		const style = osm({ urls: { base: 'https://my.cdn.com' } });
+		const src = style.sources['versatiles-shortbread'] as { url: string };
+		expect(src.url).toContain('my.cdn.com');
 	});
 
-	it('uses explicit osm tile URL verbatim', async () => {
-		const style = await osm({ urls: { osm: 'https://custom.tiles/tiles.json' } });
-		const src = style.sources['versatiles-shortbread'] as { tiles: string[] };
+	it('references an explicit osm TileJSON URL rather than fetching it', async () => {
+		const style = osm({ urls: { osm: 'https://custom.tiles/tiles.json' } });
+		const src = style.sources['versatiles-shortbread'] as { url: string };
+		expect(src.url).toBe('https://custom.tiles/tiles.json');
+		expect(src).not.toHaveProperty('tiles');
+	});
+
+	it('inlines a pre-fetched TileJSON instead of referencing it', () => {
+		const style = osm({
+			urls: { osm: { tilejson: '3.0.0', tiles: ['https://custom.tiles/{z}/{x}/{y}'], maxzoom: 14 } as never },
+		});
+		const src = style.sources['versatiles-shortbread'] as { tiles: string[]; maxzoom: number };
 		expect(src.tiles[0]).toBe('https://custom.tiles/{z}/{x}/{y}');
+		expect(src.maxzoom).toBe(14);
+		expect(src).not.toHaveProperty('url');
 	});
 
 	it('applies glyphs from custom base URL', async () => {

@@ -10,7 +10,7 @@
  *   <body>
  *     <!-- ... -->
  *     <script>
- *       const style = await VersaTilesStyle.osm();
+ *       const style = VersaTilesStyle.osm();
  *       // ...
  *     </script>
  *   </body>
@@ -23,23 +23,30 @@
  * ```
  * ```
  * import { osm } from '@versatiles/style';
- * const style = await osm({ theme: 'colorful' });
+ * const style = osm({ theme: 'colorful' });
  * ```
  *
  * ---
  *
  * ## Generate a style for OpenStreetMap data:
  *
- * {@link osm} accepts an {@link OsmOptions} object and resolves to a MapLibre style.
- * It is async because TileJSON sources (any `*.json` source URL) are downloaded and
- * their relative tile paths are made absolute before being embedded into the style.
+ * {@link osm} accepts an {@link OsmOptions} object and returns a MapLibre style.
+ * It is synchronous and performs no I/O: a `*.json` source URL becomes a source `url`
+ * that MapLibre resolves when the map loads.
+ *
+ * Call {@link inlineSources} afterwards when the style has to stand on its own — a
+ * published `style.json`, an offline deployment, or anywhere the first tile request
+ * should not wait for a TileJSON round-trip.
  *
  * ```ts
- * import { osm } from '@versatiles/style';
- * const style = await osm({
+ * import { osm, inlineSources } from '@versatiles/style';
+ * const style = osm({
  *   theme: { palette: 'colorful', darkMode: false },
  *   urls: { base: 'https://tiles.example.org' },
  * });
+ *
+ * // optional: resolve every source reference into a self-contained style
+ * const standalone = await inlineSources(style);
  * ```
  *
  * Available palettes: `'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`
@@ -52,18 +59,20 @@
  *
  * ```ts
  * import { satellite } from '@versatiles/style';
- * const style = await satellite({ osmOverlay: { theme: 'toner' } });
+ * const style = satellite({ osmOverlay: { theme: 'toner' } });
  * ```
  *
  * ---
  *
- * ## Guess a style from a TileJSON:
+ * ## Guess a style from a tile source:
  *
- * {@link guessStyle} inspects a {@link TileJSONSpecification} and returns the most appropriate style.
+ * {@link guessStyle} downloads a TileJSON and returns the most appropriate style for it.
+ * It is the one style function that is asynchronous, because it has to read the document
+ * before it can decide what to build.
  *
  * ```ts
  * import { guessStyle } from '@versatiles/style';
- * const style = await guessStyle(tilejson);
+ * const style = await guessStyle('https://tiles.example.org/tiles.json');
  * ```
  *
  * ---
@@ -134,7 +143,7 @@ export type {
 export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/index.js';
 
 export { inlineSources } from './lib/inlineSources.js';
-export { loadTileSource as fetchTileJSON } from './lib/loadTileSource.js';
+export { fetchTileJSON } from './lib/fetchTileJSON.js';
 export type { TileSource } from './options/urls.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { satellite } from './satellite.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { jsonResponse } from '../lib/loadTileSource.test.js';
+import { inlineSources } from '../lib/inlineSources.js';
 
 function layerIds(style: StyleSpecification): string[] {
 	return style.layers.map((l) => l.id);
@@ -63,19 +64,19 @@ describe('satellite()', () => {
 
 	// ── URL configuration ────────────────────────────────────────────────────────
 
-	it('uses default versatiles satellite URL', async () => {
-		const style = await satellite();
-		const src = style.sources['satellite'] as { tiles: string[] };
-		expect(src.tiles[0]).toContain('satellite');
+	it('uses default versatiles satellite URL', () => {
+		const style = satellite();
+		const src = style.sources['satellite'] as { url: string };
+		expect(src.url).toContain('satellite');
 	});
 
-	it('applies custom base URL to satellite tiles', async () => {
-		const style = await satellite({ urls: { base: 'https://my.cdn.com' } });
-		const src = style.sources['satellite'] as { tiles: string[] };
-		expect(src.tiles[0]).toContain('my.cdn.com');
+	it('applies custom base URL to the satellite source', () => {
+		const style = satellite({ urls: { base: 'https://my.cdn.com' } });
+		const src = style.sources['satellite'] as { url: string };
+		expect(src.url).toContain('my.cdn.com');
 	});
 
-	it('accepts explicit satellite URL string', async () => {
+	it('accepts explicit satellite URL string, resolved by inlineSources', async () => {
 		const fetchFn = vi.fn(async () =>
 			jsonResponse({
 				tiles: ['https://sat/{z}/{x}/{y}'],
@@ -83,7 +84,10 @@ describe('satellite()', () => {
 				maxzoom: 18,
 			})
 		);
-		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const built = satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		expect(built.sources['satellite'] as { url: string }).toMatchObject({ url: 'https://sat/tiles.json' });
+
+		const style = await inlineSources(built, { fetch: fetchFn });
 		const src = style.sources['satellite'] as { tiles: string[]; minzoom: number };
 		expect(src.tiles[0]).toBe('https://sat/{z}/{x}/{y}');
 		expect(src.minzoom).toBe(0);
@@ -98,7 +102,9 @@ describe('satellite()', () => {
 				tile_size: 512,
 			})
 		);
-		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+			fetch: fetchFn,
+		});
 		const src = style.sources['satellite'] as { tileSize: number };
 		expect(src.tileSize).toBe(512);
 	});
@@ -106,7 +112,9 @@ describe('satellite()', () => {
 	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
 		// Declaring a guessed tileSize would silently override MapLibre's own default.
 		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] }));
-		const style = await satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+			fetch: fetchFn,
+		});
 		const src = style.sources['satellite'] as Record<string, unknown>;
 		expect(src).not.toHaveProperty('tileSize');
 	});

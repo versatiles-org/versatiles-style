@@ -36,9 +36,11 @@ describe('guessStyle() — Shortbread vector tiles', () => {
 
 	it('sets the TileJSON as the OSM source', async () => {
 		const style = await guessStyle('https://tiles.example.com/tiles.json', { fetch: fetchShortbreadFn });
-		const src = style.sources['versatiles-shortbread'] as { tiles: string[] };
+		const src = style.sources['versatiles-shortbread'] as { url: string };
 		expect(src).toBeDefined();
-		expect(src.tiles[0]).toBe('https://tiles.example.com/{z}/{x}/{y}');
+		// guessStyle fetches to classify the tileset, but the style it returns still
+		// references the TileJSON rather than inlining it; use inlineSources for that.
+		expect(src.url).toBe('https://tiles.example.com/tiles.json');
 	});
 
 	it('includes slot anchors in the OSM style', async () => {

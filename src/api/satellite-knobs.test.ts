@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { satellite } from './satellite.js';
 import type { SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
+import { inlineSources } from '../lib/inlineSources.js';
 
 // Exhaustive behavioural coverage of every satellite() option ("knob"): raster paint
 // adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/sun,
@@ -143,9 +144,9 @@ describe('satellite() knob: features', () => {
 // ── URL configuration ────────────────────────────────────────────────────────────
 
 describe('satellite() knob: urls', () => {
-	it('base rewrites the satellite tile host', async () => {
-		const s = await build({ urls: { base: 'https://my.cdn.example' } });
-		expect((s.sources['satellite'] as { tiles: string[] }).tiles[0]).toContain('my.cdn.example');
+	it('base rewrites the satellite source host', () => {
+		const s = build({ urls: { base: 'https://my.cdn.example' } });
+		expect((s.sources['satellite'] as { url: string }).url).toContain('my.cdn.example');
 	});
 
 	it('an explicit satellite TileJSON is fetched, and its tile_size becomes tileSize', async () => {
@@ -156,14 +157,16 @@ describe('satellite() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = await build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+			fetch: fetchFn,
+		});
 		const src = s.sources['satellite'] as { tiles: string[]; tileSize: number; minzoom: number };
 		expect(src.tiles[0]).toBe('https://sat/{z}/{x}/{y}');
 		expect(src.tileSize).toBe(512);
 		expect(src.minzoom).toBe(0);
 	});
 
-	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
+	it('omits raster tileSize when the TileJSON omits tile_size (after inlining)', async () => {
 		const fetchFn = vi.fn(
 			async () =>
 				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'] }), {
@@ -171,7 +174,9 @@ describe('satellite() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = await build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+			fetch: fetchFn,
+		});
 		expect(s.sources['satellite'] as Record<string, unknown>).not.toHaveProperty('tileSize');
 	});
 });

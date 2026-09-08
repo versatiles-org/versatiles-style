@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { osm } from './osm.js';
 import type { OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
+import { inlineSources } from '../lib/inlineSources.js';
 
 // Exhaustive behavioural coverage of every osm() option ("knob"). Where a resolve-level
 // test already exists (options/resolve.test.ts, options/layer-groups.test.ts), this file
@@ -285,17 +286,17 @@ describe('osm() knob: recolor', () => {
 // ── urls ─────────────────────────────────────────────────────────────────────────
 
 describe('osm() knob: urls', () => {
-	it('base rewrites osm tiles, glyphs and sprite hosts', async () => {
-		const s = await build({ urls: { base: 'https://my.cdn.example' } });
-		const src = s.sources['versatiles-shortbread'] as { tiles: string[] };
-		expect(src.tiles[0]).toContain('my.cdn.example');
+	it('base rewrites the osm source, glyphs and sprite hosts', () => {
+		const s = build({ urls: { base: 'https://my.cdn.example' } });
+		const src = s.sources['versatiles-shortbread'] as { url: string };
+		expect(src.url).toContain('my.cdn.example');
 		expect(String(s.glyphs)).toContain('my.cdn.example');
 	});
 
-	it('explicit osm URL is used verbatim', async () => {
-		const s = await build({ urls: { osm: 'https://custom.tiles/tiles.json' } });
-		const src = s.sources['versatiles-shortbread'] as { tiles: string[] };
-		expect(src.tiles[0]).toBe('https://custom.tiles/{z}/{x}/{y}');
+	it('explicit osm URL is used verbatim', () => {
+		const s = build({ urls: { osm: 'https://custom.tiles/tiles.json' } });
+		const src = s.sources['versatiles-shortbread'] as { url: string };
+		expect(src.url).toBe('https://custom.tiles/tiles.json');
 	});
 
 	it('explicit glyphsPattern is used verbatim', async () => {
@@ -303,7 +304,7 @@ describe('osm() knob: urls', () => {
 		expect(s.glyphs).toBe('https://g.example/{fontstack}/{range}.pbf');
 	});
 
-	it('custom elevation URL is fetched and embedded when terrain is on', async () => {
+	it('custom elevation URL is referenced, and inlineSources embeds it', async () => {
 		const fetchFn = vi.fn(
 			async () =>
 				new Response(JSON.stringify({ tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 }), {
@@ -311,12 +312,20 @@ describe('osm() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = await build({
+		const s = build({
 			features: { terrain: true },
 			urls: { elevation: 'https://dem/tiles.json', fetch: fetchFn },
 		});
-		const src = s.sources['elevation'] as { tiles: string[] };
+		// Building performs no I/O: the source carries a reference.
+		expect(s.sources['elevation'] as { url: string }).toMatchObject({ url: 'https://dem/tiles.json' });
+		expect(fetchFn).not.toHaveBeenCalled();
+
+		// inlineSources resolves it into a self-contained source.
+		const inlined = await inlineSources(s, { fetch: fetchFn });
+		const src = inlined.sources['elevation'] as { tiles: string[]; maxzoom: number };
 		expect(src.tiles[0]).toBe('https://dem/{z}/{x}/{y}');
+		expect(src.maxzoom).toBe(12);
+		expect(src).not.toHaveProperty('url');
 		expect(fetchFn).toHaveBeenCalled();
 	});
 
@@ -330,7 +339,7 @@ describe('osm() knob: urls', () => {
 		expect(s.sprite).toStrictEqual([{ id: 'a', url: 'https://b.example/s/a' }]);
 	});
 
-	it('a custom fetch is used to download TileJSON', async () => {
+	it('building performs no I/O, and inlineSources uses the custom fetch', async () => {
 		const fetchFn = vi.fn(
 			async () =>
 				new Response(JSON.stringify({ tiles: ['https://x/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 }), {
@@ -338,7 +347,10 @@ describe('osm() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		await build({ urls: { fetch: fetchFn } });
+		const s = build({ urls: { fetch: fetchFn } });
+		expect(fetchFn).not.toHaveBeenCalled();
+
+		await inlineSources(s, { fetch: fetchFn });
 		expect(fetchFn).toHaveBeenCalled();
 	});
 });
