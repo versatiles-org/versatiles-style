@@ -37,7 +37,10 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// than bare imagery, matching v5. Only `false` turns it off — `undefined` must not be treated
 	// as `false`, which is the defect that shipped `satellite/style` with no labels.
 	const overlay = options?.osmOverlay;
-	const osmOverlay = overlay === false ? false : resolveOsmOverlay(typeof overlay === 'object' ? overlay : {});
+	// v5 built the satellite overlay from `graybeard`; `gray` is its successor and the least
+	// saturated palette, so roads and labels stay out of the imagery's way. An explicit
+	// `osmOverlay.theme` still wins.
+	const osmOverlay = overlay === false ? false : resolveOsmOverlay(typeof overlay === 'object' ? overlay : {}, 'gray');
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls),

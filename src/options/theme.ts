@@ -22,11 +22,16 @@ export function isDarkMode(): boolean {
 	}
 }
 
-export function resolveTheme(theme?: ThemeOptions): ResolvedTheme {
-	if (theme == null) return { palette: 'colorful', darkMode: false };
+/**
+ * `defaultPalette` lets a caller pick the fallback without overriding an explicit choice — the
+ * satellite overlay defaults to `gray` while `osm()` keeps `colorful`. It applies per-field, so
+ * `{ darkMode: true }` still gets the caller's palette rather than falling back to `colorful`.
+ */
+export function resolveTheme(theme?: ThemeOptions, defaultPalette: Palette = 'colorful'): ResolvedTheme {
+	if (theme == null) return { palette: defaultPalette, darkMode: false };
 	if (typeof theme === 'string') return { palette: theme as Palette, darkMode: false };
 	return {
-		palette: theme.palette ?? 'colorful',
+		palette: theme.palette ?? defaultPalette,
 		darkMode: theme.darkMode === 'auto' ? isDarkMode() : (theme.darkMode ?? false),
 	};
 }

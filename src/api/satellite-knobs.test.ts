@@ -3,6 +3,7 @@ import { satellite } from './satellite.js';
 import type { SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/inlineSources.js';
+import { osm } from './osm.js';
 
 // Exhaustive behavioural coverage of every satellite() option ("knob"): raster paint
 // adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/sun,
@@ -258,5 +259,33 @@ describe('satellite() knob: osmOverlay accepts a boolean', () => {
 	it('an object still configures it', () => {
 		const toner = satellite({ osmOverlay: { theme: 'toner' } });
 		expect(JSON.stringify(toner)).not.toBe(JSON.stringify(satellite({ osmOverlay: true })));
+	});
+});
+
+// v5 built the satellite overlay from `graybeard`; `gray` is its measured successor and the least
+// saturated palette, so it stays out of the imagery's way. osm() keeps `colorful` (A3).
+describe('satellite() knob: overlay palette default', () => {
+	it('defaults the overlay to gray, not colorful', () => {
+		const overlay = satellite.defaults.osmOverlay;
+		expect(overlay).not.toBe(false);
+		expect((overlay as { theme: { palette: string } }).theme.palette).toBe('gray');
+	});
+
+	it('does not change osm()’s own default', () => {
+		expect(osm.resolveOptions().theme.palette).toBe('colorful');
+	});
+
+	it('an explicit overlay theme still wins', () => {
+		const r = satellite.resolveOptions({ osmOverlay: { theme: 'toner' } });
+		expect((r.osmOverlay as { theme: { palette: string } }).theme.palette).toBe('toner');
+	});
+
+	it('setting only darkMode keeps the gray palette', () => {
+		// The fallback applies per-field, so `{ darkMode: true }` must not reset the palette.
+		const r = satellite.resolveOptions({ osmOverlay: { theme: { darkMode: true } } });
+		expect((r.osmOverlay as { theme: { palette: string; darkMode: boolean } }).theme).toStrictEqual({
+			palette: 'gray',
+			darkMode: true,
+		});
 	});
 });

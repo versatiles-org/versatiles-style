@@ -302,7 +302,7 @@ type SatelliteOptions = {
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
-  osmOverlay?: boolean | OsmContentOptions; // default: true — on unless disabled
+  osmOverlay?: boolean | OsmContentOptions; // default: true (palette 'gray'); false for bare imagery
   raster?: {
     // keys mirror MapLibre's raster-* paint properties
     opacity?: number;
@@ -390,7 +390,11 @@ satellite.resolveOptions(options?: SatelliteOptions): ResolvedSatelliteOptions
 The OSM vector overlay (roads, boundaries, labels and POIs over the imagery) is rendered by default.
 `true` uses the overlay's own defaults, `false` gives bare imagery with no vector layers, and an
 object configures it — the same `boolean | object` shape as `features.terrain` and
-`features.hillshade`. Slot anchors are emitted either way,
+`features.hillshade`.
+
+The overlay defaults to the `gray` palette rather than `osm()`'s `colorful`: it is drawn over
+imagery, so the least saturated palette keeps roads and labels from competing with the photo.
+Pass `osmOverlay: { theme: … }` to choose another. Slot anchors are emitted either way,
 so `satellite.slots` references stay valid.
 
 ---

@@ -1,5 +1,6 @@
 import type { ThemeOptions, ResolvedTheme } from './theme.js';
 import { resolveTheme } from './theme.js';
+import type { Palette } from './theme.js';
 import type { ColorsOptions, ResolvedColors } from './colors.js';
 import { resolveColors } from './colors.js';
 import type { RecolorOptions, ResolvedRecolor } from './recolor.js';
@@ -28,8 +29,8 @@ export type ResolvedOsmOverlay = {
 	recolor: ResolvedRecolor;
 };
 
-export function resolveOsmOverlay(content: OsmOverlayOptions): ResolvedOsmOverlay {
-	const theme = resolveTheme(content.theme);
+export function resolveOsmOverlay(content: OsmOverlayOptions, defaultPalette?: Palette): ResolvedOsmOverlay {
+	const theme = resolveTheme(content.theme, defaultPalette);
 	return {
 		theme,
 		layers: resolveLayerGroups(content.layers),
