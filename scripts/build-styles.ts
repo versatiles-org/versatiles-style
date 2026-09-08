@@ -1,6 +1,7 @@
 import { createWriteStream, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { getStyleVariants } from '../src/variants.js';
+import { inlineSources } from '../src/lib/inlineSources.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import tar from 'tar-stream';
 import { createGzip } from 'zlib';
@@ -17,7 +18,9 @@ const bar = makeProgressBar(variants.length);
 for (let i = 0; i < variants.length; i++) {
 	const { name, build } = variants[i];
 	bar.update(i, name);
-	produce(name, await build());
+	// Published styles must stand on their own: resolve every source reference up front so a
+	// map does not pay a TileJSON round-trip before its first tile request.
+	produce(name, await inlineSources(build()));
 }
 bar.update(variants.length, 'done');
 bar.done();

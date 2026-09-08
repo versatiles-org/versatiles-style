@@ -10,7 +10,7 @@ import type { StyleSpecification } from '../types/index.js';
 //
 // Tests rely on the global `fetch` stub from vitest.setup.ts (canned Shortbread TileJSON).
 
-const build = (options?: OsmOptions): Promise<StyleSpecification> => osm(options);
+const build = (options?: OsmOptions): StyleSpecification => osm(options);
 
 const ids = (s: StyleSpecification): string[] => s.layers.map((l) => l.id);
 const layer = (s: StyleSpecification, id: string) => s.layers.find((l) => l.id === id);

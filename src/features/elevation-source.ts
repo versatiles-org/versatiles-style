@@ -4,7 +4,8 @@ import type { TileJSONSpecification } from '../types/index.js';
 // or a fully resolved TileJSONSpecification. Shared by addTerrain and addHillshade.
 export function buildElevationSource(elevation: string | TileJSONSpecification): {
 	type: 'raster-dem';
-	tiles: string[];
+	tiles?: string[];
+	url?: string;
 	tileSize?: number;
 	encoding: 'terrarium' | 'mapbox';
 	minzoom?: number;
@@ -13,9 +14,13 @@ export function buildElevationSource(elevation: string | TileJSONSpecification):
 	attribution?: string;
 } {
 	if (typeof elevation === 'string') {
-		// Treat the string as a direct tile URL pattern.
-		// No TileJSON, so no stated tile size — let MapLibre apply its own default.
-		return { type: 'raster-dem', tiles: [elevation], encoding: 'terrarium' };
+		// A `{z}` placeholder marks a raw tile template; anything else is a TileJSON URL, which
+		// MapLibre resolves at map load. `encoding` is a MapLibre source property rather than a
+		// TileJSON field, so state the VersaTiles default here — `inlineSources` corrects it if
+		// the fetched document says otherwise.
+		return elevation.includes('{z}')
+			? { type: 'raster-dem', tiles: [elevation], encoding: 'terrarium' }
+			: { type: 'raster-dem', url: elevation, encoding: 'terrarium' };
 	}
 
 	let encoding: 'terrarium' | 'mapbox' = 'terrarium';

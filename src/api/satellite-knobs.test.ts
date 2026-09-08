@@ -8,7 +8,7 @@ import type { StyleSpecification } from '../types/index.js';
 // URL configuration, and the static helpers. Relies on the global `fetch` stub from
 // vitest.setup.ts.
 
-const build = (options?: SatelliteOptions): Promise<StyleSpecification> => satellite(options);
+const build = (options?: SatelliteOptions): StyleSpecification => satellite(options);
 
 const layer = (s: StyleSpecification, id: string) => s.layers.find((l) => l.id === id);
 const paint = (s: StyleSpecification, id: string): Record<string, unknown> =>

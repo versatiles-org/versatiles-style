@@ -6,7 +6,7 @@ import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
 import { addTerrain, addHillshade, addLandcover, configure3DLighting, applySky } from '../features/index.js';
-import { loadTileSource } from '../lib/loadTileSource.js';
+import { buildSourceDescriptor } from '../lib/tileSource.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
@@ -15,14 +15,8 @@ const SOURCE_NAME = 'versatiles-shortbread';
 // The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
 // `osmSource` is the resolved OSM source: a tile URL template, or a TileJSON whose
 // `tiles[]` have already been made absolute.
-function buildBase(resolved: ResolvedOsm, osmSource: TileJSONSpecification): StyleSpecification {
-	const tj = osmSource;
-	const source: StyleSpecification['sources'][string] = { type: 'vector', tiles: tj.tiles, url: resolved.urls.osm };
-
-	if (tj.minzoom !== undefined) source.minzoom = tj.minzoom;
-	if (tj.maxzoom !== undefined) source.maxzoom = tj.maxzoom;
-	if (tj.bounds) source.bounds = tj.bounds;
-	if (tj.attribution) source.attribution = tj.attribution;
+function buildBase(resolved: ResolvedOsm): StyleSpecification {
+	const source = buildSourceDescriptor('vector', resolved.urls.osm) as StyleSpecification['sources'][string];
 
 	const style: StyleSpecification = {
 		version: 8,
@@ -107,19 +101,12 @@ function getLanguages(tileJSON: TileJSONSpecification): string[] {
 
 // ── Main osm() function ───────────────────────────────────────────────────────
 
-async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
+function osmFn(options?: OsmOptions): StyleSpecification {
 	const resolved = resolveOsm(options);
 
-	// Prefetch the TileJSON sources actually used by this style, in parallel.
-	// Elevation is only needed (and fetched once, then reused) for terrain/hillshade.
-	const needElevation = resolved.features.terrain !== false || resolved.features.hillshade !== false;
-	const [osmSource, elevationSource] = await Promise.all([
-		loadTileSource(resolved.urls.osm, resolved.urls.fetch),
-		needElevation ? loadTileSource(resolved.urls.elevation, resolved.urls.fetch) : Promise.resolve(undefined),
-	]);
-
-	// 1. Base style (template + URL configuration)
-	const style = buildBase(resolved, osmSource);
+	// 1. Base style (template + URL configuration). No I/O: a URL becomes a source `url`
+	//    that MapLibre resolves at map load; a pre-fetched TileJSON is inlined as-is.
+	const style = buildBase(resolved);
 
 	// 2+3+4. Build the decorated layer list (structure + theme colors/fonts) from per-group modules.
 	// Each module gates its own layers on the resolved `layers:` option (carried in the context):
@@ -132,10 +119,10 @@ async function osmFn(options?: OsmOptions): Promise<StyleSpecification> {
 
 	// 6. Optional features
 	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, elevationSource!);
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, elevationSource!);
+		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
 		addLandcover(style);

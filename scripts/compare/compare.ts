@@ -37,7 +37,7 @@ interface Pair {
 	/** Published v5 style name under `/assets/styles/<name>/style.json`. */
 	v5: string;
 	/** How API_DESIGN.md's migration table says to reproduce it in v6. */
-	build: () => Promise<StyleSpecification>;
+	build: () => StyleSpecification | Promise<StyleSpecification>;
 	note?: string;
 }
 

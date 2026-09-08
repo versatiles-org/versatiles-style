@@ -133,6 +133,9 @@ export type {
 } from './types/index.js';
 export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/index.js';
 
+export { inlineSources } from './lib/inlineSources.js';
+export { loadTileSource as fetchTileJSON } from './lib/loadTileSource.js';
+export type { TileSource } from './options/urls.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
 

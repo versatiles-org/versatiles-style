@@ -4,7 +4,7 @@ import type { OsmFeaturesOptions, Palette } from './options/index.js';
 
 export interface StyleVariant {
 	name: string;
-	build: () => Promise<StyleSpecification>;
+	build: () => StyleSpecification;
 }
 
 export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {

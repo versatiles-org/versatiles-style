@@ -3,7 +3,8 @@ import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import { addTerrain, addHillshade, configure3DLighting, applySky } from '../features/index.js';
-import { loadTileSource } from '../lib/loadTileSource.js';
+import { buildSourceDescriptor } from '../lib/tileSource.js';
+import type { TileSource } from '../options/urls.js';
 import { osm } from './osm.js';
 import { ResolvedOsmOverlay } from '../options/osm-overlay.js';
 
@@ -22,24 +23,8 @@ function slotLayer(id: string): StyleSpecification['layers'][number] {
 	return { id, type: 'background', paint: { 'background-opacity': 0 } } as StyleSpecification['layers'][number];
 }
 
-function buildSatelliteSource(url: string | TileJSONSpecification): Record<string, unknown> {
-	if (typeof url === 'string') {
-		// A raw tile template carries no metadata, so there is nothing to say about tile size:
-		// leave it out and let MapLibre apply its own default.
-		return { type: 'raster', tiles: [url] };
-	}
-	const tj = url as TileJSONSpecification & { tile_size?: number };
-	return {
-		type: 'raster',
-		tiles: tj.tiles,
-		// Only declare `tileSize` when the TileJSON actually states one. Defaulting it here
-		// would silently override MapLibre's default with a guess.
-		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
-		...(tj.minzoom !== undefined && { minzoom: tj.minzoom }),
-		...(tj.maxzoom !== undefined && { maxzoom: tj.maxzoom }),
-		...(tj.bounds && { bounds: tj.bounds }),
-		...(tj.attribution && { attribution: tj.attribution }),
-	};
+function buildSatelliteSource(source: TileSource): Record<string, unknown> {
+	return buildSourceDescriptor('raster', source);
 }
 
 function buildRasterPaint(raster: ResolvedSatellite['raster']): Record<string, number> {
@@ -56,13 +41,13 @@ function buildRasterPaint(raster: ResolvedSatellite['raster']): Record<string, n
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): Promise<StyleSpecification['layers']> {
+function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecification['layers'] {
 	// Run the full OSM pipeline using the overlay's resolved options.
 	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
 	// (including URL configuration that was inherited from the satellite options).
 	// `osmSource` is the already-prefetched OSM source, passed through so osm() reuses it
 	// (a resolved TileJSON object is used as-is, avoiding a second download).
-	const overlayStyle = await osm(overlayResolved);
+	const overlayStyle = osm(overlayResolved);
 
 	// Filter: remove the opaque background layer and all fill layers.
 	// Slot anchors (background type with opacity 0) are kept — they provide stable beforeId targets.
@@ -76,19 +61,8 @@ async function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): Promi
 
 // ── Main satellite() function ─────────────────────────────────────────────────
 
-async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecification> {
+function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	const resolved = resolveSatellite(options);
-
-	// Prefetch the TileJSON sources actually used by this style, in parallel.
-	// The OSM source is reused by both the vector source and the overlay layers;
-	// elevation is fetched once and reused for terrain + hillshade.
-	const needOverlay = resolved.osmOverlay !== false;
-	const needElevation = resolved.features.terrain !== false || resolved.features.hillshade !== false;
-	const [satelliteSource, osmSource, elevationSource] = await Promise.all([
-		loadTileSource(resolved.urls.satellite, resolved.urls.fetch),
-		needOverlay ? loadTileSource(resolved.urls.osm, resolved.urls.fetch) : Promise.resolve(undefined),
-		needElevation ? loadTileSource(resolved.urls.elevation, resolved.urls.fetch) : Promise.resolve(undefined),
-	]);
 
 	// Base style shell
 	const style: StyleSpecification = {
@@ -100,7 +74,7 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 	};
 
 	// Satellite raster source
-	(style.sources as Record<string, unknown>)['satellite'] = buildSatelliteSource(satelliteSource);
+	(style.sources as Record<string, unknown>)['satellite'] = buildSatelliteSource(resolved.urls.satellite);
 
 	// Layer stack
 	const rasterPaint = buildRasterPaint(resolved.raster);
@@ -126,11 +100,11 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 
 	if (resolved.osmOverlay !== false) {
 		// OSM vector overlay: roads, labels, boundaries on top of satellite
-		const overlayLayers = await buildOsmOverlayLayers(resolved.osmOverlay);
+		const overlayLayers = buildOsmOverlayLayers(resolved.osmOverlay);
 		layers.push(...overlayLayers);
 
 		// Also add the OSM vector source (reusing the already-prefetched OSM source)
-		(style.sources as Record<string, unknown>)['versatiles-shortbread'] = buildOsmVectorSource(osmSource!);
+		(style.sources as Record<string, unknown>)['versatiles-shortbread'] = buildOsmVectorSource(resolved.urls.osm);
 	} else {
 		// No overlay: still provide slot anchors so satellite.slots references are valid
 		layers.push(slotLayer(SLOT_BELOW_SYMBOLS));
@@ -141,12 +115,12 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 
 	// Optional terrain
 	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, elevationSource!);
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 
 	// Optional hillshade
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, elevationSource!);
+		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 		configure3DLighting(style, resolved.sun);
 	}
 
@@ -157,24 +131,8 @@ async function satelliteFn(options?: SatelliteOptions): Promise<StyleSpecificati
 }
 
 // Build the OSM vector source descriptor for the overlay.
-function buildOsmVectorSource(osm: string | TileJSONSpecification): Record<string, unknown> {
-	if (typeof osm === 'string') {
-		return {
-			type: 'vector',
-			tiles: [osm],
-			scheme: 'xyz',
-		};
-	}
-	const tj = osm as TileJSONSpecification;
-	return {
-		type: 'vector',
-		tiles: tj.tiles,
-		scheme: 'xyz',
-		...(tj.minzoom !== undefined && { minzoom: tj.minzoom }),
-		...(tj.maxzoom !== undefined && { maxzoom: tj.maxzoom }),
-		...(tj.bounds && { bounds: tj.bounds }),
-		...(tj.attribution && { attribution: tj.attribution }),
-	};
+function buildOsmVectorSource(source: TileSource): Record<string, unknown> {
+	return buildSourceDescriptor('vector', source, { scheme: 'xyz' });
 }
 
 // ── Static properties ─────────────────────────────────────────────────────────
