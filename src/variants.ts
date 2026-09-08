@@ -45,13 +45,16 @@ export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] 
 		});
 	}
 
-	variants.push({ name: 'satellite/style', build: () => satelliteFn() });
+	// `osmOverlay` defaults to false (see API_DESIGN.md), so the published `satellite/style` and
+	// `terrain/style` must ask for the overlay explicitly — otherwise they are byte-identical to
+	// their `/nooverlay` siblings, and the v5 style they replace has a full vector overlay.
+	variants.push({ name: 'satellite/style', build: () => satelliteFn({ osmOverlay: {} }) });
 	variants.push({ name: 'satellite/en', build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } } }) });
 	variants.push({ name: 'satellite/de', build: () => satelliteFn({ osmOverlay: { text: { language: 'de' } } }) });
 	variants.push({ name: 'satellite/nooverlay', build: () => satelliteFn({ osmOverlay: false }) });
 
 	const terrainSat = { features: { terrain: true, hillshade: true } } as const;
-	variants.push({ name: 'terrain/style', build: () => satelliteFn({ ...terrainSat }) });
+	variants.push({ name: 'terrain/style', build: () => satelliteFn({ osmOverlay: {}, ...terrainSat }) });
 	variants.push({
 		name: 'terrain/en',
 		build: () => satelliteFn({ osmOverlay: { text: { language: 'en' } }, ...terrainSat }),

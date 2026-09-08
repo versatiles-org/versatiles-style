@@ -18,6 +18,34 @@ async function build(features: OsmFeaturesOptions | undefined, name: string): Pr
 }
 
 describe('getStyleVariants()', () => {
+	// A1: `satellite/style` shipped byte-identical to `satellite/nooverlay` because it was built
+	// with a bare `satellite()`, whose `osmOverlay` defaults to false. Nothing caught it, because
+	// the satellite tests only ever passed `osmOverlay` explicitly.
+	it('every published variant that is not */nooverlay renders vector layers', () => {
+		for (const { name, build } of getStyleVariants()) {
+			if (name.endsWith('/nooverlay')) continue;
+			const style = build();
+			const symbols = style.layers.filter((l) => l.type === 'symbol');
+			expect(Object.keys(style.sources), `${name} has no vector source`).toContain('versatiles-shortbread');
+			expect(symbols.length, `${name} renders no labels`).toBeGreaterThan(0);
+		}
+	});
+
+	it('*/nooverlay variants really have no overlay, and differ from their default sibling', () => {
+		const byName = new Map(getStyleVariants().map((v) => [v.name, v]));
+		for (const base of ['satellite', 'terrain']) {
+			const withOverlay = byName.get(`${base}/style`)!.build();
+			const without = byName.get(`${base}/nooverlay`)!.build();
+			expect(Object.keys(without.sources), `${base}/nooverlay has a vector source`).not.toContain(
+				'versatiles-shortbread'
+			);
+			expect(
+				JSON.stringify(withOverlay) === JSON.stringify(without),
+				`${base}/style is identical to ${base}/nooverlay`
+			).toBe(false);
+		}
+	});
+
 	// ── Structure ─────────────────────────────────────────────────────────────
 
 	it('returns the expected set of variant names', () => {
