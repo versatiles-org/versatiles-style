@@ -142,6 +142,7 @@ export type {
 } from './types/index.js';
 export { isTileJSONSpecification, isRasterTileJSONSpecification } from './types/index.js';
 
+export { isDarkMode } from './options/theme.js';
 export type { LayerGroupMap } from './shortbread/layer-groups-map.js';
 export { inlineSources } from './lib/inlineSources.js';
 export { fetchTileJSON } from './lib/fetchTileJSON.js';

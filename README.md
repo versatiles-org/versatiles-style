@@ -157,21 +157,21 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 A["osm.ts"]
-1Q["satellite.ts"]
-1R["index.ts"]
+1R["satellite.ts"]
+1S["index.ts"]
 end
 subgraph 3["lib"]
 4["loadTileSource.ts"]
 5["utils.ts"]
 M["tileSource.ts"]
-1T["fetchTileJSON.ts"]
-1U["inlineSources.ts"]
+1U["fetchTileJSON.ts"]
+1V["inlineSources.ts"]
 end
 subgraph 6["types"]
 7["index.ts"]
 8["tilejson.ts"]
 9["vector_layer.ts"]
-1X["maplibre.ts"]
+1Y["maplibre.ts"]
 end
 subgraph B["color"]
 C["recolor.ts"]
@@ -219,7 +219,7 @@ Z["gray.ts"]
 10["muted.ts"]
 11["natural.ts"]
 12["toner.ts"]
-1W["types.ts"]
+1X["types.ts"]
 end
 subgraph 1J["shortbread"]
 1K["index.ts"]
@@ -229,15 +229,16 @@ subgraph 1N["layers"]
 1O["* (13 files)"]
 end
 1P["build.ts"]
+1Q["layer-groups-map.ts"]
 end
-1S["index.ts"]
-1V["variants.ts"]
+1T["index.ts"]
+1W["variants.ts"]
 end
 2-->4
 2-->5
 2-->7
 2-->A
-2-->1Q
+2-->1R
 4-->5
 7-->8
 7-->9
@@ -246,6 +247,7 @@ A-->F
 A-->M
 A-->O
 A-->1K
+A-->1Q
 A-->R
 C-->D
 F-->G
@@ -339,25 +341,29 @@ Z-->T
 1M-->1O
 1O-->1P
 1P-->T
-1Q-->F
-1Q-->M
 1Q-->O
-1Q-->1K
-1Q-->A
-1R-->2
+1Q-->1L
+1Q-->1O
+1R-->F
+1R-->M
+1R-->O
+1R-->1K
 1R-->A
-1R-->1Q
+1S-->2
+1S-->A
 1S-->1R
-1S-->T
-1S-->1T
-1S-->1U
-1S-->O
-1S-->7
-1S-->1V
-1T-->4
+1T-->1S
+1T-->T
+1T-->1U
+1T-->1V
+1T-->O
+1T-->1B
+1T-->7
+1T-->1W
 1U-->4
-1U-->M
-1V-->1R
+1V-->4
+1V-->M
+1W-->1S
 
 class 0,1,3,6,B,E,N,Q,1J,1N subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;

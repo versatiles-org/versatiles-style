@@ -9,6 +9,18 @@ describe('exports', () => {
 		expect(typeof lib.getStyleVariants).toBe('function');
 	});
 
+	it('should export every function API_DESIGN.md documents', () => {
+		expect(typeof lib.isDarkMode).toBe('function');
+		expect(typeof lib.fetchTileJSON).toBe('function');
+		expect(typeof lib.inlineSources).toBe('function');
+	});
+
+	it('osm() and satellite() are synchronous; guessStyle() is not', () => {
+		expect(lib.osm()).not.toBeInstanceOf(Promise);
+		expect(lib.satellite()).not.toBeInstanceOf(Promise);
+		expect(lib.guessStyle('https://tiles.example.com/tiles.json')).toBeInstanceOf(Promise);
+	});
+
 	it('should expose osm static properties', () => {
 		expect(lib.osm.palettes).toStrictEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
 		expect(typeof lib.osm.colors).toBe('function');
