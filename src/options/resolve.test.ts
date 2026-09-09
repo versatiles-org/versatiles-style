@@ -198,7 +198,21 @@ describe('resolveSky', () => {
 			horizonColor: '#ffffff',
 			skyHorizonBlend: 0.5,
 			horizonFogBlend: 0.5,
-			atmosphereBlend: 0,
+			atmosphereBlend: ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0],
+		});
+	});
+
+	it('takes sky and horizon from the palette when one is given', () => {
+		expect(resolveSky(true, { skyColor: '#123456', horizonColor: '#abcdef' })).toMatchObject({
+			skyColor: '#123456',
+			horizonColor: '#abcdef',
+		});
+	});
+
+	it('lets an explicit option beat the palette', () => {
+		expect(resolveSky({ skyColor: '#010203' }, { skyColor: '#123456', horizonColor: '#abcdef' })).toMatchObject({
+			skyColor: '#010203',
+			horizonColor: '#abcdef',
 		});
 	});
 });

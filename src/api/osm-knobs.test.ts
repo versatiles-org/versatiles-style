@@ -479,7 +479,9 @@ describe('osm() knob: sky', () => {
 			'horizon-color': colors.background,
 			'sky-horizon-blend': 0.5,
 			'horizon-fog-blend': 0.5,
-			'atmosphere-blend': 0,
+			// A zoom ramp, not a constant: the globe needs it non-zero to draw a sky at all, while a
+			// pitched terrain view is washed out by it. Full below z2, off from z5. See sky.ts.
+			'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0],
 		});
 	});
 
