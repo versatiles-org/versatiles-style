@@ -309,8 +309,10 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 
 function zoneStyle(ctx: LayerContext, prefix: Prefix): b.StyleProps {
 	const { c, fg } = ctx;
-	// surface: minor-width opacity {12:0,13:1} overlaid by the zone's {14:0,15:1}
-	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 1 } };
+	// The surface zone is a tint over what it covers — landuse, sites, the plaza's own paths — so it
+	// fades in to 0.25, not to 1. At full strength it hides all of them; v5 expressed the same thing
+	// as a 25%-alpha fill colour. Bridges and tunnels below are real surfaces, not tints, and stay opaque.
+	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 0.25 } };
 	if (prefix === 'tunnel-') return { color: c.roadStreet.blend(0.03, fg), opacity: { 12: 0, 13: 1 } };
 	return { color: c.roadStreet, opacity: { 12: 0, 13: 1 } };
 }
