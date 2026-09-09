@@ -13,10 +13,9 @@ import * as b from '../build.js';
 const lineCap = 'round';
 const lineJoin = 'round';
 
-const notMaritimeCoast: FilterSpecification[] = [
-	['!=', ['get', 'maritime'], true],
-	['!=', ['get', 'coastline'], true],
-];
+// Shortbread 1.1's `boundaries` layer carries only `admin_level`, `disputed` and `maritime` — there
+// is no `coastline` field, so the clause that used to test it was always true and has been removed.
+const notMaritimeCoast: FilterSpecification[] = [['!=', ['get', 'maritime'], true]];
 const COUNTRY = [
 	'all',
 	['==', ['get', 'admin_level'], 2],
@@ -40,7 +39,6 @@ const MARITIME = [
 	['==', ['get', 'admin_level'], 2],
 	['==', ['get', 'maritime'], true],
 	['!=', ['get', 'disputed'], true],
-	['!=', ['get', 'coastline'], true],
 ] as FilterSpecification;
 
 export function* boundaries(ctx: LayerContext): Generator<b.TaggedLayer> {
