@@ -3,6 +3,7 @@ import { osm } from './osm.js';
 import type { OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/inlineSources.js';
+import { Color } from '../color/index.js';
 
 // Exhaustive behavioural coverage of every osm() option ("knob"). Where a resolve-level
 // test already exists (options/resolve.test.ts, options/layer-groups.test.ts), this file
@@ -470,9 +471,12 @@ describe('osm() static properties', () => {
 
 describe('osm() knob: sky', () => {
 	it('emits a style.sky populated from the resolved defaults', async () => {
+		// Sky and horizon come from the palette (see the per-palette block below); the three blend
+		// factors are palette-independent.
+		const colors = osm.colors('colorful', false);
 		expect((await build()).sky).toStrictEqual({
-			'sky-color': '#87CEEB',
-			'horizon-color': '#ffffff',
+			'sky-color': colors.water,
+			'horizon-color': colors.background,
 			'sky-horizon-blend': 0.5,
 			'horizon-fog-blend': 0.5,
 			'atmosphere-blend': 0,
@@ -550,5 +554,38 @@ describe('osm() knob: sky accepts a boolean', () => {
 	it('resolves to false so callers can detect it', () => {
 		expect(osm.resolveOptions({ sky: false }).sky).toBe(false);
 		expect(osm.resolveOptions().sky).not.toBe(false);
+	});
+});
+
+// Every theme used to get the same `#87CEEB`, which put a bright blue sky above a dark map in dark
+// mode and above a monochrome one in `toner` (issue #126). The defaults are now derived from the
+// palette: sky from its `water`, horizon from its `background`.
+describe('osm() sky defaults follow the palette', () => {
+	const sky = (theme: unknown) => build({ theme } as never).sky as Record<string, string>;
+
+	it('takes the palette water colour for the sky and background for the horizon', () => {
+		for (const palette of osm.palettes) {
+			for (const darkMode of [false, true]) {
+				const colors = osm.colors(palette, darkMode);
+				const s = sky({ palette, darkMode });
+				expect(s['sky-color'], `${palette} dark=${darkMode}`).toBe(colors.water);
+				expect(s['horizon-color'], `${palette} dark=${darkMode}`).toBe(colors.background);
+			}
+		}
+	});
+
+	it('gives every palette a distinct sky', () => {
+		const skies = osm.palettes.map((p) => sky(p)['sky-color']);
+		expect(new Set(skies).size).toBe(skies.length);
+	});
+
+	it('darkens the sky in dark mode', () => {
+		const light = Color.parse(sky({ palette: 'colorful', darkMode: false })['sky-color']).asHSL();
+		const dark = Color.parse(sky({ palette: 'colorful', darkMode: true })['sky-color']).asHSL();
+		expect(dark.l).toBeLessThan(light.l);
+	});
+
+	it('an explicit sky colour still wins', () => {
+		expect((build({ sky: { skyColor: '#123456' } }).sky as Record<string, string>)['sky-color']).toBe('#123456');
 	});
 });

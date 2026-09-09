@@ -30,17 +30,18 @@ export type ResolvedOsm = ResolvedOsmOverlay & {
 
 export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 	const theme = resolveTheme(options?.theme);
+	const colors = resolveColors(theme, options?.colors);
 
 	return {
 		urls: resolveOsmUrls(options?.urls),
 		features: resolveOsmFeatures(options?.features),
 		sun: resolveSun(options?.sun),
-		sky: resolveSky(options?.sky),
+		sky: resolveSky(options?.sky, { skyColor: colors.water, horizonColor: colors.background }),
 		theme,
 		layers: resolveLayerGroups(options?.layers),
 		text: resolveText(options?.text),
 		layout: resolveLayout(options?.layout),
-		colors: resolveColors(theme, options?.colors),
+		colors,
 		recolor: resolveRecolor(options?.recolor),
 	};
 }
