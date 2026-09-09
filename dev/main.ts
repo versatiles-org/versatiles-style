@@ -1,7 +1,10 @@
 import { inlineSources, osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
+import type { LayerSpecification } from 'maplibre-gl';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
-declare const MaplibreInspect: new (options?: Record<string, unknown>) => maplibregl.IControl;
+// `sources` and `render()` are public members; we drive both ourselves, see `collectVectorLayers`.
+type Inspect = maplibregl.IControl & { sources: Record<string, string[]>; render(): void };
+declare const MaplibreInspect: new (options?: Record<string, unknown>) => Inspect;
 
 type Base = 'osm' | 'satellite';
 
@@ -36,11 +39,61 @@ hillshadeToggle.checked = getBool('hillshade');
 landcoverToggle.checked = getBool('landcover');
 
 let map: maplibregl.Map | undefined;
+let inspect: Inspect | undefined;
+let inspecting = false;
+
+// ── Inspect mode ────────────────────────────────────────────────────────────────
+// The inspect control discovers a vector source's layer list by fetching the TileJSON that the
+// source's `url` points at. `inlineSources` resolves that reference away — the built style
+// carries `tiles`, not `url` — so the control skips every source, ends up with an empty layer
+// list and renders a blank inspect view. Read the documents here and pass the result in as its
+// `sources` option instead (which also stops it from trying to discover them itself).
+const vectorLayerCache = new Map<string, Promise<string[]>>();
+
+async function collectVectorLayers(style: StyleSpecification): Promise<Record<string, string[]>> {
+	const entries = await Promise.all(
+		Object.entries(style.sources).map(async ([id, source]) => {
+			if (source.type !== 'vector' || typeof source.url !== 'string') return undefined;
+			const { url } = source;
+			let layers = vectorLayerCache.get(url);
+			if (!layers) {
+				layers = fetch(url)
+					.then((res) => res.json() as Promise<{ vector_layers?: { id: string }[] }>)
+					.then((tileJSON) => (tileJSON.vector_layers ?? []).map((layer) => layer.id));
+				vectorLayerCache.set(url, layers);
+			}
+			return [id, await layers] as const;
+		})
+	);
+	return Object.fromEntries(entries.filter((entry) => entry !== undefined));
+}
+
+// The control's own inspect-style builder drops every source that is not vector or geojson but
+// leaves `terrain` in place, and MapLibre throws on a terrain block whose raster-dem source is
+// gone. Build the style here so the two stay consistent.
+function buildInspectStyle(
+	style: StyleSpecification,
+	coloredLayers: LayerSpecification[],
+	options: { backgroundColor: string }
+): StyleSpecification {
+	const inspectStyle: StyleSpecification = {
+		...style,
+		sources: Object.fromEntries(
+			Object.entries(style.sources).filter(([, source]) => source.type === 'vector' || source.type === 'geojson')
+		),
+		layers: [
+			{ id: 'background', type: 'background', paint: { 'background-color': options.backgroundColor } },
+			...coloredLayers,
+		],
+	};
+	delete inspectStyle.terrain;
+	return inspectStyle;
+}
 
 // Build a style from the current control values. Landcover only exists for the OSM vector
 // style; for satellite, theme/dark-mode apply to the (optional) OSM overlay and terrain/hillshade
 // apply to the raster style.
-function buildStyle(): Promise<StyleSpecification> {
+async function buildStyle(): Promise<{ style: StyleSpecification; sources: Record<string, string[]> }> {
 	const base = baseSelect.value as Base;
 	const palette = themeSelect.value as Palette;
 	const buildings = buildingsToggle.checked ? 'extruded' : 'flat';
@@ -69,8 +122,10 @@ function buildStyle(): Promise<StyleSpecification> {
 	// fetches the document itself. That is fine only when the TileJSON's `tiles` entries are
 	// absolute — the VersaTiles one serves `/tiles/osm/{z}/{x}/{y}`, and MapLibre does not resolve
 	// relative templates, so it builds `Request('/tiles/osm/2/2/2')` and throws. `inlineSources`
-	// fetches the document and rewrites those paths against it.
-	return inlineSources(style);
+	// fetches the document and rewrites those paths against it. The inspect control needs the same
+	// documents, so read both off the un-inlined style in one go.
+	const [inlined, sources] = await Promise.all([inlineSources(style), collectVectorLayers(style)]);
+	return { style: inlined, sources };
 }
 
 function persistState(): void {
@@ -87,11 +142,12 @@ function persistState(): void {
 }
 
 async function render(): Promise<void> {
-	const style = await buildStyle();
+	const { style, sources } = await buildStyle();
 
 	console.log('Rendering style', style);
 
-	if (map) {
+	if (map && inspect) {
+		inspect.sources = sources;
 		// `diff: false` forces a full reload. With MapLibre's default diffing the rebuilt style is
 		// applied to the model — `map.getStyle()` is correct — but tiles already parsed keep the
 		// buckets they were built with, so a layer that was outside its zoom range (or absent) when
@@ -99,6 +155,13 @@ async function render(): Promise<void> {
 		// exactly that case: it removes each covered fill's `minzoom`, and the loaded tiles carry no
 		// bucket for those layers, so forest and grass only appear after a reload.
 		map.setStyle(style, { diff: false });
+		if (inspecting) {
+			// That `setStyle` also replaced the inspect view with the plain style, so put it back. Wait
+			// for `idle` rather than `styledata`: the control picks the new style up as the one to
+			// restore on toggle-off on `styledata` (it registered that listener first), but swapping the
+			// style again from inside that event re-enters MapLibre's own style loading and throws.
+			map.once('idle', () => inspect?.render());
+		}
 	} else {
 		map = new maplibregl.Map({
 			container: 'map',
@@ -109,12 +172,15 @@ async function render(): Promise<void> {
 		});
 		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 		// Inspect control: toggles a debug view of the vector tile layers/features.
-		map.addControl(
-			new MaplibreInspect({
-				popup: new maplibregl.Popup({ closeButton: false, closeOnClick: false }),
-			}),
-			'top-right'
-		);
+		inspect = new MaplibreInspect({
+			popup: new maplibregl.Popup({ closeButton: false, closeOnClick: false }),
+			sources,
+			buildInspectStyle,
+			toggleCallback: (on: boolean) => {
+				inspecting = on;
+			},
+		});
+		map.addControl(inspect, 'top-right');
 	}
 
 	persistState();
