@@ -2,6 +2,24 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../../api/index.js';
 
+// ── The zoom-behaviour rule ────────────────────────────────────────────────────────
+//
+// Every zoom-dependent property of a layer is **declared once and derived everywhere else**.
+// Both zoom bugs this suite exists to catch came from breaking that:
+//
+//   • #124 — the Shortbread appearance zooms lived in three hand-maintained copies (`appear:`,
+//     `LAND_FILLS`, `LANDCOVER_DEFADE`); they drifted, and `land-sand`/`land-rock` ended up
+//     the wrong way round. Now one table with a `landcover` flag, everything derived from it.
+//   • `minzoom` — written by hand next to a transition declared elsewhere. `transport-tram` was
+//     gated at z13 and its casing at z15 while both faded over z14 → 15, so rail rendered without
+//     a casing for a whole zoom level. Now derived from the transition.
+//
+// The invariants below are the machine-checkable form of that rule.
+//
+// **The one deliberate exception is this file.** The schema zooms in the tables here are typed out
+// by hand on purpose, so the test can *disagree* with the implementation — deriving them from the
+// source would make every assertion tautological. Do not "deduplicate" them.
+//
 // Specification under test (independent of the implementation):
 //
 // Every element fades in by OPACITY over the zoom `z0` at which it appears in Shortbread tiles
@@ -412,6 +430,54 @@ describe('minzoom matches where each layer starts appearing', () => {
 		for (const id of LANDCOVER_COVERED) {
 			const layer = landcoverStyle.layers.find((l) => l.id === id) as { minzoom?: number };
 			expect(layer.minzoom ?? 0, `${id} must render from z0 with landcover`).toBeLessThanOrEqual(0);
+		}
+	});
+});
+
+// ── Zoom-range sanity ─────────────────────────────────────────────────────────────
+// Cheap invariants that are currently clean; they exist so they stay that way. Each describes a
+// layer that would silently render wrongly — or never render — rather than fail loudly.
+describe('zoom ranges are internally consistent', () => {
+	const styles = (): [string, StyleSpecification][] => [
+		['default', style],
+		['landcover', landcoverStyle],
+	];
+
+	it('no layer has a maxzoom at or below its minzoom (it would never render)', () => {
+		for (const [name, s] of styles()) {
+			const broken = s.layers
+				.map((l) => l as { id: string; minzoom?: number; maxzoom?: number })
+				.filter((l) => l.minzoom !== undefined && l.maxzoom !== undefined && l.maxzoom <= l.minzoom)
+				.map((l) => `${l.id} [${l.minzoom}, ${l.maxzoom}]`);
+			expect(broken, `${name}: layers with an empty zoom range`).toEqual([]);
+		}
+	});
+
+	it('a layer with a maxzoom also has a minzoom', () => {
+		// A one-sided range is almost always an oversight: the layer is gated at the top but
+		// processed all the way down to z0.
+		for (const [name, s] of styles()) {
+			const oneSided = s.layers
+				.map((l) => l as { id: string; minzoom?: number; maxzoom?: number })
+				.filter((l) => l.maxzoom !== undefined && l.minzoom === undefined)
+				.map((l) => l.id);
+			expect(oneSided, `${name}: layers gated at the top but not the bottom`).toEqual([]);
+		}
+	});
+
+	it('every fade finishes before its layer disappears', () => {
+		// A fade that runs past maxzoom means the layer is removed before it ever reaches full
+		// opacity — it would flicker in and vanish.
+		for (const [name, s] of styles()) {
+			const clipped: string[] = [];
+			for (const layer of s.layers) {
+				const max = (layer as { maxzoom?: number }).maxzoom;
+				if (max === undefined) continue;
+				const fade = opacityFade(s, layer.id);
+				if (fade && fade.stops[0] + 1 > max)
+					clipped.push(`${layer.id}: fade ends z${fade.stops[0] + 1} > maxzoom ${max}`);
+			}
+			expect(clipped, `${name}: fades cut short by maxzoom`).toEqual([]);
 		}
 	});
 });
