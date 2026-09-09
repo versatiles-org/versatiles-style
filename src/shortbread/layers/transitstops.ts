@@ -2,7 +2,7 @@ import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import * as b from '../build.js';
 
-// Public-transport stop icons + names (bus, tram, subway, light rail, stations, airports).
+// Public-transport stop icons + names (bus, tram, stations, airports).
 // All share a common symbol style (the old `symbol-*` rule); each adds its icon + min-zoom.
 
 type StopDef = {
@@ -28,31 +28,15 @@ const STOPS: StopDef[] = [
 		image: 'base:transport-tram',
 		iconSize: { 15: 0.5, 17: 1 },
 	},
-	{
-		id: 'subway',
-		filter: ['all', ['in', ['get', 'kind'], ['literal', ['station', 'halt']]], ['==', ['get', 'station'], 'subway']],
-		minzoom: 14,
-		image: 'base:icon-rail_metro',
-		iconSize: { 14: 0.5, 16: 1 },
-	},
-	{
-		id: 'lightrail',
-		filter: [
-			'all',
-			['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
-			['==', ['get', 'station'], 'light_rail'],
-		],
-		minzoom: 14,
-		image: 'base:icon-rail_light',
-		iconSize: { 14: 0.5, 16: 1 },
-	},
+	// There were `subway` and `lightrail` stops here, filtering on `['get', 'station']`. Shortbread's
+	// `public_transport` layer has no such field — only `kind`, `name` and `iata` — so both filters
+	// were always false and neither layer ever rendered, while `station` below matched every stop
+	// anyway (its `!in(undefined, …)` clause is always true). The distinction is simply not
+	// expressible against this schema, so the two dead layers are gone and `station` now says plainly
+	// what it matches. See https://shortbread-tiles.org/schema/1.1/#layer-public_transport
 	{
 		id: 'station',
-		filter: [
-			'all',
-			['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
-			['!', ['in', ['get', 'station'], ['literal', ['light_rail', 'subway']]]],
-		],
+		filter: ['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
 		minzoom: 13,
 		image: 'base:icon-rail',
 		iconSize: { 13: 0.5, 15: 1 },
