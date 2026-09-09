@@ -429,6 +429,22 @@ build. The style it returns still _references_ its sources; pass it through
 
 ---
 
+## Swapping a style at runtime
+
+Rebuilding a style and handing it to an existing map needs a full reload:
+
+```ts
+map.setStyle(osm({ features: { landcover: true } }), { diff: false });
+```
+
+MapLibre's default diffing applies the new style to its model — `map.getStyle()` returns the right
+thing — but tiles already parsed keep the buckets they were built with. A layer that was outside its
+zoom range, or absent, when those tiles loaded stays invisible until something forces a re-parse.
+Toggling `features.landcover` is exactly that case: it removes the `minzoom` from each covered fill,
+and the loaded tiles carry no bucket for them, so the land cover appears only after a page reload.
+
+---
+
 ## Projection
 
 ```ts

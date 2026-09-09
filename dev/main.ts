@@ -92,7 +92,13 @@ async function render(): Promise<void> {
 	console.log('Rendering style', style);
 
 	if (map) {
-		map.setStyle(style);
+		// `diff: false` forces a full reload. With MapLibre's default diffing the rebuilt style is
+		// applied to the model — `map.getStyle()` is correct — but tiles already parsed keep the
+		// buckets they were built with, so a layer that was outside its zoom range (or absent) when
+		// they loaded stays invisible until something forces a re-parse. Toggling `landcover` is
+		// exactly that case: it removes each covered fill's `minzoom`, and the loaded tiles carry no
+		// bucket for those layers, so forest and grass only appear after a reload.
+		map.setStyle(style, { diff: false });
 	} else {
 		map = new maplibregl.Map({
 			container: 'map',
