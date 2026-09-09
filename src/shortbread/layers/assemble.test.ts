@@ -117,3 +117,96 @@ describe('assembled layers', () => {
 		}
 	});
 });
+
+describe('underground treatment', () => {
+	// A tunnel layer must actually LOOK different from the same road on the surface. Snapshots only
+	// record whatever shipped last, so this states the property instead: for every `tunnel-` layer
+	// that has a surface counterpart, at least one cue must differ — and the cue must be one that
+	// really renders.
+	//
+	// Before `underground()`, `tunnel-street-primary` differed from `street-primary` by ΔE 3.6 and
+	// nothing else — invisible — and every tunnel dash in the style was cancelled by its round
+	// line-cap. Both bugs pass a snapshot test and fail this one.
+
+	/** CIE76 ΔE. ~2.3 is a just-noticeable difference on large flat areas; a thin line needs more. */
+	function deltaE(a: string, b: string): number {
+		const lab = (css: string): number[] => {
+			const [r, g, b2] = css
+				.match(/[\d.]+/g)!
+				.slice(0, 3)
+				.map(Number);
+			const lin = (v: number) => (v / 255 <= 0.04045 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4);
+			const [R, G, B] = [lin(r), lin(g), lin(b2)];
+			const xyz = [
+				(0.4124 * R + 0.3576 * G + 0.1805 * B) / 0.95047,
+				0.2126 * R + 0.7152 * G + 0.0722 * B,
+				(0.0193 * R + 0.1192 * G + 0.9505 * B) / 1.08883,
+			].map((t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116));
+			return [116 * xyz[1] - 16, 500 * (xyz[0] - xyz[1]), 200 * (xyz[1] - xyz[2])];
+		};
+		const [A, B] = [lab(a), lab(b)];
+		return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+	}
+
+	/** A round cap extends each dash by half a line width at both ends, closing any gap below 1.0. */
+	function dashRenders(layer: Record<string, unknown>): boolean {
+		const paint = (layer.paint ?? {}) as Record<string, unknown>;
+		const dash = paint['line-dasharray'] as number[] | undefined;
+		if (!dash) return false;
+		const cap = ((layer.layout ?? {}) as Record<string, string>)['line-cap'] ?? 'butt';
+		return cap !== 'round' || dash[1] > 1;
+	}
+
+	// Roads whose surface colour is already at (or within a hair of) `bg`, so fading toward `bg`
+	// cannot move them — see the KNOWN GAP note on `UNDERGROUND.fade`. They render underground
+	// exactly as they do on the surface. Listed exactly rather than skipped: if the treatment stops
+	// reaching another road this list grows and the test fails, and if one of these gains a cue the
+	// list shrinks and the test fails too, so the gap has to stay a deliberate decision.
+	const NO_COLOUR_HEADROOM = [
+		'tunnel-way-cycleway',
+		'tunnel-street-service',
+		'tunnel-street-busway',
+		'tunnel-street-busguideway',
+		'tunnel-street-track-bicycle',
+		'tunnel-street-pedestrian-bicycle',
+		'tunnel-street-service-bicycle',
+		'tunnel-street-livingstreet-bicycle',
+		'tunnel-street-residential-bicycle',
+		'tunnel-street-unclassified-bicycle',
+	];
+
+	it('every tunnel road differs visibly from the same road on the surface', async () => {
+		const layers = (await layersFor('local')) as unknown as Record<string, unknown>[];
+		const byId = new Map(layers.map((l) => [l.id as string, l]));
+
+		// Grouped by road, not by layer: a reader sees the casing and the fill as one road, so the cue
+		// only has to be on one of them. Several casings are near-white and have no room to fade.
+		const roads = new Map<string, Record<string, unknown>[]>();
+		for (const l of layers) {
+			const id = l.id as string;
+			if (!id.startsWith('tunnel-')) continue;
+			const road = id.replace(/:outline$/, '');
+			roads.set(road, [...(roads.get(road) ?? []), l]);
+		}
+		expect(roads.size).toBeGreaterThan(20);
+
+		const undifferentiated: string[] = [];
+		for (const [road, parts] of roads) {
+			const differs = parts.some((t) => {
+				const surface = byId.get((t.id as string).slice('tunnel-'.length));
+				if (!surface) return true; // nothing on the surface to be confused with
+				const tp = (t.paint ?? {}) as Record<string, unknown>;
+				const sp = (surface.paint ?? {}) as Record<string, unknown>;
+				const colorKey = t.type === 'fill' ? 'fill-color' : 'line-color';
+				const opacityKey = t.type === 'fill' ? 'fill-opacity' : 'line-opacity';
+				return (
+					deltaE(tp[colorKey] as string, sp[colorKey] as string) >= 6 ||
+					(dashRenders(t) && !dashRenders(surface)) ||
+					JSON.stringify(tp[opacityKey]) !== JSON.stringify(sp[opacityKey])
+				);
+			});
+			if (!differs) undifferentiated.push(road);
+		}
+		expect(undifferentiated).toStrictEqual(NO_COLOUR_HEADROOM);
+	});
+});

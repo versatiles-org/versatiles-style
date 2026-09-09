@@ -276,26 +276,12 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 
 	if (isOutline) {
 		r.color = casing;
-		if (prefix === 'tunnel-') {
-			// Tunnels: yellow casings lighten a touch, service/bus casings stay as-is, the rest grey to
-			// a light neutral.
-			r.color = isYellow
-				? casing.blend(0.05, c.roadStreet)
-				: isServiceLike(base)
-					? casing
-					: c.roadStreet.blend(0.13, fg);
-			// OSM Bright dashes tunnel casings for every class EXCEPT trunk and primary.
-			if (base !== 'trunk' && base !== 'primary') r.lineDasharray = [0.5, 0.25];
-		} else if (prefix === 'bridge-' && !isYellow && !isServiceLike(base)) {
-			// Bridges lighten the white-minor / pedestrian casing to a neutral grey.
-			r.color = c.roadStreet.blend(0.15, fg);
-		}
+		// Bridges lighten the white-minor / pedestrian casing to a neutral grey.
+		if (prefix === 'bridge-' && !isYellow && !isServiceLike(base)) r.color = c.roadStreet.blend(0.15, fg);
 	} else {
 		r.color = main;
-		// Tunnels lighten the yellow fills toward white and grey everything else to a faint off-white.
-		if (prefix === 'tunnel-') r.color = isYellow ? main.blend(0.1, c.roadStreet) : c.roadStreet.blend(0.03, fg);
 		// Pedestrian streets are lavender only on the surface; on bridges they render white.
-		else if (prefix === 'bridge-' && base === 'pedestrian') r.color = c.roadStreet;
+		if (prefix === 'bridge-' && base === 'pedestrian') r.color = c.roadStreet;
 	}
 
 	Object.assign(r, streetWidth(base, isLink, isOutline));
@@ -308,19 +294,20 @@ function streetLineStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline
 }
 
 function zoneStyle(ctx: LayerContext, prefix: Prefix): b.StyleProps {
-	const { c, fg } = ctx;
+	const { c } = ctx;
 	// The surface zone is a tint over what it covers — landuse, sites, the plaza's own paths — so it
 	// fades in to 0.25, not to 1. At full strength it hides all of them; v5 expressed the same thing
 	// as a 25%-alpha fill colour. Bridges and tunnels below are real surfaces, not tints, and stay opaque.
 	if (prefix === '') return { color: c.transitFoot, opacity: { 14: 0, 15: 0.25 } };
-	if (prefix === 'tunnel-') return { color: c.roadStreet.blend(0.03, fg), opacity: { 12: 0, 13: 1 } };
+	// Inside a tunnel or on a bridge the zone is a built deck, not a tint over the ground, so it takes
+	// the road surface colour rather than the lavender. `underground` fades the tunnel one from here.
 	return { color: c.roadStreet, opacity: { 12: 0, 13: 1 } };
 }
 
-function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleProps {
-	const { c, fg } = ctx;
+function bicycleStyle(ctx: LayerContext, base: string): b.StyleProps {
+	const { c } = ctx;
 	const r: b.StyleProps = { lineJoin, lineCap };
-	r.color = prefix === 'tunnel-' ? c.roadStreet.blend(0.03, fg) : c.roadStreet;
+	r.color = c.roadStreet;
 	// minor width for these bicycle overlays (track/service overlays get none)
 	if (base === 'residential' || base === 'unclassified' || base === 'livingstreet' || base === 'pedestrian') {
 		r.size = MINOR_WIDTH.main;
@@ -334,7 +321,7 @@ function bicycleStyle(ctx: LayerContext, prefix: Prefix, base: string): b.StyleP
 // Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
 // casing, growing in from 0 width at z15. footway/steps/path use the lavender foot color; cycleway
 // the light-blue cycle color. Tunnels dash the fill; bridges also get a deck (see bridgeDeckStyle).
-function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
+function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg } = ctx;
 	const fill = t === 'cycleway' ? c.transitCycle : c.transitFoot;
 
@@ -352,14 +339,12 @@ function wayStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boole
 		lineJoin,
 		lineCap,
 		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
-		// Tunnels dash the path fill; surface and bridge paths are solid.
-		...(prefix === 'tunnel-' ? { lineDasharray: [1, 0.2] } : {}),
 	};
 }
 
 // Returns null for variants that should not be drawn at all (e.g. ferry casing,
 // service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
-function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline: boolean): b.StyleProps | null {
+function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg, bg } = ctx;
 
 	if (t === 'ferry')
@@ -412,10 +397,7 @@ function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline:
 
 	// Rail tracks fade in by opacity over z14→15 — the zoom at which OSM Bright starts drawing rail
 	// (the width curves are ~0 below 14) — for both the base (:outline) and the hatching (fill).
-	//
-	// Underground (tunnel) rails render translucent (0.2) to read as "below ground".
-	const target = prefix === 'tunnel-' ? 0.3 : 1;
-	r.opacity = b.fadeIn(14, target);
+	r.opacity = b.fadeIn(14);
 	return r;
 }
 
@@ -505,13 +487,12 @@ function roadStyle(ctx: LayerContext, id: string): b.StyleProps | null {
 			lineCap,
 		};
 	}
-	if (s.startsWith('transport-'))
-		return transportStyle(ctx, prefix, s.slice('transport-'.length), suffix === ':outline');
-	if (s.startsWith('way-')) return wayStyle(ctx, prefix, s.slice('way-'.length), suffix === ':outline');
+	if (s.startsWith('transport-')) return transportStyle(ctx, s.slice('transport-'.length), suffix === ':outline');
+	if (s.startsWith('way-')) return wayStyle(ctx, s.slice('way-'.length), suffix === ':outline');
 	if (s.startsWith('street-')) {
 		const t = s.slice('street-'.length);
 		if (t === 'pedestrian-zone') return zoneStyle(ctx, prefix);
-		if (t.endsWith('-bicycle')) return bicycleStyle(ctx, prefix, t.slice(0, -'-bicycle'.length));
+		if (t.endsWith('-bicycle')) return bicycleStyle(ctx, t.slice(0, -'-bicycle'.length));
 		return streetLineStyle(ctx, prefix, t, suffix === ':outline');
 	}
 	return null;
@@ -557,6 +538,51 @@ function roadGroup(id: string): string | undefined {
 	return undefined;
 }
 
+// ── Underground (tunnel) treatment ─────────────────────────────────────────────
+
+// The one definition of "this is below ground". Every `tunnel-` layer is routed through
+// `underground` by the assembler, so a road or path type added later cannot quietly miss it, and
+// there is a single place to look when the treatment needs debugging or tuning.
+const UNDERGROUND = {
+	// How far a tunnel's colour is faded toward `bg` (white in light mode, black in dark). 0.45 is
+	// where the arterials gain the most — ΔE 16 from their surface colour — while still staying ~17
+	// clear of every other colour on the map; past ~0.5 the casings start to merge into the ground.
+	//
+	// KNOWN GAP: `roadStreet` IS `bg`, so a fade cannot move the white minor roads at all and they
+	// read the same underground as on the surface. Only a cue that is not a colour can mark those —
+	// a dashed fill does it, and is what the test below records as missing. See the exception list
+	// there before assuming a road was simply forgotten.
+	fade: 0.45,
+	// Rail is the exception (see `underground`): it keeps the translucency the old style gave it.
+	translucency: 0.3,
+} as const;
+
+/** Scale an opacity — a constant or a zoom ramp — by a factor, keeping its shape. */
+function scaleOpacity(opacity: b.StyleProps['opacity'], factor: number): b.StyleProps['opacity'] {
+	if (opacity === undefined) return factor;
+	if (typeof opacity === 'number') return opacity * factor;
+	return Object.fromEntries(Object.entries(opacity).map(([z, v]) => [Number(z), v * factor]));
+}
+
+/**
+ * Apply the underground treatment to one already-styled tunnel layer.
+ *
+ * Nothing here is per road class: every tunnel layer fades, and rail additionally dims.
+ *
+ * If a dash is ever added back here, it must set `line-cap: 'butt'`. A round cap extends every dash
+ * by half a line width at BOTH ends, so it closes any gap narrower than 1.0 line widths — that is
+ * why the `[0.5, 0.25]` and `[1, 0.2]` tunnel dashes this style used to carry all rendered solid.
+ */
+function underground(ctx: LayerContext, id: string, s: b.StyleProps): b.StyleProps {
+	const color = typeof s.color === 'object' ? s.color.blend(UNDERGROUND.fade, ctx.bg) : s.color;
+
+	// Rail keeps the translucency it has always had; its casing and its ties dim together.
+	if (id.startsWith('tunnel-transport-'))
+		return { ...s, color, opacity: scaleOpacity(s.opacity, UNDERGROUND.translucency) };
+
+	return { ...s, color };
+}
+
 export function* roads(ctx: LayerContext): Generator<b.TaggedLayer> {
 	for (const def of buildStructures()) {
 		// every road structure is a fill or line layer (never background)
@@ -568,12 +594,15 @@ export function* roads(ctx: LayerContext): Generator<b.TaggedLayer> {
 		// end into a bulge that overlaps the road it continues, making one street look like two
 		// overlapping outlined pieces. Surface and tunnel roads keep round caps.
 		if (d.type === 'line' && d.id.startsWith('bridge-')) (style as b.StyleProps).lineCap = 'butt';
+		// Depth is a property of the structure, not of the road class, so it is applied here in one
+		// pass rather than branching inside every style function.
+		const placed = d.id.startsWith('tunnel-') ? underground(ctx, d.id, style) : style;
 		const make = d.type === 'fill' ? b.fill : b.line;
 		// roadStyle guarantees a color for every non-null result (see its contract).
 		yield make(d.id, {
 			sourceLayer: d['source-layer'],
 			filter: d.filter,
-			...(style as b.ColoredStyleProps),
+			...(placed as b.ColoredStyleProps),
 			group: roadGroup(d.id),
 		});
 	}
