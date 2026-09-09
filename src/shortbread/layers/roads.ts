@@ -156,7 +156,9 @@ function buildStructures(): MaplibreLayerDefinition[] {
 						id: 'aerialway-' + t.replace(/[_-]+/g, '') + suffix,
 						type: 'line',
 						'source-layer': 'aerialways',
-						filter: ['all', ...filter, ['==', ['get', 'kind'], t]] as FilterSpecification,
+						// No `...filter` here: the shared road filter tests `bridge`/`tunnel`, and the
+						// `aerialways` layer carries only `kind`, so those clauses were always true.
+						filter: ['==', ['get', 'kind'], t] as FilterSpecification,
 					});
 				}
 				results.push({ id: 'transport-ferry' + suffix, type: 'line', 'source-layer': 'ferries' });
