@@ -113,6 +113,7 @@ type LayerGroupOptions = {
         states?: boolean | number; // label-boundary-state
         countries?: boolean | number; // label-boundary-country-small/medium/large
         addresses?: boolean | number; // label-address-housenumber
+        water?: boolean | number; // label-water-area, -river, -stream
       };
   icons?: boolean | number; // convenience alias for { pois, transit.stops, markings } together
 };
@@ -205,6 +206,7 @@ type ColorsOptions = {
   labelSymbol?: string; // transit icon tint
   labelPoi?: string; // POI icon and label tint
   labelHousenumber?: string; // house-number labels
+  labelWater?: string; // lake, sea and river names
 };
 
 type RecolorOptions = {

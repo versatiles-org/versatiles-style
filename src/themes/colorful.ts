@@ -48,6 +48,7 @@ const light: ResolvedColors = {
 	labelSymbol: '#66626A',
 	labelPoi: '#66666666',
 	labelHousenumber: '#0F0B074D',
+	labelWater: '#4E5B68',
 };
 
 // Light colors are taken directly from the v5 Colorful palette.

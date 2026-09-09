@@ -222,7 +222,7 @@ describe('satellite() knob: urls', () => {
 
 describe('satellite() static properties', () => {
 	it('satellite.colorKeys mirrors the osm color keys', () => {
-		expect(satellite.colorKeys).toHaveLength(44);
+		expect(satellite.colorKeys).toHaveLength(45);
 	});
 
 	it('satellite.slots exposes the raster/symbol/label anchors', () => {

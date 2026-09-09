@@ -63,6 +63,8 @@ export type ColorsOptions = {
 	labelSymbol?: string;
 	labelPoi?: string;
 	labelHousenumber?: string;
+	/** Lake, sea and river names — a darkened water tone, so they read as water, not as places. */
+	labelWater?: string;
 };
 
 export type ResolvedColors = Required<ColorsOptions>;
@@ -112,6 +114,7 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'labelSymbol',
 	'labelPoi',
 	'labelHousenumber',
+	'labelWater',
 ] as const;
 
 export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions): ResolvedColors {

@@ -29,7 +29,7 @@ const DEFAULTS = {
 	pois: true,
 	boundaries: { country: true, state: true },
 	markings: true,
-	labels: { places: true, streets: true, states: true, countries: true, addresses: true },
+	labels: { places: true, streets: true, states: true, countries: true, addresses: true, water: true },
 	icons: true,
 };
 
@@ -177,6 +177,7 @@ describe('resolveLayerGroups', () => {
 			states: false,
 			countries: false,
 			addresses: false,
+			water: false,
 		});
 	});
 

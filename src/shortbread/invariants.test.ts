@@ -4,6 +4,7 @@ import { resolveOsm } from '../options/index.js';
 import { resolveLayerGroups } from '../options/layer-groups.js';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
+import { SHORTBREAD_SCHEMA } from './schema.js';
 
 // Structural contracts on the *tagged* layer stream (before gate() drops the group tags), i.e.
 // the layer-generation stage. These complement api/style-invariants.test.ts (which validates the
@@ -14,34 +15,11 @@ const ctx = buildContext(resolveOsm());
 const tagged = [...shortbreadLayers(ctx)];
 const layers = tagged.map((t) => t.layer as unknown as Record<string, unknown>);
 
-// The Shortbread vector schema's source-layers (https://shortbread-tiles.org). Every data layer
-// must read from one of these — a typo here silently renders nothing, and passes MapLibre's own
-// spec validation (which doesn't know the source's layer names).
-const ALLOWED_SOURCE_LAYERS = new Set([
-	'addresses',
-	'aerialways',
-	'boundaries',
-	'boundary_labels',
-	'bridges',
-	'buildings',
-	'dam_lines',
-	'dam_polygons',
-	'ferries',
-	'land',
-	'ocean',
-	'pier_lines',
-	'pier_polygons',
-	'place_labels',
-	'pois',
-	'public_transport',
-	'sites',
-	'street_labels',
-	'street_labels_points',
-	'street_polygons',
-	'streets',
-	'water_lines',
-	'water_polygons',
-]);
+// Every data layer must read from a source-layer the tiles actually carry — a typo here silently
+// renders nothing and passes MapLibre's own spec validation, which does not know the source's layer
+// names. Derived from the vendored schema rather than restated: a hand-written copy is one more
+// thing to drift, and this one already had (it predated `water_polygons_labels` being rendered).
+const ALLOWED_SOURCE_LAYERS = new Set(Object.keys(SHORTBREAD_SCHEMA));
 
 describe('layer-generation invariants', () => {
 	it('every data layer reads from a known Shortbread source-layer', () => {

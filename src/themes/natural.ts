@@ -48,6 +48,7 @@ const light: ResolvedColors = {
 	labelSymbol: '#606068',
 	labelPoi: '#505050',
 	labelHousenumber: '#211C0D4D',
+	labelWater: '#475A67',
 };
 
 export const natural: PaletteDefinition = {

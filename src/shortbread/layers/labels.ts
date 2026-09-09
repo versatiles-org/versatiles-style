@@ -166,6 +166,52 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 
+	// ── Water labels ────────────────────────────────────────────────────────────
+	// Shortbread carries names for water separately from the geometry: `water_polygons_labels`
+	// (points, z4+, pre-sorted by `way_area` so the largest win collisions) and `water_lines_labels`
+	// (lines, canals/rivers z12+, streams/ditches z14+). Neither was rendered before, so the map had
+	// no lake, sea or river names at all.
+	const waterBase: b.StyleProps = {
+		color: c.labelWater,
+		font: ctx.fonts.normal,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		textAnchor: 'center',
+	};
+
+	yield b.symbol('label-water-area', {
+		sourceLayer: 'water_polygons_labels',
+		layout: { 'text-field': ctx.nameField },
+		...waterBase,
+		symbolPlacement: 'point',
+		minzoom: 4,
+		size: { 4: 10, 10: 12, 14: 14 },
+		group: 'labels.water',
+	});
+
+	yield b.symbol('label-water-river', {
+		sourceLayer: 'water_lines_labels',
+		filter: ['in', ['get', 'kind'], ['literal', ['river', 'canal']]],
+		layout: { 'text-field': ctx.nameField },
+		...waterBase,
+		symbolPlacement: 'line',
+		minzoom: 12,
+		size: { 12: 10, 15: 12 },
+		group: 'labels.water',
+	});
+
+	yield b.symbol('label-water-stream', {
+		sourceLayer: 'water_lines_labels',
+		filter: ['in', ['get', 'kind'], ['literal', ['stream', 'ditch']]],
+		layout: { 'text-field': ctx.nameField },
+		...waterBase,
+		symbolPlacement: 'line',
+		minzoom: 14,
+		size: { 14: 9, 17: 11 },
+		group: 'labels.water',
+	});
+
 	// small place labels
 	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
 

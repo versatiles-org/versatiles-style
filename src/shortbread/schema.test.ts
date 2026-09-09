@@ -102,8 +102,6 @@ describe('schema coverage', () => {
 	// Source-layers the style deliberately does not render. Each entry is a decision, not an
 	// oversight — adding a layer to the tiles should make this list fail until someone chooses.
 	const NOT_RENDERED: Record<string, string> = {
-		water_lines_labels: 'river and stream names — not rendered in v5 either; tracked as a gap',
-		water_polygons_labels: 'lake and sea names — not rendered in v5 either; tracked as a gap',
 		streets_polygons_labels: 'names of pedestrian zones and similar street polygons',
 	};
 

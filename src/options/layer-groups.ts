@@ -71,6 +71,7 @@ export type LayerGroupOptions = {
 				states?: boolean | number;
 				countries?: boolean | number;
 				addresses?: boolean | number;
+				water?: boolean | number;
 		  };
 	icons?: boolean | number;
 };
@@ -127,6 +128,7 @@ export type ResolvedLayerGroups = {
 		states: boolean | number;
 		countries: boolean | number;
 		addresses: boolean | number;
+		water: boolean | number;
 	};
 	icons: boolean | number;
 };
@@ -236,7 +238,7 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions):
 		pois: leaf(o.pois, icons, true),
 		boundaries: resolveFlat(o.boundaries, ['country', 'state']),
 		markings: leaf(o.markings, icons, true),
-		labels: resolveFlat(o.labels, ['places', 'streets', 'states', 'countries', 'addresses']),
+		labels: resolveFlat(o.labels, ['places', 'streets', 'states', 'countries', 'addresses', 'water']),
 		icons: leaf(o.icons, undefined, true),
 	};
 }

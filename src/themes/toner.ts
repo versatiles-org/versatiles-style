@@ -48,6 +48,7 @@ const light: ResolvedColors = {
 	labelSymbol: '#404040',
 	labelPoi: '#404040',
 	labelHousenumber: '#0000004D',
+	labelWater: '#3E5466',
 };
 
 export const toner: PaletteDefinition = {
