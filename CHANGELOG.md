@@ -32,6 +32,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
 - `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
   expose the same array.
+- **Published satellite styles reshaped.** `assets/styles/satellite/style.json` is now **bare
+  imagery**; the vector overlay moved to `satellite/overlay.json`. `satellite/nooverlay.json` is
+  retired — use `satellite/style.json`, which is the same thing. The same applies to `terrain/*`.
+  `satellite/en` and `satellite/de` are unchanged and still carry the overlay.
+  Note this is deliberately the opposite of the library default: `satellite()` includes the overlay,
+  because a bare style is the more useful published artifact but the less useful API default.
+- **Sprite sheet renamed `basics` → `base`**, and `/assets/sprites/basics/sprites` is no longer
+  published. Most ids only need the new prefix, but 22 were renamed or split — see the mapping table
+  in `SPRITES.md`.
+- The v5 style names (`eclipse`, `graybeard`, `neutrino`, `shadow`, `empty`) are **still published**
+  as aliases of their closest v6 equivalent, so existing `assets/styles/<name>/…` URLs keep working.
+  They are deprecated and will be dropped in 7.0.
 
 ## [5.13.1] - 2026-08-15
 
