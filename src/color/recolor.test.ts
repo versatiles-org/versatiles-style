@@ -192,3 +192,34 @@ describe('applyRecolor()', () => {
 		expect(bgColor(style)).toBe(fillColor(style));
 	});
 });
+
+// `Color.parse` is assigned at module load of ./parse.js — it cannot live on the abstract class,
+// which RGB/HSL extend. It used to be assigned in the barrel, so importing this module without the
+// barrel compiled fine and then threw `Color.parse is not a function` at runtime, depending only on
+// what else happened to have loaded first.
+describe('recolor does not depend on load order', () => {
+	it('works when imported without the color barrel', async () => {
+		const fresh = (await import('./recolor.js')) as typeof import('./recolor.js');
+		const style = {
+			version: 8,
+			sources: {},
+			layers: [{ id: 'x', type: 'background', paint: { 'background-color': '#336699' } }],
+		};
+		expect(() =>
+			fresh.applyRecolor(
+				style as never,
+				{
+					invertBrightness: false,
+					rotateHue: 0,
+					saturate: 0,
+					brightness: 0,
+					contrast: 1,
+					gamma: 1,
+					tint: { color: '#ff0000', amount: 0 },
+					blend: { color: '#000000', amount: 0.5 },
+				} as never
+			)
+		).not.toThrow();
+		expect((style.layers[0].paint as Record<string, string>)['background-color']).toBe('rgb(26,51,77)');
+	});
+});
