@@ -13,6 +13,7 @@ import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { transitStops } from './transitstops.js';
 import { labels, addresses } from './labels.js';
+import { SHORTBREAD_SCHEMA } from '../schema.js';
 
 // Slot anchor layers — stable IDs used as MapLibre `beforeId` targets.
 export const SLOT_BELOW_FILLS = 'slot-below-fills';
@@ -56,7 +57,28 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
 	const layers: MaplibreLayer[] = [];
 	for (const { layer } of gate(ctx.layers, shortbreadLayers(ctx))) {
+		if (layer.type !== 'background') applyDataFloor(layer);
 		layers.push(layer.type === 'background' ? layer : ({ ...layer, source: ctx.source } as MaplibreLayer));
 	}
 	return layers;
+}
+
+/**
+ * Raise a layer's `minzoom` to the zoom where its source-layer's data actually begins.
+ *
+ * `make()` derives `minzoom` from a layer's transition, which covers everything that fades or grows
+ * in. Layers with no transition had no gate at all, so MapLibre processed them from z0 while the
+ * tiles carried nothing — `water-river` was live from z0 although `water_lines` starts at z9.
+ *
+ * Only ever raises, never lowers: a layer deliberately gated later than its data keeps that.
+ * `addLandcover` runs after this and clears the gate on the fills it reveals, which is what lets
+ * the low-zoom landcover extension supply those kinds below their plain-Shortbread zoom (#124).
+ */
+function applyDataFloor(layer: MaplibreLayer): void {
+	const sourceLayer = (layer as { 'source-layer'?: string })['source-layer'];
+	if (!sourceLayer) return;
+	const dataFrom = SHORTBREAD_SCHEMA[sourceLayer]?.minzoom;
+	if (dataFrom === undefined) return;
+	const l = layer as { minzoom?: number };
+	if ((l.minzoom ?? 0) < dataFrom) l.minzoom = dataFrom;
 }

@@ -166,8 +166,8 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["guessStyle.ts"]
 1L["osm.ts"]
-20["satellite.ts"]
-21["index.ts"]
+21["satellite.ts"]
+22["index.ts"]
 end
 subgraph 3["lib"]
 4["index.ts"]
@@ -207,7 +207,7 @@ T["gray.ts"]
 U["muted.ts"]
 V["natural.ts"]
 W["toner.ts"]
-24["types.ts"]
+25["types.ts"]
 end
 subgraph J["color"]
 K["index.ts"]
@@ -239,22 +239,23 @@ end
 1W["index.ts"]
 1X["context.ts"]
 1Y["groups.ts"]
-1Z["layer-groups-map.ts"]
+1Z["schema.ts"]
+20["layer-groups-map.ts"]
 end
 subgraph 1H["types"]
 1I["index.ts"]
 1J["tilejson.ts"]
 1K["vector_layer.ts"]
-25["maplibre.ts"]
+26["maplibre.ts"]
 end
-22["index.ts"]
-23["variants.ts"]
+23["index.ts"]
+24["variants.ts"]
 end
 2-->4
 2-->C
 2-->1I
 2-->1L
-2-->20
+2-->21
 4-->5
 4-->8
 4-->6
@@ -337,7 +338,7 @@ Z-->Y
 1L-->4
 1L-->C
 1L-->1W
-1L-->1Z
+1L-->20
 1L-->H
 1M-->1N
 1M-->1O
@@ -351,6 +352,7 @@ Z-->Y
 1O-->1N
 1P-->1R
 1R-->1G
+1R-->1Z
 1V-->1N
 1W-->1X
 1W-->1Y
@@ -358,24 +360,24 @@ Z-->Y
 1X-->K
 1X-->C
 1Y-->1R
-1Z-->C
-1Z-->1X
-1Z-->1R
-20-->1M
-20-->4
 20-->C
-20-->1W
-20-->1L
-21-->2
+20-->1X
+20-->1R
+21-->1M
+21-->4
+21-->C
+21-->1W
 21-->1L
-21-->20
+22-->2
+22-->1L
 22-->21
-22-->K
-22-->4
-22-->C
-22-->1I
-22-->23
-23-->21
+23-->22
+23-->K
+23-->4
+23-->C
+23-->1I
+23-->24
+24-->22
 
 class 0,1,3,B,G,J,1D,1F,1Q,1H subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
