@@ -438,7 +438,8 @@ Web Mercator exaggerates area away from the equator — Greenland reads as the s
 that distortion is worst at exactly the low zooms where the whole world is visible. `globe` is
 correct there, and MapLibre transitions back to Mercator as you zoom in.
 
-**Requires MapLibre GL JS 5.0+.** Renderers without projection support ignore the property and draw
+**Requires MapLibre GL JS 5.0+**, declared as an optional peer dependency so npm flags a mismatch
+without forcing an install. Renderers without projection support ignore the property and draw
 Mercator, which is the pre-v6 behaviour: MapLibre GL JS 4.x, and the native/server renderers, which
 are Mercator-only. A style therefore renders as a globe in a current browser and flat server-side —
 worth knowing if you compare the two.

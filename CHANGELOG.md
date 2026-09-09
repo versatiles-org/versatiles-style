@@ -35,9 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Styles now default to the `globe` projection** and accept a `projection` option
   (`'globe' | 'mercator' | 'vertical-perspective'`). Web Mercator's area distortion is worst at the
   low zooms where the whole world is visible; MapLibre returns to Mercator as you zoom in. This
-  raises the recommended MapLibre GL JS version to **5.0+** — older versions and the native/server
-  renderers ignore the property and draw Mercator, i.e. the previous behaviour. Pass
-  `projection: 'mercator'` to keep it.
+  raises the required MapLibre GL JS version to **5.0+**, now declared as an **optional peer
+  dependency** (`maplibre-gl: >=5.0.0`) — optional because the package has no runtime dependency
+  on MapLibre and works for anyone generating style JSON server-side. Older versions and the
+  native/server renderers ignore the property and draw Mercator, i.e. the previous behaviour;
+  pass `projection: 'mercator'` to keep it explicitly.
 - **Published satellite styles reshaped.** `assets/styles/satellite/style.json` is now **bare
   imagery**; the vector overlay moved to `satellite/overlay.json`. `satellite/nooverlay.json` is
   retired — use `satellite/style.json`, which is the same thing. The same applies to `terrain/*`.

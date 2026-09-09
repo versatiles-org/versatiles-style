@@ -53,6 +53,14 @@
   "dependencies": {
     "@maplibre/maplibre-gl-style-spec": "^26.2.1"
   },
+  "peerDependencies": {
+    "maplibre-gl": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@maplibre/maplibre-gl-native": "^6.4.1",
