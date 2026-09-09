@@ -1,5 +1,5 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
+import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import {
@@ -11,9 +11,7 @@ import {
 	toOverlayLayers,
 } from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
-import type { TileSource } from '../options/urls.js';
 import { osm } from './osm.js';
-import { ResolvedOsmOverlay } from '../options/osm-overlay.js';
 import { STYLE_METADATA } from '../lib/styleMeta.js';
 
 // Stable slot IDs for satellite styles

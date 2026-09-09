@@ -1,6 +1,5 @@
-import type { StyleSpecification } from '../types/index.js';
+import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
 import { scaleLayerOpacity } from '../shortbread/build.js';
-import type { MaplibreLayer } from '../types/maplibre.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
