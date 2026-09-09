@@ -47,7 +47,7 @@ exports[`generator: buildings3d > yielded layer ids are stable 1`] = `
 ]
 `;
 
-exports[`generator: labels > yielded layer ids are stable 1`] = `
+exports[`generator: featureLabels > yielded layer ids are stable 1`] = `
 [
   "symbol:label-motorway-exit",
   "symbol:label-motorway-shield",
@@ -67,19 +67,6 @@ exports[`generator: labels > yielded layer ids are stable 1`] = `
   "symbol:label-water-area-small",
   "symbol:label-water-river",
   "symbol:label-water-stream",
-  "symbol:label-place-neighbourhood",
-  "symbol:label-place-quarter",
-  "symbol:label-place-suburb",
-  "symbol:label-place-hamlet",
-  "symbol:label-place-village",
-  "symbol:label-place-town",
-  "symbol:label-boundary-state",
-  "symbol:label-place-city",
-  "symbol:label-place-statecapital",
-  "symbol:label-place-capital",
-  "symbol:label-boundary-country-small",
-  "symbol:label-boundary-country-medium",
-  "symbol:label-boundary-country-large",
 ]
 `;
 
@@ -110,6 +97,24 @@ exports[`generator: markings > yielded layer ids are stable 1`] = `
   "symbol:marking-oneway",
   "symbol:marking-oneway-reverse",
   "symbol:marking-bicycle",
+]
+`;
+
+exports[`generator: placeLabels > yielded layer ids are stable 1`] = `
+[
+  "symbol:label-place-neighbourhood",
+  "symbol:label-place-quarter",
+  "symbol:label-place-suburb",
+  "symbol:label-place-hamlet",
+  "symbol:label-place-village",
+  "symbol:label-place-town",
+  "symbol:label-boundary-state",
+  "symbol:label-place-city",
+  "symbol:label-place-statecapital",
+  "symbol:label-place-capital",
+  "symbol:label-boundary-country-small",
+  "symbol:label-boundary-country-medium",
+  "symbol:label-boundary-country-large",
 ]
 `;
 

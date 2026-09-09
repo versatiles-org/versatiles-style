@@ -101,7 +101,11 @@ describe('assembled layers', () => {
 		expect(indexOf(SLOT_BELOW_SYMBOLS)).toBeLessThan(indexOf('poi-amenity'));
 		expect(indexOf(SLOT_BELOW_SYMBOLS)).toBeGreaterThan(indexOf('bridge-street-motorway'));
 		expect(indexOf(SLOT_BELOW_LABELS)).toBeLessThan(indexOf('label-place-city'));
-		expect(indexOf(SLOT_BELOW_LABELS)).toBeGreaterThan(indexOf('symbol-transit-airport'));
+		expect(indexOf('symbol-transit-station')).toBeGreaterThan(indexOf('label-street-residential'));
+		expect(indexOf('symbol-transit-station')).toBeLessThan(indexOf('label-place-city'));
+		// Transit stops sit inside the label stack, above the anchor: they are name labels with an icon,
+		// and they have to outrank the street names they stand on (see the assembly order).
+		expect(indexOf(SLOT_BELOW_LABELS)).toBeLessThan(indexOf('symbol-transit-airport'));
 	});
 
 	it('slot anchor layers should be invisible background layers', async () => {

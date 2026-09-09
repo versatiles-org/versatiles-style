@@ -12,7 +12,7 @@ import { pois } from './pois.js';
 import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { transitStops } from './transitstops.js';
-import { labels, addresses } from './labels.js';
+import { featureLabels, placeLabels, addresses } from './labels.js';
 import { SHORTBREAD_SCHEMA } from '../schema.js';
 
 // Slot anchor layers — stable IDs used as MapLibre `beforeId` targets.
@@ -43,9 +43,14 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* addresses(ctx);
 	yield* markings(ctx);
 	yield* pois(ctx);
-	yield* transitStops(ctx);
 	yield slot(SLOT_BELOW_LABELS);
-	yield* labels(ctx);
+	// MapLibre resolves symbol collisions in layer order, and the later layer wins. Transit stops sit
+	// between the two label bands so a bus or tram stop outranks the street and water names it stands
+	// on, while a settlement name still outranks the stop. Emitting the stops before the labels (as
+	// the icon stack would suggest) is what silently dropped most of them at city zooms.
+	yield* featureLabels(ctx);
+	yield* transitStops(ctx);
+	yield* placeLabels(ctx);
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);
 }

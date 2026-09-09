@@ -3,9 +3,11 @@ import type { LayerContext } from '../context.js';
 import type { Color } from '../../color/index.js';
 import * as b from '../build.js';
 
-// Text labels: motorway refs/shields, street names, place names, and administrative
-// (state/country) names. Rendered topmost, above icons. House numbers are a separate, lowest-
-// priority symbol (see `addresses`) emitted below POIs so they yield to them in collisions.
+// Text labels, rendered topmost above the icons. They come in two bands, because MapLibre resolves
+// symbol collisions in layer order and the transit stops belong between them: `featureLabels`
+// (motorway refs/shields, street names, water names), then transit stops, then `placeLabels`
+// (settlement and state/country names). House numbers are a separate, lowest-priority symbol (see
+// `addresses`) emitted below POIs so they yield to them in collisions.
 
 const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
 
@@ -89,28 +91,12 @@ export function* addresses(ctx: LayerContext): Generator<b.TaggedLayer> {
 	});
 }
 
-export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
+// Names for the features themselves: motorway refs, street names, water names. They sit at the
+// bottom of the label stack, so every symbol emitted after them — transit stops included — wins the
+// collision when the two compete for the same spot.
+export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
-	const placeBase: b.StyleProps = {
-		color: placeText(ctx),
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-	};
-	const boundaryBase: b.StyleProps = {
-		color: c.label,
-		font: ctx.fonts.normal,
-		textTransform: 'uppercase',
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		textAnchor: 'top',
-		textOffset: [0, 0.2],
-		textPadding: 0,
-		textOptional: true,
-	};
 	const streetBase: b.StyleProps = {
 		color: c.label,
 		font: ctx.fonts.normal,
@@ -122,7 +108,6 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 12,
 		size: { 12: 10, 15: 13 },
 	};
-
 	// motorway exit number + shield
 	yield b.symbol('label-motorway-exit', {
 		sourceLayer: 'street_labels_points',
@@ -176,8 +161,11 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'streets_polygons_labels',
 		filter: ['==', ['get', 'kind'], 'pedestrian'],
 		layout: { 'text-field': ctx.nameField },
-		...placeBase,
 		color: c.label,
+		font: ctx.fonts.normal,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 14,
@@ -254,6 +242,32 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		size: { 14: 9, 17: 11 },
 		group: 'labels.water',
 	});
+}
+
+// Place and administrative names: settlements, states, countries. Emitted at the top of the label
+// stack, so a settlement name outranks every other symbol it collides with.
+export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
+	const { c } = ctx;
+
+	const placeBase: b.StyleProps = {
+		color: placeText(ctx),
+		font: ctx.fonts.normal,
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+	};
+	const boundaryBase: b.StyleProps = {
+		color: c.label,
+		font: ctx.fonts.normal,
+		textTransform: 'uppercase',
+		textHaloColor: c.labelHalo,
+		textHaloWidth: 2,
+		textHaloBlur: 1,
+		textAnchor: 'top',
+		textOffset: [0, 0.2],
+		textPadding: 0,
+		textOptional: true,
+	};
 
 	// small place labels
 	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
