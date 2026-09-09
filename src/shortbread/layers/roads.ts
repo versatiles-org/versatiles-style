@@ -319,7 +319,7 @@ function bicycleStyle(ctx: LayerContext, base: string): b.StyleProps {
 }
 
 // Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
-// casing, growing in from 0 width at z15. footway/steps/path use the lavender foot color; cycleway
+// casing, growing in from 0 width at z13. footway/steps/path use the lavender foot color; cycleway
 // the light-blue cycle color. Tunnels dash the fill; bridges also get a deck (see bridgeDeckStyle).
 function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg } = ctx;
@@ -331,14 +331,14 @@ function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProp
 			color: fill.blend(0.1, fg),
 			lineJoin,
 			lineCap,
-			size: { 15: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
+			size: { 13: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
 		};
 	}
 	return {
 		color: fill,
 		lineJoin,
 		lineCap,
-		size: { 15: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
+		size: { 13: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
 	};
 }
 
