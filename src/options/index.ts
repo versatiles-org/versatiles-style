@@ -59,3 +59,5 @@ export { resolveSatelliteRaster } from './satellite-raster.js';
 
 export type { SatelliteOptions, ResolvedSatellite } from './satellite.js';
 export { resolveSatellite } from './satellite.js';
+export { resolveProjection } from './projection.js';
+export type { ProjectionOptions, ResolvedProjection } from './projection.js';

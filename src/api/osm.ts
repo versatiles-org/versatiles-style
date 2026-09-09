@@ -5,7 +5,14 @@ import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/recolor.js';
-import { addTerrain, addHillshade, addLandcover, configure3DLighting, applySky } from '../features/index.js';
+import {
+	addTerrain,
+	addHillshade,
+	addLandcover,
+	configure3DLighting,
+	applySky,
+	applyProjection,
+} from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { STYLE_METADATA, styleName } from '../lib/styleMeta.js';
@@ -136,6 +143,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	applySky(style, resolved.sky);
+	applyProjection(style, resolved.projection);
 
 	// 7. Post-process: recolor
 	if (resolved.recolor) {

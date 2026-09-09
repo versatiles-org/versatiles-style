@@ -319,3 +319,12 @@ describe('satellite() knob: overlay palette default', () => {
 		});
 	});
 });
+
+describe('satellite() knob: projection', () => {
+	it('defaults to globe and is overridable', () => {
+		expect((satellite() as { projection?: unknown }).projection).toStrictEqual({ type: 'globe' });
+		expect((satellite({ projection: 'mercator' }) as { projection?: unknown }).projection).toStrictEqual({
+			type: 'mercator',
+		});
+	});
+});

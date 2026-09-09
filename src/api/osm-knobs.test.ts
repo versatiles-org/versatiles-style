@@ -589,3 +589,22 @@ describe('osm() sky defaults follow the palette', () => {
 		expect((build({ sky: { skyColor: '#123456' } }).sky as Record<string, string>)['sky-color']).toBe('#123456');
 	});
 });
+
+// Web Mercator's area distortion is worst at exactly the low zooms where the whole world is
+// visible; globe is correct there and MapLibre returns to Mercator as you zoom in (issue #129).
+describe('osm() knob: projection', () => {
+	it('defaults to globe', () => {
+		expect((build() as { projection?: unknown }).projection).toStrictEqual({ type: 'globe' });
+	});
+
+	it('can be set back to mercator', () => {
+		expect((build({ projection: 'mercator' }) as { projection?: unknown }).projection).toStrictEqual({
+			type: 'mercator',
+		});
+	});
+
+	it('resolves so callers can read it back', () => {
+		expect(osm.resolveOptions().projection).toBe('globe');
+		expect(osm.resolveOptions({ projection: 'vertical-perspective' }).projection).toBe('vertical-perspective');
+	});
+});

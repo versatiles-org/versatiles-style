@@ -13,12 +13,15 @@ import type { OsmUrlsOptions, ResolvedOsmUrls } from './urls.js';
 import { resolveOsmUrls } from './urls.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
 import { resolveLayerGroups } from './layer-groups.js';
+import { resolveProjection } from './projection.js';
+import type { ProjectionOptions, ResolvedProjection } from './projection.js';
 
 export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;
 	features?: OsmFeaturesOptions;
 	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
+	projection?: ProjectionOptions;
 };
 
 export type ResolvedOsm = ResolvedOsmOverlay & {
@@ -26,6 +29,7 @@ export type ResolvedOsm = ResolvedOsmOverlay & {
 	features: ResolvedOsmFeatures;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
+	projection: ResolvedProjection;
 };
 
 export function resolveOsm(options?: OsmOptions): ResolvedOsm {
@@ -37,6 +41,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 		features: resolveOsmFeatures(options?.features),
 		sun: resolveSun(options?.sun),
 		sky: resolveSky(options?.sky, { skyColor: colors.water, horizonColor: colors.background }),
+		projection: resolveProjection(options?.projection),
 		theme,
 		layers: resolveLayerGroups(options?.layers),
 		text: resolveText(options?.text),

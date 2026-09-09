@@ -5,3 +5,4 @@ export { addLandcover } from './landcover.js';
 export { configure3DLighting } from './sun.js';
 export { applySky } from './sky.js';
 export { toOverlayLayers, OVERLAY_DEFAULTS } from './satellite-overlay.js';
+export { applyProjection } from './projection.js';

@@ -9,6 +9,8 @@ import { resolveSatelliteUrls } from './urls.js';
 import { ResolvedSatelliteRaster, resolveSatelliteRaster, SatelliteRasterOptions } from './satellite-raster.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay, resolveOsmOverlay } from './osm-overlay.js';
 import { OVERLAY_DEFAULTS } from '../features/satellite-overlay.js';
+import { resolveProjection } from './projection.js';
+import type { ProjectionOptions, ResolvedProjection } from './projection.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -22,6 +24,7 @@ export type SatelliteOptions = {
 	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
+	projection?: ProjectionOptions;
 };
 
 export type ResolvedSatellite = {
@@ -29,6 +32,7 @@ export type ResolvedSatellite = {
 	features: ResolvedSatelliteFeatures;
 	sun: ResolvedSun;
 	sky: ResolvedSky;
+	projection: ResolvedProjection;
 	osmOverlay: false | ResolvedOsmOverlay;
 	raster: ResolvedSatelliteRaster;
 };
@@ -61,6 +65,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 		features: resolveSatelliteFeatures(options?.features),
 		sun: resolveSun(options?.sun),
 		sky: resolveSky(options?.sky),
+		projection: resolveProjection(options?.projection),
 		raster: resolveSatelliteRaster(options?.raster),
 		osmOverlay,
 	};

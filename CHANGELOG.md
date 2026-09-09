@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
 - `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
   expose the same array.
+- **Styles now default to the `globe` projection** and accept a `projection` option
+  (`'globe' | 'mercator' | 'vertical-perspective'`). Web Mercator's area distortion is worst at the
+  low zooms where the whole world is visible; MapLibre returns to Mercator as you zoom in. This
+  raises the recommended MapLibre GL JS version to **5.0+** — older versions and the native/server
+  renderers ignore the property and draw Mercator, i.e. the previous behaviour. Pass
+  `projection: 'mercator'` to keep it.
 - **Published satellite styles reshaped.** `assets/styles/satellite/style.json` is now **bare
   imagery**; the vector overlay moved to `satellite/overlay.json`. `satellite/nooverlay.json` is
   retired — use `satellite/style.json`, which is the same thing. The same applies to `terrain/*`.

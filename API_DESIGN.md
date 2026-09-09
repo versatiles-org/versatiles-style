@@ -291,6 +291,7 @@ type OsmOptions = OsmContentOptions & {
   };
   sun?: SunOptions;
   sky?: boolean | SkyOptions; // default: true
+  projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
 
 type SatelliteOptions = {
@@ -318,6 +319,7 @@ type SatelliteOptions = {
   };
   sun?: SunOptions;
   sky?: boolean | SkyOptions; // default: true
+  projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
 ```
 
@@ -422,6 +424,28 @@ style rather than throwing — but an invalid `url` argument throws, and network
 This is the only asynchronous style function: it has to read the document before it can decide what to
 build. The style it returns still _references_ its sources; pass it through
 [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
+
+---
+
+## Projection
+
+```ts
+osm({ projection: 'globe' }); // default
+osm({ projection: 'mercator' }); // pre-v6 behaviour
+```
+
+Web Mercator exaggerates area away from the equator — Greenland reads as the size of Africa — and
+that distortion is worst at exactly the low zooms where the whole world is visible. `globe` is
+correct there, and MapLibre transitions back to Mercator as you zoom in.
+
+**Requires MapLibre GL JS 5.0+.** Renderers without projection support ignore the property and draw
+Mercator, which is the pre-v6 behaviour: MapLibre GL JS 4.x, and the native/server renderers, which
+are Mercator-only. A style therefore renders as a globe in a current browser and flat server-side —
+worth knowing if you compare the two.
+
+Note the style spec accepts _any_ string for `projection.type`, so an unsupported value (`equal-earth`,
+say) passes validation and then silently does nothing. The three values above are the ones MapLibre
+implements.
 
 ---
 

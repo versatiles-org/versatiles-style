@@ -2,7 +2,14 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import type { SatelliteOptions, ResolvedSatellite } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
-import { addTerrain, addHillshade, configure3DLighting, applySky, toOverlayLayers } from '../features/index.js';
+import {
+	addTerrain,
+	addHillshade,
+	configure3DLighting,
+	applySky,
+	applyProjection,
+	toOverlayLayers,
+} from '../features/index.js';
 import { buildSourceDescriptor } from '../lib/tileSource.js';
 import type { TileSource } from '../options/urls.js';
 import { osm } from './osm.js';
@@ -127,6 +134,7 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	applySky(style, resolved.sky);
+	applyProjection(style, resolved.projection);
 
 	return style;
 }
