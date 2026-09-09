@@ -1,5 +1,6 @@
 import type { TileJSONSpecification } from '../types/index.js';
 import type { TileSource } from '../options/urls.js';
+import { normalizeAttribution } from './utils.js';
 
 /**
  * Build a MapLibre source descriptor from a tile source, without any I/O.
@@ -34,7 +35,7 @@ export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }
 		...(tj.minzoom !== undefined && { minzoom: tj.minzoom }),
 		...(tj.maxzoom !== undefined && { maxzoom: tj.maxzoom }),
 		...(tj.bounds && { bounds: tj.bounds }),
-		...(tj.attribution && { attribution: tj.attribution }),
+		...(tj.attribution && { attribution: normalizeAttribution(tj.attribution) }),
 		// Only declare tileSize when the document states one (see the tile_size fix).
 		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
 	};

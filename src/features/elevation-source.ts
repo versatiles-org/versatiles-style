@@ -1,4 +1,5 @@
 import type { TileJSONSpecification } from '../types/index.js';
+import { normalizeAttribution } from '../lib/utils.js';
 
 // Builds a MapLibre raster-dem source descriptor from either a tile URL pattern string
 // or a fully resolved TileJSONSpecification. Shared by addTerrain and addHillshade.
@@ -37,6 +38,6 @@ export function buildElevationSource(elevation: string | TileJSONSpecification):
 		...(elevation.minzoom !== undefined && { minzoom: elevation.minzoom }),
 		...(elevation.maxzoom !== undefined && { maxzoom: elevation.maxzoom }),
 		...(elevation.bounds && { bounds: elevation.bounds }),
-		...(elevation.attribution && { attribution: elevation.attribution }),
+		...(elevation.attribution && { attribution: normalizeAttribution(elevation.attribution) }),
 	};
 }

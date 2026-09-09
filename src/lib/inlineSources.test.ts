@@ -72,3 +72,32 @@ describe('inlineSources()', () => {
 		expect(out.sources['e'] as Record<string, unknown>).toMatchObject({ encoding: 'terrarium' });
 	});
 });
+
+// Upstream TileJSONs quote HTML attributes inconsistently (the satellite source uses single
+// quotes, OSM and elevation use double), so a style inlining several sources would show mixed
+// markup in one attribution bar. v5 normalised; v6 kept the helper but stopped calling it (F6).
+describe('attribution normalisation', () => {
+	it('rewrites single-quoted attributes to double', async () => {
+		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(async () =>
+				json({ tiles: ['https://t/{z}/{x}/{y}'], attribution: "<a href='https://x.example/'>X</a>" })
+			),
+		});
+		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe('<a href="https://x.example/">X</a>');
+	});
+
+	it('collapses whitespace and trims', async () => {
+		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(async () => json({ tiles: ['https://t/{z}/{x}/{y}'], attribution: '  a \n\t b  ' })),
+		});
+		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe('a b');
+	});
+
+	it('leaves already-normalised markup untouched', async () => {
+		const attribution = '<a href="https://x.example/" target="_blank">&copy; X</a>';
+		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(async () => json({ tiles: ['https://t/{z}/{x}/{y}'], attribution })),
+		});
+		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe(attribution);
+	});
+});

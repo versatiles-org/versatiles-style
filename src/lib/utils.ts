@@ -142,6 +142,10 @@ export function basename(url: string): string {
  *   - trim leading/trailing whitespace
  *   - collapse internal whitespace runs to single spaces
  *   - rewrite `attr='value'` to `attr="value"` (HTML standard form)
+ *
+ * Upstream TileJSONs are inconsistent — the satellite source serves `href='…'` while OSM and
+ * elevation serve `href="…"` — so a style inlining several sources would otherwise show mixed
+ * quoting in one attribution bar. Purely cosmetic; the markup is otherwise untouched.
  */
 export function normalizeAttribution(s: string): string {
 	return s
