@@ -118,6 +118,37 @@ describe('satellite() knob: osmOverlay', () => {
 		}
 	});
 
+	it('lightens water labels too, in a water blue rather than plain white', async () => {
+		// Lake and river names are the one label the overlay does not whiten. They used to be missed
+		// entirely and kept the basemap's dark slate, which sat at 2.9:1 on the forced black halo.
+		for (const theme of ['gray', 'toner', 'colorful'] as const) {
+			for (const id of ['label-water-area-major', 'label-water-river']) {
+				const paint = layer(await build({ osmOverlay: { theme } }), id)?.paint as Record<string, unknown>;
+				expect(
+					Color.parse(paint['text-color'] as string)
+						.asHex()
+						.toLowerCase(),
+					`${theme} ${id}`
+				).toBe('#8fc1ed');
+				expect(
+					Color.parse(paint['text-halo-color'] as string)
+						.asHex()
+						.toLowerCase()
+				).toBe('#000000');
+			}
+		}
+	});
+
+	it('lets an explicit water-label colour override the imagery default', async () => {
+		const s = await build({ osmOverlay: { colors: { labelWater: '#00ff00' } } });
+		const c = (layer(s, 'label-water-river')?.paint as Record<string, unknown>)['text-color'];
+		expect(
+			Color.parse(c as string)
+				.asHex()
+				.toLowerCase()
+		).toBe('#00ff00');
+	});
+
 	it('lets an explicit label colour override the imagery default', async () => {
 		const s = await build({ osmOverlay: { colors: { label: '#ff0000' } } });
 		const c = (layer(s, 'label-place-village')?.paint as Record<string, unknown>)['text-color'];

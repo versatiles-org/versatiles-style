@@ -66,10 +66,10 @@ export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): 
 /**
  * The option defaults that give the overlay its imagery treatment, overridable by the caller.
  *
- * Every label-text token is whitened, not just `label`: place names, POIs, transit symbols and
- * house numbers each draw from their own colour, so setting only `label` leaves two thirds of the
- * labels in basemap grey. `labelShield` is left alone — it is the motorway shield's background, not
- * text — and so are the oneway arrows, which are tinted from `fg` and carry no text.
+ * Every label-text token is lightened, not just `label`: place names, POIs, transit symbols, house
+ * numbers and water names each draw from their own colour, so setting only `label` leaves most of
+ * the labels in basemap grey. `labelShield` is left alone — it is the motorway shield's background,
+ * not text — and so are the oneway arrows, which are tinted from `fg` and carry no text.
  *
  * Note this also whitens POI and transit *icons*, which share their label's colour token. v5 left
  * those dark; white reads better over imagery, so it is a deliberate departure.
@@ -82,6 +82,12 @@ export const OVERLAY_DEFAULTS = {
 		labelPoi: '#ffffff',
 		labelSymbol: '#ffffff',
 		labelHousenumber: '#ffffff',
+		/**
+		 * Lake and river names are the one label that is not plain white: a water blue keeps the cue
+		 * that says "this is water, not a town", and still clears the halo comfortably (11.9:1 against
+		 * the black halo, where the basemap's dark slate managed 2.9:1 and vanished).
+		 */
+		labelWater: '#8FC1ED',
 	},
 	/** v5 set every symbol layer bold, so labels hold up against a busy photo. */
 	text: { fontNormal: 'noto_sans_bold' },
