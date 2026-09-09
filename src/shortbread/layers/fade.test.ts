@@ -163,10 +163,11 @@ describe('boundaries fade in at their appearance zoom', () => {
 // casing that is already 1 px wide at low zoom can only appear by opacity, while a line whose width
 // grows from 0 appears by that growth (the group below).
 //
-// The zooms are the ones the style has always used: mainline rail from z8, where the network is
-// still a structural cue at regional zoom, light rail and subway from z11 as city detail.
+// No rail is drawn before z11. Shortbread ships service tracks from z10 but the `service` attribute
+// that identifies them only from z11, so z10 cannot tell a marshalling yard from a main line — see
+// `transportStyle`. z11 is therefore the first zoom at which any rail layer may appear.
 const RAIL_FADES: { id: string; z: number }[] = [
-	{ id: 'transport-rail:outline', z: 8 },
+	{ id: 'transport-rail:outline', z: 11 },
 	{ id: 'transport-rail', z: 14 },
 	{ id: 'transport-lightrail:outline', z: 11 },
 	{ id: 'transport-lightrail', z: 14 },
@@ -178,6 +179,14 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 	for (const { id, z } of RAIL_FADES) {
 		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
 	}
+
+	it('no rail layer is drawn before z11, where `service` first distinguishes yards', () => {
+		const early = style.layers
+			.filter((l) => /^(tunnel-|bridge-)?transport-/.test(l.id) && !l.id.startsWith('transport-ferry'))
+			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) < 11)
+			.map((l) => `${l.id}: minzoom ${(l as { minzoom?: number }).minzoom ?? 0}`);
+		expect(early).toEqual([]);
+	});
 });
 
 // The tram family and every service track appear by width growth instead: their curves already

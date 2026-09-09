@@ -376,12 +376,19 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.Sty
 		else
 			r = isOutline
 				? // The casing is a hairline well before its width ramp starts moving, so its fade-in is what
-					// puts it on the map: mainline rail at z8, where the network is still a structural cue at
-					// regional zooms, light rail three zooms later, where it reads as city detail.
+					// puts it on the map — and z11 is the earliest zoom at which putting it there is honest.
+					//
+					// Shortbread ships service tracks (yards, sidings, spurs, crossovers) from z10 but the
+					// `service` attribute that identifies them only from z11, so at z10 a marshalling yard is
+					// indistinguishable from a main line: at Maschen that is 270 km of track in one tile that
+					// this layer would have to draw at full mainline weight. Below z10 the data is clean —
+					// service tracks are simply absent — so z8/z9 would be safe, but appearing at z8, blooming
+					// into a solid mass at z10 and thinning again at z11 is worse than starting at z11. If the
+					// schema ever supplies `service` from z10, this can move back down.
 					{
 						color: c.transitRail,
 						size: { 8: 1, 13: 1, 15: 1, 20: 14 },
-						opacity: b.fadeIn(rt === 'rail' ? 8 : 11),
+						opacity: b.fadeIn(11),
 					}
 				: {
 						color: c.transitRail.blend(0.3, bg),
