@@ -318,12 +318,12 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			minzoom: 14, // Shortbread `pois` appear at z14 (matches OSM Bright poi layers)
 			iconSize: { base: 2, stops: { 16: 0.4, 20: 1.2 } },
 			iconOpacity: { 16: 0, 17: iconOpacity },
-			textOpacity: { 19: 0, 19.5: iconOpacity },
+			textOpacity: { 18: 0, 18.5: iconOpacity },
 			// Name label under the icon, appearing from z19+. `text-size` is 0 below z18 so the label
 			// adds no collision box at mid zoom (only icons compete there), and an empty name renders
 			// nothing. `textOptional` keeps the icon visible even when the label can't be placed.
 			text: ctx.nameField,
-			size: { 18: 0, 19: 11, 22: 13 },
+			size: { 17: 0, 18: 11, 22: 13 },
 			textAnchor: 'top',
 			textOffset: [0, 1.2],
 			textOptional: true,
