@@ -199,15 +199,39 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 	};
 
-	yield b.symbol('label-water-area', {
-		sourceLayer: 'water_polygons_labels',
-		layout: { 'text-field': ctx.nameField },
-		...waterBase,
-		symbolPlacement: 'point',
-		minzoom: 4,
-		size: { 4: 10, 10: 12, 14: 14 },
-		group: 'labels.water',
-	});
+	// Water-area labels are bucketed by `way_area`, because a name alone says nothing about whether a
+	// feature deserves a label at continental zoom. Berlin's "Wasserkaskaden am Fernsehturm" — a
+	// public cascade — is a named `natural=water` polygon of **3325** Mercator m², and without this
+	// it labelled from z4 alongside the North Sea.
+	//
+	// `way_area` is Mercator area, so it inflates by 1/cos²(latitude): roughly 2.7× at Berlin's
+	// 52.5°N and ~1× at the equator. The thresholds are therefore approximate by nature — a pond in
+	// Norway can carry the same `way_area` as a noticeably larger lake in Kenya.
+	//
+	// Each bucket declares its appearance zoom with `appear`, so it fades in like everything else and
+	// its `minzoom` is derived rather than hand-written. Larger buckets come first: symbol collision
+	// is resolved in layer order, so big water wins over small when the two compete.
+	const WATER_AREAS: { id: string; min: number; max?: number; appear: number; size: Record<number, number> }[] = [
+		{ id: 'major', min: 1e9, appear: 4, size: { 4: 11, 10: 14 } }, // seas, great lakes
+		{ id: 'large', min: 1e7, max: 1e9, appear: 8, size: { 8: 10, 12: 13 } }, // large lakes
+		{ id: 'medium', min: 1e5, max: 1e7, appear: 11, size: { 11: 10, 14: 12 } }, // town lakes
+		{ id: 'small', min: 0, max: 1e5, appear: 15, size: { 14: 10, 17: 12 } }, // ponds, cascades
+	];
+
+	for (const bucket of WATER_AREAS) {
+		const area: FilterSpecification[] = [['>', ['get', 'way_area'], bucket.min]];
+		if (bucket.max !== undefined) area.push(['<=', ['get', 'way_area'], bucket.max]);
+		yield b.symbol('label-water-area-' + bucket.id, {
+			sourceLayer: 'water_polygons_labels',
+			filter: (area.length > 1 ? ['all', ...area] : area[0]) as FilterSpecification,
+			layout: { 'text-field': ctx.nameField },
+			...waterBase,
+			symbolPlacement: 'point',
+			appear: bucket.appear,
+			size: bucket.size,
+			group: 'labels.water',
+		});
+	}
 
 	yield b.symbol('label-water-river', {
 		sourceLayer: 'water_lines_labels',
