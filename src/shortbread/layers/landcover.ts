@@ -79,7 +79,7 @@ const LAND: LandDef[] = [
 	{
 		id: 'park',
 		kinds: ['park', 'village_green', 'recreation_ground'],
-		color: (c) => c.naturePark,
+		color: (c) => c.naturePark.fade(0.5),
 		appear: 11,
 		group: 'land.urban',
 	},
@@ -125,7 +125,7 @@ const LAND: LandDef[] = [
 	{
 		id: 'vegetation',
 		kinds: ['heath', 'scrub'],
-		color: (c) => c.naturePark,
+		color: (c) => c.natureWood.blend(0.7, c.natureSand),
 		appear: 11,
 		landcover: true,
 		group: 'land.vegetation',
