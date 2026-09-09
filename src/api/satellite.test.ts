@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { satellite } from './satellite.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { jsonResponse } from '../lib/loadTileSource.test.js';
-import { inlineSources } from '../lib/inlineSources.js';
+import { inlineSources } from '../lib/index.js';
 
 function layerIds(style: StyleSpecification): string[] {
 	return style.layers.map((l) => l.id);

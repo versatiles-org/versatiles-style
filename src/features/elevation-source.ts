@@ -1,5 +1,5 @@
 import type { TileJSONSpecification } from '../types/index.js';
-import { normalizeAttribution } from '../lib/utils.js';
+import { normalizeAttribution } from '../lib/index.js';
 
 // Builds a MapLibre raster-dem source descriptor from either a tile URL pattern string
 // or a fully resolved TileJSONSpecification. Shared by addTerrain and addHillshade.

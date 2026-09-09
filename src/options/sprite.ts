@@ -1,4 +1,4 @@
-import { resolveUrl } from '../lib/utils.js';
+import { resolveUrl } from '../lib/index.js';
 
 export type SpriteEntries = string | { id: string; url: string }[];
 

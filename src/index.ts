@@ -152,8 +152,7 @@ export {
 } from './types/index.js';
 
 export type { LayerGroupMap } from './shortbread/layer-groups-map.js';
-export { inlineSources } from './lib/inlineSources.js';
-export { fetchTileJSON } from './lib/fetchTileJSON.js';
+export { inlineSources, fetchTileJSON } from './lib/index.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
 

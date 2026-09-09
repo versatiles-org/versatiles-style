@@ -1,4 +1,4 @@
-import { resolveUrl } from '../lib/utils.js';
+import { resolveUrl } from '../lib/index.js';
 import type { TileJSONSpecification } from '../types/index.js';
 import type { SpriteEntries } from './sprite.js';
 import { resolveSprite } from './sprite.js';

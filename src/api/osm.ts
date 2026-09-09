@@ -13,9 +13,8 @@ import {
 	applySky,
 	applyProjection,
 } from '../features/index.js';
-import { buildSourceDescriptor } from '../lib/tileSource.js';
+import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
-import { STYLE_METADATA, styleName } from '../lib/styleMeta.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 

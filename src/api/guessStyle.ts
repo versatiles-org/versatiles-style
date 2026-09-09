@@ -2,10 +2,9 @@ import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVe
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/index.js';
 import { DEFAULT_BASE } from '../options/index.js';
-import { loadTileSource, resolveTileJSONTiles } from '../lib/loadTileSource.js';
+import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
-import { resolveUrl } from '../lib/utils.js';
 
 /** Options for {@link guessStyle}. */
 export type GuessStyleOptions = {

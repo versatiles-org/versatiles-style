@@ -10,9 +10,8 @@ import {
 	applyProjection,
 	toOverlayLayers,
 } from '../features/index.js';
-import { buildSourceDescriptor } from '../lib/tileSource.js';
+import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
-import { STYLE_METADATA } from '../lib/styleMeta.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
