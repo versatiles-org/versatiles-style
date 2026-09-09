@@ -70,6 +70,15 @@ Integrate it into your HTML application:
 </script>
 ```
 
+> **Requires MapLibre GL JS 5.0 or newer.**
+> The generated styles set the [`globe` projection](https://maplibre.org/maplibre-style-spec/projection/)
+> and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/). Older versions ignore both and
+> render a flat Mercator map with no sky — everything else works, so this degrades rather than breaks.
+>
+> npm users have this checked automatically through an optional peer dependency. Loading MapLibre
+> from a `<script>` tag, as above, bypasses that check entirely — so verify the version yourself.
+> To stay on Mercator deliberately, pass `projection: 'mercator'`.
+
 ### Backend Usage (Node.js)
 
 Install the library via NPM:
