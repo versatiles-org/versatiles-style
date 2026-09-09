@@ -27,6 +27,7 @@
     "doc-graph": "vrt deps-graph --collapse-dir \"src/shortbread/layers/*\" | vrt doc-insert README.md '### Dependency Graph'",
     "doc-screenshots": "tsx scripts/screenshots.ts",
     "doc-typescript": "vrt doc-typescript -f html",
+		"extract-palette": "tsx scripts/extract-palette.ts",
     "format": "prettier --write --log-level warn .",
     "format:check": "prettier --check .",
     "lint": "eslint --color .",
