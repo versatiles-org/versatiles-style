@@ -1,4 +1,4 @@
-import { osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
+import { inlineSources, osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => maplibregl.IControl;
@@ -55,16 +55,22 @@ function buildStyle(): Promise<StyleSpecification> {
 	landcoverToggle.disabled = isSatellite;
 	buildingsToggle.disabled = isSatellite;
 
-	if (isSatellite) {
-		return satellite({
-			osmOverlay: { theme: { palette, darkMode } },
-			features: { terrain, hillshade },
-		});
-	}
-	return osm({
-		theme: { palette, darkMode },
-		features: { terrain, hillshade, landcover, buildings },
-	});
+	const style = isSatellite
+		? satellite({
+				osmOverlay: { theme: { palette, darkMode } },
+				features: { terrain, hillshade },
+			})
+		: osm({
+				theme: { palette, darkMode },
+				features: { terrain, hillshade, landcover, buildings },
+			});
+
+	// `osm()`/`satellite()` reference their sources by TileJSON URL and do no I/O, so MapLibre
+	// fetches the document itself. That is fine only when the TileJSON's `tiles` entries are
+	// absolute — the VersaTiles one serves `/tiles/osm/{z}/{x}/{y}`, and MapLibre does not resolve
+	// relative templates, so it builds `Request('/tiles/osm/2/2/2')` and throws. `inlineSources`
+	// fetches the document and rewrites those paths against it.
+	return inlineSources(style);
 }
 
 function persistState(): void {
