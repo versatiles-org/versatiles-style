@@ -133,7 +133,9 @@ export type {
 	ResolvedSatelliteRaster,
 	ResolvedOsmUrls,
 	ResolvedSatelliteUrls,
+	TileSource,
 } from './options/index.js';
+export { isDarkMode } from './options/index.js';
 
 export type {
 	StyleSpecification,
@@ -149,11 +151,9 @@ export {
 	isRasterTileJSONSpecification,
 } from './types/index.js';
 
-export { isDarkMode } from './options/theme.js';
 export type { LayerGroupMap } from './shortbread/layer-groups-map.js';
 export { inlineSources } from './lib/inlineSources.js';
 export { fetchTileJSON } from './lib/fetchTileJSON.js';
-export type { TileSource } from './options/urls.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
 

@@ -4,7 +4,7 @@ import type { OsmOptions, ResolvedLayout, ResolvedOsm } from '../options/index.j
 import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
-import { applyRecolor } from '../color/recolor.js';
+import { applyRecolor } from '../color/index.js';
 import {
 	addTerrain,
 	addHillshade,

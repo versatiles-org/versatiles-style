@@ -1,4 +1,8 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
+// ⚠️ `Color.parse` is *declared* on the abstract class but *assigned* at module load of
+// `./index.js` (it needs RGB/HSL, which import this class — assigning there avoids a cycle).
+// This module calls `Color.parse`, so it only works once `./index.js` has been loaded. Import
+// `../color/index.js`, never this file directly, or you get `Color.parse is not a function`.
 import { Color } from './abstract.js';
 import type { ResolvedRecolor, ResolvedColors } from '../options/index.js';
 

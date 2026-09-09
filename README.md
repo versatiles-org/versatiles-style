@@ -206,31 +206,31 @@ C["vector_layer.ts"]
 23["maplibre.ts"]
 end
 subgraph E["color"]
-F["recolor.ts"]
+F["index.ts"]
 G["abstract.ts"]
-Q["index.ts"]
-R["hsl.ts"]
-S["hsv.ts"]
-T["random.ts"]
-U["utils.ts"]
-V["rgb.ts"]
+H["hsl.ts"]
+I["hsv.ts"]
+J["random.ts"]
+K["utils.ts"]
+L["rgb.ts"]
+M["recolor.ts"]
 end
-subgraph H["features"]
-I["index.ts"]
-J["elevation-source.ts"]
-K["hillshade.ts"]
-L["landcover.ts"]
+subgraph N["features"]
+O["index.ts"]
+P["elevation-source.ts"]
+Q["hillshade.ts"]
+R["landcover.ts"]
 W["projection.ts"]
 X["satellite-overlay.ts"]
 Y["sky.ts"]
 Z["sun.ts"]
 10["terrain.ts"]
 end
-subgraph M["shortbread"]
-subgraph N["layers"]
-O["* (13 files)"]
+subgraph S["shortbread"]
+subgraph T["layers"]
+U["* (13 files)"]
 end
-P["build.ts"]
+V["build.ts"]
 1S["index.ts"]
 1T["context.ts"]
 1U["groups.ts"]
@@ -261,7 +261,7 @@ end
 A-->B
 A-->C
 D-->F
-D-->I
+D-->O
 D-->11
 D-->12
 D-->13
@@ -269,41 +269,41 @@ D-->1S
 D-->1V
 D-->18
 F-->G
+F-->H
+F-->I
+F-->M
+F-->L
+H-->G
+H-->I
+H-->L
+H-->K
+I-->G
+I-->H
 I-->J
-I-->K
 I-->L
-I-->W
-I-->X
-I-->Y
-I-->Z
-I-->10
-J-->5
-K-->J
-L-->O
+I-->K
+J-->I
+J-->K
+L-->G
+L-->H
+L-->I
+L-->K
+M-->G
 O-->P
-P-->Q
-Q-->G
-Q-->R
-Q-->S
-Q-->F
-Q-->V
-R-->G
-R-->S
-R-->V
+O-->Q
+O-->R
+O-->W
+O-->X
+O-->Y
+O-->Z
+O-->10
+P-->5
+Q-->P
 R-->U
-S-->G
-S-->R
-S-->T
-S-->V
-S-->U
-T-->S
-T-->U
-V-->G
-V-->R
-V-->S
-V-->U
-X-->P
-10-->J
+U-->V
+V-->F
+X-->V
+10-->P
 12-->5
 13-->14
 13-->1Q
@@ -331,11 +331,11 @@ X-->P
 18-->1B
 18-->1C
 18-->1D
-19-->Q
-1A-->Q
-1B-->Q
-1C-->Q
-1D-->Q
+19-->F
+1A-->F
+1B-->F
+1C-->F
+1D-->F
 1G-->1E
 1G-->1F
 1Q-->15
@@ -344,14 +344,14 @@ X-->P
 1R-->15
 1S-->1T
 1S-->1U
-1S-->O
-1T-->Q
+1S-->U
+1T-->F
 1T-->13
-1U-->O
+1U-->U
 1V-->13
 1V-->1T
-1V-->O
-1W-->I
+1V-->U
+1W-->O
 1W-->11
 1W-->12
 1W-->13
@@ -361,10 +361,10 @@ X-->P
 1X-->D
 1X-->1W
 1Y-->1X
-1Y-->Q
+1Y-->F
 1Y-->1Z
 1Y-->20
-1Y-->1P
+1Y-->13
 1Y-->A
 1Y-->21
 1Z-->4
@@ -372,7 +372,7 @@ X-->P
 20-->12
 21-->1X
 
-class 0,1,3,6,9,E,H,M,N,17 subgraphs;
+class 0,1,3,6,9,E,N,S,T,17 subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
