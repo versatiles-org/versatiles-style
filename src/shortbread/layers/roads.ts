@@ -387,18 +387,18 @@ function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline:
 		if (isService)
 			r = isOutline
 				? { color: c.transitRail, size: { 14: 0, 15: 1, 16: 1, 20: 14 } }
-				: { color: c.transitRail.blend(0.28, bg), lineDasharray: [2, 2], size: { 15: 0, 16: 1, 20: 10 } };
+				: { color: c.transitRail.blend(0.3, bg), lineDasharray: [2, 2], size: { 15: 0, 16: 1, 20: 10 } };
 		else
 			r = isOutline
 				? { color: c.transitRail, size: { 8: 1, 13: 1, 15: 1, 20: 14 } }
-				: { color: c.transitRail.blend(0.28, bg), lineDasharray: [2, 2], size: { 14: 0, 15: 1, 20: 10 } };
+				: { color: c.transitRail.blend(0.3, bg), lineDasharray: [2, 2], size: { 14: 0, 15: 1, 20: 10 } };
 	} else if (rt === 'subway') {
 		if (isService) return null;
 		// Subway: same two-tone tie technique in its own (bluer) grey.
 		r = isOutline
 			? { color: c.transitSubway, size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 } }
 			: {
-					color: c.transitSubway.blend(0.27, bg),
+					color: c.transitSubway.blend(0.3, bg),
 					lineDasharray: [2, 2],
 					size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
 				};
@@ -414,7 +414,7 @@ function transportStyle(ctx: LayerContext, prefix: Prefix, t: string, isOutline:
 	// (the width curves are ~0 below 14) — for both the base (:outline) and the hatching (fill).
 	//
 	// Underground (tunnel) rails render translucent (0.2) to read as "below ground".
-	const target = prefix === 'tunnel-' ? 0.2 : 1;
+	const target = prefix === 'tunnel-' ? 0.3 : 1;
 	r.opacity = b.fadeIn(14, target);
 	return r;
 }
