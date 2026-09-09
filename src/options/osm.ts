@@ -1,20 +1,27 @@
-import { resolveTheme } from './theme.js';
-import { resolveColors } from './colors.js';
-import { resolveRecolor } from './recolor.js';
-import { resolveText } from './text.js';
-import { resolveLayout } from './layout.js';
-import type { OsmFeaturesOptions, ResolvedOsmFeatures } from './features.js';
-import { resolveOsmFeatures } from './features.js';
-import type { SunOptions, ResolvedSun } from './sun.js';
-import { resolveSun } from './sun.js';
-import type { SkyOptions, ResolvedSky } from './sky.js';
-import { resolveSky } from './sky.js';
-import type { OsmUrlsOptions, ResolvedOsmUrls } from './urls.js';
-import { resolveOsmUrls } from './urls.js';
+import {
+	resolveColors,
+	resolveLayerGroups,
+	resolveLayout,
+	resolveOsmFeatures,
+	resolveProjection,
+	resolveRecolor,
+	resolveSky,
+	resolveSun,
+	resolveText,
+	resolveTheme,
+	resolveOsmUrls,
+	type OsmFeaturesOptions,
+	type OsmUrlsOptions,
+	type ProjectionOptions,
+	type ResolvedOsmFeatures,
+	type ResolvedOsmUrls,
+	type ResolvedProjection,
+	type ResolvedSky,
+	type ResolvedSun,
+	type SkyOptions,
+	type SunOptions,
+} from './parts.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
-import { resolveLayerGroups } from './layer-groups.js';
-import { resolveProjection } from './projection.js';
-import type { ProjectionOptions, ResolvedProjection } from './projection.js';
 
 export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;

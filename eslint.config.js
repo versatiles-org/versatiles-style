@@ -67,4 +67,41 @@ export default [
 			],
 		},
 	},
+	{
+		// `src/options/parts.ts` is a barrel over the option modules that `osm`/`satellite`/
+		// `osm-overlay` compose from. It only stays acyclic while nothing inside it imports it —
+		// a cycle here would not fail loudly, it would surface as a temporal-dead-zone error at a
+		// module-level initialiser like `DEFAULT_BASE`, far from the import that caused it.
+		files: [
+			'**/src/options/theme.ts',
+			'**/src/options/colors.ts',
+			'**/src/options/recolor.ts',
+			'**/src/options/text.ts',
+			'**/src/options/layout.ts',
+			'**/src/options/features.ts',
+			'**/src/options/features-terrain.ts',
+			'**/src/options/features-hillshade.ts',
+			'**/src/options/sun.ts',
+			'**/src/options/sky.ts',
+			'**/src/options/projection.ts',
+			'**/src/options/sprite.ts',
+			'**/src/options/layer-groups.ts',
+			'**/src/options/urls.ts',
+			'**/src/options/satellite-raster.ts',
+		],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['**/parts.js', '**/parts.ts', './index.js'],
+							message:
+								'This module is re-exported by src/options/parts.ts, so importing parts.js (or the index barrel) from it creates a cycle. Import the specific module instead.',
+						},
+					],
+				},
+			],
+		},
+	},
 ];

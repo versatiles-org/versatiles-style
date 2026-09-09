@@ -1,16 +1,25 @@
-import type { SatelliteFeaturesOptions, ResolvedSatelliteFeatures } from './features.js';
-import { resolveSatelliteFeatures } from './features.js';
-import type { SunOptions, ResolvedSun } from './sun.js';
-import { resolveSun } from './sun.js';
-import type { SkyOptions, ResolvedSky } from './sky.js';
-import { resolveSky } from './sky.js';
-import type { SatelliteUrlsOptions, ResolvedSatelliteUrls } from './urls.js';
-import { resolveSatelliteUrls } from './urls.js';
-import { ResolvedSatelliteRaster, resolveSatelliteRaster, SatelliteRasterOptions } from './satellite-raster.js';
-import { OsmOverlayOptions, ResolvedOsmOverlay, resolveOsmOverlay } from './osm-overlay.js';
+import {
+	resolveProjection,
+	resolveSatelliteFeatures,
+	resolveSatelliteRaster,
+	resolveSatelliteUrls,
+	resolveSky,
+	resolveSun,
+	type ProjectionOptions,
+	type ResolvedProjection,
+	type ResolvedSatelliteFeatures,
+	type ResolvedSatelliteRaster,
+	type ResolvedSatelliteUrls,
+	type ResolvedSky,
+	type ResolvedSun,
+	type SatelliteFeaturesOptions,
+	type SatelliteRasterOptions,
+	type SatelliteUrlsOptions,
+	type SkyOptions,
+	type SunOptions,
+} from './parts.js';
+import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
 import { OVERLAY_DEFAULTS } from '../features/satellite-overlay.js';
-import { resolveProjection } from './projection.js';
-import type { ProjectionOptions, ResolvedProjection } from './projection.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;

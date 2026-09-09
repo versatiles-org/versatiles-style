@@ -1,15 +1,24 @@
-import type { ThemeOptions, ResolvedTheme } from './theme.js';
-import { resolveTheme } from './theme.js';
-import type { Palette } from './theme.js';
-import type { ColorsOptions, ResolvedColors } from './colors.js';
-import { resolveColors } from './colors.js';
-import type { RecolorOptions, ResolvedRecolor } from './recolor.js';
-import { resolveRecolor } from './recolor.js';
-import type { TextOptions, ResolvedText } from './text.js';
-import { resolveText } from './text.js';
-import type { LayoutOptions, ResolvedLayout } from './layout.js';
-import { resolveLayout } from './layout.js';
-import { resolveLayerGroups, type LayerGroupOptions, type ResolvedLayerGroups } from './layer-groups.js';
+import {
+	resolveColors,
+	resolveLayerGroups,
+	resolveLayout,
+	resolveRecolor,
+	resolveText,
+	resolveTheme,
+	type ColorsOptions,
+	type LayerGroupOptions,
+	type LayoutOptions,
+	type Palette,
+	type RecolorOptions,
+	type ResolvedColors,
+	type ResolvedLayerGroups,
+	type ResolvedLayout,
+	type ResolvedRecolor,
+	type ResolvedText,
+	type ResolvedTheme,
+	type TextOptions,
+	type ThemeOptions,
+} from './parts.js';
 
 export type OsmOverlayOptions = {
 	theme?: ThemeOptions;
