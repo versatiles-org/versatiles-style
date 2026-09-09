@@ -299,9 +299,9 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	// its transition (an opacity ramp, or a width ramp growing from 0). `minzoom` exists purely to
 	// stop MapLibre processing a layer that is drawing nothing. So it is computed from the
 	// transition rather than written by hand — hand-written values drift from the transition they
-	// are meant to match, which is how `transport-tram` ended up gated at z13 and its casing
-	// `transport-tram:outline` at z15 while both fade over z14 → 15, leaving rail without a casing
-	// for a whole zoom level.
+	// are meant to match, which is how the old style ended up with layers gated a zoom level away
+	// from the fade they were meant to match, hiding a line that its own ramp said was already
+	// drawing (or paying for one that was still invisible).
 	//
 	// The clamp matters as much as the derivation: VersaTiles tiles are only generated for z0–14,
 	// so z14 is always the deepest real tile and everything above it is overzoomed from it. Gating a

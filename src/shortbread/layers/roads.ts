@@ -375,29 +375,47 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.Sty
 				: { color: c.transitRail.blend(0.3, bg), lineDasharray: [2, 2], size: { 15: 0, 16: 1, 20: 10 } };
 		else
 			r = isOutline
-				? { color: c.transitRail, size: { 8: 1, 13: 1, 15: 1, 20: 14 } }
-				: { color: c.transitRail.blend(0.3, bg), lineDasharray: [2, 2], size: { 14: 0, 15: 1, 20: 10 } };
+				? // The casing is a hairline well before its width ramp starts moving, so its fade-in is what
+					// puts it on the map: mainline rail at z8, where the network is still a structural cue at
+					// regional zooms, light rail three zooms later, where it reads as city detail.
+					{
+						color: c.transitRail,
+						size: { 8: 1, 13: 1, 15: 1, 20: 14 },
+						opacity: b.fadeIn(rt === 'rail' ? 8 : 11),
+					}
+				: {
+						color: c.transitRail.blend(0.3, bg),
+						lineDasharray: [2, 2],
+						size: { 14: 0, 15: 1, 20: 10 },
+						opacity: b.fadeIn(14),
+					};
 	} else if (rt === 'subway') {
 		if (isService) return null;
-		// Subway: same two-tone tie technique in its own (bluer) grey.
+		// Subway: same two-tone tie technique in its own (bluer) grey. The casing joins the map at z11,
+		// a city-overview zoom; the ties only make sense once the casing is wide enough to show them.
 		r = isOutline
-			? { color: c.transitSubway, size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 } }
+			? {
+					color: c.transitSubway,
+					size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 },
+					opacity: b.fadeIn(11),
+				}
 			: {
 					color: c.transitSubway.blend(0.3, bg),
 					lineDasharray: [2, 2],
 					size: { 11: 0, 12: 1, 15: 2, 16: 2, 18: 5, 19: 6, 20: 8 },
+					opacity: b.fadeIn(14),
 				};
 	} else {
 		// tram / narrowgauge / funicular / monorail
 		if (isService) return null;
+		// No opacity ramp here: both width curves already grow from 0 (the casing at z15, the track at
+		// z13), which is the appearance transition — adding a fade on top would only dim the track
+		// through the zooms where it is the sole thing drawn.
 		r = isOutline
-			? { minzoom: 15, color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
-			: { minzoom: 13, size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
+			? { color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
+			: { size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
 	}
 
-	// Rail tracks fade in by opacity over z14→15 — the zoom at which OSM Bright starts drawing rail
-	// (the width curves are ~0 below 14) — for both the base (:outline) and the hatching (fill).
-	r.opacity = b.fadeIn(14);
 	return r;
 }
 
@@ -554,7 +572,7 @@ const UNDERGROUND = {
 	// there before assuming a road was simply forgotten.
 	fade: 0.45,
 	// Rail is the exception (see `underground`): it keeps the translucency the old style gave it.
-	translucency: 0.3,
+	translucency: 0.5,
 } as const;
 
 /** Scale an opacity — a constant or a zoom ramp — by a factor, keeping its shape. */

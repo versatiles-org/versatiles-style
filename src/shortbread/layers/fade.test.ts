@@ -10,9 +10,10 @@ import { osm } from '../../api/index.js';
 //   • #124 — the Shortbread appearance zooms lived in three hand-maintained copies (`appear:`,
 //     `LAND_FILLS`, `LANDCOVER_DEFADE`); they drifted, and `land-sand`/`land-rock` ended up
 //     the wrong way round. Now one table with a `landcover` flag, everything derived from it.
-//   • `minzoom` — written by hand next to a transition declared elsewhere. `transport-tram` was
-//     gated at z13 and its casing at z15 while both faded over z14 → 15, so rail rendered without
-//     a casing for a whole zoom level. Now derived from the transition.
+//   • `minzoom` — written by hand next to a transition declared elsewhere, so the two drifted and a
+//     layer ended up gated a zoom level away from the fade it was meant to match: either hidden
+//     while its own ramp said it was drawing, or processed while it was still invisible. Now
+//     derived from the transition.
 //
 // The invariants below are the machine-checkable form of that rule.
 //
@@ -156,16 +157,57 @@ describe('boundaries fade in at their appearance zoom', () => {
 });
 
 // ── Rail tracks ─────────────────────────────────────────────────────────────────
-// Shortbread serves rail from z8–10, but its OSM-Bright width curves are ~0 below z14, so colorful
-// only starts drawing rail at z14 — and that's where it fades in (base + hatching, every kind).
-const RAIL_KINDS = ['rail', 'lightrail', 'subway', 'tram', 'narrowgauge', 'funicular', 'monorail'];
-const RAIL_Z = 14;
+// Rail is drawn as a solid casing (`:outline`) with a dashed "tie" line (the fill) on top, and the
+// two join the map at different zooms: the casing is a hairline long before the ties are wide
+// enough to read as ties. Which mechanism does the appearing follows from the width curve — a
+// casing that is already 1 px wide at low zoom can only appear by opacity, while a line whose width
+// grows from 0 appears by that growth (the group below).
+//
+// The zooms are the ones the style has always used: mainline rail from z8, where the network is
+// still a structural cue at regional zoom, light rail and subway from z11 as city detail.
+const RAIL_FADES: { id: string; z: number }[] = [
+	{ id: 'transport-rail:outline', z: 8 },
+	{ id: 'transport-rail', z: 14 },
+	{ id: 'transport-lightrail:outline', z: 11 },
+	{ id: 'transport-lightrail', z: 14 },
+	{ id: 'transport-subway:outline', z: 11 },
+	{ id: 'transport-subway', z: 14 },
+];
 
-describe('rail tracks fade in at z14 (their OSM-Bright drawing zoom)', () => {
-	for (const kind of RAIL_KINDS) {
-		for (const layerId of [`transport-${kind}`, `transport-${kind}:outline`]) {
-			it(`${layerId} over z${RAIL_Z}–${RAIL_Z + 1}`, () => expectFadeInAt(style, layerId, RAIL_Z));
-		}
+describe('rail tracks fade in at the zoom their kind joins the map', () => {
+	for (const { id, z } of RAIL_FADES) {
+		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
+	}
+});
+
+// The tram family and every service track appear by width growth instead: their curves already
+// start at 0, so that growth IS the transition, and an opacity fade on top would only dim them
+// through the zooms where they are the sole thing drawn.
+const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
+	{ id: 'transport-tram', z: 13 },
+	{ id: 'transport-tram:outline', z: 15 },
+	{ id: 'transport-narrowgauge', z: 13 },
+	{ id: 'transport-narrowgauge:outline', z: 15 },
+	{ id: 'transport-funicular', z: 13 },
+	{ id: 'transport-funicular:outline', z: 15 },
+	{ id: 'transport-monorail', z: 13 },
+	{ id: 'transport-monorail:outline', z: 15 },
+	{ id: 'transport-rail-service:outline', z: 14 },
+	{ id: 'transport-rail-service', z: 15 },
+	{ id: 'transport-lightrail-service:outline', z: 14 },
+	{ id: 'transport-lightrail-service', z: 15 },
+];
+
+describe('tram-family and service tracks appear by growing from 0 width (no opacity fade)', () => {
+	for (const { id, z } of RAIL_WIDTH_GROWN) {
+		it(`${id} grows from 0 width at z${z}`, () => {
+			expect(opacityFade(style, id), `${id} must not opacity-fade`).toBeNull();
+			const width = paintOf(style, id)?.['line-width'];
+			expect(Array.isArray(width), `${id} must have a zoom width ramp`).toBe(true);
+			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
+			expect(stops[0], `${id} width ramp must start at z${z}`).toBe(z);
+			expect(stops[1], `${id} must start at 0 width`).toBe(0);
+		});
 	}
 });
 
@@ -415,15 +457,6 @@ describe('minzoom matches where each layer starts appearing', () => {
 			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) > SOURCE_MAXZOOM)
 			.map((l) => l.id);
 		expect(tooDeep).toEqual([]);
-	});
-
-	it('rail and its casing are gated together', () => {
-		// The defect this rule exists to prevent.
-		for (const kind of ['tram', 'narrowgauge', 'funicular', 'monorail']) {
-			const fill = style.layers.find((l) => l.id === `transport-${kind}`) as { minzoom?: number };
-			const casing = style.layers.find((l) => l.id === `transport-${kind}:outline`) as { minzoom?: number };
-			expect(casing.minzoom, `${kind} casing must not outlive its fill`).toBe(fill.minzoom);
-		}
 	});
 
 	it('landcover clears the gate on the fills it reveals', () => {
