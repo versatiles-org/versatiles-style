@@ -60,6 +60,7 @@ exports[`generator: labels > yielded layer ids are stable 1`] = `
   "symbol:label-street-primary",
   "symbol:label-street-trunk",
   "symbol:label-street-track",
+  "symbol:label-street-pedestrian-zone",
   "symbol:label-water-area",
   "symbol:label-water-river",
   "symbol:label-water-stream",

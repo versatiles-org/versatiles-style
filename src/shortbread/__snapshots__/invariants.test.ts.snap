@@ -23,6 +23,7 @@ exports[`layer-generation invariants > the set of source-layers in use is stable
   "street_labels_points",
   "street_polygons",
   "streets",
+  "streets_polygons_labels",
   "water_lines",
   "water_lines_labels",
   "water_polygons",

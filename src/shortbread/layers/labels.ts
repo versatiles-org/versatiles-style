@@ -166,6 +166,25 @@ export function* labels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 
+	// Named pedestrian squares and plazas. Shortbread keeps the labelling points for street polygons
+	// in `streets_polygons_labels` — note the plural `streets_`, where the geometry layer is
+	// `street_polygons`; that inconsistency is why this pairing was overlooked until the schema
+	// audit. The layer also carries `runway`, `taxiway` and `service` kinds, which are deliberately
+	// left unlabelled: it holds only `name` (no `ref`), so runways would almost never label, and
+	// service polygons are not drawn at all.
+	yield b.symbol('label-street-pedestrian-zone', {
+		sourceLayer: 'streets_polygons_labels',
+		filter: ['==', ['get', 'kind'], 'pedestrian'],
+		layout: { 'text-field': ctx.nameField },
+		...placeBase,
+		color: c.label,
+		symbolPlacement: 'point',
+		textAnchor: 'center',
+		minzoom: 14,
+		size: { 14: 10, 17: 12 },
+		group: 'labels.streets',
+	});
+
 	// ── Water labels ────────────────────────────────────────────────────────────
 	// Shortbread carries names for water separately from the geometry: `water_polygons_labels`
 	// (points, z4+, pre-sorted by `way_area` so the largest win collisions) and `water_lines_labels`

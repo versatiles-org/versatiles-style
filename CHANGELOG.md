@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
 - `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
   expose the same array.
+- **Pedestrian squares are now labelled.** `label-street-pedestrian-zone` reads Shortbread's
+  `streets_polygons_labels` at z14, so named squares and plazas are no longer anonymous grey
+  polygons. `runway`, `taxiway` and `service` kinds in that layer stay unlabelled — it carries no
+  `ref`, so runways would seldom label, and service polygons are not drawn.
 - **Water is now labelled.** `label-water-area` (lakes, seas, reservoirs, from z4),
   `label-water-river` (rivers and canals, z12) and `label-water-stream` (streams and ditches, z14)
   read Shortbread's `water_polygons_labels` and `water_lines_labels`, which no VersaTiles style has

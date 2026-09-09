@@ -101,9 +101,13 @@ describe('no layer is drawn before its data exists', () => {
 describe('schema coverage', () => {
 	// Source-layers the style deliberately does not render. Each entry is a decision, not an
 	// oversight — adding a layer to the tiles should make this list fail until someone chooses.
-	const NOT_RENDERED: Record<string, string> = {
-		streets_polygons_labels: 'names of pedestrian zones and similar street polygons',
-	};
+	// Empty, and worth keeping that way: every source-layer the tiles carry is rendered. An entry
+	// here is a deliberate decision not to draw something, not a backlog item.
+	//
+	// Kind-level gaps are not expressible here and are recorded at their layer instead — e.g.
+	// `streets_polygons_labels` is rendered for `pedestrian` only, because the layer carries no
+	// `ref` and `service` polygons are not drawn at all.
+	const NOT_RENDERED: Record<string, string> = {};
 
 	it('every source-layer is either rendered or explicitly listed as not rendered', () => {
 		const used = new Set(usage().keys());
