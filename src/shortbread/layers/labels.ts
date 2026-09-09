@@ -68,7 +68,17 @@ export function* addresses(ctx: LayerContext): Generator<b.TaggedLayer> {
 	yield b.symbol('label-address-housenumber', {
 		sourceLayer: 'addresses',
 		filter: ['has', 'housenumber'],
-		layout: { 'text-field': '{housenumber}' },
+		layout: {
+			// Where one house number covers several spread-out units, the number alone is ambiguous —
+			// the Shortbread `addresses` layer carries `unit` for exactly this, and OSM Carto renders
+			// it. Joined with `/`, the compact form used for sub-addresses (issue #118).
+			'text-field': [
+				'case',
+				['has', 'unit'],
+				['concat', ['get', 'housenumber'], '/', ['get', 'unit']],
+				['get', 'housenumber'],
+			],
+		},
 		font: ctx.fonts.normal,
 		color: ctx.c.labelHousenumber,
 		symbolPlacement: 'point',
