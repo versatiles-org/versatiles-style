@@ -393,8 +393,6 @@ exports[`generator: transitStops > yielded layer ids are stable 1`] = `
 [
   "symbol:symbol-transit-bus",
   "symbol:symbol-transit-tram",
-  "symbol:symbol-transit-subway",
-  "symbol:symbol-transit-lightrail",
   "symbol:symbol-transit-station",
   "symbol:symbol-transit-airfield",
   "symbol:symbol-transit-airport",

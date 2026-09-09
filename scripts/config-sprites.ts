@@ -97,8 +97,6 @@ const config: SpriteConfig = {
 					'postbox',
 					'prison',
 					'rail',
-					'rail_light',
-					'rail_metro',
 					'recycling',
 					'restaurant',
 					'school',
