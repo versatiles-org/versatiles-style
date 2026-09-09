@@ -64,8 +64,12 @@ type StructuralProps = {
 	group?: string;
 	/** Smoothly fade this layer in over `appear`→`appear+1` by ramping opacity 0 → target (the layer's
 	 *  own constant `opacity`, e.g. 0.1/0.8, else 1), so it doesn't pop in when its features first
-	 *  appear in the tiles. Mutually exclusive with a zoom-stops `opacity`. Never sets `minzoom`, so
-	 *  the `landcover` feature can still reveal faded land fills at low zoom by flattening opacity. */
+	 *  appear in the tiles. Mutually exclusive with a zoom-stops `opacity`.
+	 *
+	 *  Also sets `minzoom` to the same zoom unless one is given explicitly: the fade is already at
+	 *  opacity 0 below it, so this is output-identical and lets MapLibre skip the layer instead of
+	 *  drawing it invisibly. `addLandcover` clears the `minzoom` again on the fills it flattens,
+	 *  which is what lets the landcover feature reveal them at low zoom. */
 	appear?: number;
 };
 
@@ -250,6 +254,32 @@ export function fadeIn(appear: number, target = 1, span = 1): Record<number, num
 	return { [appear]: 0, [appear + span]: target };
 }
 
+/** VersaTiles tiles are generated for z0–14 only; z14 is always the deepest real tile. */
+const SOURCE_MAXZOOM = 14;
+
+/** The first zoom of a `{ z: 0, … }` ramp, or undefined if the value is not such a ramp. */
+function rampFromZero(value: unknown): number | undefined {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
+	const zooms = Object.keys(value as Record<string, number>)
+		.map(Number)
+		.filter((z) => Number.isFinite(z))
+		.sort((a, b) => a - b);
+	if (zooms.length === 0) return undefined;
+	return (value as Record<number, number>)[zooms[0]] === 0 ? zooms[0] : undefined;
+}
+
+/**
+ * The zoom at which a layer first draws something, or undefined if it has no zoom transition.
+ *
+ * A layer is visible only once *every* channel that ramps from 0 has left 0, so the appearance zoom
+ * is the latest of them — a line whose opacity ramps at z10 but whose width ramps at z12 shows
+ * nothing until z12.
+ */
+function appearZoom(style: StyleProps): number | undefined {
+	const starts = [rampFromZero(style.opacity), rampFromZero(style.size)].filter((z): z is number => z !== undefined);
+	return starts.length > 0 ? Math.max(...starts) : undefined;
+}
+
 function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedLayer {
 	const { sourceLayer, filter, layout, group, appear, ...style } = opts;
 	const layer = { id, type } as MaplibreLayer;
@@ -262,6 +292,26 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 			throw new Error(`build: layer "${id}" combines \`appear\` with a zoom-stops \`opacity\` — use one or the other`);
 		style.opacity = fadeIn(appear, style.opacity ?? 1);
 	}
+
+	// ── minzoom is derived, never hand-written ────────────────────────────────────
+	//
+	// `minzoom` carries no cartographic meaning of its own: what a layer looks like is decided by
+	// its transition (an opacity ramp, or a width ramp growing from 0). `minzoom` exists purely to
+	// stop MapLibre processing a layer that is drawing nothing. So it is computed from the
+	// transition rather than written by hand — hand-written values drift from the transition they
+	// are meant to match, which is how `transport-tram` ended up gated at z13 and its casing
+	// `transport-tram:outline` at z15 while both fade over z14 → 15, leaving rail without a casing
+	// for a whole zoom level.
+	//
+	// The clamp matters as much as the derivation: VersaTiles tiles are only generated for z0–14,
+	// so z14 is always the deepest real tile and everything above it is overzoomed from it. Gating a
+	// layer later than 14 therefore gains no data — it only defers the work (bucket build, and for
+	// symbols the collision/placement pass) from the final real tile to a worse moment.
+	//
+	// Layers with no transition keep whatever `minzoom` they were given: for those, `minzoom` *is*
+	// the appearance mechanism. `addLandcover` clears the derived value on the fills it flattens.
+	const appearsAt = appearZoom(style);
+	if (appearsAt !== undefined) style.minzoom = Math.min(appearsAt, SOURCE_MAXZOOM);
 
 	applyProps(layer, style as StyleProps);
 	return { layer, group };

@@ -36,5 +36,8 @@ export function addLandcover(style: StyleSpecification) {
 		if (layer.type !== 'fill') continue;
 		const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
 		paint['fill-opacity'] = fadedInOpacity(paint['fill-opacity']);
+		// `appear` also sets a matching `minzoom`; it has to go, or the fill stays hidden below its
+		// OSM appearance zoom and the extension's low-zoom data never shows.
+		delete (layer as { minzoom?: number }).minzoom;
 	}
 }

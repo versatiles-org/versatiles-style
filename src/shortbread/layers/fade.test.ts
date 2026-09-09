@@ -356,3 +356,62 @@ describe('every opacity fade-in ramps 0 → its target linearly over one zoom', 
 		expect(problems, `\n${problems.join('\n')}\n`).toEqual([]);
 	});
 });
+
+// ── minzoom is derived, not hand-written ──────────────────────────────────────────
+// `minzoom` carries no cartographic meaning: what a layer looks like is its transition (an opacity
+// ramp, or a width ramp growing from 0). `minzoom` only stops MapLibre processing a layer that
+// draws nothing, so it is computed from the transition and clamped to the deepest real tile.
+// Hand-written values drift: `transport-tram` was gated at z13 and its casing at z15 while both
+// faded over z14 → 15, so rail rendered without a casing for a whole zoom level.
+const SOURCE_MAXZOOM = 14; // VersaTiles tiles are generated for z0–14; above that is overzoomed.
+
+describe('minzoom matches where each layer starts appearing', () => {
+	const rampStart = (value: unknown): number | undefined => {
+		if (!Array.isArray(value) || value[0] !== 'interpolate') return undefined;
+		const stops = value.slice(3) as number[];
+		return stops[1] === 0 ? stops[0] : undefined;
+	};
+
+	/** The zoom a layer first draws something: the latest of its from-zero ramps. */
+	const appearZoom = (layer: StyleSpecification['layers'][number]): number | undefined => {
+		const paint = (layer as { paint?: Record<string, unknown> }).paint ?? {};
+		const starts = [...(OPACITY_PROPS[layer.type] ?? []), 'line-width']
+			.map((prop) => rampStart(paint[prop]))
+			.filter((z): z is number => z !== undefined);
+		return starts.length > 0 ? Math.max(...starts) : undefined;
+	};
+
+	it('every transitioning layer is gated exactly where it appears', () => {
+		const wrong = style.layers
+			.map((l) => ({ id: l.id, appear: appearZoom(l), min: (l as { minzoom?: number }).minzoom }))
+			.filter((r) => r.appear !== undefined)
+			.filter((r) => r.min !== Math.min(r.appear!, SOURCE_MAXZOOM))
+			.map((r) => `${r.id}: minzoom ${r.min} but appears at z${r.appear}`);
+		expect(wrong).toEqual([]);
+	});
+
+	it('gates never exceed the deepest real tile', () => {
+		// Above z14 the tiles are overzoomed from z14, so a later gate defers work without gaining data.
+		const tooDeep = style.layers
+			.filter((l) => appearZoom(l) !== undefined)
+			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) > SOURCE_MAXZOOM)
+			.map((l) => l.id);
+		expect(tooDeep).toEqual([]);
+	});
+
+	it('rail and its casing are gated together', () => {
+		// The defect this rule exists to prevent.
+		for (const kind of ['tram', 'narrowgauge', 'funicular', 'monorail']) {
+			const fill = style.layers.find((l) => l.id === `transport-${kind}`) as { minzoom?: number };
+			const casing = style.layers.find((l) => l.id === `transport-${kind}:outline`) as { minzoom?: number };
+			expect(casing.minzoom, `${kind} casing must not outlive its fill`).toBe(fill.minzoom);
+		}
+	});
+
+	it('landcover clears the gate on the fills it reveals', () => {
+		for (const id of LANDCOVER_COVERED) {
+			const layer = landcoverStyle.layers.find((l) => l.id === id) as { minzoom?: number };
+			expect(layer.minzoom ?? 0, `${id} must render from z0 with landcover`).toBeLessThanOrEqual(0);
+		}
+	});
+});
