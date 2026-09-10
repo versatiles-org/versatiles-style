@@ -19,7 +19,7 @@ describe('Icon', () => {
 	});
 
 	it('should initialize icon with provided options', () => {
-		const icon = new Icon({ name: 'test-icon', src: 'src/test-icon', size: 24, filename });
+		const icon = new Icon({ name: 'test-icon', src: 'src/test-icon', title: 'Test', size: 24, filename });
 
 		expect(icon.name).toBe('test-icon');
 		expect(icon.src).toBe('src/test-icon');
@@ -32,7 +32,7 @@ describe('Icon', () => {
 	it('should throw an error if the icon file does not exist', () => {
 		vi.mocked(existsSync).mockReturnValue(false);
 
-		expect(() => new Icon({ name: 'missing-icon', src: 'src/missing', size: 24, filename })).toThrow(
+		expect(() => new Icon({ name: 'missing-icon', src: 'src/missing', title: 'Missing', size: 24, filename })).toThrow(
 			'icon not found: ' + filename
 		);
 	});
@@ -48,9 +48,17 @@ describe('loadIcons', () => {
 	});
 
 	it('should load icons from specified icon sets', () => {
-		// A bare string and the object form must both resolve — the object is how tags and
-		// descriptions get attached later without changing how the build reads `src`.
-		const iconSets = { set1: { size: 24, icons: { icon1: 'maki/one', icon2: { src: 'temaki/two' } } } };
+		// Every icon is an object carrying at least `src` and `title`; the picker fields ride along
+		// on the Icon so the sprite JSON can publish them.
+		const iconSets = {
+			set1: {
+				size: 24,
+				icons: {
+					icon1: { src: 'maki/one', title: 'One' },
+					icon2: { src: 'temaki/two', title: 'Two', aliases: ['second'], center: [0.5, 1] as [number, number] },
+				},
+			},
+		};
 
 		const icons = loadIcons(iconSets, dirIcons);
 
@@ -59,6 +67,9 @@ describe('loadIcons', () => {
 		expect(icons[0].src).toBe('maki/one');
 		expect(icons[1].name).toBe('set1-icon2');
 		expect(icons[1].src).toBe('temaki/two');
+		expect(icons[0].title).toBe('One');
+		expect(icons[1].aliases).toStrictEqual(['second']);
+		expect(icons[1].center).toStrictEqual([0.5, 1]);
 		expect(icons[0].size).toBe(24);
 		expect(icons[0].svg).toBe(svgContent);
 	});

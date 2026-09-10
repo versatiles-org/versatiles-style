@@ -38,27 +38,28 @@ export class Icon {
 }
 
 /**
- * One icon in a group: either a bare source path, or that path plus metadata.
+ * One icon in a group.
  *
  * The key it is stored under is the SPRITE name (the public `<group>-<name>` id); `src` is the file
  * it is drawn from, relative to `icons/` and without the `.svg`. The two are deliberately
  * independent — see the header of config/sprites.ts.
+ *
+ * Always an object, never a bare path: every icon owes a `title`, so leaving the shorthand in place
+ * only made it easy to add one without.
  */
-export type IconSpec =
-	| string
-	| {
-			src: string;
-			/** Human-readable label, e.g. `Bicycle`. Published in the sprite JSON. */
-			title?: string;
-			/** Other names a picker should match, e.g. `bike`. Published in the sprite JSON. */
-			aliases?: string[];
-			/**
-			 * Where the icon points at, as a fraction of its own box with the origin top-left.
-			 * Omit for the middle — `[0.5, 1]` is the bottom edge, which is where a map pin's tip
-			 * sits. Fractions rather than pixels so the value is identical at 1x and 2x.
-			 */
-			center?: [number, number];
-	  };
+export interface IconSpec {
+	src: string;
+	/** Human-readable label, e.g. `Bicycle`. Published in the sprite JSON. */
+	title: string;
+	/** Other names a picker should match, e.g. `bike`. Published in the sprite JSON. */
+	aliases?: string[];
+	/**
+	 * Where the icon points at, as a fraction of its own box with the origin top-left.
+	 * Omit for the middle — `[0.5, 1]` is the bottom edge, which is where a map pin's tip
+	 * sits. Fractions rather than pixels so the value is identical at 1x and 2x.
+	 */
+	center?: [number, number];
+}
 
 export type IconSets = Record<
 	string,
@@ -70,7 +71,7 @@ export type IconSets = Record<
 >;
 
 export function iconSrc(spec: IconSpec): string {
-	return typeof spec === 'string' ? spec : spec.src;
+	return spec.src;
 }
 
 const svgAttr = (svg: string, name: string): number | undefined => {
@@ -122,7 +123,7 @@ export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 
 		const { size, useSDF } = iconSet;
 		for (const [iconName, spec] of Object.entries(iconSet.icons)) {
-			const src = iconSrc(spec);
+			const { src } = spec;
 			icons.push(
 				new Icon({
 					name: `${setName}-${iconName}`,
@@ -130,7 +131,9 @@ export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 					filename: resolve(dirIcons, src + '.svg'),
 					size,
 					useSDF,
-					...(typeof spec === 'string' ? {} : { title: spec.title, aliases: spec.aliases, center: spec.center }),
+					title: spec.title,
+					aliases: spec.aliases,
+					center: spec.center,
 				})
 			);
 		}

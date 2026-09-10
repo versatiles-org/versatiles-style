@@ -234,13 +234,12 @@ matching `icons/<source>/` folder **under its upstream filename**, then give it 
 `config/sprites.ts`. Only draw one yourself when neither has it; those go in `icons/versatiles/`.
 
 ```ts
-// scripts/config/sprites.ts — the key is the sprite name, the value is the file it is drawn from
-airfield: 'maki/airfield',                                              // fine for `base`
-cat: { src: 'maki/animal-shelter', tags: ['pet', 'animal'], description: 'A sitting cat' },
+// scripts/config/icons-extras.ts — the key is the sprite name, the value is where it is drawn from
+cat: { src: 'maki/animal-shelter', title: 'Cat', aliases: ['pet', 'animal', 'feline'] },
 ```
 
-`base` may use the bare string form. **`extras` may not** — every icon there needs tags and a
-description, and a test fails without them (see below).
+Every icon is an object and every icon needs a `title`; a test fails without one. There is no bare
+string shorthand — leaving one in place only made it easy to add an icon with no title.
 
 The naming convention below governs **sprite names**, not filenames — upstream keeps its own
 spelling on disk. `npm run icons-report` renders the whole set and fails if a sprite entry points at
@@ -275,8 +274,11 @@ which comes out as:
   tool can reach for `icon-anchor: "bottom"` without knowing the group by name. Fractions rather
   than pixels, so the value is identical in `extras.json` and `extras@2x.json`.
 
-`base` carries none of this. It is internal, no picker should offer it, and the bytes would be paid
-on every map load for nothing.
+**`base` carries titles and aliases too.** It stays internal — do not reference `base:*` from your
+own layers — but a style editor picking icons for a map it is building needs to search them, and
+many of their aliases are the v5 name the icon used to carry, so searching `pharmacy` still finds
+`base:icon-pill` and `hairdresser` finds `base:icon-scissors_and_comb`. Only `extras` sets
+`center`, since `base` has no pins.
 
 **This is safe to put in the sprite JSON.** MapLibre destructures only the fields it knows
 (`width`, `height`, `x`, `y`, `sdf`, `pixelRatio`, `stretchX/Y`, `content`, `textFit*`) and ignores

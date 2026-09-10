@@ -14,15 +14,19 @@ vi.mock('./config/sprites', () => ({
 				// while the sprite name follows our convention (`alcohol_shop`).
 				icon: {
 					size: 22,
-					icons: { airfield: 'maki/airfield', airport: 'maki/airport', alcohol_shop: 'maki/alcohol-shop' },
+					icons: {
+						airfield: { src: 'maki/airfield', title: 'Airfield' },
+						airport: { src: 'maki/airport', title: 'Airport' },
+						alcohol_shop: { src: 'maki/alcohol-shop', title: 'Alcohol shop' },
+					},
 				},
 				pattern: {
 					size: 12,
 					useSDF: true,
 					icons: {
-						hatched_thin: 'versatiles/hatched_thin',
-						striped: 'versatiles/striped',
-						hatched: 'versatiles/hatched',
+						hatched_thin: { src: 'versatiles/hatched_thin', title: 'Hatched thin' },
+						striped: { src: 'versatiles/striped', title: 'Striped' },
+						hatched: { src: 'versatiles/hatched', title: 'Hatched' },
 					},
 				},
 			},

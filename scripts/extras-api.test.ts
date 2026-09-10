@@ -35,46 +35,6 @@ describe('extras public API ↔ SPRITES.md', () => {
 		).toStrictEqual([]);
 	});
 
-	// A picker shows titles, so an icon without one is an icon nobody can identify. Published
-	// inside the sprite JSON, which is why this is part of the contract rather than a nicety.
-	it('gives every extras icon a title', () => {
-		const untitled: string[] = [];
-		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
-			for (const [name, spec] of Object.entries(set.icons)) {
-				if (typeof spec === 'string' || !spec.title) untitled.push(`extras:${group}-${name}`);
-			}
-		}
-		expect(untitled.sort(), `extras icons with no title:\n${untitled.join('\n')}`).toStrictEqual([]);
-	});
-
-	// Aliases exist to be searched, so one that merely repeats the name or the title is dead weight.
-	it('never uses an alias that repeats the icon name or its title', () => {
-		const echoes: string[] = [];
-		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
-			for (const [name, spec] of Object.entries(set.icons)) {
-				if (typeof spec === 'string') continue;
-				const own = new Set([name, name.replace(/_/g, ' '), (spec.title ?? '').toLowerCase()]);
-				for (const a of spec.aliases ?? []) {
-					if (own.has(a.toLowerCase())) echoes.push(`extras:${group}-${name} → "${a}"`);
-				}
-			}
-		}
-		expect(echoes.sort(), `aliases that repeat the name or title:\n${echoes.join('\n')}`).toStrictEqual([]);
-	});
-
-	// `center` is a fraction of the icon's own box, so it stays valid at every pixel ratio.
-	it('keeps every center inside the icon box', () => {
-		const bad: string[] = [];
-		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
-			for (const [name, spec] of Object.entries(set.icons)) {
-				if (typeof spec === 'string' || !spec.center) continue;
-				const [x, y] = spec.center;
-				if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) bad.push(`extras:${group}-${name} → [${x}, ${y}]`);
-			}
-		}
-		expect(bad.sort(), `centers outside 0..1:\n${bad.join('\n')}`).toStrictEqual([]);
-	});
-
 	// `base` is what the style draws for you; `extras` is what you place yourself. Duplicating a
 	// name across the two sheets wastes bytes in an opt-in sheet and makes `base:icon-x` vs
 	// `extras:icon-x` a coin flip for the reader. Names are add-only, so a collision that ships is

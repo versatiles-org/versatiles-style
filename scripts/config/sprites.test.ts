@@ -35,6 +35,52 @@ describe('sprite config', () => {
 		}
 	});
 
+	// Picker metadata is published inside the sprite JSON for BOTH sheets — `extras` so users can
+	// find an icon, `base` so a style editor can offer the ones the style itself draws. An icon
+	// without a title is one nobody can identify in a list.
+	it('gives every icon a title', () => {
+		const untitled: string[] = [];
+		for (const [sheet, groups] of Object.entries(config.spritesheets)) {
+			for (const [group, set] of Object.entries(groups)) {
+				for (const [name, spec] of Object.entries(set.icons)) {
+					if (!spec.title) untitled.push(`${sheet}:${group}-${name}`);
+				}
+			}
+		}
+		expect(untitled.sort(), `icons with no title:\n${untitled.join('\n')}`).toStrictEqual([]);
+	});
+
+	// Aliases exist to be searched, so one repeating the name or the title is dead weight.
+	it('never uses an alias that repeats the icon name or its title', () => {
+		const echoes: string[] = [];
+		for (const [sheet, groups] of Object.entries(config.spritesheets)) {
+			for (const [group, set] of Object.entries(groups)) {
+				for (const [name, spec] of Object.entries(set.icons)) {
+					const own = new Set([name, name.replace(/_/g, ' '), spec.title.toLowerCase()]);
+					for (const a of spec.aliases ?? []) {
+						if (own.has(a.toLowerCase())) echoes.push(`${sheet}:${group}-${name} → "${a}"`);
+					}
+				}
+			}
+		}
+		expect(echoes.sort(), `aliases repeating the name or title:\n${echoes.join('\n')}`).toStrictEqual([]);
+	});
+
+	// `center` is a fraction of the icon's own box, so it stays valid at every pixel ratio.
+	it('keeps every center inside the icon box', () => {
+		const bad: string[] = [];
+		for (const [sheet, groups] of Object.entries(config.spritesheets)) {
+			for (const [group, set] of Object.entries(groups)) {
+				for (const [name, spec] of Object.entries(set.icons)) {
+					if (!spec.center) continue;
+					const [x, y] = spec.center;
+					if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) bad.push(`${sheet}:${group}-${name} → [${x}, ${y}]`);
+				}
+			}
+		}
+		expect(bad.sort(), `centers outside 0..1:\n${bad.join('\n')}`).toStrictEqual([]);
+	});
+
 	// A group declares `size` (the rendered HEIGHT). Sprite.fromIcons derives the width from each
 	// SOURCE's width/height attributes — `round(size × w0/h0)` — so a source at the wrong aspect
 	// ratio doesn't fail the build, it just lands on the sheet a pixel or two off. These two tests
