@@ -2,6 +2,11 @@
 	"name": "VersaTiles",
 	"url": "https://github.com/versatiles-org/versatiles-style",
 	"license": "CC0-1.0",
-	"grid": "24×24 (pins 24×30); older hand-drawn sets on 29.1042 and 39.6875",
-	"note": "Drawn for this project. New work uses the 24 grid — see SPRITES.md."
+	"grid": "24×24 (pins 24×30); older hand-drawn sets on 29.1042, 39.6875 and other mm-derived canvases",
+	"note": "Drawn for this project. New work uses the 24 grid — see SPRITES.md.",
+	"provenance": {
+		"method": "CC0 metadata stamp",
+		"detail": "Icons drawn for VersaTiles carry a hand-added <metadata id=\"license\"> block declaring CC0; icons imported from Maki do not, because they arrived CC0 already. Measured across the 518 SVGs in commit 9a659ad ('integrate sprites', 2024-02-18): every icon on a millimetre-derived canvas carried the stamp (39.6875 = 10.5 mm ×35, 29.1042 ×31, 96/108/120/105.83/119.06/95.25 ×19), while 424 of 431 Maki-sized 15×15 files carried none. The 7 stamped 15×15 files — atm, car_wash, chalet, community, fountain, justice, nightclub — were drawn at Maki's size to sit alongside the imports, and are counted here on that evidence.",
+		"caveat": "The stamp identifies authorship intent, not the individual author. It came from versatiles-org/versatiles-sprites, which no longer exists on GitHub, so the upstream history is unreachable."
+	}
 }

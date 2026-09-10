@@ -1,5 +1,39 @@
 {
 	"name": "Unattributed",
 	"license": "CC0-1.0",
-	"note": "Provenance not yet established. Every file here is on Maki's 15×15 grid (except arrow2/arrow3 at 16×16), so these are most likely modified Maki icons — but neither exact geometry nor visual matching against Maki 6.1/7.2/8.2 and Temaki 5.13 confirmed a source. `npm run icons-report` lists them; move a file into its source folder once identified."
+	"note": "Provenance not established. Every file here is on Maki's 15×15 grid and carries NO CC0 metadata stamp — see icons/versatiles/source.json for what that stamp means and why its absence is evidence.",
+	"leads": [
+		{
+			"files": [
+				"dog",
+				"fountain",
+				"fuel_pump",
+				"pill",
+				"pint_glass",
+				"restrooms",
+				"ring",
+				"shelter",
+				"tram",
+				"tube_and_toothbrush"
+			],
+			"lead": "Arrived in commit 5454666 (2026-07-04, 'Add new icons and update existing ones in the icon set'), a batch of 23 replacements that swapped the artwork and dropped the CC0 stamp. Two icons from the same batch — police_officer and seesaw — were later matched to Temaki by path geometry, so the batch may well be Temaki at a version we have not tested, or a set derived from it."
+		},
+		{
+			"files": [
+				"arrow2",
+				"arrow3",
+				"beer_mug",
+				"bus",
+				"caravan",
+				"newspaper",
+				"person_kneeling_and_praying",
+				"recycling",
+				"rocking_horse",
+				"star_of_david",
+				"vending_machine"
+			],
+			"lead": "Predate that batch and match no upstream geometry. arrow2 and arrow3 are 16×16, unlike everything else here."
+		}
+	],
+	"howToResolve": "`npm run icons-report` lists what is here. Move a file into its source folder once identified, keeping the upstream filename, and update its sprite entry in scripts/config-sprites.ts."
 }
