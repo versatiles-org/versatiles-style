@@ -82,7 +82,7 @@ const config: SpriteConfig = {
 					ring: 'unknown/ring',
 					justice: 'versatiles/justice',
 					khanda: 'temaki/sikhism',
-					latin_cross: 'maki/religious-christian',
+					latin_cross: 'unknown/latin_cross',
 					newspaper: 'unknown/newspaper',
 					laundry: 'maki/laundry',
 					library: 'maki/library',
