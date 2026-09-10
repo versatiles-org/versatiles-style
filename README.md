@@ -57,18 +57,33 @@ Integrate it into your HTML application:
 <script src="maplibre-gl.js"></script>
 <script src="versatiles-style.js"></script>
 <script>
-  const style = VersaTilesStyle.osm({
-    theme: { palette: 'colorful', darkMode: true },
-    text: { language: 'de' },
-    recolor: { gamma: 0.5 },
-  });
+  (async () => {
+    const style = VersaTilesStyle.osm({
+      theme: { palette: 'colorful', darkMode: true },
+      text: { language: 'de' },
+      recolor: { gamma: 0.5 },
+    });
 
-  const map = new maplibregl.Map({
-    container: 'map',
-    style,
-  });
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: await VersaTilesStyle.inlineSources(style),
+    });
+  })();
 </script>
 ```
+
+> **`inlineSources` is required, not optional.** `osm()` and `satellite()` are synchronous and do no
+> I/O: they leave each source as a `{ type, url }` reference to a TileJSON and let MapLibre fetch it.
+> That works only if the TileJSON lists absolute tile URLs — and the VersaTiles ones list **relative**
+> templates (`/tiles/osm/{z}/{x}/{y}`), which MapLibre does not resolve. Handing such a style straight
+> to `new maplibregl.Map()` fails with
+> `Request constructor: /tiles/osm/2/2/2 is not a valid URL` and no tiles appear.
+>
+> `inlineSources` fetches the TileJSON and folds it in, so the tile URLs come out absolute and the
+> attribution, bounds and maxzoom it carries are preserved. That last part matters: the attribution
+> is a licensing obligation.
+>
+> If your own tile server publishes absolute tile URLs, you can skip it and stay fully synchronous.
 
 > **Requires MapLibre GL JS 5.0 or newer.**
 > The generated styles set the [`globe` projection](https://maplibre.org/maplibre-style-spec/projection/)
@@ -90,21 +105,28 @@ npm install @versatiles/style
 Generate styles programmatically:
 
 ```javascript
-import { osm } from '@versatiles/style';
+import { osm, inlineSources } from '@versatiles/style';
 import { writeFileSync } from 'node:fs';
 
 const style = osm({
   theme: 'colorful',
   text: { language: 'en' },
 });
-writeFileSync('style.json', JSON.stringify(style));
+// resolves the TileJSON reference into absolute tile URLs — see the note above
+writeFileSync('style.json', JSON.stringify(await inlineSources(style)));
 ```
+
+A `style.json` written without `inlineSources` still carries a `url` reference, so whoever loads it
+hits the same relative-tile problem. This is exactly what the published styles do — `build-styles.ts`
+calls `inlineSources` before writing each one.
 
 ---
 
 ## Style Generation Methods
 
-All three functions are synchronous and return a MapLibre `StyleSpecification`:
+`osm()` and `satellite()` are **synchronous** and do no I/O; `guessStyle()` is **asynchronous**,
+because it has to read the TileJSON before it can decide what to build. All three return a MapLibre
+`StyleSpecification` — pass it through `inlineSources` before handing it to MapLibre, as above:
 
 - `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/functions/osm.html)
   - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`) or `{ palette, darkMode }`.
@@ -114,7 +136,7 @@ All three functions are synchronous and return a MapLibre `StyleSpecification`:
 
 ```javascript
 import { guessStyle } from '@versatiles/style';
-const style = guessStyle(tileJSON);
+const style = await guessStyle(tileJSON);
 ```
 
 ---
