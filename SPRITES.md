@@ -6,7 +6,7 @@ under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprite
 `…/assets/sprites/<sheet>{,@2x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
-`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`).
+`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:shape-star`).
 
 **Sprite names and filenames are decoupled.** The SVGs under [`icons/`](./icons) are organized by
 **provenance**, not by sheet, and keep their upstream filename — `base:icon-alcohol_shop` is drawn
@@ -61,7 +61,7 @@ const style = await osm({
 });
 
 // then, in a custom layer:
-// { "type": "symbol", "layout": { "icon-image": "extras:symbol-star" } }
+// { "type": "symbol", "layout": { "icon-image": "extras:shape-star" } }
 ```
 
 ### Stability guarantee
@@ -111,42 +111,6 @@ so a transit tracker or a charging-price map can mark its own features without s
 `extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` · `extras:icon-tunnel` ·
 `extras:icon-van` · `extras:icon-wheelchair`
 
-#### `symbol` group
-
-Abstract marks, for encoding a category rather than depicting a thing. Fifteen shapes, each filled
-and outlined, so a categorical series can be told apart by silhouette and not only by colour.
-Arrows and chevrons are drawn pointing **right**, like `symbol-arrow`; turn them with
-`icon-rotate` rather than asking for a second name. Numbered badges come filled — a knocked-out
-numeral, which reads on a light basemap — and outlined, with a solid numeral, which reads over
-imagery.
-
-`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` ·
-`extras:symbol-arrow_circle` · `extras:symbol-arrow_curved` · `extras:symbol-arrow_double` ·
-`extras:symbol-arrow_return` · `extras:symbol-caret` · `extras:symbol-chart_bar` ·
-`extras:symbol-chart_line` · `extras:symbol-chart_pie` · `extras:symbol-check` ·
-`extras:symbol-chevron` · `extras:symbol-chevron_double` · `extras:symbol-circle` ·
-`extras:symbol-circle_outline` · `extras:symbol-cross` · `extras:symbol-cross_outline` ·
-`extras:symbol-crosshair` · `extras:symbol-diamond` · `extras:symbol-diamond_outline` ·
-`extras:symbol-dot` · `extras:symbol-drop` · `extras:symbol-drop_outline` ·
-`extras:symbol-entrance` · `extras:symbol-exclamation` · `extras:symbol-heart` ·
-`extras:symbol-heart_outline` · `extras:symbol-hexagon` · `extras:symbol-hexagon_outline` ·
-`extras:symbol-minus` · `extras:symbol-number_0` · `extras:symbol-number_0_outline` ·
-`extras:symbol-number_1` · `extras:symbol-number_1_outline` · `extras:symbol-number_2` ·
-`extras:symbol-number_2_outline` · `extras:symbol-number_3` · `extras:symbol-number_3_outline` ·
-`extras:symbol-number_4` · `extras:symbol-number_4_outline` · `extras:symbol-number_5` ·
-`extras:symbol-number_5_outline` · `extras:symbol-number_6` · `extras:symbol-number_6_outline` ·
-`extras:symbol-number_7` · `extras:symbol-number_7_outline` · `extras:symbol-number_8` ·
-`extras:symbol-number_8_outline` · `extras:symbol-number_9` · `extras:symbol-number_9_outline` ·
-`extras:symbol-octagon` · `extras:symbol-octagon_outline` · `extras:symbol-oval` ·
-`extras:symbol-oval_outline` · `extras:symbol-pentagon` · `extras:symbol-pentagon_outline` ·
-`extras:symbol-percent` · `extras:symbol-question` · `extras:symbol-rounded_square` ·
-`extras:symbol-rounded_square_outline` · `extras:symbol-slash` · `extras:symbol-square` ·
-`extras:symbol-square_outline` · `extras:symbol-star` · `extras:symbol-star4` ·
-`extras:symbol-star4_outline` · `extras:symbol-star6` · `extras:symbol-star6_outline` ·
-`extras:symbol-star_outline` · `extras:symbol-trend_down` · `extras:symbol-trend_up` ·
-`extras:symbol-triangle` · `extras:symbol-triangle_outline` · `extras:symbol-x` ·
-`extras:symbol-x_outline`
-
 #### `pin` group
 
 Map markers, drawn on a 24×30 source so the tip sits **on** the bottom edge. Place them with
@@ -162,6 +126,53 @@ a numbered marker needs no second layer.
 `extras:pin-teardrop_4` · `extras:pin-teardrop_5` · `extras:pin-teardrop_6` ·
 `extras:pin-teardrop_7` · `extras:pin-teardrop_8` · `extras:pin-teardrop_9` ·
 `extras:pin-teardrop_dot` · `extras:pin-teardrop_hole` · `extras:pin-teardrop_outline`
+
+#### `shape` group
+
+Pure geometry, every one a filled/outlined pair at one optical size. Encode a categorical series
+by silhouette rather than by colour alone — which is also the accessible way to do it — and the
+outline variants stay legible over imagery.
+
+`extras:shape-circle` · `extras:shape-circle_outline` · `extras:shape-cross` ·
+`extras:shape-cross_outline` · `extras:shape-diamond` · `extras:shape-diamond_outline` ·
+`extras:shape-drop` · `extras:shape-drop_outline` · `extras:shape-heart` ·
+`extras:shape-heart_outline` · `extras:shape-hexagon` · `extras:shape-hexagon_outline` ·
+`extras:shape-octagon` · `extras:shape-octagon_outline` · `extras:shape-oval` ·
+`extras:shape-oval_outline` · `extras:shape-pentagon` · `extras:shape-pentagon_outline` ·
+`extras:shape-rounded_square` · `extras:shape-rounded_square_outline` · `extras:shape-square` ·
+`extras:shape-square_outline` · `extras:shape-star` · `extras:shape-star4` ·
+`extras:shape-star4_outline` · `extras:shape-star6` · `extras:shape-star6_outline` ·
+`extras:shape-star_outline` · `extras:shape-triangle` · `extras:shape-triangle_outline` ·
+`extras:shape-x` · `extras:shape-x_outline`
+
+#### `badge` group
+
+Numbered discs for ordered things — route stops, ranked results, legend keys. Filled carries a
+knocked-out numeral and reads on a light basemap; outlined carries a solid numeral and reads over
+imagery. Letters would join this group as `letter_a` rather than starting a group of their own.
+
+`extras:badge-number_0` · `extras:badge-number_0_outline` · `extras:badge-number_1` ·
+`extras:badge-number_1_outline` · `extras:badge-number_2` · `extras:badge-number_2_outline` ·
+`extras:badge-number_3` · `extras:badge-number_3_outline` · `extras:badge-number_4` ·
+`extras:badge-number_4_outline` · `extras:badge-number_5` · `extras:badge-number_5_outline` ·
+`extras:badge-number_6` · `extras:badge-number_6_outline` · `extras:badge-number_7` ·
+`extras:badge-number_7_outline` · `extras:badge-number_8` · `extras:badge-number_8_outline` ·
+`extras:badge-number_9` · `extras:badge-number_9_outline`
+
+#### `symbol` group
+
+Abstract marks that carry a meaning rather than a shape: arrows and chevrons, glyphs for annotating
+a feature, and small marks for legends. Arrows are drawn pointing **right**, like `symbol-arrow`;
+turn them with `icon-rotate` rather than asking for a second name.
+
+`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` ·
+`extras:symbol-arrow_circle` · `extras:symbol-arrow_curved` · `extras:symbol-arrow_double` ·
+`extras:symbol-arrow_return` · `extras:symbol-caret` · `extras:symbol-chart_bar` ·
+`extras:symbol-chart_line` · `extras:symbol-chart_pie` · `extras:symbol-check` ·
+`extras:symbol-chevron` · `extras:symbol-chevron_double` · `extras:symbol-crosshair` ·
+`extras:symbol-dot` · `extras:symbol-entrance` · `extras:symbol-exclamation` ·
+`extras:symbol-minus` · `extras:symbol-percent` · `extras:symbol-question` · `extras:symbol-slash` ·
+`extras:symbol-trend_down` · `extras:symbol-trend_up`
 
 ## Adding an icon
 
@@ -324,8 +335,18 @@ style rather than guessed:
 
 v5 shipped a second sheet called `markers`; v6 renames it `extras` and reorganizes it. Names were
 audited against the naming convention above — several described where an icon was _used_ rather than
-what it _depicts_ — and abstract marks moved out of `icon` into `symbol`. Everything not listed here
-is a straight prefix swap, so `markers:symbol-star` becomes `extras:symbol-star`.
+what it _depicts_ — and the groups were split by the kind of mark they hold.
+
+**Check the group, not just the sheet.** v5 had two groups, `icon` and `symbol`; v6 has five, so a
+prefix swap alone is not enough. In particular every geometric shape moved from `symbol` to `shape`:
+
+| v5 `markers:` id                                                                                                                                         | v6 `extras:` id          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `symbol-circle`, `symbol-square`, `symbol-triangle`, `symbol-diamond`, `symbol-hexagon`, `symbol-star`, `symbol-cross`, `symbol-x` (and each `_outline`) | same name under `shape-` |
+
+So `markers:symbol-star` becomes `extras:shape-star` — the group changes, not just the sheet prefix.
+Everything not listed here or in the table below keeps its group, so `markers:symbol-arrow` is still
+`extras:symbol-arrow`.
 
 | v5 `markers:` id        | v6 `extras:` id                                | why                                       |
 | ----------------------- | ---------------------------------------------- | ----------------------------------------- |
