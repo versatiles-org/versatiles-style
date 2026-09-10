@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="dots" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 3.3,6 A 2.7,2.7 0 1 0 8.7,6 A 2.7,2.7 0 1 0 3.3,6 Z"/><path d="M 15.3,18 A 2.7,2.7 0 1 0 20.7,18 A 2.7,2.7 0 1 0 15.3,18 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

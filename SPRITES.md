@@ -149,6 +149,21 @@ its own features without shipping a sheet.
 `extras:icon-wave` · `extras:icon-whale` · `extras:icon-wheelchair` · `extras:icon-wifi` ·
 `extras:icon-wind` · `extras:icon-wind_turbine`
 
+#### `pattern` group
+
+Tileable fills for `fill-pattern`, so you can hatch or stipple your own polygons rather than relying
+on colour alone. Every tile wraps seamlessly in both directions.
+
+These are the one part of the sheet that is **not** SDF: MapLibre cannot recolour a fill pattern, so
+they render as drawn rather than following `icon-color`. `base` carries its own diagonal and
+horizontal line fills; these five are the ones it does not have.
+
+```js
+{ type: 'fill', paint: { 'fill-pattern': 'extras:pattern-crosshatch' } }
+```
+
+`extras:pattern-checker` · `extras:pattern-crosshatch` · `extras:pattern-dots` · `extras:pattern-grid` · `extras:pattern-zigzag`
+
 #### `pin` group
 
 Map markers, drawn on a 24×30 source so the tip sits **on** the bottom edge. Place them with

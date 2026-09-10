@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="zigzag" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 0,10 L 6,4 L 12,10 L 18,4 L 24,10" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="butt"/><path d="M 0,22 L 6,16 L 12,22 L 18,16 L 24,22" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="butt"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
