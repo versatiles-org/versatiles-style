@@ -106,27 +106,39 @@ Pictograms — things you can point at.
 
 #### `symbol` group
 
-Abstract marks: geometric shapes for encoding a category, arrows, numbered badges for ordered
-things (route stops, ranked results, legend keys), and glyphs for annotating a feature. Badges come
-filled — a knocked-out numeral, which reads on a light basemap — and outlined, with a solid numeral,
-which reads over imagery.
+Abstract marks, for encoding a category rather than depicting a thing. Fifteen shapes, each filled
+and outlined, so a categorical series can be told apart by silhouette and not only by colour.
+Arrows and chevrons are drawn pointing **right**, like `symbol-arrow`; turn them with
+`icon-rotate` rather than asking for a second name. Numbered badges come filled — a knocked-out
+numeral, which reads on a light basemap — and outlined, with a solid numeral, which reads over
+imagery.
 
-`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` · `extras:symbol-check` ·
-`extras:symbol-circle` · `extras:symbol-circle_outline` · `extras:symbol-cross` ·
-`extras:symbol-cross_outline` · `extras:symbol-crosshair` · `extras:symbol-diamond` ·
-`extras:symbol-diamond_outline` · `extras:symbol-dot` · `extras:symbol-entrance` ·
-`extras:symbol-exclamation` · `extras:symbol-heart` · `extras:symbol-hexagon` ·
-`extras:symbol-hexagon_outline` · `extras:symbol-minus` · `extras:symbol-number_0` ·
-`extras:symbol-number_0_outline` · `extras:symbol-number_1` · `extras:symbol-number_1_outline` ·
-`extras:symbol-number_2` · `extras:symbol-number_2_outline` · `extras:symbol-number_3` ·
-`extras:symbol-number_3_outline` · `extras:symbol-number_4` · `extras:symbol-number_4_outline` ·
-`extras:symbol-number_5` · `extras:symbol-number_5_outline` · `extras:symbol-number_6` ·
-`extras:symbol-number_6_outline` · `extras:symbol-number_7` · `extras:symbol-number_7_outline` ·
-`extras:symbol-number_8` · `extras:symbol-number_8_outline` · `extras:symbol-number_9` ·
-`extras:symbol-number_9_outline` · `extras:symbol-question` · `extras:symbol-slash` ·
-`extras:symbol-square` · `extras:symbol-square_outline` · `extras:symbol-star` ·
-`extras:symbol-star_outline` · `extras:symbol-triangle` · `extras:symbol-triangle_outline` ·
-`extras:symbol-x` · `extras:symbol-x_outline`
+`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` ·
+`extras:symbol-arrow_circle` · `extras:symbol-arrow_curved` · `extras:symbol-arrow_double` ·
+`extras:symbol-arrow_return` · `extras:symbol-caret` · `extras:symbol-chart_bar` ·
+`extras:symbol-chart_line` · `extras:symbol-chart_pie` · `extras:symbol-check` ·
+`extras:symbol-chevron` · `extras:symbol-chevron_double` · `extras:symbol-circle` ·
+`extras:symbol-circle_outline` · `extras:symbol-cross` · `extras:symbol-cross_outline` ·
+`extras:symbol-crosshair` · `extras:symbol-diamond` · `extras:symbol-diamond_outline` ·
+`extras:symbol-dot` · `extras:symbol-drop` · `extras:symbol-drop_outline` ·
+`extras:symbol-entrance` · `extras:symbol-exclamation` · `extras:symbol-heart` ·
+`extras:symbol-heart_outline` · `extras:symbol-hexagon` · `extras:symbol-hexagon_outline` ·
+`extras:symbol-minus` · `extras:symbol-number_0` · `extras:symbol-number_0_outline` ·
+`extras:symbol-number_1` · `extras:symbol-number_1_outline` · `extras:symbol-number_2` ·
+`extras:symbol-number_2_outline` · `extras:symbol-number_3` · `extras:symbol-number_3_outline` ·
+`extras:symbol-number_4` · `extras:symbol-number_4_outline` · `extras:symbol-number_5` ·
+`extras:symbol-number_5_outline` · `extras:symbol-number_6` · `extras:symbol-number_6_outline` ·
+`extras:symbol-number_7` · `extras:symbol-number_7_outline` · `extras:symbol-number_8` ·
+`extras:symbol-number_8_outline` · `extras:symbol-number_9` · `extras:symbol-number_9_outline` ·
+`extras:symbol-octagon` · `extras:symbol-octagon_outline` · `extras:symbol-oval` ·
+`extras:symbol-oval_outline` · `extras:symbol-pentagon` · `extras:symbol-pentagon_outline` ·
+`extras:symbol-percent` · `extras:symbol-question` · `extras:symbol-rounded_square` ·
+`extras:symbol-rounded_square_outline` · `extras:symbol-slash` · `extras:symbol-square` ·
+`extras:symbol-square_outline` · `extras:symbol-star` · `extras:symbol-star4` ·
+`extras:symbol-star4_outline` · `extras:symbol-star6` · `extras:symbol-star6_outline` ·
+`extras:symbol-star_outline` · `extras:symbol-trend_down` · `extras:symbol-trend_up` ·
+`extras:symbol-triangle` · `extras:symbol-triangle_outline` · `extras:symbol-x` ·
+`extras:symbol-x_outline`
 
 #### `pin` group
 

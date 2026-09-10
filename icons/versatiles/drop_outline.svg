@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="drop_outline" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 12 0.80078125 L 5.2207031 8.5878906 A 9 9 0 1 0 18.779297 8.5878906 L 12 0.80078125 z M 12 4.7597656 L 16.820312 10.294922 L 16.822266 10.296875 C 18.692407 12.439144 18.807988 14.994087 17.826172 17.154297 C 16.84431 19.314459 14.843387 20.90625 12 20.90625 C 9.1566128 20.90625 7.155644 19.314506 6.1738281 17.154297 C 5.1920122 14.994087 5.3075932 12.439144 7.1777344 10.296875 L 7.1796875 10.294922 L 12 4.7597656 z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
