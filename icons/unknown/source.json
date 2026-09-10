@@ -1,8 +1,13 @@
 {
 	"name": "Unattributed",
 	"license": "CC0-1.0",
-	"note": "Provenance not established. Every file here is on Maki's 15×15 grid and carries NO CC0 metadata stamp — see icons/versatiles/source.json for what that stamp means and why its absence is evidence.",
-	"ruledOut": {
+	"note": "Provenance not established. Every file here is on Maki's 15×15 grid and carries NO CC0 metadata stamp — see icons/versatiles/source.json for what that stamp means.",
+	"whatIsKnown": {
+		"authoringGrid": "Coordinates are natively grid-aligned on the 15-unit canvas — 32% integers, 12% half-steps, 49% landing on quarter-units, and 100% at two decimal places or fewer. That is the profile of icons DRAWN at 15×15, not of artwork rescaled from a larger canvas.",
+		"exportStyle": "Compact absolute path data with no separator after the command letter (`M2 3C2 1.9 2.9 1 4 1L11 1`), rounded to two decimals. Byte-for-byte the same export style Temaki uses.",
+		"notTheNounProject": "Investigated and rejected. The Noun Project publishes on a 100×100 canvas and almost entirely under CC BY rather than CC0. A 100→15 rescale would leave coordinates clustered on 0.15 multiples and would not produce quarter-unit alignment; neither signature is present. Nothing here shows any trace of a rescale."
+	},
+	"ruledOutAsVerbatimCopies": {
 		"sets": [
 			"maki 6.1.0",
 			"maki 7.2.0",
@@ -15,10 +20,8 @@
 			"temaki 5.12.0",
 			"temaki 5.13.0"
 		],
-		"byGeometry": "0 of 21 matched any of the 1033 distinct path geometries across those ten releases.",
-		"byAppearance": "Best visual overlap (IoU on 32×32 rasters) was 0.79 for bus against temaki/bus, 0.74 for tram, 0.70 for vending_machine. Confirmed matches elsewhere in this repo score 0.91–1.00, so these are near misses, not the same artwork.",
-		"byEye": "bus, tram, caravan, vending_machine, fuel_pump and restrooms were compared side by side against their closest upstream candidate. Same concept, different drawing every time — our bus has a rounded windshield and round headlights, temaki's is boxy; our caravan has no tow hitch; our fuel_pump has no hose.",
-		"conclusion": "These are NOT Maki or Temaki at any published version. Do not repeat this search."
+		"method": "Exact path geometry against 1033 distinct upstream geometries, then visual overlap (IoU on 32×32 rasters), then a longest-shared-substring test over the raw path data.",
+		"caveat": "Exact-match alone gives FALSE NEGATIVES for edited icons. The substring test found two derivatives that exact matching missed: bus (192 identical characters) and tram (363) were Temaki icons with one detail redrawn, and have been moved to icons/temaki/. Use the substring test, not equality, before concluding anything here is original."
 	},
 	"leads": [
 		{
@@ -31,17 +34,15 @@
 				"restrooms",
 				"ring",
 				"shelter",
-				"tram",
 				"tube_and_toothbrush"
 			],
-			"lead": "Arrived in commit 5454666 (2026-07-04), a batch of 23 replacements that swapped artwork and dropped the CC0 stamp. Two icons from that same batch — police_officer and seesaw — DO match Temaki exactly, so the batch mixed sources: some Temaki, these ten from somewhere else."
+			"lead": "Arrived in commit 5454666 (2026-07-04), a batch of 23 replacements that swapped artwork and dropped the CC0 stamp. Other icons from that same batch — police_officer, seesaw, and now tram — trace to Temaki, so the batch drew on Temaki even where these nine do not match it."
 		},
 		{
 			"files": [
 				"arrow2",
 				"arrow3",
 				"beer_mug",
-				"bus",
 				"caravan",
 				"newspaper",
 				"person_kneeling_and_praying",
@@ -53,5 +54,5 @@
 			"lead": "Predate that batch. arrow2 and arrow3 are 16×16, unlike everything else here. star_of_david is a hollow hexagram where maki/religious-jewish is solid — deliberately different, not a copy."
 		}
 	],
-	"howToResolve": "The remaining candidates are the versatiles-sprites repo (deleted from GitHub, so unreachable) or a fourth icon set not yet identified. `npm run icons-report` lists what is here; move a file into its source folder once identified, keeping the upstream filename, and update its sprite entry in scripts/config-sprites.ts."
+	"howToResolve": "Best remaining explanation is that these were drawn for VersaTiles in Temaki's style and simply never stamped — the versatiles-sprites repo they came through is deleted from GitHub, so that cannot be confirmed from here. `npm run icons-report` lists what is here; move a file into its source folder once identified and update its sprite entry in scripts/config-sprites.ts."
 }

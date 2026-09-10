@@ -36,7 +36,7 @@ const config: SpriteConfig = {
 					beverages: 'versatiles/beverages',
 					bicycle_share: 'maki/bicycle-share',
 					books: 'versatiles/books',
-					bus: 'unknown/bus',
+					bus: 'temaki/bus',
 					butcher: 'versatiles/butcher',
 					cafe: 'maki/cafe',
 					campsite: 'maki/campsite',
@@ -159,7 +159,7 @@ const config: SpriteConfig = {
 			transport: {
 				size: 22,
 				icons: {
-					tram: 'unknown/tram',
+					tram: 'temaki/tram',
 					information: 'versatiles/information',
 				},
 			},
