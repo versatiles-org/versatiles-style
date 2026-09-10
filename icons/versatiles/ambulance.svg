@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="ambulance" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 1.8 14.34 L 1.8 8.74 C 1.8 7.74 2.4 7.04 3.6 6.74 L 9.2 5.54 L 19.6 5.54 C 21 5.54 22 6.44 22 7.84 L 22 14.34 Z M 5.85 7.64 L 7.75 7.64 L 7.75 9.39 L 9.5 9.39 L 9.5 11.29 L 7.75 11.29 L 7.75 13.04 L 5.85 13.04 L 5.85 11.29 L 4.1 11.29 L 4.1 9.39 L 5.85 9.39 Z M 14.6 7.34 L 20.6 7.34 L 20.6 10.54 L 14.6 10.54 Z M 4.3 16.14 A 2.3 2.3 0 1 0 8.9 16.14 A 2.3 2.3 0 1 0 4.3 16.14 Z M 14.9 16.14 A 2.3 2.3 0 1 0 19.5 16.14 A 2.3 2.3 0 1 0 14.9 16.14 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="first_aid" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 4,6.4 L 20,6.4 A 2,2 0 0 1 22,8.4 L 22,18.8 A 2,2 0 0 1 20,20.8 L 4,20.8 A 2,2 0 0 1 2,18.8 L 2,8.4 A 2,2 0 0 1 4,6.4 Z M 8.6,3.2 L 15.4,3.2 L 15.4,6.4 L 8.6,6.4 Z M 10.4,9.1 L 13.6,9.1 L 13.6,12 L 16.5,12 L 16.5,15.2 L 13.6,15.2 L 13.6,18.1 L 10.4,18.1 L 10.4,15.2 L 7.5,15.2 L 7.5,12 L 10.4,12 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
