@@ -25,6 +25,17 @@ Each folder carries a `source.json` recording the upstream repo, the version we 
 and the license. Keeping upstream filenames is what makes it answerable whether we already hold a
 given icon, and what it was called where it came from — renaming on download destroys both.
 
+Those folders are a claim about origin, so `npm run icons-provenance` checks it: it fetches the
+upstream releases, indexes every 40-character window of their path data, and reports any icon filed
+under `maki/` or `temaki/` that is not found there, or any upstream artwork sitting in
+`versatiles/`. Exact equality deliberately is **not** the test — it misses edited imports, and two
+icons here (`bus` and `tram`) turned out to be Temaki artwork with one detail redrawn, sharing 192
+and 363 characters while matching nothing under equality.
+
+`versatiles/` is identified by a second signal: icons drawn for this project carry a hand-added
+`<metadata id="license">` block declaring CC0, which Maki imports never do because they arrive CC0
+already. `icons/versatiles/source.json` records how that was measured.
+
 | Sheet    | Loaded by default | Stability                         | Purpose                                                          |
 | -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------- |
 | `base`   | ✅ yes            | **internal** — may change anytime | Everything the style needs to draw a Shortbread map              |
@@ -208,11 +219,13 @@ matching `icons/<source>/` folder **under its upstream filename**, then give it 
 `config-sprites.ts`. Only draw one yourself when neither has it; those go in `icons/versatiles/`.
 
 ```ts
-// scripts/config-sprites.ts — the key is the sprite name, the value is the file
-cat: 'maki/animal-shelter',
-// or, with metadata for an icon picker:
+// scripts/config-sprites.ts — the key is the sprite name, the value is the file it is drawn from
+airfield: 'maki/airfield',                                              // fine for `base`
 cat: { src: 'maki/animal-shelter', tags: ['pet', 'animal'], description: 'A sitting cat' },
 ```
+
+`base` may use the bare string form. **`extras` may not** — every icon there needs tags and a
+description, and a test fails without them (see below).
 
 The naming convention below governs **sprite names**, not filenames — upstream keeps its own
 spelling on disk. `npm run icons-report` renders the whole set and fails if a sprite entry points at
@@ -244,10 +257,10 @@ Two tests keep it honest: every `extras` icon must have a description **and** at
 no tag may simply repeat the icon's own name — a tag that echoes the name adds nothing to a search
 index. `aliases` is accepted alongside them for names an icon used to have.
 
-**Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on a
-15×15 grid (the Maki-derived ones) or on 29.1042 (the hand-drawn symbols); they render correctly and
-are left alone, so the repo carries more than one authoring grid on purpose. Anything new, and
-anything redrawn, uses 24.
+**Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on
+15×15 (the Maki-derived ones) or on a millimetre-derived canvas such as 29.1042 or 39.6875 (the
+hand-drawn sets, authored in a mm-based editor); they render correctly and are left alone, so the
+repo carries more than one authoring grid on purpose. Anything new, and anything redrawn, uses 24.
 
 **The `width` and `height` attributes are what the build reads** — not the `viewBox`.
 `Sprite.fromIcons` takes the group's `size` as the rendered _height_ and derives the width from the
@@ -261,9 +274,10 @@ So the `pin` group's `size: 28` and a 24×30 source give `round(28 × 24/30)` = 
 the wrong aspect ratio does not fail the build — it just lands a pixel or two off. `config-sprites.test.ts`
 asserts the pin geometry and that every icon within a group agrees on one rendered size.
 
-**One color.** Every icon in both sheets is packed as SDF (`"sdf": true`), so an icon is a single
-silhouette that MapLibre recolors via `icon-color`. There is no way to bake two colors into one
-image — see below for what to do instead.
+**One color.** Every icon is packed as SDF (`"sdf": true`), so it is a single silhouette that
+MapLibre recolors via `icon-color`, and there is no way to bake two colors into one image — see
+below for what to do instead. The one exception is `base`'s `pattern` group, which sets
+`useSDF: false`: those are tiled polygon fills, not recolorable point symbols.
 
 ### Two-color markers
 
@@ -283,16 +297,22 @@ draw underneath shows through in its own color:
   type: 'symbol',
   layout: {
     'icon-image': 'extras:icon-mountain',
-    'icon-offset': [0, -17.3], // well center sits 17.3 px above the tip
-    'icon-size': 0.55,         // the well is 12.8 px across; a 22 px glyph needs scaling down
+    'icon-size': 0.55,         // the well is 12.8 px across; a 22 px glyph must come down to fit
+    'icon-offset': [0, -31.5], // 17.3 ÷ 0.55 — see below
     'icon-allow-overlap': true,
   },
   paint: { 'icon-color': '#333344' },
 }
 ```
 
-Both numbers come off the geometry above and hold at `icon-size: 1` on layer 1: the head center is
-`28 − 11.5 × (28/30)` = 17.3 px above the tip, and the well is `2 × 7 × (22/24)` = 12.8 px wide.
+Both numbers come off the geometry above, at `icon-size: 1` on layer 1: the head center sits
+`28 − 11.5 × (28/30)` = **17.3 px** above the tip, and the well is `2 × 7 × (22/24)` = **12.8 px**
+wide, so a 22 px glyph needs `icon-size` of about 0.55 to sit inside it.
+
+> **`icon-offset` is multiplied by `icon-size`.** The style spec is explicit: "each component is
+> multiplied by the value of `icon-size` to obtain the final offset in pixels". So the number you
+> write is the distance you want **divided by** the scale — 17.3 ÷ 0.55 = 31.5. Writing 17.3 here
+> would place the glyph at 9.5 px, down at the pin's neck instead of in the well.
 
 ## Naming convention
 
