@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="teardrop_4" width="24" height="30" viewBox="0 0 24 30" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 3.356,17.459 A 10.5,10.5 0 1 1 20.644,17.459 L 12,30 Z M 13.875,4.6171875 A 1.2351235,1.2351235 0 0 0 12.488281,5.1210937 L 7.359375,12.910156 a 1.2351235,1.2351235 0 0 0 1.03125,1.914063 h 3.894531 v 2.375 a 1.235,1.235 0 0 0 1.234375,1.236328 1.235,1.235 0 0 0 1.236328,-1.236328 v -2.375 h 1.044922 a 1.235,1.235 0 0 0 1.234375,-1.234375 1.235,1.235 0 0 0 -1.234375,-1.234375 H 14.755859 V 5.8007812 A 1.2351235,1.2351235 0 0 0 13.875,4.6171875 Z m -1.589844,5.3027344 v 2.4355471 h -1.603515 z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

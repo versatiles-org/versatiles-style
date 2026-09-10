@@ -106,12 +106,24 @@ Pictograms — things you can point at.
 
 #### `symbol` group
 
-Abstract marks — shapes, arrows and signs, for encoding a category rather than depicting a thing.
+Abstract marks: geometric shapes for encoding a category, arrows, numbered badges for ordered
+things (route stops, ranked results, legend keys), and glyphs for annotating a feature. Badges come
+filled — a knocked-out numeral, which reads on a light basemap — and outlined, with a solid numeral,
+which reads over imagery.
 
-`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` · `extras:symbol-circle` ·
-`extras:symbol-circle_outline` · `extras:symbol-cross` · `extras:symbol-cross_outline` ·
-`extras:symbol-diamond` · `extras:symbol-diamond_outline` · `extras:symbol-entrance` ·
-`extras:symbol-heart` · `extras:symbol-hexagon` · `extras:symbol-hexagon_outline` ·
+`extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` · `extras:symbol-check` ·
+`extras:symbol-circle` · `extras:symbol-circle_outline` · `extras:symbol-cross` ·
+`extras:symbol-cross_outline` · `extras:symbol-crosshair` · `extras:symbol-diamond` ·
+`extras:symbol-diamond_outline` · `extras:symbol-dot` · `extras:symbol-entrance` ·
+`extras:symbol-exclamation` · `extras:symbol-heart` · `extras:symbol-hexagon` ·
+`extras:symbol-hexagon_outline` · `extras:symbol-minus` · `extras:symbol-number_0` ·
+`extras:symbol-number_0_outline` · `extras:symbol-number_1` · `extras:symbol-number_1_outline` ·
+`extras:symbol-number_2` · `extras:symbol-number_2_outline` · `extras:symbol-number_3` ·
+`extras:symbol-number_3_outline` · `extras:symbol-number_4` · `extras:symbol-number_4_outline` ·
+`extras:symbol-number_5` · `extras:symbol-number_5_outline` · `extras:symbol-number_6` ·
+`extras:symbol-number_6_outline` · `extras:symbol-number_7` · `extras:symbol-number_7_outline` ·
+`extras:symbol-number_8` · `extras:symbol-number_8_outline` · `extras:symbol-number_9` ·
+`extras:symbol-number_9_outline` · `extras:symbol-question` · `extras:symbol-slash` ·
 `extras:symbol-square` · `extras:symbol-square_outline` · `extras:symbol-star` ·
 `extras:symbol-star_outline` · `extras:symbol-triangle` · `extras:symbol-triangle_outline` ·
 `extras:symbol-x` · `extras:symbol-x_outline`
@@ -123,9 +135,13 @@ Map markers, drawn on a 24×30 source so the tip sits **on** the bottom edge. Pl
 centered on it.
 
 Two silhouettes, named for their shape: `teardrop` tapers smoothly from head to point, `balloon` is
-a round head on a narrow neck.
+a round head on a narrow neck. `teardrop_1`–`teardrop_9` carry a numeral knocked out of the head, so
+a numbered marker needs no second layer.
 
 `extras:pin-balloon` · `extras:pin-balloon_outline` · `extras:pin-teardrop` ·
+`extras:pin-teardrop_1` · `extras:pin-teardrop_2` · `extras:pin-teardrop_3` ·
+`extras:pin-teardrop_4` · `extras:pin-teardrop_5` · `extras:pin-teardrop_6` ·
+`extras:pin-teardrop_7` · `extras:pin-teardrop_8` · `extras:pin-teardrop_9` ·
 `extras:pin-teardrop_dot` · `extras:pin-teardrop_hole` · `extras:pin-teardrop_outline`
 
 ## Adding an icon
