@@ -2,6 +2,24 @@
 	"name": "Unattributed",
 	"license": "CC0-1.0",
 	"note": "Provenance not established. Every file here is on Maki's 15×15 grid and carries NO CC0 metadata stamp — see icons/versatiles/source.json for what that stamp means and why its absence is evidence.",
+	"ruledOut": {
+		"sets": [
+			"maki 6.1.0",
+			"maki 7.2.0",
+			"maki 8.0.0",
+			"maki 8.2.0",
+			"temaki 5.3.0",
+			"temaki 5.6.0",
+			"temaki 5.9.0",
+			"temaki 5.11.0",
+			"temaki 5.12.0",
+			"temaki 5.13.0"
+		],
+		"byGeometry": "0 of 21 matched any of the 1033 distinct path geometries across those ten releases.",
+		"byAppearance": "Best visual overlap (IoU on 32×32 rasters) was 0.79 for bus against temaki/bus, 0.74 for tram, 0.70 for vending_machine. Confirmed matches elsewhere in this repo score 0.91–1.00, so these are near misses, not the same artwork.",
+		"byEye": "bus, tram, caravan, vending_machine, fuel_pump and restrooms were compared side by side against their closest upstream candidate. Same concept, different drawing every time — our bus has a rounded windshield and round headlights, temaki's is boxy; our caravan has no tow hitch; our fuel_pump has no hose.",
+		"conclusion": "These are NOT Maki or Temaki at any published version. Do not repeat this search."
+	},
 	"leads": [
 		{
 			"files": [
@@ -16,7 +34,7 @@
 				"tram",
 				"tube_and_toothbrush"
 			],
-			"lead": "Arrived in commit 5454666 (2026-07-04, 'Add new icons and update existing ones in the icon set'), a batch of 23 replacements that swapped the artwork and dropped the CC0 stamp. Two icons from the same batch — police_officer and seesaw — were later matched to Temaki by path geometry, so the batch may well be Temaki at a version we have not tested, or a set derived from it."
+			"lead": "Arrived in commit 5454666 (2026-07-04), a batch of 23 replacements that swapped artwork and dropped the CC0 stamp. Two icons from that same batch — police_officer and seesaw — DO match Temaki exactly, so the batch mixed sources: some Temaki, these ten from somewhere else."
 		},
 		{
 			"files": [
@@ -32,8 +50,8 @@
 				"star_of_david",
 				"vending_machine"
 			],
-			"lead": "Predate that batch and match no upstream geometry. arrow2 and arrow3 are 16×16, unlike everything else here."
+			"lead": "Predate that batch. arrow2 and arrow3 are 16×16, unlike everything else here. star_of_david is a hollow hexagram where maki/religious-jewish is solid — deliberately different, not a copy."
 		}
 	],
-	"howToResolve": "`npm run icons-report` lists what is here. Move a file into its source folder once identified, keeping the upstream filename, and update its sprite entry in scripts/config-sprites.ts."
+	"howToResolve": "The remaining candidates are the versatiles-sprites repo (deleted from GitHub, so unreachable) or a fourth icon set not yet identified. `npm run icons-report` lists what is here; move a file into its source folder once identified, keeping the upstream filename, and update its sprite entry in scripts/config-sprites.ts."
 }
