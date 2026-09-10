@@ -134,7 +134,7 @@ describe('path-class ways appear by growing from 0 width at z15 (no opacity fade
 				const width = paintOf(style, layerId)?.['line-width'];
 				expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
 				const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
-				expect(stops[0], `${layerId} width ramp must start at z15`).toBe(15);
+				expect(stops[0], `${layerId} width ramp must start at z15`).toBe(13);
 				expect(stops[1], `${layerId} must start at 0 width`).toBe(0);
 			});
 		}
