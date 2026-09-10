@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="lifebuoy" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 1.6,12 A 10.4,10.4 0 1 0 22.4,12 A 10.4,10.4 0 1 0 1.6,12 Z M 6.8,12 A 5.2,5.2 0 1 0 17.2,12 A 5.2,5.2 0 1 0 6.8,12 Z M 16.045,14.939 L 20.576,18.231 L 18.231,20.576 L 14.939,16.045 Z M 9.061,16.045 L 5.769,20.576 L 3.424,18.231 L 7.955,14.939 Z M 7.955,9.061 L 3.424,5.769 L 5.769,3.424 L 9.061,7.955 Z M 14.939,7.955 L 18.231,3.424 L 20.576,5.769 L 16.045,9.061 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
