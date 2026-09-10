@@ -35,6 +35,36 @@ describe('extras public API ↔ SPRITES.md', () => {
 		).toStrictEqual([]);
 	});
 
+	// Metadata is what makes 200+ icons findable in a picker, so it is part of the contract rather
+	// than a nicety: an icon added without tags is an icon nobody will search up.
+	it('gives every extras icon a description and search tags', () => {
+		const thin: string[] = [];
+		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
+			for (const [name, spec] of Object.entries(set.icons)) {
+				const id = `extras:${group}-${name}`;
+				if (typeof spec === 'string') thin.push(`${id} — no metadata at all`);
+				else if (!spec.description) thin.push(`${id} — no description`);
+				else if (!spec.tags?.length) thin.push(`${id} — no tags`);
+			}
+		}
+		expect(thin.sort(), `extras icons missing picker metadata:\n${thin.join('\n')}`).toStrictEqual([]);
+	});
+
+	// Tags exist to be searched, so a tag that merely repeats the icon's own name is dead weight.
+	it('never uses a tag that just repeats the icon name', () => {
+		const echoes: string[] = [];
+		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
+			for (const [name, spec] of Object.entries(set.icons)) {
+				if (typeof spec === 'string') continue;
+				const own = name.replace(/_/g, ' ');
+				for (const t of spec.tags ?? []) {
+					if (t.toLowerCase() === own || t.toLowerCase() === name) echoes.push(`extras:${group}-${name} → "${t}"`);
+				}
+			}
+		}
+		expect(echoes.sort(), `tags that repeat the icon name:\n${echoes.join('\n')}`).toStrictEqual([]);
+	});
+
 	// `base` is what the style draws for you; `extras` is what you place yourself. Duplicating a
 	// name across the two sheets wastes bytes in an opt-in sheet and makes `base:icon-x` vs
 	// `extras:icon-x` a coin flip for the reader. Names are add-only, so a collision that ships is

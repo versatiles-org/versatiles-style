@@ -219,6 +219,31 @@ spelling on disk. `npm run icons-report` renders the whole set and fails if a sp
 a missing file, if two sprite names in one sheet share a source, or if a source file is referenced
 by nothing.
 
+### Metadata for icon pickers
+
+Every `extras` icon carries a one-line `description` and a set of search `tags`, so a sprite picker
+can offer search rather than making people scroll 200+ tiles. Tags are the terms someone would
+actually type that are **not** already the icon's name — synonyms, spellings, and the job the icon
+does:
+
+```ts
+bicycle: { src: 'maki/bicycle', tags: ['bike', 'cycling', 'cycle', 'ride', 'velo'], description: 'A bicycle' },
+```
+
+The build writes it beside the sheet as `…/assets/sprites/extras.meta.json`, keyed by the same
+`<group>-<name>` ids the sprite JSON uses, so a picker can join the two directly:
+
+```json
+{
+  "icon-bicycle": { "description": "A bicycle", "tags": ["bike", "cycling", "cycle", "ride", "velo"] },
+  "badge-number_3": { "description": "A filled disc with the numeral 3 knocked out", "tags": ["badge", "…"] }
+}
+```
+
+Two tests keep it honest: every `extras` icon must have a description **and** at least one tag, and
+no tag may simply repeat the icon's own name — a tag that echoes the name adds nothing to a search
+index. `aliases` is accepted alongside them for names an icon used to have.
+
 **Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on a
 15×15 grid (the Maki-derived ones) or on 29.1042 (the hand-drawn symbols); they render correctly and
 are left alone, so the repo carries more than one authoring grid on purpose. Anything new, and

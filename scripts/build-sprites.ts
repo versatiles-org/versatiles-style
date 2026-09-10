@@ -25,6 +25,26 @@ for (const [name, sets] of Object.entries(config.spritesheets)) {
 	const maxScale = 12;
 	const spriteBig = await Sprite.fromIcons(icons, maxScale, 5);
 
+	// Metadata sidecar: `sprites/<name>.meta.json`, keyed by the same `<group>-<name>` ids the
+	// sprite JSON uses, so an icon picker can join the two and offer search. Written only when a
+	// sheet actually carries tags or descriptions (today: `extras`).
+	const meta: Record<string, { tags?: string[]; description?: string }> = {};
+	for (const [group, set] of Object.entries(sets)) {
+		for (const [icon, spec] of Object.entries(set.icons)) {
+			if (typeof spec === 'string') continue;
+			if (!spec.tags?.length && !spec.description && !spec.aliases?.length) continue;
+			meta[`${group}-${icon}`] = {
+				...(spec.description ? { description: spec.description } : {}),
+				...(spec.tags?.length ? { tags: spec.tags } : {}),
+				...(spec.aliases?.length ? { aliases: spec.aliases } : {}),
+			};
+		}
+	}
+	if (Object.keys(meta).length > 0) {
+		console.log('  - write metadata (' + Object.keys(meta).length + ' icons)');
+		writeFileSync(resolve(dirSprites, `${name}.meta.json`), JSON.stringify(meta, null, '\t'));
+	}
+
 	// Flat layout: each sheet is `sprites/<name>{,@2x,@3x,@4x}.{png,json}` (the sheet name is the
 	// filename, so a sprite `id` maps 1:1 to its URL tail — e.g. id "base" → sprites/base).
 	for (const scale of config.ratios) {
