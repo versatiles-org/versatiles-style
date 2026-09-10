@@ -131,7 +131,7 @@ const config: SpriteConfig = {
 					'zoo',
 				],
 			},
-			marking: { size: 15, names: ['arrow'] },
+			marking: { size: 15, names: ['oneway'] },
 			pattern: {
 				useSDF: false,
 				size: 16,
@@ -146,33 +146,31 @@ const config: SpriteConfig = {
 			icon: {
 				size: 22,
 				names: [
-					'animal_shelter',
-					'aquarium',
 					'bbq',
 					'beach',
-					'entrance',
-					'heart',
-					'home',
-					'information',
-					'karaoke',
+					'cat',
+					'conifer',
+					'droplet',
+					'fish',
+					'house',
+					'microphone',
 					'mountain',
 					'mushroom',
 					'music',
-					'park',
-					'park2',
-					'roadblock',
+					'no_entry',
 					'rocket',
-					'water',
+					'tree',
 				],
 			},
 			// Map pins, drawn 24×30 with the tip ON the bottom edge so `icon-anchor: "bottom"`
 			// puts the point on the coordinate. `size` is the rendered HEIGHT; the width follows
 			// from the source aspect ratio (see Sprite.fromIcons):
 			//   round(28 × 24/30) = round(22.4) = 22  →  22×28 on the sheet.
-			// A source at a different aspect silently changes that width — sprites.test.ts guards it.
+			// A source at a different aspect silently changes that width — config-sprites.test.ts
+			// guards it.
 			pin: {
 				size: 28,
-				names: ['pin', 'pin_dot', 'pin_hole', 'pin_outline'],
+				names: ['balloon', 'balloon_outline', 'teardrop', 'teardrop_dot', 'teardrop_hole', 'teardrop_outline'],
 			},
 			symbol: {
 				size: 22,
@@ -186,10 +184,10 @@ const config: SpriteConfig = {
 					'cross_outline',
 					'diamond',
 					'diamond_outline',
+					'entrance',
+					'heart',
 					'hexagon',
 					'hexagon_outline',
-					'marker',
-					'marker_outline',
 					'square',
 					'square_outline',
 					'star',

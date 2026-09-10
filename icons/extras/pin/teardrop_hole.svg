@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg version="1.1" id="arrow" width="30" height="109.99998" viewBox="0 0 7.9374998 29.10416" xmlns="http://www.w3.org/2000/svg">
-<path d="M 3.9687,0 0,10.58333 H 2.6458 V 29.10416 H 5.2916 V 10.58333 h 2.6459 z"/>
+<svg version="1.1" id="teardrop_hole" width="24" height="30" viewBox="0 0 24 30" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 3.356,17.459 A 10.5,10.5 0 1 1 20.644,17.459 L 12,30 Z M 5,11.5 A 7,7 0 1 0 19,11.5 A 7,7 0 1 0 5,11.5 Z"/>
 <metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
 </svg>

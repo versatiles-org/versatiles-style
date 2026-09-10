@@ -68,10 +68,10 @@ icon twice. Duplicating one would add bytes to an opt-in sheet and leave a reade
 the two sheets the icon they want actually lives in.
 
 That rule is enforced, not just stated: the [`extras-api` test](./scripts/extras-api.test.ts) fails
-on any `extras` name that also exists in `base`. Two names predate it — `extras:symbol-arrow`
-(against `base:marking-arrow`) and `extras:icon-information` (against `base:transport-information`)
-— and are grandfathered in the test. Both are defensible as different drawings for different jobs,
-and add-only means neither can be withdrawn; the list is not a place to wave through new icons.
+on any `extras` name that also exists in `base`, with **no exception list** — one would quietly
+become the place duplicates go. Two names collided before v6 shipped and both were resolved rather
+than waved through: the extras `icon-information` was dropped (`base` already draws an "i"), and
+`base:marking-arrow` was renamed `base:marking-oneway`, which is what it actually marks.
 
 > Adding an icon? Add the SVG under `icons/extras/<group>/`, list its name in
 > `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add it to the list below in the
@@ -81,18 +81,21 @@ and add-only means neither can be withdrawn; the list is not a place to wave thr
 
 #### `icon` group
 
-`extras:icon-animal_shelter` · `extras:icon-aquarium` · `extras:icon-bbq` · `extras:icon-beach` ·
-`extras:icon-entrance` · `extras:icon-heart` · `extras:icon-home` · `extras:icon-information` ·
-`extras:icon-karaoke` · `extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` ·
-`extras:icon-park` · `extras:icon-park2` · `extras:icon-roadblock` · `extras:icon-rocket` ·
-`extras:icon-water`
+Pictograms — things you can point at.
+
+`extras:icon-bbq` · `extras:icon-beach` · `extras:icon-cat` · `extras:icon-conifer` ·
+`extras:icon-droplet` · `extras:icon-fish` · `extras:icon-house` · `extras:icon-microphone` ·
+`extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` · `extras:icon-no_entry` ·
+`extras:icon-rocket` · `extras:icon-tree`
 
 #### `symbol` group
 
+Abstract marks — shapes, arrows and signs, for encoding a category rather than depicting a thing.
+
 `extras:symbol-arrow` · `extras:symbol-arrow2` · `extras:symbol-arrow3` · `extras:symbol-circle` ·
 `extras:symbol-circle_outline` · `extras:symbol-cross` · `extras:symbol-cross_outline` ·
-`extras:symbol-diamond` · `extras:symbol-diamond_outline` · `extras:symbol-hexagon` ·
-`extras:symbol-hexagon_outline` · `extras:symbol-marker` · `extras:symbol-marker_outline` ·
+`extras:symbol-diamond` · `extras:symbol-diamond_outline` · `extras:symbol-entrance` ·
+`extras:symbol-heart` · `extras:symbol-hexagon` · `extras:symbol-hexagon_outline` ·
 `extras:symbol-square` · `extras:symbol-square_outline` · `extras:symbol-star` ·
 `extras:symbol-star_outline` · `extras:symbol-triangle` · `extras:symbol-triangle_outline` ·
 `extras:symbol-x` · `extras:symbol-x_outline`
@@ -100,16 +103,14 @@ and add-only means neither can be withdrawn; the list is not a place to wave thr
 #### `pin` group
 
 Map markers, drawn on a 24×30 source so the tip sits **on** the bottom edge. Place them with
-`icon-anchor: "bottom"` and the point lands on the coordinate; every other group is centered.
+`icon-anchor: "bottom"` and the point lands on the coordinate; icons in every other group are
+centered on it.
 
-`extras:pin-pin` · `extras:pin-pin_dot` · `extras:pin-pin_hole` · `extras:pin-pin_outline`
+Two silhouettes, named for their shape: `teardrop` tapers smoothly from head to point, `balloon` is
+a round head on a narrow neck.
 
-> `extras:symbol-marker` and `extras:symbol-marker_outline` predate this group and are not going
-> anywhere — names are add-only, so they will keep resolving. They are drawn tip-on-the-bottom-edge
-> too, so `icon-anchor: "bottom"` works for them exactly as it does here. The difference is
-> proportion: a square 22×22 canvas makes them squatter (39.5° at the tip against this group's
-> 34.6°, head 78% of the width against 88%), which leaves less room in the head for a glyph. Both
-> are good markers — reach for `pin` when you want the headroom, and for the taller silhouette.
+`extras:pin-balloon` · `extras:pin-balloon_outline` · `extras:pin-teardrop` ·
+`extras:pin-teardrop_dot` · `extras:pin-teardrop_hole` · `extras:pin-teardrop_outline`
 
 ## Authoring an icon
 
@@ -137,14 +138,14 @@ image — see below for what to do instead.
 ### Two-color markers
 
 Because an SDF icon is one color, "a dark glyph on a colored pin" is two symbol layers, not one
-image. `extras:pin-pin_hole` is a pin with a circular well knocked out of the head, so whatever you
+image. `extras:pin-teardrop_hole` is a pin with a circular well knocked out of the head, so whatever you
 draw underneath shows through in its own color:
 
 ```js
 // 1 — the pin body, tip on the coordinate
 {
   type: 'symbol',
-  layout: { 'icon-image': 'extras:pin-pin_hole', 'icon-anchor': 'bottom', 'icon-allow-overlap': true },
+  layout: { 'icon-image': 'extras:pin-teardrop_hole', 'icon-anchor': 'bottom', 'icon-allow-overlap': true },
   paint: { 'icon-color': '#E9AC77' },
 }
 // 2 — the glyph, centered in the well
@@ -251,3 +252,36 @@ style rather than guessed:
 
 `icon-pub` now uses `icon-pint_glass` while `icon-biergarten` uses `icon-beer_mug`; in v5 both drew
 `icon-beer`.
+
+### The `markers` sheet is now `extras`
+
+v5 shipped a second sheet called `markers`; v6 renames it `extras` and reorganizes it. Names were
+audited against the naming convention above — several described where an icon was _used_ rather than
+what it _depicts_ — and abstract marks moved out of `icon` into `symbol`. Everything not listed here
+is a straight prefix swap, so `markers:symbol-star` becomes `extras:symbol-star`.
+
+| v5 `markers:` id        | v6 `extras:` id                                | why                                       |
+| ----------------------- | ---------------------------------------------- | ----------------------------------------- |
+| `icon-animal_shelter`   | `icon-cat`                                     | it draws a cat, not a facility            |
+| `icon-aquarium`         | `icon-fish`                                    | it draws a fish                           |
+| `icon-home`             | `icon-house`                                   | the object, not the concept               |
+| `icon-karaoke`          | `icon-microphone`                              | it draws a microphone                     |
+| `icon-park`             | `icon-tree`                                    | it draws a deciduous tree                 |
+| `icon-park1`            | `icon-conifer`                                 | a different species, not an alternate `2` |
+| `icon-roadblock`        | `icon-no_entry`                                | it draws the no-entry sign                |
+| `icon-water`            | `icon-droplet`                                 | it draws a droplet                        |
+| `icon-entrance1`        | `symbol-entrance`                              | an abstract mark, not a pictogram         |
+| `icon-heart`            | `symbol-heart`                                 | a shape, like `star` and `diamond`        |
+| `icon-information`      | **dropped** — use `base:transport-information` | `base` already draws it                   |
+| `symbol-arrow1`         | `symbol-arrow2`                                | alternates now start at 2                 |
+| `symbol-arrow2`         | `symbol-arrow3`                                | shifted by the same renumbering           |
+| `symbol-marker`         | `pin-teardrop`                                 | moved to the `pin` group                  |
+| `symbol-marker_outline` | `pin-teardrop_outline`                         | moved to the `pin` group                  |
+
+> Watch the arrows: v5 `symbol-arrow1` and `symbol-arrow2` both shift by one, so a v5 map using
+> `markers:symbol-arrow2` wants `extras:symbol-arrow3` — a straight prefix swap silently gives you
+> the wrong drawing.
+
+The old markers were drawn on a square canvas; in the `pin` group they are re-cut on 24×30 with the
+tip on the bottom edge, so they sit slightly taller and want `icon-anchor: "bottom"`.
+`extras:pin-balloon` is a **new** silhouette, not a v5 icon.
