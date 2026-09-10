@@ -165,6 +165,15 @@ const config: SpriteConfig = {
 					'water',
 				],
 			},
+			// Map pins, drawn 24×30 with the tip ON the bottom edge so `icon-anchor: "bottom"`
+			// puts the point on the coordinate. `size` is the rendered HEIGHT; the width follows
+			// from the source aspect ratio (see Sprite.fromIcons):
+			//   round(28 × 24/30) = round(22.4) = 22  →  22×28 on the sheet.
+			// A source at a different aspect silently changes that width — sprites.test.ts guards it.
+			pin: {
+				size: 28,
+				names: ['pin', 'pin_dot', 'pin_hole', 'pin_outline'],
+			},
 			symbol: {
 				size: 22,
 				names: [

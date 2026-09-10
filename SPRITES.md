@@ -60,6 +60,19 @@ const style = await osm({
   [`extras-api` test](./scripts/extras-api.test.ts) fails if this list and the built sprite ever
   disagree, so the two cannot drift apart.
 
+### What belongs in `extras`
+
+`extras` holds what **you** place on the map; `base` holds what the **style** draws. So an icon
+belongs in `extras` only if `base` does not already have it — the two sheets never carry the same
+icon twice. Duplicating one would add bytes to an opt-in sheet and leave a reader guessing which of
+the two sheets the icon they want actually lives in.
+
+That rule is enforced, not just stated: the [`extras-api` test](./scripts/extras-api.test.ts) fails
+on any `extras` name that also exists in `base`. Two names predate it — `extras:symbol-arrow`
+(against `base:marking-arrow`) and `extras:icon-information` (against `base:transport-information`)
+— and are grandfathered in the test. Both are defensible as different drawings for different jobs,
+and add-only means neither can be withdrawn; the list is not a place to wave through new icons.
+
 > Adding an icon? Add the SVG under `icons/extras/<group>/`, list its name in
 > `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add it to the list below in the
 > same change. Removing or renaming an `extras` icon is a breaking change — avoid it.
@@ -83,6 +96,72 @@ const style = await osm({
 `extras:symbol-square` · `extras:symbol-square_outline` · `extras:symbol-star` ·
 `extras:symbol-star_outline` · `extras:symbol-triangle` · `extras:symbol-triangle_outline` ·
 `extras:symbol-x` · `extras:symbol-x_outline`
+
+#### `pin` group
+
+Map markers, drawn on a 24×30 source so the tip sits **on** the bottom edge. Place them with
+`icon-anchor: "bottom"` and the point lands on the coordinate; every other group is centered.
+
+`extras:pin-pin` · `extras:pin-pin_dot` · `extras:pin-pin_hole` · `extras:pin-pin_outline`
+
+> `extras:symbol-marker` and `extras:symbol-marker_outline` predate this group and are not going
+> anywhere — names are add-only, so they will keep resolving. They are drawn tip-on-the-bottom-edge
+> too, so `icon-anchor: "bottom"` works for them exactly as it does here. The difference is
+> proportion: a square 22×22 canvas makes them squatter (39.5° at the tip against this group's
+> 34.6°, head 78% of the width against 88%), which leaves less room in the head for a glyph. Both
+> are good markers — reach for `pin` when you want the headroom, and for the taller silhouette.
+
+## Authoring an icon
+
+**Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on a
+15×15 grid (the Maki-derived ones) or on 29.1042 (the hand-drawn symbols); they render correctly and
+are left alone, so the repo carries more than one authoring grid on purpose. Anything new, and
+anything redrawn, uses 24.
+
+**The `width` and `height` attributes are what the build reads** — not the `viewBox`.
+`Sprite.fromIcons` takes the group's `size` as the rendered _height_ and derives the width from the
+source's aspect ratio:
+
+```
+width = round(size × w0 / h0)
+```
+
+So the `pin` group's `size: 28` and a 24×30 source give `round(28 × 24/30)` = **22×28**. A source at
+the wrong aspect ratio does not fail the build — it just lands a pixel or two off. `config-sprites.test.ts`
+asserts the pin geometry and that every icon within a group agrees on one rendered size.
+
+**One color.** Every icon in both sheets is packed as SDF (`"sdf": true`), so an icon is a single
+silhouette that MapLibre recolors via `icon-color`. There is no way to bake two colors into one
+image — see below for what to do instead.
+
+### Two-color markers
+
+Because an SDF icon is one color, "a dark glyph on a colored pin" is two symbol layers, not one
+image. `extras:pin-pin_hole` is a pin with a circular well knocked out of the head, so whatever you
+draw underneath shows through in its own color:
+
+```js
+// 1 — the pin body, tip on the coordinate
+{
+  type: 'symbol',
+  layout: { 'icon-image': 'extras:pin-pin_hole', 'icon-anchor': 'bottom', 'icon-allow-overlap': true },
+  paint: { 'icon-color': '#E9AC77' },
+}
+// 2 — the glyph, centered in the well
+{
+  type: 'symbol',
+  layout: {
+    'icon-image': 'extras:icon-mountain',
+    'icon-offset': [0, -17.3], // well center sits 17.3 px above the tip
+    'icon-size': 0.55,         // the well is 12.8 px across; a 22 px glyph needs scaling down
+    'icon-allow-overlap': true,
+  },
+  paint: { 'icon-color': '#333344' },
+}
+```
+
+Both numbers come off the geometry above and hold at `icon-size: 1` on layer 1: the head center is
+`28 − 11.5 × (28/30)` = 17.3 px above the tip, and the well is `2 × 7 × (22/24)` = 12.8 px wide.
 
 ## Naming convention
 
@@ -110,6 +189,11 @@ predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<n
      Append the digit directly (`arrow2`, not `arrow_2`). Numbers are **stable**: a new drawing
      takes the next free number and existing ones are never renumbered, and never leave an orphan
      number (an `entrance1` with no `entrance`). This stays open for adding more versions later.
+   - **A depicted digit → an underscore.** When the number is part of the _picture_ rather than a
+     way of telling two drawings apart, separate it: `pin_1` is a pin with a **1** on it, while
+     `pin2` would be a second drawing of a plain pin. The underscore is the whole difference
+     between the two, so it is load-bearing — never write a badge as `pin1` or an alternate as
+     `pin_2`.
 6. **Spell it out; American English.** Prefer full words over abbreviations and use US spelling
    (`theater`, `center`, `gray`). The only accepted abbreviations are near-universal ones: `atm`,
    `bbq`.

@@ -34,4 +34,34 @@ describe('extras public API ↔ SPRITES.md', () => {
 			)}`
 		).toStrictEqual([]);
 	});
+
+	// `base` is what the style draws for you; `extras` is what you place yourself. Duplicating a
+	// name across the two sheets wastes bytes in an opt-in sheet and makes `base:icon-x` vs
+	// `extras:icon-x` a coin flip for the reader. Names are add-only, so a collision that ships is
+	// permanent — catch it here rather than in review.
+	it('never duplicates a name that already exists in base', () => {
+		// Two names predate the rule. Both are add-only, so neither can be withdrawn, and both are
+		// defensible: base draws a road-marking arrow and a transport "i", extras offers a generic
+		// arrow symbol and a standalone info pictogram. Grandfathered deliberately — do not extend
+		// this list to wave through a new icon.
+		const grandfathered = new Set(['extras:symbol-arrow', 'extras:icon-information']);
+
+		const inBase = new Set<string>();
+		for (const set of Object.values(config.spritesheets.base)) {
+			for (const name of set.names) inBase.add(name);
+		}
+
+		const collisions: string[] = [];
+		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
+			for (const name of set.names) {
+				const id = `extras:${group}-${name}`;
+				if (inBase.has(name) && !grandfathered.has(id)) collisions.push(id);
+			}
+		}
+
+		expect(
+			collisions.sort(),
+			`already drawn by base — extras should not duplicate it:\n${collisions.join('\n')}`
+		).toStrictEqual([]);
+	});
 });
