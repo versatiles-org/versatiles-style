@@ -1,0 +1,5 @@
+{
+	"name": "Unattributed",
+	"license": "CC0-1.0",
+	"note": "Provenance not yet established. Every file here is on Maki's 15×15 grid (except arrow2/arrow3 at 16×16), so these are most likely modified Maki icons — but neither exact geometry nor visual matching against Maki 6.1/7.2/8.2 and Temaki 5.13 confirmed a source. `npm run icons-report` lists them; move a file into its source folder once identified."
+}

@@ -44,7 +44,7 @@ const SHORTBREAD_POIS: Record<string, string[]> = {
 // The icons packed into the `base` sprite sheet (referenced as `base:<group>-<name>`).
 const SPRITE_ICONS = new Set<string>();
 for (const [group, set] of Object.entries(spriteConfig.spritesheets.base)) {
-	for (const name of set.names) SPRITE_ICONS.add(`${group}-${name}`);
+	for (const name of Object.keys(set.icons)) SPRITE_ICONS.add(`${group}-${name}`);
 }
 
 // Parse each poi-* layer's `icon-image` match expression into { key, matches, default }.

@@ -1,0 +1,7 @@
+{
+	"name": "VersaTiles",
+	"url": "https://github.com/versatiles-org/versatiles-style",
+	"license": "CC0-1.0",
+	"grid": "24×24 (pins 24×30); older hand-drawn sets on 29.1042 and 39.6875",
+	"note": "Drawn for this project. New work uses the 24 grid — see SPRITES.md."
+}

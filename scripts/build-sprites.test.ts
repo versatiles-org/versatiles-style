@@ -10,8 +10,21 @@ vi.mock('./config-sprites', () => ({
 		ratios: [1, 2],
 		spritesheets: {
 			base: {
-				icon: { size: 22, names: ['airfield', 'airport', 'alcohol_shop'] },
-				pattern: { size: 12, useSDF: true, names: ['hatched_thin', 'striped', 'warning'] },
+				// Sprite name → source path: the source keeps its upstream filename (`alcohol-shop`)
+				// while the sprite name follows our convention (`alcohol_shop`).
+				icon: {
+					size: 22,
+					icons: { airfield: 'maki/airfield', airport: 'maki/airport', alcohol_shop: 'maki/alcohol-shop' },
+				},
+				pattern: {
+					size: 12,
+					useSDF: true,
+					icons: {
+						hatched_thin: 'versatiles/hatched_thin',
+						striped: 'versatiles/striped',
+						warning: 'versatiles/warning',
+					},
+				},
 			},
 		},
 	},

@@ -13,7 +13,7 @@ const SPRITES_MD = new URL('../SPRITES.md', import.meta.url).pathname;
 // Icons packed into the extras sheet, as `extras:<group>-<name>`.
 const packed = new Set<string>();
 for (const [group, set] of Object.entries(config.spritesheets.extras)) {
-	for (const name of set.names) packed.add(`extras:${group}-${name}`);
+	for (const name of Object.keys(set.icons)) packed.add(`extras:${group}-${name}`);
 }
 
 // Every `extras:<group>-<name>` token documented in SPRITES.md.
@@ -46,12 +46,12 @@ describe('extras public API ↔ SPRITES.md', () => {
 	it('never duplicates a name that already exists in base', () => {
 		const inBase = new Set<string>();
 		for (const set of Object.values(config.spritesheets.base)) {
-			for (const name of set.names) inBase.add(name);
+			for (const name of Object.keys(set.icons)) inBase.add(name);
 		}
 
 		const collisions: string[] = [];
 		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
-			for (const name of set.names) if (inBase.has(name)) collisions.push(`extras:${group}-${name}`);
+			for (const name of Object.keys(set.icons)) if (inBase.has(name)) collisions.push(`extras:${group}-${name}`);
 		}
 
 		expect(

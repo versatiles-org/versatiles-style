@@ -6,9 +6,24 @@ under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprite
 `…/assets/sprites/<sheet>{,@2x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
-`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`). The source SVGs mirror
-that grammar on disk — each lives at `icons/<sheet>/<group>/<name>.svg` — so a reference maps
-directly to a file (and `config-sprites.ts` maps 1:1 to the folder tree).
+`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:symbol-star`).
+
+**Sprite names and filenames are decoupled.** The SVGs under [`icons/`](./icons) are organized by
+**provenance**, not by sheet, and keep their upstream filename — `base:icon-alcohol_shop` is drawn
+from `icons/maki/alcohol-shop.svg`, hyphen and all. Which file backs which sprite name is declared
+in [`scripts/config-sprites.ts`](./scripts/config-sprites.ts), and that file is the index: run
+`npm run icons-report` for a rendered overview of every icon, its sprite ids and its source.
+
+| folder              | what it holds                                                             |
+| ------------------- | ------------------------------------------------------------------------- |
+| `icons/maki/`       | [Maki](https://github.com/mapbox/maki), CC0 — upstream filenames          |
+| `icons/temaki/`     | [Temaki](https://github.com/rapideditor/temaki), CC0 — upstream filenames |
+| `icons/versatiles/` | drawn for this project                                                    |
+| `icons/unknown/`    | provenance not yet established — see `icons/unknown/source.json`          |
+
+Each folder carries a `source.json` recording the upstream repo, the version we took icons from,
+and the license. Keeping upstream filenames is what makes it answerable whether we already hold a
+given icon, and what it was called where it came from — renaming on download destroys both.
 
 | Sheet    | Loaded by default | Stability                         | Purpose                                                          |
 | -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------- |
@@ -73,9 +88,10 @@ become the place duplicates go. Two names collided before v6 shipped and both we
 than waved through: the extras `icon-information` was dropped (`base` already draws an "i"), and
 `base:marking-arrow` was renamed `base:marking-oneway`, which is what it actually marks.
 
-> Adding an icon? Add the SVG under `icons/extras/<group>/`, list its name in
-> `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add it to the list below in the
-> same change. Removing or renaming an `extras` icon is a breaking change — avoid it.
+> Adding an icon? Put the SVG under `icons/<source>/` keeping its upstream filename, map a sprite
+> name to it in `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add that name to
+> the list below in the same change. Removing or renaming an `extras` icon is a breaking change —
+> avoid it.
 
 ### Icon list
 
@@ -112,7 +128,23 @@ a round head on a narrow neck.
 `extras:pin-balloon` · `extras:pin-balloon_outline` · `extras:pin-teardrop` ·
 `extras:pin-teardrop_dot` · `extras:pin-teardrop_hole` · `extras:pin-teardrop_outline`
 
-## Authoring an icon
+## Adding an icon
+
+**Borrowed, or drawn?** Prefer a CC0 source. Take the file from Maki or Temaki, drop it into the
+matching `icons/<source>/` folder **under its upstream filename**, then give it a sprite name in
+`config-sprites.ts`. Only draw one yourself when neither has it; those go in `icons/versatiles/`.
+
+```ts
+// scripts/config-sprites.ts — the key is the sprite name, the value is the file
+cat: 'maki/animal-shelter',
+// or, with metadata for an icon picker:
+cat: { src: 'maki/animal-shelter', tags: ['pet', 'animal'], description: 'A sitting cat' },
+```
+
+The naming convention below governs **sprite names**, not filenames — upstream keeps its own
+spelling on disk. `npm run icons-report` renders the whole set and fails if a sprite entry points at
+a missing file, if two sprite names in one sheet share a source, or if a source file is referenced
+by nothing.
 
 **Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on a
 15×15 grid (the Maki-derived ones) or on 29.1042 (the hand-drawn symbols); they render correctly and

@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import config from './config-sprites.js';
-import { loadIcons } from './lib/icons.js';
+import type { IconSpec } from './lib/icons.js';
+import { iconSrc, loadIcons } from './lib/icons.js';
 
-// The sprite config references ~180 icon names across several groups. loadIcons() reads each
-// `<icons>/<group>/<name>.svg` and throws if one is missing — so building the icon list is itself
-// the existence check. Guards against a name typo silently producing an incomplete sprite sheet.
+// The sprite config maps ~180 sprite names onto source files under `icons/<source>/`. loadIcons()
+// reads each one and throws if it is missing — so building the icon list is itself the existence
+// check. Guards against a typo'd source path silently producing an incomplete sprite sheet.
 
 const dirIcons = new URL('../icons', import.meta.url).pathname;
 
@@ -18,10 +19,10 @@ describe('sprite config', () => {
 
 	it.each(Object.keys(config.spritesheets))('every icon referenced by "%s" exists on disk', (sheet) => {
 		const sets = config.spritesheets[sheet];
-		// Icons live under icons/<sheet>/<group>/. loadIcons throws "icon not found: <path>" on the
-		// first missing SVG.
-		const icons = loadIcons(sets, join(dirIcons, sheet));
-		const expected = Object.values(sets).reduce((n, set) => n + set.names.length, 0);
+		// Sources are addressed by their path under icons/. loadIcons throws "icon not found:
+		// <path>" on the first missing SVG.
+		const icons = loadIcons(sets, dirIcons);
+		const expected = Object.values(sets).reduce((n, set) => n + Object.keys(set.icons).length, 0);
 		expect(icons).toHaveLength(expected);
 	});
 
@@ -29,7 +30,7 @@ describe('sprite config', () => {
 		for (const sets of Object.values(config.spritesheets)) {
 			for (const group of Object.values(sets)) {
 				expect(group.size).toBeGreaterThan(0);
-				expect(group.names.length).toBeGreaterThan(0);
+				expect(Object.keys(group.icons).length).toBeGreaterThan(0);
 			}
 		}
 	});
@@ -41,7 +42,11 @@ describe('sprite config', () => {
 	describe('rendered geometry follows from the source aspect ratio', () => {
 		it.each(Object.keys(config.spritesheets))('all icons in a "%s" group render at one size', (sheet) => {
 			for (const [group, set] of Object.entries(config.spritesheets[sheet])) {
-				const sizes = new Set(set.names.map((name) => renderedSize(sheet, group, name)).map(({ w, h }) => `${w}×${h}`));
+				const sizes = new Set(
+					Object.values(set.icons)
+						.map((spec) => renderedSize(sheet, group, spec))
+						.map(({ w, h }) => `${w}×${h}`)
+				);
 				expect([...sizes], `sources in ${sheet}/${group} disagree on aspect ratio`).toHaveLength(1);
 			}
 		});
@@ -49,19 +54,20 @@ describe('sprite config', () => {
 		// The pin group's whole point is `icon-anchor: "bottom"` landing the tip on the coordinate,
 		// which only works at the aspect it was drawn for: 24×30 sources at size 28 → 22×28.
 		it('builds extras pins at 22×28 from 24×30 sources', () => {
-			for (const name of config.spritesheets.extras.pin.names) {
-				expect(renderedSize('extras', 'pin', name), name).toStrictEqual({ w: 22, h: 28 });
+			for (const [name, spec] of Object.entries(config.spritesheets.extras.pin.icons)) {
+				expect(renderedSize('extras', 'pin', spec), name).toStrictEqual({ w: 22, h: 28 });
 			}
 		});
 	});
 });
 
 /** Rendered size of one icon on the sheet at ratio 1 — the same arithmetic Sprite.fromIcons uses. */
-function renderedSize(sheet: string, group: string, name: string): { w: number; h: number } {
-	const svg = readFileSync(join(dirIcons, sheet, group, `${name}.svg`), 'utf8');
+function renderedSize(sheet: string, group: string, spec: IconSpec): { w: number; h: number } {
+	const src = iconSrc(spec);
+	const svg = readFileSync(join(dirIcons, `${src}.svg`), 'utf8');
 	const w0 = /<svg[^>]+width="([^"]+)"/.exec(svg);
 	const h0 = /<svg[^>]+height="([^"]+)"/.exec(svg);
-	if (!w0 || !h0) throw Error(`missing width/height attribute: ${sheet}/${group}/${name}.svg`);
+	if (!w0 || !h0) throw Error(`missing width/height attribute: ${src}.svg`);
 
 	const { size } = config.spritesheets[sheet][group];
 	return {

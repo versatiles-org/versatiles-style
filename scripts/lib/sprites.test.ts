@@ -36,18 +36,21 @@ await import('child_process');
 const fakeIcons = [
 	{
 		name: 'icon1',
+		src: 'test/icon1',
 		size: 64,
 		useSDF: true,
 		svg: '<svg width="64" height="64"><rect width="64" height="64" fill="#000" /></svg>',
 	},
 	{
 		name: 'icon2',
+		src: 'test/icon2',
 		size: 32,
 		useSDF: true,
 		svg: '<svg width="32" height="32"><circle cx="16" cy="16" r="16" fill="#f00" /></svg>',
 	},
 	{
 		name: 'icon3',
+		src: 'test/icon3',
 		size: 48,
 		useSDF: true,
 		svg: '<svg width="48" height="48"><path d="M 24 0 L 48 48 H 0 Z" fill="#00f" /></svg>',

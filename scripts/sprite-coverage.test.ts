@@ -18,7 +18,7 @@ function availableIds(): Set<string> {
 	const ids = new Set<string>();
 	for (const [sheet, groups] of Object.entries(config.spritesheets)) {
 		for (const [group, set] of Object.entries(groups)) {
-			for (const name of set.names) ids.add(`${sheet}:${group}-${name}`);
+			for (const name of Object.keys(set.icons)) ids.add(`${sheet}:${group}-${name}`);
 		}
 	}
 	return ids;

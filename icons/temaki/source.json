@@ -1,0 +1,9 @@
+{
+	"name": "Temaki",
+	"url": "https://github.com/rapideditor/temaki",
+	"package": "@rapideditor/temaki",
+	"version": "5.13.0",
+	"license": "CC0-1.0",
+	"grid": "15×15",
+	"note": "Maki-compatible expansion pack. Filenames are Temaki's own."
+}

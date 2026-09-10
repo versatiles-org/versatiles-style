@@ -35,7 +35,7 @@ function collectBaseRefs(style: StyleSpecification): Set<string> {
 // Every icon packed into the `base` sprite sheet, as `base:<group>-<name>`.
 const packedBase = new Set<string>();
 for (const [group, set] of Object.entries(spriteConfig.spritesheets.base)) {
-	for (const name of set.names) packedBase.add(`base:${group}-${name}`);
+	for (const name of Object.keys(set.icons)) packedBase.add(`base:${group}-${name}`);
 }
 
 describe('base sprite usage', () => {
