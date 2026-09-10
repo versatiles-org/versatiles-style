@@ -14,6 +14,17 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 	ditch: { base: 1.3, stops: { 13: 0.5, 20: 2 } },
 };
 
+// Per-kind data floors inside `water_lines`. `applyDataFloor` can only gate at the SOURCE-LAYER
+// minzoom, which the tileset reports as 9 — true for rivers and canals, but streams and ditches are
+// not tiled until z14, so without this they would be processed for five zoom levels that carry no
+// such feature. None of these widths ramps from 0, so nothing else derives a gate for them.
+//
+// Measured against the live tileset rather than taken from the prose spec, which says rivers and
+// canals are "not below 12" — the VersaTiles tiles in fact carry both from z9, so trusting the prose
+// here would have hidden them. Streams and ditches were absent below z14 in every region sampled
+// (Black Forest, Wales, Vermont, Bavaria, Dutch polder) and the spec agrees at "14+".
+const LINE_MINZOOM: Record<string, number> = { stream: 14, ditch: 14 };
+
 export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c, fg } = ctx;
 	// OSM Bright draws waterway lines in a slightly deeper blue than the water fill (#a0c8f0).
@@ -30,6 +41,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 			lineCap: 'round',
 			lineJoin: 'round',
 			size: LINE_SIZES[kind],
+			minzoom: LINE_MINZOOM[kind],
 			group: 'water.rivers',
 		});
 	}
