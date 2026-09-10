@@ -58,6 +58,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sprite sheet renamed `basics` → `base`**, and `/assets/sprites/basics/sprites` is no longer
   published. Most ids only need the new prefix, but 22 were renamed or split — see the mapping table
   in `SPRITES.md`.
+- **The `markers` sheet is now `extras`, and its ids moved groups — a prefix swap is not enough.**
+  v5's two groups (`icon`, `symbol`) became six: `badge`, `icon`, `pattern`, `pin`, `shape`,
+  `symbol`. Every geometric shape left `symbol` for `shape`, so `markers:symbol-star` is now
+  `extras:shape-star`, not `extras:symbol-star`. Names were also audited against the naming
+  convention, because several described where an icon was _used_ rather than what it _draws_:
+  `icon-karaoke` → `icon-microphone`, `icon-aquarium` → `icon-fish`, `icon-animal_shelter` →
+  `icon-cat`, `icon-park`/`icon-park1` → `icon-tree`/`icon-conifer`, `icon-water` →
+  `icon-droplet`, `icon-roadblock` → `icon-no_entry`, `icon-home` → `icon-house`. `icon-heart` and
+  `icon-entrance` moved to `symbol`, `symbol-marker` became `pin-teardrop`, `icon-information` was
+  dropped (`base` already draws one), and `symbol-arrow1`/`arrow2` shifted to `arrow2`/`arrow3` —
+  so a v5 map using `markers:symbol-arrow2` wants `extras:symbol-arrow3` and a prefix swap would
+  silently give it the wrong drawing. The full table is in `SPRITES.md`.
+- **`extras` grew from 38 icons to 234** and is a supported, add-only public API. Alongside the
+  existing shapes and arrows it now carries map pins (including numbered ones), numbered badges,
+  tileable `fill-pattern` tiles, and pictograms for transport, weather and hazards, energy, nature,
+  civic and commerce, culture and interface. All CC0.
+- **New: `…/assets/sprites/extras.meta.json`.** Every `extras` icon ships a one-line description and
+  search tags, keyed by the same `<group>-<name>` ids the sprite JSON uses, so an icon picker can
+  join the two and offer search over 200+ tiles.
+- **Two `base` icons renamed** (`base` is internal and may change with any release, but for
+  completeness): `base:marking-arrow` → `base:marking-oneway`, which is what it actually marks, and
+  `base:pattern-warning` → `base:pattern-hatched`, which is what it actually draws — it is diagonal
+  hatching, and the old name described the danger-area fill it was used for.
 - The v5 style names (`eclipse`, `graybeard`, `neutrino`, `shadow`, `empty`) are **still published**
   as aliases of their closest v6 equivalent, so existing `assets/styles/<name>/…` URLs keep working.
   They are deprecated and will be dropped in 7.0.
