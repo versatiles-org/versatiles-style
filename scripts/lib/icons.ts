@@ -8,12 +8,28 @@ export class Icon {
 	public readonly useSDF: boolean;
 	/** Source path the SVG was loaded from, e.g. `maki/alcohol-shop` — provenance, for reports. */
 	public readonly src: string;
+	/** Picker metadata, published inside the sprite JSON. */
+	public readonly title?: string;
+	public readonly aliases?: string[];
+	public readonly center?: [number, number];
 
-	public constructor(options: { name: string; src: string; filename: string; size: number; useSDF?: boolean }) {
+	public constructor(options: {
+		name: string;
+		src: string;
+		filename: string;
+		size: number;
+		useSDF?: boolean;
+		title?: string;
+		aliases?: string[];
+		center?: [number, number];
+	}) {
 		this.name = options.name;
 		this.src = options.src;
 		this.size = options.size;
 		this.useSDF = options.useSDF ?? true;
+		this.title = options.title;
+		this.aliases = options.aliases;
+		this.center = options.center;
 
 		const { filename } = options;
 		if (!existsSync(filename)) throw Error('icon not found: ' + filename);
@@ -32,12 +48,16 @@ export type IconSpec =
 	| string
 	| {
 			src: string;
-			/** Search terms for an icon picker. Not used by the build. */
-			tags?: string[];
-			/** One-line description for an icon picker. Not used by the build. */
-			description?: string;
-			/** Other names a picker should also match. Not used by the build. */
+			/** Human-readable label, e.g. `Bicycle`. Published in the sprite JSON. */
+			title?: string;
+			/** Other names a picker should match, e.g. `bike`. Published in the sprite JSON. */
 			aliases?: string[];
+			/**
+			 * Where the icon points at, as a fraction of its own box with the origin top-left.
+			 * Omit for the middle — `[0.5, 1]` is the bottom edge, which is where a map pin's tip
+			 * sits. Fractions rather than pixels so the value is identical at 1x and 2x.
+			 */
+			center?: [number, number];
 	  };
 
 export type IconSets = Record<
@@ -110,6 +130,7 @@ export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 					filename: resolve(dirIcons, src + '.svg'),
 					size,
 					useSDF,
+					...(typeof spec === 'string' ? {} : { title: spec.title, aliases: spec.aliases, center: spec.center }),
 				})
 			);
 		}

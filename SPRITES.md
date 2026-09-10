@@ -249,28 +249,40 @@ by nothing.
 
 ### Metadata for icon pickers
 
-Every `extras` icon carries a one-line `description` and a set of search `tags`, so a sprite picker
-can offer search rather than making people scroll 200+ tiles. Tags are the terms someone would
-actually type that are **not** already the icon's name — synonyms, spellings, and the job the icon
-does:
+Every `extras` icon carries a **title**, optional **aliases**, and — where it does not point at its
+own middle — an optional **center**. They ride inside the sprite JSON itself, so a picker needs one
+request rather than two:
 
 ```ts
-bicycle: { src: 'maki/bicycle', tags: ['bike', 'cycling', 'cycle', 'ride', 'velo'], description: 'A bicycle' },
+bicycle: { src: 'maki/bicycle', title: 'Bicycle', aliases: ['bike', 'cycling', 'cycle', 'ride', 'velo'] },
+teardrop: { src: 'versatiles/teardrop', title: 'Map pin', aliases: ['pin', 'marker'], center: [0.5, 1] },
 ```
 
-The build writes it beside the sheet as `…/assets/sprites/extras.meta.json`, keyed by the same
-`<group>-<name>` ids the sprite JSON uses, so a picker can join the two directly:
+which comes out as:
 
 ```json
-{
-  "icon-bicycle": { "description": "A bicycle", "tags": ["bike", "cycling", "cycle", "ride", "velo"] },
-  "badge-number_3": { "description": "A filled disc with the numeral 3 knocked out", "tags": ["badge", "…"] }
-}
+"icon-bicycle":   { "width": 32, "height": 32, "x": 224, "y": 64, "pixelRatio": 1, "sdf": true,
+                    "title": "Bicycle", "aliases": ["bike", "cycling", "cycle", "ride", "velo"] },
+"pin-teardrop_3": { "width": 32, "height": 38, "x": 64,  "y": 38, "pixelRatio": 1, "sdf": true,
+                    "title": "Map pin 3", "aliases": ["pin", "marker", …], "center": [0.5, 1] }
 ```
 
-Two tests keep it honest: every `extras` icon must have a description **and** at least one tag, and
-no tag may simply repeat the icon's own name — a tag that echoes the name adds nothing to a search
-index. `aliases` is accepted alongside them for names an icon used to have.
+- **`title`** — the label a picker shows. Short: `Bicycle`, `Map pin 3`, `Badge 7`.
+- **`aliases`** — the other terms someone might type. Not the name or the title repeated; a test
+  rejects an alias that echoes either, because it adds nothing to a search index.
+- **`center`** — where the icon _points_, as a fraction of its own box with the origin top-left.
+  Omitted for the middle. `[0.5, 1]` is the bottom edge, which is where a map pin's tip sits, so a
+  tool can reach for `icon-anchor: "bottom"` without knowing the group by name. Fractions rather
+  than pixels, so the value is identical in `extras.json` and `extras@2x.json`.
+
+`base` carries none of this. It is internal, no picker should offer it, and the bytes would be paid
+on every map load for nothing.
+
+**This is safe to put in the sprite JSON.** MapLibre destructures only the fields it knows
+(`width`, `height`, `x`, `y`, `sdf`, `pixelRatio`, `stretchX/Y`, `content`, `textFit*`) and ignores
+the rest. One caveat if you extend this: it treats **every top-level key as an image**, so picker
+data must live inside an entry — a sibling `"_meta"` block would be read as an icon with no
+geometry.
 
 **Grid.** New icons are drawn on a **24×24** canvas — pins on **24×30**. Older sources sit on
 15×15 (the Maki-derived ones) or on a millimetre-derived canvas such as 29.1042 or 39.6875 (the

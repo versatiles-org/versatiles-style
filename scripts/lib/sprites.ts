@@ -65,6 +65,9 @@ export class Sprite {
 
 			return {
 				name: icon.name,
+				title: icon.title,
+				aliases: icon.aliases,
+				center: icon.center,
 				useSDF: icon.useSDF,
 				padding,
 				svg,
@@ -222,7 +225,12 @@ export class Sprite {
 	}
 
 	/**
-	 * Generates JSON metadata for each icon in the sprite.
+	 * Generates the sprite JSON: one entry per icon, keyed by `<group>-<name>`.
+	 *
+	 * Beyond the geometry MapLibre needs, an entry may carry `title`, `aliases` and `center` for an
+	 * icon picker. MapLibre destructures only the fields it knows, so these ride along unread — but
+	 * note it treats every TOP-LEVEL key as an image, so picker data has to sit inside an entry and
+	 * can never be a sibling block.
 	 * @returns A promise resolving to the JSON buffer.
 	 */
 	public async getJSON(): Promise<Buffer> {
@@ -237,6 +245,9 @@ export class Sprite {
 						y: e.y,
 						pixelRatio: e.pixelRatio,
 						sdf: e.useSDF,
+						...(e.title ? { title: e.title } : {}),
+						...(e.aliases?.length ? { aliases: e.aliases } : {}),
+						...(e.center ? { center: e.center } : {}),
 					})
 			)
 			.join(',\n');
@@ -257,6 +268,9 @@ interface SpriteEntry {
 	height: number; // Height of the icon (including padding).
 	pixelRatio: number; // Scale ratio applied to the icon.
 	useSDF: boolean; // Flag indicating if the icon uses SDF rendering.
+	title?: string; // Human-readable label, published in the sprite JSON.
+	aliases?: string[]; // Other names a picker should match.
+	center?: [number, number]; // Where the icon points, as a fraction of its box.
 }
 
 /**

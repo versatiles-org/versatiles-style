@@ -74,9 +74,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   existing shapes and arrows it now carries map pins (including numbered ones), numbered badges,
   tileable `fill-pattern` tiles, and pictograms for transport, weather and hazards, energy, nature,
   civic and commerce, culture and interface. All CC0.
-- **New: `…/assets/sprites/extras.meta.json`.** Every `extras` icon ships a one-line description and
-  search tags, keyed by the same `<group>-<name>` ids the sprite JSON uses, so an icon picker can
-  join the two and offer search over 200+ tiles.
+- **The sprite JSON now carries picker metadata for `extras`.** Each entry gains a `title`, optional
+  `aliases` for search, and — where the icon does not point at its own middle — a `center` as a
+  fraction of its box (`[0.5, 1]` for a map pin's tip). MapLibre ignores fields it does not know, so
+  this is additive; `base` carries none of it, being internal. No second request is needed to build
+  an icon picker.
 - **Two `base` icons renamed** (`base` is internal and may change with any release, but for
   completeness): `base:marking-arrow` → `base:marking-oneway`, which is what it actually marks, and
   `base:pattern-warning` → `base:pattern-hatched`, which is what it actually draws — it is diagonal

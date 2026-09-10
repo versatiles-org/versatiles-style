@@ -35,34 +35,44 @@ describe('extras public API ↔ SPRITES.md', () => {
 		).toStrictEqual([]);
 	});
 
-	// Metadata is what makes 200+ icons findable in a picker, so it is part of the contract rather
-	// than a nicety: an icon added without tags is an icon nobody will search up.
-	it('gives every extras icon a description and search tags', () => {
-		const thin: string[] = [];
+	// A picker shows titles, so an icon without one is an icon nobody can identify. Published
+	// inside the sprite JSON, which is why this is part of the contract rather than a nicety.
+	it('gives every extras icon a title', () => {
+		const untitled: string[] = [];
 		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
 			for (const [name, spec] of Object.entries(set.icons)) {
-				const id = `extras:${group}-${name}`;
-				if (typeof spec === 'string') thin.push(`${id} — no metadata at all`);
-				else if (!spec.description) thin.push(`${id} — no description`);
-				else if (!spec.tags?.length) thin.push(`${id} — no tags`);
+				if (typeof spec === 'string' || !spec.title) untitled.push(`extras:${group}-${name}`);
 			}
 		}
-		expect(thin.sort(), `extras icons missing picker metadata:\n${thin.join('\n')}`).toStrictEqual([]);
+		expect(untitled.sort(), `extras icons with no title:\n${untitled.join('\n')}`).toStrictEqual([]);
 	});
 
-	// Tags exist to be searched, so a tag that merely repeats the icon's own name is dead weight.
-	it('never uses a tag that just repeats the icon name', () => {
+	// Aliases exist to be searched, so one that merely repeats the name or the title is dead weight.
+	it('never uses an alias that repeats the icon name or its title', () => {
 		const echoes: string[] = [];
 		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
 			for (const [name, spec] of Object.entries(set.icons)) {
 				if (typeof spec === 'string') continue;
-				const own = name.replace(/_/g, ' ');
-				for (const t of spec.tags ?? []) {
-					if (t.toLowerCase() === own || t.toLowerCase() === name) echoes.push(`extras:${group}-${name} → "${t}"`);
+				const own = new Set([name, name.replace(/_/g, ' '), (spec.title ?? '').toLowerCase()]);
+				for (const a of spec.aliases ?? []) {
+					if (own.has(a.toLowerCase())) echoes.push(`extras:${group}-${name} → "${a}"`);
 				}
 			}
 		}
-		expect(echoes.sort(), `tags that repeat the icon name:\n${echoes.join('\n')}`).toStrictEqual([]);
+		expect(echoes.sort(), `aliases that repeat the name or title:\n${echoes.join('\n')}`).toStrictEqual([]);
+	});
+
+	// `center` is a fraction of the icon's own box, so it stays valid at every pixel ratio.
+	it('keeps every center inside the icon box', () => {
+		const bad: string[] = [];
+		for (const [group, set] of Object.entries(config.spritesheets.extras)) {
+			for (const [name, spec] of Object.entries(set.icons)) {
+				if (typeof spec === 'string' || !spec.center) continue;
+				const [x, y] = spec.center;
+				if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) bad.push(`extras:${group}-${name} → [${x}, ${y}]`);
+			}
+		}
+		expect(bad.sort(), `centers outside 0..1:\n${bad.join('\n')}`).toStrictEqual([]);
 	});
 
 	// `base` is what the style draws for you; `extras` is what you place yourself. Duplicating a
