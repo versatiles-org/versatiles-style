@@ -270,15 +270,19 @@ which comes out as:
 - **`aliases`** — the other terms someone might type. Not the name or the title repeated; a test
   rejects an alias that echoes either, because it adds nothing to a search index.
 - **`center`** — where the icon _points_, as a fraction of its own box with the origin top-left.
-  Omitted for the middle. `[0.5, 1]` is the bottom edge, which is where a map pin's tip sits, so a
-  tool can reach for `icon-anchor: "bottom"` without knowing the group by name. Fractions rather
-  than pixels, so the value is identical in `extras.json` and `extras@2x.json`.
+  Omitted when that is simply the middle. A map pin declares `[0.5, 1]`, its tip on the bottom edge,
+  so a tool can reach for `icon-anchor: "bottom"` without knowing the group by name; every
+  directional mark declares its **arrowhead**, measured off the rendered artwork rather than
+  guessed — `symbol-arrow` is `[0.96, 0.5]`, `symbol-trend_up` is `[0.89, 0.19]`,
+  `base:marking-oneway` is `[0.5, 0]`. `symbol-arrow_double` has two tips and `symbol-arrow_circle`
+  is a button, so neither declares one. Fractions rather than pixels, so the value is identical in
+  `extras.json` and `extras@2x.json`.
 
 **`base` carries titles and aliases too.** It stays internal — do not reference `base:*` from your
 own layers — but a style editor picking icons for a map it is building needs to search them, and
 many of their aliases are the v5 name the icon used to carry, so searching `pharmacy` still finds
-`base:icon-pill` and `hairdresser` finds `base:icon-scissors_and_comb`. Only `extras` sets
-`center`, since `base` has no pins.
+`base:icon-pill` and `hairdresser` finds `base:icon-scissors_and_comb`. `base` sets a `center` only
+on `marking-oneway`; nothing else in it points anywhere in particular.
 
 **This is safe to put in the sprite JSON.** MapLibre destructures only the fields it knows
 (`width`, `height`, `x`, `y`, `sdf`, `pixelRatio`, `stretchX/Y`, `content`, `textFit*`) and ignores

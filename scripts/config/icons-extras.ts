@@ -5,9 +5,9 @@
 // upstream filename, so the two are deliberately independent — see SPRITES.md.
 //
 // `title`, `aliases` and `center` are published INSIDE the sprite JSON, so a picker needs no
-// second request. Every entry needs a title and extras-api.test.ts fails without one; aliases are
-// the other terms someone might type, and `center` is only set where the icon does not point at
-// its own middle.
+// second request. Every entry needs a title and config/sprites.test.ts fails without one; aliases
+// are the other terms someone might type, and `center` marks where an icon POINTS when that is not
+// its own middle — a pin's tip, an arrow's head.
 
 import type { IconSets } from '../lib/icons.js';
 
@@ -512,11 +512,7 @@ const icons: IconSets = {
 				title: 'Scuba diver',
 				aliases: ['diving', 'dive site', 'snorkel', 'underwater', 'sub-aqua'],
 			},
-			search: {
-				src: 'versatiles/search',
-				title: 'Magnifier',
-				aliases: ['find', 'lookup', 'query', 'explore'],
-			},
+			search: { src: 'versatiles/search', title: 'Magnifier', aliases: ['find', 'lookup', 'query', 'explore'] },
 			share: {
 				src: 'versatiles/share',
 				title: 'Share network',
@@ -1005,12 +1001,30 @@ const icons: IconSets = {
 			},
 		},
 	},
+	// Directional marks carry a `center` at their TIP, measured off the rendered artwork, so a
+	// tool can put the point where the arrow indicates rather than at the middle of its box.
+	// `arrow_double` has two tips and `arrow_circle` is a button, so neither declares one.
 	symbol: {
 		size: 22,
 		icons: {
-			arrow: { src: 'maki/arrow', title: 'Arrow', aliases: ['direction', 'pointer', 'right', 'thin'] },
-			arrow2: { src: 'unknown/arrow2', title: 'Arrow2', aliases: ['direction', 'pointer', 'block', 'solid'] },
-			arrow3: { src: 'unknown/arrow3', title: 'Arrow3', aliases: ['direction', 'pointer', 'dart'] },
+			arrow: {
+				src: 'maki/arrow',
+				title: 'Arrow',
+				aliases: ['direction', 'pointer', 'right', 'thin'],
+				center: [0.96, 0.5],
+			},
+			arrow2: {
+				src: 'unknown/arrow2',
+				title: 'Arrow2',
+				aliases: ['direction', 'pointer', 'block', 'solid'],
+				center: [0.93, 0.5],
+			},
+			arrow3: {
+				src: 'unknown/arrow3',
+				title: 'Arrow3',
+				aliases: ['direction', 'pointer', 'dart'],
+				center: [0.93, 0.5],
+			},
 			arrow_circle: {
 				src: 'versatiles/arrow_circle',
 				title: 'Arrow in a ring',
@@ -1020,6 +1034,7 @@ const icons: IconSets = {
 				src: 'versatiles/arrow_curved',
 				title: 'Curved arrow',
 				aliases: ['turn', 'detour', 'bend', 'route'],
+				center: [0.83, 0.25],
 			},
 			arrow_double: {
 				src: 'versatiles/arrow_double',
@@ -1030,8 +1045,14 @@ const icons: IconSets = {
 				src: 'versatiles/arrow_return',
 				title: 'Return arrow',
 				aliases: ['back', 'undo', 'u-turn', 'reverse', 'round trip'],
+				center: [0.24, 0.64],
 			},
-			caret: { src: 'versatiles/caret', title: 'Caret', aliases: ['triangle', 'pointer', 'next', 'expand', 'small'] },
+			caret: {
+				src: 'versatiles/caret',
+				title: 'Caret',
+				aliases: ['triangle', 'pointer', 'next', 'expand', 'small'],
+				center: [0.7, 0.5],
+			},
 			chart_bar: {
 				src: 'versatiles/chart_bar',
 				title: 'Bar chart',
@@ -1052,11 +1073,17 @@ const icons: IconSets = {
 				title: 'Check',
 				aliases: ['tick', 'done', 'confirm', 'yes', 'verified', 'available'],
 			},
-			chevron: { src: 'versatiles/chevron', title: 'Chevron', aliases: ['angle', 'flow', 'next', 'direction'] },
+			chevron: {
+				src: 'versatiles/chevron',
+				title: 'Chevron',
+				aliases: ['angle', 'flow', 'next', 'direction'],
+				center: [0.75, 0.5],
+			},
 			chevron_double: {
 				src: 'versatiles/chevron_double',
 				title: 'Double chevron',
 				aliases: ['fast', 'skip', 'flow', 'direction'],
+				center: [0.86, 0.5],
 			},
 			crosshair: {
 				src: 'versatiles/crosshair',
@@ -1086,11 +1113,13 @@ const icons: IconSets = {
 				src: 'versatiles/trend_down',
 				title: 'Trend down',
 				aliases: ['decrease', 'fall', 'decline', 'negative', 'statistics'],
+				center: [0.89, 0.8],
 			},
 			trend_up: {
 				src: 'versatiles/trend_up',
 				title: 'Trend up',
 				aliases: ['increase', 'rise', 'growth', 'positive', 'statistics'],
+				center: [0.89, 0.19],
 			},
 		},
 	},

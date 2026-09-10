@@ -296,12 +296,20 @@ const icons: IconSets = {
 			zoo: { src: 'maki/zoo', title: 'Zoo', aliases: ['animals', 'wildlife park', 'safari'] },
 		},
 	},
+	// Road markings. `oneway` points up before `icon-rotate` turns it along the street.
 	marking: {
 		size: 15,
 		icons: {
-			oneway: { src: 'versatiles/oneway', title: 'One-way arrow', aliases: ['one way', 'direction', 'traffic flow'] },
+			oneway: {
+				src: 'versatiles/oneway',
+				title: 'One-way arrow',
+				aliases: ['one way', 'direction', 'traffic flow'],
+				center: [0.5, 0],
+			},
 		},
 	},
+	// Tileable polygon fills for `fill-pattern`. Not SDF: MapLibre cannot recolour a fill
+	// pattern, so these render as drawn. Every tile wraps seamlessly — see SPRITES.md.
 	pattern: {
 		useSDF: false,
 		size: 16,

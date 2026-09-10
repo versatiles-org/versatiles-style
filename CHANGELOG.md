@@ -75,8 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tileable `fill-pattern` tiles, and pictograms for transport, weather and hazards, energy, nature,
   civic and commerce, culture and interface. All CC0.
 - **The sprite JSON now carries picker metadata.** Each entry in **both** sheets gains a `title` and
-  optional `aliases` for search, and `extras` entries that do not point at their own middle gain a
-  `center` as a fraction of the icon's box (`[0.5, 1]` for a map pin's tip). MapLibre ignores fields
+  optional `aliases` for search, and entries that point somewhere other than their own middle gain a
+  `center` as a fraction of the icon's box — a map pin's tip (`[0.5, 1]`) and every arrowhead. MapLibre ignores fields
   it does not know, so this is additive, and no second request is needed to build an icon picker.
   Many `base` aliases are the v5 name the icon used to carry, so a style editor searching
   `pharmacy` still finds `base:icon-pill`.
