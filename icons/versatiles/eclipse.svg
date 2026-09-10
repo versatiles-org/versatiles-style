@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="eclipse" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 2.8,12 A 9.2,9.2 0 1 0 21.2,12 A 9.2,9.2 0 1 0 2.8,12 Z M 4.8,12 A 7.2,7.2 0 1 0 19.2,12 A 7.2,7.2 0 1 0 4.8,12 Z M 21.199,11.033 L 23.976,11.247 L 23.976,12.753 L 21.199,12.967 Z M 19.189,17.821 L 21.001,19.936 L 19.936,21.001 L 17.821,19.189 Z M 12.967,21.199 L 12.753,23.976 L 11.247,23.976 L 11.033,21.199 Z M 6.179,19.189 L 4.064,21.001 L 2.999,19.936 L 4.811,17.821 Z M 2.801,12.967 L 0.024,12.753 L 0.024,11.247 L 2.801,11.033 Z M 4.811,6.179 L 2.999,4.064 L 4.064,2.999 L 6.179,4.811 Z M 11.033,2.801 L 11.247,0.024 L 12.753,0.024 L 12.967,2.801 Z M 17.821,4.811 L 19.936,2.999 L 21.001,4.064 L 19.189,6.179 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

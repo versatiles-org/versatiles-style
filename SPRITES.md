@@ -98,18 +98,23 @@ than waved through: the extras `icon-information` was dropped (`base` already dr
 #### `icon` group
 
 Pictograms — things you can point at. Vehicles and street furniture the style itself never draws,
-so a transit tracker or a charging-price map can mark its own features without shipping a sheet.
+plus weather and hazard marks, so a transit tracker, a charging-price map or a storm feed can label
+its own features without shipping a sheet.
 
-`extras:icon-anchor` · `extras:icon-bbq` · `extras:icon-beach` · `extras:icon-bicycle` ·
-`extras:icon-bridge` · `extras:icon-bus_stop` · `extras:icon-cable_car` · `extras:icon-car` ·
-`extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-conifer` · `extras:icon-droplet` ·
-`extras:icon-ferry` · `extras:icon-fish` · `extras:icon-helicopter` ·
-`extras:icon-hot_air_balloon` · `extras:icon-house` · `extras:icon-microphone` ·
-`extras:icon-motorcycle` · `extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` ·
-`extras:icon-no_entry` · `extras:icon-parking` · `extras:icon-pedestrian` · `extras:icon-rocket` ·
-`extras:icon-roundabout` · `extras:icon-sailboat` · `extras:icon-scooter` · `extras:icon-taxi` ·
-`extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` · `extras:icon-tunnel` ·
-`extras:icon-van` · `extras:icon-wheelchair`
+`extras:icon-anchor` · `extras:icon-avalanche` · `extras:icon-bbq` · `extras:icon-beach` ·
+`extras:icon-bicycle` · `extras:icon-bridge` · `extras:icon-bus_stop` · `extras:icon-cable_car` ·
+`extras:icon-car` · `extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-cloud` ·
+`extras:icon-cloud_sun` · `extras:icon-conifer` · `extras:icon-droplet` · `extras:icon-eclipse` ·
+`extras:icon-ferry` · `extras:icon-fire` · `extras:icon-fish` · `extras:icon-flood` ·
+`extras:icon-fog` · `extras:icon-helicopter` · `extras:icon-hot_air_balloon` · `extras:icon-house` ·
+`extras:icon-lightning` · `extras:icon-microphone` · `extras:icon-moon` · `extras:icon-motorcycle` ·
+`extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` · `extras:icon-no_entry` ·
+`extras:icon-parking` · `extras:icon-pedestrian` · `extras:icon-radiation` · `extras:icon-rain` ·
+`extras:icon-rocket` · `extras:icon-roundabout` · `extras:icon-sailboat` · `extras:icon-scooter` ·
+`extras:icon-snowflake` · `extras:icon-sun` · `extras:icon-taxi` · `extras:icon-thermometer` ·
+`extras:icon-tornado` · `extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` ·
+`extras:icon-tunnel` · `extras:icon-umbrella` · `extras:icon-van` · `extras:icon-warning` ·
+`extras:icon-wheelchair` · `extras:icon-wind`
 
 #### `pin` group
 

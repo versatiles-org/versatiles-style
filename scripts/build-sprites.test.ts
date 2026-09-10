@@ -22,7 +22,7 @@ vi.mock('./config-sprites', () => ({
 					icons: {
 						hatched_thin: 'versatiles/hatched_thin',
 						striped: 'versatiles/striped',
-						warning: 'versatiles/warning',
+						hatched: 'versatiles/hatched',
 					},
 				},
 			},

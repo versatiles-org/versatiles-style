@@ -17,7 +17,7 @@ const SITES: SiteDef[] = [
 			color: c.siteDanger.opaque(),
 			fillOutlineColor: c.siteDanger.opaque(),
 			opacity: c.siteDanger.alpha,
-			image: 'base:pattern-warning',
+			image: 'base:pattern-hatched',
 		}),
 	},
 	{ kind: 'sports_centre', style: (c) => ({ color: c.siteSports }) },
