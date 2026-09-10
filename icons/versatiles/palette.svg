@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="palette" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 12,3 C 18.2,3 22.2,7.2 22.2,12 C 22.2,15.5 19.7,17.3 17.1,17.3 C 15.5,17.3 14.7,18.3 14.7,19.5 C 14.7,20.7 13.7,21.6 12,21.6 C 6.2,21.6 1.8,17 1.8,12 C 1.8,7.2 5.8,3 12,3 Z M 5.3,9 A 1.9,1.9 0 1 0 9.1,9 A 1.9,1.9 0 1 0 5.3,9 Z M 9.9,7 A 1.9,1.9 0 1 0 13.7,7 A 1.9,1.9 0 1 0 9.9,7 Z M 14.5,9.2 A 1.9,1.9 0 1 0 18.3,9.2 A 1.9,1.9 0 1 0 14.5,9.2 Z M 4.5,14.4 A 1.9,1.9 0 1 0 8.3,14.4 A 1.9,1.9 0 1 0 4.5,14.4 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

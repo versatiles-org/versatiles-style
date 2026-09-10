@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="guitar" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 10.699219 0.59960938 A 0.8 0.8 0 0 0 9.9003906 1.4003906 L 9.9003906 2.1992188 A 0.8 0.8 0 0 0 10.699219 3 L 11.099609 3 L 11.099609 6.5996094 A 4.1 4.1 0 0 0 7.9003906 10.599609 A 4.1 4.1 0 0 0 8.6328125 12.923828 A 5.3 5.3 0 0 0 6.6992188 17 A 5.3007812 5.3007812 0 0 0 17.300781 17 A 5.3 5.3 0 0 0 15.367188 12.923828 A 4.1 4.1 0 0 0 16.099609 10.599609 A 4.1 4.1 0 0 0 13 6.6230469 L 13 3 L 13.300781 3 A 0.8 0.8 0 0 0 14.099609 2.1992188 L 14.099609 1.4003906 A 0.8 0.8 0 0 0 13.300781 0.59960938 L 10.699219 0.59960938 z M 9.8,11 A 2.2,2.2 0 1 0 14.2,11 A 2.2,2.2 0 1 0 9.8,11 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

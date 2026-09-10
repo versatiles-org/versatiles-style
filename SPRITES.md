@@ -104,32 +104,39 @@ its own features without shipping a sheet.
 `extras:icon-ambulance` · `extras:icon-anchor` · `extras:icon-apartment` · `extras:icon-avalanche` ·
 `extras:icon-ballot_box` · `extras:icon-battery` · `extras:icon-bbq` · `extras:icon-beach` ·
 `extras:icon-bee` · `extras:icon-bicycle` · `extras:icon-binoculars` · `extras:icon-bird` ·
-`extras:icon-bridge` · `extras:icon-building` · `extras:icon-buoy` · `extras:icon-bus_stop` ·
-`extras:icon-butterfly` · `extras:icon-cable_car` · `extras:icon-calculator` · `extras:icon-car` ·
-`extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-cloud` · `extras:icon-cloud_sun` ·
-`extras:icon-co2` · `extras:icon-coin` · `extras:icon-conifer` · `extras:icon-cow` ·
-`extras:icon-crane` · `extras:icon-credit_card` · `extras:icon-dam` · `extras:icon-deer` ·
-`extras:icon-dollar` · `extras:icon-droplet` · `extras:icon-eclipse` · `extras:icon-euro` ·
-`extras:icon-factory` · `extras:icon-fence` · `extras:icon-ferry` · `extras:icon-fire` ·
-`extras:icon-fire_truck` · `extras:icon-first_aid` · `extras:icon-fish` · `extras:icon-flood` ·
-`extras:icon-flower` · `extras:icon-fog` · `extras:icon-footprint` · `extras:icon-heat_pump` ·
-`extras:icon-helicopter` · `extras:icon-helping_hand` · `extras:icon-horse_riding` ·
-`extras:icon-hot_air_balloon` · `extras:icon-house` · `extras:icon-key` · `extras:icon-leaf` ·
-`extras:icon-lifebuoy` · `extras:icon-lightning` · `extras:icon-megaphone` ·
-`extras:icon-microphone` · `extras:icon-moon` · `extras:icon-motorcycle` · `extras:icon-mountain` ·
-`extras:icon-mushroom` · `extras:icon-music` · `extras:icon-no_entry` · `extras:icon-nuclear` ·
-`extras:icon-parking` · `extras:icon-paw` · `extras:icon-pedestrian` · `extras:icon-plug` ·
-`extras:icon-police_car` · `extras:icon-power_plant` · `extras:icon-power_pole` ·
-`extras:icon-price_tag` · `extras:icon-quay` · `extras:icon-radiation` · `extras:icon-radiator` ·
-`extras:icon-rain` · `extras:icon-raised_fist` · `extras:icon-receipt` · `extras:icon-rocket` ·
-`extras:icon-roundabout` · `extras:icon-sailboat` · `extras:icon-scooter` ·
-`extras:icon-scuba_diver` · `extras:icon-shield` · `extras:icon-siren` · `extras:icon-skyscraper` ·
-`extras:icon-snowflake` · `extras:icon-solar_panel` · `extras:icon-sun` · `extras:icon-surfer` ·
-`extras:icon-taxi` · `extras:icon-thermometer` · `extras:icon-tornado` ·
+`extras:icon-bookmark` · `extras:icon-bridge` · `extras:icon-building` · `extras:icon-buoy` ·
+`extras:icon-bus_stop` · `extras:icon-butterfly` · `extras:icon-cable_car` ·
+`extras:icon-calculator` · `extras:icon-calendar` · `extras:icon-camera` · `extras:icon-car` ·
+`extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-child` · `extras:icon-clock` ·
+`extras:icon-cloud` · `extras:icon-cloud_sun` · `extras:icon-co2` · `extras:icon-coin` ·
+`extras:icon-compass` · `extras:icon-conifer` · `extras:icon-cow` · `extras:icon-crane` ·
+`extras:icon-credit_card` · `extras:icon-dam` · `extras:icon-deer` · `extras:icon-dollar` ·
+`extras:icon-download` · `extras:icon-droplet` · `extras:icon-eclipse` · `extras:icon-euro` ·
+`extras:icon-eye` · `extras:icon-factory` · `extras:icon-family` · `extras:icon-fence` ·
+`extras:icon-ferry` · `extras:icon-filter` · `extras:icon-fire` · `extras:icon-fire_truck` ·
+`extras:icon-first_aid` · `extras:icon-fish` · `extras:icon-flood` · `extras:icon-flower` ·
+`extras:icon-fog` · `extras:icon-footprint` · `extras:icon-globe` · `extras:icon-guitar` ·
+`extras:icon-headphones` · `extras:icon-heat_pump` · `extras:icon-helicopter` ·
+`extras:icon-helping_hand` · `extras:icon-horse_riding` · `extras:icon-hot_air_balloon` ·
+`extras:icon-house` · `extras:icon-key` · `extras:icon-layers` · `extras:icon-leaf` ·
+`extras:icon-lifebuoy` · `extras:icon-lightning` · `extras:icon-link` · `extras:icon-lock` ·
+`extras:icon-mail` · `extras:icon-megaphone` · `extras:icon-microphone` · `extras:icon-moon` ·
+`extras:icon-motorcycle` · `extras:icon-mountain` · `extras:icon-museum` · `extras:icon-mushroom` ·
+`extras:icon-music` · `extras:icon-no_entry` · `extras:icon-nuclear` · `extras:icon-palette` ·
+`extras:icon-parking` · `extras:icon-paw` · `extras:icon-pedestrian` · `extras:icon-person` ·
+`extras:icon-play` · `extras:icon-plug` · `extras:icon-police_car` · `extras:icon-power_plant` ·
+`extras:icon-power_pole` · `extras:icon-price_tag` · `extras:icon-quay` · `extras:icon-radiation` ·
+`extras:icon-radiator` · `extras:icon-rain` · `extras:icon-rainbow` · `extras:icon-raised_fist` ·
+`extras:icon-receipt` · `extras:icon-rocket` · `extras:icon-roundabout` · `extras:icon-ruler` ·
+`extras:icon-sailboat` · `extras:icon-scooter` · `extras:icon-scuba_diver` · `extras:icon-search` ·
+`extras:icon-share` · `extras:icon-shield` · `extras:icon-siren` · `extras:icon-skyscraper` ·
+`extras:icon-snowflake` · `extras:icon-solar_panel` · `extras:icon-speaker` ·
+`extras:icon-speech_bubble` · `extras:icon-stamp` · `extras:icon-sun` · `extras:icon-surfer` ·
+`extras:icon-taxi` · `extras:icon-thermometer` · `extras:icon-ticket` · `extras:icon-tornado` ·
 `extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` · `extras:icon-tunnel` ·
 `extras:icon-umbrella` · `extras:icon-van` · `extras:icon-warehouse` · `extras:icon-warning` ·
-`extras:icon-wave` · `extras:icon-whale` · `extras:icon-wheelchair` · `extras:icon-wind` ·
-`extras:icon-wind_turbine`
+`extras:icon-wave` · `extras:icon-whale` · `extras:icon-wheelchair` · `extras:icon-wifi` ·
+`extras:icon-wind` · `extras:icon-wind_turbine`
 
 #### `pin` group
 

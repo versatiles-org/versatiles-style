@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="mail" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 3.4,6 L 20.6,6 A 1.6,1.6 0 0 1 22.2,7.6 L 22.2,16.4 A 1.6,1.6 0 0 1 20.6,18 L 3.4,18 A 1.6,1.6 0 0 1 1.8,16.4 L 1.8,7.6 A 1.6,1.6 0 0 1 3.4,6 Z M 3.4,8 L 12,14.2 L 20.6,8 L 20.6,10.4 L 12,16.6 L 3.4,10.4 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>

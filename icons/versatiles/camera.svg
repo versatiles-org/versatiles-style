@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="camera" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" d="M 4.2,7 L 19.8,7 A 2.2,2.2 0 0 1 22,9.2 L 22,18.2 A 2.2,2.2 0 0 1 19.8,20.4 L 4.2,20.4 A 2.2,2.2 0 0 1 2,18.2 L 2,9.2 A 2.2,2.2 0 0 1 4.2,7 Z M 8,4.4 L 13.4,4.4 L 13.4,7 L 8,7 Z M 7.4,13.8 A 4.6,4.6 0 1 0 16.6,13.8 A 4.6,4.6 0 1 0 7.4,13.8 Z M 9.8,13.8 A 2.2,2.2 0 1 0 14.2,13.8 A 2.2,2.2 0 1 0 9.8,13.8 Z M 17.2,9.2 L 19.8,9.2 L 19.8,11 L 17.2,11 Z"/>
+<metadata id="license" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"><cc:Work><cc:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/></cc:Work></metadata>
+</svg>
