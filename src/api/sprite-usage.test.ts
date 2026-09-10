@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { osm } from './osm.js';
-import spriteConfig from '../../scripts/config-sprites.js';
+import spriteConfig from '../../scripts/config/sprites.js';
 import type { StyleSpecification } from '../types/index.js';
 
 // Guards the `base` sprite against drift in both directions:

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildContext } from '../context.js';
 import { pois } from './pois.js';
 import { resolveOsm } from '../../options/index.js';
-import spriteConfig from '../../../scripts/config-sprites.js';
+import spriteConfig from '../../../scripts/config/sprites.js';
 
 // Regression guard for POI icon coverage. It cross-checks three things that drifted apart before
 // (a misspelled `optican` shop key, and `artwork` filed under `historic` instead of `tourism`):
@@ -157,7 +157,7 @@ describe('POI layer ↔ Shortbread schema ↔ sprite coverage', () => {
 			console.warn(
 				`⚠ ${uncovered.length} Shortbread POI value(s) have no dedicated icon (fall back to the generic marker):\n  ` +
 					`${uncovered.join('\n  ')}\n` +
-					`  (add a match in src/shortbread/layers/pois.ts and, if needed, the icon to scripts/config-sprites.ts)`
+					`  (add a match in src/shortbread/layers/pois.ts and, if needed, the icon to scripts/config/sprites.ts)`
 			);
 		}
 

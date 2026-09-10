@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import config from './config-sprites.js';
-import type { IconSpec } from './lib/icons.js';
-import { iconSrc, loadIcons, svgSize } from './lib/icons.js';
+import config from './sprites.js';
+import type { IconSpec } from '../lib/icons.js';
+import { iconSrc, loadIcons, svgSize } from '../lib/icons.js';
 
 // The sprite config maps ~180 sprite names onto source files under `icons/<source>/`. loadIcons()
 // reads each one and throws if it is missing — so building the icon list is itself the existence
 // check. Guards against a typo'd source path silently producing an incomplete sprite sheet.
 
-const dirIcons = new URL('../icons', import.meta.url).pathname;
+const dirIcons = new URL('../../icons', import.meta.url).pathname;
 
 describe('sprite config', () => {
 	it('declares positive integer ratios', () => {

@@ -54,5 +54,5 @@
 			"lead": "Predate that batch. arrow2 and arrow3 are 16×16, unlike everything else here. star_of_david is a hollow hexagram where maki/religious-jewish is solid — deliberately different, not a copy."
 		}
 	],
-	"howToResolve": "Best remaining explanation is that these were drawn for VersaTiles in Temaki's style and simply never stamped — the versatiles-sprites repo they came through is deleted from GitHub, so that cannot be confirmed from here. `npm run icons-report` lists what is here; move a file into its source folder once identified and update its sprite entry in scripts/config-sprites.ts."
+	"howToResolve": "Best remaining explanation is that these were drawn for VersaTiles in Temaki's style and simply never stamped — the versatiles-sprites repo they came through is deleted from GitHub, so that cannot be confirmed from here. `npm run icons-report` lists what is here; move a file into its source folder once identified and update its sprite entry in scripts/config/sprites.ts."
 }

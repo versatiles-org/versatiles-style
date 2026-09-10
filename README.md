@@ -137,7 +137,7 @@ When adding new icons, [Pinhead Map Icons](https://pinhead.ink/) ([source](https
 
 ### Configuration
 
-Define icon sets in the configuration file: [`scripts/config-sprites.ts`](./scripts/config-sprites.ts)
+Define icon sets in the configuration file: [`scripts/config/sprites.ts`](./scripts/config/sprites.ts)
 
 ---
 

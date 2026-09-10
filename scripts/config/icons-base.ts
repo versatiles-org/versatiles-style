@@ -1,12 +1,12 @@
 // Icons for the `base` sheet — everything the style itself draws.
 //
 // `base` is INTERNAL. These names serve the style and may be renamed, added or removed with any
-// release, so they carry no picker metadata; see config-icons-extras.ts for the public sheet.
+// release, so they carry no picker metadata; see icons-extras.ts for the public sheet.
 //
 // The key is the sprite name (`base:<group>-<key>`), the value is the file it is drawn from,
 // relative to `icons/` and without the `.svg`. The two are deliberately independent — see
 // SPRITES.md.
-import type { IconSets } from './lib/icons.js';
+import type { IconSets } from '../lib/icons.js';
 
 const icons: IconSets = {
 	icon: {

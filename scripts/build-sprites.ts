@@ -1,6 +1,6 @@
 import { loadIcons } from './lib/icons.js';
 import { Sprite } from './lib/sprites.js';
-import config from './config-sprites.js';
+import config from './config/sprites.js';
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 

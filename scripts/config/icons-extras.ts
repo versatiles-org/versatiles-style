@@ -7,7 +7,7 @@
 // Every entry needs `tags` and a `description`: they are emitted as `extras.meta.json` beside the
 // sheet so an icon picker can offer search, and extras-api.test.ts fails without them. Tags are the
 // terms someone would type that are NOT already the icon's name.
-import type { IconSets } from './lib/icons.js';
+import type { IconSets } from '../lib/icons.js';
 
 const icons: IconSets = {
 	badge: {
@@ -738,7 +738,7 @@ const icons: IconSets = {
 	// Map pins, drawn 24×30 with the tip ON the bottom edge so `icon-anchor: "bottom"` puts the
 	// point on the coordinate. `size` is the rendered HEIGHT; the width follows from the source
 	// aspect ratio (see Sprite.fromIcons): round(28 × 24/30) = round(22.4) = 22 → 22×28 on the
-	// sheet. A source at a different aspect silently changes that width — config-sprites.test.ts
+	// sheet. A source at a different aspect silently changes that width — config/sprites.test.ts
 	// guards it.
 	pin: {
 		size: 28,

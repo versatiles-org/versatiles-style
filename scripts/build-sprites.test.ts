@@ -5,7 +5,7 @@ console.log = vi.fn();
 vi.mock('fs', { spy: true });
 vi.mock('child_process', { spy: true });
 
-vi.mock('./config-sprites', () => ({
+vi.mock('./config/sprites', () => ({
 	default: {
 		ratios: [1, 2],
 		spritesheets: {

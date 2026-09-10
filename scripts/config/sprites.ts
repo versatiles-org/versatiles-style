@@ -1,8 +1,8 @@
-import { SpriteConfig } from './lib/sprites.js';
-import base from './config-icons-base.js';
-import extras from './config-icons-extras.js';
+import { SpriteConfig } from '../lib/sprites.js';
+import base from './icons-base.js';
+import extras from './icons-extras.js';
 
-// The sheet manifest. Which icons each sheet holds lives in the two `config-icons-*` modules
+// The sheet manifest. Which icons each sheet holds lives in the two `icons-*` modules
 // beside this one — one entry per icon there, so this file stays the shape of the build rather
 // than a wall of data.
 const config: SpriteConfig = {

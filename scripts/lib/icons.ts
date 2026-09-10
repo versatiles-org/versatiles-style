@@ -26,7 +26,7 @@ export class Icon {
  *
  * The key it is stored under is the SPRITE name (the public `<group>-<name>` id); `src` is the file
  * it is drawn from, relative to `icons/` and without the `.svg`. The two are deliberately
- * independent — see the header of config-sprites.ts.
+ * independent — see the header of config/sprites.ts.
  */
 export type IconSpec =
 	| string

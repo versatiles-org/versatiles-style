@@ -5,5 +5,5 @@
 	"version": "8.2.0",
 	"license": "CC0-1.0",
 	"grid": "15×15",
-	"note": "Filenames are Maki's own (hyphenated). Sprite names are assigned in scripts/config-sprites.ts."
+	"note": "Filenames are Maki's own (hyphenated). Sprite names are assigned in scripts/config/sprites.ts."
 }

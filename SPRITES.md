@@ -2,7 +2,7 @@
 
 VersaTiles Style ships its icons as **two separate sprite sheets**. They are built from the SVGs
 under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprites.ts) (configured in
-[`scripts/config-sprites.ts`](./scripts/config-sprites.ts)) and served at
+[`scripts/config/sprites.ts`](./scripts/config/sprites.ts)) and served at
 `…/assets/sprites/<sheet>{,@2x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
@@ -11,7 +11,7 @@ MapLibre loads any number of sprite sources, each under its own `id`, so a refer
 **Sprite names and filenames are decoupled.** The SVGs under [`icons/`](./icons) are organized by
 **provenance**, not by sheet, and keep their upstream filename — `base:icon-alcohol_shop` is drawn
 from `icons/maki/alcohol-shop.svg`, hyphen and all. Which file backs which sprite name is declared
-in [`scripts/config-sprites.ts`](./scripts/config-sprites.ts), and that file is the index: run
+in [`scripts/config/sprites.ts`](./scripts/config/sprites.ts), and that file is the index: run
 `npm run icons-report` for a rendered overview of every icon, its sprite ids and its source.
 
 | folder              | what it holds                                                             |
@@ -100,7 +100,7 @@ than waved through: the extras `icon-information` was dropped (`base` already dr
 `base:marking-arrow` was renamed `base:marking-oneway`, which is what it actually marks.
 
 > Adding an icon? Put the SVG under `icons/<source>/` keeping its upstream filename, map a sprite
-> name to it in `scripts/config-sprites.ts` under `spritesheets.extras`, **and** add that name to
+> name to it in `scripts/config/sprites.ts` under `spritesheets.extras`, **and** add that name to
 > the list below in the same change. Removing or renaming an `extras` icon is a breaking change —
 > avoid it.
 
@@ -231,10 +231,10 @@ turn them with `icon-rotate` rather than asking for a second name.
 
 **Borrowed, or drawn?** Prefer a CC0 source. Take the file from Maki or Temaki, drop it into the
 matching `icons/<source>/` folder **under its upstream filename**, then give it a sprite name in
-`config-sprites.ts`. Only draw one yourself when neither has it; those go in `icons/versatiles/`.
+`config/sprites.ts`. Only draw one yourself when neither has it; those go in `icons/versatiles/`.
 
 ```ts
-// scripts/config-sprites.ts — the key is the sprite name, the value is the file it is drawn from
+// scripts/config/sprites.ts — the key is the sprite name, the value is the file it is drawn from
 airfield: 'maki/airfield',                                              // fine for `base`
 cat: { src: 'maki/animal-shelter', tags: ['pet', 'animal'], description: 'A sitting cat' },
 ```
@@ -286,7 +286,7 @@ width = round(size × w0 / h0)
 ```
 
 So the `pin` group's `size: 28` and a 24×30 source give `round(28 × 24/30)` = **22×28**. A source at
-the wrong aspect ratio does not fail the build — it just lands a pixel or two off. `config-sprites.test.ts`
+the wrong aspect ratio does not fail the build — it just lands a pixel or two off. `config/sprites.test.ts`
 asserts the pin geometry and that every icon within a group agrees on one rendered size.
 
 **One color.** Every icon is packed as SDF (`"sdf": true`), so it is a single silhouette that

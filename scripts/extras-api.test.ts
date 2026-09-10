@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import config from './config-sprites.js';
+import config from './config/sprites.js';
 
 // `extras` is a documented, add-only public API (see SPRITES.md). This test keeps the doc and the
 // sprite config in lockstep so they can never silently drift:

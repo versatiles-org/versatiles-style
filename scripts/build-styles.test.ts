@@ -15,7 +15,7 @@ vi.mock(import('tar-stream'), async (originalImport) => {
 	return { default: { pack }, pack } as unknown as typeof tar;
 });
 
-vi.mock('./config-sprites', () => ({
+vi.mock('./config/sprites', () => ({
 	default: {
 		ratio: { '': 1, '@2x': 2, '@3x': 3, '@4x': 4 },
 		sets: {
