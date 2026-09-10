@@ -53,6 +53,41 @@ export function iconSrc(spec: IconSpec): string {
 	return typeof spec === 'string' ? spec : spec.src;
 }
 
+const svgAttr = (svg: string, name: string): number | undefined => {
+	const m = new RegExp(`<svg[^>]*\\s${name}="([^"]+)"`).exec(svg);
+	const v = m ? parseFloat(m[1]) : NaN;
+	return Number.isFinite(v) ? v : undefined;
+};
+
+/**
+ * Intrinsic size of an SVG, used to derive how wide an icon lands on the sheet.
+ *
+ * Prefers the `width`/`height` attributes and falls back to the `viewBox`: upstream sets do not
+ * agree on this — several Temaki icons ship a viewBox only — and a borrowed file should not have to
+ * be edited before it can be packed.
+ */
+export function svgSize(svg: string, label = 'icon'): { w: number; h: number } {
+	let w = svgAttr(svg, 'width');
+	let h = svgAttr(svg, 'height');
+	if (w === undefined || h === undefined) {
+		const vb = /<svg[^>]*\sviewBox="\s*[-\d.eE]+[,\s]+[-\d.eE]+[,\s]+([-\d.eE]+)[,\s]+([-\d.eE]+)\s*"/.exec(svg);
+		if (!vb) throw Error(`${label}: SVG has neither width/height attributes nor a viewBox`);
+		w = parseFloat(vb[1]);
+		h = parseFloat(vb[2]);
+	}
+	if (!(w > 0 && h > 0)) throw Error(`${label}: SVG reports a non-positive size (${w}×${h})`);
+	return { w, h };
+}
+
+/** Force explicit pixel width/height on the root `<svg>`, adding the attributes when absent. */
+export function setSvgSize(svg: string, w: number, h: number): string {
+	const set = (s: string, name: string, value: number): string =>
+		new RegExp(`<svg[^>]*\\s${name}="`).test(s)
+			? s.replace(new RegExp(`(<svg[^>]*\\s${name}=")([^"]+)`), (_, before: string) => before + value)
+			: s.replace(/<svg\b/, `<svg ${name}="${value}"`);
+	return set(set(svg, 'width', w), 'height', h);
+}
+
 /**
  * Load every icon of a sheet.
  *

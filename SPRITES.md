@@ -97,12 +97,19 @@ than waved through: the extras `icon-information` was dropped (`base` already dr
 
 #### `icon` group
 
-Pictograms — things you can point at.
+Pictograms — things you can point at. Vehicles and street furniture the style itself never draws,
+so a transit tracker or a charging-price map can mark its own features without shipping a sheet.
 
-`extras:icon-bbq` · `extras:icon-beach` · `extras:icon-cat` · `extras:icon-conifer` ·
-`extras:icon-droplet` · `extras:icon-fish` · `extras:icon-house` · `extras:icon-microphone` ·
-`extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` · `extras:icon-no_entry` ·
-`extras:icon-rocket` · `extras:icon-tree`
+`extras:icon-anchor` · `extras:icon-bbq` · `extras:icon-beach` · `extras:icon-bicycle` ·
+`extras:icon-bridge` · `extras:icon-bus_stop` · `extras:icon-cable_car` · `extras:icon-car` ·
+`extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-conifer` · `extras:icon-droplet` ·
+`extras:icon-ferry` · `extras:icon-fish` · `extras:icon-helicopter` ·
+`extras:icon-hot_air_balloon` · `extras:icon-house` · `extras:icon-microphone` ·
+`extras:icon-motorcycle` · `extras:icon-mountain` · `extras:icon-mushroom` · `extras:icon-music` ·
+`extras:icon-no_entry` · `extras:icon-parking` · `extras:icon-pedestrian` · `extras:icon-rocket` ·
+`extras:icon-roundabout` · `extras:icon-sailboat` · `extras:icon-scooter` · `extras:icon-taxi` ·
+`extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` · `extras:icon-tunnel` ·
+`extras:icon-van` · `extras:icon-wheelchair`
 
 #### `symbol` group
 

@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import type { Icon, IconSets } from './icons.js';
+import { setSvgSize, svgSize } from './icons.js';
 import binPack from 'bin-pack';
 import { writeFileSync } from 'fs';
 import type { Pack as TarPack } from 'tar-stream';
@@ -53,18 +54,12 @@ export class Sprite {
 	public static async fromIcons(icons: Icon[], scale: number, defaultPadding: number): Promise<Sprite> {
 		// Parse dimensions for each SVG icon and apply scaling and padding.
 		const spriteEntries = icons.map((icon) => {
-			const wResult = /<svg[^>]+width="([^"]+)"/.exec(icon.svg);
-			const hResult = /<svg[^>]+height="([^"]+)"/.exec(icon.svg);
-			if (!wResult || !hResult) throw Error('Invalid SVG format.');
-
-			const w0 = parseFloat(wResult[1]);
-			const h0 = parseFloat(hResult[1]);
+			// `size` is the rendered HEIGHT; the width follows from the source's aspect ratio.
+			const { w: w0, h: h0 } = svgSize(icon.svg, icon.name);
 			const height = Math.round(icon.size) * scale;
 			const width = Math.round((icon.size * w0) / h0) * scale;
 
-			const svg = icon.svg
-				.replace(/(<svg[^>]*width=")([^"]+)/, (_, before) => before + width)
-				.replace(/(<svg[^>]*height=")([^"]+)/, (_, before) => before + height);
+			const svg = setSvgSize(icon.svg, width, height);
 
 			const padding = icon.useSDF ? defaultPadding * scale : 0;
 

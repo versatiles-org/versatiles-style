@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import config from './config-sprites.js';
 import type { IconSpec } from './lib/icons.js';
-import { iconSrc, loadIcons } from './lib/icons.js';
+import { iconSrc, loadIcons, svgSize } from './lib/icons.js';
 
 // The sprite config maps ~180 sprite names onto source files under `icons/<source>/`. loadIcons()
 // reads each one and throws if it is missing — so building the icon list is itself the existence
@@ -64,14 +64,8 @@ describe('sprite config', () => {
 /** Rendered size of one icon on the sheet at ratio 1 — the same arithmetic Sprite.fromIcons uses. */
 function renderedSize(sheet: string, group: string, spec: IconSpec): { w: number; h: number } {
 	const src = iconSrc(spec);
-	const svg = readFileSync(join(dirIcons, `${src}.svg`), 'utf8');
-	const w0 = /<svg[^>]+width="([^"]+)"/.exec(svg);
-	const h0 = /<svg[^>]+height="([^"]+)"/.exec(svg);
-	if (!w0 || !h0) throw Error(`missing width/height attribute: ${src}.svg`);
-
+	// same source of truth as the builder, so a viewBox-only upstream file measures identically
+	const { w, h } = svgSize(readFileSync(join(dirIcons, `${src}.svg`), 'utf8'), src);
 	const { size } = config.spritesheets[sheet][group];
-	return {
-		w: Math.round((size * parseFloat(w0[1])) / parseFloat(h0[1])),
-		h: Math.round(size),
-	};
+	return { w: Math.round((size * w) / h), h: Math.round(size) };
 }
