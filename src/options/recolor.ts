@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 export type RecolorOptions = {
 	invertBrightness?: boolean;
 	rotateHue?: number;
@@ -20,7 +21,23 @@ export type ResolvedRecolor = {
 	blend: { color: string; amount: number };
 };
 
-export function resolveRecolor(recolor?: RecolorOptions): ResolvedRecolor {
+export function resolveRecolor(recolor?: RecolorOptions, path = 'recolor'): ResolvedRecolor {
+	checkKeys(
+		recolor,
+		{
+			invertBrightness: true,
+			rotateHue: true,
+			saturate: true,
+			brightness: true,
+			contrast: true,
+			gamma: true,
+			tint: true,
+			blend: true,
+		},
+		path
+	);
+	checkKeys(recolor?.tint, { color: true, amount: true }, `${path}.tint`);
+	checkKeys(recolor?.blend, { color: true, amount: true }, `${path}.blend`);
 	return {
 		invertBrightness: recolor?.invertBrightness ?? false,
 		rotateHue: recolor?.rotateHue ?? 0,

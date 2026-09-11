@@ -1,3 +1,4 @@
+import { checkKeys, type KnownKeys } from './keys.js';
 export type LayerGroupOptions = {
 	land?:
 		| boolean
@@ -159,12 +160,14 @@ const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar): Scalar 
 	normalize(scalarOf(opt) ?? inherited ?? def);
 
 // Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
-// every child; an object `opt` sets them individually (unset children fall back to `true`).
-function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record<K, Scalar> {
+// every child; an object `opt` sets them individually (unset children fall back to `true`). `known`
+// names the children — TypeScript holds it to the option type — and rejects any other key.
+function resolveFlat<T>(opt: T, known: NoInfer<KnownKeys<T>>, path: string): Record<keyof KnownKeys<T>, Scalar> {
+	checkKeys(opt, known, path);
 	const inherited = scalarOf(opt);
-	const obj = opt && typeof opt === 'object' ? (opt as Partial<Record<K, Scalar>>) : undefined;
-	const out = {} as Record<K, Scalar>;
-	for (const k of keys) out[k] = leaf(obj?.[k], inherited, true);
+	const obj = opt && typeof opt === 'object' ? (opt as Record<string, unknown>) : undefined;
+	const out = {} as Record<keyof KnownKeys<T>, Scalar>;
+	for (const key of Object.keys(known) as (keyof KnownKeys<T> & string)[]) out[key] = leaf(obj?.[key], inherited, true);
 	return out;
 }
 
@@ -175,7 +178,25 @@ function resolveFlat<K extends string>(opt: unknown, keys: readonly K[]): Record
  * applies at every level below it. `layers: false` is the v6 equivalent of the v5 `empty` style,
  * and `layers: 0.5` dims the entire map.
  */
-export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions): ResolvedLayerGroups {
+export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, path = 'layers'): ResolvedLayerGroups {
+	checkKeys(
+		opts,
+		{
+			land: true,
+			water: true,
+			roads: true,
+			transit: true,
+			buildings: true,
+			sites: true,
+			airport: true,
+			pois: true,
+			boundaries: true,
+			markings: true,
+			labels: true,
+			icons: true,
+		},
+		path
+	);
 	// A top-level scalar cascades to every group; previously it was silently ignored, so
 	// `layers: false` returned a fully-populated style.
 	const o: LayerGroupOptions =
@@ -201,16 +222,40 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions):
 	const roads = o.roads && typeof o.roads === 'object' ? o.roads : undefined;
 	const streetsInherited = scalarOf(roads?.streets) ?? roadsInherited;
 	const streets = roads?.streets && typeof roads.streets === 'object' ? roads.streets : undefined;
+	checkKeys(
+		o.roads,
+		{ motorways: true, highways: true, streets: true, paths: true, footway: true, steps: true },
+		`${path}.roads`
+	);
+	checkKeys(
+		roads?.streets,
+		{ residential: true, service: true, pedestrian: true, track: true, bus: true },
+		`${path}.roads.streets`
+	);
 
 	// `icons` is a cross-cutting alias for the icon symbol groups (POIs, road markings, transit stops):
 	// it acts as their fallback default, overridden by a more specific option on any of those groups.
 	const icons = scalarOf(o.icons);
 	const transitInherited = scalarOf(o.transit);
 	const transit = o.transit && typeof o.transit === 'object' ? o.transit : undefined;
+	checkKeys(o.transit, { rail: true, aerialways: true, ferries: true, stops: true }, `${path}.transit`);
 
 	return {
-		land: resolveFlat(o.land, ['forest', 'vegetation', 'rock', 'wetland', 'sand', 'glacier', 'agriculture', 'urban']),
-		water: resolveFlat(o.water, ['ocean', 'rivers', 'lakes', 'piers']),
+		land: resolveFlat(
+			o.land,
+			{
+				forest: true,
+				vegetation: true,
+				rock: true,
+				wetland: true,
+				sand: true,
+				glacier: true,
+				agriculture: true,
+				urban: true,
+			},
+			`${path}.land`
+		),
+		water: resolveFlat(o.water, { ocean: true, rivers: true, lakes: true, piers: true }, `${path}.water`),
 		roads: {
 			motorways: leaf(roads?.motorways, roadsInherited, true),
 			highways: leaf(roads?.highways, roadsInherited, true),
@@ -236,9 +281,13 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions):
 		sites: leaf(o.sites, undefined, true),
 		airport: leaf(o.airport, undefined, true),
 		pois: leaf(o.pois, icons, true),
-		boundaries: resolveFlat(o.boundaries, ['country', 'state']),
+		boundaries: resolveFlat(o.boundaries, { country: true, state: true }, `${path}.boundaries`),
 		markings: leaf(o.markings, icons, true),
-		labels: resolveFlat(o.labels, ['places', 'streets', 'states', 'countries', 'addresses', 'water']),
+		labels: resolveFlat(
+			o.labels,
+			{ places: true, streets: true, states: true, countries: true, addresses: true, water: true },
+			`${path}.labels`
+		),
 		icons: leaf(o.icons, undefined, true),
 	};
 }

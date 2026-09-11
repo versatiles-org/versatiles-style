@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 export type LayoutOptions = {
 	scale?: number | { labels?: number; icons?: number };
 	spacing?: number | { labels?: number; icons?: number };
@@ -8,7 +9,10 @@ export type ResolvedLayout = {
 	spacing: { labels: number; icons: number };
 };
 
-export function resolveLayout(layout?: LayoutOptions): ResolvedLayout {
+export function resolveLayout(layout?: LayoutOptions, path = 'layout'): ResolvedLayout {
+	checkKeys(layout, { scale: true, spacing: true }, path);
+	checkKeys(layout?.scale, { labels: true, icons: true }, `${path}.scale`);
+	checkKeys(layout?.spacing, { labels: true, icons: true }, `${path}.spacing`);
 	const scale = layout?.scale;
 	const spacing = layout?.spacing;
 	return {

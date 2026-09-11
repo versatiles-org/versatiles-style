@@ -64,11 +64,13 @@ function minimizeThemed<T extends { theme?: ThemeOptions }>(
 
 /** The smallest `OsmOptions` that builds the same style as `options`. */
 export function minimizeOsmOptions(options: OsmOptions = {}): OsmOptions {
+	resolveOsm(options); // rejects unknown keys; the resolved result is not needed
 	return minimizeThemed(options, (theme) => resolveOsm({ theme }), 'colorful');
 }
 
 /** The smallest `SatelliteOptions` that builds the same style as `options`. */
 export function minimizeSatelliteOptions(options: SatelliteOptions = {}): SatelliteOptions {
+	resolveSatellite(options); // rejects unknown keys; the resolved result is not needed
 	const { osmOverlay, ...rest } = options;
 	const out = (withoutDefaults(rest, resolveSatellite()) ?? {}) as SatelliteOptions;
 	if (osmOverlay === false) return { ...out, osmOverlay: false };

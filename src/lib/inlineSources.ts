@@ -1,3 +1,4 @@
+import { checkKeys } from '../options/keys.js';
 import type { StyleSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/urls.js';
 import { loadTileSource } from './loadTileSource.js';
@@ -22,6 +23,7 @@ export async function inlineSources(
 	style: StyleSpecification,
 	options?: { fetch?: FetchLike }
 ): Promise<StyleSpecification> {
+	checkKeys(options, { fetch: true }, 'inlineSources');
 	const sources: Record<string, unknown> = { ...(style.sources as Record<string, unknown>) };
 
 	await Promise.all(

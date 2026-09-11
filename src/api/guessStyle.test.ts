@@ -246,4 +246,12 @@ describe('guessStyle() — url validation', () => {
 		}) as unknown as typeof fetch;
 		await expect(guessStyle('https://tiles.example.com/tiles.json', { fetch: failing })).resolves.toStrictEqual(blank);
 	});
+
+	it('falls back to a blank style for an unknown option key, without downloading anything', async () => {
+		const fetch = vi.fn(async () => jsonResponse({ tiles: ['https://t/{z}/{x}/{y}'] }));
+		await expect(
+			guessStyle('https://tiles.example.com/tiles.json', { fetch, bse: 'x' } as never)
+		).resolves.toStrictEqual(blank);
+		expect(fetch).not.toHaveBeenCalled();
+	});
 });

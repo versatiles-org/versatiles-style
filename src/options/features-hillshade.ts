@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 export type HillshadeOptions =
 	| boolean
 	| {
@@ -18,7 +19,12 @@ export type ResolvedHillshade =
 			anchor: 'map' | 'viewport';
 	  };
 
-export function resolveHillshade(hillshade?: HillshadeOptions): ResolvedHillshade {
+export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade'): ResolvedHillshade {
+	checkKeys(
+		hillshade,
+		{ exaggeration: true, shadowColor: true, highlightColor: true, accentColor: true, anchor: true },
+		path
+	);
 	if (!hillshade) return false;
 	const h = typeof hillshade === 'object' ? hillshade : {};
 	return {

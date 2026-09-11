@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 import type { PropertyValueSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 /**
@@ -56,8 +57,13 @@ const ATMOSPHERE_BLEND: PropertyValueSpecification<number> = ['interpolate', ['l
  * colours into `defaults` and `resolveOptions()`, so a resolved object fed back in as options pinned
  * the sky — edit `colors.water` on top of it and the sky no longer followed.
  */
-export function resolveSky(sky?: boolean | SkyOptions): ResolvedSky {
+export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSky {
 	if (sky === false) return false;
+	checkKeys(
+		sky,
+		{ skyColor: true, horizonColor: true, skyHorizonBlend: true, horizonFogBlend: true, atmosphereBlend: true },
+		path
+	);
 	const o = typeof sky === 'object' ? sky : undefined;
 	return {
 		...(o?.skyColor !== undefined ? { skyColor: o.skyColor } : {}),

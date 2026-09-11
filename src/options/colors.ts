@@ -1,3 +1,4 @@
+import { checkKeys, type KnownKeys } from './keys.js';
 import type { ResolvedTheme } from './theme.js';
 import { getPaletteColors } from '../themes/index.js';
 
@@ -117,7 +118,10 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'labelWater',
 ] as const;
 
-export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions): ResolvedColors {
+const COLOR_KEYS = Object.fromEntries(colorOptionsKeys.map((key) => [key, true])) as KnownKeys<ColorsOptions>;
+
+export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions, path = 'colors'): ResolvedColors {
+	checkKeys(overrides, COLOR_KEYS, path);
 	const base = getPaletteColors(theme.palette, theme.darkMode);
 	if (!overrides) return { ...base };
 	const result = { ...base };

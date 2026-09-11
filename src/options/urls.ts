@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 import { resolveUrl } from '../lib/index.js';
 import type { TileJSONSpecification } from '../types/index.js';
 import type { SpriteEntries } from './sprite.js';
@@ -81,7 +82,8 @@ function resolveTileSource(base: string, value: TileSource | undefined, fallback
 	return resolveUrl(base, value ?? fallback);
 }
 
-export function resolveOsmUrls(urls?: OsmUrlsOptions): ResolvedOsmUrls {
+export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOsmUrls {
+	checkKeys(urls, { base: true, osm: true, elevation: true, glyphsPattern: true, sprite: true, fetch: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
@@ -92,7 +94,12 @@ export function resolveOsmUrls(urls?: OsmUrlsOptions): ResolvedOsmUrls {
 	};
 }
 
-export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions): ResolvedSatelliteUrls {
+export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions, path = 'urls'): ResolvedSatelliteUrls {
+	checkKeys(
+		urls,
+		{ base: true, satellite: true, osm: true, elevation: true, glyphsPattern: true, sprite: true, fetch: true },
+		path
+	);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		satellite: resolveTileSource(base, urls?.satellite, '/tiles/satellite/tiles.json'),

@@ -28,6 +28,13 @@
 - A source is emitted with **either** `url` **or** `tiles`, never both — MapLibre gives explicit source options precedence over the document it fetches, so emitting both means fetching a TileJSON and then discarding it.
 - `fetchTileJSON` gets a TileJSON when you need one at build time; `inlineSources` resolves an already-built style into a self-contained one.
 
+**Unknown option keys are rejected.** Every options object is checked against the option types, and
+a key they do not have throws an error naming its full path — and, for a v5 name, its v6 replacement:
+`osm: unknown option "textScale" — in v6 this is "layout.scale.labels"`. The unknown keys of one
+options object are reported together. Keys set to `undefined` are ignored, and the contents of a pre-fetched TileJSON
+passed in `urls` are not options, so they are not checked. `guessStyle()` keeps its never-throws
+contract: unknown keys in its options count as an invalid argument and yield the blank style.
+
 ---
 
 ## Shared Types
@@ -672,8 +679,7 @@ closest of the five, and `shadow`→`gray`+dark is approximate — `shadow` has 
 
 **Colour keys were renamed.** v5's 41 `colors` keys became 45: 7 kept their name
 (`boundary`, `building`, `glacier`, `label`, `labelHalo`, `land`, `water`), 34 gained a group prefix, and 4 are new
-(`background`, `siteSports`, `labelHousenumber`, `labelWater`). v6 ignores keys it does not know, so a
-v5 colour override that is not renamed has no effect and raises no error.
+(`background`, `siteSports`, `labelHousenumber`, `labelWater`). A v5 colour key that is not renamed is rejected with an error naming its v6 key.
 
 | v5             | v6                  |
 | -------------- | ------------------- |

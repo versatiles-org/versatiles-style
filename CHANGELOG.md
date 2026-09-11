@@ -30,9 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   throwing, so they behave like the type guards their signatures always claimed. The throwing
   behaviour, with its descriptive validation messages, moved to the new
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
+- **Unknown option keys now throw** instead of being silently ignored. `osm()`, `satellite()`, their
+  `resolveOptions`/`minimizeOptions`/`toCode`, `inlineSources()` and `fetchTileJSON()` reject any
+  key they do not know, with an error naming the unknown keys and, for a v5 name, its v6
+  replacement (`osm: unknown option "textScale" — in v6 this is "layout.scale.labels"`).
+  `guessStyle()` returns its blank style instead, keeping its never-throws contract.
 - The `colors` keys were renamed to group-prefixed names (`wood` → `natureWood`, `streetbg` →
   `roadStreetBg`, `poi` → `labelPoi`, …): 34 of the 41 v5 keys changed. See the table under
-  "Migration from v5" in `API_DESIGN.md`. A v5 key that is not renamed is ignored without an error.
+  "Migration from v5" in `API_DESIGN.md`. A v5 key that is not renamed is rejected with an error naming its v6 name.
 - `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
   expose the same array.
 - **Pedestrian squares are now labelled.** `label-street-pedestrian-zone` reads Shortbread's

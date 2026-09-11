@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 export type TextOptions = {
 	language?: string;
 	languageStrict?: boolean;
@@ -15,7 +16,8 @@ export type ResolvedText = {
 const DEFAULT_FONT_NORMAL = 'noto_sans_regular';
 const DEFAULT_FONT_BOLD = 'noto_sans_bold';
 
-export function resolveText(text?: TextOptions): ResolvedText {
+export function resolveText(text?: TextOptions, path = 'text'): ResolvedText {
+	checkKeys(text, { language: true, languageStrict: true, fontNormal: true, fontBold: true }, path);
 	let language = text?.language ?? 'local';
 	if (language === 'user') {
 		language = (typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : undefined) ?? 'local';

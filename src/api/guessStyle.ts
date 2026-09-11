@@ -4,6 +4,7 @@ import type { FetchLike } from '../options/index.js';
 import { DEFAULT_BASE } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.js';
 import { osm } from './osm.js';
+import { checkKeys } from '../options/keys.js';
 import { satellite } from './satellite.js';
 
 /** Options for {@link guessStyle}. */
@@ -188,6 +189,8 @@ export async function guessStyle(url: string, options?: GuessStyleOptions): Prom
 	// style rather than surfacing. Previously the argument check and the download sat outside, so
 	// the documented "never throws" contract was false for both.
 	try {
+		// An unknown option key is an invalid argument like any other: blank style, and no download.
+		checkKeys(options, { base: true, fetch: true }, 'guessStyle');
 		if (!url || typeof url !== 'string') throw new TypeError('guessStyle: url must be a non-empty string');
 
 		url = resolveUrl(options?.base ?? DEFAULT_BASE, url);

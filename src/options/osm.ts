@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 import {
 	resolveColors,
 	resolveLayerGroups,
@@ -40,20 +41,37 @@ export type ResolvedOsm = ResolvedOsmOverlay & {
 };
 
 export function resolveOsm(options?: OsmOptions): ResolvedOsm {
-	const theme = resolveTheme(options?.theme);
-	const colors = resolveColors(theme, options?.colors);
+	checkKeys(
+		options,
+		{
+			theme: true,
+			layers: true,
+			text: true,
+			layout: true,
+			colors: true,
+			recolor: true,
+			urls: true,
+			features: true,
+			sun: true,
+			sky: true,
+			projection: true,
+		},
+		'osm'
+	);
+	const theme = resolveTheme(options?.theme, undefined, 'osm.theme');
+	const colors = resolveColors(theme, options?.colors, 'osm.colors');
 
 	return {
-		urls: resolveOsmUrls(options?.urls),
-		features: resolveOsmFeatures(options?.features),
-		sun: resolveSun(options?.sun),
-		sky: resolveSky(options?.sky),
+		urls: resolveOsmUrls(options?.urls, 'osm.urls'),
+		features: resolveOsmFeatures(options?.features, 'osm.features'),
+		sun: resolveSun(options?.sun, 'osm.sun'),
+		sky: resolveSky(options?.sky, 'osm.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,
-		layers: resolveLayerGroups(options?.layers),
-		text: resolveText(options?.text),
-		layout: resolveLayout(options?.layout),
+		layers: resolveLayerGroups(options?.layers, 'osm.layers'),
+		text: resolveText(options?.text, 'osm.text'),
+		layout: resolveLayout(options?.layout, 'osm.layout'),
 		colors,
-		recolor: resolveRecolor(options?.recolor),
+		recolor: resolveRecolor(options?.recolor, 'osm.recolor'),
 	};
 }

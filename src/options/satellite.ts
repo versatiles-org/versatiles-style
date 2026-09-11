@@ -1,3 +1,4 @@
+import { checkKeys } from './keys.js';
 import {
 	resolveProjection,
 	resolveSatelliteFeatures,
@@ -60,6 +61,11 @@ function overlayDefaults(overlay: boolean | OsmOverlayOptions | undefined): OsmO
 }
 
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
+	checkKeys(
+		options,
+		{ urls: true, osmOverlay: true, raster: true, features: true, sun: true, sky: true, projection: true },
+		'satellite'
+	);
 	// The overlay is on unless explicitly disabled: a bare `satellite()` gives a usable map rather
 	// than bare imagery, matching v5. Only `false` turns it off — `undefined` must not be treated
 	// as `false`, which is the defect that shipped `satellite/style` with no labels.
@@ -67,15 +73,16 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// v5 built the satellite overlay from `graybeard`; `gray` is its successor and the least
 	// saturated palette, so roads and labels stay out of the imagery's way. An explicit
 	// `osmOverlay.theme` still wins.
-	const osmOverlay = overlay === false ? false : resolveOsmOverlay(overlayDefaults(overlay), 'gray');
+	const osmOverlay =
+		overlay === false ? false : resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay');
 
 	return {
-		urls: resolveSatelliteUrls(options?.urls),
-		features: resolveSatelliteFeatures(options?.features),
-		sun: resolveSun(options?.sun),
-		sky: resolveSky(options?.sky),
+		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),
+		features: resolveSatelliteFeatures(options?.features, 'satellite.features'),
+		sun: resolveSun(options?.sun, 'satellite.sun'),
+		sky: resolveSky(options?.sky, 'satellite.sky'),
 		projection: resolveProjection(options?.projection),
-		raster: resolveSatelliteRaster(options?.raster),
+		raster: resolveSatelliteRaster(options?.raster, 'satellite.raster'),
 		osmOverlay,
 	};
 }

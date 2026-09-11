@@ -1,3 +1,4 @@
+import { checkKeys } from '../options/keys.js';
 import type { TileJSONSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/urls.js';
 import { loadTileSource } from './loadTileSource.js';
@@ -10,5 +11,6 @@ import { loadTileSource } from './loadTileSource.js';
  * `osm.languages()`. To resolve an already-built style instead, use `inlineSources()`.
  */
 export async function fetchTileJSON(url: string, options?: { fetch?: FetchLike }): Promise<TileJSONSpecification> {
+	checkKeys(options, { fetch: true }, 'fetchTileJSON');
 	return loadTileSource(url, options?.fetch);
 }
