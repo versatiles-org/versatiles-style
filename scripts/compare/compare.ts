@@ -18,6 +18,7 @@
  * altered property is listed for review.
  */
 
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
@@ -29,6 +30,41 @@ const V5_BASE = 'https://tiles.versatiles.org/assets/styles';
 const DIR = new URL('.', import.meta.url).pathname;
 const CACHE_DIR = resolve(DIR, 'styles');
 const BASELINE_DIR = resolve(DIR, 'baseline');
+/** Where the baseline records what it was built from. A dotfile, so no variant name can collide. */
+const BASELINE_META = resolve(BASELINE_DIR, '.meta.json');
+
+type BaselineMeta = { commit: string; dirty: boolean; savedAt: string };
+
+function git(...args: string[]): string {
+	return execFileSync('git', args, { cwd: DIR, encoding: 'utf8' }).trim();
+}
+
+/**
+ * A baseline is a snapshot of whatever the tree built at the time, so it silently goes stale as
+ * commits land. Once it has, `--baseline` reports every change since — not the one being checked —
+ * and a run that should list one layer lists 138 per variant. Recording the commit lets the diff
+ * say so instead of leaving it to be noticed.
+ */
+function currentMeta(): BaselineMeta {
+	return {
+		commit: git('rev-parse', 'HEAD'),
+		dirty: git('status', '--porcelain', '--', '../../src').length > 0,
+		savedAt: new Date().toISOString(),
+	};
+}
+
+/** Commits between the baseline and HEAD, as one-line summaries; empty when they match. */
+function commitsSince(meta: BaselineMeta): string[] {
+	const head = git('rev-parse', 'HEAD');
+	if (head === meta.commit) return [];
+	try {
+		const log = git('log', '--oneline', `${meta.commit}..HEAD`, '--', '../../src');
+		return log ? log.split('\n') : [];
+	} catch {
+		// the baseline's commit is no longer reachable (rebase, amend) — say so rather than guess
+		return [`(baseline commit ${meta.commit.slice(0, 7)} is not an ancestor of HEAD — history was rewritten)`];
+	}
+}
 
 /** Examples shown per aggregated property change unless `--full` is given. */
 const SAMPLE = 4;
@@ -179,7 +215,10 @@ async function saveBaseline(): Promise<void> {
 		mkdirSync(dirname(file), { recursive: true });
 		writeFileSync(file, JSON.stringify(style, null, 2));
 	}
+	const meta = currentMeta();
+	writeFileSync(BASELINE_META, JSON.stringify(meta, null, 2));
 	console.log(`Baseline saved: ${variants.length} variants in ${BASELINE_DIR}`);
+	console.log(`  at ${meta.commit.slice(0, 7)}${meta.dirty ? ' plus uncommitted changes under src/' : ''}`);
 	console.log('Make your change, then run `npm run compare -- --baseline`.');
 }
 
@@ -200,6 +239,29 @@ async function compareBaseline(full: boolean, names: string[]): Promise<void> {
 		'ends up in a shipped style; anything listed should be an intended consequence.',
 		'',
 	];
+
+	// Older baselines predate the metadata file; they still diff, but nothing can be said about age.
+	const meta = existsSync(BASELINE_META)
+		? (JSON.parse(readFileSync(BASELINE_META, 'utf8')) as BaselineMeta)
+		: undefined;
+	const since = meta ? commitsSince(meta) : [];
+	if (!meta) {
+		console.warn('Baseline has no commit record — its age is unknown. Re-save it to get staleness checks.');
+	} else if (since.length > 0) {
+		const warning = [
+			`**Baseline is ${since.length} commit(s) behind HEAD under \`src/\`** — this report includes`,
+			'everything those commits changed, not only the working-tree edit being checked:',
+			'',
+			...since.map((line) => `- \`${line}\``),
+			'',
+			'If that is not intended, re-run `npm run compare -- --save-baseline` before the change.',
+			'',
+		];
+		report.push(...warning);
+		console.warn(`\nWARNING: baseline is ${since.length} commit(s) behind HEAD under src/:`);
+		for (const line of since) console.warn(`  ${line}`);
+		console.warn('The diff below includes those commits, not just your working-tree change.\n');
+	}
 
 	let changedVariants = 0;
 	let missing = 0;
