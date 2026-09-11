@@ -13,6 +13,7 @@ const MOCK_SUN: ResolvedSun = {
 	altitude: 35,
 	color: '#fff5e0',
 	intensity: 0.5,
+	anchor: 'map',
 };
 
 function baseStyle(): StyleSpecification {
