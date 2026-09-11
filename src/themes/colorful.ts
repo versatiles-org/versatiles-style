@@ -1,4 +1,3 @@
-import { calculateDarkModeColors } from '../color/index.js';
 import type { ResolvedColors } from '../options/colors.js';
 import type { PaletteDefinition } from './types.js';
 
@@ -52,10 +51,53 @@ const light: ResolvedColors = {
 };
 
 // Light colors are taken directly from the v5 Colorful palette.
-// Dark colors are derived by inverting HSL lightness (L → 100 – L), matching Eclipse.
-export const colorful: PaletteDefinition = {
-	light,
-	get dark() {
-		return calculateDarkModeColors(light);
-	},
+const dark: ResolvedColors = {
+	background: '#282725',
+	land: '#282725',
+	water: '#0C1C2A',
+	glacier: '#2D2D2D',
+	natureWood: '#2B3B1D',
+	natureGrass: '#2C3923',
+	naturePark: '#383F1F',
+	natureAgriculture: '#292D17',
+	natureSand: '#2A2A22',
+	natureRock: '#2A2922',
+	natureWetland: '#2A362F',
+	natureLeisure: '#2B2F25',
+	areaResidential: '#2B2826',
+	areaCommercial: '#2E2829',
+	areaIndustrial: '#2B271C',
+	areaWaste: '#3E3B2B',
+	areaBurial: '#31332F',
+	siteConstruction: '#5959591A',
+	siteEducation: '#2B2B0020',
+	siteHospital: '#C752511A',
+	siteDanger: '#FF76654D',
+	sitePrison: '#2C252B1A',
+	siteParking: '#302E2D',
+	siteSports: '#29272426',
+	building: '#312C27',
+	buildingBg: '#393734',
+	roadStreet: '#525252',
+	roadStreetBg: '#353432',
+	roadMotorway: '#694710',
+	roadMotorwayBg: '#5A3104',
+	roadTrunk: '#695D2B',
+	roadTrunkBg: '#5A3104',
+	transitRail: '#474E54',
+	transitSubway: '#45525C',
+	transitCycle: '#24292D',
+	transitFoot: '#302732',
+	boundary: '#575770',
+	boundaryDisputed: '#4A4956',
+	label: '#DEDEF0',
+	labelHalo: '#000000CC',
+	labelShield: '#000000',
+	labelSymbol: '#9E9BA2',
+	labelPoi: '#84848466',
+	labelHousenumber: '#C5C0BB4D',
+	labelWater: '#7D8893',
 };
+
+// Derived from `colorful` against a dark land (see ./index.ts); adjust by hand from here.
+export const colorful: PaletteDefinition = { light, dark };

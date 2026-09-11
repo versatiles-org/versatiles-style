@@ -21,8 +21,12 @@ export const PALETTES: ReadonlyArray<Palette> = [
 	'toner-dark',
 ] as const;
 
-// Each palette file defines a light theme and derives its dark one (`calculateDarkModeColors`) on
-// access, so a dark theme costs nothing until it is used.
+// Each palette file defines its light and its dark theme as colour tables. `colorful` (light) is the
+// reference; the other nine were derived from it. Each colour keeps its theme's hue, takes a chroma
+// relative to colorful's, and gets the lightness at which its contrast against the land matches
+// colorful's, scaled per theme: stronger nature fills in `natural`, softer fills in `muted` and
+// `gray`, much stronger lines in `toner`. The dark themes do the same against a dark land, with water
+// darker and everything else lighter than it, and streets lighter than their casings.
 const PALETTE_COLORS: Record<Palette, () => ResolvedColors> = {
 	colorful: () => colorful.light,
 	'colorful-dark': () => colorful.dark,

@@ -21,9 +21,9 @@ export type ThemeOptions = Palette;
 export type ResolvedTheme = Palette;
 
 /**
- * v5 style names and the v6 theme that reproduces each most closely, chosen by comparing per-colour
- * RGB distance against the published v5 styles (see "Migration from v5" in API_DESIGN.md). `shadow`
- * is the one loose match — v6 has no close equivalent — the other three measure near-exact.
+ * v5 style names and the v6 theme closest to each. The mapping was chosen by per-colour RGB distance
+ * against the published v5 styles; the v6 themes have since been retuned, so it names the closest
+ * theme in character rather than an exact colour match (see "Migration from v5" in API_DESIGN.md).
  */
 export const V5_STYLE_THEMES = {
 	eclipse: 'colorful-dark',

@@ -55,9 +55,8 @@ export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] 
 	//
 	// The v5 palettes were removed in v6, but `tiles.versatiles.org/assets/styles/<name>/…` still
 	// serves them and anyone pointing MapLibre at a URL (rather than installing the package) would
-	// get a 404 on upgrade. These regenerate the old names from their closest v6 equivalent, chosen
-	// by comparing per-colour RGB distance against the published v5 styles — see the migration table
-	// in API_DESIGN.md. Deprecated: drop them in 7.0.
+	// get a 404 on upgrade. These regenerate the old names from their closest v6 theme — see the
+	// migration table in API_DESIGN.md. Deprecated: drop them in 7.0.
 	for (const { name, theme } of LEGACY_ALIASES) {
 		variants.push({ name: `${name}/style`, build: () => osm({ theme, features }) });
 		variants.push({ name: `${name}/en`, build: () => osm({ theme, text: { language: 'en' }, features }) });

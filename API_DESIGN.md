@@ -695,9 +695,10 @@ only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → 
 `guessStyle` never throws, the old option names do not fail loudly — they are unknown keys, which yield
 a blank style — so this is one to grep for. It returns a Promise in both forms.
 
-The palette mappings above were chosen by comparing per-colour RGB distance against the published v5
-styles: `graybeard`→`gray` and `eclipse`→`colorful-dark` are near-exact, `neutrino`→`muted` is the
-closest of the five, and `shadow`→`gray-dark` is approximate — `shadow` has no close v6 equivalent. A v5 style name passed as `theme` is rejected with an error naming its v6 theme.
+The palette mappings above name the closest v6 theme in character. They were chosen by per-colour RGB
+distance against the published v5 styles, but the v6 themes have since been retuned against `colorful`,
+so none of the four reproduces its v5 style exactly. A v5 style name passed as `theme` is rejected with
+an error naming its v6 theme.
 
 **Colour keys were renamed.** v5's 41 `colors` keys became 45: 7 kept their name
 (`boundary`, `building`, `glacier`, `label`, `labelHalo`, `land`, `water`), 34 gained a group prefix, and 4 are new
