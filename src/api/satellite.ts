@@ -136,7 +136,6 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 		if (resolved.osmOverlay) {
 			applySky(style, {
 				skyColor: resolved.osmOverlay?.colors.water,
-				horizonColor: resolved.osmOverlay?.colors.background,
 				...resolved.sky,
 			});
 		} else {

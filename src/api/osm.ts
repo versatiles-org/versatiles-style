@@ -152,7 +152,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	// The sky follows the palette: its `water` for the sky, its `background` for the horizon.
 	if (resolved.sky) {
-		applySky(style, { skyColor: resolved.colors.water, horizonColor: resolved.colors.background, ...resolved.sky });
+		applySky(style, { skyColor: resolved.colors.water, ...resolved.sky });
 	}
 	applyProjection(style, resolved.projection);
 
