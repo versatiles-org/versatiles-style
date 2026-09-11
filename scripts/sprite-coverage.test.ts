@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import config from './config/sprites.js';
+import { spriteName } from './lib/icons.js';
 import { getStyleVariants } from '../src/variants.js';
 
-// Sprite ids are `<sheet>:<group>-<name>` (e.g. `base:icon-cafe`), see SPRITES.md.
+// Sprite ids are `<sheet>:<group>-<name>` (e.g. `base:icon-cafe`), or `icons:<name>` for the ungrouped
+// `icons` sheet; see SPRITES.md.
 //
 // Two failure modes this guards against:
 //  1. a layer references an icon the sheet does not contain — MapLibre renders nothing, silently;
 //  2. an icon is built into `base` that no style ever uses — dead weight in every download (#20).
 //
-// `extras` is exempt from (2): it is an opt-in public sheet of icons for users to place themselves,
-// so it is expected to be unreferenced by the built-in styles.
+// `extras` and `icons` are exempt from (2): they are opt-in public sheets of icons for users to place
+// themselves, so they are expected to be unreferenced by the built-in styles.
 
 const SHEET_ID_RE = /^[a-z0-9_-]+:[a-z0-9_-]+$/i;
 
@@ -18,7 +20,7 @@ function availableIds(): Set<string> {
 	const ids = new Set<string>();
 	for (const [sheet, groups] of Object.entries(config.spritesheets)) {
 		for (const [group, set] of Object.entries(groups)) {
-			for (const name of Object.keys(set.icons)) ids.add(`${sheet}:${group}-${name}`);
+			for (const name of Object.keys(set.icons)) ids.add(`${sheet}:${spriteName(group, name, set)}`);
 		}
 	}
 	return ids;
@@ -70,8 +72,8 @@ describe('sprite coverage', () => {
 		expect(unused, 'unused icons ship in every download — drop them or use them (#20)').toEqual([]);
 	});
 
-	it('`extras` is a user-facing sheet, so the built-in styles do not reference it', () => {
-		const used = [...referencedIds().keys()].filter((id) => id.startsWith('extras:'));
-		expect(used, '`extras` is opt-in for users; built-in styles should not depend on it').toEqual([]);
+	it('`extras` and `icons` are user-facing sheets, so the built-in styles do not reference them', () => {
+		const used = [...referencedIds().keys()].filter((id) => id.startsWith('extras:') || id.startsWith('icons:'));
+		expect(used, 'the public sheets are opt-in for users; built-in styles should not depend on them').toEqual([]);
 	});
 });

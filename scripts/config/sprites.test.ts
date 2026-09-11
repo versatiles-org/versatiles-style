@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import config from './sprites.js';
 import type { IconSpec } from '../lib/icons.js';
-import { iconSrc, loadIcons, svgSize } from '../lib/icons.js';
+import { iconSrc, loadIcons, spriteName, svgSize } from '../lib/icons.js';
 
 // The sprite config maps ~180 sprite names onto source files under `icons/<source>/`. loadIcons()
 // reads each one and throws if it is missing — so building the icon list is itself the existence
@@ -35,7 +35,7 @@ describe('sprite config', () => {
 		}
 	});
 
-	// Picker metadata is published inside the sprite JSON for BOTH sheets — `extras` so users can
+	// Picker metadata is published inside the sprite JSON for EVERY sheet — `extras` and `icons` so users can
 	// find an icon, `base` so a style editor can offer the ones the style itself draws. An icon
 	// without a title is one nobody can identify in a list.
 	it('gives every icon a title', () => {
@@ -43,7 +43,7 @@ describe('sprite config', () => {
 		for (const [sheet, groups] of Object.entries(config.spritesheets)) {
 			for (const [group, set] of Object.entries(groups)) {
 				for (const [name, spec] of Object.entries(set.icons)) {
-					if (!spec.title) untitled.push(`${sheet}:${group}-${name}`);
+					if (!spec.title) untitled.push(`${sheet}:${spriteName(group, name, set)}`);
 				}
 			}
 		}
@@ -58,7 +58,7 @@ describe('sprite config', () => {
 				for (const [name, spec] of Object.entries(set.icons)) {
 					const own = new Set([name, name.replace(/_/g, ' '), spec.title.toLowerCase()]);
 					for (const a of spec.aliases ?? []) {
-						if (own.has(a.toLowerCase())) echoes.push(`${sheet}:${group}-${name} → "${a}"`);
+						if (own.has(a.toLowerCase())) echoes.push(`${sheet}:${spriteName(group, name, set)} → "${a}"`);
 					}
 				}
 			}
@@ -74,7 +74,8 @@ describe('sprite config', () => {
 				for (const [name, spec] of Object.entries(set.icons)) {
 					if (!spec.center) continue;
 					const [x, y] = spec.center;
-					if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) bad.push(`${sheet}:${group}-${name} → [${x}, ${y}]`);
+					if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1))
+						bad.push(`${sheet}:${spriteName(group, name, set)} → [${x}, ${y}]`);
 				}
 			}
 		}

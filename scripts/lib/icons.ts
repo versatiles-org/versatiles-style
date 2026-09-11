@@ -66,9 +66,16 @@ export type IconSets = Record<
 	{
 		useSDF?: boolean;
 		size: number;
+		/** Whether sprite names carry the group (`icon-cafe`). Default true; the single-group `icons` sheet leaves it off. */
+		prefix?: boolean;
 		icons: Record<string, IconSpec>;
 	}
 >;
+
+/** An icon's sprite name within its sheet: `<group>-<name>`, or `<name>` where the group sets `prefix: false`. */
+export function spriteName(group: string, name: string, set: { prefix?: boolean }): string {
+	return set.prefix === false ? name : `${group}-${name}`;
+}
 
 export function iconSrc(spec: IconSpec): string {
 	return spec.src;
@@ -126,7 +133,7 @@ export function loadIcons(iconSets: IconSets, dirIcons: string): Icon[] {
 			const { src } = spec;
 			icons.push(
 				new Icon({
-					name: `${setName}-${iconName}`,
+					name: spriteName(setName, iconName, iconSet),
 					src,
 					filename: resolve(dirIcons, src + '.svg'),
 					size,

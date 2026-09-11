@@ -1,12 +1,13 @@
 # Sprite sheets
 
-VersaTiles Style ships its icons as **two separate sprite sheets**. They are built from the SVGs
+VersaTiles Style ships its icons as **three separate sprite sheets**. They are built from the SVGs
 under [`icons/`](./icons) by [`scripts/build-sprites.ts`](./scripts/build-sprites.ts) (configured in
 [`scripts/config/sprites.ts`](./scripts/config/sprites.ts)) and served at
 `…/assets/sprites/<sheet>{,@2x}.{png,json}`.
 
 MapLibre loads any number of sprite sources, each under its own `id`, so a reference is written as
-`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:shape-star`).
+`` `<sheet>:<group>-<name>` `` (e.g. `base:icon-cafe`, `extras:shape-star`) — except in the single-group
+`icons` sheet, whose ids are just `` `icons:<name>` `` (e.g. `icons:bicycle`).
 
 **Sprite names and filenames are decoupled.** The SVGs under [`icons/`](./icons) are organized by
 **provenance**, not by sheet, and keep their upstream filename — `base:icon-alcohol_shop` is drawn
@@ -38,10 +39,11 @@ and 363 characters while matching nothing under equality.
 `<metadata id="license">` block declaring CC0, which Maki imports never do because they arrive CC0
 already. `icons/versatiles/source.json` records how that was measured.
 
-| Sheet    | Loaded by default | Stability                         | Purpose                                                          |
-| -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------- |
-| `base`   | ✅ yes            | **internal** — may change anytime | Everything the style needs to draw a Shortbread map              |
-| `extras` | ❌ opt-in         | **public API — add-only**         | Extra icons you can place on the map yourself (pins, symbols, …) |
+| Sheet    | Loaded by default | Stability                         | Purpose                                                                      |
+| -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| `base`   | ✅ yes            | **internal** — may change anytime | Everything the style needs to draw a Shortbread map                          |
+| `extras` | ❌ opt-in         | **public API — add-only**         | Marks you place on the map yourself: pins, badges, shapes, symbols, patterns |
+| `icons`  | ❌ opt-in         | **public API — add-only**         | Pictograms you place on the map yourself: vehicles, weather, hazards, …      |
 
 ## `base` — internal
 
@@ -55,11 +57,12 @@ sprite: [{ id: 'base', url: '/assets/sprites/base' }];
 **Do not rely on `base:*` icon names in your own layers.** They exist to serve the style and may be
 renamed, added, or removed with any release.
 
-## `extras` — public API (add-only)
+## `extras` and `icons` — public API (add-only)
 
-`extras` is a curated, standalone sheet of general-purpose icons — map pins, geometric symbols,
-arrows, and assorted pictograms — meant for **you** to reference from your own layers (custom
-markers, annotations, etc.). It is **not** loaded by default; opt in by listing it alongside `base`:
+`extras` and `icons` are curated, standalone sheets meant for **you** to reference from your own
+layers (custom markers, annotations, etc.): `extras` holds map pins, badges, geometric shapes,
+symbols and fill patterns, `icons` holds pictograms. Neither is loaded by default; opt in by listing
+the ones you need alongside `base`:
 
 ```js
 import { osm } from '@versatiles/style';
@@ -69,87 +72,89 @@ const style = await osm({
     sprite: [
       { id: 'base', url: '/assets/sprites/base' },
       { id: 'extras', url: '/assets/sprites/extras' },
+      { id: 'icons', url: '/assets/sprites/icons' },
     ],
   },
 });
 
 // then, in a custom layer:
 // { "type": "symbol", "layout": { "icon-image": "extras:shape-star" } }
+// { "type": "symbol", "layout": { "icon-image": "icons:bicycle" } }
 ```
 
 ### Stability guarantee
 
-`extras` is a **public API**. Because downstream maps reference these names directly:
+`extras` and `icons` are a **public API**. Because downstream maps reference these names directly:
 
 - **Add-only.** Icon names are only ever **added** — never renamed or removed. An existing
-  `extras:<group>-<name>` will keep resolving in future releases.
+  `extras:<group>-<name>` or `icons:<name>` will keep resolving in future releases.
 - **Public domain.** All icons are **CC0-1.0**, so they are safe to use without attribution.
 - **Documented.** The full set below is the contract; the
   [`extras-api` test](./scripts/extras-api.test.ts) fails if this list and the built sprite ever
   disagree, so the two cannot drift apart.
 
-### What belongs in `extras`
+### What belongs in `extras` and `icons`
 
-`extras` holds what **you** place on the map; `base` holds what the **style** draws. So an icon
-belongs in `extras` only if `base` does not already have it — the two sheets never carry the same
-icon twice. Duplicating one would add bytes to an opt-in sheet and leave a reader guessing which of
+`extras` and `icons` hold what **you** place on the map; `base` holds what the **style** draws. So an
+icon belongs in a public sheet only if `base` does not already have it — the sheets never carry the
+same icon twice. Duplicating one would add bytes to an opt-in sheet and leave a reader guessing which of
 the two sheets the icon they want actually lives in.
 
 That rule is enforced, not just stated: the [`extras-api` test](./scripts/extras-api.test.ts) fails
-on any `extras` name that also exists in `base`, with **no exception list** — one would quietly
+on any public name that also exists in `base` (or in both `extras` and `icons`), with **no exception list** — one would quietly
 become the place duplicates go. Two names collided before v6 shipped and both were resolved rather
-than waved through: the extras `icon-information` was dropped (`base` already draws an "i"), and
+than waved through: the pictogram `information` was dropped (`base` already draws an "i"), and
 `base:marking-arrow` was renamed `base:marking-oneway`, which is what it actually marks.
 
 > Adding an icon? Put the SVG under `icons/<source>/` keeping its upstream filename, map a sprite
-> name to it in `scripts/config/sprites.ts` under `spritesheets.extras`, **and** add that name to
-> the list below in the same change. Removing or renaming an `extras` icon is a breaking change —
+> name to it in `scripts/config/icons-extras.ts` or `scripts/config/icons-icons.ts`, **and** add that
+> name to the list below in the same change. Removing or renaming a public icon is a breaking change —
 > avoid it.
 
 ### Icon list
 
-#### `icon` group
+#### `icons` sheet
 
-Pictograms — things you can point at. Vehicles and street furniture the style itself never draws,
+Pictograms — things you can point at. The sheet has no groups, so its ids carry no group prefix. Vehicles and street furniture the style itself never draws,
 plus weather and hazard marks, so a transit tracker, a charging-price map or a storm feed can label
 its own features without shipping a sheet.
 
-`extras:icon-ambulance` · `extras:icon-anchor` · `extras:icon-apartment` · `extras:icon-avalanche` ·
-`extras:icon-ballot_box` · `extras:icon-battery` · `extras:icon-bbq` · `extras:icon-beach` ·
-`extras:icon-bee` · `extras:icon-bicycle` · `extras:icon-binoculars` · `extras:icon-bird` ·
-`extras:icon-bookmark` · `extras:icon-bridge` · `extras:icon-building` · `extras:icon-buoy` ·
-`extras:icon-bus_stop` · `extras:icon-butterfly` · `extras:icon-cable_car` ·
-`extras:icon-calculator` · `extras:icon-calendar` · `extras:icon-camera` · `extras:icon-car` ·
-`extras:icon-cat` · `extras:icon-charging_station` · `extras:icon-child` · `extras:icon-clock` ·
-`extras:icon-cloud` · `extras:icon-cloud_sun` · `extras:icon-co2` · `extras:icon-coin` ·
-`extras:icon-compass` · `extras:icon-conifer` · `extras:icon-cow` · `extras:icon-crane` ·
-`extras:icon-credit_card` · `extras:icon-dam` · `extras:icon-deer` · `extras:icon-dollar` ·
-`extras:icon-download` · `extras:icon-droplet` · `extras:icon-eclipse` · `extras:icon-euro` ·
-`extras:icon-eye` · `extras:icon-factory` · `extras:icon-family` · `extras:icon-fence` ·
-`extras:icon-ferry` · `extras:icon-filter` · `extras:icon-fire` · `extras:icon-fire_truck` ·
-`extras:icon-first_aid` · `extras:icon-fish` · `extras:icon-flood` · `extras:icon-flower` ·
-`extras:icon-fog` · `extras:icon-footprint` · `extras:icon-globe` · `extras:icon-guitar` ·
-`extras:icon-headphones` · `extras:icon-heat_pump` · `extras:icon-helicopter` ·
-`extras:icon-helping_hand` · `extras:icon-horse_riding` · `extras:icon-hot_air_balloon` ·
-`extras:icon-house` · `extras:icon-key` · `extras:icon-layers` · `extras:icon-leaf` ·
-`extras:icon-lifebuoy` · `extras:icon-lightning` · `extras:icon-link` · `extras:icon-lock` ·
-`extras:icon-mail` · `extras:icon-megaphone` · `extras:icon-microphone` · `extras:icon-moon` ·
-`extras:icon-motorcycle` · `extras:icon-mountain` · `extras:icon-museum` · `extras:icon-mushroom` ·
-`extras:icon-music` · `extras:icon-no_entry` · `extras:icon-nuclear` · `extras:icon-palette` ·
-`extras:icon-parking` · `extras:icon-paw` · `extras:icon-pedestrian` · `extras:icon-person` ·
-`extras:icon-play` · `extras:icon-plug` · `extras:icon-police_car` · `extras:icon-power_plant` ·
-`extras:icon-power_pole` · `extras:icon-price_tag` · `extras:icon-quay` · `extras:icon-radiation` ·
-`extras:icon-radiator` · `extras:icon-rain` · `extras:icon-rainbow` · `extras:icon-raised_fist` ·
-`extras:icon-receipt` · `extras:icon-rocket` · `extras:icon-roundabout` · `extras:icon-ruler` ·
-`extras:icon-sailboat` · `extras:icon-scooter` · `extras:icon-scuba_diver` · `extras:icon-search` ·
-`extras:icon-share` · `extras:icon-shield` · `extras:icon-siren` · `extras:icon-skyscraper` ·
-`extras:icon-snowflake` · `extras:icon-solar_panel` · `extras:icon-speaker` ·
-`extras:icon-speech_bubble` · `extras:icon-stamp` · `extras:icon-sun` · `extras:icon-surfer` ·
-`extras:icon-taxi` · `extras:icon-thermometer` · `extras:icon-ticket` · `extras:icon-tornado` ·
-`extras:icon-traffic_light` · `extras:icon-tree` · `extras:icon-truck` · `extras:icon-tunnel` ·
-`extras:icon-umbrella` · `extras:icon-van` · `extras:icon-warehouse` · `extras:icon-warning` ·
-`extras:icon-wave` · `extras:icon-whale` · `extras:icon-wheelchair` · `extras:icon-wifi` ·
-`extras:icon-wind` · `extras:icon-wind_turbine`
+`icons:ambulance` · `icons:anchor` · `icons:apartment` · `icons:avalanche` ·
+`icons:ballot_box` · `icons:battery` · `icons:bbq` · `icons:beach` ·
+`icons:bee` · `icons:bicycle` · `icons:binoculars` · `icons:bird` ·
+`icons:bookmark` · `icons:bridge` · `icons:building` · `icons:buoy` ·
+`icons:bus_stop` · `icons:butterfly` · `icons:cable_car` ·
+`icons:calculator` · `icons:calendar` · `icons:camera` · `icons:car` ·
+`icons:cat` · `icons:charging_station` · `icons:child` · `icons:clock` ·
+`icons:cloud` · `icons:cloud_sun` · `icons:co2` · `icons:coin` ·
+`icons:compass` · `icons:conifer` · `icons:cow` · `icons:crane` ·
+`icons:credit_card` · `icons:dam` · `icons:deer` · `icons:dollar` ·
+`icons:download` · `icons:droplet` · `icons:eclipse` · `icons:euro` ·
+`icons:eye` · `icons:factory` · `icons:family` · `icons:fence` ·
+`icons:ferry` · `icons:filter` · `icons:fire` · `icons:fire_truck` ·
+`icons:first_aid` · `icons:fish` · `icons:flood` · `icons:flower` ·
+`icons:fog` · `icons:footprint` · `icons:globe` · `icons:guitar` ·
+`icons:headphones` · `icons:heat_pump` · `icons:helicopter` ·
+`icons:helping_hand` · `icons:horse_riding` · `icons:hot_air_balloon` ·
+`icons:house` · `icons:key` · `icons:layers` · `icons:leaf` ·
+`icons:lifebuoy` · `icons:lightning` · `icons:link` · `icons:lock` ·
+`icons:mail` · `icons:megaphone` · `icons:microphone` · `icons:moon` ·
+`icons:motorcycle` · `icons:mountain` · `icons:museum` · `icons:mushroom` ·
+`icons:music` · `icons:no_entry` · `icons:nuclear` · `icons:palette` ·
+`icons:parking` · `icons:paw` · `icons:pedestrian` · `icons:person` ·
+`icons:play` · `icons:plug` · `icons:police_car` · `icons:power_plant` ·
+`icons:power_pole` · `icons:price_tag` · `icons:quay` · `icons:radiation` ·
+`icons:radiator` · `icons:rain` · `icons:rainbow` · `icons:raised_fist` ·
+`icons:receipt` · `icons:rocket` · `icons:roundabout` · `icons:ruler` ·
+`icons:sailboat` · `icons:scooter` · `icons:scuba_diver` · `icons:search` ·
+`icons:share` · `icons:shield` · `icons:siren` · `icons:skyscraper` ·
+`icons:snowflake` · `icons:solar_panel` · `icons:speaker` ·
+`icons:speech_bubble` · `icons:stamp` · `icons:sun` · `icons:surfer` ·
+`icons:taxi` · `icons:thermometer` · `icons:ticket` · `icons:tornado` ·
+`icons:traffic_light` · `icons:tree` · `icons:truck` · `icons:tunnel` ·
+`icons:umbrella` · `icons:van` · `icons:warehouse` · `icons:warning` ·
+`icons:wave` · `icons:whale` · `icons:wheelchair` · `icons:wifi` ·
+`icons:wind` · `icons:wind_turbine`
 
 #### `pattern` group
 
@@ -259,10 +264,10 @@ bicycle: { src: 'maki/bicycle', title: 'Bicycle', aliases: ['bike', 'cycling', '
 teardrop: { src: 'versatiles/teardrop', title: 'Map pin', aliases: ['pin', 'marker'], center: [0.5, 1] },
 ```
 
-which comes out as:
+which comes out as, in `icons.json` and `extras.json`:
 
 ```json
-"icon-bicycle":   { "width": 32, "height": 32, "x": 224, "y": 64, "pixelRatio": 1, "sdf": true,
+"bicycle":        { "width": 32, "height": 32, "x": 224, "y": 64, "pixelRatio": 1, "sdf": true,
                     "title": "Bicycle", "aliases": ["bike", "cycling", "cycle", "ride", "velo"] },
 "pin-teardrop_3": { "width": 32, "height": 38, "x": 64,  "y": 38, "pixelRatio": 1, "sdf": true,
                     "title": "Map pin 3", "aliases": ["pin", "marker", …], "center": [0.5, 1] }
@@ -331,7 +336,7 @@ draw underneath shows through in its own color:
 {
   type: 'symbol',
   layout: {
-    'icon-image': 'extras:icon-mountain',
+    'icon-image': 'icons:mountain',
     'icon-size': 0.55,         // the well is 12.8 px across; a 22 px glyph must come down to fit
     'icon-offset': [0, -31.5], // 17.3 ÷ 0.55 — see below
     'icon-allow-overlap': true,
@@ -352,7 +357,7 @@ wide, so a 22 px glyph needs `icon-size` of about 0.55 to sit inside it.
 ## Naming convention
 
 Every icon name — in **all** sheets and groups — follows one convention. It keeps names
-predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<name>`.
+predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<name>` (`icons:<name>` in the ungrouped `icons` sheet).
 
 1. **Characters.** Lowercase ASCII only: `a`–`z`, `0`–`9`, `_`. No uppercase, spaces, or hyphens
    inside a name. (The `-` in a reference separates the group from the name; it never appears
@@ -397,7 +402,7 @@ predictable and greppable, and it fits the reference grammar `<sheet>:<group>-<n
 
 ### Known deviations (pre-convention)
 
-None — every icon in both sheets follows the convention. (Icon _names_ are American English; the
+None — every icon in every sheet follows the convention. (Icon _names_ are American English; the
 OSM tag _values_ they match on, e.g. `theatre` or `garden_centre`, keep OSM's own spelling.)
 
 ## Migrating sprite ids from v5
@@ -438,9 +443,11 @@ style rather than guessed:
 `icon-pub` now uses `icon-pint_glass` while `icon-biergarten` uses `icon-beer_mug`; in v5 both drew
 `icon-beer`.
 
-### The `markers` sheet is now `extras`
+### The `markers` sheet is now `extras` and `icons`
 
-v5 shipped a second sheet called `markers`; v6 renames it `extras` and reorganizes it. Names were
+v5 shipped a second sheet called `markers`; v6 splits it into `extras` and `icons` and reorganizes it.
+v5's `icon` group became the `icons` sheet, whose ids drop the group prefix: `markers:icon-bicycle` is
+`icons:bicycle`. Names were
 audited against the naming convention above — several described where an icon was _used_ rather than
 what it _depicts_ — and the groups were split by the kind of mark they hold.
 
@@ -453,25 +460,25 @@ prefix swap alone is not enough. In particular every geometric shape moved from 
 
 So `markers:symbol-star` becomes `extras:shape-star` — the group changes, not just the sheet prefix.
 Everything not listed here or in the table below keeps its group, so `markers:symbol-arrow` is still
-`extras:symbol-arrow`.
+`extras:symbol-arrow`, and `markers:icon-<name>` is `icons:<name>`.
 
-| v5 `markers:` id        | v6 `extras:` id                                | why                                       |
+| v5 `markers:` id        | v6 id                                          | why                                       |
 | ----------------------- | ---------------------------------------------- | ----------------------------------------- |
-| `icon-animal_shelter`   | `icon-cat`                                     | it draws a cat, not a facility            |
-| `icon-aquarium`         | `icon-fish`                                    | it draws a fish                           |
-| `icon-home`             | `icon-house`                                   | the object, not the concept               |
-| `icon-karaoke`          | `icon-microphone`                              | it draws a microphone                     |
-| `icon-park`             | `icon-tree`                                    | it draws a deciduous tree                 |
-| `icon-park1`            | `icon-conifer`                                 | a different species, not an alternate `2` |
-| `icon-roadblock`        | `icon-no_entry`                                | it draws the no-entry sign                |
-| `icon-water`            | `icon-droplet`                                 | it draws a droplet                        |
-| `icon-entrance1`        | `symbol-entrance`                              | an abstract mark, not a pictogram         |
-| `icon-heart`            | `symbol-heart`                                 | a shape, like `star` and `diamond`        |
+| `icon-animal_shelter`   | `icons:cat`                                    | it draws a cat, not a facility            |
+| `icon-aquarium`         | `icons:fish`                                   | it draws a fish                           |
+| `icon-home`             | `icons:house`                                  | the object, not the concept               |
+| `icon-karaoke`          | `icons:microphone`                             | it draws a microphone                     |
+| `icon-park`             | `icons:tree`                                   | it draws a deciduous tree                 |
+| `icon-park1`            | `icons:conifer`                                | a different species, not an alternate `2` |
+| `icon-roadblock`        | `icons:no_entry`                               | it draws the no-entry sign                |
+| `icon-water`            | `icons:droplet`                                | it draws a droplet                        |
+| `icon-entrance1`        | `extras:symbol-entrance`                       | an abstract mark, not a pictogram         |
+| `icon-heart`            | `extras:shape-heart`                           | a shape, like `star` and `diamond`        |
 | `icon-information`      | **dropped** — use `base:transport-information` | `base` already draws it                   |
-| `symbol-arrow1`         | `symbol-arrow2`                                | alternates now start at 2                 |
-| `symbol-arrow2`         | `symbol-arrow3`                                | shifted by the same renumbering           |
-| `symbol-marker`         | `pin-teardrop`                                 | moved to the `pin` group                  |
-| `symbol-marker_outline` | `pin-teardrop_outline`                         | moved to the `pin` group                  |
+| `symbol-arrow1`         | `extras:symbol-arrow2`                         | alternates now start at 2                 |
+| `symbol-arrow2`         | `extras:symbol-arrow3`                         | shifted by the same renumbering           |
+| `symbol-marker`         | `extras:pin-teardrop`                          | moved to the `pin` group                  |
+| `symbol-marker_outline` | `extras:pin-teardrop_outline`                  | moved to the `pin` group                  |
 
 > Watch the arrows: v5 `symbol-arrow1` and `symbol-arrow2` both shift by one, so a v5 map using
 > `markers:symbol-arrow2` wants `extras:symbol-arrow3` — a straight prefix swap silently gives you

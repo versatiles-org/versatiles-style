@@ -1,7 +1,7 @@
 // Icons for the `base` sheet — everything the style itself draws.
 //
 // `base` is INTERNAL: these names serve the style and may be renamed, added or removed with any
-// release. Do not reference them from your own layers; see icons-extras.ts for the public sheet.
+// release. Do not reference them from your own layers; see icons-extras.ts and icons-icons.ts for the public sheets.
 //
 // The key is the sprite name (`base:<group>-<key>`), the value is the file it is drawn from,
 // relative to `icons/` and without the `.svg`. The two are deliberately independent — see

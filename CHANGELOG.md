@@ -72,23 +72,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sprite sheet renamed `basics` → `base`**, and `/assets/sprites/basics/sprites` is no longer
   published. Most ids only need the new prefix, but 22 were renamed or split — see the mapping table
   in `SPRITES.md`.
-- **The `markers` sheet is now `extras`, and its ids moved groups — a prefix swap is not enough.**
-  v5's two groups (`icon`, `symbol`) became six: `badge`, `icon`, `pattern`, `pin`, `shape`,
-  `symbol`. Every geometric shape left `symbol` for `shape`, so `markers:symbol-star` is now
+- **The `markers` sheet is now split into `extras` and `icons`, and its ids moved — a prefix swap is not
+  enough.** v5's `icon` group became the `icons` sheet, whose ids drop the group prefix
+  (`markers:icon-bicycle` → `icons:bicycle`); `extras` keeps five groups: `badge`, `pattern`, `pin`,
+  `shape`, `symbol`. Every geometric shape left `symbol` for `shape`, so `markers:symbol-star` is now
   `extras:shape-star`, not `extras:symbol-star`. Names were also audited against the naming
   convention, because several described where an icon was _used_ rather than what it _draws_:
-  `icon-karaoke` → `icon-microphone`, `icon-aquarium` → `icon-fish`, `icon-animal_shelter` →
-  `icon-cat`, `icon-park`/`icon-park1` → `icon-tree`/`icon-conifer`, `icon-water` →
-  `icon-droplet`, `icon-roadblock` → `icon-no_entry`, `icon-home` → `icon-house`. `icon-heart` and
-  `icon-entrance` moved to `symbol`, `symbol-marker` became `pin-teardrop`, `icon-information` was
+  `icon-karaoke` → `icons:microphone`, `icon-aquarium` → `icons:fish`, `icon-animal_shelter` →
+  `icons:cat`, `icon-park`/`icon-park1` → `icons:tree`/`icons:conifer`, `icon-water` →
+  `icons:droplet`, `icon-roadblock` → `icons:no_entry`, `icon-home` → `icons:house`. `icon-heart` moved to
+  `extras:shape-heart` and `icon-entrance` to `extras:symbol-entrance`, `symbol-marker` became `pin-teardrop`, `icon-information` was
   dropped (`base` already draws one), and `symbol-arrow1`/`arrow2` shifted to `arrow2`/`arrow3` —
   so a v5 map using `markers:symbol-arrow2` wants `extras:symbol-arrow3` and a prefix swap would
   silently give it the wrong drawing. The full table is in `SPRITES.md`.
-- **`extras` grew from 38 icons to 234** and is a supported, add-only public API. Alongside the
-  existing shapes and arrows it now carries map pins (including numbered ones), numbered badges,
+- **The public icons grew from 38 to 234** — 96 in `extras`, 138 in `icons` — and both sheets are a
+  supported, add-only public API. They are separate sheets so a map that only places pins does not
+  download every pictogram. Alongside the existing shapes and arrows they now carry map pins (including numbered ones), numbered badges,
   tileable `fill-pattern` tiles, and pictograms for transport, weather and hazards, energy, nature,
   civic and commerce, culture and interface. All CC0.
-- **The sprite JSON now carries picker metadata.** Each entry in **both** sheets gains a `title` and
+- **The sprite JSON now carries picker metadata.** Each entry in **every** sheet gains a `title` and
   optional `aliases` for search, and entries that point somewhere other than their own middle gain a
   `center` as a fraction of the icon's box — a map pin's tip (`[0.5, 1]`) and every arrowhead. MapLibre ignores fields
   it does not know, so this is additive, and no second request is needed to build an icon picker.

@@ -73,4 +73,11 @@ describe('loadIcons', () => {
 		expect(icons[0].size).toBe(24);
 		expect(icons[0].svg).toBe(svgContent);
 	});
+
+	it('leaves the group out of the sprite name where the group sets prefix: false', () => {
+		const iconSets = {
+			icon: { size: 22, prefix: false, icons: { bicycle: { src: 'maki/bicycle', title: 'Bicycle' } } },
+		};
+		expect(loadIcons(iconSets, dirIcons)[0].name).toBe('bicycle');
+	});
 });
