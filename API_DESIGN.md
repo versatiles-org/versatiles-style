@@ -342,6 +342,7 @@ osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the 
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
 osm.colors(palette: Palette, darkMode: boolean): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
+osm.supportsLandcover(tileJSON: TileJSONSpecification): boolean
 osm.slots: {
   belowLabels:  string  // below text labels, above icons/symbols
   belowSymbols: string  // below all symbols, above streets
@@ -349,14 +350,40 @@ osm.slots: {
   belowFills:   string  // below all fill layers
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
 osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
+osm.minimizeOptions(options?: OsmOptions): OsmOptions
+osm.toCode(options?: OsmOptions): string
 ```
 
-`osm.defaults` and `osm.resolveOptions()` return **derived values already filled in**:
-`sky.skyColor` and `sky.horizonColor` are taken from the resolved `colors.water` and
-`colors.background`. Feed a resolved object back in as options and those two are pinned —
-change `colors.water` afterwards and the sky no longer follows it. A UI that pre-fills its state
-from `defaults` should leave `sky` out unless it offers sky controls of its own. These are the only
-derived fields; everything else in a resolved object can be round-tripped as-is.
+`osm.defaults` and `osm.resolveOptions()` leave `sky.skyColor` and `sky.horizonColor` unset unless
+you set them: `osm()` derives them from the palette's `water` and `background` when it builds. So a
+resolved object can be fed straight back in as options — edit `colors.water` on top of it and the sky
+still follows.
+
+`osm.supportsLandcover(tileJSON)` tells whether a tileset can back `features.landcover`: it is true
+when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
+means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
+
+`osm.minimizeOptions(options)` returns the smallest options object that builds the same style: every
+value equal to its default is dropped, with colours compared against the chosen palette's own
+defaults. `osm(osm.minimizeOptions(x))` builds the same style as `osm(x)` — including for a full
+`osm.resolveOptions()` object that a UI has edited — so it is the thing to store in a URL or a config
+file.
+
+`osm.toCode(options)` returns a runnable snippet for those options, minimised first:
+
+```ts
+osm.toCode({ theme: 'gray', layout: { scale: { labels: 1.5 } } });
+// import { osm, inlineSources } from '@versatiles/style';
+//
+// const style = await inlineSources(osm({
+//   theme: "gray",
+//   layout: { scale: { labels: 1.5 } }   (formatted over several lines)
+// }));
+```
+
+It always goes through `inlineSources`, because the VersaTiles tile server publishes relative tile
+URLs that MapLibre cannot resolve on its own. A custom `urls.fetch` function cannot be written out and
+is left out.
 
 `osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
 at the leaves — useful for building a UI over the options, or for finding a layer to target with
@@ -396,11 +423,17 @@ satellite.slots: {
   belowRaster:  string // below the satellite raster layer
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
 satellite.resolveOptions(options?: SatelliteOptions): ResolvedSatelliteOptions
+satellite.minimizeOptions(options?: SatelliteOptions): SatelliteOptions
+satellite.toCode(options?: SatelliteOptions): string
 ```
 
-`satellite.defaults` and `satellite.resolveOptions()` carry the same two derived fields, taken from
-the overlay's palette — or a generic sky blue when `osmOverlay` is `false`. The same caution applies:
-pre-filling `sky` stops it following the overlay toggle and the overlay's colours.
+Likewise `satellite.defaults` and `satellite.resolveOptions()` leave the two sky colours unset;
+`satellite()` takes them from the overlay's palette, or a generic sky blue when `osmOverlay` is
+`false`.
+
+`satellite.minimizeOptions` and `satellite.toCode` work the same way. Overlay colours are compared
+against the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise — and an overlay
+left at its defaults minimises away entirely, since the overlay is on by default.
 
 The OSM vector overlay (roads, boundaries, labels and POIs over the imagery) is rendered by default.
 `true` uses the overlay's own defaults, `false` gives bare imagery with no vector layers, and an

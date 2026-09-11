@@ -47,7 +47,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 		urls: resolveOsmUrls(options?.urls),
 		features: resolveOsmFeatures(options?.features),
 		sun: resolveSun(options?.sun),
-		sky: resolveSky(options?.sky, { skyColor: colors.water, horizonColor: colors.background }),
+		sky: resolveSky(options?.sky),
 		projection: resolveProjection(options?.projection),
 		theme,
 		layers: resolveLayerGroups(options?.layers),

@@ -73,15 +73,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 		urls: resolveSatelliteUrls(options?.urls),
 		features: resolveSatelliteFeatures(options?.features),
 		sun: resolveSun(options?.sun),
-		// With an overlay the sky follows its palette, exactly as `osm()` does — otherwise a dark or
-		// `toner` overlay got a bright sky-blue sky, the defect #126 fixed for `osm()` but not here.
-		// Bare imagery has no palette to follow and keeps `resolveSky`'s generic sky blue.
-		sky: resolveSky(
-			options?.sky,
-			osmOverlay === false
-				? undefined
-				: { skyColor: osmOverlay.colors.water, horizonColor: osmOverlay.colors.background }
-		),
+		sky: resolveSky(options?.sky),
 		projection: resolveProjection(options?.projection),
 		raster: resolveSatelliteRaster(options?.raster),
 		osmOverlay,

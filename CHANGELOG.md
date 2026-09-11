@@ -87,6 +87,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The v5 style names (`eclipse`, `graybeard`, `neutrino`, `shadow`, `empty`) are **still published**
   as aliases of their closest v6 equivalent, so existing `assets/styles/<name>/…` URLs keep working.
   They are deprecated and will be dropped in 7.0.
+- `defaults` and `resolveOptions()` on `osm` and `satellite` no longer fill in `sky.skyColor` and
+  `sky.horizonColor`. The style still derives them from the palette when it is built, so a resolved
+  object can be passed back to `osm()`/`satellite()` without pinning the sky to the old colours.
+- An unknown palette name now throws `theme: unknown palette "…"`, listing the valid palettes, instead
+  of `TypeError: Cannot read properties of undefined (reading 'light')`. The v5 style names are not
+  accepted as themes.
+
+### Features
+
+- `osm.supportsLandcover(tileJSON)` reports whether a tileset carries the low-zoom landcover
+  extension that `features.landcover` needs.
+- `osm.minimizeOptions(options)` / `satellite.minimizeOptions(options)` return the smallest options
+  object that builds the same style — for storing a style in a URL or config file.
+- `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
+  wrapped in `inlineSources`.
+
 
 ## [5.13.1] - 2026-08-15
 

@@ -293,3 +293,32 @@ describe('osm()', () => {
 		expect(langs).not.toContain('name');
 	});
 });
+
+// Upstreamed from maplibre-versatiles-styler, which hardcoded the threshold (z7) — D2 in the 6.0
+// release notes. The threshold is now derived from the land table, so these pin its value.
+describe('osm.supportsLandcover', () => {
+	const withLand = (land?: { minzoom?: number }) =>
+		({
+			tilejson: '3.0.0',
+			tiles: ['https://example.com/{z}/{x}/{y}'],
+			vector_layers: land ? [{ id: 'land', fields: {}, ...land }] : [{ id: 'water_polygons', fields: {} }],
+		}) as never;
+
+	it('detects a land layer reaching below plain Shortbread', () => {
+		expect(osm.supportsLandcover(withLand({ minzoom: 0 }))).toBe(true);
+		expect(osm.supportsLandcover(withLand({ minzoom: 6 }))).toBe(true);
+	});
+
+	it('rejects plain Shortbread, where forest starts at z7', () => {
+		expect(osm.supportsLandcover(withLand({ minzoom: 7 }))).toBe(false);
+		expect(osm.supportsLandcover(withLand({ minzoom: 10 }))).toBe(false);
+	});
+
+	it('treats missing metadata as "no landcover"', () => {
+		expect(osm.supportsLandcover(withLand({}))).toBe(false);
+		expect(osm.supportsLandcover(withLand())).toBe(false);
+		expect(osm.supportsLandcover({ tilejson: '3.0.0', tiles: ['https://example.com/{z}/{x}/{y}'] } as never)).toBe(
+			false
+		);
+	});
+});

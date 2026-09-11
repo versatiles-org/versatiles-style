@@ -1,4 +1,4 @@
-import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
+import type { StyleSpecification } from '../types/index.js';
 import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
@@ -12,6 +12,8 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
+import { minimizeSatelliteOptions } from '../options/minimize.js';
+import { styleCode } from './code.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -130,7 +132,16 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	}
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
-	applySky(style, resolved.sky);
+	// With an overlay the sky follows its palette, exactly as `osm()` does — otherwise a dark or
+	// `toner` overlay got a bright sky-blue sky, the defect #126 fixed for `osm()` but not here.
+	// Bare imagery has no palette to follow and keeps the generic sky blue.
+	applySky(
+		style,
+		resolved.sky,
+		resolved.osmOverlay === false
+			? undefined
+			: { skyColor: resolved.osmOverlay.colors.water, horizonColor: resolved.osmOverlay.colors.background }
+	);
 	applyProjection(style, resolved.projection);
 
 	return style;
@@ -152,21 +163,23 @@ export const satellite = Object.assign(satelliteFn, {
 		return resolveSatellite();
 	},
 
-	/** Return language codes available in a given TileJSON. */
-	languages(tileJSON: TileJSONSpecification): string[] {
-		const langs = new Set<string>();
-		const vl = (tileJSON as { vector_layers?: Array<{ fields?: Record<string, unknown> }> }).vector_layers ?? [];
-		for (const layer of vl) {
-			for (const key of Object.keys(layer.fields ?? {})) {
-				if (key.startsWith('name_')) langs.add(key.slice(5));
-			}
-		}
-		return [...langs].sort();
-	},
+	/** Return language codes available in a given TileJSON. The overlay is an `osm()` style, so its labels read the same fields. */
+	languages: osm.languages,
 
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SAT_SLOT_IDS,
 
 	/** Resolve raw SatelliteOptions to a fully validated ResolvedSatellite. */
 	resolveOptions: resolveSatellite,
+
+	/**
+	 * The smallest options object that builds the same style. Overlay colours are compared against
+	 * the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise.
+	 */
+	minimizeOptions: minimizeSatelliteOptions,
+
+	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
+	toCode(options?: SatelliteOptions): string {
+		return styleCode('satellite', minimizeSatelliteOptions(options));
+	},
 } as const);

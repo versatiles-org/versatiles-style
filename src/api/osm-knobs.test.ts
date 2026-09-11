@@ -610,3 +610,26 @@ describe('osm() knob: projection', () => {
 		expect(osm.resolveOptions({ projection: 'vertical-perspective' }).projection).toBe('vertical-perspective');
 	});
 });
+
+// Resolved options used to carry the sky already derived from the palette, so feeding them back in
+// pinned it: edit `colors.water` on top of `osm.resolveOptions()` and the sky stayed put. They now
+// leave the two colours unset and `osm()` derives them when it builds.
+describe('osm() resolved options round-trip without pinning the sky', () => {
+	it('leaves the palette-derived sky colours out of resolved options', () => {
+		const sky = osm.resolveOptions().sky;
+		expect(sky).not.toBe(false);
+		expect(sky).not.toHaveProperty('skyColor');
+		expect(sky).not.toHaveProperty('horizonColor');
+	});
+
+	it('lets the sky follow a colour edit made on top of resolved defaults', () => {
+		const resolved = osm.resolveOptions({ theme: 'muted' });
+		const style = osm({ ...resolved, colors: { ...resolved.colors, water: '#123456' } });
+		expect(style.sky).toMatchObject({ 'sky-color': '#123456' });
+	});
+
+	it('rebuilds the identical style from resolved defaults', () => {
+		for (const theme of ['colorful', { palette: 'gray', darkMode: true }] as const)
+			expect(JSON.stringify(osm(osm.resolveOptions({ theme })))).toBe(JSON.stringify(osm({ theme })));
+	});
+});

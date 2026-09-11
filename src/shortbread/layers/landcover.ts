@@ -179,3 +179,10 @@ export const LANDCOVER_LAYERS: ReadonlySet<string> = new Set([
 	'land-glacier',
 	'water-area',
 ]);
+
+/**
+ * The earliest zoom at which plain Shortbread carries any `land` kind, derived from the `LAND` table
+ * rather than written down again. A tileset whose `land` layer starts below it is carrying the
+ * low-zoom landcover extension — see `osm.supportsLandcover`.
+ */
+export const LAND_APPEAR_MIN: number = Math.min(...LAND.map((def) => def.appear));

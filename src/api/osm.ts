@@ -15,6 +15,9 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
+import { minimizeOsmOptions } from '../options/minimize.js';
+import { styleCode } from './code.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
@@ -107,6 +110,14 @@ function getLanguages(tileJSON: TileJSONSpecification): string[] {
 	return [...langs].sort();
 }
 
+function supportsLandcover(tileJSON: TileJSONSpecification): boolean {
+	const layers = (tileJSON as TileJSONSpecificationVector).vector_layers ?? [];
+	const land = layers.find((layer) => layer.id === 'land');
+	// Missing metadata counts as "no": a style with landcover fills and no data behind them is worse
+	// than the plain Shortbread fade-ins.
+	return land?.minzoom !== undefined && land.minzoom < LAND_APPEAR_MIN;
+}
+
 // ── Main osm() function ───────────────────────────────────────────────────────
 
 function osmFn(options?: OsmOptions): StyleSpecification {
@@ -141,7 +152,8 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	}
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
-	applySky(style, resolved.sky);
+	// The sky follows the palette: its `water` for the sky, its `background` for the horizon.
+	applySky(style, resolved.sky, { skyColor: resolved.colors.water, horizonColor: resolved.colors.background });
 	applyProjection(style, resolved.projection);
 
 	// 7. Post-process: recolor
@@ -177,9 +189,26 @@ export const osm = Object.assign(osmFn, {
 	/** Return the language codes available in a given TileJSON. */
 	languages: getLanguages,
 
+	/**
+	 * Whether a tileset can back `features.landcover`: its `land` layer starts below the zoom where
+	 * plain Shortbread's first land kind appears, so it carries the low-zoom landcover extension.
+	 */
+	supportsLandcover,
+
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SLOT_IDS,
 
 	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */
 	resolveOptions: resolveOsm,
+
+	/**
+	 * The smallest options object that builds the same style: every value equal to its default is
+	 * dropped, colours compared against the chosen palette. For storing a style in a URL or config.
+	 */
+	minimizeOptions: minimizeOsmOptions,
+
+	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
+	toCode(options?: OsmOptions): string {
+		return styleCode('osm', minimizeOsmOptions(options));
+	},
 } as const);

@@ -18,7 +18,8 @@ export type SkyOptions = {
 	atmosphereBlend?: PropertyValueSpecification<number>;
 };
 
-export type ResolvedSky = false | Required<SkyOptions>;
+export type ResolvedSky =
+	false | (Required<Omit<SkyOptions, 'skyColor' | 'horizonColor'>> & Pick<SkyOptions, 'skyColor' | 'horizonColor'>);
 
 /**
  * Per-palette sky, derived rather than invented: the sky takes the palette's own `water` colour —
@@ -29,6 +30,9 @@ export type ResolvedSky = false | Required<SkyOptions>;
  * dark mode and above a monochrome one in `toner` (issue #126).
  */
 export type SkyPaletteDefaults = { skyColor: string; horizonColor: string };
+
+/** Sky and horizon for a style with no palette to follow — bare satellite imagery. */
+export const GENERIC_SKY: SkyPaletteDefaults = { skyColor: '#87CEEB', horizonColor: '#ffffff' };
 
 /**
  * `atmosphere-blend` does two jobs with one number, and they want opposite values.
@@ -46,12 +50,18 @@ export type SkyPaletteDefaults = { skyColor: string; horizonColor: string };
  */
 const ATMOSPHERE_BLEND: PropertyValueSpecification<number> = ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0];
 
-export function resolveSky(sky?: boolean | SkyOptions, palette?: SkyPaletteDefaults): ResolvedSky {
+/**
+ * `skyColor` and `horizonColor` stay unset unless the caller set them. They are derived from the
+ * palette when the style is built (`applySky`), not here: resolving them here baked one palette's
+ * colours into `defaults` and `resolveOptions()`, so a resolved object fed back in as options pinned
+ * the sky — edit `colors.water` on top of it and the sky no longer followed.
+ */
+export function resolveSky(sky?: boolean | SkyOptions): ResolvedSky {
 	if (sky === false) return false;
 	const o = typeof sky === 'object' ? sky : undefined;
 	return {
-		skyColor: o?.skyColor ?? palette?.skyColor ?? '#87CEEB',
-		horizonColor: o?.horizonColor ?? palette?.horizonColor ?? '#ffffff',
+		...(o?.skyColor !== undefined ? { skyColor: o.skyColor } : {}),
+		...(o?.horizonColor !== undefined ? { horizonColor: o.horizonColor } : {}),
 		skyHorizonBlend: o?.skyHorizonBlend ?? 0.5,
 		horizonFogBlend: o?.horizonFogBlend ?? 0.5,
 		atmosphereBlend: o?.atmosphereBlend ?? ATMOSPHERE_BLEND,

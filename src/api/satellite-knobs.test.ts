@@ -373,3 +373,12 @@ describe('satellite() knob: projection', () => {
 		});
 	});
 });
+
+// Same guarantee as osm(): resolved options no longer pin the sky, so turning the overlay off on top
+// of `satellite.resolveOptions()` gives bare imagery its generic sky rather than the overlay's.
+describe('satellite() resolved options round-trip without pinning the sky', () => {
+	it('lets the sky follow the overlay toggle on top of resolved defaults', async () => {
+		const s = await build({ ...satellite.resolveOptions(), osmOverlay: false });
+		expect(s.sky).toMatchObject({ 'sky-color': '#87CEEB', 'horizon-color': '#ffffff' });
+	});
+});

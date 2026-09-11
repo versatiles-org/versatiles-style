@@ -204,28 +204,20 @@ describe('resolveSun', () => {
 });
 
 describe('resolveSky', () => {
-	it('fills all defaults', () => {
-		expect(resolveSky()).toMatchObject({
-			skyColor: '#87CEEB',
-			horizonColor: '#ffffff',
+	it('fills the blends but leaves the palette-derived colours unset', () => {
+		const sky = resolveSky();
+		expect(sky).toEqual({
 			skyHorizonBlend: 0.5,
 			horizonFogBlend: 0.5,
 			atmosphereBlend: ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0],
 		});
+		expect(sky).not.toHaveProperty('skyColor');
+		expect(sky).not.toHaveProperty('horizonColor');
 	});
 
-	it('takes sky and horizon from the palette when one is given', () => {
-		expect(resolveSky(true, { skyColor: '#123456', horizonColor: '#abcdef' })).toMatchObject({
-			skyColor: '#123456',
-			horizonColor: '#abcdef',
-		});
-	});
-
-	it('lets an explicit option beat the palette', () => {
-		expect(resolveSky({ skyColor: '#010203' }, { skyColor: '#123456', horizonColor: '#abcdef' })).toMatchObject({
-			skyColor: '#010203',
-			horizonColor: '#abcdef',
-		});
+	it('keeps colours the caller set, and only those', () => {
+		expect(resolveSky({ skyColor: '#010203' })).toMatchObject({ skyColor: '#010203' });
+		expect(resolveSky({ skyColor: '#010203' })).not.toHaveProperty('horizonColor');
 	});
 });
 
