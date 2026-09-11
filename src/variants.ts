@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite as satelliteFn } from './api/index.js';
-import { V5_STYLE_THEMES, type OsmFeaturesOptions, type Palette } from './options/index.js';
+import { V5_STYLE_THEMES, type OsmFeaturesOptions } from './options/index.js';
 
 export interface StyleVariant {
 	name: string;
@@ -13,10 +13,8 @@ const LEGACY_ALIASES = Object.entries(V5_STYLE_THEMES).map(([name, theme]) => ({
 export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
-	// Only the light themes are published under their own name. The dark themes are still generated
-	// from them rather than tuned by hand; the v5 dark names (`eclipse`, `shadow`) stay published as
-	// aliases below.
-	const palettes: Palette[] = ['colorful', 'natural', 'muted', 'gray', 'toner'];
+	// every theme, light and dark
+	const palettes = osm.palettes;
 
 	// Terrain variants enable terrain + hillshade, but let the caller's `features`
 	// override those defaults (and add landcover / buildings on top).

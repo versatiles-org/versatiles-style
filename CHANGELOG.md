@@ -113,7 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 - Every palette has a dark theme of its own: `colorful-dark`, `natural-dark`, `muted-dark`, `gray-dark`
-  and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting.
+  and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting. They are published
+  like the light themes (`assets/styles/colorful-dark/style.json`, `…/en.json`, `…-terrain/…`).
 - `osm.supportsLandcover(tileJSON)` reports whether a tileset carries the low-zoom landcover
   extension that `features.landcover` needs.
 - `osm.minimizeOptions(options)` / `satellite.minimizeOptions(options)` return the smallest options

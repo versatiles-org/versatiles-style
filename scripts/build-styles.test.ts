@@ -49,8 +49,8 @@ describe('Sprite Generation and Packaging', () => {
 		const { calls } = vi.mocked(packInstance.entry).mock;
 		const generatedFiles = calls.map((call) => call[0].name).sort();
 
-		// v6 palettes, plus the v5 names kept alive so their published URLs do not 404 (B1).
-		const palettes = ['colorful', 'natural', 'muted', 'gray', 'toner'];
+		// v6 themes, light and dark, plus the v5 names kept alive so their published URLs do not 404 (B1).
+		const palettes = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
 		const legacy = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
 		const expectedFiles = [...palettes, ...legacy].flatMap((style) => [
 			`${style}/style.json`,
