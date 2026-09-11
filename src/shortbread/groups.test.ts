@@ -46,18 +46,20 @@ describe('layer visibility gating', () => {
 
 	it('drops a nested sub-group while keeping its siblings', async () => {
 		const full = await idsFor();
-		expect(full.has('street-residential')).toBe(true);
+		// residential + unclassified are one merged layer (see MERGED_IDS in layers/index.ts); the
+		// `residential` sub-group owns both kinds, so gating it off drops the merged layer.
+		expect(full.has('street-minor')).toBe(true);
 
 		const ids = await idsFor({ roads: { streets: { residential: false } } });
-		expect(ids.has('street-residential')).toBe(false);
-		expect(ids.has('tunnel-street-residential')).toBe(false);
+		expect(ids.has('street-minor')).toBe(false);
+		expect(ids.has('tunnel-street-minor')).toBe(false);
 		expect(ids.has('street-service')).toBe(true); // sibling street kind
 		expect(ids.has('street-motorway')).toBe(true); // sibling road group
 	});
 
 	it('cascades a scalar to hide all road layers', async () => {
 		const ids = await idsFor({ roads: false });
-		for (const id of ['street-motorway', 'street-residential', 'way-footway', 'bridge-street-motorway'])
+		for (const id of ['street-motorway', 'street-minor', 'way-footway', 'bridge-street-motorway'])
 			expect(ids.has(id)).toBe(false);
 	});
 

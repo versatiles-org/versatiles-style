@@ -73,11 +73,11 @@ type LayerGroupOptions = {
           | boolean
           | number
           | {
-              residential?: boolean | number; // street-residential, street-livingstreet, street-unclassified
+              residential?: boolean | number; // street-minor (residential + unclassified), street-livingstreet
               service?: boolean | number; // street-service (driveways, parking aisles, access roads)
               pedestrian?: boolean | number; // street-pedestrian, street-pedestrian-zone
               track?: boolean | number; // street-track
-              bus?: boolean | number; // street-busway, street-busguideway
+              bus?: boolean | number; // street-bus (busway + bus_guideway)
             };
         paths?: boolean | number; // path, cycleway
         footway?: boolean | number; // footways and pedestrian paths

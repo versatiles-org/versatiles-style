@@ -182,7 +182,9 @@ describe('v5 style names are still published', () => {
 	it('each legacy alias renders a real style', () => {
 		for (const p of LEGACY_PALETTES) {
 			const style = byName(getStyleVariants(), `${p}/style`).build();
-			expect(style.layers.length, `${p} layer count`).toBeGreaterThan(300);
+			// A smoke floor, not a spec: it only has to catch an alias that renders an empty or
+			// stub style. The exact count moves whenever layers are added or merged (#51).
+			expect(style.layers.length, `${p} layer count`).toBeGreaterThan(250);
 			expect(Object.keys(style.sources)).toContain('versatiles-shortbread');
 		}
 	});

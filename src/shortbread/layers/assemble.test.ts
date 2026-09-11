@@ -46,10 +46,10 @@ describe('assembled layers', () => {
 
 	it('should render busway and bus_guideway as streets', async () => {
 		const ids = new Set((await layersFor('local')).map((l) => l.id));
-		expect(ids.has('street-busway')).toBe(true);
-		expect(ids.has('street-busguideway')).toBe(true);
-		expect(ids.has('bridge-street-busway')).toBe(true);
-		expect(ids.has('tunnel-street-busway')).toBe(true);
+		// both kinds are drawn by one merged `street-bus` layer per band (see MERGED_IDS)
+		expect(ids.has('street-bus')).toBe(true);
+		expect(ids.has('bridge-street-bus')).toBe(true);
+		expect(ids.has('tunnel-street-bus')).toBe(true);
 		expect(ids.has('transport-busway')).toBe(false);
 		expect(ids.has('transport-bus_guideway')).toBe(false);
 	});
@@ -96,7 +96,7 @@ describe('assembled layers', () => {
 
 		expect(indexOf(SLOT_BELOW_FILLS)).toBeLessThan(indexOf('water-ocean'));
 		expect(indexOf(SLOT_BELOW_FILLS)).toBeLessThan(indexOf('land-forest'));
-		expect(indexOf(SLOT_BELOW_STREETS)).toBeLessThan(indexOf('street-residential'));
+		expect(indexOf(SLOT_BELOW_STREETS)).toBeLessThan(indexOf('street-minor'));
 		expect(indexOf(SLOT_BELOW_STREETS)).toBeGreaterThan(indexOf('building'));
 		expect(indexOf(SLOT_BELOW_SYMBOLS)).toBeLessThan(indexOf('poi-amenity'));
 		expect(indexOf(SLOT_BELOW_SYMBOLS)).toBeGreaterThan(indexOf('bridge-street-motorway'));
@@ -162,17 +162,17 @@ describe('underground treatment', () => {
 	// exactly as they do on the surface. Listed exactly rather than skipped: if the treatment stops
 	// reaching another road this list grows and the test fails, and if one of these gains a cue the
 	// list shrinks and the test fails too, so the gap has to stay a deliberate decision.
+	// Merged layers appear once under their merged ID (see MERGED_IDS in layers/index.ts): the two
+	// bus kinds as `tunnel-street-bus`, and livingstreet/residential/unclassified bicycle overlays
+	// as `tunnel-street-minor-bicycle`.
 	const NO_COLOUR_HEADROOM = [
 		'tunnel-way-cycleway',
 		'tunnel-street-service',
-		'tunnel-street-busway',
-		'tunnel-street-busguideway',
+		'tunnel-street-bus',
 		'tunnel-street-track-bicycle',
 		'tunnel-street-pedestrian-bicycle',
 		'tunnel-street-service-bicycle',
-		'tunnel-street-livingstreet-bicycle',
-		'tunnel-street-residential-bicycle',
-		'tunnel-street-unclassified-bicycle',
+		'tunnel-street-minor-bicycle',
 	];
 
 	it('every tunnel road differs visibly from the same road on the surface', async () => {
@@ -208,5 +208,71 @@ describe('underground treatment', () => {
 			if (!differs) undifferentiated.push(road);
 		}
 		expect(undifferentiated).toStrictEqual(NO_COLOUR_HEADROOM);
+	});
+});
+
+// ── Layer merging (issue #51) ─────────────────────────────────────────────────────
+// `mergeIdenticalLayers` collapses adjacent runs that MapLibre would draw identically. These lock
+// the invariant in both directions: the merge is COMPLETE (nothing mergeable is left behind, so the
+// count cannot creep back up) and it is SOUND (it never merges what must stay separate).
+describe('identically-drawn layers are merged', () => {
+	const renderKey = (l: Record<string, unknown>): string => {
+		const { id, filter, ...rest } = l;
+		void id;
+		void filter;
+		return JSON.stringify(rest);
+	};
+
+	it('leaves no adjacent run that draws identically', async () => {
+		const layers = (await layersFor('local')) as unknown as Record<string, unknown>[];
+		const groups = osm.layerGroups;
+		const groupOf = new Map<string, string>();
+		const walk = (node: unknown, path: string[]): void => {
+			for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+				if (Array.isArray(v)) for (const id of v as string[]) groupOf.set(id, [...path, k].join('.'));
+				else walk(v, [...path, k]);
+			}
+		};
+		walk(groups, []);
+
+		const leftover: string[] = [];
+		for (let i = 1; i < layers.length; i++) {
+			const a = layers[i - 1];
+			const b = layers[i];
+			if (a.type === 'symbol' || b.type === 'symbol') continue;
+			if (a['source-layer'] === undefined || b['source-layer'] === undefined) continue;
+			if (groupOf.get(a.id as string) !== groupOf.get(b.id as string)) continue;
+			if (renderKey(a) === renderKey(b)) leftover.push(`${String(a.id)} + ${String(b.id)}`);
+		}
+		expect(leftover).toStrictEqual([]);
+	});
+
+	it('never merges symbol layers, whose order decides label collisions', async () => {
+		const ids = new Set((await layersFor('local')).map((l) => l.id));
+		// these draw identically and sit adjacent, but merging them would change which street name
+		// survives a collision, so each keeps its own layer
+		for (const id of ['label-street-pedestrian', 'label-street-residential', 'label-street-trunk'])
+			expect(ids.has(id), `${id} must stay a separate symbol layer`).toBe(true);
+	});
+
+	it('gives every layer a unique id', async () => {
+		const ids = (await layersFor('local')).map((l) => l.id);
+		expect(ids.length).toBe(new Set(ids).size);
+	});
+
+	it('keeps the merged ids addressable through osm.layerGroups', async () => {
+		const ids = new Set((await layersFor('local')).map((l) => l.id));
+		const listed = new Set<string>();
+		const walk = (node: unknown): void => {
+			for (const v of Object.values(node as Record<string, unknown>)) {
+				if (Array.isArray(v)) for (const id of v as string[]) listed.add(id);
+				else walk(v);
+			}
+		};
+		walk(osm.layerGroups);
+		// every layer the style emits is reachable from the group map — merging must not orphan one
+		expect([...ids].filter((id) => !listed.has(id) && !id.startsWith('slot-') && id !== 'background')).toStrictEqual(
+			[]
+		);
 	});
 });
