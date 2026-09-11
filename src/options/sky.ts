@@ -1,5 +1,4 @@
 import { checkKeys } from './keys.js';
-import type { PropertyValueSpecification, ColorSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 /**
  * Atmosphere above the horizon. `true` (the default) uses the defaults below, `false` omits the
@@ -11,14 +10,14 @@ import type { PropertyValueSpecification, ColorSpecification } from '@maplibre/m
  * flat 2D map therefore carries five paint properties it never draws; `sky: false` drops them.
  */
 export type SkyOptions = {
-	fogColor?: PropertyValueSpecification<ColorSpecification>;
-	horizonColor?: PropertyValueSpecification<ColorSpecification>;
-	skyColor?: PropertyValueSpecification<ColorSpecification>;
+	fogColor?: string;
+	horizonColor?: string;
+	skyColor?: string;
 
-	atmosphereBlend?: PropertyValueSpecification<number>;
-	fogGroundBlend?: PropertyValueSpecification<number>;
-	horizonFogBlend?: PropertyValueSpecification<number>;
-	skyHorizonBlend?: PropertyValueSpecification<number>;
+	atmosphereBlend?: number;
+	fogGroundBlend?: number;
+	horizonFogBlend?: number;
+	skyHorizonBlend?: number;
 };
 
 export type ResolvedSky = undefined | SkyOptions;

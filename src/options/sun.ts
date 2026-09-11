@@ -1,4 +1,3 @@
-import type { ColorSpecification, PropertyValueSpecification } from 'maplibre-gl';
 import { checkKeys } from './keys.js';
 
 export type SunOptions =
@@ -11,9 +10,9 @@ export type SunOptions =
 			/** The reference frame for the sun's position: 'map' anchors it to the map, 'viewport' to the screen. */
 			anchor?: 'map' | 'viewport';
 			/** The sun's color. */
-			color?: PropertyValueSpecification<ColorSpecification>;
+			color?: string;
 			/** The sun's intensity. */
-			intensity?: PropertyValueSpecification<number>;
+			intensity?: number;
 	  };
 
 export type ResolvedSun =
@@ -22,8 +21,8 @@ export type ResolvedSun =
 			direction: number;
 			altitude: number;
 			anchor: 'map' | 'viewport';
-			color?: PropertyValueSpecification<ColorSpecification>;
-			intensity?: PropertyValueSpecification<number>;
+			color?: string;
+			intensity?: number;
 	  };
 
 export function resolveSun(sun?: SunOptions, path = 'sun'): ResolvedSun {
