@@ -482,7 +482,7 @@ describe('osm() knob: sky', () => {
 		const colors = osm.colors('colorful');
 		expect((await build()).sky).toStrictEqual({
 			'sky-color': colors.water,
-			'horizon-color': colors.background,
+			'atmosphere-blend': 0,
 		});
 	});
 
@@ -571,7 +571,6 @@ describe('osm() sky defaults follow the palette', () => {
 			const colors = osm.colors(palette);
 			const s = sky(palette);
 			expect(s['sky-color'], palette).toBe(colors.water);
-			expect(s['horizon-color'], palette).toBe(colors.background);
 		}
 	});
 

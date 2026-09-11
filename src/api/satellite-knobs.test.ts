@@ -297,19 +297,19 @@ describe('satellite() knob: sky', () => {
 		const gray = osm.colors('gray');
 		expect(build().sky).toStrictEqual({
 			'sky-color': gray.water,
-			'horizon-color': gray.background,
+			'atmosphere-blend': 0,
 		});
 	});
 
 	it('follows an explicit overlay theme', async () => {
 		const dark = osm.colors('colorful-dark');
 		const s = build({ osmOverlay: { theme: 'colorful-dark' } });
-		expect(s.sky).toMatchObject({ 'sky-color': dark.water, 'horizon-color': dark.background });
+		expect(s.sky).toMatchObject({ 'sky-color': dark.water });
 	});
 
 	it('keeps the generic sky blue for bare imagery, which has no palette', async () => {
 		const s = build({ osmOverlay: false });
-		expect(s.sky).toStrictEqual({});
+		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
 	});
 
 	it('maps sky options onto style-spec properties', async () => {
@@ -376,6 +376,6 @@ describe('satellite() knob: projection', () => {
 describe('satellite() resolved options round-trip without pinning the sky', () => {
 	it('lets the sky follow the overlay toggle on top of resolved defaults', async () => {
 		const s = build({ ...satellite.resolveOptions(), osmOverlay: false });
-		expect(s.sky).toStrictEqual({});
+		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
 	});
 });
