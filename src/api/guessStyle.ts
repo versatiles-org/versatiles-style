@@ -1,17 +1,22 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
-import type { FetchLike } from '../options/index.js';
-import { DEFAULT_BASE } from '../options/index.js';
+import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
+import { DEFAULT_BASE, resolveOsmUrls, resolveText } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.js';
 import { osm } from './osm.js';
 import { checkKeys } from '../options/keys.js';
 import { satellite } from './satellite.js';
 
-/** Options for {@link guessStyle}. */
+/**
+ * Options for {@link guessStyle}.
+ *
+ * - `urls` — the same shape as for `osm()` and `satellite()`: `base` resolves relative URLs (`tiles`,
+ *   glyphs, sprites) and defaults to the page origin, or tiles.versatiles.org outside a browser;
+ *   `glyphsPattern` and `sprite` set where the guessed style loads fonts and icons from.
+ * - `fetch` — used when `source` is a URL, as for `inlineSources()` and `fetchTileJSON()`.
+ */
 export type GuessStyleOptions = {
-	/** Base URL that relative `tiles[]` entries are resolved against. Defaults to the page origin. */
-	base?: string;
-	/** Custom `fetch` used to download any nested TileJSON sources. Defaults to the global `fetch`. */
+	urls?: Pick<OsmUrlsOptions, 'base' | 'glyphsPattern' | 'sprite'>;
 	fetch?: FetchLike;
 };
 
@@ -66,7 +71,8 @@ function stringToHue(s: string): number {
 
 // Build a simple inspector style: one fill + one line + one symbol layer per source-layer,
 // each with a unique hue derived from the layer name. Useful for visualising unknown vector tiles.
-function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): StyleSpecification {
+function buildInspectorStyle(tj: TileJSONSpecificationVector, urls: GuessStyleOptions['urls']): StyleSpecification {
+	const base = urls?.base ?? DEFAULT_BASE;
 	const sourceName = 'tiles';
 	const sourceSpec: Record<string, unknown> = {
 		type: 'vector',
@@ -114,6 +120,7 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): Sty
 			'source-layer': vl.id,
 			layout: {
 				'text-field': ['get', 'name'],
+				'text-font': [resolveText().fontNormal],
 				'text-size': 11,
 				'text-max-width': 6,
 			},
@@ -123,6 +130,8 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): Sty
 
 	return {
 		version: 8,
+		// the labels need glyphs: from `urls.glyphsPattern`, or the VersaTiles default, like osm()
+		glyphs: resolveOsmUrls({ base: urls?.base, glyphsPattern: urls?.glyphsPattern }).glyphsPattern,
 		sources: { [sourceName]: sourceSpec } as unknown as StyleSpecification['sources'],
 		layers,
 	};
@@ -132,9 +141,9 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): Sty
 async function buildRasterStyle(
 	source: string | TileJSONSpecification,
 	tj: TileJSONSpecification,
-	options?: GuessStyleOptions
+	urls: GuessStyleOptions['urls']
 ): Promise<StyleSpecification> {
-	const base = options?.base ?? DEFAULT_BASE;
+	const base = urls?.base ?? DEFAULT_BASE;
 	const sourceName = isSatelliteHint(tj) ? 'satellite' : 'raster';
 	const sourceSpec: Record<string, unknown> = {
 		type: 'raster',
@@ -147,7 +156,7 @@ async function buildRasterStyle(
 	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
 
 	if (isSatelliteHint(tj)) {
-		return satellite({ urls: { satellite: source, base: options?.base, fetch: options?.fetch } });
+		return satellite({ urls: { ...urls, satellite: source } });
 	}
 
 	return {
@@ -179,7 +188,7 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  * `source` is either the URL of a TileJSON document, which is downloaded (relative `tiles` are
  * resolved against the document), or a TileJSON object the caller already holds — a tile server has
  * one in memory from its container's metadata — which is used without any network access (relative
- * `tiles` are resolved against `options.base`). The caller's object is not modified.
+ * `tiles` are resolved against `options.urls.base`). The caller's object is not modified.
  *
  * Styles by tileset:
  * - Shortbread vector tiles → full `osm()` style
@@ -200,8 +209,10 @@ export async function guessStyle(
 	// the documented "never throws" contract was false for both.
 	try {
 		// An unknown option key is an invalid argument like any other: blank style, and no download.
-		checkKeys(options, { base: true, fetch: true }, 'guessStyle');
-		const base = options?.base ?? DEFAULT_BASE;
+		checkKeys(options, { urls: true, fetch: true }, 'guessStyle');
+		checkKeys(options?.urls, { base: true, glyphsPattern: true, sprite: true }, 'guessStyle.urls');
+		const urls = options?.urls;
+		const base = urls?.base ?? DEFAULT_BASE;
 		let tileJSON: TileJSONSpecification;
 		// What osm()/satellite() receive: the URL, so the style references the document, or the resolved
 		// object, so it is inlined — either way without a second download.
@@ -223,11 +234,11 @@ export async function guessStyle(
 		assertTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
-				return await osm({ urls: { osm: osmSource, base: options?.base, fetch: options?.fetch } });
+				return await osm({ urls: { ...urls, osm: osmSource } });
 			}
-			return buildInspectorStyle(tileJSON, base);
+			return buildInspectorStyle(tileJSON, urls);
 		}
-		return await buildRasterStyle(osmSource, tileJSON, options);
+		return await buildRasterStyle(osmSource, tileJSON, urls);
 	} catch {
 		// A blank style is still a valid style: the map loads, and the caller sees an empty map
 		// rather than an exception at style-build time.

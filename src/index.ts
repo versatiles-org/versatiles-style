@@ -73,7 +73,7 @@
  * ```ts
  * import { guessStyle } from '@versatiles/style';
  * const style = await guessStyle('https://tiles.example.org/tiles.json');
- * const fromObject = await guessStyle(tileJSON, { base: 'https://tiles.example.org' });
+ * const fromObject = await guessStyle(tileJSON, { urls: { base: 'https://tiles.example.org' } });
  * ```
  *
  * ---

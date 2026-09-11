@@ -277,7 +277,7 @@ describe('guessStyle() — TileJSON object', () => {
 
 	it('builds the full OSM style for a Shortbread object without downloading anything', async () => {
 		const fetch = noFetch();
-		const style = await guessStyle(shortbread(), { base: BASE, fetch });
+		const style = await guessStyle(shortbread(), { urls: { base: BASE }, fetch });
 		expect(fetch).not.toHaveBeenCalled();
 		expect(style.layers.length).toBeGreaterThan(100);
 		const vector = sourcesOf(style).find((s) => s.type === 'vector');
@@ -288,20 +288,20 @@ describe('guessStyle() — TileJSON object', () => {
 	it('does not modify the object it is given', async () => {
 		const input = shortbread();
 		const before = JSON.stringify(input);
-		await guessStyle(input, { base: BASE });
+		await guessStyle(input, { urls: { base: BASE } });
 		expect(JSON.stringify(input)).toBe(before);
 	});
 
 	it('builds the inspector style for an unknown vector object', async () => {
 		const input = { tilejson: '3.0.0', tiles: ['/v/{z}/{x}/{y}'], vector_layers: [{ id: 'roads', fields: {} }] };
-		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch: noFetch() });
+		const style = await guessStyle(input as TileJSONSpecification, { urls: { base: BASE }, fetch: noFetch() });
 		expect(layerTypes(style)).toStrictEqual(expect.arrayContaining(['fill', 'line', 'symbol']));
 		expect(sourcesOf(style)[0].tiles).toStrictEqual([`${BASE}/v/{z}/{x}/{y}`]);
 	});
 
 	it('builds a raster style for a raster object', async () => {
 		const input = { tilejson: '3.0.0', tiles: ['/r/{z}/{x}/{y}.png'] };
-		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch: noFetch() });
+		const style = await guessStyle(input as TileJSONSpecification, { urls: { base: BASE }, fetch: noFetch() });
 		expect(layerTypes(style)).toContain('raster');
 		expect(sourcesOf(style).find((s) => s.type === 'raster')?.tiles).toStrictEqual([`${BASE}/r/{z}/{x}/{y}.png`]);
 	});
@@ -309,7 +309,7 @@ describe('guessStyle() — TileJSON object', () => {
 	it('uses satellite() for a raster object named satellite, with the source inlined', async () => {
 		const fetch = noFetch();
 		const input = { tilejson: '3.0.0', name: 'satellite', tiles: ['/s/{z}/{x}/{y}.jpg'] };
-		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch });
+		const style = await guessStyle(input as TileJSONSpecification, { urls: { base: BASE }, fetch });
 		expect(fetch).not.toHaveBeenCalled();
 		const raster = sourcesOf(style).find((s) => s.type === 'raster');
 		expect(raster?.url).toBeUndefined();
@@ -323,5 +323,55 @@ describe('guessStyle() — TileJSON object', () => {
 		['a number', 42],
 	])('falls back to a blank style for %s', async (_label, input) => {
 		await expect(guessStyle(input as never)).resolves.toStrictEqual({ version: 8, sources: {}, layers: [] });
+	});
+});
+
+// ── urls: glyphs and sprites ─────────────────────────────────────────────────────
+// `urls` has the same shape as for osm() and satellite(), so a tile server can point the guessed style
+// at its own fonts and icons — for every kind of tileset that needs them.
+
+describe('guessStyle() — urls', () => {
+	const BASE = 'https://tiles.example.org';
+	const urls = {
+		base: BASE,
+		glyphsPattern: '/fonts/{fontstack}/{range}.pbf',
+		sprite: [{ id: 'base', url: '/icons/base' }],
+	};
+	const blank = { version: 8, sources: {}, layers: [] };
+
+	it('passes glyphs and sprites through to the Shortbread style', async () => {
+		const tj = {
+			tilejson: '3.0.0',
+			tiles: ['/tiles/osm/{z}/{x}/{y}'],
+			vector_layers: ['streets', 'water_polygons', 'place_labels'].map((id) => ({ id, fields: {} })),
+		};
+		const style = await guessStyle(tj as TileJSONSpecification, { urls });
+		expect(style.glyphs).toBe(`${BASE}/fonts/{fontstack}/{range}.pbf`);
+		expect(JSON.stringify(style.sprite)).toContain(`${BASE}/icons/base`);
+	});
+
+	it('passes glyphs through to the satellite style', async () => {
+		const tj = { tilejson: '3.0.0', name: 'satellite', tiles: ['/s/{z}/{x}/{y}.jpg'] };
+		const style = await guessStyle(tj as TileJSONSpecification, { urls });
+		expect(style.glyphs).toBe(`${BASE}/fonts/{fontstack}/{range}.pbf`);
+	});
+
+	it('gives the inspector style glyphs and a font the glyph server has', async () => {
+		const tj = { tilejson: '3.0.0', tiles: ['/v/{z}/{x}/{y}'], vector_layers: [{ id: 'roads', fields: {} }] };
+		const style = await guessStyle(tj as TileJSONSpecification, { urls });
+		expect(style.glyphs).toBe(`${BASE}/fonts/{fontstack}/{range}.pbf`);
+		const label = style.layers.find((l) => l.type === 'symbol') as { layout: Record<string, unknown> };
+		expect(label.layout['text-font']).toStrictEqual(['noto_sans_regular']);
+	});
+
+	it('treats fetch inside urls, and base outside it, as unknown keys: blank style', async () => {
+		await expect(guessStyle('https://x.org/tiles.json', { urls: { fetch: vi.fn() } } as never)).resolves.toStrictEqual(
+			blank
+		);
+	});
+
+	it('treats the pre-urls top-level base as an unknown key: blank style', async () => {
+		const tj = { tilejson: '3.0.0', tiles: ['https://x.org/r/{z}/{x}/{y}.png'] };
+		await expect(guessStyle(tj as TileJSONSpecification, { base: BASE } as never)).resolves.toStrictEqual(blank);
 	});
 });

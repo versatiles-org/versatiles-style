@@ -24,7 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flag) instead. See the migration table in `API_DESIGN.md`.
 - Removed the old `guess_style` module. `guessStyle()` accepts a TileJSON **URL**, which it downloads,
   or a `TileJSONSpecification` object, which it uses without network access, and returns a Promise.
-  Its options are `base` and `fetch`; v5's `baseUrl`, `glyphs` and `sprite` are gone. It never throws:
+  Its options use the same `urls` shape as `osm()`: v5's `baseUrl`, `glyphs` and `sprite` are
+  `urls.base`, `urls.glyphsPattern` and `urls.sprite`; `fetch` is a top-level option, as for
+  `inlineSources()` and `fetchTileJSON()`. It never throws:
   an invalid argument, an unknown option key, a failed download or a malformed document all yield a
   blank — but valid — style.
 - `isTileJSONSpecification` / `isRasterTileJSONSpecification` now return a boolean instead of

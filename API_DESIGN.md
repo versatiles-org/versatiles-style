@@ -464,8 +464,12 @@ so `satellite.slots` references stay valid.
 guessStyle(
   source: string | TileJSONSpecification,
   options?: {
-    base?:  string                   // resolves relative URLs; the page origin, or tiles.versatiles.org outside a browser
-    fetch?: typeof globalThis.fetch  // used when `source` is a URL
+    urls?: {                          // the same shape as for osm() and satellite()
+      base?:          string          // resolves relative URLs; the page origin, or tiles.versatiles.org outside a browser
+      glyphsPattern?: string          // where the guessed style loads fonts from
+      sprite?:        string | Array<{ id: string; url: string }>
+    }
+    fetch?: typeof globalThis.fetch   // used when `source` is a URL, as for inlineSources()
   }
 )
 ```
@@ -476,8 +480,7 @@ raster layer, or a `satellite()` style when the TileJSON's `name` suggests image
 
 `source` is either the **URL** of a TileJSON document, which is downloaded (relative `tiles` resolve
 against the document), or a **TileJSON object** you already hold — a tile server has one from its
-container's metadata — which is used without any network access (relative `tiles` resolve against
-`base`). The object is not modified.
+container's metadata — which is used without any network access (relative `tiles` resolve against `urls.base`). The object is not modified.
 
 It never throws: an invalid `source`, an unknown option key, a failed download or a malformed document
 each yield a blank but valid style. It returns a Promise in both forms, so callers need not tell them
@@ -485,7 +488,8 @@ apart.
 
 From a URL, a Shortbread or satellite style still _references_ the document; pass it through
 [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
-From an object, the source is inlined already.
+From an object, the source is inlined already. `urls.glyphsPattern` and `urls.sprite` apply to the
+Shortbread, satellite and inspector styles alike.
 
 ---
 
@@ -664,15 +668,15 @@ delivering the second.
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
 | `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
 | `satellite({ overlay: false })`                         | `satellite({ osmOverlay: false })`                                |
-| `await guessStyle(tileJSON, options)`                   | `await guessStyle(tileJSON, { base })` — see note below           |
+| `await guessStyle(tileJSON, options)`                   | `await guessStyle(tileJSON, { urls: { base } })` — see note below |
 | `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'` — but see below                                |
 
 The sprite sheet was renamed `basics` → `base` and the old path is no longer published. Most ids
 only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → `icon-pill`,
 `icon-place_of_worship` → one of seven religion icons, …). `SPRITES.md` has the full mapping.
 
-`guessStyle` still accepts the TileJSON object v5 took, and now also a URL, which it downloads. Its
-options changed: v5's `baseUrl` is `base`, and `glyphs` and `sprite` have no equivalent. Because
+`guessStyle` still accepts the TileJSON object v5 took, and now also a URL, which it downloads. Its options now use the same `urls` shape as `osm()`: v5's `baseUrl`, `glyphs` and `sprite` are
+`urls.base`, `urls.glyphsPattern` and `urls.sprite`. Because
 `guessStyle` never throws, the old option names do not fail loudly — they are unknown keys, which yield
 a blank style — so this is one to grep for. It returns a Promise in both forms.
 
