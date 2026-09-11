@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   throwing, so they behave like the type guards their signatures always claimed. The throwing
   behaviour, with its descriptive validation messages, moved to the new
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
+- The `colors` keys were renamed to group-prefixed names (`wood` → `natureWood`, `streetbg` →
+  `roadStreetBg`, `poi` → `labelPoi`, …): 34 of the 41 v5 keys changed. See the table under
+  "Migration from v5" in `API_DESIGN.md`. A v5 key that is not renamed is ignored without an error.
 - `colorOptionsKeys` is no longer exported; use `osm.colorKeys` or `satellite.colorKeys`, which
   expose the same array.
 - **Pedestrian squares are now labelled.** `label-street-pedestrian-zone` reads Shortbread's

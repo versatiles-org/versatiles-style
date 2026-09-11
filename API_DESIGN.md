@@ -373,11 +373,16 @@ file.
 
 ```ts
 osm.toCode({ theme: 'gray', layout: { scale: { labels: 1.5 } } });
+// returns:
 // import { osm, inlineSources } from '@versatiles/style';
 //
 // const style = await inlineSources(osm({
 //   theme: "gray",
-//   layout: { scale: { labels: 1.5 } }   (formatted over several lines)
+//   layout: {
+//     scale: {
+//       labels: 1.5
+//     }
+//   }
 // }));
 ```
 
@@ -664,6 +669,48 @@ malformed document each yield a blank but valid style.
 The palette mappings above were chosen by comparing per-colour RGB distance against the published v5
 styles: `graybeard`→`gray` and `eclipse`→`colorful`+dark are near-exact, `neutrino`→`muted` is the
 closest of the five, and `shadow`→`gray`+dark is approximate — `shadow` has no close v6 equivalent.
+
+**Colour keys were renamed.** v5's 41 `colors` keys became 45: 7 kept their name
+(`boundary`, `building`, `glacier`, `label`, `labelHalo`, `land`, `water`), 34 gained a group prefix, and 4 are new
+(`background`, `siteSports`, `labelHousenumber`, `labelWater`). v6 ignores keys it does not know, so a
+v5 colour override that is not renamed has no effect and raises no error.
+
+| v5             | v6                  |
+| -------------- | ------------------- |
+| `agriculture`  | `natureAgriculture` |
+| `buildingbg`   | `buildingBg`        |
+| `burial`       | `areaBurial`        |
+| `commercial`   | `areaCommercial`    |
+| `construction` | `siteConstruction`  |
+| `cycle`        | `transitCycle`      |
+| `danger`       | `siteDanger`        |
+| `disputed`     | `boundaryDisputed`  |
+| `education`    | `siteEducation`     |
+| `foot`         | `transitFoot`       |
+| `grass`        | `natureGrass`       |
+| `hospital`     | `siteHospital`      |
+| `industrial`   | `areaIndustrial`    |
+| `leisure`      | `natureLeisure`     |
+| `motorway`     | `roadMotorway`      |
+| `motorwaybg`   | `roadMotorwayBg`    |
+| `park`         | `naturePark`        |
+| `parking`      | `siteParking`       |
+| `poi`          | `labelPoi`          |
+| `prison`       | `sitePrison`        |
+| `rail`         | `transitRail`       |
+| `residential`  | `areaResidential`   |
+| `rock`         | `natureRock`        |
+| `sand`         | `natureSand`        |
+| `shield`       | `labelShield`       |
+| `street`       | `roadStreet`        |
+| `streetbg`     | `roadStreetBg`      |
+| `subway`       | `transitSubway`     |
+| `symbol`       | `labelSymbol`       |
+| `trunk`        | `roadTrunk`         |
+| `trunkbg`      | `roadTrunkBg`       |
+| `waste`        | `areaWaste`         |
+| `wetland`      | `natureWetland`     |
+| `wood`         | `natureWood`        |
 
 ### Removed types
 
