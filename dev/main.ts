@@ -1,9 +1,9 @@
 import { inlineSources, osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
-import type { LayerSpecification } from 'maplibre-gl';
+import type * as MaplibreGL from 'maplibre-gl';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
 // `sources` and `render()` are public members; we drive both ourselves, see `collectVectorLayers`.
-type Inspect = maplibregl.IControl & { sources: Record<string, string[]>; render(): void };
+type Inspect = MaplibreGL.IControl & { sources: Record<string, string[]>; render(): void };
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => Inspect;
 
 type Base = 'osm' | 'satellite';
@@ -36,7 +36,7 @@ terrainToggle.checked = getBool('terrain');
 hillshadeToggle.checked = getBool('hillshade');
 landcoverToggle.checked = getBool('landcover');
 
-let map: maplibregl.Map | undefined;
+let map: MaplibreGL.Map | undefined;
 let inspect: Inspect | undefined;
 let inspecting = false;
 
@@ -71,7 +71,7 @@ async function collectVectorLayers(style: StyleSpecification): Promise<Record<st
 // gone. Build the style here so the two stay consistent.
 function buildInspectStyle(
 	style: StyleSpecification,
-	coloredLayers: LayerSpecification[],
+	coloredLayers: MaplibreGL.LayerSpecification[],
 	options: { backgroundColor: string }
 ): StyleSpecification {
 	const inspectStyle: StyleSpecification = {
@@ -107,13 +107,13 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 
 	const style = isSatellite
 		? satellite({
-				osmOverlay: { theme: palette },
-				features: { terrain, hillshade },
-			})
+			osmOverlay: { theme: palette },
+			features: { terrain, hillshade },
+		})
 		: osm({
-				theme: palette,
-				features: { terrain, hillshade, landcover, buildings },
-			});
+			theme: palette,
+			features: { terrain, hillshade, landcover, buildings },
+		});
 
 	// `osm()`/`satellite()` reference their sources by TileJSON URL and do no I/O, so MapLibre
 	// fetches the document itself. That is fine only when the TileJSON's `tiles` entries are
@@ -165,6 +165,8 @@ async function render(): Promise<void> {
 			maxZoom: 20,
 			hash: true,
 			maxPitch: 90,
+			zoom: 2,
+			center: [10, 30],
 		});
 		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 		// Inspect control: toggles a debug view of the vector tile layers/features.
