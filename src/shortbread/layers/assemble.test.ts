@@ -46,7 +46,7 @@ describe('assembled layers', () => {
 
 	it('should render busway and bus_guideway as streets', async () => {
 		const ids = new Set((await layersFor('local')).map((l) => l.id));
-		// both kinds are drawn by one merged `street-bus` layer per band (see MERGED_IDS)
+		// both kinds are drawn by one merged `street-bus` layer per band (see MERGES)
 		expect(ids.has('street-bus')).toBe(true);
 		expect(ids.has('bridge-street-bus')).toBe(true);
 		expect(ids.has('tunnel-street-bus')).toBe(true);
@@ -162,7 +162,7 @@ describe('underground treatment', () => {
 	// exactly as they do on the surface. Listed exactly rather than skipped: if the treatment stops
 	// reaching another road this list grows and the test fails, and if one of these gains a cue the
 	// list shrinks and the test fails too, so the gap has to stay a deliberate decision.
-	// Merged layers appear once under their merged ID (see MERGED_IDS in layers/index.ts): the two
+	// Merged layers appear once under their merged ID (see MERGES in layers/index.ts): the two
 	// bus kinds as `tunnel-street-bus`, and livingstreet/residential/unclassified bicycle overlays
 	// as `tunnel-street-minor-bicycle`.
 	const NO_COLOUR_HEADROOM = [
@@ -274,5 +274,49 @@ describe('identically-drawn layers are merged', () => {
 		expect([...ids].filter((id) => !listed.has(id) && !id.startsWith('slot-') && id !== 'background')).toStrictEqual(
 			[]
 		);
+	});
+});
+
+// Merges are registered by member IDs, so they depend on how the style is built, never on colour
+// values. Before this, the merge was decided by comparing computed paint: two neighbouring layers that
+// merely happened to get equal colours formed an unregistered run and `osm()` threw, and a matching
+// neighbour could be absorbed into a registered merge, silently dropping its layer ID.
+describe('layer IDs do not depend on colour values', () => {
+	const defaultIds = osm().layers.map((l) => l.id);
+	const idsOf = (style: { layers: { id: string }[] }) => style.layers.map((l) => l.id);
+
+	it('does not throw when user colours make neighbouring layers identical', () => {
+		// path and cycleway tunnel casings: equal transitCycle and transitFoot used to crash osm()
+		const style = osm({ colors: { transitCycle: '#88aa66', transitFoot: '#88aa66' } });
+		expect(idsOf(style)).toStrictEqual(defaultIds);
+	});
+
+	it('does not absorb a coincidentally identical neighbour into a registered merge', () => {
+		const education = osm.resolveOptions().colors.siteEducation;
+		const style = osm({ colors: { siteHospital: education } });
+		expect(idsOf(style)).toStrictEqual(defaultIds);
+		expect(idsOf(style)).toContain('site-hospital');
+	});
+
+	it('keeps the same IDs in every shipped theme', () => {
+		for (const palette of osm.palettes)
+			for (const darkMode of [false, true])
+				expect(idsOf(osm({ theme: { palette, darkMode } })), `${palette} dark=${darkMode}`).toStrictEqual(defaultIds);
+	});
+
+	it('keeps the same IDs for arbitrary user colours', () => {
+		let seed = 7;
+		const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+		for (let run = 0; run < 12; run++) {
+			// few distinct values, so coincidentally equal colours are common
+			const pool = ['#101010', '#808080', '#f0f0f0', '#cc6633'];
+			const colors = Object.fromEntries(osm.colorKeys.map((key) => [key, pool[Math.floor(random() * pool.length)]]));
+			expect(idsOf(osm({ colors })), `run ${run}`).toStrictEqual(defaultIds);
+		}
+	});
+
+	it('keeps the same IDs under recolor options that collapse colours together', () => {
+		for (const recolor of [{ saturate: -1 }, { invertBrightness: true }, { contrast: 0 }, { brightness: 1 }])
+			expect(idsOf(osm({ recolor })), JSON.stringify(recolor)).toStrictEqual(defaultIds);
 	});
 });

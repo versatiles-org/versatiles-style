@@ -29,7 +29,7 @@ export const SLOT_BELOW_LABELS = 'slot-below-labels';
  * collapsed there rather than here, because which kinds share a style is decided by the style
  * functions, not by the structure list that names them.
  */
-function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
+export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
 	yield* landcover(ctx);
@@ -107,75 +107,126 @@ function applyDataFloor(layer: MaplibreLayer): void {
 // ── Merging layers that render identically (issue #51) ───────────────────────
 
 /**
- * Chosen ID for each merged run, keyed by the run's shared prefix + shared suffix.
+ * Layers drawn as one, by merged ID, with their members in draw order.
  *
- * Derived names would be unusable — `site-university` + `site-college` + `site-school` share the
- * prefix `site-` and no suffix, giving `site-`. So every merge names itself here, and
- * `mergeIdenticalLayers` throws on a run that is missing, which turns a future style change that
- * creates a new merge into a naming decision rather than a silently invented ID.
+ * Merges are listed by member rather than detected from computed paint. Detecting them made layer IDs
+ * depend on colour values: two neighbouring layers whose colours merely happened to match — a user
+ * setting `transitCycle` equal to `transitFoot`, say — formed a run nobody had named, and `osm()`
+ * threw; and a matching neighbour could be pulled into a named merge, silently losing its ID. Every
+ * entry here is identical by construction, because its members share one style rule. The tests in
+ * `assemble.test.ts` check both directions: a default build leaves no identical run unregistered, and
+ * the IDs stay the same for every theme, arbitrary colours and recolor options.
  */
-const MERGED_IDS: Readonly<Record<string, string>> = {
+const MERGES: Readonly<Record<string, readonly string[]>> = {
 	// sites: the three education kinds share the `siteEducation` colour, and both parking kinds
 	// share `siteParking`.
-	'site-': 'site-education',
-	'site-parking': 'site-parking',
-	// residential + unclassified are one visual class ("minor"), as are the two bus-only kinds,
-	// across all three structure bands.
-	'tunnel-street-:outline': 'tunnel-street-minor:outline',
-	'tunnel-street-': 'tunnel-street-minor',
-	'tunnel-street--bicycle': 'tunnel-street-minor-bicycle',
-	'tunnel-street-busway:outline': 'tunnel-street-bus:outline',
-	'tunnel-street-busway': 'tunnel-street-bus',
-	'street-:outline': 'street-minor:outline',
-	'street-': 'street-minor',
-	'street--bicycle': 'street-minor-bicycle',
-	'street-busway:outline': 'street-bus:outline',
-	'street-busway': 'street-bus',
-	'bridge-street-:bridge': 'bridge-street-minor:bridge',
-	'bridge-street-:outline': 'bridge-street-minor:outline',
-	'bridge-street-': 'bridge-street-minor',
-	'bridge-street--bicycle': 'bridge-street-minor-bicycle',
-	'bridge-street-busway:bridge': 'bridge-street-bus:bridge',
-	'bridge-street-busway:outline': 'bridge-street-bus:outline',
-	'bridge-street-busway': 'bridge-street-bus',
-	// tram / narrowgauge / funicular / monorail share one style — see `wayStyle`, which handles all
-	// four in a single branch.
-	'tunnel-transport-:outline': 'tunnel-transport-minorrail:outline',
-	'tunnel-transport-': 'tunnel-transport-minorrail',
-	'transport-:outline': 'transport-minorrail:outline',
-	'transport-': 'transport-minorrail',
-	'bridge-transport-:outline': 'bridge-transport-minorrail:outline',
-	'bridge-transport-': 'bridge-transport-minorrail',
-	// all nine aerialway kinds are drawn identically
-	'aerialway-:outline': 'aerialway:outline',
-	'aerialway-': 'aerialway',
+	'site-education': ['site-university', 'site-college', 'site-school'],
+	'site-parking': ['site-parking', 'site-bicycleparking'],
+	// residential + unclassified (+ living street on bicycle overlays and bridge decks) are one visual
+	// class ("minor"), as are the two bus-only kinds, across all three structure bands.
+	'tunnel-street-minor:outline': ['tunnel-street-residential:outline', 'tunnel-street-unclassified:outline'],
+	'tunnel-street-bus:outline': ['tunnel-street-busway:outline', 'tunnel-street-busguideway:outline'],
+	'tunnel-street-minor': ['tunnel-street-residential', 'tunnel-street-unclassified'],
+	'tunnel-street-bus': ['tunnel-street-busway', 'tunnel-street-busguideway'],
+	'tunnel-street-minor-bicycle': [
+		'tunnel-street-livingstreet-bicycle',
+		'tunnel-street-residential-bicycle',
+		'tunnel-street-unclassified-bicycle',
+	],
+	'street-minor:outline': ['street-residential:outline', 'street-unclassified:outline'],
+	'street-bus:outline': ['street-busway:outline', 'street-busguideway:outline'],
+	'street-minor': ['street-residential', 'street-unclassified'],
+	'street-bus': ['street-busway', 'street-busguideway'],
+	'street-minor-bicycle': ['street-livingstreet-bicycle', 'street-residential-bicycle', 'street-unclassified-bicycle'],
+	'bridge-street-minor:bridge': [
+		'bridge-street-livingstreet:bridge',
+		'bridge-street-residential:bridge',
+		'bridge-street-unclassified:bridge',
+	],
+	'bridge-street-bus:bridge': ['bridge-street-busway:bridge', 'bridge-street-busguideway:bridge'],
+	'bridge-street-minor:outline': ['bridge-street-residential:outline', 'bridge-street-unclassified:outline'],
+	'bridge-street-bus:outline': ['bridge-street-busway:outline', 'bridge-street-busguideway:outline'],
+	'bridge-street-minor': ['bridge-street-residential', 'bridge-street-unclassified'],
+	'bridge-street-bus': ['bridge-street-busway', 'bridge-street-busguideway'],
+	'bridge-street-minor-bicycle': [
+		'bridge-street-livingstreet-bicycle',
+		'bridge-street-residential-bicycle',
+		'bridge-street-unclassified-bicycle',
+	],
 	// primary + secondary links. `roads.ts` reserves "arterial" for exactly the yellow/orange
 	// classes and explicitly excludes tertiary, which is why this is not named after its
 	// `roads.highways` group — `street-tertiary-link` sits in that group too, styled differently.
-	// (trunk and motorway links are arterial as well but live in `roads.motorways`, and neither
-	// shares this style: motorway links appear a zoom earlier.)
-	'tunnel-street-ary-link:outline': 'tunnel-street-arterial-link:outline',
-	'tunnel-street-ary-link': 'tunnel-street-arterial-link',
-	'street-ary-link:outline': 'street-arterial-link:outline',
-	'street-ary-link': 'street-arterial-link',
-	'bridge-street-ary-link:bridge': 'bridge-street-arterial-link:bridge',
-	'bridge-street-ary-link:outline': 'bridge-street-arterial-link:outline',
-	'bridge-street-ary-link': 'bridge-street-arterial-link',
+	'tunnel-street-arterial-link:outline': ['tunnel-street-secondary-link:outline', 'tunnel-street-primary-link:outline'],
+	'tunnel-street-arterial-link': ['tunnel-street-secondary-link', 'tunnel-street-primary-link'],
+	'street-arterial-link:outline': ['street-secondary-link:outline', 'street-primary-link:outline'],
+	'street-arterial-link': ['street-secondary-link', 'street-primary-link'],
+	'bridge-street-arterial-link:bridge': ['bridge-street-secondary-link:bridge', 'bridge-street-primary-link:bridge'],
+	'bridge-street-arterial-link:outline': ['bridge-street-secondary-link:outline', 'bridge-street-primary-link:outline'],
+	'bridge-street-arterial-link': ['bridge-street-secondary-link', 'bridge-street-primary-link'],
+	// tram / narrowgauge / funicular / monorail share one style — `wayStyle` handles all four in a
+	// single branch.
+	'tunnel-transport-minorrail:outline': [
+		'tunnel-transport-narrowgauge:outline',
+		'tunnel-transport-tram:outline',
+		'tunnel-transport-funicular:outline',
+		'tunnel-transport-monorail:outline',
+	],
+	'tunnel-transport-minorrail': [
+		'tunnel-transport-narrowgauge',
+		'tunnel-transport-tram',
+		'tunnel-transport-funicular',
+		'tunnel-transport-monorail',
+	],
+	'transport-minorrail:outline': [
+		'transport-narrowgauge:outline',
+		'transport-tram:outline',
+		'transport-funicular:outline',
+		'transport-monorail:outline',
+	],
+	'transport-minorrail': ['transport-narrowgauge', 'transport-tram', 'transport-funicular', 'transport-monorail'],
+	'bridge-transport-minorrail:outline': [
+		'bridge-transport-narrowgauge:outline',
+		'bridge-transport-tram:outline',
+		'bridge-transport-funicular:outline',
+		'bridge-transport-monorail:outline',
+	],
+	'bridge-transport-minorrail': [
+		'bridge-transport-narrowgauge',
+		'bridge-transport-tram',
+		'bridge-transport-funicular',
+		'bridge-transport-monorail',
+	],
+	// all nine aerialway kinds are drawn identically
+	'aerialway:outline': [
+		'aerialway-cablecar:outline',
+		'aerialway-gondola:outline',
+		'aerialway-goods:outline',
+		'aerialway-chairlift:outline',
+		'aerialway-draglift:outline',
+		'aerialway-tbar:outline',
+		'aerialway-jbar:outline',
+		'aerialway-platter:outline',
+		'aerialway-ropetow:outline',
+	],
+	aerialway: [
+		'aerialway-cablecar',
+		'aerialway-gondola',
+		'aerialway-goods',
+		'aerialway-chairlift',
+		'aerialway-draglift',
+		'aerialway-tbar',
+		'aerialway-jbar',
+		'aerialway-platter',
+		'aerialway-ropetow',
+	],
 	// path + cycleway — the two kinds of the `roads.paths` group (footway and steps have their own
 	// groups, so they stay separate even though the bridge deck draws them the same).
-	'bridge-way-:bridge': 'bridge-way-paths:bridge',
+	'bridge-way-paths:bridge': ['bridge-way-path:bridge', 'bridge-way-cycleway:bridge'],
 	// the disputed-country casing is identical to the country casing
-	'boundary-country:outline': 'boundary-country:outline',
+	'boundary-country:outline': ['boundary-country:outline', 'boundary-country-disputed:outline'],
 };
 
-/** Length of the run of characters every string shares, from the front or the back. */
-function sharedAffix(ids: string[], fromEnd: boolean): number {
-	const shortest = Math.min(...ids.map((s) => s.length));
-	const at = (s: string, i: number): string => (fromEnd ? s[s.length - 1 - i] : s[i]);
-	let n = 0;
-	while (n < shortest && ids.every((s) => at(s, n) === at(ids[0], n))) n++;
-	return n;
-}
+const MERGE_BY_FIRST_MEMBER = new Map(Object.entries(MERGES).map(([id, members]) => [members[0], { id, members }]));
 
 /** Everything that decides how a layer draws — its identity and its filter aside. */
 function renderKey(layer: MaplibreLayer): string {
@@ -219,68 +270,45 @@ function mergeFilters(filters: unknown[]): unknown {
 }
 
 /**
- * Collapse adjacent layers that MapLibre would draw identically into one (issue #51: v6 emitted 355
- * layers against v5's 324).
+ * Collapse the registered merges (`MERGES`) into single layers (issue #51: v6 emitted 355 layers
+ * against v5's 324).
  *
- * A run qualifies only when every member is **adjacent**, carries the **same group**, and is
- * identical in every property **except its filter** — so the merged layer paints exactly the pixels
- * the run did, and `osm.layerGroups` keeps controlling the same features. Feature order within the
- * merged layer differs from the old layer-by-layer order, which cannot matter: the paint is by
- * definition the same for all of them.
+ * A registered merge is applied when its members arrive **adjacent**, in the **same group**, and
+ * identical in every property **except their filter** — so the merged layer paints exactly the pixels
+ * they did, and `osm.layerGroups` keeps controlling the same features. Feature order within the
+ * merged layer differs from the old layer-by-layer order, which cannot matter: the paint is the same
+ * for all of them. Layers that are not registered are never merged, however they are drawn.
  *
- * Two exclusions, both about ordering:
- * - **`symbol` layers are never merged.** MapLibre resolves label collisions in layer order, so
- *   folding `label-street-pedestrian` … `label-street-motorway` into one layer would change which
- *   street name survives a collision. That is a real rendering change, not a merge.
- * - **Layers with no `source-layer`** (background, slot anchors) are left alone; the slots exist to
- *   be addressed by ID.
+ * Symbol layers are never registered: MapLibre resolves label collisions in layer order, so folding
+ * `label-street-*` together would change which street name survives a collision.
  *
  * This runs over the assembled generator rather than over the built style so that
  * `getLayerGroupMap()` — which walks the same generator — reports the merged IDs. Merging before
- * `gate()` is safe precisely because a run is single-group: whatever `gate` does to one member it
- * does to all of them.
+ * `gate()` is safe because a merge is single-group: whatever `gate` does to one member it does to all.
  */
 export function* mergeIdenticalLayers(source: Iterable<TaggedLayer>): Generator<TaggedLayer> {
-	let run: TaggedLayer[] = [];
-
-	function* flush(): Generator<TaggedLayer> {
-		if (run.length === 0) return;
-		if (run.length === 1) {
-			yield run[0];
-			run = [];
-			return;
-		}
-		const ids = run.map((t) => t.layer.id);
-		const prefix = sharedAffix(ids, false);
-		const suffix = sharedAffix(ids, true);
-		const shortest = Math.min(...ids.map((s) => s.length));
-		const key = prefix + suffix <= shortest ? ids[0].slice(0, prefix) + ids[0].slice(ids[0].length - suffix) : ids[0];
-		const id = MERGED_IDS[key];
-		if (id === undefined) {
-			throw new Error(
-				`mergeIdenticalLayers: ${ids.length} layers render identically (${ids.join(', ')}) but no merged ID is ` +
-					`registered for "${key}" — add one to MERGED_IDS in shortbread/layers/index.ts`
+	const layers = [...source];
+	for (let i = 0; i < layers.length; i++) {
+		const merge = MERGE_BY_FIRST_MEMBER.get(layers[i].layer.id);
+		const run = merge ? layers.slice(i, i + merge.members.length) : [];
+		const applies =
+			merge !== undefined &&
+			run.length === merge.members.length &&
+			run.every(
+				(tagged, k) =>
+					tagged.layer.id === merge.members[k] &&
+					tagged.group === run[0].group &&
+					renderKey(tagged.layer) === renderKey(run[0].layer)
 			);
+		if (!applies) {
+			yield layers[i];
+			continue;
 		}
 		const filter = mergeFilters(run.map((t) => (t.layer as { filter?: unknown }).filter));
-		const merged = { ...run[0].layer, id } as MaplibreLayer & { filter?: unknown };
+		const merged = { ...run[0].layer, id: merge.id } as MaplibreLayer & { filter?: unknown };
 		if (filter === undefined) delete merged.filter;
 		else merged.filter = filter;
 		yield { layer: merged, group: run[0].group };
-		run = [];
+		i += merge.members.length - 1;
 	}
-
-	for (const tagged of source) {
-		const { layer, group } = tagged;
-		const mergeable = layer.type !== 'symbol' && (layer as { 'source-layer'?: string })['source-layer'] !== undefined;
-		const joins = mergeable && run.length > 0 && run[0].group === group && renderKey(run[0].layer) === renderKey(layer);
-		if (joins) {
-			run.push(tagged);
-			continue;
-		}
-		yield* flush();
-		if (mergeable) run = [tagged];
-		else yield tagged;
-	}
-	yield* flush();
 }

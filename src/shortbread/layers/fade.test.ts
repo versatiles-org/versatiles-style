@@ -107,7 +107,7 @@ const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-secondary', z: 9, outline: true },
 	{ id: 'street-tertiary', z: 10, outline: true },
 	// residential + unclassified draw from one merged layer, as do busway + bus_guideway
-	// (see MERGED_IDS in layers/index.ts).
+	// (see MERGES in layers/index.ts).
 	{ id: 'street-minor', z: 12, outline: true },
 	{ id: 'street-bus', z: 12, outline: true },
 	{ id: 'street-livingstreet', z: 13, outline: true },
@@ -194,7 +194,7 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 // through the zooms where they are the sole thing drawn.
 const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
 	// tram, narrowgauge, funicular and monorail share one style and are emitted as a single
-	// merged layer (see MERGED_IDS in layers/index.ts).
+	// merged layer (see MERGES in layers/index.ts).
 	{ id: 'transport-minorrail', z: 13 },
 	{ id: 'transport-minorrail:outline', z: 15 },
 	{ id: 'transport-rail-service:outline', z: 14 },
@@ -294,7 +294,7 @@ describe('buildings fade in at Shortbread z14', () => {
 });
 
 // Layer IDs, not raw kinds: university/college/school share the `siteEducation` colour and are
-// drawn by one merged layer, as are parking + bicycleparking (see MERGED_IDS in layers/index.ts).
+// drawn by one merged layer, as are parking + bicycleparking (see MERGES in layers/index.ts).
 const SITE_KINDS = ['dangerarea', 'sportscentre', 'education', 'hospital', 'prison', 'parking', 'construction'];
 
 describe('sites fade in at Shortbread z14', () => {
