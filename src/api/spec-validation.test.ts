@@ -22,11 +22,8 @@ function errorsFor(style: StyleSpecification): string[] {
 
 const OSM_CASES: [string, OsmOptions | undefined][] = [
 	['defaults', undefined],
-	// palettes × dark mode
-	...(['colorful', 'natural', 'muted', 'gray', 'toner'] as const).flatMap((palette): [string, OsmOptions][] => [
-		[`${palette}/light`, { theme: { palette, darkMode: false } }],
-		[`${palette}/dark`, { theme: { palette, darkMode: true } }],
-	]),
+	// every theme, light and dark
+	...osm.palettes.map((palette): [string, OsmOptions] => [palette, { theme: palette }]),
 	// languages
 	['lang:en', { text: { language: 'en' } }],
 	['lang:de', { text: { language: 'de' } }],
@@ -41,7 +38,7 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 	[
 		'all features + dark + de',
 		{
-			theme: { palette: 'colorful', darkMode: true },
+			theme: 'colorful-dark',
 			text: { language: 'de' },
 			features: { terrain: { exaggeration: 2 }, hillshade: true, landcover: true, buildings: 'extruded' },
 		},

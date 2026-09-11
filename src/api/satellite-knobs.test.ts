@@ -291,7 +291,7 @@ describe('satellite() knob: sky', () => {
 	it('takes sky and horizon from the overlay palette, like osm()', async () => {
 		// The default overlay palette is `gray`; before this the satellite sky was hardcoded sky-blue
 		// whatever the overlay looked like, which is the defect #126 fixed for osm() but not here.
-		const gray = osm.colors('gray', false);
+		const gray = osm.colors('gray');
 		expect((await build()).sky).toStrictEqual({
 			'sky-color': gray.water,
 			'horizon-color': gray.background,
@@ -302,8 +302,8 @@ describe('satellite() knob: sky', () => {
 	});
 
 	it('follows an explicit overlay theme', async () => {
-		const dark = osm.colors('colorful', true);
-		const s = await build({ osmOverlay: { theme: { palette: 'colorful', darkMode: true } } });
+		const dark = osm.colors('colorful-dark');
+		const s = await build({ osmOverlay: { theme: 'colorful-dark' } });
 		expect(s.sky).toMatchObject({ 'sky-color': dark.water, 'horizon-color': dark.background });
 	});
 
@@ -343,25 +343,22 @@ describe('satellite() knob: overlay palette default', () => {
 	it('defaults the overlay to gray, not colorful', () => {
 		const overlay = satellite.defaults.osmOverlay;
 		expect(overlay).not.toBe(false);
-		expect((overlay as { theme: { palette: string } }).theme.palette).toBe('gray');
+		expect((overlay as { theme: string }).theme).toBe('gray');
 	});
 
 	it('does not change osm()’s own default', () => {
-		expect(osm.resolveOptions().theme.palette).toBe('colorful');
+		expect(osm.resolveOptions().theme).toBe('colorful');
 	});
 
 	it('an explicit overlay theme still wins', () => {
 		const r = satellite.resolveOptions({ osmOverlay: { theme: 'toner' } });
-		expect((r.osmOverlay as { theme: { palette: string } }).theme.palette).toBe('toner');
+		expect((r.osmOverlay as { theme: string }).theme).toBe('toner');
 	});
 
-	it('setting only darkMode keeps the gray palette', () => {
-		// The fallback applies per-field, so `{ darkMode: true }` must not reset the palette.
-		const r = satellite.resolveOptions({ osmOverlay: { theme: { darkMode: true } } });
-		expect((r.osmOverlay as { theme: { palette: string; darkMode: boolean } }).theme).toStrictEqual({
-			palette: 'gray',
-			darkMode: true,
-		});
+	it('rejects the removed { darkMode } object, suggesting the dark gray theme', () => {
+		expect(() => satellite.resolveOptions({ osmOverlay: { theme: { darkMode: true } as never } })).toThrow(
+			'satellite.osmOverlay.theme: expected a theme name, not an object — use "gray-dark".'
+		);
 	});
 });
 

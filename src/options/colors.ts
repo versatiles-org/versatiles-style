@@ -122,7 +122,7 @@ const COLOR_KEYS = Object.fromEntries(colorOptionsKeys.map((key) => [key, true])
 
 export function resolveColors(theme: ResolvedTheme, overrides?: ColorsOptions, path = 'colors'): ResolvedColors {
 	checkKeys(overrides, COLOR_KEYS, path);
-	const base = getPaletteColors(theme.palette, theme.darkMode);
+	const base = getPaletteColors(theme);
 	if (!overrides) return { ...base };
 	const result = { ...base };
 	for (const key of colorOptionsKeys) {

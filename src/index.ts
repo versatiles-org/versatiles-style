@@ -41,7 +41,7 @@
  * ```ts
  * import { osm, inlineSources } from '@versatiles/style';
  * const style = osm({
- *   theme: { palette: 'colorful', darkMode: false },
+ *   theme: 'colorful',
  *   urls: { base: 'https://tiles.example.org' },
  * });
  *
@@ -49,7 +49,8 @@
  * const standalone = await inlineSources(style);
  * ```
  *
- * Available palettes: `'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`
+ * Available palettes: `'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`, each also as a dark
+ * theme with a `-dark` suffix (`'colorful-dark'`, …).
  *
  * ---
  *

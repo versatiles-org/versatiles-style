@@ -13,7 +13,7 @@
 ## Styles Overview
 
 The `osm()` function renders OpenStreetMap vector tiles using one of five built-in color palettes,
-each available in light and dark mode. `satellite()` renders raster/satellite tiles with an optional
+each available as a light theme and a dark one (`colorful-dark`, …). `satellite()` renders raster/satellite tiles with an optional
 vector overlay.
 
 | Palette       | Preview                                                                                               |
@@ -60,7 +60,7 @@ Integrate it into your HTML application:
 <script>
   (async () => {
     const style = VersaTilesStyle.osm({
-      theme: { palette: 'colorful', darkMode: true },
+      theme: 'colorful-dark',
       text: { language: 'de' },
       recolor: { gamma: 0.5 },
     });
@@ -130,7 +130,7 @@ because it has to read the TileJSON before it can decide what to build. All thre
 `StyleSpecification` — pass it through `inlineSources` before handing it to MapLibre, as above:
 
 - `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/functions/osm.html)
-  - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`) or `{ palette, darkMode }`.
+  - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`), or its dark theme with a `-dark` suffix (`'colorful-dark'`, …).
   - `text`, `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/interfaces/OsmOptions.html).
 - `satellite(options)` - raster/satellite style with an optional OSM overlay. [Documentation](https://versatiles.org/versatiles-style/functions/satellite.html) — see [SatelliteOptions](https://versatiles.org/versatiles-style/interfaces/SatelliteOptions.html).
 - `guessStyle(source)` - inspect a tileset, given as a TileJSON URL or object, and return the most appropriate style. [Documentation](https://versatiles.org/versatiles-style/functions/guessStyle.html)
@@ -368,7 +368,6 @@ Z-->1D
 1A-->8
 1B-->8
 1C-->C
-1C-->8
 1D-->5
 1D-->8
 1D-->19
@@ -415,6 +414,7 @@ Z-->1D
 20-->1U
 21-->F
 21-->X
+21-->C
 22-->1U
 24-->X
 24-->21
@@ -436,6 +436,7 @@ Z-->1D
 27-->1L
 27-->28
 28-->26
+28-->X
 
 class 0,1,4,7,B,E,1G,1I,1T,1K subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;

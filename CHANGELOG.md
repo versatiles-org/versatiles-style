@@ -20,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `colorful`, `eclipse`, `graybeard`, `neutrino`, `shadow`, the deprecated `styles` object, and the
   related `StyleBuilderOptions` / `StyleBuilderColors` / `StyleBuilderColorKey` / `StyleBuilderFonts` /
   `StyleBuilderFunction` / `SatelliteStyleOptions` / `Language` types. (`GuessStyleOptions` remains.)
-  Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
-  flag) instead. See the migration table in `API_DESIGN.md`.
+  Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner`, each also available
+  as a dark theme (`colorful-dark`, …), instead. See the migration table in `API_DESIGN.md`.
 - Removed the old `guess_style` module. `guessStyle()` accepts a TileJSON **URL**, which it downloads,
   or a `TileJSONSpecification` object, which it uses without network access, and returns a Promise.
   Its options use the same `urls` shape as `osm()`: v5's `baseUrl`, `glyphs` and `sprite` are
@@ -104,12 +104,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `defaults` and `resolveOptions()` on `osm` and `satellite` no longer fill in `sky.skyColor` and
   `sky.horizonColor`. The style still derives them from the palette when it is built, so a resolved
   object can be passed back to `osm()`/`satellite()` without pinning the sky to the old colours.
-- An unknown palette name now throws `theme: unknown palette "…"`, listing the valid palettes, instead
+- An unknown palette name now throws `osm.theme: unknown palette "…"`, listing the valid palettes, instead
   of `TypeError: Cannot read properties of undefined (reading 'light')`. The v5 style names are not
-  accepted as themes.
+  accepted as themes; the error names the v6 theme to use (`"eclipse" is a v5 style name — in v6 use
+  "colorful-dark"`).
 
 ### Features
 
+- Every palette has a dark theme of its own: `colorful-dark`, `natural-dark`, `muted-dark`, `gray-dark`
+  and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting.
 - `osm.supportsLandcover(tileJSON)` reports whether a tileset carries the low-zoom landcover
   extension that `features.landcover` needs.
 - `osm.minimizeOptions(options)` / `satellite.minimizeOptions(options)` return the smallest options

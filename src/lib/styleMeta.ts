@@ -11,6 +11,6 @@ export const STYLE_METADATA: StyleSpecification['metadata'] = { license: STYLE_L
  * v5 published a distinct name per style (`versatiles-colorful`, `versatiles-graybeard`, …) and
  * tooling keys off it, so a single generic `versatiles` for every palette loses the distinction.
  */
-export function styleName(palette: string, darkMode = false): string {
-	return `versatiles-${palette}${darkMode ? '-dark' : ''}`;
+export function styleName(palette: string): string {
+	return `versatiles-${palette}`;
 }

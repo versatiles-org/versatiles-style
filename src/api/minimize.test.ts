@@ -14,18 +14,9 @@ describe('osm.minimizeOptions', () => {
 		expect(osm.minimizeOptions({ theme: 'colorful', sky: true })).toEqual({});
 	});
 
-	it('keeps a non-default theme in its shortest form', () => {
+	it('keeps a non-default theme', () => {
 		expect(osm.minimizeOptions(osm.resolveOptions({ theme: 'gray' }))).toEqual({ theme: 'gray' });
-		expect(osm.minimizeOptions(osm.resolveOptions({ theme: { darkMode: true } }))).toEqual({
-			theme: { darkMode: true },
-		});
-		expect(osm.minimizeOptions(osm.resolveOptions({ theme: { palette: 'toner', darkMode: true } }))).toEqual({
-			theme: { palette: 'toner', darkMode: true },
-		});
-	});
-
-	it('keeps darkMode: "auto" as written rather than freezing the current mode', () => {
-		expect(osm.minimizeOptions({ theme: { darkMode: 'auto' } })).toEqual({ theme: { darkMode: 'auto' } });
+		expect(osm.minimizeOptions(osm.resolveOptions({ theme: 'colorful-dark' }))).toEqual({ theme: 'colorful-dark' });
 	});
 
 	it("compares colours against the chosen palette's own defaults", () => {
@@ -45,7 +36,7 @@ describe('osm.minimizeOptions', () => {
 
 	const CASES: [string, OsmOptions][] = [
 		['defaults', {}],
-		['palette + dark', { theme: { palette: 'natural', darkMode: true } }],
+		['dark theme', { theme: 'natural-dark' }],
 		[
 			'colours + recolor',
 			{ theme: 'muted', colors: { land: '#ff00ff' }, recolor: { gamma: 1.5, tint: { amount: 0.3, color: '#00ff00' } } },
@@ -99,7 +90,7 @@ describe('satellite.minimizeOptions', () => {
 		['overlay off', { osmOverlay: false, features: { terrain: true } }],
 		[
 			'overlay configured',
-			{ osmOverlay: { theme: { darkMode: true }, colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
+			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
 	];
 

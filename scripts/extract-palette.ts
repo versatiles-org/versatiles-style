@@ -5,7 +5,7 @@
  *   npm run extract-palette -- positron           # another known OMT style, by name
  *   npm run extract-palette -- https://…/style.json
  *   npm run extract-palette -- osm-bright --json  # just the object, for piping into a file
- *   npm run extract-palette -- osm-bright --palette gray --dark
+ *   npm run extract-palette -- osm-bright --palette gray-dark
  *
  * The output is a `ColorsOptions` object, which is all you need to try a foreign palette:
  *
@@ -304,10 +304,10 @@ async function main(): Promise<void> {
 
 	// Compare against what we ship, so the report says what would actually change.
 	const palette = (flags.get('palette') ?? 'colorful') as Palette;
-	const current = osm.colors(palette, flags.has('dark')) as Record<string, string>;
+	const current = osm.colors(palette) as Record<string, string>;
 	const background = Color.parse(current.background);
 
-	console.log(`Palette extracted from ${label} — compared with \`${palette}${flags.has('dark') ? ' dark' : ''}\`.`);
+	console.log(`Palette extracted from ${label} — compared with \`${palette}\`.`);
 	console.log(`ΔE is measured on the colours as seen, i.e. composited over the map background.\n`);
 	console.log(`${'key'.padEnd(20)} ${'extracted'.padEnd(12)} ${'ours'.padEnd(12)} ΔE`);
 	for (const key of colorOptionsKeys) {

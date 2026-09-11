@@ -21,8 +21,8 @@ describe('style generation is deterministic', () => {
 	});
 
 	it('two structurally-equal option objects yield identical output', async () => {
-		const a = JSON.stringify(await osm({ theme: { palette: 'gray', darkMode: true }, text: { language: 'de' } }));
-		const b = JSON.stringify(await osm({ theme: { palette: 'gray', darkMode: true }, text: { language: 'de' } }));
+		const a = JSON.stringify(await osm({ theme: 'gray-dark', text: { language: 'de' } }));
+		const b = JSON.stringify(await osm({ theme: 'gray-dark', text: { language: 'de' } }));
 		expect(a).toBe(b);
 	});
 

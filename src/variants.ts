@@ -1,26 +1,21 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite as satelliteFn } from './api/index.js';
-import type { OsmFeaturesOptions, Palette, ThemeOptions } from './options/index.js';
+import { V5_STYLE_THEMES, type OsmFeaturesOptions, type Palette } from './options/index.js';
 
 export interface StyleVariant {
 	name: string;
 	build: () => StyleSpecification;
 }
 
-/**
- * v5 style names and the v6 theme that reproduces each most closely. `shadow` is the one loose
- * match — v6 has no close equivalent — the other three measure near-exact.
- */
-const LEGACY_ALIASES: { name: string; theme: ThemeOptions }[] = [
-	{ name: 'eclipse', theme: { darkMode: true } },
-	{ name: 'graybeard', theme: 'gray' },
-	{ name: 'neutrino', theme: 'muted' },
-	{ name: 'shadow', theme: { palette: 'gray', darkMode: true } },
-];
+/** v5 style names, each built from its closest v6 theme (see `V5_STYLE_THEMES`). */
+const LEGACY_ALIASES = Object.entries(V5_STYLE_THEMES).map(([name, theme]) => ({ name, theme }));
 
 export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
+	// Only the light themes are published under their own name. The dark themes are still generated
+	// from them rather than tuned by hand; the v5 dark names (`eclipse`, `shadow`) stay published as
+	// aliases below.
 	const palettes: Palette[] = ['colorful', 'natural', 'muted', 'gray', 'toner'];
 
 	// Terrain variants enable terrain + hillshade, but let the caller's `features`

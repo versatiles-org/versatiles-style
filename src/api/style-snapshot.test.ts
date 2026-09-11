@@ -30,7 +30,7 @@ describe('generated style shape snapshots', () => {
 	});
 
 	it('osm colorful (dark)', async () => {
-		expect(shape(await osm({ theme: { palette: 'colorful', darkMode: true } }))).toMatchSnapshot();
+		expect(shape(await osm({ theme: 'colorful-dark' }))).toMatchSnapshot();
 	});
 
 	it('osm colorful with terrain + hillshade + extruded buildings', async () => {

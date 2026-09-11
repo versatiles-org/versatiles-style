@@ -16,7 +16,6 @@ describe('unknown option keys are rejected', () => {
 	it('accepts the optional keys that defaults leave out', () => {
 		expect(() =>
 			osm({
-				theme: { darkMode: 'auto' },
 				urls: { base: 'https://tiles.example.org' },
 				sky: { skyColor: '#010203', horizonColor: '#ffffff' },
 				features: {

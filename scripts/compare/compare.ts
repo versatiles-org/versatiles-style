@@ -79,11 +79,11 @@ interface Pair {
 
 const PAIRS: Pair[] = [
 	{ v5: 'colorful', build: () => osm({ theme: 'colorful' }) },
-	{ v5: 'graybeard', build: () => osm({ theme: { palette: 'gray' } }) },
-	{ v5: 'shadow', build: () => osm({ theme: { palette: 'gray', darkMode: true } }) },
+	{ v5: 'graybeard', build: () => osm({ theme: 'gray' }) },
+	{ v5: 'shadow', build: () => osm({ theme: 'gray-dark' }) },
 	{
 		v5: 'eclipse',
-		build: () => osm({ theme: { darkMode: true } }),
+		build: () => osm({ theme: 'colorful-dark' }),
 		note: 'migration table marks this mapping "approximate"',
 	},
 	{

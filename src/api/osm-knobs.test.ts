@@ -31,22 +31,16 @@ describe('osm() knob: theme', () => {
 		expect(new Set(backgrounds).size).toBe(osm.palettes.length);
 	});
 
-	it('darkMode flips the background between light and dark', async () => {
-		const light = await build({ theme: { palette: 'colorful', darkMode: false } });
-		const dark = await build({ theme: { palette: 'colorful', darkMode: true } });
+	it('a -dark theme flips the background between light and dark', async () => {
+		const light = await build({ theme: 'colorful' });
+		const dark = await build({ theme: 'colorful-dark' });
 		expect(bgColor(light)).not.toBe(bgColor(dark));
 	});
 
-	it("darkMode:'auto' resolves to light in a non-browser (node) environment", async () => {
-		const auto = await build({ theme: { palette: 'colorful', darkMode: 'auto' } });
-		const light = await build({ theme: { palette: 'colorful', darkMode: false } });
-		expect(bgColor(auto)).toBe(bgColor(light));
-	});
-
-	it('palette string shorthand equals the explicit object form', async () => {
-		const short = await build({ theme: 'toner' });
-		const long = await build({ theme: { palette: 'toner', darkMode: false } });
-		expect(bgColor(short)).toBe(bgColor(long));
+	it('rejects the removed { palette, darkMode } object, naming the theme it meant', () => {
+		expect(() => build({ theme: { palette: 'toner', darkMode: true } } as never)).toThrow(
+			'osm.theme: expected a theme name, not an object — use "toner-dark".'
+		);
 	});
 });
 
@@ -426,8 +420,19 @@ describe('osm() knob: layers (group gating)', () => {
 // ── static helpers on the osm() function object ──────────────────────────────────
 
 describe('osm() static properties', () => {
-	it('osm.palettes lists all five palettes', () => {
-		expect(osm.palettes).toEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
+	it('osm.palettes lists all ten themes', () => {
+		expect(osm.palettes).toEqual([
+			'colorful',
+			'colorful-dark',
+			'natural',
+			'natural-dark',
+			'muted',
+			'muted-dark',
+			'gray',
+			'gray-dark',
+			'toner',
+			'toner-dark',
+		]);
 	});
 
 	it('osm.colorKeys has 45 unique keys', () => {
@@ -446,17 +451,17 @@ describe('osm() static properties', () => {
 
 	it('osm.defaults is a fully-resolved ResolvedOsm', () => {
 		const d = osm.defaults;
-		expect(d.theme).toEqual({ palette: 'colorful', darkMode: false });
+		expect(d.theme).toBe('colorful');
 		expect(d.features.terrain).toBe(false);
 		expect(d.layers.buildings).toBe(true);
 	});
 
 	it('osm.colors returns a palette color set', () => {
-		expect(typeof osm.colors('toner', false).background).toBe('string');
+		expect(typeof osm.colors('toner').background).toBe('string');
 	});
 
 	it('osm.resolveOptions resolves raw options', () => {
-		expect(osm.resolveOptions({ theme: 'gray' }).theme.palette).toBe('gray');
+		expect(osm.resolveOptions({ theme: 'gray' }).theme).toBe('gray');
 	});
 
 	it('osm.languages extracts name_* language codes from a TileJSON', () => {
@@ -474,7 +479,7 @@ describe('osm() knob: sky', () => {
 	it('emits a style.sky populated from the resolved defaults', async () => {
 		// Sky and horizon come from the palette (see the per-palette block below); the three blend
 		// factors are palette-independent.
-		const colors = osm.colors('colorful', false);
+		const colors = osm.colors('colorful');
 		expect((await build()).sky).toStrictEqual({
 			'sky-color': colors.water,
 			'horizon-color': colors.background,
@@ -568,12 +573,10 @@ describe('osm() sky defaults follow the palette', () => {
 
 	it('takes the palette water colour for the sky and background for the horizon', () => {
 		for (const palette of osm.palettes) {
-			for (const darkMode of [false, true]) {
-				const colors = osm.colors(palette, darkMode);
-				const s = sky({ palette, darkMode });
-				expect(s['sky-color'], `${palette} dark=${darkMode}`).toBe(colors.water);
-				expect(s['horizon-color'], `${palette} dark=${darkMode}`).toBe(colors.background);
-			}
+			const colors = osm.colors(palette);
+			const s = sky(palette);
+			expect(s['sky-color'], palette).toBe(colors.water);
+			expect(s['horizon-color'], palette).toBe(colors.background);
 		}
 	});
 
@@ -582,9 +585,9 @@ describe('osm() sky defaults follow the palette', () => {
 		expect(new Set(skies).size).toBe(skies.length);
 	});
 
-	it('darkens the sky in dark mode', () => {
-		const light = Color.parse(sky({ palette: 'colorful', darkMode: false })['sky-color']).asHSL();
-		const dark = Color.parse(sky({ palette: 'colorful', darkMode: true })['sky-color']).asHSL();
+	it('darkens the sky in a dark theme', () => {
+		const light = Color.parse(sky('colorful')['sky-color']).asHSL();
+		const dark = Color.parse(sky('colorful-dark')['sky-color']).asHSL();
 		expect(dark.l).toBeLessThan(light.l);
 	});
 
@@ -630,7 +633,7 @@ describe('osm() resolved options round-trip without pinning the sky', () => {
 	});
 
 	it('rebuilds the identical style from resolved defaults', () => {
-		for (const theme of ['colorful', { palette: 'gray', darkMode: true }] as const)
+		for (const theme of ['colorful', 'gray-dark'] as const)
 			expect(JSON.stringify(osm(osm.resolveOptions({ theme })))).toBe(JSON.stringify(osm({ theme })));
 	});
 });

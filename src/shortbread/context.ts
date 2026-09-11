@@ -2,6 +2,7 @@ import type { DataDrivenPropertyValueSpecification, FormattedSpecification } fro
 import { Color } from '../color/index.js';
 import { colorOptionsKeys } from '../options/index.js';
 import type { ColorsOptions, ResolvedOsm, ResolvedOsmFeatures, ResolvedLayerGroups } from '../options/index.js';
+import { isDarkPalette } from '../themes/index.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;
 
@@ -42,7 +43,7 @@ export function buildContext(resolved: ResolvedOsm): LayerContext {
 	// `bg` is the pure "background" reference — fully white in light mode, fully black in dark mode —
 	// and `fg` is its inverse. Derived colors blend toward bg/fg (instead of absolute lighten/darken)
 	// so they adapt to both light and dark palettes; keeping bg/fg pure makes those blends predictable.
-	const bg = Color.parse(resolved.theme.darkMode ? '#000000' : '#ffffff');
+	const bg = Color.parse(isDarkPalette(resolved.theme) ? '#000000' : '#ffffff');
 	const fg = bg.invertLuminosity();
 
 	return {

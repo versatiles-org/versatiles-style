@@ -90,17 +90,9 @@ describe('osm()', () => {
 		expect(bgColorful).not.toBe(bgGray);
 	});
 
-	it('palette shorthand works', async () => {
-		const s1 = await osm({ theme: 'toner' });
-		const s2 = await osm({ theme: { palette: 'toner', darkMode: false } });
-		const bg1 = (s1.layers.find((l) => l.id === 'background')?.paint as Record<string, string>)?.['background-color'];
-		const bg2 = (s2.layers.find((l) => l.id === 'background')?.paint as Record<string, string>)?.['background-color'];
-		expect(bg1).toBe(bg2);
-	});
-
-	it('dark mode produces different colors than light mode', async () => {
-		const light = await osm({ theme: { palette: 'colorful', darkMode: false } });
-		const dark = await osm({ theme: { palette: 'colorful', darkMode: true } });
+	it('a dark theme produces different colors than its light theme', async () => {
+		const light = await osm({ theme: 'colorful' });
+		const dark = await osm({ theme: 'colorful-dark' });
 		const bgLight = (light.layers.find((l) => l.id === 'background')?.paint as Record<string, string>)?.[
 			'background-color'
 		];
@@ -248,7 +240,18 @@ describe('osm()', () => {
 	// ── Static properties ─────────────────────────────────────────────────────────
 
 	it('osm.palettes lists all palette names', () => {
-		expect(osm.palettes).toEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
+		expect(osm.palettes).toEqual([
+			'colorful',
+			'colorful-dark',
+			'natural',
+			'natural-dark',
+			'muted',
+			'muted-dark',
+			'gray',
+			'gray-dark',
+			'toner',
+			'toner-dark',
+		]);
 	});
 
 	it('osm.colorKeys lists all color key names', () => {
@@ -266,20 +269,20 @@ describe('osm()', () => {
 
 	it('osm.defaults returns a ResolvedOsm object', () => {
 		const d = osm.defaults;
-		expect(d.theme).toEqual({ palette: 'colorful', darkMode: false });
+		expect(d.theme).toBe('colorful');
 		expect(d.features.terrain).toBe(false);
 		expect(typeof d.urls.glyphsPattern).toBe('string');
 	});
 
 	it('osm.colors returns palette colors', () => {
-		const colors = osm.colors('toner', false);
+		const colors = osm.colors('toner');
 		expect(typeof colors.background).toBe('string');
 		expect(typeof colors.water).toBe('string');
 	});
 
 	it('osm.resolveOptions resolves options', () => {
 		const r = osm.resolveOptions({ theme: 'toner' });
-		expect(r.theme.palette).toBe('toner');
+		expect(r.theme).toBe('toner');
 	});
 
 	it('osm.languages returns language codes from TileJSON', () => {

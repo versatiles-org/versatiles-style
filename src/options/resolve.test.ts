@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveOsm } from './osm.js';
 import { resolveSatellite } from './satellite.js';
 import { resolveTheme } from './theme.js';
+import { PALETTES } from '../themes/index.js';
 import { resolveColors } from './colors.js';
 import { resolveSun } from './sun.js';
 import { resolveSky } from './sky.js';
@@ -14,7 +15,7 @@ import { resolveOsmFeatures } from './features.js';
 describe('resolveOsm', () => {
 	it('returns sensible defaults when called with no arguments', () => {
 		const r = resolveOsm();
-		expect(r.theme).toEqual({ palette: 'colorful', darkMode: false });
+		expect(r.theme).toBe('colorful');
 		expect(typeof r.urls.osm).toBe('string');
 		expect(typeof r.urls.elevation).toBe('string');
 		expect(typeof r.urls.glyphsPattern).toBe('string');
@@ -45,15 +46,9 @@ describe('resolveOsm', () => {
 		});
 	});
 
-	it('resolves palette shorthand in theme', () => {
-		const r = resolveOsm({ theme: 'toner' });
-		expect(r.theme.palette).toBe('toner');
-		expect(r.theme.darkMode).toBe(false);
-	});
-
-	it('resolves theme object with darkMode', () => {
-		const r = resolveOsm({ theme: { palette: 'gray', darkMode: true } });
-		expect(r.theme).toEqual({ palette: 'gray', darkMode: true });
+	it('resolves a theme name, light or dark', () => {
+		expect(resolveOsm({ theme: 'toner' }).theme).toBe('toner');
+		expect(resolveOsm({ theme: 'gray-dark' }).theme).toBe('gray-dark');
 	});
 
 	it('resolves custom base URL and builds relative URLs from it', () => {
@@ -152,43 +147,48 @@ describe('resolveOsm', () => {
 
 describe('resolveTheme', () => {
 	it('rejects an unknown palette with an error naming the valid ones', () => {
-		expect(() => resolveTheme('eclipse' as never)).toThrow(
-			'theme: unknown palette "eclipse". Valid palettes: colorful, natural, muted, gray, toner.'
+		expect(() => resolveTheme('purple' as never)).toThrow(
+			'theme: unknown palette "purple". Valid palettes: colorful, colorful-dark, natural, natural-dark, muted, muted-dark, gray, gray-dark, toner, toner-dark.'
 		);
 	});
 
-	it('rejects an unknown palette in object form too', () => {
-		expect(() => resolveTheme({ palette: 'graybeard' as never, darkMode: true })).toThrow(
-			'unknown palette "graybeard"'
+	it('names the v6 theme for a v5 style name', () => {
+		expect(() => resolveTheme('eclipse' as never)).toThrow('"eclipse" is a v5 style name — in v6 use "colorful-dark".');
+		expect(() => resolveTheme('graybeard' as never)).toThrow('in v6 use "gray".');
+	});
+
+	it('does not mistake an inherited property name for a v5 style name', () => {
+		expect(() => resolveTheme('toString' as never)).toThrow(/unknown palette "toString"\. Valid palettes: [^"]*$/);
+	});
+
+	it('returns the default with no input', () => {
+		expect(resolveTheme()).toBe('colorful');
+		expect(resolveTheme(undefined, 'gray')).toBe('gray');
+	});
+
+	it('accepts every palette name', () => {
+		for (const palette of PALETTES) expect(resolveTheme(palette)).toBe(palette);
+	});
+
+	it('rejects the removed { palette, darkMode } object, naming the theme it meant', () => {
+		expect(() => resolveTheme({ palette: 'gray', darkMode: true } as never)).toThrow('use "gray-dark"');
+		expect(() => resolveTheme({ darkMode: true } as never)).toThrow('use "colorful-dark"');
+		expect(() => resolveTheme({ palette: 'muted' } as never)).toThrow('use "muted"');
+		expect(() => resolveTheme({ darkMode: 'auto' } as never, 'gray', 'satellite.osmOverlay.theme')).toThrow(
+			'satellite.osmOverlay.theme: expected a theme name, not an object — use isDarkMode() ? "gray-dark" : "gray".'
 		);
-	});
-
-	it('returns colorful/light defaults with no input', () => {
-		expect(resolveTheme()).toEqual({ palette: 'colorful', darkMode: false });
-	});
-
-	it('handles palette string shorthand', () => {
-		expect(resolveTheme('muted')).toEqual({ palette: 'muted', darkMode: false });
-	});
-
-	it('handles full theme object', () => {
-		expect(resolveTheme({ palette: 'gray', darkMode: true })).toEqual({ palette: 'gray', darkMode: true });
-	});
-
-	it('defaults missing palette in theme object to colorful', () => {
-		expect(resolveTheme({ darkMode: true })).toEqual({ palette: 'colorful', darkMode: true });
 	});
 });
 
 describe('resolveColors', () => {
 	it('returns all color keys from palette', () => {
-		const colors = resolveColors({ palette: 'colorful', darkMode: false });
+		const colors = resolveColors('colorful');
 		expect(typeof colors.background).toBe('string');
 		expect(typeof colors.water).toBe('string');
 	});
 
 	it('merges overrides on top', () => {
-		const colors = resolveColors({ palette: 'colorful', darkMode: false }, { water: '#ff0000' });
+		const colors = resolveColors('colorful', { water: '#ff0000' });
 		expect(colors.water).toBe('#ff0000');
 	});
 });
@@ -295,7 +295,7 @@ describe('resolveSatellite', () => {
 		const r = resolveSatellite({ osmOverlay: { theme: 'toner' } });
 		expect(r.osmOverlay).not.toBe(false);
 		if (r.osmOverlay !== false) {
-			expect(r.osmOverlay.theme.palette).toBe('toner');
+			expect(r.osmOverlay.theme).toBe('toner');
 		}
 	});
 

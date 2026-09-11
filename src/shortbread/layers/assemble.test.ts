@@ -299,9 +299,7 @@ describe('layer IDs do not depend on colour values', () => {
 	});
 
 	it('keeps the same IDs in every shipped theme', () => {
-		for (const palette of osm.palettes)
-			for (const darkMode of [false, true])
-				expect(idsOf(osm({ theme: { palette, darkMode } })), `${palette} dark=${darkMode}`).toStrictEqual(defaultIds);
+		for (const palette of osm.palettes) expect(idsOf(osm({ theme: palette })), palette).toStrictEqual(defaultIds);
 	});
 
 	it('keeps the same IDs for arbitrary user colours', () => {

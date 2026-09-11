@@ -37,9 +37,8 @@ function withoutDefaults(value: unknown, defaults: unknown): unknown {
  * Minimise an options object that carries a `theme`.
  *
  * Colours depend on the theme, so everything else is compared against the defaults of *this* theme.
- * The theme itself is compared against `defaultPalette` in light mode — otherwise a non-default
- * palette would equal its own defaults and vanish. `darkMode: 'auto'` is kept as written, since
- * resolving it would freeze whatever mode the machine happens to be in.
+ * The theme itself is compared against `defaultPalette` — otherwise a non-default palette would
+ * equal its own defaults and vanish.
  */
 function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	options: T,
@@ -49,15 +48,7 @@ function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
 	const out = (withoutDefaults(rest, defaultsFor(theme)) ?? {}) as T;
-
-	const darkMode = typeof raw === 'object' && raw.darkMode === 'auto' ? 'auto' : theme.darkMode;
-	let minimalTheme: ThemeOptions | undefined;
-	if (darkMode !== false) {
-		minimalTheme = theme.palette === defaultPalette ? { darkMode } : { palette: theme.palette, darkMode };
-	} else if (theme.palette !== defaultPalette) {
-		minimalTheme = theme.palette;
-	}
-	return (minimalTheme === undefined ? out : { theme: minimalTheme, ...out }) as T;
+	return (theme === defaultPalette ? out : { theme, ...out }) as T;
 }
 
 /** The smallest `OsmOptions` that builds the same style as `options`. */

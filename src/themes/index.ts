@@ -4,19 +4,43 @@ import { gray } from './gray.js';
 import { muted } from './muted.js';
 import { natural } from './natural.js';
 import { toner } from './toner.js';
-import type { PaletteDefinition } from './types.js';
 
 export type { PaletteDefinition } from './types.js';
 export { colorful, gray, muted, natural, toner };
 
-export const PALETTES: ReadonlyArray<Palette> = ['colorful', 'natural', 'muted', 'gray', 'toner'] as const;
+export const PALETTES: ReadonlyArray<Palette> = [
+	'colorful',
+	'colorful-dark',
+	'natural',
+	'natural-dark',
+	'muted',
+	'muted-dark',
+	'gray',
+	'gray-dark',
+	'toner',
+	'toner-dark',
+] as const;
 
-const PALETTE_MAP: Record<Palette, PaletteDefinition> = { colorful, natural, muted, gray, toner };
+// Each palette file defines a light theme and derives its dark one (`calculateDarkModeColors`) on
+// access, so a dark theme costs nothing until it is used.
+const PALETTE_COLORS: Record<Palette, () => ResolvedColors> = {
+	colorful: () => colorful.light,
+	'colorful-dark': () => colorful.dark,
+	natural: () => natural.light,
+	'natural-dark': () => natural.dark,
+	muted: () => muted.light,
+	'muted-dark': () => muted.dark,
+	gray: () => gray.light,
+	'gray-dark': () => gray.dark,
+	toner: () => toner.light,
+	'toner-dark': () => toner.dark,
+};
 
-export function getPaletteColors(palette: Palette, darkMode: boolean): ResolvedColors {
-	return darkMode ? PALETTE_MAP[palette].dark : PALETTE_MAP[palette].light;
+export function getPaletteColors(palette: Palette): ResolvedColors {
+	return PALETTE_COLORS[palette]();
 }
 
-export function getPaletteDefinition(palette: Palette): PaletteDefinition {
-	return PALETTE_MAP[palette];
+/** Whether a palette is a dark theme, whose derived colours blend toward black instead of white. */
+export function isDarkPalette(palette: Palette): boolean {
+	return palette.endsWith('-dark');
 }

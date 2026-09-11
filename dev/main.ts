@@ -13,7 +13,6 @@ const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) 
 const baseSelect = $<HTMLSelectElement>('base-select');
 const themeSelect = $<HTMLSelectElement>('theme-select');
 const buildingsToggle = $<HTMLInputElement>('buildings-toggle');
-const darkToggle = $<HTMLInputElement>('dark-toggle');
 const terrainToggle = $<HTMLInputElement>('terrain-toggle');
 const hillshadeToggle = $<HTMLInputElement>('hillshade-toggle');
 const landcoverToggle = $<HTMLInputElement>('landcover-toggle');
@@ -33,7 +32,6 @@ const getBool = (key: string): boolean => params.get(key) === '1';
 baseSelect.value = params.get('base') === 'satellite' ? 'satellite' : 'osm';
 themeSelect.value = params.get('theme') ?? 'colorful';
 buildingsToggle.checked = getBool('buildings3d');
-darkToggle.checked = getBool('dark');
 terrainToggle.checked = getBool('terrain');
 hillshadeToggle.checked = getBool('hillshade');
 landcoverToggle.checked = getBool('landcover');
@@ -91,13 +89,12 @@ function buildInspectStyle(
 }
 
 // Build a style from the current control values. Landcover only exists for the OSM vector
-// style; for satellite, theme/dark-mode apply to the (optional) OSM overlay and terrain/hillshade
+// style; for satellite, the theme applies to the (optional) OSM overlay and terrain/hillshade
 // apply to the raster style.
 async function buildStyle(): Promise<{ style: StyleSpecification; sources: Record<string, string[]> }> {
 	const base = baseSelect.value as Base;
 	const palette = themeSelect.value as Palette;
 	const buildings = buildingsToggle.checked ? 'extruded' : 'flat';
-	const darkMode = darkToggle.checked;
 	const terrain = terrainToggle.checked;
 	const hillshade = hillshadeToggle.checked;
 	const landcover = landcoverToggle.checked;
@@ -110,11 +107,11 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 
 	const style = isSatellite
 		? satellite({
-				osmOverlay: { theme: { palette, darkMode } },
+				osmOverlay: { theme: palette },
 				features: { terrain, hillshade },
 			})
 		: osm({
-				theme: { palette, darkMode },
+				theme: palette,
 				features: { terrain, hillshade, landcover, buildings },
 			});
 
@@ -134,7 +131,6 @@ function persistState(): void {
 	p.set('base', baseSelect.value);
 	p.set('theme', themeSelect.value);
 	p.set('buildings3d', buildingsToggle.checked ? '1' : '0');
-	p.set('dark', darkToggle.checked ? '1' : '0');
 	p.set('terrain', terrainToggle.checked ? '1' : '0');
 	p.set('hillshade', hillshadeToggle.checked ? '1' : '0');
 	p.set('landcover', landcoverToggle.checked ? '1' : '0');
@@ -186,15 +182,7 @@ async function render(): Promise<void> {
 	persistState();
 }
 
-for (const control of [
-	baseSelect,
-	themeSelect,
-	buildingsToggle,
-	darkToggle,
-	terrainToggle,
-	hillshadeToggle,
-	landcoverToggle,
-]) {
+for (const control of [baseSelect, themeSelect, buildingsToggle, terrainToggle, hillshadeToggle, landcoverToggle]) {
 	control.addEventListener('change', () => void render());
 }
 

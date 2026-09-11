@@ -31,7 +31,7 @@ function buildBase(resolved: ResolvedOsm): StyleSpecification {
 
 	const style: StyleSpecification = {
 		version: 8,
-		name: styleName(resolved.theme.palette, resolved.theme.darkMode),
+		name: styleName(resolved.theme),
 		metadata: STYLE_METADATA,
 		glyphs: resolved.urls.glyphsPattern,
 		sprite: resolved.urls.sprite as StyleSpecification['sprite'],
@@ -167,7 +167,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 // ── Static properties ─────────────────────────────────────────────────────────
 
 export const osm = Object.assign(osmFn, {
-	/** All available palette names. */
+	/** All available palette names: five light themes, each followed by its `-dark` theme. */
 	palettes: PALETTES,
 
 	/** All color key names accepted by ColorsOptions. */
@@ -178,12 +178,12 @@ export const osm = Object.assign(osmFn, {
 		return getLayerGroupMap();
 	},
 
-	/** Fully resolved defaults (palette: 'colorful', darkMode: false). */
+	/** Fully resolved defaults (theme: 'colorful'). */
 	get defaults() {
 		return resolveOsm();
 	},
 
-	/** Return the palette's resolved colors for a given mode. */
+	/** Return a palette's resolved colors. */
 	colors: getPaletteColors,
 
 	/** Return the language codes available in a given TileJSON. */

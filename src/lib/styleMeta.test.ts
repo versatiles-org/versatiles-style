@@ -8,7 +8,7 @@ describe('style name and metadata', () => {
 	it('names each palette distinctly, like v5 did', () => {
 		expect(osm({ theme: 'colorful' }).name).toBe('versatiles-colorful');
 		expect(osm({ theme: 'toner' }).name).toBe('versatiles-toner');
-		expect(osm({ theme: { palette: 'gray', darkMode: true } }).name).toBe('versatiles-gray-dark');
+		expect(osm({ theme: 'gray-dark' }).name).toBe('versatiles-gray-dark');
 		expect(satellite().name).toBe('versatiles-satellite');
 	});
 
@@ -23,8 +23,8 @@ describe('style name and metadata', () => {
 		}
 	});
 
-	it('styleName composes palette and dark mode', () => {
+	it('styleName prefixes the theme name', () => {
 		expect(styleName('muted')).toBe('versatiles-muted');
-		expect(styleName('muted', true)).toBe('versatiles-muted-dark');
+		expect(styleName('muted-dark')).toBe('versatiles-muted-dark');
 	});
 });

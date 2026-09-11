@@ -22,7 +22,18 @@ describe('exports', () => {
 	});
 
 	it('should expose osm static properties', () => {
-		expect(lib.osm.palettes).toStrictEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
+		expect(lib.osm.palettes).toStrictEqual([
+			'colorful',
+			'colorful-dark',
+			'natural',
+			'natural-dark',
+			'muted',
+			'muted-dark',
+			'gray',
+			'gray-dark',
+			'toner',
+			'toner-dark',
+		]);
 		expect(typeof lib.osm.colors).toBe('function');
 		expect(typeof lib.osm.layerGroups).toBe('object');
 		expect(lib.osm.layerGroups.buildings).toContain('building');

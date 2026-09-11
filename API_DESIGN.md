@@ -267,16 +267,23 @@ type HillshadeOptions =
 
 `OsmContentOptions` is the shared base used by both `osm()` and `satellite({ osmOverlay })`. `OsmOptions` and `SatelliteOptions` extend it with their respective URL and feature configurations.
 
+Each palette is a light theme and has a dark theme of its own, named with a `-dark` suffix (`colorful-dark`, …). To follow the system setting, pick between them with [`isDarkMode()`](#isdarkmode-boolean).
+
 ```ts
-type Palette = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
+type Palette =
+  | 'colorful'
+  | 'colorful-dark'
+  | 'natural'
+  | 'natural-dark'
+  | 'muted'
+  | 'muted-dark'
+  | 'gray'
+  | 'gray-dark'
+  | 'toner'
+  | 'toner-dark';
 
 type OsmContentOptions = {
-  theme?:
-    | Palette // shorthand for { palette }
-    | {
-        darkMode?: boolean | 'auto'; // default: false; 'auto' = system preference (browser only)
-        palette?: Palette; // default: 'colorful'
-      };
+  theme?: Palette; // default: 'colorful'
   layers?: LayerGroupOptions;
   text?: TextOptions;
   layout?: LayoutOptions;
@@ -343,11 +350,11 @@ osm(options?: OsmOptions)
 Static properties for introspection:
 
 ```ts
-osm.palettes:     Palette[]           // ['colorful', 'natural', 'muted', 'gray', 'toner']
+osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural', …, 'toner-dark']
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
-osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (palette: 'colorful', darkMode: false)
-osm.colors(palette: Palette, darkMode: boolean): Record<string, string>
+osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (theme: 'colorful')
+osm.colors(palette: Palette): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
 osm.supportsLandcover(tileJSON: TileJSONSpecification): boolean
 osm.slots: {
@@ -412,7 +419,7 @@ Object.keys(osm.layerGroups.roads.streets); // ['pedestrian', 'track', 'service'
 `icons` is a cross-cutting alias, so it is listed as the union of `pois`, `markings` and
 `transit.stops`.
 
-The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with an explicit `theme.palette` and `theme.darkMode` instead — see [Migration from v5](#migration-from-v5) below.
+The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with a `theme` instead — see [Migration from v5](#migration-from-v5) below.
 
 ---
 
@@ -534,7 +541,15 @@ implements.
 
 ## `isDarkMode(): boolean`
 
-Returns `true` if the system preference is dark mode. In Node.js, always returns `false`.
+Returns `true` if the system preference is dark mode. In Node.js, always returns `false`. Use it to
+pick a dark theme when the system asks for one:
+
+```ts
+const style = osm({ theme: isDarkMode() ? 'colorful-dark' : 'colorful' });
+```
+
+It is read when called, so to follow a later change, listen to the `prefers-color-scheme` media query
+and rebuild the style.
 
 ---
 
@@ -660,9 +675,9 @@ delivering the second.
 | `await colorful({ terrain: true })`                     | `osm({ features: { terrain: true } })`                            |
 | `colorful({ experimental: { buildingHeights: true } })` | `osm({ features: { buildings: 'extruded' } })`                    |
 | `colorful({ elevationTilejson: '…' })`                  | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
-| `shadow(options)`                                       | `osm({ ...options, theme: { palette: 'gray', darkMode: true } })` |
-| `graybeard(options)`                                    | `osm({ ...options, theme: { palette: 'gray' } })`                 |
-| `eclipse(options)`                                      | `osm({ ...options, theme: { darkMode: true } })`                  |
+| `shadow(options)`                                       | `osm({ ...options, theme: 'gray-dark' })`                         |
+| `graybeard(options)`                                    | `osm({ ...options, theme: 'gray' })`                              |
+| `eclipse(options)`                                      | `osm({ ...options, theme: 'colorful-dark' })`                     |
 | `neutrino(options)`                                     | `osm({ ...options, theme: 'muted' })` _(closest match)_           |
 | `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
@@ -681,8 +696,8 @@ only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → 
 a blank style — so this is one to grep for. It returns a Promise in both forms.
 
 The palette mappings above were chosen by comparing per-colour RGB distance against the published v5
-styles: `graybeard`→`gray` and `eclipse`→`colorful`+dark are near-exact, `neutrino`→`muted` is the
-closest of the five, and `shadow`→`gray`+dark is approximate — `shadow` has no close v6 equivalent.
+styles: `graybeard`→`gray` and `eclipse`→`colorful-dark` are near-exact, `neutrino`→`muted` is the
+closest of the five, and `shadow`→`gray-dark` is approximate — `shadow` has no close v6 equivalent. A v5 style name passed as `theme` is rejected with an error naming its v6 theme.
 
 **Colour keys were renamed.** v5's 41 `colors` keys became 45: 7 kept their name
 (`boundary`, `building`, `glacier`, `label`, `labelHalo`, `land`, `water`), 34 gained a group prefix, and 4 are new
