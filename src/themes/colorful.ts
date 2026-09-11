@@ -99,5 +99,5 @@ const dark: ResolvedColors = {
 	labelWater: '#7D8893',
 };
 
-// Derived from `colorful` against a dark land (see ./index.ts); adjust by hand from here.
+// Generated from `colorful` by `npm run generate-themes` — change the generator, not these values.
 export const colorful: PaletteDefinition = { light, dark };

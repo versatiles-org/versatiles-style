@@ -2,6 +2,7 @@ import type { ResolvedColors } from '../options/colors.js';
 import type { PaletteDefinition } from './types.js';
 
 // Nearly desaturated palette — a trace of colorful's hues keeps water and road classes apart.
+// Generated from `colorful` by `npm run generate-themes` — change the generator, not these values.
 const light: ResolvedColors = {
 	background: '#F0F0F0',
 	land: '#F0F0F0',
@@ -21,9 +22,9 @@ const light: ResolvedColors = {
 	areaWaste: '#D8D7D4',
 	areaBurial: '#E1E2E1',
 	siteConstruction: '#B4B4B41A',
-	siteEducation: '#F3F3E220',
+	siteEducation: '#F2F3E220',
 	siteHospital: '#AD95941A',
-	siteDanger: '#785B584D',
+	siteDanger: '#785B574D',
 	sitePrison: '#F2F0F11A',
 	siteParking: '#E7E6E6',
 	siteSports: '#EFEFEE26',
@@ -31,10 +32,10 @@ const light: ResolvedColors = {
 	buildingBg: '#DDDCDB',
 	roadStreet: '#F9F9F9',
 	roadStreetBg: '#CECDCC',
-	roadMotorway: '#DFD2BA',
-	roadMotorwayBg: '#C4B9A2',
-	roadTrunk: '#EFEBD4',
-	roadTrunkBg: '#C4B9A2',
+	roadMotorway: '#E3D1BB',
+	roadMotorwayBg: '#CCB6A5',
+	roadTrunk: '#F0EAD4',
+	roadTrunkBg: '#CCB6A5',
 	transitRail: '#B8BCBF',
 	transitSubway: '#B2B8BE',
 	transitCycle: '#F0F3F5',
@@ -71,7 +72,7 @@ const dark: ResolvedColors = {
 	siteConstruction: '#4E4E4E1A',
 	siteEducation: '#26261C20',
 	siteHospital: '#6D5C5B1A',
-	siteDanger: '#977E7C4D',
+	siteDanger: '#977E7A4D',
 	sitePrison: '#2524251A',
 	siteParking: '#2B2B2B',
 	siteSports: '#25252526',
@@ -79,10 +80,10 @@ const dark: ResolvedColors = {
 	buildingBg: '#323231',
 	roadStreet: '#4C4C4C',
 	roadStreetBg: '#313130',
-	roadMotorway: '#504837',
-	roadMotorwayBg: '#3E3727',
-	roadTrunk: '#595747',
-	roadTrunkBg: '#3E3727',
+	roadMotorway: '#534738',
+	roadMotorwayBg: '#433529',
+	roadTrunk: '#5A5647',
+	roadTrunkBg: '#433529',
 	transitRail: '#46484A',
 	transitSubway: '#474B4E',
 	transitCycle: '#242628',
@@ -98,5 +99,5 @@ const dark: ResolvedColors = {
 	labelWater: '#858789',
 };
 
-// Derived from `colorful` against a dark land (see ./index.ts); adjust by hand from here.
+// Generated from `colorful` by `npm run generate-themes` — change the generator, not these values.
 export const gray: PaletteDefinition = { light, dark };

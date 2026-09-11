@@ -29,6 +29,7 @@
 		"doc-sprites": "tsx scripts/icons-report.ts --public --out docs/sprites.html",
 		"doc-typescript": "vrt doc-typescript -f html",
 		"extract-palette": "tsx scripts/extract-palette.ts",
+		"generate-themes": "tsx scripts/generate-themes.ts",
 		"icons-provenance": "tsx scripts/icons-provenance.ts",
 		"icons-report": "tsx scripts/icons-report.ts",
 		"format": "prettier --write --log-level warn .",
