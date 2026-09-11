@@ -107,13 +107,13 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 
 	const style = isSatellite
 		? satellite({
-			osmOverlay: { theme: palette },
-			features: { terrain, hillshade },
-		})
+				osmOverlay: { theme: palette },
+				features: { terrain, hillshade },
+			})
 		: osm({
-			theme: palette,
-			features: { terrain, hillshade, landcover, buildings },
-		});
+				theme: palette,
+				features: { terrain, hillshade, landcover, buildings },
+			});
 
 	// `osm()`/`satellite()` reference their sources by TileJSON URL and do no I/O, so MapLibre
 	// fetches the document itself. That is fine only when the TileJSON's `tiles` entries are

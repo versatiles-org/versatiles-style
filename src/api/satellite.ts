@@ -128,20 +128,22 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	// Optional hillshade
 	if (resolved.features.hillshade !== false) {
 		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
-		configure3DLighting(style, resolved.sun);
 	}
 
-	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
-	// With an overlay the sky follows its palette, exactly as `osm()` does — otherwise a dark or
-	// `toner` overlay got a bright sky-blue sky, the defect #126 fixed for `osm()` but not here.
-	// Bare imagery has no palette to follow and keeps the generic sky blue.
-	applySky(
-		style,
-		resolved.sky,
-		resolved.osmOverlay === false
-			? undefined
-			: { skyColor: resolved.osmOverlay.colors.water, horizonColor: resolved.osmOverlay.colors.background }
-	);
+	configure3DLighting(style, resolved.sun);
+
+	if (resolved.sky) {
+		if (resolved.osmOverlay) {
+			applySky(style, {
+				skyColor: resolved.osmOverlay?.colors.water,
+				horizonColor: resolved.osmOverlay?.colors.background,
+				...resolved.sky,
+			});
+		} else {
+			applySky(style, resolved.sky);
+		}
+	}
+
 	applyProjection(style, resolved.projection);
 
 	return style;

@@ -147,13 +147,13 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 		addLandcover(style);
 	}
 
-	if (resolved.features.hillshade !== false || resolved.features.buildings === 'extruded') {
-		configure3DLighting(style, resolved.sun);
-	}
+	configure3DLighting(style, resolved.sun);
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	// The sky follows the palette: its `water` for the sky, its `background` for the horizon.
-	applySky(style, resolved.sky, { skyColor: resolved.colors.water, horizonColor: resolved.colors.background });
+	if (resolved.sky) {
+		applySky(style, { skyColor: resolved.colors.water, horizonColor: resolved.colors.background, ...resolved.sky });
+	}
 	applyProjection(style, resolved.projection);
 
 	// 7. Post-process: recolor
