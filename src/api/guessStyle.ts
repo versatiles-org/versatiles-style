@@ -130,7 +130,7 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, base: string): Sty
 
 // Build a minimal raster style for a raster TileJSON.
 async function buildRasterStyle(
-	url: string,
+	source: string | TileJSONSpecification,
 	tj: TileJSONSpecification,
 	options?: GuessStyleOptions
 ): Promise<StyleSpecification> {
@@ -147,7 +147,7 @@ async function buildRasterStyle(
 	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
 
 	if (isSatelliteHint(tj)) {
-		return satellite({ urls: { satellite: url, base: options?.base, fetch: options?.fetch } });
+		return satellite({ urls: { satellite: source, base: options?.base, fetch: options?.fetch } });
 	}
 
 	return {
@@ -174,7 +174,14 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
 }
 
 /**
- * Inspect a TileJSON and return the most appropriate MapLibre style:
+ * Inspect a tileset and return the most appropriate MapLibre style.
+ *
+ * `source` is either the URL of a TileJSON document, which is downloaded (relative `tiles` are
+ * resolved against the document), or a TileJSON object the caller already holds — a tile server has
+ * one in memory from its container's metadata — which is used without any network access (relative
+ * `tiles` are resolved against `options.base`). The caller's object is not modified.
+ *
+ * Styles by tileset:
  * - Shortbread vector tiles → full `osm()` style
  * - Unknown vector tiles → inspector style (one color-coded fill+line+label per source-layer)
  * - Raster tiles with satellite name hint → `satellite()` style
@@ -183,7 +190,10 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  * Never throws — an invalid argument, a failed download or a malformed document all yield a
  * blank (but valid) StyleSpecification.
  */
-export async function guessStyle(url: string, options?: GuessStyleOptions): Promise<StyleSpecification> {
+export async function guessStyle(
+	source: string | TileJSONSpecification,
+	options?: GuessStyleOptions
+): Promise<StyleSpecification> {
 	// Everything is inside the try: the point of guessStyle is that it always yields a usable
 	// style. A bad argument, an unreachable host, a malformed document — each falls back to a blank
 	// style rather than surfacing. Previously the argument check and the download sat outside, so
@@ -191,19 +201,33 @@ export async function guessStyle(url: string, options?: GuessStyleOptions): Prom
 	try {
 		// An unknown option key is an invalid argument like any other: blank style, and no download.
 		checkKeys(options, { base: true, fetch: true }, 'guessStyle');
-		if (!url || typeof url !== 'string') throw new TypeError('guessStyle: url must be a non-empty string');
+		const base = options?.base ?? DEFAULT_BASE;
+		let tileJSON: TileJSONSpecification;
+		// What osm()/satellite() receive: the URL, so the style references the document, or the resolved
+		// object, so it is inlined — either way without a second download.
+		let osmSource: string | TileJSONSpecification;
 
-		url = resolveUrl(options?.base ?? DEFAULT_BASE, url);
-		const tileJSON = await loadTileSource(url, options?.fetch);
+		if (typeof source === 'string') {
+			if (!source) throw new TypeError('guessStyle: source must be a non-empty URL or a TileJSON object');
+			const url = resolveUrl(base, source);
+			tileJSON = await loadTileSource(url, options?.fetch);
+			osmSource = url;
+		} else if (source !== null && typeof source === 'object' && !Array.isArray(source)) {
+			// resolve relative tiles against `base` on a copy, so the caller's object stays untouched
+			tileJSON = resolveTileJSONTiles(source, base);
+			osmSource = tileJSON;
+		} else {
+			throw new TypeError('guessStyle: source must be a non-empty URL or a TileJSON object');
+		}
 
 		assertTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
 			if (isShortbread(tileJSON)) {
-				return await osm({ urls: { osm: url, base: options?.base, fetch: options?.fetch } });
+				return await osm({ urls: { osm: osmSource, base: options?.base, fetch: options?.fetch } });
 			}
-			return buildInspectorStyle(tileJSON, options?.base ?? DEFAULT_BASE);
+			return buildInspectorStyle(tileJSON, base);
 		}
-		return await buildRasterStyle(url, tileJSON, options);
+		return await buildRasterStyle(osmSource, tileJSON, options);
 	} catch {
 		// A blank style is still a valid style: the map loads, and the caller sees an empty map
 		// rather than an exception at style-build time.

@@ -255,3 +255,73 @@ describe('guessStyle() — url validation', () => {
 		expect(fetch).not.toHaveBeenCalled();
 	});
 });
+
+// ── TileJSON objects ─────────────────────────────────────────────────────────────
+// A tile server already holds its tileset's TileJSON (from the container's metadata), so it passes
+// the object instead of a URL. Nothing may be downloaded, and the caller's object must stay as it was.
+
+describe('guessStyle() — TileJSON object', () => {
+	const BASE = 'https://tiles.example.org';
+	const shortbread = (): TileJSONSpecification =>
+		({
+			tilejson: '3.0.0',
+			tiles: ['/tiles/osm/{z}/{x}/{y}'],
+			minzoom: 0,
+			maxzoom: 14,
+			attribution: '© OpenStreetMap contributors',
+			vector_layers: ['streets', 'water_polygons', 'place_labels', 'land'].map((id) => ({ id, fields: {} })),
+		}) as TileJSONSpecification;
+	const noFetch = () => vi.fn(async () => jsonResponse({}));
+	type Source = { type: string; tiles?: string[]; url?: string };
+	const sourcesOf = (style: StyleSpecification) => Object.values(style.sources) as unknown as Source[];
+
+	it('builds the full OSM style for a Shortbread object without downloading anything', async () => {
+		const fetch = noFetch();
+		const style = await guessStyle(shortbread(), { base: BASE, fetch });
+		expect(fetch).not.toHaveBeenCalled();
+		expect(style.layers.length).toBeGreaterThan(100);
+		const vector = sourcesOf(style).find((s) => s.type === 'vector');
+		expect(vector?.url).toBeUndefined();
+		expect(vector?.tiles).toStrictEqual([`${BASE}/tiles/osm/{z}/{x}/{y}`]);
+	});
+
+	it('does not modify the object it is given', async () => {
+		const input = shortbread();
+		const before = JSON.stringify(input);
+		await guessStyle(input, { base: BASE });
+		expect(JSON.stringify(input)).toBe(before);
+	});
+
+	it('builds the inspector style for an unknown vector object', async () => {
+		const input = { tilejson: '3.0.0', tiles: ['/v/{z}/{x}/{y}'], vector_layers: [{ id: 'roads', fields: {} }] };
+		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch: noFetch() });
+		expect(layerTypes(style)).toStrictEqual(expect.arrayContaining(['fill', 'line', 'symbol']));
+		expect(sourcesOf(style)[0].tiles).toStrictEqual([`${BASE}/v/{z}/{x}/{y}`]);
+	});
+
+	it('builds a raster style for a raster object', async () => {
+		const input = { tilejson: '3.0.0', tiles: ['/r/{z}/{x}/{y}.png'] };
+		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch: noFetch() });
+		expect(layerTypes(style)).toContain('raster');
+		expect(sourcesOf(style).find((s) => s.type === 'raster')?.tiles).toStrictEqual([`${BASE}/r/{z}/{x}/{y}.png`]);
+	});
+
+	it('uses satellite() for a raster object named satellite, with the source inlined', async () => {
+		const fetch = noFetch();
+		const input = { tilejson: '3.0.0', name: 'satellite', tiles: ['/s/{z}/{x}/{y}.jpg'] };
+		const style = await guessStyle(input as TileJSONSpecification, { base: BASE, fetch });
+		expect(fetch).not.toHaveBeenCalled();
+		const raster = sourcesOf(style).find((s) => s.type === 'raster');
+		expect(raster?.url).toBeUndefined();
+		expect(raster?.tiles).toStrictEqual([`${BASE}/s/{z}/{x}/{y}.jpg`]);
+	});
+
+	it.each([
+		['a malformed object', { not: 'a tilejson' }],
+		['null', null],
+		['an array', []],
+		['a number', 42],
+	])('falls back to a blank style for %s', async (_label, input) => {
+		await expect(guessStyle(input as never)).resolves.toStrictEqual({ version: 8, sources: {}, layers: [] });
+	});
+});

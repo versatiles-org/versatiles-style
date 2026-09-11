@@ -22,10 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `StyleBuilderFunction` / `SatelliteStyleOptions` / `Language` types. (`GuessStyleOptions` remains.)
   Use `osm({ theme })` with the palettes `colorful | natural | muted | gray | toner` (each with a `darkMode`
   flag) instead. See the migration table in `API_DESIGN.md`.
-- Removed the old `guess_style` module. `guessStyle()` now takes a **URL string** instead of a
-  `TileJSONSpecification` object, downloads the document itself, and returns a Promise. It never
-  throws: an invalid argument, a failed download or a malformed document all yield a blank — but
-  valid — style.
+- Removed the old `guess_style` module. `guessStyle()` accepts a TileJSON **URL**, which it downloads,
+  or a `TileJSONSpecification` object, which it uses without network access, and returns a Promise.
+  Its options are `base` and `fetch`; v5's `baseUrl`, `glyphs` and `sprite` are gone. It never throws:
+  an invalid argument, an unknown option key, a failed download or a malformed document all yield a
+  blank — but valid — style.
 - `isTileJSONSpecification` / `isRasterTileJSONSpecification` now return a boolean instead of
   throwing, so they behave like the type guards their signatures always claimed. The throwing
   behaviour, with its descriptive validation messages, moved to the new

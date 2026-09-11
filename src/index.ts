@@ -66,13 +66,14 @@
  *
  * ## Guess a style from a tile source:
  *
- * {@link guessStyle} downloads a TileJSON and returns the most appropriate style for it.
- * It is the one style function that is asynchronous, because it has to read the document
- * before it can decide what to build.
+ * {@link guessStyle} inspects a tileset and returns the most appropriate style for it. Pass the URL
+ * of a TileJSON document, which it downloads, or a TileJSON object you already hold, which it uses
+ * without network access. It is the one style function that is asynchronous.
  *
  * ```ts
  * import { guessStyle } from '@versatiles/style';
  * const style = await guessStyle('https://tiles.example.org/tiles.json');
+ * const fromObject = await guessStyle(tileJSON, { base: 'https://tiles.example.org' });
  * ```
  *
  * ---

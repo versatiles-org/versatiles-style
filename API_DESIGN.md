@@ -12,7 +12,7 @@
     - [Function options](#function-options)
   - [`osm()`](#osmoptions-stylespecification)
   - [`satellite()`](#satelliteoptions-stylespecification)
-  - [`guessStyle()`](#guessstyleurl-options-promise-stylespecification)
+  - [`guessStyle()`](#guessstylesource-options-promise-stylespecification)
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
@@ -459,29 +459,34 @@ so `satellite.slots` references stay valid.
 
 ---
 
-## `guessStyle(url, options?): Promise<StyleSpecification>`
+## `guessStyle(source, options?): Promise<StyleSpecification>`
 
 ```ts
 guessStyle(
-  url: string,
-  {
-    urls?: {
-      base?:          string
-      glyphsPattern?: string
-      sprite?:        string | Array<{ id: string; url: string }>
-    }
+  source: string | TileJSONSpecification,
+  options?: {
+    base?:  string                   // resolves relative URLs; the page origin, or tiles.versatiles.org outside a browser
+    fetch?: typeof globalThis.fetch  // used when `source` is a URL
   }
 )
 ```
 
-Downloads the TileJSON at `url` and picks an appropriate style automatically: Shortbread vector tiles
-get a full osm style; unknown vector tiles get an auto-colored inspector style (one color per
-source-layer); raster tiles get a basic raster layer. Anything it cannot classify falls back to a blank
-style rather than throwing — but an invalid `url` argument throws, and network failures propagate.
+Picks an appropriate style for a tileset: Shortbread vector tiles get a full `osm()` style; unknown
+vector tiles get an auto-colored inspector style (one color per source-layer); raster tiles get a basic
+raster layer, or a `satellite()` style when the TileJSON's `name` suggests imagery.
 
-This is the only asynchronous style function: it has to read the document before it can decide what to
-build. The style it returns still _references_ its sources; pass it through
+`source` is either the **URL** of a TileJSON document, which is downloaded (relative `tiles` resolve
+against the document), or a **TileJSON object** you already hold — a tile server has one from its
+container's metadata — which is used without any network access (relative `tiles` resolve against
+`base`). The object is not modified.
+
+It never throws: an invalid `source`, an unknown option key, a failed download or a malformed document
+each yield a blank but valid style. It returns a Promise in both forms, so callers need not tell them
+apart.
+
+From a URL, a Shortbread or satellite style still _references_ the document; pass it through
 [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
+From an object, the source is inlined already.
 
 ---
 
@@ -660,18 +665,17 @@ delivering the second.
 | `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
 | `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
 | `satellite({ overlay: false })`                         | `satellite({ osmOverlay: false })`                                |
-| `await guessStyle(tileJSON, options)`                   | `await guessStyle(url, options)` — see note below                 |
+| `await guessStyle(tileJSON, options)`                   | `await guessStyle(tileJSON, { base })` — see note below           |
 | `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'` — but see below                                |
 
 The sprite sheet was renamed `basics` → `base` and the old path is no longer published. Most ids
 only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → `icon-pill`,
 `icon-place_of_worship` → one of seven religion icons, …). `SPRITES.md` has the full mapping.
 
-`guessStyle` changed more than its name suggests: it takes the tileset's **URL** where v5 took an
-already-fetched `TileJSONSpecification`, and downloads the document itself. Passing a TileJSON object
-does not fail loudly — it is stringified into a URL — so this is one to grep for rather than rely on
-the type checker. In exchange it now never throws: an invalid argument, a failed download or a
-malformed document each yield a blank but valid style.
+`guessStyle` still accepts the TileJSON object v5 took, and now also a URL, which it downloads. Its
+options changed: v5's `baseUrl` is `base`, and `glyphs` and `sprite` have no equivalent. Because
+`guessStyle` never throws, the old option names do not fail loudly — they are unknown keys, which yield
+a blank style — so this is one to grep for. It returns a Promise in both forms.
 
 The palette mappings above were chosen by comparing per-colour RGB distance against the published v5
 styles: `graybeard`→`gray` and `eclipse`→`colorful`+dark are near-exact, `neutrino`→`muted` is the
