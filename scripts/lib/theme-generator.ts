@@ -11,7 +11,7 @@
  * near-white tint does not turn into a vivid colour when it is darkened.
  *
  * Dark themes use the same scale against a dark land: water darker than the land, everything else
- * lighter, and streets lighter than their casings.
+ * lighter, streets lighter than their casings, and glaciers clearly lighter so they read as snow.
  *
  * Hues come from colorful and settings from `THEMES`, never from the tables in src/themes, so running
  * the generator twice gives the same result. `npm run generate-themes` writes those tables, and a unit
@@ -55,11 +55,11 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
 		chroma: { fill: 0.5, line: 0.6, label: 0.6 },
 		darkLand: 0.019,
 	},
-	// a trace of colour, enough to keep water and the road classes apart
+	// fully desaturated: every colour is a gray
 	gray: {
 		land: '#F0F0F0',
 		contrast: { fill: 0.8, line: 0.9, label: 1 },
-		chroma: { fill: 0.15, line: 0.35, label: 0.2 },
+		chroma: { fill: 0, line: 0, label: 0 },
 		darkLand: 0.018,
 	},
 	// quiet fills, heavy lines, black labels
@@ -78,6 +78,8 @@ export const OVERRIDES: Partial<Record<Palette, Partial<ResolvedColors>>> = {};
 const DARK_CHROMA = 0.8;
 /** Below this land luminance there is no room for darker water, so dark water turns a lighter blue. */
 const DARK_WATER_ROOM = 0.015;
+/** Contrast of dark-theme glaciers against the land: snow, clearly lighter than the ground around it. */
+const DARK_GLACIER = 1.6;
 /** Road fills and the casings drawn beneath them. */
 const CASINGS: Record<string, string> = {
 	roadStreet: 'roadStreetBg',
@@ -244,6 +246,8 @@ function build(theme: LightTheme, dark: boolean): Record<string, string> {
 			target = magnitude(contrast(parse(ref[key]), over(parse(ref[CASINGS[key]]), refLand))) ** exponent;
 		} else if (Object.values(CASINGS).includes(key)) {
 			target = magnitude(target) ** (0.5 * exponent); // casings stay subtle
+		} else if (key === 'glacier') {
+			target = DARK_GLACIER ** exponent;
 		} else if (key === 'water') {
 			const step = magnitude(target) ** (0.5 * exponent);
 			target = settings.darkLand >= DARK_WATER_ROOM ? 1 / step : step;

@@ -55,7 +55,7 @@ const dark: ResolvedColors = {
 	background: '#262525',
 	land: '#262525',
 	water: '#171E25',
-	glacier: '#2A2A2A',
+	glacier: '#3C3C3C',
 	natureWood: '#2B3325',
 	natureGrass: '#2C3227',
 	naturePark: '#333728',
