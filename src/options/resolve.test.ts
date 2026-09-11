@@ -151,6 +151,18 @@ describe('resolveOsm', () => {
 // ── sub-resolvers ─────────────────────────────────────────────────────────────
 
 describe('resolveTheme', () => {
+	it('rejects an unknown palette with an error naming the valid ones', () => {
+		expect(() => resolveTheme('eclipse' as never)).toThrow(
+			'theme: unknown palette "eclipse". Valid palettes: colorful, natural, muted, gray, toner.'
+		);
+	});
+
+	it('rejects an unknown palette in object form too', () => {
+		expect(() => resolveTheme({ palette: 'graybeard' as never, darkMode: true })).toThrow(
+			'unknown palette "graybeard"'
+		);
+	});
+
 	it('returns colorful/light defaults with no input', () => {
 		expect(resolveTheme()).toEqual({ palette: 'colorful', darkMode: false });
 	});

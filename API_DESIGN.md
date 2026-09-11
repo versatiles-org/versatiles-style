@@ -351,6 +351,13 @@ osm.slots: {
 osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
 ```
 
+`osm.defaults` and `osm.resolveOptions()` return **derived values already filled in**:
+`sky.skyColor` and `sky.horizonColor` are taken from the resolved `colors.water` and
+`colors.background`. Feed a resolved object back in as options and those two are pinned —
+change `colors.water` afterwards and the sky no longer follows it. A UI that pre-fills its state
+from `defaults` should leave `sky` out unless it offers sky controls of its own. These are the only
+derived fields; everything else in a resolved object can be round-tripped as-is.
+
 `osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
 at the leaves — useful for building a UI over the options, or for finding a layer to target with
 `beforeId`. It is derived from the layers themselves, so it cannot drift from what the options
@@ -390,6 +397,10 @@ satellite.slots: {
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
 satellite.resolveOptions(options?: SatelliteOptions): ResolvedSatelliteOptions
 ```
+
+`satellite.defaults` and `satellite.resolveOptions()` carry the same two derived fields, taken from
+the overlay's palette — or a generic sky blue when `osmOverlay` is `false`. The same caution applies:
+pre-filling `sky` stops it following the overlay toggle and the overlay's colours.
 
 The OSM vector overlay (roads, boundaries, labels and POIs over the imagery) is rendered by default.
 `true` uses the overlay's own defaults, `false` gives bare imagery with no vector layers, and an
