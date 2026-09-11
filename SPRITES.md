@@ -13,6 +13,8 @@ MapLibre loads any number of sprite sources, each under its own `id`, so a refer
 from `icons/maki/alcohol-shop.svg`, hyphen and all. Which file backs which sprite name is declared
 in [`scripts/config/sprites.ts`](./scripts/config/sprites.ts), and that file is the index: run
 `npm run icons-report` for a rendered overview of every icon, its sprite ids and its source.
+The same overview without the maintenance details is published with each release as the
+[sprite overview](https://versatiles.org/versatiles-style/sprites.html).
 
 | folder              | what it holds                                                             |
 | ------------------- | ------------------------------------------------------------------------- |

@@ -36,6 +36,7 @@ Download the assets from the [latest release](https://github.com/versatiles-org/
 - **[styles.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz):** Contains all styles in multiple languages.
   - **Note:** These styles use `tiles.versatiles.org` as the source for tiles, fonts (glyphs), and icons (sprites).
 - **[sprites.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz):** Includes map icons and other sprites.
+- **[Sprite overview](https://versatiles.org/versatiles-style/sprites.html):** every icon in both sheets, with its sprite ID, title and aliases.
 - **[versatiles-style.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/versatiles-style.tar.gz):** Contains a JavaScript file to generate styles dynamically in the browser.
 
 ---

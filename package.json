@@ -26,6 +26,7 @@
 		"doc": "npm run doc-graph",
 		"doc-graph": "vrt deps-graph --collapse-dir \"src/shortbread/layers/*\" | vrt doc-insert README.md '### Dependency Graph'",
 		"doc-screenshots": "tsx scripts/screenshots.ts",
+		"doc-sprites": "tsx scripts/icons-report.ts --public --out docs/sprites.html",
 		"doc-typescript": "vrt doc-typescript -f html",
 		"extract-palette": "tsx scripts/extract-palette.ts",
 		"icons-provenance": "tsx scripts/icons-provenance.ts",

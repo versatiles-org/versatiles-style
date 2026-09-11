@@ -98,6 +98,9 @@ jobs:
       - name: Generate Screenshots
         run: npm run doc-screenshots
 
+      - name: Generate Sprite Overview
+        run: npm run doc-sprites
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
