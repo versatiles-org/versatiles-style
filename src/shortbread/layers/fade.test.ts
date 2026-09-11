@@ -38,8 +38,8 @@ import { osm } from '../../api/index.js';
 let style: StyleSpecification; // default colorful
 let landcoverStyle: StyleSpecification; // colorful + features.landcover
 
-beforeAll(async () => {
-	[style, landcoverStyle] = await Promise.all([osm(), osm({ features: { landcover: true } })]);
+beforeAll(() => {
+	[style, landcoverStyle] = [osm(), osm({ features: { landcover: true } })];
 });
 
 const OPACITY_PROPS: Record<string, string[]> = {

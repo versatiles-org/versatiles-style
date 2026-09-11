@@ -68,19 +68,19 @@ function render(style: StyleSpecification, tile: Buffer, png: Buffer): Promise<U
 
 describe('native MapLibre rendering', () => {
 	it('renders an osm() vector style to a full RGBA buffer', async () => {
-		const style = (await osm({
+		const style = osm({
 			theme: 'colorful',
 			layers: { labels: false, icons: false },
-		})) as unknown as StyleSpecification;
+		}) as unknown as StyleSpecification;
 		// empty buffer = a valid, empty vector tile
 		const buffer = await render(style, Buffer.alloc(0), await onePixelPng());
 		expect(buffer.length).toBe(WIDTH * HEIGHT * 4);
 	}, 30000);
 
 	it('renders a satellite() raster style to a full RGBA buffer', async () => {
-		const style = (await satellite({
+		const style = satellite({
 			osmOverlay: false,
-		})) as unknown as StyleSpecification;
+		}) as unknown as StyleSpecification;
 		const png = await onePixelPng();
 		// raster tiles must decode as images → serve a PNG
 		const buffer = await render(style, png, png);

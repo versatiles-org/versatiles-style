@@ -13,8 +13,8 @@ function layerById(style: StyleSpecification, id: string) {
 // ── Basic output validity ─────────────────────────────────────────────────────
 
 describe('osm()', () => {
-	it('returns a valid MapLibre style', async () => {
-		const style = await osm();
+	it('returns a valid MapLibre style', () => {
+		const style = osm();
 		expect(style.version).toBe(8);
 		expect(style.sources).toBeDefined();
 		expect(style.layers.length).toBeGreaterThan(50);
@@ -22,22 +22,22 @@ describe('osm()', () => {
 		expect(style.sprite).toBeDefined();
 	});
 
-	it('includes slot anchor layers', async () => {
-		const ids = layerIds(await osm());
+	it('includes slot anchor layers', () => {
+		const ids = layerIds(osm());
 		expect(ids).toContain('slot-below-fills');
 		expect(ids).toContain('slot-below-streets');
 		expect(ids).toContain('slot-below-symbols');
 		expect(ids).toContain('slot-below-labels');
 	});
 
-	it('includes background and water-ocean', async () => {
-		const ids = layerIds(await osm());
+	it('includes background and water-ocean', () => {
+		const ids = layerIds(osm());
 		expect(ids).toContain('background');
 		expect(ids).toContain('water-ocean');
 	});
 
-	it('uses versatiles-shortbread vector source for non-background layers', async () => {
-		const style = await osm();
+	it('uses versatiles-shortbread vector source for non-background layers', () => {
+		const style = osm();
 		const nonBg = style.layers.filter((l) => l.type !== 'background');
 		for (const layer of nonBg) {
 			expect((layer as Record<string, unknown>).source).toBe('versatiles-shortbread');
@@ -46,13 +46,13 @@ describe('osm()', () => {
 
 	// ── URL configuration ───────────────────────────────────────────────────────
 
-	it('applies custom base URL to the osm source', async () => {
+	it('applies custom base URL to the osm source', () => {
 		const style = osm({ urls: { base: 'https://my.cdn.com' } });
 		const src = style.sources['versatiles-shortbread'] as { url: string };
 		expect(src.url).toContain('my.cdn.com');
 	});
 
-	it('references an explicit osm TileJSON URL rather than fetching it', async () => {
+	it('references an explicit osm TileJSON URL rather than fetching it', () => {
 		const style = osm({ urls: { osm: 'https://custom.tiles/tiles.json' } });
 		const src = style.sources['versatiles-shortbread'] as { url: string };
 		expect(src.url).toBe('https://custom.tiles/tiles.json');
@@ -69,16 +69,16 @@ describe('osm()', () => {
 		expect(src).not.toHaveProperty('url');
 	});
 
-	it('applies glyphs from custom base URL', async () => {
-		const style = await osm({ urls: { base: 'https://my.cdn.com' } });
+	it('applies glyphs from custom base URL', () => {
+		const style = osm({ urls: { base: 'https://my.cdn.com' } });
 		expect(style.glyphs).toContain('my.cdn.com');
 	});
 
 	// ── Theme ───────────────────────────────────────────────────────────────────
 
-	it('produces different background colors for different palettes', async () => {
-		const colorful = await osm({ theme: 'colorful' });
-		const gray = await osm({ theme: 'gray' });
+	it('produces different background colors for different palettes', () => {
+		const colorful = osm({ theme: 'colorful' });
+		const gray = osm({ theme: 'gray' });
 		const bgColorful = (colorful.layers.find((l) => l.id === 'background')?.paint as Record<string, string>)?.[
 			'background-color'
 		];
@@ -90,9 +90,9 @@ describe('osm()', () => {
 		expect(bgColorful).not.toBe(bgGray);
 	});
 
-	it('a dark theme produces different colors than its light theme', async () => {
-		const light = await osm({ theme: 'colorful' });
-		const dark = await osm({ theme: 'colorful-dark' });
+	it('a dark theme produces different colors than its light theme', () => {
+		const light = osm({ theme: 'colorful' });
+		const dark = osm({ theme: 'colorful-dark' });
 		const bgLight = (light.layers.find((l) => l.id === 'background')?.paint as Record<string, string>)?.[
 			'background-color'
 		];
@@ -102,9 +102,9 @@ describe('osm()', () => {
 		expect(bgLight).not.toBe(bgDark);
 	});
 
-	it('applies custom color override', async () => {
-		const normal = await osm();
-		const blue = await osm({ colors: { water: '#0000FF' } });
+	it('applies custom color override', () => {
+		const normal = osm();
+		const blue = osm({ colors: { water: '#0000FF' } });
 		const getWaterColor = (s: StyleSpecification) =>
 			(layerById(s, 'water-ocean')?.paint as Record<string, string> | undefined)?.['fill-color'];
 		// The override changes the water color; exact format (rgb/hex) is not asserted
@@ -114,8 +114,8 @@ describe('osm()', () => {
 
 	// ── Language ─────────────────────────────────────────────────────────────────
 
-	it('sets label field to local name by default', async () => {
-		const style = await osm();
+	it('sets label field to local name by default', () => {
+		const style = osm();
 		const placeLayer = style.layers.find((l) => l.id === 'label-place-village');
 		const layout = placeLayer?.layout as Record<string, unknown> | undefined;
 		expect(layout).toBeDefined();
@@ -124,8 +124,8 @@ describe('osm()', () => {
 		expect(textField).toContain('name');
 	});
 
-	it('applies explicit language to labels', async () => {
-		const style = await osm({ text: { language: 'de' } });
+	it('applies explicit language to labels', () => {
+		const style = osm({ text: { language: 'de' } });
 		const placeLayer = style.layers.find((l) => l.id === 'label-place-village');
 		const layout = placeLayer?.layout as Record<string, unknown> | undefined;
 		const textField = JSON.stringify(layout?.['text-field']);
@@ -134,26 +134,26 @@ describe('osm()', () => {
 
 	// ── Layer groups ─────────────────────────────────────────────────────────────
 
-	it('removes all buildings when layers.buildings = false', async () => {
-		const style = await osm({ layers: { buildings: false } });
+	it('removes all buildings when layers.buildings = false', () => {
+		const style = osm({ layers: { buildings: false } });
 		// Invisible layers are dropped entirely, not shipped as hidden no-ops.
 		expect(layerById(style, 'building')).toBeUndefined();
 	});
 
-	it('removes labels when layers.labels = false', async () => {
-		const style = await osm({ layers: { labels: false } });
+	it('removes labels when layers.labels = false', () => {
+		const style = osm({ layers: { labels: false } });
 		expect(layerById(style, 'label-place-village')).toBeUndefined();
 	});
 
-	it('removes sub-group: layers.labels.places = false', async () => {
-		const style = await osm({ layers: { labels: { places: false } } });
+	it('removes sub-group: layers.labels.places = false', () => {
+		const style = osm({ layers: { labels: { places: false } } });
 		expect(layerById(style, 'label-place-village')).toBeUndefined();
 		// street labels should remain (untouched by the places override)
 		expect(layerById(style, 'label-street-residential')).toBeDefined();
 	});
 
-	it('sets opacity on a layer group, merging with the layer’s existing fade', async () => {
-		const style = await osm({ layers: { buildings: 0.5 } });
+	it('sets opacity on a layer group, merging with the layer’s existing fade', () => {
+		const style = osm({ layers: { buildings: 0.5 } });
 		const buildingLayer = layerById(style, 'building');
 		// `building` fades in over z14→15 ({14:0, 15:1}); dimming by 0.5 scales the target to 0.5.
 		expect((buildingLayer?.paint as Record<string, unknown>)?.['fill-opacity']).toStrictEqual([
@@ -167,22 +167,22 @@ describe('osm()', () => {
 		]);
 	});
 
-	it('icons alias removes pois and transit stops', async () => {
-		const style = await osm({ layers: { icons: false } });
+	it('icons alias removes pois and transit stops', () => {
+		const style = osm({ layers: { icons: false } });
 		expect(layerById(style, 'poi-amenity')).toBeUndefined();
 	});
 
-	it('specific group overrides icons alias', async () => {
-		const style = await osm({ layers: { icons: false, pois: true } });
+	it('specific group overrides icons alias', () => {
+		const style = osm({ layers: { icons: false, pois: true } });
 		// pois: true should override icons: false, so the layer remains
 		expect(layerById(style, 'poi-amenity')).toBeDefined();
 	});
 
 	// ── Scale ────────────────────────────────────────────────────────────────────
 
-	it('applies text scale to symbol layers', async () => {
-		const normal = await osm();
-		const scaled = await osm({ layout: { scale: { labels: 1.5 } } });
+	it('applies text scale to symbol layers', () => {
+		const normal = osm();
+		const scaled = osm({ layout: { scale: { labels: 1.5 } } });
 		const getTextSize = (s: StyleSpecification) => {
 			const l = s.layers.find((l) => l.id === 'label-place-village');
 			return (l?.layout as Record<string, unknown>)?.['text-size'];
@@ -196,42 +196,42 @@ describe('osm()', () => {
 
 	// ── Features ─────────────────────────────────────────────────────────────────
 
-	it('adds terrain when features.terrain = true', async () => {
-		const style = await osm({ features: { terrain: true } });
+	it('adds terrain when features.terrain = true', () => {
+		const style = osm({ features: { terrain: true } });
 		expect(style.terrain).toBeDefined();
 		expect(style.sources).toHaveProperty('elevation');
 	});
 
-	it('adds hillshade layer when features.hillshade = true', async () => {
-		const style = await osm({ features: { hillshade: true } });
+	it('adds hillshade layer when features.hillshade = true', () => {
+		const style = osm({ features: { hillshade: true } });
 		expect(layerIds(style)).toContain('hillshade');
 		expect(style.sources).toHaveProperty('elevation');
 	});
 
-	it('adds 3D buildings when features.buildings = extruded', async () => {
-		const style = await osm({ features: { buildings: 'extruded' } });
+	it('adds 3D buildings when features.buildings = extruded', () => {
+		const style = osm({ features: { buildings: 'extruded' } });
 		expect(layerById(style, 'building')).toBeUndefined();
 		expect(layerById(style, 'building:outline')).toBeUndefined();
 		expect(layerById(style, 'building-3d')).toBeDefined();
 	});
 
-	it('renders 3D buildings as the last (topmost) layer', async () => {
-		const ids = layerIds(await osm({ features: { buildings: 'extruded' } }));
+	it('renders 3D buildings as the last (topmost) layer', () => {
+		const ids = layerIds(osm({ features: { buildings: 'extruded' } }));
 		expect(ids[ids.length - 1]).toBe('building-3d');
 		// The flat footprints and every label sit below it.
 		expect(ids.indexOf('label-place-village')).toBeLessThan(ids.indexOf('building-3d'));
 	});
 
-	it('has no 3D buildings when features.buildings = flat', async () => {
-		const style = await osm({ features: { buildings: 'flat' } });
+	it('has no 3D buildings when features.buildings = flat', () => {
+		const style = osm({ features: { buildings: 'flat' } });
 		expect(layerById(style, 'building')).toBeDefined();
 		expect(layerById(style, 'building:outline')).toBeDefined();
 		expect(layerById(style, 'building-3d')).toBeUndefined();
 	});
 
-	it('applies recolor', async () => {
-		const normal = await osm();
-		const recolored = await osm({ recolor: { invertBrightness: true } });
+	it('applies recolor', () => {
+		const normal = osm();
+		const recolored = osm({ recolor: { invertBrightness: true } });
 		const bg = (l: StyleSpecification) =>
 			(l.layers.find((x) => x.id === 'background')?.paint as Record<string, string>)?.['background-color'];
 		expect(bg(normal)).not.toBe(bg(recolored));

@@ -15,30 +15,30 @@ function layerById(style: StyleSpecification, id: string) {
 describe('satellite()', () => {
 	// ── Basic validity ──────────────────────────────────────────────────────────
 
-	it('returns a valid MapLibre style', async () => {
-		const style = await satellite();
+	it('returns a valid MapLibre style', () => {
+		const style = satellite();
 		expect(style.version).toBe(8);
 		expect(style.sources).toBeDefined();
 		expect(typeof style.glyphs).toBe('string');
 		expect(style.sprite).toBeDefined();
 	});
 
-	it('includes satellite raster source', async () => {
-		const style = await satellite();
+	it('includes satellite raster source', () => {
+		const style = satellite();
 		const src = style.sources['satellite'] as Record<string, unknown>;
 		expect(src).toBeDefined();
 		expect(src.type).toBe('raster');
 	});
 
-	it('includes satellite raster layer', async () => {
-		const style = await satellite();
+	it('includes satellite raster layer', () => {
+		const style = satellite();
 		const layer = layerById(style, 'satellite');
 		expect(layer).toBeDefined();
 		expect(layer?.type).toBe('raster');
 	});
 
-	it('has background layer before raster', async () => {
-		const style = await satellite();
+	it('has background layer before raster', () => {
+		const style = satellite();
 		const ids = layerIds(style);
 		const bgIdx = ids.indexOf('background');
 		const satIdx = ids.indexOf('satellite');
@@ -46,8 +46,8 @@ describe('satellite()', () => {
 		expect(satIdx).toBeGreaterThan(bgIdx);
 	});
 
-	it('always includes slot-below-raster before satellite layer', async () => {
-		const style = await satellite();
+	it('always includes slot-below-raster before satellite layer', () => {
+		const style = satellite();
 		const ids = layerIds(style);
 		const slotIdx = ids.indexOf('slot-below-raster');
 		const satIdx = ids.indexOf('satellite');
@@ -55,8 +55,8 @@ describe('satellite()', () => {
 		expect(slotIdx).toBeLessThan(satIdx);
 	});
 
-	it('includes slot-below-symbols and slot-below-labels without overlay', async () => {
-		const style = await satellite();
+	it('includes slot-below-symbols and slot-below-labels without overlay', () => {
+		const style = satellite();
 		const ids = layerIds(style);
 		expect(ids).toContain('slot-below-symbols');
 		expect(ids).toContain('slot-below-labels');
@@ -77,12 +77,14 @@ describe('satellite()', () => {
 	});
 
 	it('accepts explicit satellite URL string, resolved by inlineSources', async () => {
-		const fetchFn = vi.fn(async () =>
-			jsonResponse({
-				tiles: ['https://sat/{z}/{x}/{y}'],
-				minzoom: 0,
-				maxzoom: 18,
-			})
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
+				jsonResponse({
+					tiles: ['https://sat/{z}/{x}/{y}'],
+					minzoom: 0,
+					maxzoom: 18,
+				})
+			)
 		);
 		const built = satellite({ urls: { satellite: 'https://sat/tiles.json' } });
 		expect(built.sources['satellite'] as { url: string }).toMatchObject({ url: 'https://sat/tiles.json' });
@@ -96,11 +98,13 @@ describe('satellite()', () => {
 	// ── Tile size ─────────────────────────────────────────────────────────────
 
 	it('uses tile_size from the satellite TileJSON as the raster tileSize', async () => {
-		const fetchFn = vi.fn(async () =>
-			jsonResponse({
-				tiles: ['https://sat/{z}/{x}/{y}'],
-				tile_size: 512,
-			})
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
+				jsonResponse({
+					tiles: ['https://sat/{z}/{x}/{y}'],
+					tile_size: 512,
+				})
+			)
 		);
 		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
@@ -111,7 +115,7 @@ describe('satellite()', () => {
 
 	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
 		// Declaring a guessed tileSize would silently override MapLibre's own default.
-		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] }));
+		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] })));
 		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
@@ -121,20 +125,20 @@ describe('satellite()', () => {
 
 	// ── Raster paint options ────────────────────────────────────────────────────
 
-	it('applies raster opacity', async () => {
-		const style = await satellite({ raster: { opacity: 0.8 } });
+	it('applies raster opacity', () => {
+		const style = satellite({ raster: { opacity: 0.8 } });
 		const sat = layerById(style, 'satellite');
 		expect((sat?.paint as Record<string, unknown>)?.['raster-opacity']).toBe(0.8);
 	});
 
-	it('applies raster saturation', async () => {
-		const style = await satellite({ raster: { saturation: -0.5 } });
+	it('applies raster saturation', () => {
+		const style = satellite({ raster: { saturation: -0.5 } });
 		const sat = layerById(style, 'satellite');
 		expect((sat?.paint as Record<string, unknown>)?.['raster-saturation']).toBe(-0.5);
 	});
 
-	it('omits raster paint when all values are default', async () => {
-		const style = await satellite();
+	it('omits raster paint when all values are default', () => {
+		const style = satellite();
 		const sat = layerById(style, 'satellite');
 		// Default values: opacity=1, hueRotate=0, etc. — paint should be absent or empty
 		const paint = sat?.paint as Record<string, unknown> | undefined;
@@ -143,75 +147,75 @@ describe('satellite()', () => {
 
 	// ── No osmOverlay ─────────────────────────────────────────────────────────
 
-	it('has no vector source when osmOverlay is false', async () => {
-		const style = await satellite({ osmOverlay: false });
+	it('has no vector source when osmOverlay is false', () => {
+		const style = satellite({ osmOverlay: false });
 		expect(style.sources).not.toHaveProperty('versatiles-shortbread');
 	});
 
-	it('has no fill layers when osmOverlay is false', async () => {
-		const style = await satellite({ osmOverlay: false });
+	it('has no fill layers when osmOverlay is false', () => {
+		const style = satellite({ osmOverlay: false });
 		const fills = style.layers.filter((l) => l.type === 'fill');
 		expect(fills).toHaveLength(0);
 	});
 
 	// ── osmOverlay ────────────────────────────────────────────────────────────
 
-	it('adds vector source when osmOverlay is set', async () => {
-		const style = await satellite({ osmOverlay: {} });
+	it('adds vector source when osmOverlay is set', () => {
+		const style = satellite({ osmOverlay: {} });
 		expect(style.sources).toHaveProperty('versatiles-shortbread');
 	});
 
-	it('osmOverlay adds symbol layers (labels)', async () => {
-		const style = await satellite({ osmOverlay: {} });
+	it('osmOverlay adds symbol layers (labels)', () => {
+		const style = satellite({ osmOverlay: {} });
 		const symbols = style.layers.filter((l) => l.type === 'symbol');
 		expect(symbols.length).toBeGreaterThan(0);
 	});
 
-	it('osmOverlay does not add fill layers (land/water obscure satellite)', async () => {
-		const style = await satellite({ osmOverlay: {} });
+	it('osmOverlay does not add fill layers (land/water obscure satellite)', () => {
+		const style = satellite({ osmOverlay: {} });
 		const fills = style.layers.filter((l) => l.type === 'fill');
 		expect(fills).toHaveLength(0);
 	});
 
-	it('osmOverlay does not include opaque background layer', async () => {
-		const style = await satellite({ osmOverlay: {} });
+	it('osmOverlay does not include opaque background layer', () => {
+		const style = satellite({ osmOverlay: {} });
 		// Should have exactly one background layer (our own dark background)
 		const bgs = style.layers.filter((l) => l.type === 'background' && l.id === 'background');
 		expect(bgs).toHaveLength(1);
 	});
 
-	it('osmOverlay respects theme', async () => {
-		const tonerStyle = await satellite({ osmOverlay: { theme: 'toner' } });
-		const grayStyle = await satellite({ osmOverlay: { theme: 'gray' } });
+	it('osmOverlay respects theme', () => {
+		const tonerStyle = satellite({ osmOverlay: { theme: 'toner' } });
+		const grayStyle = satellite({ osmOverlay: { theme: 'gray' } });
 		// Both should have symbol layers
 		expect(tonerStyle.layers.filter((l) => l.type === 'symbol').length).toBeGreaterThan(0);
 		expect(grayStyle.layers.filter((l) => l.type === 'symbol').length).toBeGreaterThan(0);
 	});
 
-	it('osmOverlay slot-below-symbols appears after satellite raster', async () => {
-		const style = await satellite({ osmOverlay: {} });
+	it('osmOverlay slot-below-symbols appears after satellite raster', () => {
+		const style = satellite({ osmOverlay: {} });
 		const ids = layerIds(style);
 		const satIdx = ids.indexOf('satellite');
 		const slotIdx = ids.indexOf('slot-below-symbols');
 		expect(slotIdx).toBeGreaterThan(satIdx);
 	});
 
-	it('osmOverlay layer group hiding works', async () => {
-		const style = await satellite({ osmOverlay: { layers: { labels: false } } });
+	it('osmOverlay layer group hiding works', () => {
+		const style = satellite({ osmOverlay: { layers: { labels: false } } });
 		// Hidden layer groups are dropped from the overlay entirely.
 		expect(layerById(style, 'label-place-village')).toBeUndefined();
 	});
 
 	// ── Features ─────────────────────────────────────────────────────────────
 
-	it('adds terrain when features.terrain = true', async () => {
-		const style = await satellite({ features: { terrain: true } });
+	it('adds terrain when features.terrain = true', () => {
+		const style = satellite({ features: { terrain: true } });
 		expect(style.terrain).toBeDefined();
 		expect(style.sources).toHaveProperty('elevation');
 	});
 
-	it('adds hillshade when features.hillshade = true', async () => {
-		const style = await satellite({ features: { hillshade: true } });
+	it('adds hillshade when features.hillshade = true', () => {
+		const style = satellite({ features: { hillshade: true } });
 		const ids = layerIds(style);
 		expect(ids).toContain('hillshade');
 		expect(style.sources).toHaveProperty('elevation');

@@ -62,8 +62,8 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 ];
 
 describe('osm() styles are MapLibre-spec valid', () => {
-	it.each(OSM_CASES)('osm(%s)', async (_name, options) => {
-		expect(errorsFor(await osm(options))).toStrictEqual([]);
+	it.each(OSM_CASES)('osm(%s)', (_name, options) => {
+		expect(errorsFor(osm(options))).toStrictEqual([]);
 	});
 });
 
@@ -88,8 +88,8 @@ const SAT_CASES: [string, SatelliteOptions | undefined][] = [
 ];
 
 describe('satellite() styles are MapLibre-spec valid', () => {
-	it.each(SAT_CASES)('satellite(%s)', async (_name, options) => {
-		expect(errorsFor(await satellite(options))).toStrictEqual([]);
+	it.each(SAT_CASES)('satellite(%s)', (_name, options) => {
+		expect(errorsFor(satellite(options))).toStrictEqual([]);
 	});
 });
 
@@ -98,8 +98,8 @@ describe('satellite() styles are MapLibre-spec valid', () => {
 describe('every getStyleVariants() build is MapLibre-spec valid', () => {
 	let built: { name: string; style: StyleSpecification }[];
 
-	beforeAll(async () => {
-		built = await Promise.all(getStyleVariants().map(async (v) => ({ name: v.name, style: await v.build() })));
+	beforeAll(() => {
+		built = getStyleVariants().map((v) => ({ name: v.name, style: v.build() }));
 	});
 
 	it('produces the expected number of variants', () => {

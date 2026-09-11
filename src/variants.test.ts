@@ -13,7 +13,7 @@ function layerIds(style: StyleSpecification): string[] {
 	return style.layers.map((l) => l.id);
 }
 
-async function build(features: OsmFeaturesOptions | undefined, name: string): Promise<StyleSpecification> {
+function build(features: OsmFeaturesOptions | undefined, name: string): StyleSpecification {
 	return byName(getStyleVariants(features), name).build();
 }
 
@@ -81,9 +81,9 @@ describe('getStyleVariants()', () => {
 		expect(names).not.toContain('satellite/nooverlay'); // retired in favour of the bare /style
 	});
 
-	it('every variant builds a valid MapLibre style', async () => {
+	it('every variant builds a valid MapLibre style', () => {
 		const variants = getStyleVariants();
-		const styles = await Promise.all(variants.map((v) => v.build()));
+		const styles = variants.map((v) => v.build());
 		for (const style of styles) {
 			expect(style.version).toBe(8);
 			expect(style.layers.length).toBeGreaterThan(0);
@@ -92,70 +92,70 @@ describe('getStyleVariants()', () => {
 
 	// ── Built-in terrain variants (independent of the features argument) ────────
 
-	it('*-terrain variants add terrain + hillshade', async () => {
-		const style = await build(undefined, 'colorful-terrain/style');
+	it('*-terrain variants add terrain + hillshade', () => {
+		const style = build(undefined, 'colorful-terrain/style');
 		expect(style.terrain).toBeDefined();
 		expect(style.sources).toHaveProperty('elevation');
 		expect(layerIds(style)).toContain('hillshade');
 	});
 
-	it('plain variants have no terrain', async () => {
-		const style = await build(undefined, 'colorful/style');
+	it('plain variants have no terrain', () => {
+		const style = build(undefined, 'colorful/style');
 		expect(style.terrain).toBeUndefined();
 		expect(layerIds(style)).not.toContain('hillshade');
 	});
 
-	it('language variants set the label language', async () => {
-		const de = await build(undefined, 'colorful/de');
+	it('language variants set the label language', () => {
+		const de = build(undefined, 'colorful/de');
 		const layout = de.layers.find((l) => l.id === 'label-place-village')?.layout as Record<string, unknown>;
 		expect(JSON.stringify(layout['text-field'])).toContain('name_de');
 	});
 
-	it('nolabel variant drops labels', async () => {
-		const style = await build(undefined, 'colorful/nolabel');
+	it('nolabel variant drops labels', () => {
+		const style = build(undefined, 'colorful/nolabel');
 		expect(layerIds(style)).not.toContain('label-place-village');
 	});
 
 	// ── The `features` argument must actually be applied ────────────────────────
 
-	it('default (no features) renders flat buildings', async () => {
-		const ids = layerIds(await build(undefined, 'colorful/style'));
+	it('default (no features) renders flat buildings', () => {
+		const ids = layerIds(build(undefined, 'colorful/style'));
 		expect(ids).toContain('building');
 		expect(ids).not.toContain('building-3d');
 	});
 
-	it('applies an activated feature (buildings: extruded) to a plain variant', async () => {
-		const ids = layerIds(await build({ buildings: 'extruded' }, 'colorful/style'));
+	it('applies an activated feature (buildings: extruded) to a plain variant', () => {
+		const ids = layerIds(build({ buildings: 'extruded' }, 'colorful/style'));
 		expect(ids).toContain('building-3d');
 		expect(ids).not.toContain('building');
 	});
 
-	it('applies an activated feature to language / nolabel variants too', async () => {
+	it('applies an activated feature to language / nolabel variants too', () => {
 		for (const name of ['colorful/en', 'colorful/de', 'colorful/nolabel']) {
-			const ids = layerIds(await build({ buildings: 'extruded' }, name));
+			const ids = layerIds(build({ buildings: 'extruded' }, name));
 			expect(ids, `${name} should honour buildings:extruded`).toContain('building-3d');
 		}
 	});
 
-	it('activates landcover when requested', async () => {
-		const on = await build({ landcover: true }, 'colorful/style');
-		const off = await build(undefined, 'colorful/style');
+	it('activates landcover when requested', () => {
+		const on = build({ landcover: true }, 'colorful/style');
+		const off = build(undefined, 'colorful/style');
 		const opacity = (s: StyleSpecification) =>
 			(s.layers.find((l) => l.id === 'land-forest')?.paint as Record<string, unknown> | undefined)?.['fill-opacity'];
 		// landcover removes the low-zoom fade (a zoom interpolate expression) and pins a constant.
 		expect(opacity(on)).not.toStrictEqual(opacity(off));
 	});
 
-	it('merges the features argument into *-terrain variants (keeps terrain, adds the feature)', async () => {
-		const style = await build({ buildings: 'extruded' }, 'colorful-terrain/style');
+	it('merges the features argument into *-terrain variants (keeps terrain, adds the feature)', () => {
+		const style = build({ buildings: 'extruded' }, 'colorful-terrain/style');
 		// terrain still present …
 		expect(style.terrain).toBeDefined();
 		// … and the extra feature applied.
 		expect(layerIds(style)).toContain('building-3d');
 	});
 
-	it('lets the features argument override a terrain-variant default (hillshade off)', async () => {
-		const style = await build({ hillshade: false }, 'colorful-terrain/style');
+	it('lets the features argument override a terrain-variant default (hillshade off)', () => {
+		const style = build({ hillshade: false }, 'colorful-terrain/style');
 		expect(layerIds(style)).not.toContain('hillshade');
 	});
 });

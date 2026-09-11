@@ -8,27 +8,27 @@ import { getStyleVariants } from '../variants.js';
 // global fetch stub from vitest.setup.ts.
 
 describe('style generation is deterministic', () => {
-	it('osm() produces byte-identical JSON across repeated builds', async () => {
-		const a = JSON.stringify(await osm({ theme: 'colorful', features: { hillshade: true } }));
-		const b = JSON.stringify(await osm({ theme: 'colorful', features: { hillshade: true } }));
+	it('osm() produces byte-identical JSON across repeated builds', () => {
+		const a = JSON.stringify(osm({ theme: 'colorful', features: { hillshade: true } }));
+		const b = JSON.stringify(osm({ theme: 'colorful', features: { hillshade: true } }));
 		expect(a).toBe(b);
 	});
 
-	it('satellite() produces byte-identical JSON across repeated builds', async () => {
-		const a = JSON.stringify(await satellite({ osmOverlay: { theme: 'toner' } }));
-		const b = JSON.stringify(await satellite({ osmOverlay: { theme: 'toner' } }));
+	it('satellite() produces byte-identical JSON across repeated builds', () => {
+		const a = JSON.stringify(satellite({ osmOverlay: { theme: 'toner' } }));
+		const b = JSON.stringify(satellite({ osmOverlay: { theme: 'toner' } }));
 		expect(a).toBe(b);
 	});
 
-	it('two structurally-equal option objects yield identical output', async () => {
-		const a = JSON.stringify(await osm({ theme: 'gray-dark', text: { language: 'de' } }));
-		const b = JSON.stringify(await osm({ theme: 'gray-dark', text: { language: 'de' } }));
+	it('two structurally-equal option objects yield identical output', () => {
+		const a = JSON.stringify(osm({ theme: 'gray-dark', text: { language: 'de' } }));
+		const b = JSON.stringify(osm({ theme: 'gray-dark', text: { language: 'de' } }));
 		expect(a).toBe(b);
 	});
 
-	it('every getStyleVariants() build is reproducible', async () => {
-		const first = await Promise.all(getStyleVariants().map(async (v) => [v.name, JSON.stringify(await v.build())]));
-		const second = await Promise.all(getStyleVariants().map(async (v) => [v.name, JSON.stringify(await v.build())]));
+	it('every getStyleVariants() build is reproducible', () => {
+		const first = getStyleVariants().map((v) => [v.name, JSON.stringify(v.build())]);
+		const second = getStyleVariants().map((v) => [v.name, JSON.stringify(v.build())]);
 		expect(second).toStrictEqual(first);
 	});
 });

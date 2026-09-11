@@ -114,9 +114,9 @@ describe('addLandcover', () => {
 
 	// ── integration through osm() ──────────────────────────────────────────────────
 
-	it('makes low-zoom landcover visible in a generated style without changing high zoom', async () => {
-		const base = await osm({ theme: 'colorful' });
-		const lc = await osm({ theme: 'colorful', features: { landcover: true } });
+	it('makes low-zoom landcover visible in a generated style without changing high zoom', () => {
+		const base = osm({ theme: 'colorful' });
+		const lc = osm({ theme: 'colorful', features: { landcover: true } });
 		const get = (s: StyleSpecification, id: string) => op(s, id);
 
 		// forest: translucency now lives in the token alpha (natureWood), so the layer opacity just

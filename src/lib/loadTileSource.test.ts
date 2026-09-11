@@ -28,7 +28,7 @@ describe('resolveTileJSONTiles()', () => {
 
 describe('loadTileSource()', () => {
 	it('returns a tile URL', async () => {
-		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['/tiles/temp/{z}/{x}/{y}'], maxzoom: 12 }));
+		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['/tiles/temp/{z}/{x}/{y}'], maxzoom: 12 })));
 		const out = await loadTileSource('https://cdn.example/tiles/temp/tiles.json', fetchFn);
 		expect(out).toStrictEqual({
 			maxzoom: 12,
@@ -38,7 +38,7 @@ describe('loadTileSource()', () => {
 	});
 
 	it('fetches a `.json` URL and resolves relative tiles against the document URL', async () => {
-		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 12 }));
+		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 12 })));
 		const out = (await loadTileSource(
 			'https://cdn.example/tiles/osm/tiles.json',
 			fetchFn as unknown as typeof fetch
@@ -49,7 +49,7 @@ describe('loadTileSource()', () => {
 	});
 
 	it('throws when the TileJSON request fails', async () => {
-		const fetchFn = vi.fn(async () => jsonResponse({}, 404));
+		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({}, 404)));
 		await expect(loadTileSource('https://cdn.example/tiles.json', fetchFn as unknown as typeof fetch)).rejects.toThrow(
 			/HTTP 404/
 		);
@@ -82,7 +82,7 @@ describe('cachingFetch()', () => {
 	});
 
 	it('serves repeated GETs of the same URL from the cache (one network call)', async () => {
-		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'], maxzoom: 5 }));
+		fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: ['a'], maxzoom: 5 })));
 
 		const first = await (await cachingFetch('https://cdn.example/tiles.json')).json();
 		const second = await (await cachingFetch('https://cdn.example/tiles.json')).json();
@@ -93,7 +93,7 @@ describe('cachingFetch()', () => {
 	});
 
 	it('dedupes concurrent requests for the same URL', async () => {
-		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'] }));
+		fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: ['a'] })));
 
 		await Promise.all([cachingFetch('https://cdn.example/a.json'), cachingFetch('https://cdn.example/a.json')]);
 
@@ -102,8 +102,8 @@ describe('cachingFetch()', () => {
 
 	it('does not cache failed responses (allows retry)', async () => {
 		fetchSpy
-			.mockImplementationOnce(async () => jsonResponse({}, 500))
-			.mockImplementationOnce(async () => jsonResponse({ tiles: ['ok'] }));
+			.mockImplementationOnce(() => Promise.resolve(jsonResponse({}, 500)))
+			.mockImplementationOnce(() => Promise.resolve(jsonResponse({ tiles: ['ok'] })));
 
 		await expect(cachingFetch('https://cdn.example/flaky.json')).rejects.toThrow(/HTTP 500/);
 		const retried = await (await cachingFetch('https://cdn.example/flaky.json')).json();
@@ -113,7 +113,7 @@ describe('cachingFetch()', () => {
 	});
 
 	it('is used as the default and caches across loadTileSource calls', async () => {
-		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 9 }));
+		fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 9 })));
 
 		const url = 'https://cdn.example/tiles/osm/tiles.json';
 		const a = await loadTileSource(url);
@@ -132,7 +132,7 @@ describe('cachingFetch() — cache key by request type', () => {
 		clearTileSourceCache();
 		fetchSpy = vi.spyOn(globalThis, 'fetch');
 		fetchSpy.mockClear();
-		fetchSpy.mockImplementation(async () => jsonResponse({ tiles: ['a'] }));
+		fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: ['a'] })));
 	});
 
 	afterEach(() => {

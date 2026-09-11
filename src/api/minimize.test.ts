@@ -102,10 +102,10 @@ describe('satellite.minimizeOptions', () => {
 describe('toCode', () => {
 	// The snippet imports from the package; run it with the real builders and a stand-in
 	// `inlineSources` (the real one downloads TileJSONs) to check it builds the same style.
-	async function run(code: string): Promise<unknown> {
+	function run(code: string): unknown {
 		const body = code.replace(/^import .*\n/, '') + '\nreturn style;';
 		const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-		const inlineSources = async (style: unknown) => style;
+		const inlineSources = (style: unknown) => style;
 		return new AsyncFunction('osm', 'satellite', 'inlineSources', body)(osm, satellite, inlineSources);
 	}
 

@@ -42,8 +42,8 @@ describe('base sprite usage', () => {
 	// Collect references from a couple of option variants so the set is comprehensive and stable.
 	// (Uses the global fetch stub from vitest.setup.ts.)
 	let referenced: Set<string>;
-	beforeAll(async () => {
-		const styles = await Promise.all([osm(), osm({ features: { buildings: 'extruded' } })]);
+	beforeAll(() => {
+		const styles = [osm(), osm({ features: { buildings: 'extruded' } })];
 		referenced = new Set(styles.flatMap((s) => [...collectBaseRefs(s)]));
 	});
 

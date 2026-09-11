@@ -13,17 +13,19 @@ function sourceIds(style: StyleSpecification): string[] {
 
 // ── Shortbread detection ──────────────────────────────────────────────────────
 
-const fetchShortbreadFn = vi.fn(async () =>
-	jsonResponse({
-		tiles: ['https://tiles.example.com/{z}/{x}/{y}'],
-		vector_layers: [
-			{ id: 'land', fields: {} },
-			{ id: 'water_polygons', fields: {} },
-			{ id: 'streets', fields: {} },
-			{ id: 'buildings', fields: {} },
-			{ id: 'place_labels', fields: { name: 'String', name_de: 'String' } },
-		],
-	})
+const fetchShortbreadFn = vi.fn(() =>
+	Promise.resolve(
+		jsonResponse({
+			tiles: ['https://tiles.example.com/{z}/{x}/{y}'],
+			vector_layers: [
+				{ id: 'land', fields: {} },
+				{ id: 'water_polygons', fields: {} },
+				{ id: 'streets', fields: {} },
+				{ id: 'buildings', fields: {} },
+				{ id: 'place_labels', fields: { name: 'String', name_de: 'String' } },
+			],
+		})
+	)
 );
 
 describe('guessStyle() — Shortbread vector tiles', () => {
@@ -51,30 +53,34 @@ describe('guessStyle() — Shortbread vector tiles', () => {
 	});
 
 	it('detects Shortbread with ≥3 matching layers even if others are unknown', async () => {
-		const fetchFn = vi.fn(async () =>
-			jsonResponse({
-				tiles: ['https://t/{z}/{x}/{y}'],
-				vector_layers: [
-					{ id: 'streets', fields: {} },
-					{ id: 'buildings', fields: {} },
-					{ id: 'place_labels', fields: {} },
-					{ id: 'some_custom_layer', fields: {} },
-				],
-			})
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
+				jsonResponse({
+					tiles: ['https://t/{z}/{x}/{y}'],
+					vector_layers: [
+						{ id: 'streets', fields: {} },
+						{ id: 'buildings', fields: {} },
+						{ id: 'place_labels', fields: {} },
+						{ id: 'some_custom_layer', fields: {} },
+					],
+				})
+			)
 		);
 		const style = await guessStyle('https://tiles.example.com/tiles.json', { fetch: fetchFn });
 		expect(style.layers.length).toBeGreaterThan(50);
 	});
 
 	it('does NOT treat 2-layer vector tiles with 0 Shortbread matches as Shortbread', async () => {
-		const fetchFn = vi.fn(async () =>
-			jsonResponse({
-				tiles: ['https://t/{z}/{x}/{y}'],
-				vector_layers: [
-					{ id: 'my_layer', fields: {} },
-					{ id: 'other_layer', fields: {} },
-				],
-			})
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
+				jsonResponse({
+					tiles: ['https://t/{z}/{x}/{y}'],
+					vector_layers: [
+						{ id: 'my_layer', fields: {} },
+						{ id: 'other_layer', fields: {} },
+					],
+				})
+			)
 		);
 		const style = await guessStyle('https://tiles.example.com/tiles.json', { fetch: fetchFn });
 		// Inspector style has far fewer layers
@@ -84,14 +90,16 @@ describe('guessStyle() — Shortbread vector tiles', () => {
 
 // ── Inspector style (unknown vector) ──────────────────────────────────────────
 
-const fetchUnknownVectorFn = vi.fn(async () =>
-	jsonResponse({
-		tiles: ['https://custom.tiles/{z}/{x}/{y}'],
-		vector_layers: [
-			{ id: 'my_points', fields: { name: 'String' } },
-			{ id: 'my_polygons', fields: {} },
-		],
-	})
+const fetchUnknownVectorFn = vi.fn(() =>
+	Promise.resolve(
+		jsonResponse({
+			tiles: ['https://custom.tiles/{z}/{x}/{y}'],
+			vector_layers: [
+				{ id: 'my_points', fields: { name: 'String' } },
+				{ id: 'my_polygons', fields: {} },
+			],
+		})
+	)
 );
 
 describe('guessStyle() — unknown vector tiles (inspector)', () => {
@@ -138,13 +146,15 @@ describe('guessStyle() — unknown vector tiles (inspector)', () => {
 	});
 
 	it('passes through minzoom/maxzoom', async () => {
-		const fetchMinMaxFn = vi.fn(async () =>
-			jsonResponse({
-				tiles: ['https://t/{z}/{x}/{y}'],
-				minzoom: 4,
-				maxzoom: 14,
-				vector_layers: [{ id: 'layer_a', fields: {} }],
-			})
+		const fetchMinMaxFn = vi.fn(() =>
+			Promise.resolve(
+				jsonResponse({
+					tiles: ['https://t/{z}/{x}/{y}'],
+					minzoom: 4,
+					maxzoom: 14,
+					vector_layers: [{ id: 'layer_a', fields: {} }],
+				})
+			)
 		);
 		const style = await guessStyle('https://tiles.example.com/tiles.json', { fetch: fetchMinMaxFn });
 		const srcId = sourceIds(style)[0];
@@ -156,10 +166,12 @@ describe('guessStyle() — unknown vector tiles (inspector)', () => {
 
 // ── Raster tiles ──────────────────────────────────────────────────────────────
 
-const fetchRasterFn = vi.fn(async () =>
-	jsonResponse({
-		tiles: ['https://raster.tiles/{z}/{x}/{y}'],
-	})
+const fetchRasterFn = vi.fn(() =>
+	Promise.resolve(
+		jsonResponse({
+			tiles: ['https://raster.tiles/{z}/{x}/{y}'],
+		})
+	)
 );
 
 describe('guessStyle() — raster tiles', () => {
@@ -187,7 +199,7 @@ describe('guessStyle() — raster tiles', () => {
 			name: 'satellite',
 		};
 		const style = await guessStyle('https://tiles.example.com/tiles.json', {
-			fetch: vi.fn(async () => jsonResponse(satTJ)),
+			fetch: vi.fn(() => Promise.resolve(jsonResponse(satTJ))),
 		});
 		// satellite() produces more than 3 layers (background, slot, raster at minimum)
 		expect(style.sources).toHaveProperty('satellite');
@@ -199,7 +211,7 @@ describe('guessStyle() — raster tiles', () => {
 			name: 'Aerial imagery 2024',
 		};
 		const style = await guessStyle('https://tiles.example.com/tiles.json', {
-			fetch: vi.fn(async () => jsonResponse(aerialTJ)),
+			fetch: vi.fn(() => Promise.resolve(jsonResponse(aerialTJ))),
 		});
 		expect(style.sources).toHaveProperty('satellite');
 	});
@@ -210,7 +222,7 @@ describe('guessStyle() — raster tiles', () => {
 describe('guessStyle() — never throws', () => {
 	it('handles a minimal TileJSON with just tiles', async () => {
 		const style = await guessStyle('https://tiles.example.com/tiles.json', {
-			fetch: vi.fn(async () => jsonResponse({ tiles: ['https://t/{z}/{x}/{y}'] })),
+			fetch: vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['https://t/{z}/{x}/{y}'] }))),
 		});
 		expect(style.version).toBe(8);
 	});
@@ -219,7 +231,7 @@ describe('guessStyle() — never throws', () => {
 		// loadTileSource returns the JSON as-is; isTileJSONSpecification then throws (no tiles[]),
 		// which guessStyle catches → blank style instead of propagating.
 		const style = await guessStyle('https://tiles.example.com/tiles.json', {
-			fetch: vi.fn(async () => jsonResponse({ not: 'a tilejson' })),
+			fetch: vi.fn(() => Promise.resolve(jsonResponse({ not: 'a tilejson' }))),
 		});
 		expect(style).toStrictEqual({ version: 8, sources: {}, layers: [] });
 	});
@@ -241,14 +253,14 @@ describe('guessStyle() — url validation', () => {
 	});
 
 	it('falls back to a blank style when the download fails', async () => {
-		const failing = (async () => {
+		const failing = (() => {
 			throw new Error('network down');
 		}) as unknown as typeof fetch;
 		await expect(guessStyle('https://tiles.example.com/tiles.json', { fetch: failing })).resolves.toStrictEqual(blank);
 	});
 
 	it('falls back to a blank style for an unknown option key, without downloading anything', async () => {
-		const fetch = vi.fn(async () => jsonResponse({ tiles: ['https://t/{z}/{x}/{y}'] }));
+		const fetch = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['https://t/{z}/{x}/{y}'] })));
 		await expect(
 			guessStyle('https://tiles.example.com/tiles.json', { fetch, bse: 'x' } as never)
 		).resolves.toStrictEqual(blank);
@@ -271,7 +283,7 @@ describe('guessStyle() — TileJSON object', () => {
 			attribution: '© OpenStreetMap contributors',
 			vector_layers: ['streets', 'water_polygons', 'place_labels', 'land'].map((id) => ({ id, fields: {} })),
 		}) as TileJSONSpecification;
-	const noFetch = () => vi.fn(async () => jsonResponse({}));
+	const noFetch = () => vi.fn(() => Promise.resolve(jsonResponse({})));
 	type Source = { type: string; tiles?: string[]; url?: string };
 	const sourcesOf = (style: StyleSpecification) => Object.values(style.sources) as unknown as Source[];
 

@@ -8,7 +8,7 @@ vi.mock('child_process', () => ({
 
 vi.mock('fs/promises', () => ({
 	writeFile: vi.fn(async () => {}),
-	readFile: vi.fn(async () => Buffer.from('optimized png buffer')),
+	readFile: vi.fn(() => Promise.resolve(Buffer.from('optimized png buffer'))),
 	rm: vi.fn(async () => {}),
 }));
 

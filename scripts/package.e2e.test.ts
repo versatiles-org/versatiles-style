@@ -6,7 +6,7 @@ describe('nodejs', () => {
 
 		expect(osm).toBeDefined();
 		// osm() does no I/O, so this runs offline as it is.
-		const style = await osm({ theme: 'colorful' });
+		const style = osm({ theme: 'colorful' });
 		expect(style.version).toBe(8);
 		expect(Array.isArray(style.layers)).toBe(true);
 		expect(style.layers.length).toBeGreaterThan(0);

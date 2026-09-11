@@ -13,8 +13,8 @@ interface NamedStyle {
 
 let styles: NamedStyle[];
 
-beforeAll(async () => {
-	styles = await Promise.all(getStyleVariants().map(async (v) => ({ name: v.name, style: await v.build() })));
+beforeAll(() => {
+	styles = getStyleVariants().map((v) => ({ name: v.name, style: v.build() }));
 });
 
 const paint = (l: LayerSpecification): Record<string, unknown> =>

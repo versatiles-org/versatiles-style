@@ -25,15 +25,15 @@ const bgColor = (s: StyleSpecification): unknown => paint(s, 'background')['back
 // ── theme ──────────────────────────────────────────────────────────────────────
 
 describe('osm() knob: theme', () => {
-	it('every palette produces a distinct background color', async () => {
-		const styles = await Promise.all(osm.palettes.map((p) => build({ theme: p })));
+	it('every palette produces a distinct background color', () => {
+		const styles = osm.palettes.map((p) => build({ theme: p }));
 		const backgrounds = styles.map(bgColor);
 		expect(new Set(backgrounds).size).toBe(osm.palettes.length);
 	});
 
-	it('a -dark theme flips the background between light and dark', async () => {
-		const light = await build({ theme: 'colorful' });
-		const dark = await build({ theme: 'colorful-dark' });
+	it('a -dark theme flips the background between light and dark', () => {
+		const light = build({ theme: 'colorful' });
+		const dark = build({ theme: 'colorful-dark' });
 		expect(bgColor(light)).not.toBe(bgColor(dark));
 	});
 
@@ -47,14 +47,14 @@ describe('osm() knob: theme', () => {
 // ── colors (every one of the 44 keys) ───────────────────────────────────────────
 
 describe('osm() knob: colors', () => {
-	it.each(osm.colorKeys)('colors.%s is wired into the output', async (key) => {
-		const base = JSON.stringify((await build()).layers);
-		const overridden = JSON.stringify((await build({ colors: { [key]: '#abcdef' } })).layers);
+	it.each(osm.colorKeys)('colors.%s is wired into the output', (key) => {
+		const base = JSON.stringify(build().layers);
+		const overridden = JSON.stringify(build({ colors: { [key]: '#abcdef' } }).layers);
 		expect(overridden).not.toBe(base);
 	});
 
-	it('a color override lands on its target layer (water → water-ocean)', async () => {
-		const s = await build({ colors: { water: '#0000ff' } });
+	it('a color override lands on its target layer (water → water-ocean)', () => {
+		const s = build({ colors: { water: '#0000ff' } });
 		expect(String(paint(s, 'water-ocean')['fill-color'])).toContain('0,0,255');
 	});
 });
@@ -62,12 +62,12 @@ describe('osm() knob: colors', () => {
 // ── text ─────────────────────────────────────────────────────────────────────────
 
 describe('osm() knob: text', () => {
-	it("defaults to the local name field (['get','name'])", async () => {
-		expect(layout(await build(), 'label-place-village')['text-field']).toStrictEqual(['get', 'name']);
+	it("defaults to the local name field (['get','name'])", () => {
+		expect(layout(build(), 'label-place-village')['text-field']).toStrictEqual(['get', 'name']);
 	});
 
-	it('language uses a coalesce over name_<lang> and name by default (non-strict)', async () => {
-		const s = await build({ text: { language: 'de' } });
+	it('language uses a coalesce over name_<lang> and name by default (non-strict)', () => {
+		const s = build({ text: { language: 'de' } });
 		expect(layout(s, 'label-place-village')['text-field']).toStrictEqual([
 			'coalesce',
 			['get', 'name_de'],
@@ -75,17 +75,17 @@ describe('osm() knob: text', () => {
 		]);
 	});
 
-	it('languageStrict:true drops the fallback and uses name_<lang> directly', async () => {
-		const s = await build({ text: { language: 'de', languageStrict: true } });
+	it('languageStrict:true drops the fallback and uses name_<lang> directly', () => {
+		const s = build({ text: { language: 'de', languageStrict: true } });
 		expect(layout(s, 'label-place-village')['text-field']).toStrictEqual(['get', 'name_de']);
 	});
 
-	it('fontNormal defaults to noto_sans_regular', async () => {
-		expect(layout(await build(), 'label-place-village')['text-font']).toStrictEqual(['noto_sans_regular']);
+	it('fontNormal defaults to noto_sans_regular', () => {
+		expect(layout(build(), 'label-place-village')['text-font']).toStrictEqual(['noto_sans_regular']);
 	});
 
-	it('fontNormal / fontBold override the emitted text-font', async () => {
-		const s = await build({ text: { fontNormal: 'my_regular', fontBold: 'my_bold' } });
+	it('fontNormal / fontBold override the emitted text-font', () => {
+		const s = build({ text: { fontNormal: 'my_regular', fontBold: 'my_bold' } });
 		// label-place-village renders with the normal font; the motorway shield uses bold.
 		expect(layout(s, 'label-place-village')['text-font']).toStrictEqual(['my_regular']);
 		expect(layout(s, 'label-motorway-shield')['text-font']).toStrictEqual(['my_bold']);
@@ -95,24 +95,24 @@ describe('osm() knob: text', () => {
 // ── layout.scale ─────────────────────────────────────────────────────────────────
 
 describe('osm() knob: layout.scale', () => {
-	it('scale.labels multiplies symbol text-size', async () => {
-		const base = layout(await build(), 'label-place-village')['text-size'];
-		const scaled = layout(await build({ layout: { scale: { labels: 2 } } }), 'label-place-village')['text-size'];
+	it('scale.labels multiplies symbol text-size', () => {
+		const base = layout(build(), 'label-place-village')['text-size'];
+		const scaled = layout(build({ layout: { scale: { labels: 2 } } }), 'label-place-village')['text-size'];
 		if (typeof base === 'number') expect(scaled).toBeCloseTo(base * 2);
 		else expect(scaled).not.toStrictEqual(base);
 	});
 
-	it('scale.icons multiplies icon-size on icon layers', async () => {
-		const base = layout(await build(), 'poi-amenity')['icon-size'] as unknown[];
-		const scaled = layout(await build({ layout: { scale: { icons: 2 } } }), 'poi-amenity')['icon-size'] as unknown[];
+	it('scale.icons multiplies icon-size on icon layers', () => {
+		const base = layout(build(), 'poi-amenity')['icon-size'] as unknown[];
+		const scaled = layout(build({ layout: { scale: { icons: 2 } } }), 'poi-amenity')['icon-size'] as unknown[];
 		// icon-size is an ['interpolate', …, z, v, z, v] ramp; every value doubles.
 		const values = (arr: unknown[]) => arr.filter((_, i) => i >= 4 && i % 2 === 0) as number[];
 		expect(values(scaled)).toStrictEqual(values(base).map((v) => v * 2));
 	});
 
-	it('a scalar scale applies to both labels and icons', async () => {
-		const s = await build({ layout: { scale: 1.5 } });
-		const baseText = layout(await build(), 'label-place-village')['text-size'];
+	it('a scalar scale applies to both labels and icons', () => {
+		const s = build({ layout: { scale: 1.5 } });
+		const baseText = layout(build(), 'label-place-village')['text-size'];
 		const scaledText = layout(s, 'label-place-village')['text-size'];
 		if (typeof baseText === 'number') expect(scaledText).toBeCloseTo(baseText * 1.5);
 		else expect(scaledText).not.toStrictEqual(baseText);
@@ -122,25 +122,25 @@ describe('osm() knob: layout.scale', () => {
 // ── layout.spacing ─────────────────────────────────────────────────────────────
 
 describe('osm() knob: layout.spacing', () => {
-	it('spacing.icons multiplies symbol-spacing on icon (marking) layers', async () => {
-		const base = layout(await build(), 'marking-oneway')['symbol-spacing'] as number;
-		const spaced = layout(await build({ layout: { spacing: { icons: 2 } } }), 'marking-oneway')['symbol-spacing'];
+	it('spacing.icons multiplies symbol-spacing on icon (marking) layers', () => {
+		const base = layout(build(), 'marking-oneway')['symbol-spacing'] as number;
+		const spaced = layout(build({ layout: { spacing: { icons: 2 } } }), 'marking-oneway')['symbol-spacing'];
 		expect(spaced).toBe(base * 2);
 	});
 
-	it('spacing.labels sets symbol-spacing on line-placed label layers (from the 250px default)', async () => {
+	it('spacing.labels sets symbol-spacing on line-placed label layers (from the 250px default)', () => {
 		// street name labels are line-placed and carry no explicit symbol-spacing → default 250.
-		const spaced = layout(await build({ layout: { spacing: { labels: 3 } } }), 'label-street-residential');
+		const spaced = layout(build({ layout: { spacing: { labels: 3 } } }), 'label-street-residential');
 		expect(spaced['symbol-spacing']).toBe(250 * 3);
 	});
 
-	it('spacing.labels does not touch icon (marking) spacing', async () => {
-		const s = await build({ layout: { spacing: { labels: 3 } } });
+	it('spacing.labels does not touch icon (marking) spacing', () => {
+		const s = build({ layout: { spacing: { labels: 3 } } });
 		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175); // unchanged default
 	});
 
-	it('a scalar spacing applies to both labels and icons', async () => {
-		const s = await build({ layout: { spacing: 1.5 } });
+	it('a scalar spacing applies to both labels and icons', () => {
+		const s = build({ layout: { spacing: 1.5 } });
 		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175 * 1.5);
 		expect(layout(s, 'label-street-residential')['symbol-spacing']).toBe(250 * 1.5);
 	});
@@ -149,42 +149,42 @@ describe('osm() knob: layout.spacing', () => {
 // ── features.terrain ─────────────────────────────────────────────────────────────
 
 describe('osm() knob: features.terrain', () => {
-	it('terrain:true enables 3D terrain with a raster-dem elevation source', async () => {
-		const s = await build({ features: { terrain: true } });
+	it('terrain:true enables 3D terrain with a raster-dem elevation source', () => {
+		const s = build({ features: { terrain: true } });
 		expect(s.terrain).toEqual({ source: 'elevation', exaggeration: 1 });
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('terrain exaggeration flows into style.terrain', async () => {
-		const s = await build({ features: { terrain: { exaggeration: 2.5 } } });
+	it('terrain exaggeration flows into style.terrain', () => {
+		const s = build({ features: { terrain: { exaggeration: 2.5 } } });
 		expect(s.terrain?.exaggeration).toBe(2.5);
 	});
 
-	it('no terrain by default', async () => {
-		expect((await build()).terrain).toBeUndefined();
+	it('no terrain by default', () => {
+		expect(build().terrain).toBeUndefined();
 	});
 });
 
 // ── features.hillshade (+ sun) ───────────────────────────────────────────────────
 
 describe('osm() knob: features.hillshade', () => {
-	it('hillshade:true adds a hillshade layer + elevation source', async () => {
-		const s = await build({ features: { hillshade: true } });
+	it('hillshade:true adds a hillshade layer + elevation source', () => {
+		const s = build({ features: { hillshade: true } });
 		expect(ids(s)).toContain('hillshade');
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('hillshade exaggeration / anchor flow into the layer paint', async () => {
-		const s = await build({ features: { hillshade: { exaggeration: 0.42, anchor: 'viewport' } } });
+	it('hillshade exaggeration / anchor flow into the layer paint', () => {
+		const s = build({ features: { hillshade: { exaggeration: 0.42, anchor: 'viewport' } } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-exaggeration']).toBe(0.42);
 		expect(p['hillshade-illumination-anchor']).toBe('viewport');
 	});
 
-	it('hillshade custom colors change the emitted paint colors', async () => {
-		const def = paint(await build({ features: { hillshade: true } }), 'hillshade');
+	it('hillshade custom colors change the emitted paint colors', () => {
+		const def = paint(build({ features: { hillshade: true } }), 'hillshade');
 		const custom = paint(
-			await build({
+			build({
 				features: { hillshade: { shadowColor: '#123456', highlightColor: '#654321', accentColor: '#abcdef' } },
 			}),
 			'hillshade'
@@ -196,42 +196,42 @@ describe('osm() knob: features.hillshade', () => {
 });
 
 describe('osm() knob: sun', () => {
-	it('sun direction / altitude drive the hillshade illumination', async () => {
-		const s = await build({ features: { hillshade: true }, sun: { direction: 123, altitude: 27 } });
+	it('sun direction / altitude drive the hillshade illumination', () => {
+		const s = build({ features: { hillshade: true }, sun: { direction: 123, altitude: 27 } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(123);
 		expect(p['hillshade-illumination-altitude']).toBe(27);
 	});
 
-	it('sun configures style.light for hillshade (position, color, intensity)', async () => {
-		const s = await build({
+	it('sun configures style.light for hillshade (position, color, intensity)', () => {
+		const s = build({
 			features: { hillshade: true },
 			sun: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
 		expect(s.light).toEqual({ anchor: 'viewport', position: [1.15, 100, 60], color: '#ff0000', intensity: 0.9 });
 	});
 
-	it('extruded buildings sync style.light even without hillshade', async () => {
-		const s = await build({ features: { buildings: 'extruded', hillshade: false }, sun: { direction: 200 } });
+	it('extruded buildings sync style.light even without hillshade', () => {
+		const s = build({ features: { buildings: 'extruded', hillshade: false }, sun: { direction: 200 } });
 		expect((s.light?.position as number[])?.[1]).toBe(200);
 	});
 
-	it('no style.light without hillshade or extruded buildings', async () => {
-		expect((await build({ features: { hillshade: false } })).light).toBeUndefined();
+	it('no style.light without hillshade or extruded buildings', () => {
+		expect(build({ features: { hillshade: false } }).light).toBeUndefined();
 	});
 });
 
 // ── features.buildings ───────────────────────────────────────────────────────────
 
 describe('osm() knob: features.buildings', () => {
-	it('flat (default) renders footprint fills, not extrusions', async () => {
-		const s = await build({ features: { buildings: 'flat' } });
+	it('flat (default) renders footprint fills, not extrusions', () => {
+		const s = build({ features: { buildings: 'flat' } });
 		expect(layer(s, 'building')).toBeDefined();
 		expect(layer(s, 'building-3d')).toBeUndefined();
 	});
 
-	it('extruded swaps footprints for a 3D building layer on top', async () => {
-		const s = await build({ features: { buildings: 'extruded' } });
+	it('extruded swaps footprints for a 3D building layer on top', () => {
+		const s = build({ features: { buildings: 'extruded' } });
 		expect(layer(s, 'building')).toBeUndefined();
 		expect(layer(s, 'building-3d')).toBeDefined();
 		expect(ids(s)[ids(s).length - 1]).toBe('building-3d');
@@ -241,16 +241,16 @@ describe('osm() knob: features.buildings', () => {
 // ── features.landcover ───────────────────────────────────────────────────────────
 
 describe('osm() knob: features.landcover', () => {
-	it('landcover removes the low-zoom fade on landcover-backed fills', async () => {
-		const off = paint(await build(), 'land-forest')['fill-opacity'];
-		const on = paint(await build({ features: { landcover: true } }), 'land-forest')['fill-opacity'];
+	it('landcover removes the low-zoom fade on landcover-backed fills', () => {
+		const off = paint(build(), 'land-forest')['fill-opacity'];
+		const on = paint(build({ features: { landcover: true } }), 'land-forest')['fill-opacity'];
 		// default is a zoom ramp; landcover pins the fully-faded-in constant.
 		expect(Array.isArray(off)).toBe(true);
 		expect(on).toBe(1);
 	});
 
-	it('landcover is off by default', async () => {
-		expect(Array.isArray(paint(await build(), 'land-forest')['fill-opacity'])).toBe(true);
+	it('landcover is off by default', () => {
+		expect(Array.isArray(paint(build(), 'land-forest')['fill-opacity'])).toBe(true);
 	});
 });
 
@@ -268,13 +268,13 @@ describe('osm() knob: recolor', () => {
 		['blend', { blend: { color: '#00ff00', amount: 1 } }],
 	];
 
-	it.each(RECOLORS)('recolor.%s changes output colors', async (_name, recolor) => {
-		const base = bgColor(await build());
-		expect(bgColor(await build({ recolor }))).not.toBe(base);
+	it.each(RECOLORS)('recolor.%s changes output colors', (_name, recolor) => {
+		const base = bgColor(build());
+		expect(bgColor(build({ recolor }))).not.toBe(base);
 	});
 
-	it('the default (identity) recolor leaves palette colors unchanged', async () => {
-		expect(bgColor(await build({ recolor: {} }))).toBe(bgColor(await build()));
+	it('the default (identity) recolor leaves palette colors unchanged', () => {
+		expect(bgColor(build({ recolor: {} }))).toBe(bgColor(build()));
 	});
 });
 
@@ -294,18 +294,19 @@ describe('osm() knob: urls', () => {
 		expect(src.url).toBe('https://custom.tiles/tiles.json');
 	});
 
-	it('explicit glyphsPattern is used verbatim', async () => {
-		const s = await build({ urls: { glyphsPattern: 'https://g.example/{fontstack}/{range}.pbf' } });
+	it('explicit glyphsPattern is used verbatim', () => {
+		const s = build({ urls: { glyphsPattern: 'https://g.example/{fontstack}/{range}.pbf' } });
 		expect(s.glyphs).toBe('https://g.example/{fontstack}/{range}.pbf');
 	});
 
 	it('custom elevation URL is referenced, and inlineSources embeds it', async () => {
-		const fetchFn = vi.fn(
-			async () =>
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
 				new Response(JSON.stringify({ tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 }), {
 					status: 200,
 					headers: { 'content-type': 'application/json' },
 				})
+			)
 		);
 		const s = build({
 			features: { terrain: true },
@@ -324,23 +325,24 @@ describe('osm() knob: urls', () => {
 		expect(fetchFn).toHaveBeenCalled();
 	});
 
-	it('sprite as a string is passed through unchanged', async () => {
-		const s = await build({ urls: { sprite: 'https://cdn.example/sprites/base' } });
+	it('sprite as a string is passed through unchanged', () => {
+		const s = build({ urls: { sprite: 'https://cdn.example/sprites/base' } });
 		expect(s.sprite).toBe('https://cdn.example/sprites/base');
 	});
 
-	it('sprite as an array resolves relative URLs against base', async () => {
-		const s = await build({ urls: { base: 'https://b.example', sprite: [{ id: 'a', url: '/s/a' }] } });
+	it('sprite as an array resolves relative URLs against base', () => {
+		const s = build({ urls: { base: 'https://b.example', sprite: [{ id: 'a', url: '/s/a' }] } });
 		expect(s.sprite).toStrictEqual([{ id: 'a', url: 'https://b.example/s/a' }]);
 	});
 
 	it('building performs no I/O, so a custom fetch belongs to inlineSources, not to urls', async () => {
-		const fetchFn = vi.fn(
-			async () =>
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
 				new Response(JSON.stringify({ tiles: ['https://x/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 }), {
 					status: 200,
 					headers: { 'content-type': 'application/json' },
 				})
+			)
 		);
 		expect(() => build({ urls: { fetch: fetchFn } } as never)).toThrow('osm: unknown option "urls.fetch"');
 
@@ -385,34 +387,34 @@ describe('osm() knob: layers (group gating)', () => {
 		[{ labels: { addresses: false } }, 'label-address-housenumber', 'label-place-village'],
 	];
 
-	it.each(CASES)('%o hides %s but keeps %s', async (layers, hidden, kept) => {
-		const s = await build({ layers });
+	it.each(CASES)('%o hides %s but keeps %s', (layers, hidden, kept) => {
+		const s = build({ layers });
 		expect(layer(s, hidden), `${hidden} should be hidden`).toBeUndefined();
 		expect(layer(s, kept), `${kept} should remain`).toBeDefined();
 	});
 
-	it('icons alias hides every icon group (pois, markings, transit stops) at once', async () => {
-		const s = await build({ layers: { icons: false } });
+	it('icons alias hides every icon group (pois, markings, transit stops) at once', () => {
+		const s = build({ layers: { icons: false } });
 		expect(layer(s, 'poi-amenity')).toBeUndefined();
 		expect(layer(s, 'marking-oneway')).toBeUndefined();
 		expect(layer(s, 'symbol-transit-bus')).toBeUndefined();
 		expect(layer(s, 'label-place-village')).toBeDefined(); // non-icon labels stay
 	});
 
-	it('a specific group overrides the icons alias', async () => {
-		const s = await build({ layers: { icons: false, pois: true } });
+	it('a specific group overrides the icons alias', () => {
+		const s = build({ layers: { icons: false, pois: true } });
 		expect(layer(s, 'poi-amenity')).toBeDefined();
 		expect(layer(s, 'marking-oneway')).toBeUndefined();
 	});
 
-	it('a fractional group opacity is baked into the layer, scaling its fade target', async () => {
-		const s = await build({ layers: { land: { forest: 0.5 } } });
+	it('a fractional group opacity is baked into the layer, scaling its fade target', () => {
+		const s = build({ layers: { land: { forest: 0.5 } } });
 		// land-forest fades 0→1 over z7→8; dimming by 0.5 scales the target to 0.5.
 		expect(paint(s, 'land-forest')['fill-opacity']).toStrictEqual(['interpolate', ['linear'], ['zoom'], 7, 0, 8, 0.5]);
 	});
 
-	it('buildings opacity merges with the existing z14→15 fade', async () => {
-		const s = await build({ layers: { buildings: 0.5 } });
+	it('buildings opacity merges with the existing z14→15 fade', () => {
+		const s = build({ layers: { buildings: 0.5 } });
 		expect(paint(s, 'building')['fill-opacity']).toStrictEqual(['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.5]);
 	});
 });
@@ -476,18 +478,18 @@ describe('osm() static properties', () => {
 // ── sky ────────────────────────────────────────────────────────────────────────
 
 describe('osm() knob: sky', () => {
-	it('emits a style.sky populated from the resolved defaults', async () => {
+	it('emits a style.sky populated from the resolved defaults', () => {
 		// Sky and horizon come from the palette (see the per-palette block below); the three blend
 		// factors are palette-independent.
 		const colors = osm.colors('colorful');
-		expect((await build()).sky).toStrictEqual({
+		expect(build().sky).toStrictEqual({
 			'sky-color': colors.water,
 			'atmosphere-blend': 0,
 		});
 	});
 
-	it('maps every sky option onto its style-spec property', async () => {
-		const s = await build({
+	it('maps every sky option onto its style-spec property', () => {
+		const s = build({
 			sky: {
 				skyColor: '#010203',
 				horizonColor: '#0a0b0c',

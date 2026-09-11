@@ -104,4 +104,14 @@ export default [
 			],
 		},
 	},
+	{
+		// Tests: `osm()` and `satellite()` are synchronous in v6, so an `await` on their result (or on any
+		// other non-Promise) is noise that also hides which calls really are async. `require-await` catches
+		// the `async` keywords left behind once those awaits are gone.
+		files: ['**/*.test.ts'],
+		rules: {
+			'@typescript-eslint/await-thenable': 'error',
+			'@typescript-eslint/require-await': 'error',
+		},
+	},
 ];

@@ -21,8 +21,8 @@ const hasFills = (s: StyleSpecification): boolean => s.layers.some((l) => l.type
 // ── raster paint (all six knobs) ─────────────────────────────────────────────────
 
 describe('satellite() knob: raster', () => {
-	it('all raster adjustments are written to the satellite layer paint', async () => {
-		const s = await build({
+	it('all raster adjustments are written to the satellite layer paint', () => {
+		const s = build({
 			raster: { opacity: 0.7, hueRotate: 45, brightnessMin: 0.1, brightnessMax: 0.9, saturation: -0.3, contrast: 0.4 },
 		});
 		expect(paint(s, 'satellite')).toStrictEqual({
@@ -42,12 +42,12 @@ describe('satellite() knob: raster', () => {
 		['brightnessMax', { brightnessMax: 0.8 }, 'raster-brightness-max', 0.8],
 		['saturation', { saturation: -0.5 }, 'raster-saturation', -0.5],
 		['contrast', { contrast: 0.6 }, 'raster-contrast', 0.6],
-	] as [string, SatelliteOptions['raster'], string, number][])('raster.%s → %s', async (_name, raster, key, value) => {
-		expect(paint(await build({ raster }), 'satellite')[key]).toBe(value);
+	] as [string, SatelliteOptions['raster'], string, number][])('raster.%s → %s', (_name, raster, key, value) => {
+		expect(paint(build({ raster }), 'satellite')[key]).toBe(value);
 	});
 
-	it('omits raster paint entirely when every value is default', async () => {
-		const p = layer(await build(), 'satellite')?.paint;
+	it('omits raster paint entirely when every value is default', () => {
+		const p = layer(build(), 'satellite')?.paint;
 		expect(!p || Object.keys(p).length === 0).toBe(true);
 	});
 });
@@ -55,58 +55,55 @@ describe('satellite() knob: raster', () => {
 // ── osmOverlay ───────────────────────────────────────────────────────────────────
 
 describe('satellite() knob: osmOverlay', () => {
-	it('is enabled by default (vector source + overlay symbols)', async () => {
+	it('is enabled by default (vector source + overlay symbols)', () => {
 		// A bare satellite() gives a usable map, as in v5; only `osmOverlay: false` turns it off.
-		const s = await build();
+		const s = build();
 		expect(s.sources).toHaveProperty('versatiles-shortbread');
 		expect(s.layers.some((l) => l.type === 'symbol')).toBe(true);
 	});
 
-	it('the default differs from an explicitly disabled overlay', async () => {
+	it('the default differs from an explicitly disabled overlay', () => {
 		// The two were byte-identical while `undefined` was treated as `false`.
-		expect(JSON.stringify(await build())).not.toBe(JSON.stringify(await build({ osmOverlay: false })));
+		expect(JSON.stringify(build())).not.toBe(JSON.stringify(build({ osmOverlay: false })));
 	});
 
-	it('osmOverlay:false keeps the style raster-only but still exposes slot anchors', async () => {
-		const s = await build({ osmOverlay: false });
+	it('osmOverlay:false keeps the style raster-only but still exposes slot anchors', () => {
+		const s = build({ osmOverlay: false });
 		expect(s.sources).not.toHaveProperty('versatiles-shortbread');
 		expect(layer(s, 'slot-below-symbols')).toBeDefined();
 		expect(layer(s, 'slot-below-labels')).toBeDefined();
 	});
 
-	it('osmOverlay:{} adds the vector source and label symbols on top of the raster', async () => {
-		const s = await build({ osmOverlay: {} });
+	it('osmOverlay:{} adds the vector source and label symbols on top of the raster', () => {
+		const s = build({ osmOverlay: {} });
 		expect(s.sources).toHaveProperty('versatiles-shortbread');
 		expect(s.layers.some((l) => l.type === 'symbol')).toBe(true);
 	});
 
-	it('the overlay never contributes fill layers (they would hide the imagery)', async () => {
-		expect(hasFills(await build({ osmOverlay: {} }))).toBe(false);
+	it('the overlay never contributes fill layers (they would hide the imagery)', () => {
+		expect(hasFills(build({ osmOverlay: {} }))).toBe(false);
 	});
 
-	it('the overlay keeps exactly one (dark) background, not the OSM opaque one', async () => {
-		const s = await build({ osmOverlay: {} });
+	it('the overlay keeps exactly one (dark) background, not the OSM opaque one', () => {
+		const s = build({ osmOverlay: {} });
 		const bgs = s.layers.filter((l) => l.type === 'background' && l.id === 'background');
 		expect(bgs).toHaveLength(1);
 		expect((bgs[0].paint as Record<string, unknown>)['background-color']).toBe('#000');
 	});
 
-	it('forwards the theme knob to the overlay', async () => {
+	it('forwards the theme knob to the overlay', () => {
 		// Label colours are fixed white-on-black for imagery regardless of palette (A2), so the
 		// theme is observed on a road colour, which still varies.
 		const roadColor = (s: StyleSpecification) =>
 			(layer(s, 'street-motorway')?.paint as Record<string, unknown>)['line-color'];
-		expect(roadColor(await build({ osmOverlay: { theme: 'toner' } }))).not.toBe(
-			roadColor(await build({ osmOverlay: { theme: 'gray' } }))
+		expect(roadColor(build({ osmOverlay: { theme: 'toner' } }))).not.toBe(
+			roadColor(build({ osmOverlay: { theme: 'gray' } }))
 		);
 	});
 
-	it('applies the imagery treatment to labels regardless of palette', async () => {
+	it('applies the imagery treatment to labels regardless of palette', () => {
 		for (const theme of ['gray', 'toner', 'colorful'] as const) {
-			const paint = layer(await build({ osmOverlay: { theme } }), 'label-place-village')?.paint as Record<
-				string,
-				unknown
-			>;
+			const paint = layer(build({ osmOverlay: { theme } }), 'label-place-village')?.paint as Record<string, unknown>;
 			const hex = (v: unknown) =>
 				Color.parse(v as string)
 					.asHex()
@@ -118,12 +115,12 @@ describe('satellite() knob: osmOverlay', () => {
 		}
 	});
 
-	it('lightens water labels too, in a water blue rather than plain white', async () => {
+	it('lightens water labels too, in a water blue rather than plain white', () => {
 		// Lake and river names are the one label the overlay does not whiten. They used to be missed
 		// entirely and kept the basemap's dark slate, which sat at 2.9:1 on the forced black halo.
 		for (const theme of ['gray', 'toner', 'colorful'] as const) {
 			for (const id of ['label-water-area-major', 'label-water-river']) {
-				const paint = layer(await build({ osmOverlay: { theme } }), id)?.paint as Record<string, unknown>;
+				const paint = layer(build({ osmOverlay: { theme } }), id)?.paint as Record<string, unknown>;
 				expect(
 					Color.parse(paint['text-color'] as string)
 						.asHex()
@@ -139,8 +136,8 @@ describe('satellite() knob: osmOverlay', () => {
 		}
 	});
 
-	it('lets an explicit water-label colour override the imagery default', async () => {
-		const s = await build({ osmOverlay: { colors: { labelWater: '#00ff00' } } });
+	it('lets an explicit water-label colour override the imagery default', () => {
+		const s = build({ osmOverlay: { colors: { labelWater: '#00ff00' } } });
 		const c = (layer(s, 'label-water-river')?.paint as Record<string, unknown>)['text-color'];
 		expect(
 			Color.parse(c as string)
@@ -149,8 +146,8 @@ describe('satellite() knob: osmOverlay', () => {
 		).toBe('#00ff00');
 	});
 
-	it('lets an explicit label colour override the imagery default', async () => {
-		const s = await build({ osmOverlay: { colors: { label: '#ff0000' } } });
+	it('lets an explicit label colour override the imagery default', () => {
+		const s = build({ osmOverlay: { colors: { label: '#ff0000' } } });
 		const c = (layer(s, 'label-place-village')?.paint as Record<string, unknown>)['text-color'];
 		expect(
 			Color.parse(c as string)
@@ -159,19 +156,19 @@ describe('satellite() knob: osmOverlay', () => {
 		).toBe('#ff0000');
 	});
 
-	it('forwards the text.language knob to the overlay', async () => {
-		const s = await build({ osmOverlay: { text: { language: 'de' } } });
+	it('forwards the text.language knob to the overlay', () => {
+		const s = build({ osmOverlay: { text: { language: 'de' } } });
 		const field = (layer(s, 'label-place-village')?.layout as Record<string, unknown>)['text-field'];
 		expect(field).toStrictEqual(['coalesce', ['get', 'name_de'], ['get', 'name']]);
 	});
 
-	it('forwards the layers knob to the overlay (hidden groups are dropped)', async () => {
-		const s = await build({ osmOverlay: { layers: { labels: false } } });
+	it('forwards the layers knob to the overlay (hidden groups are dropped)', () => {
+		const s = build({ osmOverlay: { layers: { labels: false } } });
 		expect(layer(s, 'label-place-village')).toBeUndefined();
 	});
 
-	it('the overlay symbols sit above the satellite raster', async () => {
-		const s = await build({ osmOverlay: {} });
+	it('the overlay symbols sit above the satellite raster', () => {
+		const s = build({ osmOverlay: {} });
 		const idsList = s.layers.map((l) => l.id);
 		expect(idsList.indexOf('slot-below-symbols')).toBeGreaterThan(idsList.indexOf('satellite'));
 	});
@@ -180,24 +177,24 @@ describe('satellite() knob: osmOverlay', () => {
 // ── features: terrain / hillshade / sun ──────────────────────────────────────────
 
 describe('satellite() knob: features', () => {
-	it('terrain:true enables terrain with an elevation source', async () => {
-		const s = await build({ features: { terrain: true } });
+	it('terrain:true enables terrain with an elevation source', () => {
+		const s = build({ features: { terrain: true } });
 		expect(s.terrain).toEqual({ source: 'elevation', exaggeration: 1 });
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('terrain exaggeration flows through', async () => {
-		expect((await build({ features: { terrain: { exaggeration: 3 } } })).terrain?.exaggeration).toBe(3);
+	it('terrain exaggeration flows through', () => {
+		expect(build({ features: { terrain: { exaggeration: 3 } } }).terrain?.exaggeration).toBe(3);
 	});
 
-	it('hillshade:true adds a hillshade layer + elevation source', async () => {
-		const s = await build({ features: { hillshade: true } });
+	it('hillshade:true adds a hillshade layer + elevation source', () => {
+		const s = build({ features: { hillshade: true } });
 		expect(layer(s, 'hillshade')).toBeDefined();
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('sun drives the hillshade illumination and style.light', async () => {
-		const s = await build({ features: { hillshade: true }, sun: { direction: 120, altitude: 20 } });
+	it('sun drives the hillshade illumination and style.light', () => {
+		const s = build({ features: { hillshade: true }, sun: { direction: 120, altitude: 20 } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(120);
 		expect(p['hillshade-illumination-altitude']).toBe(20);
@@ -221,12 +218,13 @@ describe('satellite() knob: urls', () => {
 	});
 
 	it('an explicit satellite TileJSON is fetched, and its tile_size becomes tileSize', async () => {
-		const fetchFn = vi.fn(
-			async () =>
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
 				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'], tile_size: 512, minzoom: 0, maxzoom: 18 }), {
 					status: 200,
 					headers: { 'content-type': 'application/json' },
 				})
+			)
 		);
 		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
@@ -238,12 +236,13 @@ describe('satellite() knob: urls', () => {
 	});
 
 	it('omits raster tileSize when the TileJSON omits tile_size (after inlining)', async () => {
-		const fetchFn = vi.fn(
-			async () =>
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(
 				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'] }), {
 					status: 200,
 					headers: { 'content-type': 'application/json' },
 				})
+			)
 		);
 		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
@@ -291,7 +290,7 @@ describe('satellite() static properties', () => {
 // ── sky ──────────────────────────────────────────────────────────────────────────
 
 describe('satellite() knob: sky', () => {
-	it('takes sky and horizon from the overlay palette, like osm()', async () => {
+	it('takes sky and horizon from the overlay palette, like osm()', () => {
 		// The default overlay palette is `gray`; before this the satellite sky was hardcoded sky-blue
 		// whatever the overlay looked like, which is the defect #126 fixed for osm() but not here.
 		const gray = osm.colors('gray');
@@ -301,18 +300,18 @@ describe('satellite() knob: sky', () => {
 		});
 	});
 
-	it('follows an explicit overlay theme', async () => {
+	it('follows an explicit overlay theme', () => {
 		const dark = osm.colors('colorful-dark');
 		const s = build({ osmOverlay: { theme: 'colorful-dark' } });
 		expect(s.sky).toMatchObject({ 'sky-color': dark.water });
 	});
 
-	it('keeps the generic sky blue for bare imagery, which has no palette', async () => {
+	it('keeps the generic sky blue for bare imagery, which has no palette', () => {
 		const s = build({ osmOverlay: false });
 		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
 	});
 
-	it('maps sky options onto style-spec properties', async () => {
+	it('maps sky options onto style-spec properties', () => {
 		const s = build({ sky: { skyColor: '#010203', atmosphereBlend: 0.7 } });
 		expect(s.sky).toMatchObject({ 'sky-color': '#010203', 'atmosphere-blend': 0.7 });
 	});
@@ -374,7 +373,7 @@ describe('satellite() knob: projection', () => {
 // Same guarantee as osm(): resolved options no longer pin the sky, so turning the overlay off on top
 // of `satellite.resolveOptions()` gives bare imagery its generic sky rather than the overlay's.
 describe('satellite() resolved options round-trip without pinning the sky', () => {
-	it('lets the sky follow the overlay toggle on top of resolved defaults', async () => {
+	it('lets the sky follow the overlay toggle on top of resolved defaults', () => {
 		const s = build({ ...satellite.resolveOptions(), osmOverlay: false });
 		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
 	});
