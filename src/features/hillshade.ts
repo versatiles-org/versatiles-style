@@ -41,10 +41,14 @@ export function addHillshade(
 			'hillshade-shadow-color': options.shadowColor,
 			'hillshade-highlight-color': options.highlightColor,
 			'hillshade-accent-color': options.accentColor,
-			'hillshade-illumination-direction': sun.direction,
-			'hillshade-illumination-altitude': sun.altitude,
 			'hillshade-illumination-anchor': options.anchor,
 			'hillshade-method': 'standard',
+			...(sun
+				? {
+						'hillshade-illumination-direction': sun.direction,
+						'hillshade-illumination-altitude': sun.altitude,
+					}
+				: {}),
 		},
 	};
 
