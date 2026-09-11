@@ -30,7 +30,8 @@ export type ResolvedSky = undefined | SkyOptions;
  * the sky — edit `colors.water` on top of it and the sky no longer followed.
  */
 export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSky {
-	if (typeof sky !== 'object') return undefined;
+	if (sky === false) return undefined;
+	if (sky === true || sky === undefined) return {};
 	checkKeys(
 		sky,
 		{

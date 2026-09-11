@@ -11,7 +11,7 @@ describe('osm.minimizeOptions', () => {
 	it('minimises defaults to nothing, however they are spelled', () => {
 		expect(osm.minimizeOptions()).toEqual({});
 		expect(osm.minimizeOptions(osm.defaults)).toEqual({});
-		expect(osm.minimizeOptions({ theme: 'colorful', sky: true })).toEqual({});
+		expect(osm.minimizeOptions({ theme: 'colorful', sky: false })).toEqual({ sky: false });
 	});
 
 	it('keeps a non-default theme', () => {

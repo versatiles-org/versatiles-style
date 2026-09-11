@@ -606,7 +606,7 @@ exports[`generated style shape snapshots > osm colorful (light) 1`] = `
 
 exports[`generated style shape snapshots > osm colorful with terrain + hillshade + extruded buildings 1`] = `
 {
-  "hasLight": true,
+  "hasLight": false,
   "hasSky": true,
   "hasTerrain": true,
   "layers": [

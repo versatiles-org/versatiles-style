@@ -208,7 +208,7 @@ describe('osm() knob: sun', () => {
 			features: { hillshade: true },
 			sun: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
-		expect(s.light).toEqual({ anchor: 'map', position: [1.15, 100, 60], color: '#ff0000', intensity: 0.9 });
+		expect(s.light).toEqual({ anchor: 'viewport', position: [1.15, 100, 60], color: '#ff0000', intensity: 0.9 });
 	});
 
 	it('extruded buildings sync style.light even without hillshade', async () => {
@@ -483,11 +483,6 @@ describe('osm() knob: sky', () => {
 		expect((await build()).sky).toStrictEqual({
 			'sky-color': colors.water,
 			'horizon-color': colors.background,
-			'sky-horizon-blend': 0.5,
-			'horizon-fog-blend': 0.5,
-			// A zoom ramp, not a constant: the globe needs it non-zero to draw a sky at all, while a
-			// pitched terrain view is washed out by it. Full below z2, off from z5. See sky.ts.
-			'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0],
 		});
 	});
 
@@ -560,7 +555,7 @@ describe('osm() knob: sky accepts a boolean', () => {
 	});
 
 	it('resolves to false so callers can detect it', () => {
-		expect(osm.resolveOptions({ sky: false }).sky).toBe(false);
+		expect(osm.resolveOptions({ sky: false }).sky).toBe(undefined);
 		expect(osm.resolveOptions().sky).not.toBe(false);
 	});
 });

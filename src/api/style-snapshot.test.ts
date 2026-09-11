@@ -26,23 +26,23 @@ function shape(style: StyleSpecification) {
 
 describe('generated style shape snapshots', () => {
 	it('osm colorful (light)', async () => {
-		expect(shape(await osm({ theme: 'colorful' }))).toMatchSnapshot();
+		expect(shape(osm({ theme: 'colorful' }))).toMatchSnapshot();
 	});
 
 	it('osm colorful (dark)', async () => {
-		expect(shape(await osm({ theme: 'colorful-dark' }))).toMatchSnapshot();
+		expect(shape(osm({ theme: 'colorful-dark' }))).toMatchSnapshot();
 	});
 
 	it('osm colorful with terrain + hillshade + extruded buildings', async () => {
-		expect(shape(await osm({ features: { terrain: true, hillshade: true, buildings: 'extruded' } }))).toMatchSnapshot();
+		expect(shape(osm({ features: { terrain: true, hillshade: true, buildings: 'extruded' } }))).toMatchSnapshot();
 	});
 
 	it('satellite with toner overlay', async () => {
-		expect(shape(await satellite({ osmOverlay: { theme: 'toner' } }))).toMatchSnapshot();
+		expect(shape(satellite({ osmOverlay: { theme: 'toner' } }))).toMatchSnapshot();
 	});
 
 	it('satellite raster-only (no overlay)', async () => {
-		expect(shape(await satellite({ osmOverlay: false }))).toMatchSnapshot();
+		expect(shape(satellite({ osmOverlay: false }))).toMatchSnapshot();
 	});
 
 	// A single coarse snapshot over ALL variants (name → layer count) catches any variant
@@ -50,7 +50,7 @@ describe('generated style shape snapshots', () => {
 	it('variant layer counts', async () => {
 		const variants = getStyleVariants();
 		const counts: Record<string, number> = {};
-		for (const v of variants) counts[v.name] = (await v.build()).layers.length;
+		for (const v of variants) counts[v.name] = v.build().layers.length;
 		expect(counts).toMatchSnapshot();
 	});
 });

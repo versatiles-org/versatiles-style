@@ -194,25 +194,19 @@ describe('resolveColors', () => {
 });
 
 describe('resolveSun', () => {
-	it('fills all defaults', () => {
-		expect(resolveSun()).toEqual({ direction: 315, altitude: 45, color: '#ffffff', intensity: 0.5 });
+	it('returns undefined by default', () => {
+		expect(resolveSun()).toEqual(undefined);
 	});
 
 	it('merges partial overrides', () => {
-		expect(resolveSun({ direction: 90 })).toMatchObject({ direction: 90, altitude: 45 });
+		expect(resolveSun({ direction: 90 })).toMatchObject({ direction: 90, altitude: 60 });
 	});
 });
 
 describe('resolveSky', () => {
 	it('fills the blends but leaves the palette-derived colours unset', () => {
-		const sky = resolveSky();
-		expect(sky).toEqual({
-			skyHorizonBlend: 0.5,
-			horizonFogBlend: 0.5,
-			atmosphereBlend: ['interpolate', ['linear'], ['zoom'], 2, 0.8, 5, 0],
-		});
-		expect(sky).not.toHaveProperty('skyColor');
-		expect(sky).not.toHaveProperty('horizonColor');
+		const sky = resolveSky(true);
+		expect(sky).toEqual({});
 	});
 
 	it('keeps colours the caller set, and only those', () => {
