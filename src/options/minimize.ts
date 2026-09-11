@@ -16,12 +16,10 @@ function isPlain(value: unknown): value is Plain {
  * `value` minus everything equal to `defaults`, recursively; `undefined` when nothing is left.
  *
  * `true` counts as the default of a `boolean | object` option whose default is enabled, because
- * resolving turns that `true` into the default object. Functions (a custom `urls.fetch`) have no
- * default to equal and are kept.
+ * resolving turns that `true` into the default object.
  */
 function withoutDefaults(value: unknown, defaults: unknown): unknown {
 	if (value === undefined) return undefined;
-	if (typeof value === 'function') return value;
 	if (value === true && isPlain(defaults)) return undefined;
 	if (isPlain(value)) {
 		const base = isPlain(defaults) ? defaults : {};

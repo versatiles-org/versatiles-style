@@ -17,7 +17,7 @@ describe('unknown option keys are rejected', () => {
 		expect(() =>
 			osm({
 				theme: { darkMode: 'auto' },
-				urls: { base: 'https://tiles.example.org', fetch: globalThis.fetch },
+				urls: { base: 'https://tiles.example.org' },
 				sky: { skyColor: '#010203', horizonColor: '#ffffff' },
 				features: {
 					terrain: { exaggeration: 2 },
@@ -91,6 +91,7 @@ describe('unknown option keys are rejected', () => {
 	});
 
 	it('is enforced by every function that takes options', async () => {
+		expect(() => osm({ urls: { fetch: globalThis.fetch } } as never)).toThrow('osm: unknown option "urls.fetch"');
 		const bad = { textScale: 2 } as never;
 		expect(() => osm.resolveOptions(bad)).toThrow('unknown option');
 		expect(() => osm.minimizeOptions(bad)).toThrow('unknown option');

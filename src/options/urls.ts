@@ -22,8 +22,6 @@ export type OsmUrlsOptions = {
 	elevation?: TileSource;
 	glyphsPattern?: string;
 	sprite?: SpriteEntries;
-	/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
-	fetch?: FetchLike;
 };
 
 export type SatelliteUrlsOptions = OsmUrlsOptions & {
@@ -35,8 +33,6 @@ export type ResolvedOsmUrls = {
 	elevation: TileSource;
 	glyphsPattern: string;
 	sprite: SpriteEntries;
-	/** Custom `fetch` used to download any TileJSON sources. Defaults to the global `fetch`. */
-	fetch?: FetchLike;
 };
 
 export type ResolvedSatelliteUrls = ResolvedOsmUrls & {
@@ -83,23 +79,18 @@ function resolveTileSource(base: string, value: TileSource | undefined, fallback
 }
 
 export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOsmUrls {
-	checkKeys(urls, { base: true, osm: true, elevation: true, glyphsPattern: true, sprite: true, fetch: true }, path);
+	checkKeys(urls, { base: true, osm: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
-		fetch: urls?.fetch,
 	};
 }
 
 export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions, path = 'urls'): ResolvedSatelliteUrls {
-	checkKeys(
-		urls,
-		{ base: true, satellite: true, osm: true, elevation: true, glyphsPattern: true, sprite: true, fetch: true },
-		path
-	);
+	checkKeys(urls, { base: true, satellite: true, osm: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		satellite: resolveTileSource(base, urls?.satellite, '/tiles/satellite/tiles.json'),
@@ -107,7 +98,6 @@ export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions, path = 'urls')
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
-		fetch: urls?.fetch,
 	};
 }
 
@@ -119,6 +109,5 @@ export function convertSatelliteUrlsToOsmUrls(urls: undefined | SatelliteUrlsOpt
 		elevation: urls.elevation,
 		glyphsPattern: urls.glyphsPattern,
 		sprite: urls.sprite,
-		fetch: urls.fetch,
 	};
 }

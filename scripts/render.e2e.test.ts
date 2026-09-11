@@ -21,13 +21,6 @@ import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 const WIDTH = 64;
 const HEIGHT = 64;
 
-// A `fetch` that keeps osm()/satellite() offline while resolving the default TileJSON sources.
-const cannedFetch = (async () =>
-	new Response(JSON.stringify({ tiles: ['{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 }), {
-		status: 200,
-		headers: { 'content-type': 'application/json' },
-	})) as typeof fetch;
-
 const MIN_TILEJSON = Buffer.from(
 	JSON.stringify({ tilejson: '2.2.0', tiles: ['http://localhost/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 })
 );
@@ -77,7 +70,6 @@ describe('native MapLibre rendering', () => {
 	it('renders an osm() vector style to a full RGBA buffer', async () => {
 		const style = (await osm({
 			theme: 'colorful',
-			urls: { fetch: cannedFetch },
 			layers: { labels: false, icons: false },
 		})) as unknown as StyleSpecification;
 		// empty buffer = a valid, empty vector tile
@@ -87,7 +79,6 @@ describe('native MapLibre rendering', () => {
 
 	it('renders a satellite() raster style to a full RGBA buffer', async () => {
 		const style = (await satellite({
-			urls: { fetch: cannedFetch },
 			osmOverlay: false,
 		})) as unknown as StyleSpecification;
 		const png = await onePixelPng();

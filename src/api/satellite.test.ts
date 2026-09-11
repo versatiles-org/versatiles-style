@@ -84,7 +84,7 @@ describe('satellite()', () => {
 				maxzoom: 18,
 			})
 		);
-		const built = satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } });
+		const built = satellite({ urls: { satellite: 'https://sat/tiles.json' } });
 		expect(built.sources['satellite'] as { url: string }).toMatchObject({ url: 'https://sat/tiles.json' });
 
 		const style = await inlineSources(built, { fetch: fetchFn });
@@ -102,7 +102,7 @@ describe('satellite()', () => {
 				tile_size: 512,
 			})
 		);
-		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
 		const src = style.sources['satellite'] as { tileSize: number };
@@ -112,7 +112,7 @@ describe('satellite()', () => {
 	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
 		// Declaring a guessed tileSize would silently override MapLibre's own default.
 		const fetchFn = vi.fn(async () => jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] }));
-		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
 		const src = style.sources['satellite'] as Record<string, unknown>;

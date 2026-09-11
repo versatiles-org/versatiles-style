@@ -225,7 +225,7 @@ describe('satellite() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
 		const src = s.sources['satellite'] as { tiles: string[]; tileSize: number; minzoom: number };
@@ -242,7 +242,7 @@ describe('satellite() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json', fetch: fetchFn } }), {
+		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
 		expect(s.sources['satellite'] as Record<string, unknown>).not.toHaveProperty('tileSize');

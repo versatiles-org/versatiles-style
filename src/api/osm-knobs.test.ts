@@ -315,7 +315,7 @@ describe('osm() knob: urls', () => {
 		);
 		const s = build({
 			features: { terrain: true },
-			urls: { elevation: 'https://dem/tiles.json', fetch: fetchFn },
+			urls: { elevation: 'https://dem/tiles.json' },
 		});
 		// Building performs no I/O: the source carries a reference.
 		expect(s.sources['elevation'] as { url: string }).toMatchObject({ url: 'https://dem/tiles.json' });
@@ -340,7 +340,7 @@ describe('osm() knob: urls', () => {
 		expect(s.sprite).toStrictEqual([{ id: 'a', url: 'https://b.example/s/a' }]);
 	});
 
-	it('building performs no I/O, and inlineSources uses the custom fetch', async () => {
+	it('building performs no I/O, so a custom fetch belongs to inlineSources, not to urls', async () => {
 		const fetchFn = vi.fn(
 			async () =>
 				new Response(JSON.stringify({ tiles: ['https://x/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 }), {
@@ -348,9 +348,10 @@ describe('osm() knob: urls', () => {
 					headers: { 'content-type': 'application/json' },
 				})
 		);
-		const s = build({ urls: { fetch: fetchFn } });
-		expect(fetchFn).not.toHaveBeenCalled();
+		expect(() => build({ urls: { fetch: fetchFn } } as never)).toThrow('osm: unknown option "urls.fetch"');
 
+		const s = build();
+		expect(fetchFn).not.toHaveBeenCalled();
 		await inlineSources(s, { fetch: fetchFn });
 		expect(fetchFn).toHaveBeenCalled();
 	});

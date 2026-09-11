@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   throwing, so they behave like the type guards their signatures always claimed. The throwing
   behaviour, with its descriptive validation messages, moved to the new
   `assertTileJSONSpecification` / `assertRasterTileJSONSpecification`.
+- `osm()` and `satellite()` no longer accept `urls.fetch`. They do no I/O, so it was never used; passing
+  it is now an unknown-option error. A custom `fetch` belongs to the functions that download:
+  `inlineSources()`, `fetchTileJSON()` and `guessStyle()`.
 - **Unknown option keys now throw** instead of being silently ignored. `osm()`, `satellite()`, their
   `resolveOptions`/`minimizeOptions`/`toCode`, `inlineSources()` and `fetchTileJSON()` reject any
   key they do not know, with an error naming the unknown keys and, for a v5 name, its v6

@@ -28,7 +28,6 @@ describe('resolveOsmUrls', () => {
 			elevation: 'https://tiles.versatiles.org/tiles/elevation/tiles.json',
 			glyphsPattern: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
 			sprite: [{ id: 'base', url: 'https://tiles.versatiles.org/assets/sprites/base' }],
-			fetch: undefined,
 		});
 	});
 
@@ -52,11 +51,6 @@ describe('resolveOsmUrls', () => {
 		expect(r.sprite).toBe('https://s/sprite');
 		expect(r.glyphsPattern).toBe('https://g/{fontstack}/{range}.pbf');
 	});
-
-	it('threads a custom fetch through untouched', () => {
-		const fetch = (async () => new Response('{}')) as typeof globalThis.fetch;
-		expect(resolveOsmUrls({ fetch }).fetch).toBe(fetch);
-	});
 });
 
 describe('resolveSatelliteUrls', () => {
@@ -64,7 +58,7 @@ describe('resolveSatelliteUrls', () => {
 		const r = resolveSatelliteUrls();
 		expect(r.satellite).toBe('https://tiles.versatiles.org/tiles/satellite/tiles.json');
 		expect(r.osm).toBe('https://tiles.versatiles.org/tiles/osm/tiles.json');
-		expect(Object.keys(r).sort()).toStrictEqual(['elevation', 'fetch', 'glyphsPattern', 'osm', 'satellite', 'sprite']);
+		expect(Object.keys(r).sort()).toStrictEqual(['elevation', 'glyphsPattern', 'osm', 'satellite', 'sprite']);
 	});
 
 	it('resolves the satellite URL against a custom base', () => {
@@ -91,12 +85,10 @@ describe('convertSatelliteUrlsToOsmUrls', () => {
 		expect(out).not.toHaveProperty('satellite');
 	});
 
-	it('preserves sprite and fetch', () => {
-		const fetch = (async () => new Response('{}')) as typeof globalThis.fetch;
+	it('preserves sprite', () => {
 		const sprite = 'https://s/sprite';
-		const out = convertSatelliteUrlsToOsmUrls({ sprite, fetch });
+		const out = convertSatelliteUrlsToOsmUrls({ sprite });
 		expect(out?.sprite).toBe(sprite);
-		expect(out?.fetch).toBe(fetch);
 	});
 });
 

@@ -394,8 +394,7 @@ osm.toCode({ theme: 'gray', layout: { scale: { labels: 1.5 } } });
 ```
 
 It always goes through `inlineSources`, because the VersaTiles tile server publishes relative tile
-URLs that MapLibre cannot resolve on its own. A custom `urls.fetch` function cannot be written out and
-is left out.
+URLs that MapLibre cannot resolve on its own.
 
 `osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
 at the leaves — useful for building a UI over the options, or for finding a layer to target with
