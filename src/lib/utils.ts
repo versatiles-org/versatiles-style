@@ -146,10 +146,15 @@ export function basename(url: string): string {
  * Upstream TileJSONs are inconsistent — the satellite source serves `href='…'` while OSM and
  * elevation serve `href="…"` — so a style inlining several sources would otherwise show mixed
  * quoting in one attribution bar. Purely cosmetic; the markup is otherwise untouched.
+ *
+ * The attribute pattern matches a single `\w` rather than `\w+`: the capture is echoed back
+ * unchanged, so one preceding word character gives identical output. `\w+` there is ambiguous
+ * with no left anchor, making the match quadratic on long runs of word characters — and an
+ * attribution can arrive from a fetched TileJSON (CodeQL js/polynomial-redos).
  */
 export function normalizeAttribution(s: string): string {
 	return s
 		.trim()
 		.replace(/\s+/g, ' ')
-		.replace(/(\w+)='([^']*)'/g, '$1="$2"');
+		.replace(/(\w)='([^']*)'/g, '$1="$2"');
 }
