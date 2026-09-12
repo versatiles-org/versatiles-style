@@ -49,11 +49,15 @@
 		"type": "git",
 		"url": "git+https://github.com/versatiles-org/versatiles-style.git"
 	},
+	"homepage": "https://versatiles.org/versatiles-style/",
 	"author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
 	"license": "MIT",
 	"type": "module",
 	"files": [
-		"dist/*"
+		"dist/*",
+		"API_DESIGN.md",
+		"CHANGELOG.md",
+		"SPRITES.md"
 	],
 	"dependencies": {
 		"@maplibre/maplibre-gl-style-spec": "^26.4.2"
