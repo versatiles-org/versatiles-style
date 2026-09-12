@@ -11,7 +11,7 @@ mkdirSync('docs', { recursive: true });
  *
  * The script uses `@maplibre/maplibre-gl-native` for map rendering
  * and `sharp` for image processing. It generates map images for a set
- * of predefined styles and saves them in the `screenshots` directory.
+ * of predefined styles and saves them in the `docs` directory.
  */
 Promise.all([
 	draw('colorful', osm({ theme: 'colorful' })),
@@ -29,10 +29,7 @@ Promise.all([
  * @param style - The style specification to render.
  * @returns A promise that resolves when the image has been successfully saved.
  */
-async function draw(name: string, styleInput: StyleSpecification | Promise<StyleSpecification>): Promise<void> {
-	// osm()/satellite() are async, so accept a style or a promise of one.
-	const style = await styleInput;
-
+async function draw(name: string, style: StyleSpecification): Promise<void> {
 	// Create a new MapLibre GL map instance
 	const map = new mbgl.Map();
 
