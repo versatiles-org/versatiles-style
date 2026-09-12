@@ -44,17 +44,21 @@ describe('coverage, while the port is incomplete', () => {
 	// The inverse of Shortbread's coverage test, which demands that every source-layer be rendered or
 	// explicitly waived. Here the unrendered set is the to-do list, so it is asserted exactly: a module
 	// landing must shorten it, and nothing may drop off it by accident.
-	it('renders water and waterway, and nothing else yet', () => {
-		expect([...audit.usage.keys()].sort()).toEqual(['water', 'waterway']);
+	it('reads exactly the source-layers the ported modules need', () => {
+		expect([...audit.usage.keys()].sort()).toEqual(['landcover', 'landuse', 'water', 'waterway']);
+	});
+
+	it('lists every source-layer still to be bound', () => {
 		expect(audit.unrendered).toEqual([
 			'aerodrome_label',
 			'aeroway',
 			'boundary',
 			'building',
 			'housenumber',
-			'landcover',
-			'landuse',
 			'mountain_peak',
+			// `park` is deliberate, not pending: it holds protected areas, and its `class` was sampled at
+			// 56+ values including raw localised titles ("Natura 2000-gebied", "Ruhezone I/5"), so nothing
+			// filters on it. Urban parks come from `landcover` (`subclass: park`) instead.
 			'park',
 			'place',
 			'poi',
@@ -72,8 +76,13 @@ describe('the schema seam', () => {
 	});
 
 	it('emits the four slot anchors §6 requires of every schema', () => {
-		const anchors = style.layers.filter((l) => l.type === 'background').map((l) => l.id);
+		// The page background is a background-type layer too, so anchors are identified by id.
+		const anchors = style.layers.filter((l) => l.id.startsWith('slot-')).map((l) => l.id);
 		expect(anchors).toEqual(['slot-below-fills', 'slot-below-streets', 'slot-below-symbols', 'slot-below-labels']);
+		// Every anchor must be an invisible background, or it would paint over the map.
+		for (const anchor of style.layers.filter((l) => l.id.startsWith('slot-'))) {
+			expect(anchor.type, anchor.id).toBe('background');
+		}
 	});
 
 	it('floors each layer at its own source-layer’s data zoom, not Shortbread’s', () => {

@@ -2,12 +2,18 @@
  * Candidate source-layer mapping from Shortbread to another schema — the input that turns
  * `npm run schema-gate` from a name diff into a decision.
  *
- * ⚠️ **This is a hypothesis, not ground truth.** Every entry was derived from two things only: the two
- * vendored schema records (`src/shortbread/schema.ts`, `src/omt/schema.ts` — which state layer names,
- * zooms and *field names*) and the published OpenMapTiles schema. No entry has been confirmed against
- * real tiles, and a record cannot state which *values* a field carries: that `transportation.subclass`
- * exists is verifiable here, that it carries `pier` is not. Confirm `partial` and `none` before
- * relying on them. See SCHEMA-SUPPORT-PLAN.md §7 step 2.
+ * ⚠️ **Partly verified.** Every entry started as a hypothesis from the two vendored schema records
+ * (`src/shortbread/schema.ts`, `src/omt/schema.ts` — which state layer names, zooms and *field names*)
+ * plus the published OpenMapTiles schema. The entries marked "verified" in their note have since been
+ * checked against real tiles with `npm run schema-values`, which reports the values a field actually
+ * carries; the rest have not. A record alone cannot settle a value claim: that
+ * `transportation.subclass` exists is verifiable from the record, that it carries `pier` is not.
+ * See SCHEMA-SUPPORT-PLAN.md §7 step 2.
+ *
+ * Sampling corrected two entries that the record had made look worse than they are — `land` and
+ * `sites` — and one that it had made look better: `park` is not a vocabulary at all. Both corrections
+ * are in the notes below, and they are the reason this file is worth keeping rather than deleting once
+ * the port is done: it is the record of what was checked and how.
  *
  * ── Why a mapping is needed at all ────────────────────────────────────────────
  *
@@ -99,14 +105,14 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 		note: 'class=ferry; the route name needs `transportation_name`, since `transportation` has no name fields.',
 	},
 	land: {
-		targets: ['landcover', 'landuse', 'park'],
+		targets: ['landcover', 'landuse'],
 		confidence: 'partial',
-		note: '15 style layers keyed on one `kind` split across three layers with coarser, differently-cut classes.',
+		note: 'verified: 15 layers split across two, and the fidelity is in `landcover.subclass` (park, garden, scrub, scree, glacier…) — `class` has only 7 values. `park` is not involved; `landfill` has no counterpart.',
 	},
 	ocean: {
 		targets: ['water'],
 		confidence: 'partial',
-		note: 'class=ocean inside `water` rather than its own layer — the bottom-most fill becomes a filter.',
+		note: 'verified: `class: ocean` inside `water` rather than its own layer, so the bottom-most fill becomes a filter and moves into the water module.',
 	},
 	pier_lines: {
 		targets: ['transportation'],
@@ -134,9 +140,9 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 		note: 'stations/stops are `poi` classes (with `agg_stop`), not their own layer; z11 rather than z0.',
 	},
 	sites: {
-		targets: ['landuse', 'park'],
+		targets: ['landuse'],
 		confidence: 'partial',
-		note: 'university/hospital/military-style sites are `landuse` classes; coverage per kind is unverified.',
+		note: 'verified: education/hospital/pitch/track/military are `landuse` classes, but parking, bicycle_parking, prison and construction were in no sampled tile — 5 of 10 kinds are lost.',
 	},
 	street_labels: {
 		targets: ['transportation_name'],
@@ -166,7 +172,7 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	water_lines: {
 		targets: ['waterway'],
 		confidence: 'exact',
-		note: 'class plus brunnel covers kind/bridge/tunnel; `intermittent` is a bonus.',
+		note: 'verified: all five classes (river, canal, stream, ditch, drain) observed, plus brunnel for bridge/tunnel and a bonus `intermittent`.',
 	},
 	water_lines_labels: {
 		targets: ['waterway'],
@@ -176,7 +182,7 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	water_polygons: {
 		targets: ['water'],
 		confidence: 'exact',
-		note: 'class covers the kinds the fills need.',
+		note: 'verified: lake, pond, river, swimming_pool and ocean observed (`dock` was not, in a twelve-tile sample).',
 	},
 	water_polygons_labels: {
 		targets: ['water_name'],

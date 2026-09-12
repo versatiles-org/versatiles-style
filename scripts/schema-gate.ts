@@ -118,7 +118,7 @@ function rawReport(name: string, schema: SchemaRecord): void {
 }
 
 function mappedReport(name: string, schema: SchemaRecord, mapping: Record<string, LayerMapping>): void {
-	console.log(`\n  MAPPED — via scripts/config/schema-mapping.ts (a hypothesis; see its header)\n`);
+	console.log(`\n  MAPPED — via scripts/config/schema-mapping.ts (partly tile-verified; see its header)\n`);
 
 	// Mechanical validation of the mapping table itself. Neither check can confirm the mapping is
 	// *right*, only that it is complete and points at layers that exist.

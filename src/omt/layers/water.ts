@@ -11,10 +11,13 @@ import * as b from '../../dsl/index.js';
 // `src/shortbread/layers/water.ts`: the same groups, the same colour derivation, the same widths, so
 // that what differs is only what the schema forces to differ.
 //
-// **Every class value below is from the published OpenMapTiles schema, not from tiles.** The vendored
-// record proves which *fields* exist (`class`, `brunnel`, `intermittent`) and cannot prove which values
-// they carry; `npm run schema-gate -- omt` checks the former and nothing offline can check the latter.
-// Treat the filters as unverified until someone has looked at a rendered tile.
+// **The class values below are confirmed against real tiles** by
+// `npm run schema-values -- omt water waterway`: all five `waterway` classes (river, canal, stream,
+// ditch, drain) and four of the five `water` classes occur in the sample. Two exceptions, both harmless:
+// `dock` and `brunnel: bridge` were not observed in the twelve sampled tiles, and absence in so small a
+// sample is weak evidence — a filter value the tiles never use costs nothing, where a missing one would
+// lose features. The vendored record can only prove a *field* exists; values need tiles, which is what
+// that script is for.
 //
 // ── Three things the schema decides differently ───────────────────────────────
 //
@@ -43,9 +46,9 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 // gate at the source-layer minzoom, so without this they would be processed for ten zoom levels that
 // carry no such feature.
 //
-// Unlike the Shortbread table these numbers are NOT measured — they are what the OpenMapTiles schema
-// documents for each class. Measuring them against real tiles across several regions is exactly what
-// the Shortbread comment describes doing, and it is outstanding here.
+// Unlike the Shortbread table these numbers are NOT measured: the value sample confirms *which* classes
+// exist, not the zoom each one starts at, which needs a zoom sweep. Measuring them the way the
+// Shortbread comment describes is outstanding.
 const LINE_MINZOOM: Record<string, number> = { canal: 9, stream: 13, ditch: 14, drain: 14 };
 
 /** Shortbread's `tunnel`/`bridge` booleans, as OpenMapTiles' single `brunnel` enum. */

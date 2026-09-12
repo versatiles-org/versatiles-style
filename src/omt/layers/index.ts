@@ -2,6 +2,9 @@ import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
 import { slot, type TaggedLayer } from '../../dsl/index.js';
 import { buildLayers, mergeIdenticalLayers, type MergeTable } from '../../dsl/assemble.js';
+import { background } from './background.js';
+import { landcover } from './landcover.js';
+import { sites } from './sites.js';
 import { water } from './water.js';
 import { OMT_SCHEMA } from '../schema.js';
 
@@ -35,10 +38,11 @@ export const SLOT_BELOW_LABELS = 'slot-below-labels';
  * per module. `water` sits where it does for the same reason it does there: above the land fills.
  */
 export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
-	// yield* background(ctx);
+	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
-	// yield* landcover(ctx);   // `landcover` + `landuse` + `park`
-	// yield* sites(ctx);       // `landuse` classes
+	yield* landcover(ctx);
+	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
+	yield* sites(ctx);
 	yield* water(ctx);
 	// yield* airport(ctx);     // `aeroway` (+ `aerodrome_label`)
 	// yield* buildings(ctx);   // `building`

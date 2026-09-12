@@ -46,6 +46,7 @@
 		"prepack": "npm run build",
 		"release": "vrt release-npm",
 		"schema-gate": "tsx scripts/schema-gate.ts",
+		"schema-values": "tsx scripts/schema-values.ts",
 		"test": "vitest run --project unit",
 		"test:e2e": "vitest run --project e2e",
 		"test:all": "vitest run",
