@@ -66,6 +66,8 @@ const SAMPLE: { name: string; z: number; lon: number; lat: number }[] = [
 	{ name: 'jfk-airport', z: 13, lon: -73.78, lat: 40.64 },
 	{ name: 'rotterdam-port', z: 13, lon: 4.36, lat: 51.91 },
 	{ name: 'hoover-dam', z: 14, lon: -114.737, lat: 36.016 },
+	// A ski resort: the only place aerialways and funiculars occur in any number.
+	{ name: 'zermatt-lifts', z: 13, lon: 7.748, lat: 46.02 },
 ];
 
 /** Slippy-map tile containing a coordinate. */
@@ -92,7 +94,8 @@ async function fetchTile(template: string, name: string, z: number, x: number, y
 }
 
 /** Fields whose values are worth enumerating: low-cardinality, and what filters actually test. */
-const INTERESTING = /^(class|subclass|brunnel|kind|type|category|intermittent|surface|service|network|capital)$/;
+const INTERESTING =
+	/^(class|subclass|brunnel|kind|type|category|intermittent|surface|service|network|capital|ramp|oneway|expressway|access|bicycle|foot|toll|indoor|layer|level|admin_level|disputed|maritime|rank|hide_3d)$/;
 /** Above this many distinct values a field is an identifier or a name, not a vocabulary. */
 const MAX_DISTINCT = 60;
 

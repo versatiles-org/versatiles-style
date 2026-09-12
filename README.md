@@ -245,7 +245,7 @@ E["gray.ts"]
 F["muted.ts"]
 G["natural.ts"]
 H["toner.ts"]
-2Q["types.ts"]
+2R["types.ts"]
 end
 subgraph 16["features"]
 17["satellite-overlay.ts"]
@@ -262,7 +262,7 @@ subgraph 19["types"]
 1A["index.ts"]
 1B["tilejson.ts"]
 1C["vector_layer.ts"]
-2R["maplibre.ts"]
+2S["maplibre.ts"]
 end
 subgraph 1E["color"]
 1F["index.ts"]
@@ -302,8 +302,9 @@ subgraph 2I["layers"]
 2L["buildings.ts"]
 2M["index.ts"]
 2N["landcover.ts"]
-2O["sites.ts"]
-2P["water.ts"]
+2O["roads.ts"]
+2P["sites.ts"]
+2Q["water.ts"]
 end
 end
 end
@@ -480,9 +481,11 @@ Z-->5
 2M-->2N
 2M-->2O
 2M-->2P
+2M-->2Q
 2N-->27
 2O-->27
 2P-->27
+2Q-->27
 
 class 0,1,4,7,B,16,19,1E,1X,23,20,2F,2I subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;

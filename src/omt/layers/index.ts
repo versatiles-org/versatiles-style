@@ -6,6 +6,7 @@ import { airport } from './airport.js';
 import { background } from './background.js';
 import { buildings, buildings3d } from './buildings.js';
 import { landcover } from './landcover.js';
+import { roads } from './roads.js';
 import { sites } from './sites.js';
 import { water } from './water.js';
 import { OMT_SCHEMA } from '../schema.js';
@@ -50,7 +51,7 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* airport(ctx);
 	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
-	// yield* roads(ctx);       // `transportation`
+	yield* roads(ctx);
 	yield slot(SLOT_BELOW_SYMBOLS);
 	// yield* boundaries(ctx);  // `boundary`
 	// yield* addresses(ctx);   // `housenumber`

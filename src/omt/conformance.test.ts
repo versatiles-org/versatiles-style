@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { resolveOsm } from '../options/index.js';
+import { resolveOsm, resolveLayerGroups } from '../options/index.js';
 import { auditSchema } from '../lib/schema-audit.js';
 import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
-import { buildStyleLayers } from './layers/index.js';
+import { buildStyleLayers, omtLayers } from './layers/index.js';
 import type { StyleSpecification } from '../types/index.js';
 
 // ── OpenMapTiles schema conformance ───────────────────────────────────────────
@@ -50,6 +50,7 @@ describe('coverage, while the port is incomplete', () => {
 			'building',
 			'landcover',
 			'landuse',
+			'transportation',
 			'water',
 			'waterway',
 		]);
@@ -67,7 +68,6 @@ describe('coverage, while the port is incomplete', () => {
 			'park',
 			'place',
 			'poi',
-			'transportation',
 			'transportation_name',
 			'water_name',
 		]);
@@ -130,5 +130,65 @@ describe('mixed-geometry source-layers', () => {
 		expect(byId.get('airport-area')!.type).toBe('fill');
 		expect(JSON.stringify(byId.get('airport-runway')!.filter)).toContain('LineString');
 		expect(byId.get('airport-runway')!.type).toBe('line');
+	});
+});
+
+describe('group tagging', () => {
+	// §8.1's primary divergence guard, in its cheapest form: the option vocabulary is schema-neutral, so
+	// both schemas must tag every data layer with a group that resolves against the *same* option tree. A
+	// group a schema cannot express should be an option that is absent — never one that silently does
+	// nothing (risk 3), and never an untagged layer a caller cannot hide at all.
+	const tagged = [...omtLayers(buildContext(resolveOsm()))];
+
+	it('tags every layer that reads tile data', () => {
+		const untagged = tagged.filter((t) => !t.group && t.layer.type !== 'background').map((t) => t.layer.id);
+		expect(untagged, 'layers no `layers:` option can control').toEqual([]);
+	});
+
+	it('tags only groups that resolve to a leaf of the resolved option tree', () => {
+		const resolved = resolveLayerGroups(undefined) as Record<string, unknown>;
+		const leafAt = (path: string) =>
+			path
+				.split('.')
+				.reduce<unknown>(
+					(node, key) => (node && typeof node === 'object' ? (node as Record<string, unknown>)[key] : undefined),
+					resolved
+				);
+		const unresolved = [...new Set(tagged.map((t) => t.group).filter(Boolean) as string[])]
+			.filter((group) => leafAt(group) === undefined)
+			.sort();
+		expect(unresolved, 'group tags that match no option').toEqual([]);
+	});
+
+	it('names the groups the ported modules claim, and no others', () => {
+		expect([...new Set(tagged.map((t) => t.group).filter(Boolean) as string[])].sort()).toEqual([
+			'airport',
+			'buildings',
+			'land.agriculture',
+			'land.forest',
+			'land.glacier',
+			'land.rock',
+			'land.sand',
+			'land.urban',
+			'land.vegetation',
+			'land.wetland',
+			'roads.footway',
+			'roads.highways',
+			'roads.motorways',
+			'roads.paths',
+			'roads.steps',
+			'roads.streets.bus',
+			'roads.streets.pedestrian',
+			'roads.streets.residential',
+			'roads.streets.service',
+			'roads.streets.track',
+			'sites',
+			'transit.aerialways',
+			'transit.ferries',
+			'transit.rail',
+			'water.lakes',
+			'water.ocean',
+			'water.rivers',
+		]);
 	});
 });
