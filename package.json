@@ -85,7 +85,7 @@
 		"husky": "^9.1.7",
 		"maplibre-gl": "^6.9.0",
 		"prettier": "^3.9.6",
-		"rollup": "^4.63.1",
+		"rollup": "^4.63.2",
 		"rollup-plugin-dts": "^6.5.1",
 		"rollup-plugin-sourcemaps2": "^0.5.8",
 		"sharp": "^0.35.4",
