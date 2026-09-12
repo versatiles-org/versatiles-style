@@ -10,10 +10,16 @@
  * `transportation.subclass` exists is verifiable from the record, that it carries `pier` is not.
  * See SCHEMA-SUPPORT-PLAN.md §7 step 2.
  *
- * Sampling corrected two entries that the record had made look worse than they are — `land` and
- * `sites` — and one that it had made look better: `park` is not a vocabulary at all. Both corrections
- * are in the notes below, and they are the reason this file is worth keeping rather than deleting once
- * the port is done: it is the record of what was checked and how.
+ * Sampling has corrected this table five times so far, in both directions — which is the reason it is
+ * worth keeping rather than deleting once the port is done: it is the record of what was checked and how.
+ *
+ * The largest correction was a single wrong assumption with three consequences. "`transportation` is
+ * lines only" is false: one OpenMapTiles source-layer carries mixed geometry, and the sample found
+ * `class: pier`, `class: path` and `class: bridge` all present as **polygons**. Those are exactly the
+ * counterparts of Shortbread's separate `pier_polygons`, `street_polygons` and `bridges` layers, so three
+ * verdicts of `none` became `partial` and every remaining `none` is now tile-checked rather than
+ * reasoned. Geometry type is reported per value by `npm run schema-values`, so the same mistake cannot
+ * be made silently again.
  *
  * ── Why a mapping is needed at all ────────────────────────────────────────────
  *
@@ -82,22 +88,22 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	bridges: {
 		targets: ['transportation'],
 		confidence: 'partial',
-		note: 'brunnel=bridge is a flag on the line, not a separate area layer — the bridge casing area is gone.',
+		note: 'verified: two mechanisms, not one — `brunnel: bridge` flags the carriageway, and a separate `class: bridge` carries the deck as polygons (176 observed). The casing area is not gone.',
 	},
 	buildings: {
 		targets: ['building'],
 		confidence: 'exact',
-		note: 'height→render_height, min_height→render_min_height, hide_3d kept; starts z13 rather than z14.',
+		note: 'verified: height→render_height, min_height→render_min_height, hide_3d kept, and the sample found no class/subclass at all — an unfiltered fill, as in Shortbread. Starts z13 rather than z14.',
 	},
 	dam_lines: {
 		targets: [],
 		confidence: 'none',
-		note: 'OpenMapTiles `waterway` classes are stream/river/canal/drain/ditch; dams are not carried.',
+		note: 'verified: the Hoover Dam tile carries the dam only as a POI point and an access road — no dam class in `waterway`, `water` or `transportation`.',
 	},
 	dam_polygons: {
 		targets: [],
 		confidence: 'none',
-		note: 'As dam_lines — no dam concept in `water` or `waterway`.',
+		note: 'verified with dam_lines, on the same tile: no dam geometry in any layer, at any geometry type.',
 	},
 	ferries: {
 		targets: ['transportation'],
@@ -117,12 +123,12 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	pier_lines: {
 		targets: ['transportation'],
 		confidence: 'partial',
-		note: 'piers are expected under `transportation.subclass`; unverified, and there is no pier area layer.',
+		note: 'verified: `class: pier`, as lines (5 observed) alongside the polygons — it is a `class`, not the `subclass` the record made it look like.',
 	},
 	pier_polygons: {
-		targets: [],
-		confidence: 'none',
-		note: 'No polygon pier concept; `transportation` is lines only.',
+		targets: ['transportation'],
+		confidence: 'partial',
+		note: 'verified: `class: pier` occurs as polygons (48 in the Rotterdam port tile), so a pier area is a geometry-type filter on `transportation`, not a missing concept.',
 	},
 	place_labels: {
 		targets: ['place'],
@@ -155,19 +161,19 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 		note: 'no separate point layer — point labels come from the same layer, so the split must be by geometry.',
 	},
 	street_polygons: {
-		targets: [],
-		confidence: 'none',
-		note: 'No street-area polygons (pedestrian squares, service areas); `transportation` is lines only.',
+		targets: ['transportation'],
+		confidence: 'partial',
+		note: 'verified: `class: path` carries 587 polygons in the sample (pedestrian squares and the like), so street areas exist behind a geometry-type filter. Runway/taxiway areas come from `aeroway` instead.',
 	},
 	streets: {
 		targets: ['transportation', 'aeroway'],
 		confidence: 'partial',
-		note: 'kind→class/subclass, bridge/tunnel→brunnel, link→ramp; runways/taxiways move to `aeroway` (z10+), and there is no `oneway_reverse`.',
+		note: 'verified in part: aeroway carries taxiway/apron/runway/helipad/aerodrome, and transportation collapses Shortbread’s residential/unclassified/living_street into one `minor` class. bridge/tunnel→brunnel, link→ramp, no `oneway_reverse`.',
 	},
 	streets_polygons_labels: {
-		targets: [],
-		confidence: 'none',
-		note: 'Follows street_polygons — nothing to label.',
+		targets: ['transportation_name'],
+		confidence: 'partial',
+		note: 'follows street_polygons, which does exist after all; the label would come from `transportation_name` (`class: path`). Unverified as a pairing — Shortbread renders this for `pedestrian` only.',
 	},
 	water_lines: {
 		targets: ['waterway'],

@@ -45,15 +45,20 @@ describe('coverage, while the port is incomplete', () => {
 	// explicitly waived. Here the unrendered set is the to-do list, so it is asserted exactly: a module
 	// landing must shorten it, and nothing may drop off it by accident.
 	it('reads exactly the source-layers the ported modules need', () => {
-		expect([...audit.usage.keys()].sort()).toEqual(['landcover', 'landuse', 'water', 'waterway']);
+		expect([...audit.usage.keys()].sort()).toEqual([
+			'aeroway',
+			'building',
+			'landcover',
+			'landuse',
+			'water',
+			'waterway',
+		]);
 	});
 
 	it('lists every source-layer still to be bound', () => {
 		expect(audit.unrendered).toEqual([
 			'aerodrome_label',
-			'aeroway',
 			'boundary',
-			'building',
 			'housenumber',
 			'mountain_peak',
 			// `park` is deliberate, not pending: it holds protected areas, and its `class` was sampled at
@@ -101,5 +106,29 @@ describe('the schema seam', () => {
 		// Strict drops the local-name fallback but keeps both spellings of the requested language.
 		const strict = buildContext(resolveOsm({ text: { language: 'de', languageStrict: true } }));
 		expect(strict.nameField).toEqual(['coalesce', ['get', 'name:de'], ['get', 'name_de']]);
+	});
+});
+
+describe('mixed-geometry source-layers', () => {
+	// `aeroway` carries lines and polygons under one class (`runway` as both), and a MapLibre line layer
+	// paints the boundary of a polygon. Shortbread never had to think about this — it separates `streets`
+	// from `street_polygons` — so the guard is stated here rather than left to a code comment: every
+	// layer reading a mixed-geometry source-layer must say which geometry it wants.
+	const MIXED = new Set(['aeroway', 'transportation']);
+
+	it('every layer reading one filters on geometry-type', () => {
+		const offenders = style.layers
+			.filter((l) => MIXED.has((l as { 'source-layer'?: string })['source-layer'] ?? ''))
+			.filter((l) => !JSON.stringify((l as { filter?: unknown }).filter ?? null).includes('geometry-type'))
+			.map((l) => l.id);
+		expect(offenders, 'layers that would paint the wrong geometry').toEqual([]);
+	});
+
+	it('draws runway areas as fills and runway centrelines as lines', () => {
+		const byId = new Map(style.layers.map((l) => [l.id, l as { type: string; filter?: unknown }]));
+		expect(JSON.stringify(byId.get('airport-area')!.filter)).toContain('Polygon');
+		expect(byId.get('airport-area')!.type).toBe('fill');
+		expect(JSON.stringify(byId.get('airport-runway')!.filter)).toContain('LineString');
+		expect(byId.get('airport-runway')!.type).toBe('line');
 	});
 });

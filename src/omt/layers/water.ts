@@ -13,11 +13,11 @@ import * as b from '../../dsl/index.js';
 //
 // **The class values below are confirmed against real tiles** by
 // `npm run schema-values -- omt water waterway`: all five `waterway` classes (river, canal, stream,
-// ditch, drain) and four of the five `water` classes occur in the sample. Two exceptions, both harmless:
-// `dock` and `brunnel: bridge` were not observed in the twelve sampled tiles, and absence in so small a
-// sample is weak evidence — a filter value the tiles never use costs nothing, where a missing one would
-// lose features. The vendored record can only prove a *field* exists; values need tiles, which is what
-// that script is for.
+// ditch, drain) and all five `water` classes occur in the sample — `dock` only in the Rotterdam port
+// tile, which is why that tile is in the sample at all. `brunnel: bridge` is the one value still
+// unobserved, and absence across a dozen tiles is weak evidence: a filter value the tiles never use
+// costs nothing, where a missing one loses features. Both layers are single-geometry (`water` polygons,
+// `waterway` lines), so unlike `aeroway` neither needs a geometry-type filter.
 //
 // ── Three things the schema decides differently ───────────────────────────────
 //

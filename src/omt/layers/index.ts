@@ -2,7 +2,9 @@ import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
 import { slot, type TaggedLayer } from '../../dsl/index.js';
 import { buildLayers, mergeIdenticalLayers, type MergeTable } from '../../dsl/assemble.js';
+import { airport } from './airport.js';
 import { background } from './background.js';
+import { buildings, buildings3d } from './buildings.js';
 import { landcover } from './landcover.js';
 import { sites } from './sites.js';
 import { water } from './water.js';
@@ -44,8 +46,9 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
 	yield* water(ctx);
-	// yield* airport(ctx);     // `aeroway` (+ `aerodrome_label`)
-	// yield* buildings(ctx);   // `building`
+	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
+	yield* airport(ctx);
+	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
 	// yield* roads(ctx);       // `transportation`
 	yield slot(SLOT_BELOW_SYMBOLS);
@@ -57,7 +60,8 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// yield* featureLabels(ctx);  // `transportation_name`, `water_name`, `waterway`
 	// yield* transitStops(ctx);   // `poi` classes
 	// yield* placeLabels(ctx);    // `place` (+ `mountain_peak`, which Shortbread has no layer for)
-	// yield* buildings3d(ctx);
+	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
+	yield* buildings3d(ctx);
 }
 
 /**

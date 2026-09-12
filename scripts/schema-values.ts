@@ -58,6 +58,14 @@ const SAMPLE: { name: string; z: number; lon: number; lat: number }[] = [
 	{ name: 'tokyo', z: 14, lon: 139.7, lat: 35.69 },
 	{ name: 'black-forest', z: 13, lon: 8.2, lat: 48.5 },
 	{ name: 'dutch-polder', z: 13, lon: 5.5, lat: 52.6 },
+	// Feature-specific spots, added because the twelve above covered their layers too thinly to write a
+	// filter from — `aeroway` had seven features in total, none of them a taxiway. A sample is only
+	// evidence for what it contains, so when a module's layer comes up thin, extend this list rather than
+	// fall back to the published schema.
+	{ name: 'schiphol-airport', z: 13, lon: 4.76, lat: 52.31 },
+	{ name: 'jfk-airport', z: 13, lon: -73.78, lat: 40.64 },
+	{ name: 'rotterdam-port', z: 13, lon: 4.36, lat: 51.91 },
+	{ name: 'hoover-dam', z: 14, lon: -114.737, lat: 36.016 },
 ];
 
 /** Slippy-map tile containing a coordinate. */
@@ -107,8 +115,16 @@ async function main(): Promise<void> {
 	if (!template) throw new Error(`${tileJSONUrl} carries no tiles template`);
 	console.log(`${name} ${tileJSON.version ?? ''} — ${template}\n`);
 
-	// layer → field → value → { count, tiles }
-	const seen = new Map<string, Map<string, Map<string, { count: number; tiles: Set<string> }>>>();
+	// layer → field → value → { count, tiles, geometry }
+	//
+	// Geometry type is tracked per value because it is load-bearing and nothing else reports it: one
+	// OpenMapTiles source-layer routinely carries lines *and* polygons under the same class, so
+	// `transportation` class `pier`, `path` and `bridge` are the counterparts of Shortbread's separate
+	// `pier_polygons`, `street_polygons` and `bridges` layers. Reading the schema prose as "transportation
+	// is lines only" sent three of the gate's verdicts the wrong way until a tile said otherwise.
+	type Observed = { count: number; tiles: Set<string>; geometry: Map<string, number> };
+	const seen = new Map<string, Map<string, Map<string, Observed>>>();
+	const GEOMETRY = ['unknown', 'point', 'line', 'polygon'];
 	const featureCount = new Map<string, number>();
 	const tilesWithLayer = new Map<string, Set<string>>();
 
@@ -131,9 +147,11 @@ async function main(): Promise<void> {
 					if (!INTERESTING.test(key)) continue;
 					const values = fields.get(key) ?? fields.set(key, new Map()).get(key)!;
 					const k = String(value as MvtValue);
-					const entry = values.get(k) ?? values.set(k, { count: 0, tiles: new Set() }).get(k)!;
+					const entry = values.get(k) ?? values.set(k, { count: 0, tiles: new Set(), geometry: new Map() }).get(k)!;
 					entry.count++;
 					entry.tiles.add(label);
+					const geometry = GEOMETRY[feature.type] ?? String(feature.type);
+					entry.geometry.set(geometry, (entry.geometry.get(geometry) ?? 0) + 1);
 				}
 			}
 		}
@@ -153,8 +171,11 @@ async function main(): Promise<void> {
 				continue;
 			}
 			console.log(`  ${field}:`);
-			for (const [value, { count, tiles }] of sorted) {
-				console.log(`    ${value.padEnd(28)} ${String(count).padStart(6)}×  ${[...tiles].slice(0, 3).join(' ')}`);
+			for (const [value, { count, tiles, geometry }] of sorted) {
+				const geom = [...geometry.entries()].sort((a, b) => b[1] - a[1]).map(([g, n]) => `${g}:${n}`);
+				console.log(
+					`    ${value.padEnd(26)} ${String(count).padStart(6)}×  ${geom.join(' ').padEnd(22)} ${[...tiles].slice(0, 2).join(' ')}`
+				);
 			}
 		}
 		console.log('');
