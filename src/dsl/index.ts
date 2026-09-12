@@ -13,5 +13,7 @@
  * `build.test.ts` travels with it (SCHEMA-SUPPORT-PLAN.md §7 step 3, risk 12).
  */
 export * from './build.js';
+export { buildLayers, mergeIdenticalLayers } from './assemble.js';
+export type { DataFloors, MergeTable } from './assemble.js';
 export { buildLayerContext } from './context.js';
 export type { LayerContext, ColorSet, ContextSeam } from './context.js';

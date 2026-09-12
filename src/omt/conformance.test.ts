@@ -1,0 +1,96 @@
+import { describe, expect, it } from 'vitest';
+import { resolveOsm } from '../options/index.js';
+import { auditSchema } from '../lib/schema-audit.js';
+import { OMT_SCHEMA } from './schema.js';
+import { buildContext } from './context.js';
+import { buildStyleLayers } from './layers/index.js';
+import type { StyleSpecification } from '../types/index.js';
+
+// ── OpenMapTiles schema conformance ───────────────────────────────────────────
+//
+// The same guard as `src/shortbread/schema.test.ts`, on the same audit, against a different record —
+// which is the whole point of having made it generic in step 2: a schema inherits the check by naming
+// its record and its style, not by restating the logic (SCHEMA-SUPPORT-PLAN.md §8.1).
+//
+// Scope, stated plainly: this proves the layers read source-layers and fields OpenMapTiles *has*, and
+// are not drawn before their data. It cannot prove a filter matches anything, because the vendored
+// record lists field names and not the values behind them — so `class: lake` being right is a claim no
+// offline test can settle. That needs tiles, and §8.2 is where it belongs.
+
+const style = { version: 8, sources: {}, layers: buildStyleLayers(buildContext(resolveOsm())) } as StyleSpecification;
+const audit = auditSchema(style, OMT_SCHEMA);
+
+describe('the ported layers read data OpenMapTiles carries', () => {
+	it('no unknown source-layer', () => {
+		expect(audit.unknownSourceLayers, 'source-layers that do not exist in the tiles').toEqual([]);
+	});
+
+	it('no filter or expression reads a field the tiles do not carry', () => {
+		expect(audit.unknownFields, 'reads of non-existent fields — these evaluate to undefined and fail silently').toEqual(
+			[]
+		);
+	});
+
+	it('every language field read is present in the tileset', () => {
+		expect(audit.missingLanguageFields).toEqual([]);
+	});
+
+	it('every layer is gated at or after its source-layer minzoom', () => {
+		expect(audit.drawnBeforeData).toEqual([]);
+	});
+});
+
+describe('coverage, while the port is incomplete', () => {
+	// The inverse of Shortbread's coverage test, which demands that every source-layer be rendered or
+	// explicitly waived. Here the unrendered set is the to-do list, so it is asserted exactly: a module
+	// landing must shorten it, and nothing may drop off it by accident.
+	it('renders water and waterway, and nothing else yet', () => {
+		expect([...audit.usage.keys()].sort()).toEqual(['water', 'waterway']);
+		expect(audit.unrendered).toEqual([
+			'aerodrome_label',
+			'aeroway',
+			'boundary',
+			'building',
+			'housenumber',
+			'landcover',
+			'landuse',
+			'mountain_peak',
+			'park',
+			'place',
+			'poi',
+			'transportation',
+			'transportation_name',
+			'water_name',
+		]);
+	});
+});
+
+describe('the schema seam', () => {
+	it('sources every data layer from the OpenMapTiles source name', () => {
+		const sources = new Set(style.layers.map((l) => (l as { source?: string }).source).filter(Boolean));
+		expect([...sources]).toEqual(['openmaptiles']);
+	});
+
+	it('emits the four slot anchors §6 requires of every schema', () => {
+		const anchors = style.layers.filter((l) => l.type === 'background').map((l) => l.id);
+		expect(anchors).toEqual(['slot-below-fills', 'slot-below-streets', 'slot-below-symbols', 'slot-below-labels']);
+	});
+
+	it('floors each layer at its own source-layer’s data zoom, not Shortbread’s', () => {
+		// `water` starts at z0 in OpenMapTiles where Shortbread's `water_polygons` starts at z4, so the
+		// ocean fill is ungated here — if the Shortbread record were being consulted it would be z4.
+		const ocean = style.layers.find((l) => l.id === 'water-ocean') as { minzoom?: number };
+		expect(ocean.minzoom).toBeUndefined();
+		// `waterway` starts at z3, so a river line cannot be floored earlier than that.
+		const river = style.layers.find((l) => l.id === 'water-river') as { minzoom?: number };
+		expect(river.minzoom).toBe(3);
+	});
+
+	it('reads OpenMapTiles’ own name-field convention', () => {
+		const ctx = buildContext(resolveOsm({ text: { language: 'de' } }));
+		expect(ctx.nameField).toEqual(['coalesce', ['get', 'name:de'], ['get', 'name_de'], ['get', 'name']]);
+		// Strict drops the local-name fallback but keeps both spellings of the requested language.
+		const strict = buildContext(resolveOsm({ text: { language: 'de', languageStrict: true } }));
+		expect(strict.nameField).toEqual(['coalesce', ['get', 'name:de'], ['get', 'name_de']]);
+	});
+});
