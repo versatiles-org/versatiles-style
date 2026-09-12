@@ -24,16 +24,21 @@ export function checkKeys<T>(value: T, known: NoInfer<KnownKeys<T>>, path: strin
 	if (unknown.length === 0) return;
 
 	const [label, ...parents] = path.split('.');
+	// Only point at the migration guide when a key really is a v5 name — for a plain typo the guide
+	// has nothing to say, and the list of known keys is the more useful answer.
+	let sawV5 = false;
 	const lines = unknown.map((key) => {
 		const at = [...parents, key].join('.');
 		const hint = v5Hint(label, at);
+		if (hint !== undefined) sawV5 = true;
 		if (hint === null) return `"${at}" was removed in v6`;
 		if (hint !== undefined) return `"${at}" — in v6 this is "${hint}"`;
 		return `"${at}" — known keys here: ${Object.keys(known).join(', ')}`;
 	});
+	const guide = sawV5 ? '\nSee "Migration from v5" in API_DESIGN.md.' : '';
 	throw new Error(
 		lines.length === 1
-			? `${label}: unknown option ${lines[0]}`
-			: `${label}: ${lines.length} unknown options\n${lines.map((line) => `  ${line}`).join('\n')}`
+			? `${label}: unknown option ${lines[0]}${guide}`
+			: `${label}: ${lines.length} unknown options\n${lines.map((line) => `  ${line}`).join('\n')}${guide}`
 	);
 }

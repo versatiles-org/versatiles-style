@@ -78,6 +78,17 @@ describe('unknown option keys are rejected', () => {
 		);
 	});
 
+	it('points at the migration guide for a v5 name, but not for a typo', () => {
+		const guide = 'See "Migration from v5" in API_DESIGN.md.';
+		expect(() => osm({ textScale: 2 } as never)).toThrow(guide);
+		expect(() => osm({ bounds: [0, 0, 1, 1] } as never)).toThrow(guide);
+		expect(() => satellite({ rasterOpacity: 0.5 } as never)).toThrow(guide);
+		// A typo is not a migration problem, so the guide would only be noise.
+		expect(() => osm({ txtScale: 2 } as never)).not.toThrow(guide);
+		// One v5 name among several unknown keys is enough to earn the pointer.
+		expect(() => osm({ textScale: 2, nope: 1 } as never)).toThrow(guide);
+	});
+
 	// Each resolver checks its own object, so the keys of one object are reported together; a nested
 	// object is only reached once its parent is clean.
 	it('reports every unknown key of an options object in one error', () => {
