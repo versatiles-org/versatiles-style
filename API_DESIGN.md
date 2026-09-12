@@ -110,7 +110,7 @@ type LayerGroupOptions = {
         country?: boolean | number; // boundary-country, -disputed, -maritime (admin_level=2)
         state?: boolean | number; // boundary-state (admin_level=4)
       };
-  markings?: boolean | number; // oneway arrows and bicycle lane markings
+  markings?: boolean | number; // oneway arrows
   labels?:
     | boolean
     | number

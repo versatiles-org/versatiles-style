@@ -96,7 +96,6 @@ exports[`generator: markings > yielded layer ids are stable 1`] = `
 [
   "symbol:marking-oneway",
   "symbol:marking-oneway-reverse",
-  "symbol:marking-bicycle",
 ]
 `;
 
