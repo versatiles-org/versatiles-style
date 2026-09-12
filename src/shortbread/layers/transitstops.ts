@@ -1,6 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Public-transport stop icons + names (bus, tram, stations, airports).
 // All share a common symbol style (the old `symbol-*` rule); each adds its icon + min-zoom.

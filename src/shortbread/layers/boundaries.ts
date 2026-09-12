@@ -1,6 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Administrative boundary lines (country / state, with disputed + maritime variants).
 //

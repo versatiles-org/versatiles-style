@@ -1,7 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import type { Color } from '../../color/index.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Text labels, rendered topmost above the icons. They come in two bands, because MapLibre resolves
 // symbol collisions in layer order and the transit stops belong between them: `featureLabels`

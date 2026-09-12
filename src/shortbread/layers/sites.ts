@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { ColorSet } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Site polygons (schools, hospitals, parking, danger areas, …). All in the `sites` group.
 // Every site must define a color (a bare fill would render black), so `style` is required.

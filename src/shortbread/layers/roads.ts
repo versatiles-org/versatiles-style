@@ -2,7 +2,7 @@ import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import type { Color } from '../../color/index.js';
 import type { MaplibreLayerDefinition } from '../../types/index.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Roads, paths, rail, aerialways and ferries.
 //

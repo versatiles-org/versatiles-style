@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Flat building footprints (outline + fill), rendered in the `buildings` group beneath the road
 // network. In extruded mode these are replaced by `buildings3d`, which is emitted last (above

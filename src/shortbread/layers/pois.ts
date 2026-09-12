@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Point-of-interest icons. All share a common base style (the old `poi-*` rule) and add an
 // icon `match` expression keyed on the relevant OSM tag (`highway` and `office` each carry a

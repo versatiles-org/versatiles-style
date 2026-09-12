@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Background fill (bottom-most layer).
 export function* background(ctx: LayerContext): Generator<b.TaggedLayer> {

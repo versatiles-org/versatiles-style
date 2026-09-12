@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Airport runways and taxiways (area fill + casing/fill lines). All in the `airport` group.
 export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {

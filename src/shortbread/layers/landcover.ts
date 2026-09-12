@@ -2,7 +2,7 @@ import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import type { ColorSet } from '../context.js';
 import type { Color } from '../../color/index.js';
-import * as b from '../build.js';
+import * as b from '../../dsl/index.js';
 
 // Landcover band: the bottom-most fills — ocean, glacier and all `land` polygons.
 // Render order is bottom→top exactly as the tiles stack: ocean, glacier, then land kinds.
