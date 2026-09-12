@@ -4,10 +4,13 @@ import { slot, type TaggedLayer } from '../../dsl/index.js';
 import { buildLayers, mergeIdenticalLayers, type MergeTable } from '../../dsl/assemble.js';
 import { airport } from './airport.js';
 import { background } from './background.js';
+import { boundaries } from './boundaries.js';
+import { markings } from './markings.js';
 import { buildings, buildings3d } from './buildings.js';
 import { landcover } from './landcover.js';
 import { roads } from './roads.js';
 import { sites } from './sites.js';
+import { transitStops } from './transitstops.js';
 import { water } from './water.js';
 import { OMT_SCHEMA } from '../schema.js';
 
@@ -53,13 +56,16 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield slot(SLOT_BELOW_STREETS);
 	yield* roads(ctx);
 	yield slot(SLOT_BELOW_SYMBOLS);
-	// yield* boundaries(ctx);  // `boundary`
+	// OSM Bright overlay order is boundaries → markings → POIs (POIs sit above road markings).
+	yield* boundaries(ctx);
 	// yield* addresses(ctx);   // `housenumber`
-	// yield* markings(ctx);
+	yield* markings(ctx);
 	// yield* pois(ctx);        // `poi`
 	yield slot(SLOT_BELOW_LABELS);
 	// yield* featureLabels(ctx);  // `transportation_name`, `water_name`, `waterway`
-	// yield* transitStops(ctx);   // `poi` classes
+	// Transit stops sit between the two label bands so a stop outranks the street name it stands on;
+	// see the Shortbread assembler for why emitting them before the labels drops most of them.
+	yield* transitStops(ctx);
 	// yield* placeLabels(ctx);    // `place` (+ `mountain_peak`, which Shortbread has no layer for)
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);

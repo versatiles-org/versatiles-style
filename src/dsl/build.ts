@@ -324,8 +324,10 @@ export type ColoredBuildOpts = BuildOpts & { color: ColorValue };
 
 // Data layers must name the vector `source-layer` they read from; without it the layer
 // silently renders nothing. (background and slot anchors carry no source and are exempt.)
-type DataBuildOpts = BuildOpts & { sourceLayer: string };
-type ColoredDataBuildOpts = ColoredBuildOpts & { sourceLayer: string };
+/** Build options for a layer that reads tile data — exported so a module can factor out a shared
+ *  options builder (see `src/omt/layers/markings.ts`) and still be type-checked at the call site. */
+export type DataBuildOpts = BuildOpts & { sourceLayer: string };
+export type ColoredDataBuildOpts = ColoredBuildOpts & { sourceLayer: string };
 
 /** StyleProps that are guaranteed to carry a color — the return shape for style
  *  helpers feeding the mandatory-color builders. */

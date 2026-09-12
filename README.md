@@ -245,7 +245,7 @@ E["gray.ts"]
 F["muted.ts"]
 G["natural.ts"]
 H["toner.ts"]
-2R["types.ts"]
+2U["types.ts"]
 end
 subgraph 16["features"]
 17["satellite-overlay.ts"]
@@ -262,7 +262,7 @@ subgraph 19["types"]
 1A["index.ts"]
 1B["tilejson.ts"]
 1C["vector_layer.ts"]
-2S["maplibre.ts"]
+2V["maplibre.ts"]
 end
 subgraph 1E["color"]
 1F["index.ts"]
@@ -299,12 +299,15 @@ subgraph 2F["omt"]
 subgraph 2I["layers"]
 2J["airport.ts"]
 2K["background.ts"]
-2L["buildings.ts"]
-2M["index.ts"]
-2N["landcover.ts"]
-2O["roads.ts"]
-2P["sites.ts"]
-2Q["water.ts"]
+2L["boundaries.ts"]
+2M["buildings.ts"]
+2N["index.ts"]
+2O["landcover.ts"]
+2P["markings.ts"]
+2Q["roads.ts"]
+2R["sites.ts"]
+2S["transitstops.ts"]
+2T["water.ts"]
 end
 end
 end
@@ -472,20 +475,26 @@ Z-->5
 2J-->27
 2K-->27
 2L-->27
-2M-->25
 2M-->27
-2M-->2H
-2M-->2J
-2M-->2K
-2M-->2L
-2M-->2N
-2M-->2O
-2M-->2P
-2M-->2Q
+2N-->25
 2N-->27
+2N-->2H
+2N-->2J
+2N-->2K
+2N-->2L
+2N-->2M
+2N-->2O
+2N-->2P
+2N-->2Q
+2N-->2R
+2N-->2S
+2N-->2T
 2O-->27
 2P-->27
 2Q-->27
+2R-->27
+2S-->27
+2T-->27
 
 class 0,1,4,7,B,16,19,1E,1X,23,20,2F,2I subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;

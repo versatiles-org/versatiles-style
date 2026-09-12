@@ -46,10 +46,13 @@ describe('coverage, while the port is incomplete', () => {
 	// landing must shorten it, and nothing may drop off it by accident.
 	it('reads exactly the source-layers the ported modules need', () => {
 		expect([...audit.usage.keys()].sort()).toEqual([
+			'aerodrome_label',
 			'aeroway',
+			'boundary',
 			'building',
 			'landcover',
 			'landuse',
+			'poi',
 			'transportation',
 			'water',
 			'waterway',
@@ -58,8 +61,6 @@ describe('coverage, while the port is incomplete', () => {
 
 	it('lists every source-layer still to be bound', () => {
 		expect(audit.unrendered).toEqual([
-			'aerodrome_label',
-			'boundary',
 			'housenumber',
 			'mountain_peak',
 			// `park` is deliberate, not pending: it holds protected areas, and its `class` was sampled at
@@ -67,7 +68,6 @@ describe('coverage, while the port is incomplete', () => {
 			// filters on it. Urban parks come from `landcover` (`subclass: park`) instead.
 			'park',
 			'place',
-			'poi',
 			'transportation_name',
 			'water_name',
 		]);
@@ -163,6 +163,8 @@ describe('group tagging', () => {
 	it('names the groups the ported modules claim, and no others', () => {
 		expect([...new Set(tagged.map((t) => t.group).filter(Boolean) as string[])].sort()).toEqual([
 			'airport',
+			'boundaries.country',
+			'boundaries.state',
 			'buildings',
 			'land.agriculture',
 			'land.forest',
@@ -172,6 +174,7 @@ describe('group tagging', () => {
 			'land.urban',
 			'land.vegetation',
 			'land.wetland',
+			'markings',
 			'roads.footway',
 			'roads.highways',
 			'roads.motorways',
@@ -186,6 +189,7 @@ describe('group tagging', () => {
 			'transit.aerialways',
 			'transit.ferries',
 			'transit.rail',
+			'transit.stops',
 			'water.lakes',
 			'water.ocean',
 			'water.rivers',

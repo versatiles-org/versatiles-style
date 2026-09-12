@@ -4,6 +4,7 @@
  *   npm run schema-values -- omt                 # every sampled layer's field values
  *   npm run schema-values -- omt landcover park  # just these source-layers
  *   npm run schema-values -- omt --refresh       # re-download the sample instead of using the cache
+ *   npm run schema-values -- omt poi --all       # list high-cardinality fields too (poi.class, …)
  *
  * ── The gap this closes ───────────────────────────────────────────────────────
  *
@@ -96,18 +97,27 @@ async function fetchTile(template: string, name: string, z: number, x: number, y
 /** Fields whose values are worth enumerating: low-cardinality, and what filters actually test. */
 const INTERESTING =
 	/^(class|subclass|brunnel|kind|type|category|intermittent|surface|service|network|capital|ramp|oneway|expressway|access|bicycle|foot|toll|indoor|layer|level|admin_level|disputed|maritime|rank|hide_3d)$/;
-/** Above this many distinct values a field is an identifier or a name, not a vocabulary. */
+/**
+ * Above this many distinct values a field is an identifier or a name, not a vocabulary, and listing it
+ * buries the report — `poi.rank` alone has 659. `--all` lifts the cutoff, which is what the POI port
+ * needs: `poi.class` has 90 values and `poi.subclass` 269, and that long tail *is* the finding there
+ * (SCHEMA-SUPPORT-PLAN.md §4 — raw OSM tags against class/subclass is the mapping that rejected
+ * option C).
+ */
 const MAX_DISTINCT = 60;
 
 async function main(): Promise<void> {
 	const args = process.argv.slice(2).filter((a) => a !== '--');
 	const refresh = args.includes('--refresh');
+	const showAll = args.includes('--all');
 	const positional = args.filter((a) => !a.startsWith('--'));
 	const name = positional[0];
 	const only = new Set(positional.slice(1));
 	const tileJSONUrl = name ? SOURCES[name] : undefined;
 	if (!tileJSONUrl) {
-		console.error(`Usage: npm run schema-values -- <${Object.keys(SOURCES).join('|')}> [source-layer…] [--refresh]`);
+		console.error(
+			`Usage: npm run schema-values -- <${Object.keys(SOURCES).join('|')}> [source-layer…] [--refresh] [--all]`
+		);
 		process.exit(1);
 	}
 
@@ -169,7 +179,7 @@ async function main(): Promise<void> {
 		for (const field of [...fields.keys()].sort()) {
 			const values = fields.get(field)!;
 			const sorted = [...values.entries()].sort((a, b) => b[1].count - a[1].count);
-			if (sorted.length > MAX_DISTINCT) {
+			if (!showAll && sorted.length > MAX_DISTINCT) {
 				console.log(`  ${field}: ${sorted.length} distinct values — not a vocabulary, skipped`);
 				continue;
 			}
