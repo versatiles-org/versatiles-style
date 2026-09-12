@@ -1,5 +1,4 @@
 import type { StyleSpecification } from '../types/index.js';
-import { LANDCOVER_LAYERS } from '../shortbread/layers/landcover.js';
 
 // Low-zoom landcover (https://docs.versatiles.org/compendium/specification_shortbread_landcover.html).
 //
@@ -12,9 +11,11 @@ import { LANDCOVER_LAYERS } from '../shortbread/layers/landcover.js';
 // replacing the zoom ramp with its fully-faded-in (max) opacity. This keeps each layer's high-zoom
 // appearance identical while making it visible at low zoom.
 //
-// The set of affected layers is derived from the layer definitions themselves
-// (`LANDCOVER_LAYERS`), not restated here — the three hand-maintained copies of this knowledge are
-// what produced the defects in issue #124.
+// The set of affected layers is passed in by the caller, derived from the schema's own layer
+// definitions (`LANDCOVER_LAYERS` for Shortbread) rather than restated here — the three
+// hand-maintained copies of this knowledge are what produced the defects in issue #124. Taking it as
+// an argument is also what keeps this module schema-neutral: the ids are the schema's own dialect, so
+// a schema naming its fills differently passes its own set.
 
 // The fully-faded-in opacity of a fill-opacity value that may be a constant number or a
 // ['interpolate', ['linear'], ['zoom'], z0, v0, …] zoom ramp.
@@ -30,9 +31,9 @@ function fadedInOpacity(value: unknown): number {
 	return 1; // no opacity set → fully opaque
 }
 
-export function addLandcover(style: StyleSpecification) {
+export function addLandcover(style: StyleSpecification, landcoverLayers: ReadonlySet<string>) {
 	for (const layer of style.layers) {
-		if (!LANDCOVER_LAYERS.has(layer.id)) continue;
+		if (!landcoverLayers.has(layer.id)) continue;
 		if (layer.type !== 'fill') continue;
 		const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
 		paint['fill-opacity'] = fadedInOpacity(paint['fill-opacity']);

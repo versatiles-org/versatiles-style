@@ -15,7 +15,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
-import { LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
+import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
 import { minimizeOsmOptions } from '../options/minimize.js';
 import { styleCode } from './code.js';
 
@@ -144,7 +144,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 	}
 
 	configure3DLighting(style, resolved.sun);

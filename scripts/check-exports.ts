@@ -1,6 +1,6 @@
 /**
- * Checks that the public library entry point (`src/index.ts`) exports every
- * locally-defined type that is reachable from its public API surface.
+ * Checks that the public library entry points export every locally-defined type
+ * that is reachable from their public API surface.
  *
  * Motivation: functions and types re-exported from `src/index.ts` may reference
  * other types defined under `src/` (e.g. an option sub-type). If such a type is
@@ -9,6 +9,10 @@
  * graph starting at the exported symbols and flags any local type that is
  * reachable but not exported.
  *
+ * `ENTRIES` mirrors the entry list in `rollup.config.js` — one per `exports`
+ * subpath in package.json. A type counts as exported when *any* entry exports it,
+ * since a consumer of a subpath may name it through the root import.
+ *
  * Exits with code 1 (and a report) when something is missing, 0 otherwise.
  */
 import ts from 'typescript';
@@ -16,7 +20,8 @@ import { resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '../..');
-const ENTRY = resolve(ROOT, 'src/index.ts');
+/** Public entry points, kept in step with `ENTRIES` in rollup.config.js. */
+const ENTRIES = ['src/index.ts'];
 const SRC_DIR = resolve(ROOT, 'src') + sep;
 
 /** Type-defining symbol flags (as opposed to plain values). */
@@ -36,10 +41,15 @@ function loadProgram(): ts.Program {
 const program = loadProgram();
 const checker = program.getTypeChecker();
 
-const entry = program.getSourceFile(ENTRY);
-if (!entry) throw new Error(`Could not load entry point ${ENTRY}`);
-const moduleSymbol = checker.getSymbolAtLocation(entry);
-if (!moduleSymbol) throw new Error(`Could not resolve module symbol for ${ENTRY}`);
+const entryModules = ENTRIES.map((rel) => {
+	const file = program.getSourceFile(resolve(ROOT, rel));
+	if (!file) throw new Error(`Could not load entry point ${rel}`);
+	const symbol = checker.getSymbolAtLocation(file);
+	if (!symbol) throw new Error(`Could not resolve module symbol for ${rel}`);
+	return { rel, file, symbol };
+});
+/** Fallback declaration site when a symbol has none; any source file in the program will do. */
+const entry = entryModules[0]!.file;
 
 function resolveAlias(sym: ts.Symbol): ts.Symbol {
 	return sym.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(sym) : sym;
@@ -77,10 +87,12 @@ function namedTypeSymbol(type: ts.Type): ts.Symbol | undefined {
 
 const exportedKeys = new Set<string>();
 const queue: { sym: ts.Symbol; via: string }[] = [];
-for (const raw of checker.getExportsOfModule(moduleSymbol)) {
-	const sym = resolveAlias(raw);
-	exportedKeys.add(keyOf(sym));
-	queue.push({ sym, via: '(entry)' });
+for (const { rel, symbol } of entryModules) {
+	for (const raw of checker.getExportsOfModule(symbol)) {
+		const sym = resolveAlias(raw);
+		exportedKeys.add(keyOf(sym));
+		queue.push({ sym, via: `(${rel})` });
+	}
 }
 
 const visited = new Set<string>();
@@ -131,12 +143,12 @@ function walkType(type: ts.Type, isRoot: boolean, via: string, seen: Set<ts.Type
 	if ((type.flags & ts.TypeFlags.Object) === 0) return;
 
 	for (const prop of type.getProperties()) {
-		const decl = prop.valueDeclaration ?? prop.declarations?.[0] ?? entry!;
+		const decl = prop.valueDeclaration ?? prop.declarations?.[0] ?? entry;
 		walkType(checker.getTypeOfSymbolAtLocation(prop, decl), false, via, seen);
 	}
 	for (const sig of [...type.getCallSignatures(), ...type.getConstructSignatures()]) {
 		for (const p of sig.getParameters()) {
-			const decl = p.valueDeclaration ?? p.declarations?.[0] ?? entry!;
+			const decl = p.valueDeclaration ?? p.declarations?.[0] ?? entry;
 			walkType(checker.getTypeOfSymbolAtLocation(p, decl), false, via, seen);
 		}
 		walkType(sig.getReturnType(), false, via, seen);
@@ -166,14 +178,19 @@ while (queue.length) {
 // ── Report ──────────────────────────────────────────────────────────────────
 
 if (missing.size === 0) {
-	console.log(`✓ All ${exportedKeys.size} public exports are self-contained — no missing type exports.`);
+	const where = ENTRIES.join(', ');
+	console.log(`✓ All ${exportedKeys.size} public exports of ${where} are self-contained — no missing type exports.`);
 	process.exit(0);
 }
 
-console.error(`✗ ${missing.size} type(s) are reachable from the public API but not exported by src/index.ts:\n`);
+console.error(
+	`✗ ${missing.size} type(s) are reachable from the public API but not exported by ${ENTRIES.join(', ')}:\n`
+);
 const rows = [...missing.values()].sort((a, b) => a.sym.getName().localeCompare(b.sym.getName()));
 for (const { sym, via } of rows) {
 	console.error(`  • ${sym.getName()}  (${definedIn(sym)})  — referenced via ${via}`);
 }
-console.error(`\nEither re-export these from src/index.ts, or add them to the ALLOWLIST in scripts/check-exports.ts.`);
+console.error(
+	`\nEither re-export these from an entry point (${ENTRIES.join(', ')}), or add them to the ALLOWLIST in scripts/check-exports.ts.`
+);
 process.exit(1);

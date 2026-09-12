@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '../types/index.js';
 import { addLandcover } from './landcover.js';
 import { osm } from '../api/index.js';
+import { LANDCOVER_LAYERS } from '../shortbread/layers/landcover.js';
 
 // Build a fill layer with an optional fill-opacity (number or interpolate expression).
 function fill(id: string, opacity?: unknown): Record<string, unknown> {
@@ -45,14 +46,14 @@ const op = (style: StyleSpecification, id: string): unknown =>
 describe('addLandcover', () => {
 	it('mutates the style in place and returns nothing', () => {
 		const style = makeStyle();
-		const ret = addLandcover(style);
+		const ret = addLandcover(style, LANDCOVER_LAYERS);
 		expect(ret).toBeUndefined();
 		expect(op(style, 'land-grass')).not.toEqual(fade(11, 12, 1)); // changed in place
 	});
 
 	it('collapses each landcover layer’s zoom fade to its faded-in (max) opacity', () => {
 		const style = makeStyle();
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		expect(op(style, 'land-forest')).toBe(0.1);
 		expect(op(style, 'land-grass')).toBe(1);
 		expect(op(style, 'land-vegetation')).toBe(1);
@@ -63,7 +64,7 @@ describe('addLandcover', () => {
 
 	it('leaves non-landcover fills untouched', () => {
 		const style = makeStyle();
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		// land-commercial is not an ESA landcover kind → keep its fade-in
 		expect(op(style, 'land-commercial')).toEqual(fade(10, 11, 1));
 		// generic water / buildings carry no landcover data
@@ -75,7 +76,7 @@ describe('addLandcover', () => {
 		const style = makeStyle();
 		(style.layers.find((l) => l.id === 'land-forest') as { paint: Record<string, unknown> }).paint['fill-opacity'] =
 			0.6;
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		expect(op(style, 'land-forest')).toBe(0.6);
 	});
 
@@ -93,21 +94,21 @@ describe('addLandcover', () => {
 			16,
 			0.5,
 		];
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		expect(op(style, 'land-grass')).toBe(1);
 	});
 
 	it('defaults to fully opaque when a landcover layer has no fill-opacity', () => {
 		const style = makeStyle();
 		(style.layers.find((l) => l.id === 'land-residential') as { paint: Record<string, unknown> }).paint = {};
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		expect(op(style, 'land-residential')).toBe(1);
 	});
 
 	it('ignores a non-fill layer even if its id matches', () => {
 		const style = makeStyle();
 		style.layers.push({ id: 'land-forest', type: 'line', source: 'osm', 'source-layer': 'land' } as never);
-		addLandcover(style);
+		addLandcover(style, LANDCOVER_LAYERS);
 		const lineLayer = style.layers.find((l) => l.id === 'land-forest' && l.type === 'line');
 		expect((lineLayer as { paint?: unknown }).paint).toBeUndefined();
 	});

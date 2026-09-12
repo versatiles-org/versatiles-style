@@ -4,6 +4,14 @@
 	"description": "Generate StyleJSON for MapLibre",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"sideEffects": false,
 	"devEngines": {
 		"runtime": {
 			"name": "node",

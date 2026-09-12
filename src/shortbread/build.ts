@@ -2,6 +2,7 @@ import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
 import type { ResolvedLayerGroups } from '../options/index.js';
+import { scaleLayerOpacity } from '../lib/opacity.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
@@ -348,41 +349,6 @@ export const slot = (id: string): TaggedLayer => ({
 // merging a fractional opacity into its existing paint, or passes it through. It runs as a single
 // post-processing pass over all assembled layers (see `buildStyleLayers`), so the group generators
 // stay free of visibility concerns — the group tag they attach is the only input it needs.
-
-// The opacity paint property (or properties, for symbols) of each layer type.
-const OPACITY_PROPS: Partial<Record<MaplibreLayer['type'], string[]>> = {
-	fill: ['fill-opacity'],
-	line: ['line-opacity'],
-	symbol: ['text-opacity', 'icon-opacity'],
-	background: ['background-opacity'],
-	'fill-extrusion': ['fill-extrusion-opacity'],
-};
-
-// Scale an existing opacity value by `factor`, preserving any zoom-stops fade: a number is
-// multiplied directly, an `interpolate` expression has each of its output values scaled, and an
-// absent value is treated as fully opaque (→ `factor`). Any other expression is wrapped in a `*`.
-function scaleOpacity(value: unknown, factor: number): unknown {
-	if (value == null) return factor;
-	if (typeof value === 'number') return value * factor;
-	// ['interpolate', <interp>, ['zoom'], z0, v0, z1, v1, …] — output values live at 4, 6, 8, …
-	if (Array.isArray(value) && value[0] === 'interpolate') {
-		const scaled = value.slice();
-		for (let i = 4; i < scaled.length; i += 2) {
-			if (typeof scaled[i] === 'number') scaled[i] = (scaled[i] as number) * factor;
-		}
-		return scaled;
-	}
-	return ['*', value, factor];
-}
-
-// Dim a layer by `factor`, merging with its existing opacity rather than overwriting it — so a fade
-// `{14:0, 15:0.8}` scaled by 0.5 becomes `{14:0, 15:0.4}`, and a plain layer becomes a constant.
-export function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
-	const props = OPACITY_PROPS[layer.type];
-	if (!props) return;
-	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
-	for (const prop of props) paint[prop] = scaleOpacity(paint[prop], factor);
-}
 
 // Read a resolved group option by its dotted path. Unknown/absent paths (e.g. untagged layers)
 // resolve to `true` (visible), so only explicitly-grouped layers can be hidden or dimmed.
