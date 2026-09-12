@@ -8,6 +8,15 @@
 
 **VersaTiles Style** generates styles and sprites for MapLibre.
 
+> **Upgrading from v5?** v6 is a breaking release: the palette builders (`colorful`, `shadow`, …) are
+> replaced by `osm({ theme })`, options are grouped (`textScale` → `layout.scale.labels`), all 34 of
+> the renamed colour keys moved under a group prefix, and both sprite sheets were renamed.
+> Unknown option keys now throw, and the error names the v6 replacement.
+>
+> - **[Migration from v5](API_DESIGN.md#migration-from-v5)** — the full option, colour-key and type tables.
+> - **[Migrating sprite ids from v5](SPRITES.md#migrating-sprite-ids-from-v5)** — `basics` → `base` and `markers` → `extras`/`icons`.
+> - **[CHANGELOG](CHANGELOG.md)** — every breaking change in 6.0.0.
+
 ---
 
 ## Styles Overview

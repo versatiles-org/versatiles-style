@@ -663,32 +663,48 @@ delivering the second.
 
 ## Migration from v5
 
-| v5                                                      | v6                                                                |
-| ------------------------------------------------------- | ----------------------------------------------------------------- |
-| `colorful(options)`                                     | `osm(options)`                                                    |
-| `colorful({ baseUrl: 'https://…' })`                    | `osm({ urls: { base: 'https://…' } })`                            |
-| `colorful({ tiles: ['https://…'] })`                    | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
-| `colorful({ hideLabels: true })`                        | `osm({ layers: { labels: false } })`                              |
-| `colorful({ textScale: 1.2 })`                          | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
-| `colorful({ language: null })`                          | `osm({ text: { language: 'local' } })`                            |
-| `colorful({ language: 'de', languageStrict: true })`    | `osm({ text: { language: 'de', languageStrict: true } })`         |
-| `await colorful({ terrain: true })`                     | `osm({ features: { terrain: true } })`                            |
-| `colorful({ experimental: { buildingHeights: true } })` | `osm({ features: { buildings: 'extruded' } })`                    |
-| `colorful({ elevationTilejson: '…' })`                  | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
-| `shadow(options)`                                       | `osm({ ...options, theme: 'gray-dark' })`                         |
-| `graybeard(options)`                                    | `osm({ ...options, theme: 'gray' })`                              |
-| `eclipse(options)`                                      | `osm({ ...options, theme: 'colorful-dark' })`                     |
-| `neutrino(options)`                                     | `osm({ ...options, theme: 'muted' })` _(closest match)_           |
-| `satellite({ overlayTiles: ['https://…'] })`            | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
-| `satellite({ rasterSaturation: -0.3 })`                 | `satellite({ raster: { saturation: -0.3 } })`                     |
-| `empty(options)`                                        | `osm({ ...options, layers: false })`                              |
-| `satellite({ overlay: false })`                         | `satellite({ osmOverlay: false })`                                |
-| `await guessStyle(tileJSON, options)`                   | `await guessStyle(tileJSON, { urls: { base } })` — see note below |
-| `'basics:icon-cafe'` (sprite id)                        | `'base:icon-cafe'` — but see below                                |
+| v5                                                                                                        | v6                                                                |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `colorful(options)`                                                                                       | `osm(options)`                                                    |
+| `colorful({ baseUrl: 'https://…' })`                                                                      | `osm({ urls: { base: 'https://…' } })`                            |
+| `colorful({ tiles: ['https://…'] })`                                                                      | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
+| `colorful({ hideLabels: true })`                                                                          | `osm({ layers: { labels: false } })`                              |
+| `colorful({ textScale: 1.2 })`                                                                            | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
+| `colorful({ iconScale: 1.2 })`                                                                            | `osm({ layout: { scale: { icons: 1.2 } } })`                      |
+| `colorful({ fonts: {…} })`                                                                                | `osm({ text: { fontNormal, fontBold } })`                         |
+| `colorful({ language: null })`                                                                            | `osm({ text: { language: 'local' } })`                            |
+| `colorful({ language: 'de', languageStrict: true })`                                                      | `osm({ text: { language: 'de', languageStrict: true } })`         |
+| `await colorful({ terrain: true })`                                                                       | `osm({ features: { terrain: true } })`                            |
+| `colorful({ hillshade: true })`                                                                           | `osm({ features: { hillshade: true } })`                          |
+| `colorful({ experimental: { buildingHeights: true } })`                                                   | `osm({ features: { buildings: 'extruded' } })`                    |
+| `colorful({ elevationTilejson: '…' })`                                                                    | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
+| `colorful({ recolor: { rotate } })`                                                                       | `osm({ recolor: { rotateHue } })`                                 |
+| `colorful({ recolor: { tintColor } })`                                                                    | `osm({ recolor: { tint: { color } } })`                           |
+| `colorful({ recolor: { blendColor } })`                                                                   | `osm({ recolor: { blend: { color } } })`                          |
+| `colorful({ bounds: […] })`                                                                               | — removed, no replacement                                         |
+| `shadow(options)`                                                                                         | `osm({ ...options, theme: 'gray-dark' })`                         |
+| `graybeard(options)`                                                                                      | `osm({ ...options, theme: 'gray' })`                              |
+| `eclipse(options)`                                                                                        | `osm({ ...options, theme: 'colorful-dark' })`                     |
+| `neutrino(options)`                                                                                       | `osm({ ...options, theme: 'muted' })` _(closest match)_           |
+| `satellite({ rasterTilejson: '…' })`                                                                      | `satellite({ urls: { satellite: '…' } })`                         |
+| `satellite({ overlayTiles: ['https://…'] })`                                                              | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
+| `satellite({ rasterSaturation: -0.3 })`                                                                   | `satellite({ raster: { saturation: -0.3 } })`                     |
+| `satellite({ rasterOpacity, rasterHueRotate, rasterBrightnessMin, rasterBrightnessMax, rasterContrast })` | the same names, uncapitalized, under `satellite({ raster: {…} })` |
+| `satellite({ overlay: false })`                                                                           | `satellite({ osmOverlay: false })`                                |
+| `satellite({ language, textScale, iconScale })`                                                           | the overlay's own options, under `satellite({ osmOverlay: {…} })` |
+| `await guessStyle(tileJSON, options)`                                                                     | `await guessStyle(tileJSON, { urls: { base } })` — see note below |
+| `'basics:icon-cafe'` (sprite id)                                                                          | `'base:icon-cafe'` — but see below                                |
+| `'markers:icon-bicycle'` (sprite id)                                                                      | `'icons:bicycle'` — but see below                                 |
 
-The sprite sheet was renamed `basics` → `base` and the old path is no longer published. Most ids
-only need the new prefix, but **22 were renamed or split** (`icon-pharmacy` → `icon-pill`,
-`icon-place_of_worship` → one of seven religion icons, …). `SPRITES.md` has the full mapping.
+`bounds` is the only v5 option with no v6 equivalent: it is rejected with `"bounds" was removed in v6`.
+Set the bounds on the map instead of in the style.
+
+v5 shipped **two** sprite sheets, and both changed. `basics` was renamed `base`, and the old path is no
+longer published; most ids only need the new prefix, but **22 were renamed or split**
+(`icon-pharmacy` → `icon-pill`, `icon-place_of_worship` → one of seven religion icons, …). `markers`
+was split into `extras` and `icons`, whose ids drop the group prefix — and watch the arrows, because
+`symbol-arrow1` and `symbol-arrow2` each shift by one. `SPRITES.md` has the full mapping for both
+sheets, under "Migrating sprite ids from v5".
 
 `guessStyle` still accepts the TileJSON object v5 took, and now also a URL, which it downloads. Its options now use the same `urls` shape as `osm()`: v5's `baseUrl`, `glyphs` and `sprite` are
 `urls.base`, `urls.glyphsPattern` and `urls.sprite`. Because
