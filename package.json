@@ -45,12 +45,14 @@
 		"lint": "eslint --color .",
 		"prepack": "npm run build",
 		"release": "vrt release-npm",
+		"schema-gate": "tsx scripts/schema-gate.ts",
 		"test": "vitest run --project unit",
 		"test:e2e": "vitest run --project e2e",
 		"test:all": "vitest run",
 		"test-coverage": "vitest run --coverage",
 		"typecheck": "tsc --noEmit",
 		"upgrade": "vrt deps-upgrade",
+		"vendor-schema": "tsx scripts/vendor-schema.ts",
 		"prepare": "husky"
 	},
 	"repository": {
