@@ -201,3 +201,14 @@ describe('guessStyle injection (§5.3, risk 10)', () => {
 		expect(style).toEqual({ version: 8, sources: {}, layers: [] });
 	});
 });
+
+describe('omt() subway stations', () => {
+	it('draws them like stations, from z13, as Shortbread files them as stations', () => {
+		const layers = omt().layers as { id: string; minzoom?: number; layout?: Record<string, unknown> }[];
+		const subway = layers.find((l) => l.id === 'symbol-transit-subway')!;
+		const station = layers.find((l) => l.id === 'symbol-transit-station')!;
+		expect(subway.minzoom).toBe(13);
+		expect(subway.minzoom).toBe(station.minzoom);
+		expect(subway.layout?.['icon-size']).toEqual(station.layout?.['icon-size']);
+	});
+});

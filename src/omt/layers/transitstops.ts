@@ -24,8 +24,10 @@ import { transitStops as draw, type StopDef } from '../../cartography/transitsto
 // field `public_transport` does not have, so it never rendered, and that "the distinction is simply not
 // expressible against this schema" — so both it and `lightrail` were removed. OpenMapTiles *does*
 // express it: `class: railway` with `subclass: subway` is 63 observed features. The layer returns here
-// with a filter that matches, and with its own min-zoom, because subway stops are far denser than
-// mainline stations.
+// with a filter that matches — but drawn exactly like a station. These are the subway *stations*
+// (every Shortbread station name in London, New York, Berlin and Tokyo is among them), which Shortbread
+// files as `kind: station` and shows from z13. Starting them at z14, as this layer once did, left
+// OpenMapTiles' London Underground unmarked at z13.
 //
 // What it does not get is its own icon. `base` carries exactly four transit glyphs — `icon-bus`,
 // `icon-rail`, `transport-tram`, plus `icon-airfield`/`icon-airport` — and §5.5 is explicit that a schema
@@ -60,10 +62,10 @@ const STOPS: StopDef[] = [
 		id: 'subway',
 		sourceLayer: 'poi',
 		filter: ['all', ['==', ['get', 'class'], 'railway'], ['==', ['get', 'subclass'], 'subway']],
-		// Between the tram stop and the mainline station: denser than stations, sparser than tram stops.
-		minzoom: 14,
+		// The zoom and size of `station` below: Shortbread draws these same stations as stations.
+		minzoom: 13,
 		image: 'base:icon-rail',
-		iconSize: { 14: 0.5, 16: 1 },
+		iconSize: { 13: 0.5, 15: 1 },
 	},
 	{
 		id: 'station',
