@@ -169,6 +169,10 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// Each bucket declares its appearance zoom with `appear`, so it fades in like everything else and
 	// its `minzoom` is derived rather than hand-written. Larger buckets come first: symbol collision
 	// is resolved in layer order, so big water wins over small when the two compete.
+	//
+	// Glaciers are left out. `water_polygons_labels` carries their names too (`kind: glacier`, 225 in the
+	// cached tiles), and filtered on `way_area` alone they were lettered in the water style — blue glacier
+	// names across the Alps at z10, which neither OpenMapTiles nor Protomaps shows.
 	const WATER_AREAS: { id: string; min: number; max?: number; appear: number; size: Record<number, number> }[] = [
 		{ id: 'major', min: 1e9, appear: 4, size: { 4: 11, 10: 14 } }, // seas, great lakes
 		{ id: 'large', min: 1e7, max: 1e9, appear: 8, size: { 8: 10, 12: 13 } }, // large lakes
@@ -177,11 +181,14 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	];
 
 	for (const bucket of WATER_AREAS) {
-		const area: FilterSpecification[] = [['>', ['get', 'way_area'], bucket.min]];
+		const area: FilterSpecification[] = [
+			['!=', ['get', 'kind'], 'glacier'],
+			['>', ['get', 'way_area'], bucket.min],
+		];
 		if (bucket.max !== undefined) area.push(['<=', ['get', 'way_area'], bucket.max]);
 		yield b.symbol('label-water-area-' + bucket.id, {
 			sourceLayer: 'water_polygons_labels',
-			filter: (area.length > 1 ? ['all', ...area] : area[0]) as FilterSpecification,
+			filter: ['all', ...area] as FilterSpecification,
 			layout: { 'text-field': ctx.nameField },
 			...waterBase,
 			symbolPlacement: 'point',

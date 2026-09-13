@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { featureFilter, type FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../../api/index.js';
 // Shortbread's `addresses` layer carries `unit` alongside `housenumber`, and where one number
 // covers several spread-out units the number alone is ambiguous (issue #118).
@@ -58,5 +59,25 @@ describe('water-area labels outrank POI labels for the same feature', () => {
 	// the overlap with POIs is a subset, not a superset.
 	it('still labels small water bodies, which no POI layer can cover', () => {
 		expect(indexOf('label-water-area-small')).toBeGreaterThan(-1);
+	});
+});
+
+describe('water-area labels', () => {
+	const style = osm({ theme: 'colorful' });
+	const areaLabels = (style.layers as { id: string; filter?: FilterSpecification }[]).filter((l) =>
+		l.id.startsWith('label-water-area-')
+	);
+	const labelledBy = (properties: Record<string, string | number>) =>
+		areaLabels
+			.filter((l) => featureFilter(l.filter, 'filter').filter({ zoom: 10 }, { type: 1, properties }))
+			.map((l) => l.id);
+
+	it('label water bodies in the bucket of their size', () => {
+		expect(labelledBy({ kind: 'water', way_area: 5e7 })).toEqual(['label-water-area-large']);
+		expect(labelledBy({ kind: 'river', way_area: 5e4 })).toEqual(['label-water-area-small']);
+	});
+
+	it('leave glaciers out, which `water_polygons_labels` carries too', () => {
+		expect(labelledBy({ kind: 'glacier', way_area: 5e7 })).toEqual([]);
 	});
 });
