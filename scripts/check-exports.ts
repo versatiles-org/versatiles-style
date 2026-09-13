@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '../..');
 /** Public entry points, kept in step with `ENTRIES` in rollup.config.js. */
-const ENTRIES = ['src/index.ts', 'src/omt/index.ts'];
+const ENTRIES = ['src/index.ts', 'src/omt/index.ts', 'src/protomaps/index.ts'];
 const SRC_DIR = resolve(ROOT, 'src') + sep;
 
 /** Type-defining symbol flags (as opposed to plain values). */

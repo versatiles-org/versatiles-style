@@ -4,4 +4,5 @@ export * from './parts.js';
 export * from './osm-overlay.js';
 export * from './osm.js';
 export * from './omt.js';
+export * from './protomaps.js';
 export * from './satellite.js';

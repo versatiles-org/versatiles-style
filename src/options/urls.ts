@@ -38,8 +38,30 @@ export type OmtUrlsOptions = {
 	sprite?: SpriteEntries;
 };
 
+/**
+ * Protomaps URLs. As with OpenMapTiles, the vector source does not default relative to `base` — the
+ * VersaTiles CDN serves Shortbread tiles (§5.5) — but unlike it, there is no hosted tile endpoint to
+ * fall back on either: Protomaps publishes a PMTiles archive, and its docs discourage hotlinking the
+ * daily builds. So `protomaps` has **no default** and must be supplied by the caller, normally as a
+ * `pmtiles://` URL that the MapLibre PMTiles plugin resolves.
+ */
+export type ProtomapsUrlsOptions = {
+	base?: string;
+	protomaps?: TileSource;
+	elevation?: TileSource;
+	glyphsPattern?: string;
+	sprite?: SpriteEntries;
+};
+
 export type SatelliteUrlsOptions = OsmUrlsOptions & {
 	satellite?: TileSource;
+};
+
+export type ResolvedProtomapsUrls = {
+	protomaps: TileSource;
+	elevation: TileSource;
+	glyphsPattern: string;
+	sprite: SpriteEntries;
 };
 
 export type ResolvedOmtUrls = {
@@ -122,6 +144,31 @@ export function resolveOmtUrls(urls?: OmtUrlsOptions, path = 'urls'): ResolvedOm
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		omt: resolveTileSource(base, urls?.omt, DEFAULT_OMT_TILES),
+		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
+		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
+	};
+}
+
+/**
+ * The reference Protomaps basemap, as a `pmtiles://` URL with the build date left in. It is deliberately
+ * not a working URL: Protomaps publishes a PMTiles archive rather than a hosted tile endpoint, and its
+ * docs discourage hotlinking the daily builds, so unlike OpenFreeMap there is nothing honest to default
+ * to. The caller must name the archive they serve.
+ */
+export const PROTOMAPS_PLACEHOLDER = 'pmtiles://https://build.protomaps.com/<YYYYMMDD>.pmtiles';
+
+/**
+ * Resolving leaves the placeholder in place rather than throwing, so `protomaps.defaults` and
+ * `minimizeOptions` still work — every other default is meaningful and worth being able to read.
+ * `protomaps()` is where a missing URL is refused, because that is where it would otherwise produce a
+ * style that quietly 404s.
+ */
+export function resolveProtomapsUrls(urls?: ProtomapsUrlsOptions, path = 'urls'): ResolvedProtomapsUrls {
+	checkKeys(urls, { base: true, protomaps: true, elevation: true, glyphsPattern: true, sprite: true }, path);
+	const base = urls?.base ?? DEFAULT_BASE;
+	return {
+		protomaps: resolveTileSource(base, urls?.protomaps, PROTOMAPS_PLACEHOLDER),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),

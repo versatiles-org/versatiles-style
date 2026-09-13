@@ -27,6 +27,10 @@ export type ResolvedOmtFeatures = {
 	buildings: 'flat' | 'extruded';
 };
 
+/** Identical to the OpenMapTiles set; aliased so each schema names its own option type. */
+export type ProtomapsFeaturesOptions = OmtFeaturesOptions;
+export type ResolvedProtomapsFeatures = ResolvedOmtFeatures;
+
 export type ResolvedSatelliteFeatures = {
 	terrain: ResolvedTerrain;
 	hillshade: ResolvedHillshade;
@@ -62,6 +66,14 @@ export function resolveOmtFeatures(features?: OmtFeaturesOptions, path = 'featur
 		hillshade: resolveHillshade(features?.hillshade, `${path}.hillshade`),
 		buildings: features?.buildings ?? 'flat',
 	};
+}
+
+/** Protomaps features — the same set as OpenMapTiles', and for the same reason: no `landcover`. */
+export function resolveProtomapsFeatures(
+	features?: ProtomapsFeaturesOptions,
+	path = 'features'
+): ResolvedProtomapsFeatures {
+	return resolveOmtFeatures(features, path);
 }
 
 export function resolveSatelliteFeatures(

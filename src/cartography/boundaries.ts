@@ -22,6 +22,18 @@ export type BoundaryVocabulary = {
 	readonly sourceLayer: string;
 	/** What `disputed` and `maritime` hold when set — `true` in Shortbread, `1` in OpenMapTiles. */
 	readonly flagTrue: boolean | number;
+	/**
+	 * Field holding the administrative level. Shortbread and OpenMapTiles both call it `admin_level`;
+	 * Protomaps puts the number in `kind_detail` and uses `kind` for a class name instead.
+	 */
+	readonly adminLevelField?: string;
+	/**
+	 * Whether the schema distinguishes maritime borders at all. Protomaps does not carry the field, and
+	 * a filter on a field that does not exist evaluates to `undefined` and matches nothing — silently,
+	 * which is the defect this whole suite exists to catch. So the layer is skipped rather than emitted
+	 * with a filter that can never be true.
+	 */
+	readonly hasMaritime?: boolean;
 };
 
 const lineCap = 'round';
@@ -31,29 +43,26 @@ const lineJoin = 'round';
 // always true and has been removed.
 function filters(vocab: BoundaryVocabulary) {
 	const yes = vocab.flagTrue;
-	const notMaritime: FilterSpecification[] = [['!=', ['get', 'maritime'], yes]];
+	const level = vocab.adminLevelField ?? 'admin_level';
+	// Where there is no `maritime` field there is nothing to exclude either.
+	const notMaritime: FilterSpecification[] = vocab.hasMaritime === false ? [] : [['!=', ['get', 'maritime'], yes]];
 	return {
 		COUNTRY: [
 			'all',
-			['==', ['get', 'admin_level'], 2],
+			['==', ['get', level], 2],
 			['!=', ['get', 'disputed'], yes],
 			...notMaritime,
 		] as FilterSpecification,
 		DISPUTED: [
 			'all',
-			['==', ['get', 'admin_level'], 2],
+			['==', ['get', level], 2],
 			['==', ['get', 'disputed'], yes],
 			...notMaritime,
 		] as FilterSpecification,
-		STATE: [
-			'all',
-			['==', ['get', 'admin_level'], 4],
-			['!=', ['get', 'disputed'], yes],
-			...notMaritime,
-		] as FilterSpecification,
+		STATE: ['all', ['==', ['get', level], 4], ['!=', ['get', 'disputed'], yes], ...notMaritime] as FilterSpecification,
 		MARITIME: [
 			'all',
-			['==', ['get', 'admin_level'], 2],
+			['==', ['get', level], 2],
 			['==', ['get', 'maritime'], yes],
 			['!=', ['get', 'disputed'], yes],
 		] as FilterSpecification,
@@ -128,14 +137,16 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 		group: 'boundaries.state',
 	});
 	// maritime: deeper-blue solid line over the water; fades in over z4→5 (newer; not in the old style)
-	yield b.line('boundary-country-maritime', {
-		sourceLayer: vocab.sourceLayer,
-		filter: MARITIME,
-		color: c.water.blend(0.03, fg),
-		size: countryLineSize,
-		appear: 4,
-		lineCap,
-		lineJoin,
-		group: 'boundaries.country',
-	});
+	if (vocab.hasMaritime !== false) {
+		yield b.line('boundary-country-maritime', {
+			sourceLayer: vocab.sourceLayer,
+			filter: MARITIME,
+			color: c.water.blend(0.03, fg),
+			size: countryLineSize,
+			appear: 4,
+			lineCap,
+			lineJoin,
+			group: 'boundaries.country',
+		});
+	}
 }

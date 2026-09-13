@@ -9,9 +9,10 @@ const IMPORT_PATH: Record<string, string> = {
 	osm: '@versatiles/style',
 	satellite: '@versatiles/style',
 	omt: '@versatiles/style/omt',
+	protomaps: '@versatiles/style/protomaps',
 };
 
-export function styleCode(fn: 'osm' | 'satellite' | 'omt', options: object): string {
+export function styleCode(fn: 'osm' | 'satellite' | 'omt' | 'protomaps', options: object): string {
 	const args =
 		Object.keys(options).length > 0
 			? JSON.stringify(options, null, 2).replace(/^(\s*)"([A-Za-z_$][\w$]*)":/gm, '$1$2:')

@@ -23,6 +23,7 @@ const browser = BUILD === 'browser';
 const ENTRIES = [
 	{ name: 'index', input: 'src/index.ts' },
 	{ name: 'omt', input: 'src/omt/index.ts' },
+	{ name: 'protomaps', input: 'src/protomaps/index.ts' },
 ];
 
 // Where the TypeScript plugin writes an entry's declaration, mirroring `rootDir: src`.

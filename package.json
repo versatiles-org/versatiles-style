@@ -13,6 +13,10 @@
 			"types": "./dist/omt.d.ts",
 			"default": "./dist/omt.js"
 		},
+		"./protomaps": {
+			"types": "./dist/protomaps.d.ts",
+			"default": "./dist/protomaps.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"sideEffects": false,
