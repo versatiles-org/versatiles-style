@@ -24,7 +24,7 @@
 				top: 10px;
 				left: 10px;
 				z-index: 1;
-				background: rgba(255, 255, 255, 0.9);
+				background: rgba(255, 255, 255, 0.92);
 				padding: 10px 12px;
 				border-radius: 6px;
 				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
@@ -32,7 +32,7 @@
 				flex-direction: column;
 				gap: 6px;
 				font-size: 14px;
-				width: 210px;
+				width: 260px;
 			}
 
 			/* Two-column rows: fixed label column + control that fills the rest. */
@@ -47,12 +47,18 @@
 				color: #333;
 			}
 
-			#controls select {
+			#controls select,
+			#controls input[type='text'] {
 				font-size: 14px;
 				padding: 4px 6px;
 				width: 100%;
-				/* min-width:0 lets the select shrink inside the grid cell instead of overflowing the box. */
+				/* min-width:0 lets the control shrink inside the grid cell instead of overflowing the box. */
 				min-width: 0;
+			}
+
+			#controls input[type='text'] {
+				font-family: ui-monospace, monospace;
+				font-size: 12px;
 			}
 
 			#controls .check {
@@ -67,7 +73,7 @@
 				flex: 0 0 auto;
 			}
 
-			/* Grey out a control that does not apply to the current base map. */
+			/* Grey out a control that does not apply to the current schema. */
 			#controls .row:has(:disabled),
 			#controls .check:has(:disabled) {
 				opacity: 0.4;
@@ -77,6 +83,31 @@
 				border: none;
 				border-top: 1px solid #ddd;
 				margin: 2px 0;
+			}
+
+			/*
+			 * Status line. The three schemas fail in different ways — a tileset that 404s, a PMTiles
+			 * archive the protocol cannot read, a filter on a field the tiles lack — and the last of those
+			 * is invisible. Showing the source, the layer count and any error makes the difference between
+			 * "this schema renders nothing" and "this schema is not loading" obvious at a glance.
+			 */
+			#status {
+				font-size: 12px;
+				line-height: 1.45;
+				color: #444;
+				border-top: 1px solid #ddd;
+				padding-top: 6px;
+				word-break: break-all;
+			}
+
+			#status .err {
+				color: #b00020;
+				font-weight: 600;
+			}
+
+			#status code {
+				font-family: ui-monospace, monospace;
+				color: #666;
 			}
 
 			#map {
@@ -93,7 +124,9 @@
 			<label class="row">
 				<span>Base</span>
 				<select id="base-select">
-					<option value="osm">OSM</option>
+					<option value="osm">Shortbread (OSM)</option>
+					<option value="omt">OpenMapTiles</option>
+					<option value="protomaps">Protomaps</option>
 					<option value="satellite">Satellite</option>
 				</select>
 			</label>
@@ -106,6 +139,7 @@
 			<label class="check"><input type="checkbox" id="terrain-toggle" /> Terrain</label>
 			<label class="check"><input type="checkbox" id="hillshade-toggle" /> Hillshading</label>
 			<label class="check"><input type="checkbox" id="landcover-toggle" /> Landcover</label>
+			<div id="status"></div>
 		</div>
 		<div id="map"></div>
 		<script type="module" src="./main.ts"></script>

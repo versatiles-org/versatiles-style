@@ -9,6 +9,7 @@ docs/
 node_modules/
 release/
 scripts/compare/baseline/
+dev/.tiles/
 scripts/tiles/
 scripts/compare/report-baseline.md
 scripts/compare/report.md

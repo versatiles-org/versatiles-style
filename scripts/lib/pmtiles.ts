@@ -119,7 +119,23 @@ export function readMetadata(buf: Uint8Array, header: PMTilesHeader, bufStart = 
 /** A `fetch`-shaped function, so a caller can supply their own (tests, proxies, retries). */
 export type FetchLike = (url: string, init?: { headers?: Record<string, string> }) => Promise<Response>;
 
+/**
+ * One range request, retried once.
+ *
+ * Reading an archive means several requests in quick succession against a large remote file, and a
+ * dropped connection there is common enough to be worth absorbing — it surfaced repeatedly as
+ * `TypeError: fetch failed` while building the dev tile proxy. One retry is the difference between a
+ * blank map and a slow one.
+ */
 async function range(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
+	try {
+		return await rangeOnce(url, from, length, fetchFn);
+	} catch {
+		return rangeOnce(url, from, length, fetchFn);
+	}
+}
+
+async function rangeOnce(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
 	const to = from + length - 1;
 	const res = await fetchFn(url, { headers: { Range: `bytes=${from}-${to}` } });
 	// 206 is the expected answer; a 200 means the server ignored the range and sent the whole archive,
@@ -261,6 +277,17 @@ export class PMTilesSource {
 		const header = readHeader(await range(url, 0, 127, fetchFn));
 		const rootBuf = await range(url, header.rootDirOffset, header.rootDirLength, fetchFn);
 		return new PMTilesSource(url, header, parseDirectory(decompress(rootBuf, header.internalCompression)), fetchFn);
+	}
+
+	/**
+	 * The archive's JSON metadata, read with one further range request.
+	 *
+	 * On the source rather than standalone so a caller that already has the archive open does not
+	 * re-read the header just to find where the metadata lives.
+	 */
+	async getMetadata(): Promise<unknown> {
+		const block = await range(this.url, this.header.metadataOffset, this.header.metadataLength, this.fetchFn);
+		return readMetadata(block, this.header, this.header.metadataOffset);
 	}
 
 	/** The decompressed body of one tile, or undefined where the archive has none. */

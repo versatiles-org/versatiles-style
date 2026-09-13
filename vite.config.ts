@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
+import { tileCache } from './dev/tile-cache.js';
 
 export default defineConfig({
 	root: 'dev',
@@ -18,6 +19,8 @@ export default defineConfig({
 		},
 	},
 	plugins: [
+		// Serves all three schemas as plain XYZ endpoints, cached on disk. See dev/tile-cache.ts.
+		tileCache(),
 		{
 			name: 'local-sprites',
 			configureServer(server) {
@@ -37,6 +40,10 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
+			// The subpath entries first: an alias map is matched in order, and a bare
+			// '@versatiles/style' rule would otherwise swallow '@versatiles/style/omt'.
+			'@versatiles/style/omt': new URL('./src/omt/index.ts', import.meta.url).pathname,
+			'@versatiles/style/protomaps': new URL('./src/protomaps/index.ts', import.meta.url).pathname,
 			'@versatiles/style': new URL('./src/index.ts', import.meta.url).pathname,
 		},
 	},

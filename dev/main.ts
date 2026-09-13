@@ -1,4 +1,6 @@
 import { inlineSources, osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
+import { omt } from '@versatiles/style/omt';
+import { protomaps } from '@versatiles/style/protomaps';
 import type * as MaplibreGL from 'maplibre-gl';
 declare const maplibregl: typeof import('maplibre-gl');
 // maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
@@ -6,7 +8,27 @@ declare const maplibregl: typeof import('maplibre-gl');
 type Inspect = MaplibreGL.IControl & { sources: Record<string, string[]>; render(): void };
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => Inspect;
 
-type Base = 'osm' | 'satellite';
+/**
+ * The four things the picker can build.
+ *
+ * Three of them are the three schemas the library supports, which is the point of this tool: the
+ * conformance suites prove a style only reads data its tileset carries, and the invariants prove its
+ * layers are gated sanely, but neither has ever put pixels on screen. This is where "does OpenMapTiles
+ * actually look like a map" gets answered.
+ */
+type Base = 'osm' | 'omt' | 'protomaps' | 'satellite';
+
+/**
+ * Every schema is served by the dev server's caching tile proxy (see dev/tile-cache.ts), which
+ * normalises all three to the same shape: a TileJSON at a local URL. That is what removes PMTiles from
+ * the browser entirely — Protomaps is now just another vector source — and what makes a reload fast,
+ * because the proxy answers from disk.
+ */
+const TILE_SOURCE = {
+	shortbread: '/tilecache/shortbread/tiles.json',
+	omt: '/tilecache/omt/tiles.json',
+	protomaps: '/tilecache/protomaps/tiles.json',
+} as const;
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
@@ -16,8 +38,10 @@ const buildingsToggle = $<HTMLInputElement>('buildings-toggle');
 const terrainToggle = $<HTMLInputElement>('terrain-toggle');
 const hillshadeToggle = $<HTMLInputElement>('hillshade-toggle');
 const landcoverToggle = $<HTMLInputElement>('landcover-toggle');
+const status = $<HTMLDivElement>('status');
 
-// Populate the theme dropdown from the library's palette list.
+// Populate the theme dropdown from the library's palette list. The palettes are schema-neutral, so
+// `osm`'s list is every schema's list.
 for (const palette of osm.palettes) {
 	const option = document.createElement('option');
 	option.value = palette;
@@ -28,8 +52,10 @@ for (const palette of osm.palettes) {
 // ── Restore control state from URL query parameters ─────────────────────────────
 const params = new URLSearchParams(location.search);
 const getBool = (key: string): boolean => params.get(key) === '1';
+const isBase = (value: string | null): value is Base =>
+	value === 'osm' || value === 'omt' || value === 'protomaps' || value === 'satellite';
 
-baseSelect.value = params.get('base') === 'satellite' ? 'satellite' : 'osm';
+baseSelect.value = isBase(params.get('base')) ? (params.get('base') as Base) : 'osm';
 themeSelect.value = params.get('theme') ?? 'colorful';
 buildingsToggle.checked = getBool('buildings3d');
 terrainToggle.checked = getBool('terrain');
@@ -39,13 +65,11 @@ landcoverToggle.checked = getBool('landcover');
 let map: MaplibreGL.Map | undefined;
 let inspect: Inspect | undefined;
 let inspecting = false;
-
 // ── Inspect mode ────────────────────────────────────────────────────────────────
-// The inspect control discovers a vector source's layer list by fetching the TileJSON that the
-// source's `url` points at. `inlineSources` resolves that reference away — the built style
-// carries `tiles`, not `url` — so the control skips every source, ends up with an empty layer
-// list and renders a blank inspect view. Read the documents here and pass the result in as its
-// `sources` option instead (which also stops it from trying to discover them itself).
+// The inspect control discovers a vector source's layer list by fetching the TileJSON the source's
+// `url` points at, and `inlineSources` resolves that reference away — the built style carries `tiles`,
+// not `url`. So the documents are read here, off the un-inlined style, and passed in. The proxy's
+// TileJSON carries `vector_layers` for all three schemas, so no schema needs special handling.
 const vectorLayerCache = new Map<string, Promise<string[]>>();
 
 async function collectVectorLayers(style: StyleSpecification): Promise<Record<string, string[]>> {
@@ -88,41 +112,65 @@ function buildInspectStyle(
 	return inspectStyle;
 }
 
-// Build a style from the current control values. Landcover only exists for the OSM vector
-// style; for satellite, the theme applies to the (optional) OSM overlay and terrain/hillshade
-// apply to the raster style.
-async function buildStyle(): Promise<{ style: StyleSpecification; sources: Record<string, string[]> }> {
+/** Which controls mean anything for the chosen base map. */
+function applyControlAvailability(base: Base): void {
+	const isSatellite = base === 'satellite';
+	// `features.landcover` is a Shortbread tileset extension; the other two schemas reject the option
+	// outright, so it is not merely inert there.
+	landcoverToggle.disabled = base !== 'osm';
+	buildingsToggle.disabled = isSatellite;
+}
+
+// Build a style from the current control values.
+async function buildStyle(): Promise<{ style: StyleSpecification; sources: Record<string, string[]>; note: string }> {
 	const base = baseSelect.value as Base;
-	const palette = themeSelect.value as Palette;
+	const theme = themeSelect.value as Palette;
 	const buildings = buildingsToggle.checked ? 'extruded' : 'flat';
 	const terrain = terrainToggle.checked;
 	const hillshade = hillshadeToggle.checked;
 	const landcover = landcoverToggle.checked;
 
-	// Disable controls that have no effect on the current base map (satellite has no
-	// building or landcover layers of its own).
-	const isSatellite = base === 'satellite';
-	landcoverToggle.disabled = isSatellite;
-	buildingsToggle.disabled = isSatellite;
+	applyControlAvailability(base);
 
-	const style = isSatellite
-		? satellite({
-				osmOverlay: { theme: palette },
+	let style: StyleSpecification;
+	let note: string;
+	switch (base) {
+		case 'satellite':
+			style = satellite({
+				osmOverlay: { theme },
 				features: { terrain, hillshade },
-			})
-		: osm({
-				theme: palette,
-				features: { terrain, hillshade, landcover, buildings },
+				urls: { osm: TILE_SOURCE.shortbread },
 			});
+			note = 'satellite + Shortbread overlay';
+			break;
+		case 'omt':
+			style = omt({ theme, features: { terrain, hillshade, buildings }, urls: { omt: TILE_SOURCE.omt } });
+			note = 'OpenMapTiles (OpenFreeMap)';
+			break;
+		case 'protomaps':
+			style = protomaps({
+				theme,
+				features: { terrain, hillshade, buildings },
+				urls: { protomaps: TILE_SOURCE.protomaps },
+			});
+			note = 'Protomaps (daily build)';
+			break;
+		default:
+			style = osm({
+				theme,
+				features: { terrain, hillshade, landcover, buildings },
+				urls: { osm: TILE_SOURCE.shortbread },
+			});
+			note = 'Shortbread (VersaTiles)';
+			break;
+	}
 
-	// `osm()`/`satellite()` reference their sources by TileJSON URL and do no I/O, so MapLibre
-	// fetches the document itself. That is fine only when the TileJSON's `tiles` entries are
-	// absolute — the VersaTiles one serves `/tiles/osm/{z}/{x}/{y}`, and MapLibre does not resolve
-	// relative templates, so it builds `Request('/tiles/osm/2/2/2')` and throws. `inlineSources`
-	// fetches the document and rewrites those paths against it. The inspect control needs the same
-	// documents, so read both off the un-inlined style in one go.
-	const [inlined, sources] = await Promise.all([inlineSources(style), collectVectorLayers(style)]);
-	return { style: inlined, sources };
+	const sources = await collectVectorLayers(style);
+
+	// The proxy's TileJSON already carries an absolute `tiles` template, so inlining is not strictly
+	// needed — but it keeps one fetch out of MapLibre's critical path and makes the logged style
+	// self-contained, which is handy when copying one out of the console.
+	return { style: await inlineSources(style), sources, note };
 }
 
 function persistState(): void {
@@ -137,10 +185,40 @@ function persistState(): void {
 	history.replaceState(null, '', url);
 }
 
+/** What is on screen, and what went wrong if nothing is. */
+function showStatus(parts: { note: string; style: StyleSpecification; sources: Record<string, string[]> }): void {
+	const { note, style, sources } = parts;
+	const sourceIds = Object.keys(style.sources);
+	const layerCount = style.layers.length;
+	const sourceLayers = Object.values(sources)[0]?.length ?? 0;
+	status.innerHTML =
+		`<div>${note} — <b>${layerCount}</b> layers, ${sourceLayers} source-layers</div>` +
+		`<div><code>${sourceIds.join(', ')}</code></div>`;
+}
+
+function showError(error: unknown): void {
+	// A style that throws leaves the previous map on screen, which is misleading without this.
+	status.innerHTML = `<div class="err">Style failed</div><div><code>${String(error)}</code></div>`;
+	console.error(error);
+}
+
 async function render(): Promise<void> {
-	const { style, sources } = await buildStyle();
+	let built;
+	try {
+		built = await buildStyle();
+	} catch (error) {
+		showError(error);
+		return;
+	}
+	const { style, sources, note } = built;
 
 	console.log('Rendering style', style);
+	showStatus({ note, style, sources });
+
+	// Tile-level failures (a 404 archive, a CORS refusal) surface here rather than as an exception.
+	const onMapError = (event: { error?: { message?: string } }) => {
+		if (event.error?.message) showError(event.error.message);
+	};
 
 	if (map && inspect) {
 		inspect.sources = sources;
@@ -148,8 +226,7 @@ async function render(): Promise<void> {
 		// applied to the model — `map.getStyle()` is correct — but tiles already parsed keep the
 		// buckets they were built with, so a layer that was outside its zoom range (or absent) when
 		// they loaded stays invisible until something forces a re-parse. Toggling `landcover` is
-		// exactly that case: it removes each covered fill's `minzoom`, and the loaded tiles carry no
-		// bucket for those layers, so forest and grass only appear after a reload.
+		// exactly that case, and so is switching schema: the sources differ entirely.
 		map.setStyle(style, { diff: false });
 		if (inspecting) {
 			// That `setStyle` also replaced the inspect view with the plain style, so put it back. Wait
@@ -179,6 +256,7 @@ async function render(): Promise<void> {
 			},
 		});
 		map.addControl(inspect, 'top-right');
+		map.on('error', onMapError);
 	}
 
 	persistState();
