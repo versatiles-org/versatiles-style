@@ -15,6 +15,8 @@ import {
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/languages.js';
 import { styleCode } from '../api/code.js';
+import type { SchemaDescriptor } from '../api/schema-builder.js';
+import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import {
 	buildStyleLayers,
@@ -121,6 +123,15 @@ export const omt = Object.assign(omtFn, {
 
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SLOT_IDS,
+
+	/**
+	 * How `guessStyle` recognises an OpenMapTiles tileset and builds a style for it — the injection
+	 * point of §5.3: `guessStyle(tileJSON, { schemas: [omt] })`.
+	 */
+	tileset: {
+		sourceLayers: Object.keys(OMT_SCHEMA),
+		build: (source, urls) => omtFn({ urls: { ...urls, omt: source } }),
+	} satisfies SchemaDescriptor,
 
 	/** Resolve raw OmtOptions to a fully validated ResolvedOmt. */
 	resolveOptions: resolveOmt,

@@ -143,3 +143,51 @@ describe('bundle isolation (§5.3)', () => {
 		expect(omtFiles.length).toBeGreaterThan(5);
 	});
 });
+
+describe('guessStyle injection (§5.3, risk 10)', () => {
+	// Auto-dispatch is the one thing one-function-per-subpath does not get for free: `guessStyle` lives
+	// in the root entry, so it cannot import every schema without reintroducing the bundle cost the
+	// design exists to avoid. The caller injects instead, and pays only for what they import.
+	const omtTiles = {
+		tilejson: '3.0.0',
+		tiles: ['https://example.org/{z}/{x}/{y}.pbf'],
+		vector_layers: [{ id: 'water' }, { id: 'waterway' }, { id: 'transportation' }, { id: 'place' }],
+	};
+	const shortbreadTiles = {
+		tilejson: '3.0.0',
+		tiles: ['https://example.org/{z}/{x}/{y}.pbf'],
+		vector_layers: [{ id: 'water_polygons' }, { id: 'streets' }, { id: 'buildings' }, { id: 'place_labels' }],
+	};
+
+	it('falls back to the inspector style for OpenMapTiles tiles when nothing is injected', async () => {
+		const { guessStyle } = await import('../api/index.js');
+		const style = await guessStyle(omtTiles as never);
+		// One colour-coded fill+line+symbol per source-layer, over a background — not a real map.
+		expect(style.layers.length).toBe(omtTiles.vector_layers.length * 3 + 1);
+		expect(Object.keys(style.sources)).toEqual(['tiles']);
+	});
+
+	it('builds a real OpenMapTiles style once `omt` is injected', async () => {
+		const { guessStyle } = await import('../api/index.js');
+		const style = await guessStyle(omtTiles as never, { schemas: [omt] });
+		expect(style.layers.length).toBeGreaterThan(200);
+		expect(Object.keys(style.sources)).toEqual(['openmaptiles']);
+		// The detected tileset is what the style reads, not the schema's default tile source.
+		expect(JSON.stringify(style.sources.openmaptiles)).toContain('example.org');
+	});
+
+	it('is additive — Shortbread still wins for Shortbread tiles', async () => {
+		const { guessStyle } = await import('../api/index.js');
+		const withOmt = await guessStyle(shortbreadTiles as never, { schemas: [omt] });
+		const without = await guessStyle(shortbreadTiles as never);
+		expect(JSON.stringify(withOmt)).toBe(JSON.stringify(without));
+		expect(Object.keys(withOmt.sources)).toEqual(['versatiles-shortbread']);
+	});
+
+	it('rejects an unknown option key, as every other entry point does', async () => {
+		const { guessStyle } = await import('../api/index.js');
+		// guessStyle never throws; an invalid argument yields a blank style.
+		const style = await guessStyle(omtTiles as never, { schemata: [omt] } as never);
+		expect(style).toEqual({ version: 8, sources: {}, layers: [] });
+	});
+});

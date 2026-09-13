@@ -158,6 +158,11 @@ export {
 } from './types/index.js';
 
 export type { LayerGroupMap } from './shortbread/layer-groups-map.js';
+/**
+ * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
+ * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.
+ */
+export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/schema-builder.js';
 export { inlineSources, fetchTileJSON } from './lib/index.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';

@@ -27,7 +27,12 @@ describe('published package', () => {
 		};
 		const declared = new Set(Object.keys(pkg.dependencies ?? {}));
 
-		const dts = readFileSync(new URL('../dist/index.d.ts', import.meta.url), 'utf8');
+		// Comments are stripped first: a doc example showing `import { omt } from '@versatiles/style/omt'`
+		// is not a dependency, and reading one as though it were made this test fail on documentation.
+		const dts = readFileSync(new URL('../dist/index.d.ts', import.meta.url), 'utf8').replace(
+			/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,
+			''
+		);
 		const specifiers = [...dts.matchAll(/from\s+'([^']+)'/g)]
 			.map((m) => m[1])
 			.filter((spec) => !spec.startsWith('.') && !spec.startsWith('node:'))

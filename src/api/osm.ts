@@ -17,9 +17,11 @@ import {
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/languages.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
 import { minimizeOsmOptions } from '../options/minimize.js';
 import { styleCode } from './code.js';
+import type { SchemaDescriptor } from './schema-builder.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 
@@ -133,6 +135,14 @@ export const osm = Object.assign(osmFn, {
 
 	/** Stable layer IDs for use as MapLibre `beforeId`. */
 	slots: SLOT_IDS,
+
+	/** How `guessStyle` recognises a Shortbread tileset and builds a style for it. */
+	tileset: {
+		sourceLayers: Object.keys(SHORTBREAD_SCHEMA),
+		// `osmFn`, not `osm`: referring to the exported const inside its own initialiser makes its type
+		// circular, which TypeScript resolves by widening the whole statics object to `any`.
+		build: (source, urls) => osmFn({ urls: { ...urls, osm: source } }),
+	} satisfies SchemaDescriptor,
 
 	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */
 	resolveOptions: resolveOsm,

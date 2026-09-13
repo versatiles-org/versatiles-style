@@ -6,6 +6,7 @@ import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.j
 import { osm } from './osm.js';
 import { checkKeys } from '../options/keys.js';
 import { satellite } from './satellite.js';
+import type { SchemaBuilder } from './schema-builder.js';
 
 /**
  * Options for {@link guessStyle}.
@@ -14,39 +15,33 @@ import { satellite } from './satellite.js';
  *   glyphs, sprites) and defaults to the page origin, or tiles.versatiles.org outside a browser;
  *   `glyphsPattern` and `sprite` set where the guessed style loads fonts and icons from.
  * - `fetch` — used when `source` is a URL, as for `inlineSources()` and `fetchTileJSON()`.
+ * - `schemas` — additional schemas to recognise, each the builder from its own subpath.
+ *
+ * ── Why `schemas` is an option and a registry was not ─────────────────────────
+ *
+ * SCHEMA-SUPPORT-PLAN.md §5.3, risk 10: auto-dispatch is the one thing one-function-per-subpath does not
+ * get for free. `guessStyle` lives in the root entry, so importing every schema here would reintroduce
+ * exactly the bundle cost that design avoids — a CDN user who never touches OpenMapTiles would still
+ * download it. Injection keeps the cost with the caller who asked for it:
+ *
+ * ```ts
+ * import { guessStyle } from '@versatiles/style';
+ * import { omt } from '@versatiles/style/omt';
+ * await guessStyle(tileJSON, { schemas: [omt] });
+ * ```
+ *
+ * This is acceptable here precisely where a global registry was not (§5.2): `guessStyle` is already
+ * async, already does runtime detection, already takes a function-valued option (`fetch`), and its
+ * options never pass through `minimizeOptions`/`toCode`, so nothing here has to round-trip.
+ *
+ * The list is **additive**: Shortbread is always tried first, so passing `schemas` can only widen what
+ * is recognised, never change what a tileset resolved to before.
  */
 export type GuessStyleOptions = {
 	urls?: Pick<OsmUrlsOptions, 'base' | 'glyphsPattern' | 'sprite'>;
 	fetch?: FetchLike;
+	schemas?: readonly SchemaBuilder[];
 };
-
-// The canonical set of Shortbread 1.0 source-layer IDs.
-// If a TileJSON has vector_layers and enough of them match, we treat it as Shortbread.
-const SHORTBREAD_SOURCE_LAYERS = new Set([
-	'addresses',
-	'aerialways',
-	'boundaries',
-	'boundary_labels',
-	'bridges',
-	'buildings',
-	'dam_lines',
-	'dam_polygons',
-	'ferries',
-	'land',
-	'ocean',
-	'pier_lines',
-	'pier_polygons',
-	'place_labels',
-	'pois',
-	'public_transport',
-	'sites',
-	'street_labels_points',
-	'street_labels',
-	'street_polygons',
-	'streets',
-	'water_lines',
-	'water_polygons',
-]);
 
 const SATELLITE_HINTS = new Set(['satellite', 'aerial', 'ortho', 'imagery']);
 
@@ -54,11 +49,19 @@ function isVectorTileJSON(tj: TileJSONSpecification): tj is TileJSONSpecificatio
 	return 'vector_layers' in tj && Array.isArray((tj as TileJSONSpecificationVector).vector_layers);
 }
 
-function isShortbread(tj: TileJSONSpecificationVector): boolean {
+/**
+ * Does this tileset look like the given schema's?
+ *
+ * The same heuristic that has always identified Shortbread — at least 3 matching source-layers, or a
+ * ≥50% match rate — now applied to whichever schema is being tested. The candidate ids come from the
+ * schema's own vendored record rather than a list kept by hand here, which is one fewer copy of a fact
+ * that has drifted before.
+ */
+function looksLike(tj: TileJSONSpecificationVector, sourceLayers: readonly string[]): boolean {
 	const ids = tj.vector_layers.map((l) => l.id);
 	if (ids.length === 0) return false;
-	const matches = ids.filter((id) => SHORTBREAD_SOURCE_LAYERS.has(id)).length;
-	// Require at least 3 matching layers OR ≥50% match rate
+	const known = new Set(sourceLayers);
+	const matches = ids.filter((id) => known.has(id)).length;
 	return matches >= 3 || matches / ids.length >= 0.5;
 }
 
@@ -192,6 +195,7 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  *
  * Styles by tileset:
  * - Shortbread vector tiles → full `osm()` style
+ * - Vector tiles matching an injected schema (`options.schemas`) → that schema's style
  * - Unknown vector tiles → inspector style (one color-coded fill+line+label per source-layer)
  * - Raster tiles with satellite name hint → `satellite()` style
  * - Other raster tiles → minimal single-layer raster style
@@ -209,7 +213,7 @@ export async function guessStyle(
 	// the documented "never throws" contract was false for both.
 	try {
 		// An unknown option key is an invalid argument like any other: blank style, and no download.
-		checkKeys(options, { urls: true, fetch: true }, 'guessStyle');
+		checkKeys(options, { urls: true, fetch: true, schemas: true }, 'guessStyle');
 		checkKeys(options?.urls, { base: true, glyphsPattern: true, sprite: true }, 'guessStyle.urls');
 		const urls = options?.urls;
 		const base = urls?.base ?? DEFAULT_BASE;
@@ -233,8 +237,9 @@ export async function guessStyle(
 
 		assertTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
-			if (isShortbread(tileJSON)) {
-				return await osm({ urls: { ...urls, osm: osmSource } });
+			// Shortbread first, then whatever the caller injected, in the order given.
+			for (const schema of [osm, ...(options?.schemas ?? [])]) {
+				if (looksLike(tileJSON, schema.tileset.sourceLayers)) return schema.tileset.build(osmSource, urls);
 			}
 			return buildInspectorStyle(tileJSON, urls);
 		}
