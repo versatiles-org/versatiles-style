@@ -6,20 +6,26 @@
  *
  * `deriveOptions` is tested against the package's own builders, where the right answer is known. How
  * close it gets for a style written by someone else can only be judged by looking, so this renders
- * each style and its migration side by side at a few places, with live tiles on both sides, and writes
- * `scripts/migrate-compare/out/index.html`. Needs network access.
+ * each style and its migration side by side at a few places and writes
+ * `scripts/migrate-compare/out/index.html`.
+ *
+ * Rendering goes through the shared tile cache (`scripts/lib/native-render.ts`): the VersaTiles side
+ * reads Shortbread from it, and a foreign style on OpenFreeMap's OpenMapTiles tiles is pointed at the
+ * cached OpenMapTiles tiles, so repeated runs are fast and a slow upstream leaves no holes. Any other
+ * source, sprite or font of a foreign style is fetched once and cached as an asset. Needs network access
+ * on the first run.
  */
 
-import mbgl from '@maplibre/maplibre-gl-native';
 import sharp from 'sharp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { inlineSources, osm, satellite } from '../src/index.js';
+import { inlineSources, osm, satellite, type TileJSONSpecification } from '../src/index.js';
 import { guessOptions } from '../src/migrate/index.js';
-import { createLimiter } from './lib/limit.js';
+import { NativeMap, tileTemplate } from './lib/native-render.js';
+import { sourceMetadata, type TileSchema } from './lib/tile-cache.js';
 
-const OUT = resolve(new URL('.', import.meta.url).pathname, 'migrate-compare/out');
+const OUT = resolve(import.meta.dirname, 'migrate-compare/out');
 
 /** Styles for OpenMapTiles tiles that need no API key. */
 const DEFAULT_STYLES = [
@@ -27,6 +33,12 @@ const DEFAULT_STYLES = [
 	'https://tiles.openfreemap.org/styles/bright',
 	'https://tiles.openfreemap.org/styles/liberty',
 ];
+
+/** Tile sources the cache holds, by the TileJSON URL a style names them with. */
+const CACHED_SOURCES: Record<string, TileSchema> = {
+	'https://tiles.openfreemap.org/planet': 'omt',
+	'https://tiles.versatiles.org/tiles/osm/tiles.json': 'shortbread',
+};
 
 const VIEWS: { name: string; center: [number, number]; zoom: number }[] = [
 	{ name: 'europe', center: [10, 50], zoom: 4 },
@@ -38,70 +50,36 @@ const VIEWS: { name: string; center: [number, number]; zoom: number }[] = [
 const WIDTH = 512;
 const HEIGHT = 384;
 
-// The bundled types do not describe the resource-request callback; see scripts/render.e2e.test.ts.
-type NativeRequest = (req: { url: string }, cb: (err?: Error | null, response?: { data: Buffer }) => void) => void;
-type NativeMapOptions = ConstructorParameters<typeof mbgl.Map>[0];
+async function cachedTileJSON(schema: TileSchema): Promise<TileJSONSpecification> {
+	const { minzoom, maxzoom, vectorLayers } = await sourceMetadata(schema);
+	return {
+		tilejson: '3.0.0',
+		tiles: [tileTemplate(schema)],
+		minzoom,
+		maxzoom,
+		vector_layers: vectorLayers,
+	} as TileJSONSpecification;
+}
 
-const verbose = process.argv.includes('--verbose');
-
-/** A transparent 1×1 PNG, served for a sprite image that does not exist. */
-const EMPTY_PNG = await sharp({ create: { width: 1, height: 1, channels: 4, background: '#0000' } })
-	.png()
-	.toBuffer();
-
-/**
- * Resources are fetched here rather than by the engine: a missing glyph range or tile is empty instead
- * of fatal, and a missing sprite — the v6 sprite may not be published yet — is an empty one.
- */
-const limiter = createLimiter(6);
-
-async function download(url: string): Promise<Response> {
-	for (let attempt = 1; ; attempt++) {
-		try {
-			return await limiter.run(() => fetch(url, { signal: AbortSignal.timeout(30000) }));
-		} catch (error) {
-			if (attempt >= 3) throw error;
-		}
+/** The style with every source the cache holds pointed at the cache. */
+async function viaCache(style: StyleSpecification): Promise<StyleSpecification> {
+	const sources = { ...style.sources };
+	for (const [id, source] of Object.entries(sources)) {
+		const url = 'url' in source ? source.url : undefined;
+		const schema = url ? CACHED_SOURCES[url] : undefined;
+		if (!schema) continue;
+		const { tiles, minzoom, maxzoom } = await cachedTileJSON(schema);
+		sources[id] = { type: 'vector', tiles, minzoom, maxzoom };
 	}
+	return { ...style, sources };
 }
 
-const request: NativeRequest = (req, cb) => {
-	download(req.url)
-		.then(async (response) => {
-			if (response.ok) return cb(null, { data: Buffer.from(await response.arrayBuffer()) });
-			if (verbose) console.log('   ', response.status, req.url);
-			if (/sprite/.test(req.url)) return cb(null, { data: req.url.endsWith('.json') ? Buffer.from('{}') : EMPTY_PNG });
-			cb();
-		})
-		.catch((error: Error) => {
-			// a resource that cannot be had is left out of the picture rather than failing it
-			if (verbose) console.log('   ', error.message, req.url);
-			cb();
-		});
-};
-
-function render(style: StyleSpecification, view: (typeof VIEWS)[number]): Promise<Buffer> {
-	const map = new mbgl.Map({ ratio: 1, request } as unknown as NativeMapOptions);
-	map.load(style);
-	return new Promise((resolve, reject) => {
-		const timer = setTimeout(() => reject(new Error('render timed out')), 90000);
-		map.render({ center: view.center, zoom: view.zoom, width: WIDTH, height: HEIGHT }, (err, buffer) => {
-			clearTimeout(timer);
-			map.release();
-			if (err) return reject(err);
-			sharp(buffer, { raw: { width: WIDTH, height: HEIGHT, channels: 4 } })
-				.png()
-				.toBuffer()
-				.then(resolve, reject);
-		});
-	});
-}
-
-async function sideBySide(left: Buffer, right: Buffer): Promise<Buffer> {
+async function sideBySide(left: Uint8Array, right: Uint8Array): Promise<Buffer> {
+	const raw = { width: WIDTH, height: HEIGHT, channels: 4 } as const;
 	return sharp({ create: { width: WIDTH * 2 + 4, height: HEIGHT, channels: 4, background: '#ffffff' } })
 		.composite([
-			{ input: left, left: 0, top: 0 },
-			{ input: right, left: WIDTH + 4, top: 0 },
+			{ input: await sharp(left, { raw }).png().toBuffer(), left: 0, top: 0 },
+			{ input: await sharp(right, { raw }).png().toBuffer(), left: WIDTH + 4, top: 0 },
 		])
 		.png()
 		.toBuffer();
@@ -129,18 +107,26 @@ async function main() {
 		html += `<ul>${guess.report.warnings.map((w) => `<li>${escape(w)}</li>`).join('')}</ul>`;
 		if (guess.kind === 'unknown') continue;
 
-		const derived = await inlineSources(guess.kind === 'osm' ? osm(guess.options) : satellite(guess.options));
+		const derived =
+			guess.kind === 'osm'
+				? osm({ ...guess.options, urls: { ...guess.options.urls, osm: await cachedTileJSON('shortbread') } })
+				: await inlineSources(satellite(guess.options));
+		const left = new NativeMap(await viaCache(original));
+		const right = new NativeMap(derived);
 		for (const view of VIEWS) {
-			try {
-				const image = await sideBySide(await render(original, view), await render(derived, view));
-				const file = `${index}-${view.name}.png`;
-				writeFileSync(resolve(OUT, file), image);
-				html += `<h3>${view.name}, z${view.zoom}</h3><img src="${file}">`;
-				console.log('  rendered', view.name);
-			} catch (error) {
-				console.log('  failed', view.name, error instanceof Error ? error.message : error);
+			const renderView = { ...view, width: WIDTH, height: HEIGHT };
+			const [a, b] = await Promise.all([left.render(renderView), right.render(renderView)]);
+			const file = `${index}-${view.name}.png`;
+			writeFileSync(resolve(OUT, file), await sideBySide(a.pixels, b.pixels));
+			const failures = [...a.failures, ...b.failures];
+			html += `<h3>${view.name}, z${view.zoom}</h3><img src="${file}">`;
+			if (failures.length > 0) {
+				html += `<details><summary>${failures.length} resources failed</summary><pre>${escape(failures.join('\n'))}</pre></details>`;
 			}
+			console.log('  rendered', view.name, failures.length > 0 ? `(${failures.length} resources failed)` : '');
 		}
+		left.release();
+		right.release();
 	}
 
 	writeFileSync(resolve(OUT, 'index.html'), html);

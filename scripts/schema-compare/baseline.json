@@ -1,0 +1,2252 @@
+{
+	"builds": {
+		"shortbread": "/tiles/osm/{z}/{x}/{y}",
+		"omt": "https://tiles.openfreemap.org/planet/20260906_080001_pt/{z}/{x}/{y}.pbf",
+		"protomaps": "https://build.protomaps.com/20260913.pmtiles"
+	},
+	"views": [
+		{
+			"view": "world-z2",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.00629425048828125,
+				"shortbread~protomaps": 0.3354911804199219,
+				"omt~protomaps": 0.3312492370605469
+			},
+			"full": {
+				"shortbread~omt": 0.0340576171875,
+				"shortbread~protomaps": 0.3401908874511719,
+				"omt~protomaps": 0.3231773376464844
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.4678077697753906,
+					"unclassified": 0.04785919189453125,
+					"water.lakes + water.ocean + water.rivers": 0.48366546630859375,
+					"boundaries.country": 0.000667572021484375
+				},
+				"omt": {
+					"land.glacier": 0.008152008056640625,
+					"unclassified": 0.056133270263671875,
+					"background": 0.4515266418457031,
+					"water.lakes + water.ocean + water.rivers": 0.4841194152832031,
+					"boundaries.country": 0.00006866455078125
+				},
+				"protomaps": {
+					"land.glacier": 0.007335662841796875,
+					"unclassified": 0.10334014892578125,
+					"background": 0.0018768310546875,
+					"land.vegetation": 0.06691360473632812,
+					"water.lakes + water.ocean + water.rivers": 0.4820976257324219,
+					"land.rock": 0.14625167846679688,
+					"land.forest": 0.12358856201171875,
+					"boundaries.country": 0.0001373291015625,
+					"water.rivers": 0.000682830810546875,
+					"land.urban": 0.000072479248046875,
+					"land.agriculture": 0.0677032470703125
+				}
+			}
+		},
+		{
+			"view": "europe-z4",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.00284576416015625,
+				"shortbread~protomaps": 0.70257568359375,
+				"omt~protomaps": 0.697235107421875
+			},
+			"full": {
+				"shortbread~omt": 0.08522415161132812,
+				"shortbread~protomaps": 0.6966018676757812,
+				"omt~protomaps": 0.67034912109375
+			},
+			"classes": {
+				"shortbread": {
+					"water.lakes + water.ocean + water.rivers": 0.26784515380859375,
+					"unclassified": 0.038036346435546875,
+					"background": 0.6837997436523438,
+					"boundaries.country": 0.010318756103515625
+				},
+				"omt": {
+					"water.lakes + water.ocean + water.rivers": 0.2684669494628906,
+					"unclassified": 0.053615570068359375,
+					"background": 0.6694145202636719,
+					"boundaries.country": 0.0081634521484375,
+					"water.rivers": 0.000026702880859375,
+					"land.glacier": 0.00031280517578125
+				},
+				"protomaps": {
+					"water.lakes + water.ocean + water.rivers": 0.2679100036621094,
+					"unclassified": 0.12288665771484375,
+					"land.agriculture": 0.2638092041015625,
+					"background": 0.000400543212890625,
+					"land.vegetation": 0.07079315185546875,
+					"land.forest": 0.26352691650390625,
+					"water.rivers": 0.000156402587890625,
+					"boundaries.country": 0.007984161376953125,
+					"land.urban": 0.002429962158203125,
+					"land.rock": 0.000102996826171875
+				}
+			}
+		},
+		{
+			"view": "europe-z6",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.0013275146484375,
+				"shortbread~protomaps": 0.9492721557617188,
+				"omt~protomaps": 0.9532661437988281
+			},
+			"full": {
+				"shortbread~omt": 0.036815643310546875,
+				"shortbread~protomaps": 0.9556808471679688,
+				"omt~protomaps": 0.9546127319335938
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.895538330078125,
+					"unclassified": 0.0909423828125,
+					"roads.motorways": 0.007465362548828125,
+					"water.lakes + water.ocean + water.rivers": 0.00215911865234375,
+					"boundaries.country": 0.003894805908203125
+				},
+				"omt": {
+					"background": 0.8873710632324219,
+					"unclassified": 0.10236358642578125,
+					"roads.motorways": 0.00572967529296875,
+					"water.lakes + water.ocean + water.rivers": 0.0003204345703125,
+					"boundaries.country": 0.003650665283203125,
+					"water.rivers": 0.0005645751953125
+				},
+				"protomaps": {
+					"land.forest": 0.5547294616699219,
+					"unclassified": 0.12151718139648438,
+					"land.agriculture": 0.3019294738769531,
+					"water.lakes + water.ocean + water.rivers": 0.002162933349609375,
+					"boundaries.country": 0.003498077392578125,
+					"water.rivers": 0.000110626220703125,
+					"roads.motorways": 0.002460479736328125,
+					"land.vegetation": 0.012111663818359375,
+					"background": 0.000049591064453125,
+					"land.urban": 0.001430511474609375
+				}
+			}
+		},
+		{
+			"view": "greenland-ice-z6",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0,
+				"omt~protomaps": 0
+			},
+			"full": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0,
+				"omt~protomaps": 0
+			},
+			"classes": {
+				"shortbread": {
+					"land.glacier": 1
+				},
+				"omt": {
+					"land.glacier": 1
+				},
+				"protomaps": {
+					"land.glacier": 1
+				}
+			}
+		},
+		{
+			"view": "alps-z8",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.047000885009765625,
+				"shortbread~protomaps": 0.042755126953125,
+				"omt~protomaps": 0.00696563720703125
+			},
+			"full": {
+				"shortbread~omt": 0.052036285400390625,
+				"shortbread~protomaps": 0.062225341796875,
+				"omt~protomaps": 0.0236663818359375
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.5105400085449219,
+					"unclassified": 0.14996337890625,
+					"land.forest": 0.2846717834472656,
+					"boundaries.country + boundaries.state": 0.010009765625,
+					"water.lakes + water.ocean + water.rivers": 0.004894256591796875,
+					"boundaries.country": 0.0006561279296875,
+					"land.glacier": 0.029468536376953125,
+					"water.rivers": 0.000064849853515625,
+					"roads.motorways": 0.0097198486328125,
+					"land.rock": 0.000011444091796875
+				},
+				"omt": {
+					"background": 0.5773696899414062,
+					"land.forest": 0.249359130859375,
+					"unclassified": 0.12529754638671875,
+					"boundaries.country + boundaries.state": 0.01012420654296875,
+					"land.glacier": 0.025104522705078125,
+					"water.lakes + water.ocean + water.rivers": 0.00344085693359375,
+					"boundaries.country": 0.00023651123046875,
+					"roads.motorways": 0.008647918701171875,
+					"water.rivers": 0.000408172607421875,
+					"land.rock": 0.000011444091796875
+				},
+				"protomaps": {
+					"background": 0.5660324096679688,
+					"land.forest": 0.2645759582519531,
+					"unclassified": 0.12061309814453125,
+					"water.lakes + water.ocean + water.rivers": 0.004688262939453125,
+					"boundaries.country": 0.000446319580078125,
+					"land.glacier": 0.026020050048828125,
+					"boundaries.country + boundaries.state": 0.009723663330078125,
+					"water.rivers": 0.000034332275390625,
+					"roads.motorways": 0.0078582763671875,
+					"land.rock": 0.00000762939453125
+				}
+			}
+		},
+		{
+			"view": "alps-z10",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.015705108642578125,
+				"shortbread~protomaps": 0.003566741943359375,
+				"omt~protomaps": 0.011325836181640625
+			},
+			"full": {
+				"shortbread~omt": 0.02587127685546875,
+				"shortbread~protomaps": 0.03191375732421875,
+				"omt~protomaps": 0.030635833740234375
+			},
+			"classes": {
+				"shortbread": {
+					"land.glacier": 0.1636505126953125,
+					"unclassified": 0.08850479125976562,
+					"background": 0.6381072998046875,
+					"land.forest": 0.09329605102539062,
+					"boundaries.country": 0.000194549560546875,
+					"water.lakes + water.ocean + water.rivers": 0.00406646728515625,
+					"water.rivers": 0.000011444091796875,
+					"boundaries.country + boundaries.state": 0.01129913330078125,
+					"roads.highways + roads.motorways": 0.0008697509765625
+				},
+				"omt": {
+					"land.glacier": 0.16176223754882812,
+					"unclassified": 0.07588958740234375,
+					"background": 0.6630020141601562,
+					"land.forest": 0.08380126953125,
+					"water.lakes + water.ocean + water.rivers": 0.003063201904296875,
+					"boundaries.country": 0.000125885009765625,
+					"boundaries.country + boundaries.state": 0.011394500732421875,
+					"roads.highways + roads.motorways": 0.000919342041015625,
+					"water.rivers": 0.000041961669921875
+				},
+				"protomaps": {
+					"land.glacier": 0.16384124755859375,
+					"unclassified": 0.08592987060546875,
+					"background": 0.6420669555664062,
+					"land.forest": 0.09170913696289062,
+					"water.rivers": 0.00012969970703125,
+					"boundaries.country": 0.000293731689453125,
+					"water.lakes + water.ocean + water.rivers": 0.003833770751953125,
+					"boundaries.country + boundaries.state": 0.011257171630859375,
+					"roads.highways + roads.motorways": 0.00093841552734375
+				}
+			}
+		},
+		{
+			"view": "alps-z12",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.011608123779296875,
+				"shortbread~protomaps": 0.00933837890625,
+				"omt~protomaps": 0.01157379150390625
+			},
+			"full": {
+				"shortbread~omt": 0.02895355224609375,
+				"shortbread~protomaps": 0.02667236328125,
+				"omt~protomaps": 0.01157379150390625
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.5687446594238281,
+					"unclassified": 0.030178070068359375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.012542724609375,
+					"land.rock": 0.22036361694335938,
+					"land.glacier": 0.1047210693359375,
+					"boundaries.country + boundaries.state": 0.002838134765625,
+					"water.rivers": 0.000026702880859375,
+					"boundaries.country": 0.000110626220703125,
+					"land.forest": 0.046863555908203125,
+					"land.vegetation": 0.01361083984375
+				},
+				"omt": {
+					"background": 0.5794715881347656,
+					"unclassified": 0.02576446533203125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.012603759765625,
+					"land.rock": 0.2116851806640625,
+					"land.glacier": 0.10551834106445312,
+					"boundaries.country + boundaries.state": 0.0028839111328125,
+					"water.rivers": 0.000049591064453125,
+					"boundaries.country": 0.00008392333984375,
+					"land.forest": 0.04901885986328125,
+					"land.vegetation": 0.012920379638671875
+				},
+				"protomaps": {
+					"background": 0.667266845703125,
+					"unclassified": 0.026805877685546875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.01256561279296875,
+					"land.wetland": 0.002002716064453125,
+					"land.rock": 0.13018798828125,
+					"land.glacier": 0.10506820678710938,
+					"boundaries.country + boundaries.state": 0.002895355224609375,
+					"boundaries.country": 0.00009918212890625,
+					"water.rivers": 0.000011444091796875,
+					"land.forest": 0.047573089599609375,
+					"land.vegetation": 0.005523681640625
+				}
+			}
+		},
+		{
+			"view": "nevada-desert-z10",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0,
+				"omt~protomaps": 0
+			},
+			"full": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0,
+				"omt~protomaps": 0
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.9990692138671875,
+					"unclassified": 0.0009307861328125
+				},
+				"omt": {
+					"background": 1
+				},
+				"protomaps": {
+					"background": 0.9990768432617188,
+					"unclassified": 0.00092315673828125
+				}
+			}
+		},
+		{
+			"view": "black-forest-z11",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.0330657958984375,
+				"shortbread~protomaps": 0.004665374755859375,
+				"omt~protomaps": 0.026470184326171875
+			},
+			"full": {
+				"shortbread~omt": 0.032741546630859375,
+				"shortbread~protomaps": 0.016216278076171875,
+				"omt~protomaps": 0.038021087646484375
+			},
+			"classes": {
+				"shortbread": {
+					"land.forest": 0.8091163635253906,
+					"unclassified": 0.09300613403320312,
+					"land.agriculture": 0.0088653564453125,
+					"background": 0.06610870361328125,
+					"land.urban": 0.00812530517578125,
+					"roads.highways + roads.motorways": 0.013652801513671875,
+					"roads.highways + roads.streets.service + roads.streets.track": 0.000457763671875,
+					"roads.motorways": 0.000003814697265625,
+					"water.lakes + water.ocean + water.rivers": 0.000415802001953125,
+					"boundaries.country": 0.0001220703125,
+					"water.rivers": 0.00009918212890625,
+					"transit.ferries": 0.000026702880859375
+				},
+				"omt": {
+					"land.forest": 0.83184814453125,
+					"unclassified": 0.07037734985351562,
+					"background": 0.0753173828125,
+					"land.urban": 0.007755279541015625,
+					"roads.highways + roads.motorways": 0.013641357421875,
+					"roads.highways + roads.streets.service + roads.streets.track": 0.000469207763671875,
+					"water.rivers": 0.000423431396484375,
+					"boundaries.country": 0.000057220458984375,
+					"water.lakes + water.ocean + water.rivers": 0.000110626220703125
+				},
+				"protomaps": {
+					"land.forest": 0.8117294311523438,
+					"unclassified": 0.08671188354492188,
+					"land.agriculture": 0.004787445068359375,
+					"background": 0.07476425170898438,
+					"land.urban": 0.007259368896484375,
+					"roads.highways + roads.motorways": 0.013736724853515625,
+					"roads.highways + roads.streets.service + roads.streets.track": 0.000400543212890625,
+					"water.rivers": 0.000453948974609375,
+					"boundaries.country": 0.00005340576171875,
+					"water.lakes + water.ocean + water.rivers": 0.000080108642578125,
+					"transit.ferries": 0.0000152587890625,
+					"boundaries.country + boundaries.state": 0.000003814697265625,
+					"roads.motorways": 0.000003814697265625
+				}
+			}
+		},
+		{
+			"view": "dutch-polder-z12",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.00177001953125,
+				"shortbread~protomaps": 0.000331878662109375,
+				"omt~protomaps": 0.0012054443359375
+			},
+			"full": {
+				"shortbread~omt": 0.00177001953125,
+				"shortbread~protomaps": 0.000331878662109375,
+				"omt~protomaps": 0.0012054443359375
+			},
+			"classes": {
+				"shortbread": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.9759330749511719,
+					"unclassified": 0.00731658935546875,
+					"roads.highways + roads.motorways": 0.00249481201171875,
+					"land.vegetation": 0.004375457763671875,
+					"airport + roads.highways + roads.streets.service + roads.streets.track": 0.00006866455078125,
+					"boundaries.country": 0.00003814697265625,
+					"background": 0.00203704833984375,
+					"land.urban": 0.003185272216796875,
+					"land.agriculture": 0.00266265869140625,
+					"land.forest": 0.000759124755859375,
+					"roads.motorways": 0.001125335693359375,
+					"roads.highways": 0.000003814697265625
+				},
+				"omt": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.9756927490234375,
+					"unclassified": 0.00644683837890625,
+					"roads.highways + roads.motorways": 0.00249481201171875,
+					"land.vegetation": 0.00418853759765625,
+					"boundaries.country": 0.000270843505859375,
+					"airport + roads.highways + roads.streets.service + roads.streets.track": 0.000080108642578125,
+					"background": 0.00420379638671875,
+					"land.urban": 0.00316619873046875,
+					"roads.motorways": 0.001148223876953125,
+					"land.forest": 0.00003814697265625,
+					"land.agriculture": 0.00225830078125,
+					"water.rivers": 0.000011444091796875
+				},
+				"protomaps": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.9757232666015625,
+					"unclassified": 0.00714874267578125,
+					"roads.highways + roads.motorways": 0.002490997314453125,
+					"land.vegetation": 0.00440216064453125,
+					"airport + roads.highways + roads.streets.service + roads.streets.track": 0.000064849853515625,
+					"water.rivers": 0.00000762939453125,
+					"background": 0.00238037109375,
+					"land.urban": 0.003299713134765625,
+					"land.agriculture": 0.002338409423828125,
+					"land.forest": 0.00074005126953125,
+					"boundaries.country": 0.0002593994140625,
+					"roads.motorways": 0.0011444091796875
+				}
+			}
+		},
+		{
+			"view": "berlin-z10",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.034946441650390625,
+				"shortbread~protomaps": 0.018138885498046875,
+				"omt~protomaps": 0.02300262451171875
+			},
+			"full": {
+				"shortbread~omt": 0.0964202880859375,
+				"shortbread~protomaps": 0.0793304443359375,
+				"omt~protomaps": 0.0297393798828125
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.6186103820800781,
+					"unclassified": 0.191131591796875,
+					"roads.highways + roads.motorways": 0.054096221923828125,
+					"land.forest": 0.0872650146484375,
+					"roads.motorways": 0.02420806884765625,
+					"boundaries.country + boundaries.state": 0.00201416015625,
+					"boundaries.country": 0.001102447509765625,
+					"water.lakes + water.ocean + water.rivers": 0.021453857421875,
+					"water.rivers": 0.000118255615234375
+				},
+				"omt": {
+					"background": 0.661529541015625,
+					"unclassified": 0.16902542114257812,
+					"land.forest": 0.07201004028320312,
+					"roads.motorways": 0.0196533203125,
+					"roads.highways + roads.motorways": 0.05529022216796875,
+					"boundaries.country + boundaries.state": 0.00200653076171875,
+					"boundaries.country": 0.00278472900390625,
+					"water.lakes + water.ocean + water.rivers": 0.017024993896484375,
+					"water.rivers": 0.000675201416015625
+				},
+				"protomaps": {
+					"background": 0.6417961120605469,
+					"unclassified": 0.18140411376953125,
+					"land.forest": 0.07830429077148438,
+					"roads.motorways": 0.01967620849609375,
+					"roads.highways + roads.motorways": 0.054088592529296875,
+					"boundaries.country + boundaries.state": 0.00189208984375,
+					"boundaries.country": 0.0058135986328125,
+					"water.lakes + water.ocean + water.rivers": 0.015720367431640625,
+					"water.rivers": 0.00130462646484375
+				}
+			}
+		},
+		{
+			"view": "berlin-z14",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.00075531005859375,
+				"shortbread~protomaps": 0.00409698486328125,
+				"omt~protomaps": 0.004055023193359375
+			},
+			"full": {
+				"shortbread~omt": 0.03285980224609375,
+				"shortbread~protomaps": 0.046810150146484375,
+				"omt~protomaps": 0.044677734375
+			},
+			"classes": {
+				"shortbread": {
+					"land.urban": 0.33406829833984375,
+					"unclassified": 0.2584877014160156,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.07502365112304688,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.0027923583984375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.02378082275390625,
+					"transit.rail": 0.001186370849609375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000324249267578125,
+					"roads.footway + roads.paths + roads.steps": 0.00269317626953125,
+					"roads.streets.bus + roads.streets.service": 0.002048492431640625,
+					"boundaries.country": 0.000499725341796875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.04903411865234375,
+					"background": 0.17127609252929688,
+					"land.vegetation": 0.048564910888671875,
+					"roads.motorways": 0.00017547607421875,
+					"roads.paths": 0.0000762939453125,
+					"land.forest": 0.0000152587890625,
+					"roads.highways + roads.motorways": 0.02887725830078125,
+					"boundaries.country + boundaries.state": 0.000034332275390625,
+					"transit.aerialways + transit.rail": 0.000957489013671875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000030517578125,
+					"water.rivers": 0.00005340576171875
+				},
+				"omt": {
+					"land.urban": 0.334014892578125,
+					"unclassified": 0.2583160400390625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.07648468017578125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.002803802490234375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0239410400390625,
+					"transit.rail": 0.001190185546875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00030517578125,
+					"roads.footway + roads.paths + roads.steps": 0.00240325927734375,
+					"roads.streets.bus + roads.streets.service": 0.00200653076171875,
+					"boundaries.country": 0.005275726318359375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.04013824462890625,
+					"background": 0.17003250122070312,
+					"land.vegetation": 0.04839324951171875,
+					"roads.motorways": 0.000186920166015625,
+					"roads.paths": 0.00006103515625,
+					"land.forest": 0.0000152587890625,
+					"roads.highways + roads.motorways": 0.02910614013671875,
+					"boundaries.country + boundaries.state": 0.000030517578125,
+					"transit.aerialways + transit.rail": 0.0009918212890625,
+					"water.rivers": 0.0042724609375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000030517578125
+				},
+				"protomaps": {
+					"land.urban": 0.3643226623535156,
+					"unclassified": 0.23471832275390625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.025409698486328125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.03836822509765625,
+					"transit.rail": 0.001194000244140625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0002593994140625,
+					"roads.streets.bus + roads.streets.service": 0.001880645751953125,
+					"roads.footway + roads.paths + roads.steps": 0.002353668212890625,
+					"background": 0.2008209228515625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00037384033203125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.042510986328125,
+					"land.vegetation": 0.04769134521484375,
+					"boundaries.country": 0.005519866943359375,
+					"roads.paths": 0.0000762939453125,
+					"roads.highways + roads.motorways": 0.029003143310546875,
+					"transit.aerialways + transit.rail": 0.000957489013671875,
+					"boundaries.country + boundaries.state": 0.000019073486328125,
+					"land.forest": 0.000026702880859375,
+					"roads.motorways": 0.000057220458984375,
+					"water.rivers": 0.004436492919921875
+				}
+			}
+		},
+		{
+			"view": "amsterdam-z14",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.000133514404296875,
+				"shortbread~protomaps": 0.004009246826171875,
+				"omt~protomaps": 0.0043487548828125
+			},
+			"full": {
+				"shortbread~omt": 0.028034210205078125,
+				"shortbread~protomaps": 0.0537872314453125,
+				"omt~protomaps": 0.051486968994140625
+			},
+			"classes": {
+				"shortbread": {
+					"land.urban": 0.3166351318359375,
+					"unclassified": 0.24711227416992188,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.048675537109375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.175750732421875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.041057586669921875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.007991790771484375,
+					"background": 0.13361358642578125,
+					"roads.footway + roads.paths + roads.steps": 0.001979827880859375,
+					"roads.highways + roads.motorways": 0.0163116455078125,
+					"transit.aerialways + transit.rail": 0.000049591064453125,
+					"roads.paths": 0.000331878662109375,
+					"boundaries.country": 0.001010894775390625,
+					"roads.streets.bus + roads.streets.service": 0.00222015380859375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000213623046875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0001220703125,
+					"boundaries.country + boundaries.state": 0.000080108642578125,
+					"water.piers": 0.00091552734375,
+					"roads.motorways": 0.000049591064453125,
+					"water.rivers": 0.000026702880859375,
+					"land.rock": 0.00003814697265625,
+					"transit.rail": 0.000347137451171875,
+					"land.vegetation": 0.003864288330078125,
+					"land.forest": 0.0016021728515625
+				},
+				"omt": {
+					"land.urban": 0.3164787292480469,
+					"unclassified": 0.24596405029296875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.04937744140625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.1534576416015625,
+					"boundaries.country": 0.017078399658203125,
+					"water.rivers": 0.006256103515625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.041412353515625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008007049560546875,
+					"background": 0.13352584838867188,
+					"boundaries.country + boundaries.state": 0.00008392333984375,
+					"roads.footway + roads.paths + roads.steps": 0.001987457275390625,
+					"roads.highways + roads.motorways": 0.016284942626953125,
+					"transit.aerialways + transit.rail": 0.000049591064453125,
+					"roads.paths": 0.00031280517578125,
+					"roads.streets.bus + roads.streets.service": 0.00238800048828125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000308990478515625,
+					"water.piers": 0.001018524169921875,
+					"roads.motorways": 0.000064849853515625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000091552734375,
+					"transit.rail": 0.00035858154296875,
+					"land.vegetation": 0.00388336181640625,
+					"land.forest": 0.00160980224609375
+				},
+				"protomaps": {
+					"land.urban": 0.28072357177734375,
+					"unclassified": 0.23360061645507812,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.048015594482421875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.15842056274414062,
+					"boundaries.country": 0.0174560546875,
+					"water.rivers": 0.006259918212890625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0300750732421875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.0077362060546875,
+					"background": 0.19086837768554688,
+					"roads.footway + roads.paths + roads.steps": 0.00142669677734375,
+					"roads.highways + roads.motorways": 0.01616668701171875,
+					"transit.aerialways + transit.rail": 0.000049591064453125,
+					"roads.paths": 0.00016021728515625,
+					"land.forest": 0.002056121826171875,
+					"boundaries.country + boundaries.state": 0.000072479248046875,
+					"roads.streets.bus + roads.streets.service": 0.002277374267578125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000030517578125,
+					"water.piers": 0.000576019287109375,
+					"roads.motorways": 0.000049591064453125,
+					"transit.rail": 0.000354766845703125,
+					"land.vegetation": 0.00354766845703125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0000762939453125
+				}
+			}
+		},
+		{
+			"view": "london-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.03595733642578125,
+				"shortbread~protomaps": 0.003490447998046875,
+				"omt~protomaps": 0.034648895263671875
+			},
+			"full": {
+				"shortbread~omt": 0.07595443725585938,
+				"shortbread~protomaps": 0.07089996337890625,
+				"omt~protomaps": 0.1035919189453125
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.19705581665039062,
+					"unclassified": 0.3290863037109375,
+					"roads.highways + roads.motorways": 0.0925750732421875,
+					"land.urban": 0.20196151733398438,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.037113189697265625,
+					"roads.streets.bus": 0.002498626708984375,
+					"transit.aerialways + transit.rail": 0.00687408447265625,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"land.vegetation": 0.02268218994140625,
+					"transit.rail": 0.001483917236328125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00006103515625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.08248138427734375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000354766845703125,
+					"boundaries.country": 0.003627777099609375,
+					"water.piers": 0.00099945068359375,
+					"water.rivers": 0.004032135009765625,
+					"transit.ferries": 0.00116729736328125,
+					"roads.highways + roads.streets.residential": 0.00003814697265625,
+					"roads.footway + roads.paths + roads.steps": 0.000064849853515625,
+					"land.forest": 0.012706756591796875,
+					"land.agriculture": 0.000812530517578125,
+					"roads.motorways": 0.000034332275390625,
+					"land.rock": 0.00225067138671875,
+					"roads.paths": 0.000003814697265625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000003814697265625,
+					"land.sand": 0.00000762939453125
+				},
+				"omt": {
+					"background": 0.2459564208984375,
+					"unclassified": 0.2925453186035156,
+					"roads.highways + roads.motorways": 0.09383392333984375,
+					"land.urban": 0.20934295654296875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0376129150390625,
+					"roads.streets.bus": 0.002277374267578125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.0004119873046875,
+					"transit.aerialways + transit.rail": 0.00677490234375,
+					"roads.paths": 0.000011444091796875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.08386611938476562,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00020599365234375,
+					"boundaries.country": 0.0054473876953125,
+					"water.piers": 0.00034332275390625,
+					"water.rivers": 0.0064849853515625,
+					"transit.ferries": 0.001148223876953125,
+					"roads.highways + roads.streets.residential": 0.000019073486328125,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000003814697265625,
+					"land.forest": 0.013553619384765625,
+					"roads.footway + roads.paths + roads.steps": 0.000057220458984375,
+					"transit.rail": 0.000072479248046875,
+					"land.sand": 0.00000762939453125
+				},
+				"protomaps": {
+					"background": 0.2604713439941406,
+					"unclassified": 0.2993202209472656,
+					"roads.highways + roads.motorways": 0.09265899658203125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03646087646484375,
+					"land.urban": 0.16768646240234375,
+					"roads.streets.bus": 0.002178192138671875,
+					"transit.aerialways + transit.rail": 0.007053375244140625,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000072479248046875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.084320068359375,
+					"boundaries.country": 0.005496978759765625,
+					"water.piers": 0.000762939453125,
+					"transit.ferries": 0.001117706298828125,
+					"water.rivers": 0.00647735595703125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00006103515625,
+					"land.vegetation": 0.020816802978515625,
+					"transit.rail": 0.000858306884765625,
+					"land.forest": 0.01383209228515625,
+					"roads.footway + roads.paths + roads.steps": 0.000080108642578125,
+					"roads.highways + roads.streets.residential": 0.000011444091796875,
+					"land.agriculture": 0.000225067138671875,
+					"roads.paths": 0.00000762939453125,
+					"land.sand": 0.00000762939453125
+				}
+			}
+		},
+		{
+			"view": "new-york-z14",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.001800537109375,
+				"shortbread~protomaps": 0.00783538818359375,
+				"omt~protomaps": 0.00649261474609375
+			},
+			"full": {
+				"shortbread~omt": 0.03966522216796875,
+				"shortbread~protomaps": 0.08398818969726562,
+				"omt~protomaps": 0.07040786743164062
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.2589683532714844,
+					"unclassified": 0.2514076232910156,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.08051681518554688,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.034175872802734375,
+					"roads.highways + roads.motorways": 0.07995223999023438,
+					"land.urban": 0.038829803466796875,
+					"roads.footway + roads.paths + roads.steps": 0.00444793701171875,
+					"land.agriculture": 0.001323699951171875,
+					"roads.motorways": 0.01583099365234375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000392913818359375,
+					"roads.streets.bus + roads.streets.service": 0.001308441162109375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.19600677490234375,
+					"boundaries.country": 0.005504608154296875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.001155853271484375,
+					"roads.paths": 0.000148773193359375,
+					"land.vegetation": 0.014759063720703125,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000225067138671875,
+					"transit.rail": 0.006977081298828125,
+					"land.rock": 0.00028228759765625,
+					"land.sand": 0.000850677490234375,
+					"water.rivers": 0.00466156005859375,
+					"transit.ferries": 0.001087188720703125,
+					"water.piers": 0.000888824462890625,
+					"land.forest": 0.000270843505859375,
+					"land.wetland": 0.000019073486328125
+				},
+				"omt": {
+					"background": 0.2583198547363281,
+					"unclassified": 0.24960708618164062,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.08138656616210938,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.034862518310546875,
+					"roads.streets.bus + roads.streets.service": 0.001300811767578125,
+					"land.urban": 0.0397186279296875,
+					"roads.highways + roads.motorways": 0.0803070068359375,
+					"roads.footway + roads.paths + roads.steps": 0.00528717041015625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000408172607421875,
+					"roads.motorways": 0.01580047607421875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.19676589965820312,
+					"boundaries.country": 0.005481719970703125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.001079559326171875,
+					"roads.paths": 0.0001373291015625,
+					"land.vegetation": 0.01479339599609375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00020599365234375,
+					"transit.rail": 0.00688934326171875,
+					"land.rock": 0.000171661376953125,
+					"land.sand": 0.00086212158203125,
+					"boundaries.country + boundaries.state": 0.000003814697265625,
+					"water.rivers": 0.004703521728515625,
+					"transit.ferries": 0.0011138916015625,
+					"water.piers": 0.000507354736328125,
+					"land.forest": 0.0002593994140625,
+					"land.wetland": 0.00002288818359375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000003814697265625
+				},
+				"protomaps": {
+					"background": 0.3274726867675781,
+					"unclassified": 0.23562240600585938,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.030651092529296875,
+					"roads.highways + roads.motorways": 0.08016586303710938,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.030513763427734375,
+					"roads.streets.bus + roads.streets.service": 0.001949310302734375,
+					"roads.footway + roads.paths + roads.steps": 0.0030517578125,
+					"land.urban": 0.04111480712890625,
+					"land.forest": 0.000293731689453125,
+					"boundaries.country": 0.00536346435546875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.19688034057617188,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000774383544921875,
+					"roads.paths": 0.00017547607421875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000049591064453125,
+					"roads.motorways": 0.015689849853515625,
+					"land.vegetation": 0.01580810546875,
+					"boundaries.country + boundaries.state": 0.000003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.0002288818359375,
+					"transit.rail": 0.0069427490234375,
+					"land.sand": 0.000797271728515625,
+					"water.rivers": 0.0048675537109375,
+					"transit.ferries": 0.0010833740234375,
+					"water.piers": 0.000499725341796875
+				}
+			}
+		},
+		{
+			"view": "tokyo-z14",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.001697540283203125,
+				"shortbread~protomaps": 0.002986907958984375,
+				"omt~protomaps": 0.001399993896484375
+			},
+			"full": {
+				"shortbread~omt": 0.028759002685546875,
+				"shortbread~protomaps": 0.04007720947265625,
+				"omt~protomaps": 0.031162261962890625
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.3874969482421875,
+					"unclassified": 0.3253669738769531,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.057216644287109375,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.050739288330078125,
+					"roads.streets.bus + roads.streets.service": 0.003101348876953125,
+					"roads.motorways": 0.006977081298828125,
+					"transit.aerialways + transit.rail": 0.00289154052734375,
+					"land.urban": 0.03113555908203125,
+					"roads.highways + roads.motorways": 0.09859466552734375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00030517578125,
+					"roads.footway + roads.paths + roads.steps": 0.002349853515625,
+					"boundaries.country + boundaries.state": 0.000095367431640625,
+					"land.forest": 0.0261993408203125,
+					"land.vegetation": 0.0025177001953125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.00475311279296875,
+					"boundaries.country": 0.0001068115234375,
+					"roads.paths": 0.0000152587890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.0000457763671875,
+					"land.agriculture": 0.000041961669921875,
+					"water.rivers": 0.0000457763671875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000003814697265625
+				},
+				"omt": {
+					"background": 0.3868751525878906,
+					"unclassified": 0.3251686096191406,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0585174560546875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.049976348876953125,
+					"roads.streets.bus + roads.streets.service": 0.00319671630859375,
+					"roads.motorways": 0.006969451904296875,
+					"transit.aerialways + transit.rail": 0.002964019775390625,
+					"land.urban": 0.030548095703125,
+					"roads.highways + roads.motorways": 0.09918212890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000331878662109375,
+					"roads.footway + roads.paths + roads.steps": 0.002147674560546875,
+					"boundaries.country + boundaries.state": 0.000095367431640625,
+					"land.forest": 0.0262451171875,
+					"land.vegetation": 0.002643585205078125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.004703521728515625,
+					"boundaries.country": 0.000232696533203125,
+					"roads.paths": 0.000019073486328125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000087738037109375,
+					"water.rivers": 0.000095367431640625
+				},
+				"protomaps": {
+					"background": 0.4177284240722656,
+					"unclassified": 0.31801605224609375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.055530548095703125,
+					"roads.streets.bus + roads.streets.service": 0.0037689208984375,
+					"roads.motorways": 0.006832122802734375,
+					"transit.aerialways + transit.rail": 0.002849578857421875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0378570556640625,
+					"roads.highways + roads.motorways": 0.10005569458007812,
+					"land.urban": 0.021549224853515625,
+					"roads.footway + roads.paths + roads.steps": 0.00212860107421875,
+					"land.forest": 0.02614593505859375,
+					"land.vegetation": 0.002292633056640625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.004657745361328125,
+					"boundaries.country": 0.000240325927734375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000057220458984375,
+					"roads.paths": 0.0000457763671875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000072479248046875,
+					"water.rivers": 0.00008392333984375,
+					"boundaries.country + boundaries.state": 0.000087738037109375
+				}
+			}
+		},
+		{
+			"view": "black-forest-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.025341033935546875,
+				"shortbread~protomaps": 0.024242401123046875,
+				"omt~protomaps": 0.00399017333984375
+			},
+			"full": {
+				"shortbread~omt": 0.04013824462890625,
+				"shortbread~protomaps": 0.029804229736328125,
+				"omt~protomaps": 0.02411651611328125
+			},
+			"classes": {
+				"shortbread": {
+					"land.forest": 0.799072265625,
+					"unclassified": 0.05401611328125,
+					"land.vegetation": 0.1136016845703125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.007122039794921875,
+					"roads.streets.bus": 0.000396728515625,
+					"background": 0.018070220947265625,
+					"land.urban": 0.002101898193359375,
+					"land.agriculture": 0.001171112060546875,
+					"land.rock": 0.00201416015625,
+					"water.rivers": 0.0004119873046875,
+					"roads.highways + roads.motorways": 0.002017974853515625,
+					"boundaries.country + boundaries.state": 0.000003814697265625
+				},
+				"omt": {
+					"land.forest": 0.81512451171875,
+					"unclassified": 0.0654754638671875,
+					"land.vegetation": 0.08502197265625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.007122039794921875,
+					"roads.streets.bus": 0.000377655029296875,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"background": 0.020477294921875,
+					"land.urban": 0.001922607421875,
+					"land.rock": 0.00203704833984375,
+					"water.rivers": 0.000415802001953125,
+					"roads.highways + roads.motorways": 0.002017974853515625
+				},
+				"protomaps": {
+					"land.forest": 0.8122978210449219,
+					"unclassified": 0.06745529174804688,
+					"land.vegetation": 0.0845489501953125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.007137298583984375,
+					"roads.streets.bus": 0.00038909912109375,
+					"background": 0.02215576171875,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"land.urban": 0.0003509521484375,
+					"land.agriculture": 0.00116729736328125,
+					"land.rock": 0.00203704833984375,
+					"water.rivers": 0.00041961669921875,
+					"roads.highways + roads.motorways": 0.002017974853515625
+				}
+			}
+		},
+		{
+			"view": "schiphol-airport-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.07268905639648438,
+				"shortbread~protomaps": 0.00628662109375,
+				"omt~protomaps": 0.06716156005859375
+			},
+			"full": {
+				"shortbread~omt": 0.08216094970703125,
+				"shortbread~protomaps": 0.00867462158203125,
+				"omt~protomaps": 0.07909393310546875
+			},
+			"classes": {
+				"shortbread": {
+					"land.vegetation": 0.3099174499511719,
+					"unclassified": 0.15232467651367188,
+					"background": 0.38471221923828125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.04498291015625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.0206298828125,
+					"land.urban": 0.051116943359375,
+					"land.forest": 0.0040740966796875,
+					"land.agriculture": 0.004611968994140625,
+					"roads.motorways": 0.018466949462890625,
+					"boundaries.country": 0.000362396240234375,
+					"roads.streets.bus": 0.001178741455078125,
+					"transit.ferries": 0.00011444091796875,
+					"water.rivers": 0.00006866455078125,
+					"roads.highways + roads.streets.residential": 0.000011444091796875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0003509521484375,
+					"roads.paths": 0.000003814697265625,
+					"roads.highways + roads.motorways": 0.006298065185546875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00074005126953125,
+					"boundaries.country + boundaries.state": 0.000030517578125,
+					"roads.footway + roads.paths + roads.steps": 0.000003814697265625
+				},
+				"omt": {
+					"land.vegetation": 0.2561073303222656,
+					"unclassified": 0.12754440307617188,
+					"background": 0.4621849060058594,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.045185089111328125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.020397186279296875,
+					"land.urban": 0.05755615234375,
+					"land.forest": 0.002285003662109375,
+					"land.agriculture": 0.000011444091796875,
+					"roads.motorways": 0.018604278564453125,
+					"boundaries.country": 0.001209259033203125,
+					"roads.streets.bus": 0.0010986328125,
+					"boundaries.country + boundaries.state": 0.000034332275390625,
+					"transit.ferries": 0.000293731689453125,
+					"water.rivers": 0.00016021728515625,
+					"roads.highways + roads.streets.residential": 0.000011444091796875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00028228759765625,
+					"roads.paths": 0.000003814697265625,
+					"roads.highways + roads.motorways": 0.0063018798828125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00072479248046875,
+					"roads.footway + roads.paths + roads.steps": 0.000003814697265625
+				},
+				"protomaps": {
+					"land.vegetation": 0.31034088134765625,
+					"unclassified": 0.14450454711914062,
+					"background": 0.39615631103515625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.044750213623046875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.020511627197265625,
+					"land.urban": 0.05208587646484375,
+					"land.forest": 0.0040283203125,
+					"land.agriculture": 0.000011444091796875,
+					"roads.motorways": 0.0185089111328125,
+					"boundaries.country": 0.001125335693359375,
+					"roads.streets.bus": 0.00049591064453125,
+					"transit.ferries": 0.000133514404296875,
+					"water.rivers": 0.000080108642578125,
+					"roads.highways + roads.streets.residential": 0.000003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000244140625,
+					"roads.paths": 0.00000762939453125,
+					"roads.highways + roads.motorways": 0.006320953369140625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000675201416015625,
+					"boundaries.country + boundaries.state": 0.0000152587890625
+				}
+			}
+		},
+		{
+			"view": "jfk-airport-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.0529022216796875,
+				"shortbread~protomaps": 0.01149749755859375,
+				"omt~protomaps": 0.043888092041015625
+			},
+			"full": {
+				"shortbread~omt": 0.06609725952148438,
+				"shortbread~protomaps": 0.024261474609375,
+				"omt~protomaps": 0.059062957763671875
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.4219551086425781,
+					"unclassified": 0.10281753540039062,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0461578369140625,
+					"roads.motorways": 0.009113311767578125,
+					"land.vegetation": 0.1878662109375,
+					"land.urban": 0.01235198974609375,
+					"roads.highways + roads.motorways": 0.0032958984375,
+					"land.forest": 0.00232696533203125,
+					"roads.streets.bus": 0.001438140869140625,
+					"land.agriculture": 0.001186370849609375,
+					"roads.highways + roads.streets.residential": 0.000019073486328125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.204620361328125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.0005645751953125,
+					"transit.aerialways + transit.rail": 0.000518798828125,
+					"roads.footway + roads.paths + roads.steps": 0.000030517578125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000011444091796875,
+					"boundaries.country + boundaries.state": 0.0000152587890625,
+					"boundaries.country": 0.000095367431640625,
+					"land.rock": 0.00099945068359375,
+					"water.rivers": 0.0000457763671875,
+					"water.piers": 0.00032806396484375,
+					"land.sand": 0.00133514404296875,
+					"land.wetland": 0.00290679931640625
+				},
+				"omt": {
+					"background": 0.4839057922363281,
+					"unclassified": 0.08135986328125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.046306610107421875,
+					"roads.motorways": 0.009181976318359375,
+					"land.vegetation": 0.1417694091796875,
+					"land.urban": 0.013027191162109375,
+					"roads.highways + roads.motorways": 0.003391265869140625,
+					"land.wetland": 0.004695892333984375,
+					"land.forest": 0.00225830078125,
+					"roads.streets.bus": 0.001407623291015625,
+					"roads.highways + roads.streets.residential": 0.000019073486328125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.2108306884765625,
+					"boundaries.country": 0.000316619873046875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000514984130859375,
+					"transit.aerialways + transit.rail": 0.000507354736328125,
+					"roads.footway + roads.paths + roads.steps": 0.000041961669921875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000011444091796875,
+					"boundaries.country + boundaries.state": 0.000019073486328125,
+					"water.piers": 0.00032806396484375,
+					"land.sand": 0.0001068115234375
+				},
+				"protomaps": {
+					"background": 0.4274559020996094,
+					"unclassified": 0.09745025634765625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.046077728271484375,
+					"roads.motorways": 0.009410858154296875,
+					"land.vegetation": 0.18138504028320312,
+					"land.urban": 0.013507843017578125,
+					"roads.highways + roads.motorways": 0.003337860107421875,
+					"land.wetland": 0.004810333251953125,
+					"land.forest": 0.002353668212890625,
+					"roads.highways + roads.streets.residential": 0.000034332275390625,
+					"roads.streets.bus": 0.001476287841796875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.21100234985351562,
+					"transit.ferries": 0.000034332275390625,
+					"boundaries.country": 0.000308990478515625,
+					"water.rivers": 0.000003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000492095947265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00003814697265625,
+					"boundaries.country + boundaries.state": 0.000011444091796875,
+					"water.piers": 0.0003204345703125,
+					"land.sand": 0.00048828125
+				}
+			}
+		},
+		{
+			"view": "rotterdam-port-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.06932830810546875,
+				"shortbread~protomaps": 0.00424957275390625,
+				"omt~protomaps": 0.06640243530273438
+			},
+			"full": {
+				"shortbread~omt": 0.08786392211914062,
+				"shortbread~protomaps": 0.029392242431640625,
+				"omt~protomaps": 0.09064865112304688
+			},
+			"classes": {
+				"shortbread": {
+					"unclassified": 0.24336624145507812,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.2134246826171875,
+					"land.vegetation": 0.0832061767578125,
+					"land.forest": 0.0164031982421875,
+					"land.urban": 0.3216094970703125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03466033935546875,
+					"roads.streets.bus": 0.003513336181640625,
+					"roads.motorways": 0.0239410400390625,
+					"background": 0.027740478515625,
+					"roads.highways + roads.motorways": 0.0203399658203125,
+					"water.rivers": 0.002094268798828125,
+					"boundaries.country": 0.00257110595703125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00028228759765625,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"transit.aerialways + transit.rail": 0.000949859619140625,
+					"transit.rail": 0.00167083740234375,
+					"land.agriculture": 0.00029754638671875,
+					"transit.ferries": 0.001583099365234375,
+					"roads.footway + roads.paths + roads.steps": 0.000019073486328125,
+					"water.piers": 0.000400543212890625,
+					"roads.highways + roads.streets.residential": 0.00005340576171875,
+					"airport + roads.highways + roads.streets.residential": 0.000003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0000457763671875,
+					"land.wetland": 0.001800537109375
+				},
+				"omt": {
+					"unclassified": 0.22505950927734375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.20607376098632812,
+					"boundaries.country": 0.010082244873046875,
+					"land.vegetation": 0.035572052001953125,
+					"background": 0.049434661865234375,
+					"land.urban": 0.36895751953125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0360260009765625,
+					"roads.streets.bus": 0.0014801025390625,
+					"roads.motorways": 0.024349212646484375,
+					"roads.highways + roads.motorways": 0.020664215087890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00026702880859375,
+					"water.rivers": 0.0037841796875,
+					"transit.aerialways + transit.rail": 0.00086212158203125,
+					"roads.footway + roads.paths + roads.steps": 0.0000152587890625,
+					"airport + roads.highways + roads.streets.residential": 0.000003814697265625,
+					"land.forest": 0.003803253173828125,
+					"transit.ferries": 0.0016021728515625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00000762939453125,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"transit.rail": 0.00962066650390625,
+					"roads.highways + roads.streets.residential": 0.000148773193359375,
+					"water.piers": 0.00037384033203125,
+					"land.wetland": 0.001804351806640625
+				},
+				"protomaps": {
+					"unclassified": 0.2323455810546875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.20816421508789062,
+					"land.vegetation": 0.08103179931640625,
+					"land.forest": 0.01618194580078125,
+					"boundaries.country": 0.009990692138671875,
+					"land.urban": 0.3299903869628906,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.034511566162109375,
+					"roads.streets.bus": 0.003162384033203125,
+					"roads.motorways": 0.0243682861328125,
+					"background": 0.031139373779296875,
+					"roads.highways + roads.motorways": 0.02045440673828125,
+					"water.rivers": 0.003810882568359375,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"transit.rail": 0.000843048095703125,
+					"roads.highways + roads.streets.residential": 0.00002288818359375,
+					"roads.footway + roads.paths + roads.steps": 0.00002288818359375,
+					"land.agriculture": 0.00029754638671875,
+					"transit.ferries": 0.0015716552734375,
+					"roads.paths": 0.000003814697265625,
+					"airport + roads.highways + roads.streets.residential": 0.000003814697265625,
+					"land.wetland": 0.001800537109375,
+					"water.piers": 0.000244140625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.0000152587890625
+				}
+			}
+		},
+		{
+			"view": "hoover-dam-z14",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0,
+				"omt~protomaps": 0
+			},
+			"full": {
+				"shortbread~omt": 0.02146148681640625,
+				"shortbread~protomaps": 0.016815185546875,
+				"omt~protomaps": 0.02481842041015625
+			},
+			"classes": {
+				"shortbread": {
+					"land.rock": 0.7638053894042969,
+					"background": 0.012149810791015625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.13614273071289062,
+					"unclassified": 0.05706787109375,
+					"boundaries.country + boundaries.state": 0.002948760986328125,
+					"boundaries.country": 0.000461578369140625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.005123138427734375,
+					"water.rivers": 0.00023651123046875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0033111572265625,
+					"roads.footway + roads.paths + roads.steps": 0.00070953369140625,
+					"roads.paths": 0.000263214111328125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00090789794921875,
+					"roads.streets.bus + roads.streets.service": 0.000701904296875,
+					"land.urban": 0.000003814697265625,
+					"water.piers": 0.003620147705078125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.00003814697265625,
+					"roads.motorways": 0.012508392333984375
+				},
+				"omt": {
+					"land.rock": 0.7685775756835938,
+					"background": 0.01213836669921875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.13520431518554688,
+					"unclassified": 0.055912017822265625,
+					"boundaries.country + boundaries.state": 0.0029296875,
+					"boundaries.country": 0.001201629638671875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.005157470703125,
+					"water.rivers": 0.0004119873046875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.003265380859375,
+					"roads.footway + roads.paths + roads.steps": 0.000766754150390625,
+					"roads.paths": 0.000263214111328125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000904083251953125,
+					"roads.streets.bus + roads.streets.service": 0.00072479248046875,
+					"land.urban": 0.00000762939453125,
+					"roads.motorways": 0.01253509521484375
+				},
+				"protomaps": {
+					"background": 0.7902793884277344,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.1360626220703125,
+					"unclassified": 0.04607391357421875,
+					"boundaries.country + boundaries.state": 0.00295257568359375,
+					"boundaries.country": 0.000965118408203125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.001636505126953125,
+					"land.urban": 0.000202178955078125,
+					"water.rivers": 0.000141143798828125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000934600830078125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.003849029541015625,
+					"roads.streets.bus + roads.streets.service": 0.000530242919921875,
+					"land.rock": 0.003841400146484375,
+					"roads.footway + roads.paths + roads.steps": 0.0000152587890625,
+					"roads.motorways": 0.012516021728515625
+				}
+			}
+		},
+		{
+			"view": "zermatt-lifts-z13",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.02109527587890625,
+				"shortbread~protomaps": 0.0036773681640625,
+				"omt~protomaps": 0.022937774658203125
+			},
+			"full": {
+				"shortbread~omt": 0.026096343994140625,
+				"shortbread~protomaps": 0.017253875732421875,
+				"omt~protomaps": 0.036182403564453125
+			},
+			"classes": {
+				"shortbread": {
+					"land.vegetation": 0.35601043701171875,
+					"unclassified": 0.065673828125,
+					"land.rock": 0.1327362060546875,
+					"background": 0.017803192138671875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00128936767578125,
+					"water.rivers": 0.0002899169921875,
+					"land.forest": 0.3313865661621094,
+					"land.urban": 0.08793258666992188,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.0002593994140625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.0024261474609375,
+					"roads.motorways": 0.000003814697265625,
+					"boundaries.country": 0.0001068115234375,
+					"roads.streets.bus": 0.00051116943359375,
+					"transit.aerialways + transit.rail": 0.00347137451171875,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"transit.rail": 0.000091552734375
+				},
+				"omt": {
+					"land.vegetation": 0.3493309020996094,
+					"unclassified": 0.06968307495117188,
+					"land.rock": 0.1305999755859375,
+					"background": 0.028697967529296875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.001232147216796875,
+					"water.rivers": 0.00164794921875,
+					"land.forest": 0.32453155517578125,
+					"land.urban": 0.0891571044921875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000156402587890625,
+					"boundaries.country": 0.0010986328125,
+					"roads.motorways": 0.000003814697265625,
+					"roads.streets.bus": 0.00035858154296875,
+					"transit.aerialways + transit.rail": 0.003437042236328125,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.000057220458984375
+				},
+				"protomaps": {
+					"land.vegetation": 0.3557090759277344,
+					"unclassified": 0.07289505004882812,
+					"background": 0.035816192626953125,
+					"land.rock": 0.1105499267578125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0012359619140625,
+					"water.rivers": 0.001651763916015625,
+					"land.forest": 0.3308372497558594,
+					"land.urban": 0.08812332153320312,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential": 0.000244140625,
+					"boundaries.country": 0.00107574462890625,
+					"roads.streets.bus": 0.0005035400390625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.000087738037109375,
+					"transit.rail": 0.0000457763671875,
+					"roads.highways + roads.streets.residential": 0.00000762939453125,
+					"transit.aerialways + transit.rail": 0.00121307373046875,
+					"boundaries.country + boundaries.state": 0.000003814697265625
+				}
+			}
+		},
+		{
+			"view": "berlin-z16",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.016696929931640625,
+				"shortbread~protomaps": 0.029529571533203125,
+				"omt~protomaps": 0.028270721435546875
+			},
+			"full": {
+				"shortbread~omt": 0.019344329833984375,
+				"shortbread~protomaps": 0.043609619140625,
+				"omt~protomaps": 0.043888092041015625
+			},
+			"classes": {
+				"shortbread": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.1789398193359375,
+					"unclassified": 0.1606292724609375,
+					"background": 0.17282485961914062,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.08952713012695312,
+					"land.vegetation": 0.08441925048828125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.014690399169921875,
+					"buildings": 0.2553825378417969,
+					"roads.footway + roads.paths + roads.steps": 0.004459381103515625,
+					"land.urban": 0.01746368408203125,
+					"roads.streets.bus + roads.streets.service": 0.00341796875,
+					"transit.rail": 0.000080108642578125,
+					"transit.aerialways + transit.rail": 0.000026702880859375,
+					"roads.paths": 0.004322052001953125,
+					"boundaries.country": 0.000270843505859375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.000041961669921875,
+					"roads.motorways": 0.000026702880859375,
+					"sites": 0.00060272216796875,
+					"boundaries.country + boundaries.state": 0.000003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00006103515625,
+					"water.rivers": 0.00003814697265625,
+					"roads.highways + roads.motorways": 0.0127716064453125
+				},
+				"omt": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.16903305053710938,
+					"boundaries.country": 0.003875732421875,
+					"water.rivers": 0.00634002685546875,
+					"unclassified": 0.15395355224609375,
+					"background": 0.18103790283203125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.097991943359375,
+					"land.vegetation": 0.08152389526367188,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0146942138671875,
+					"buildings": 0.25305938720703125,
+					"roads.footway + roads.paths + roads.steps": 0.0039215087890625,
+					"land.urban": 0.018047332763671875,
+					"roads.streets.bus + roads.streets.service": 0.00342559814453125,
+					"transit.rail": 0.000091552734375,
+					"transit.aerialways + transit.rail": 0.000030517578125,
+					"sites": 0.00008392333984375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000041961669921875,
+					"roads.highways + roads.motorways": 0.012847900390625
+				},
+				"protomaps": {
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.16801071166992188,
+					"boundaries.country": 0.00368499755859375,
+					"water.rivers": 0.006313323974609375,
+					"unclassified": 0.15366363525390625,
+					"background": 0.20243072509765625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.077056884765625,
+					"land.vegetation": 0.08234786987304688,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.01465606689453125,
+					"buildings": 0.257415771484375,
+					"land.urban": 0.01496124267578125,
+					"roads.footway + roads.paths + roads.steps": 0.003017425537109375,
+					"transit.aerialways + transit.rail": 0.000030517578125,
+					"roads.streets.bus + roads.streets.service": 0.003398895263671875,
+					"transit.rail": 0.0000762939453125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000026702880859375,
+					"roads.highways + roads.motorways": 0.012889862060546875,
+					"sites": 0.000019073486328125
+				}
+			}
+		},
+		{
+			"view": "amsterdam-z16",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0.00152587890625,
+				"omt~protomaps": 0.0015106201171875
+			},
+			"full": {
+				"shortbread~omt": 0.012939453125,
+				"shortbread~protomaps": 0.046966552734375,
+				"omt~protomaps": 0.0401153564453125
+			},
+			"classes": {
+				"shortbread": {
+					"buildings": 0.4509735107421875,
+					"unclassified": 0.19725418090820312,
+					"background": 0.013996124267578125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.04010772705078125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.060573577880859375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.15468978881835938,
+					"land.urban": 0.06946182250976562,
+					"transit.aerialways + transit.rail": 0.000133514404296875,
+					"transit.rail": 0.0005340576171875,
+					"roads.footway + roads.paths + roads.steps": 0.00154876708984375,
+					"boundaries.country": 0.00037384033203125,
+					"roads.paths": 0.000301361083984375,
+					"boundaries.country + boundaries.state": 0.00008392333984375,
+					"roads.streets.bus + roads.streets.service": 0.00099945068359375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000286102294921875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008636474609375,
+					"roads.motorways": 0.000030517578125,
+					"sites": 0.0000152587890625
+				},
+				"omt": {
+					"buildings": 0.44892120361328125,
+					"unclassified": 0.19762039184570312,
+					"background": 0.013996124267578125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.040523529052734375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.060638427734375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.13980865478515625,
+					"boundaries.country": 0.007328033447265625,
+					"water.rivers": 0.00792694091796875,
+					"land.urban": 0.07088470458984375,
+					"transit.aerialways + transit.rail": 0.00012969970703125,
+					"transit.rail": 0.000530242919921875,
+					"roads.footway + roads.paths + roads.steps": 0.001338958740234375,
+					"roads.paths": 0.000301361083984375,
+					"boundaries.country + boundaries.state": 0.00008392333984375,
+					"roads.streets.bus + roads.streets.service": 0.001007080078125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000270843505859375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008640289306640625,
+					"roads.motorways": 0.000034332275390625,
+					"sites": 0.0000152587890625
+				},
+				"protomaps": {
+					"buildings": 0.4534645080566406,
+					"unclassified": 0.166229248046875,
+					"background": 0.04055023193359375,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.037899017333984375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0605621337890625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.14010238647460938,
+					"water.rivers": 0.00791168212890625,
+					"land.urban": 0.0735321044921875,
+					"roads.footway + roads.paths + roads.steps": 0.001338958740234375,
+					"transit.aerialways + transit.rail": 0.000110626220703125,
+					"boundaries.country": 0.00736236572265625,
+					"transit.rail": 0.00057220458984375,
+					"roads.streets.bus + roads.streets.service": 0.001026153564453125,
+					"roads.paths": 0.000293731689453125,
+					"boundaries.country + boundaries.state": 0.00008392333984375,
+					"roads.motorways": 0.000034332275390625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000232696533203125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008663177490234375,
+					"sites": 0.000030517578125
+				}
+			}
+		},
+		{
+			"view": "london-z15",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.010955810546875,
+				"shortbread~protomaps": 0.015106201171875,
+				"omt~protomaps": 0.012683868408203125
+			},
+			"full": {
+				"shortbread~omt": 0.0304107666015625,
+				"shortbread~protomaps": 0.041477203369140625,
+				"omt~protomaps": 0.0334014892578125
+			},
+			"classes": {
+				"shortbread": {
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.06659698486328125,
+					"unclassified": 0.20547103881835938,
+					"roads.streets.bus + roads.streets.service": 0.00583648681640625,
+					"buildings": 0.21968460083007812,
+					"land.vegetation": 0.006389617919921875,
+					"roads.highways + roads.motorways": 0.04102325439453125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00844573974609375,
+					"background": 0.03570556640625,
+					"roads.footway + roads.paths + roads.steps": 0.0036163330078125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.29701995849609375,
+					"transit.ferries": 0.000640869140625,
+					"boundaries.country": 0.003376007080078125,
+					"water.rivers": 0.0027923583984375,
+					"water.piers": 0.003208160400390625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.007701873779296875,
+					"land.urban": 0.02577972412109375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0006103515625,
+					"transit.rail": 0.0020294189453125,
+					"sites": 0.036468505859375,
+					"transit.aerialways + transit.rail": 0.001575469970703125,
+					"roads.paths": 0.000118255615234375,
+					"roads.motorways": 0.000049591064453125,
+					"boundaries.country + boundaries.state": 0.00006103515625,
+					"land.agriculture": 0.000431060791015625,
+					"land.forest": 0.02536773681640625
+				},
+				"omt": {
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.06764602661132812,
+					"unclassified": 0.19585418701171875,
+					"roads.streets.bus + roads.streets.service": 0.00585174560546875,
+					"buildings": 0.2186126708984375,
+					"roads.paths": 0.000148773193359375,
+					"roads.motorways": 0.000080108642578125,
+					"land.vegetation": 0.0063934326171875,
+					"roads.highways + roads.motorways": 0.041164398193359375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008563995361328125,
+					"background": 0.04712677001953125,
+					"roads.footway + roads.paths + roads.steps": 0.0032196044921875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.29572296142578125,
+					"transit.ferries": 0.00064849853515625,
+					"boundaries.country": 0.005802154541015625,
+					"water.rivers": 0.00638580322265625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.007717132568359375,
+					"land.urban": 0.024929046630859375,
+					"transit.rail": 0.0018768310546875,
+					"transit.aerialways + transit.rail": 0.0015106201171875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000492095947265625,
+					"sites": 0.032634735107421875,
+					"land.forest": 0.02693939208984375,
+					"land.wetland": 0.000675201416015625,
+					"boundaries.country + boundaries.state": 0.000003814697265625
+				},
+				"protomaps": {
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.03874969482421875,
+					"unclassified": 0.1977996826171875,
+					"roads.streets.bus + roads.streets.service": 0.0059967041015625,
+					"buildings": 0.22516632080078125,
+					"roads.paths": 0.000213623046875,
+					"roads.motorways": 0.00005340576171875,
+					"land.vegetation": 0.006992340087890625,
+					"background": 0.06437301635742188,
+					"roads.highways + roads.motorways": 0.04117584228515625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.008724212646484375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.29084014892578125,
+					"boundaries.country": 0.005977630615234375,
+					"transit.ferries": 0.000637054443359375,
+					"water.rivers": 0.006259918212890625,
+					"water.piers": 0.00321197509765625,
+					"land.urban": 0.025421142578125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0081787109375,
+					"roads.footway + roads.paths + roads.steps": 0.00260162353515625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000484466552734375,
+					"transit.rail": 0.00188446044921875,
+					"transit.aerialways + transit.rail": 0.001827239990234375,
+					"sites": 0.03478240966796875,
+					"boundaries.country + boundaries.state": 0.000034332275390625,
+					"land.agriculture": 0.0005340576171875,
+					"land.forest": 0.027393341064453125,
+					"land.wetland": 0.0006866455078125
+				}
+			}
+		},
+		{
+			"view": "new-york-z16",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.00273895263671875,
+				"shortbread~protomaps": 0.054935455322265625,
+				"omt~protomaps": 0.05088043212890625
+			},
+			"full": {
+				"shortbread~omt": 0.007030487060546875,
+				"shortbread~protomaps": 0.093414306640625,
+				"omt~protomaps": 0.08510208129882812
+			},
+			"classes": {
+				"shortbread": {
+					"background": 0.044338226318359375,
+					"unclassified": 0.2737236022949219,
+					"roads.footway + roads.paths + roads.steps": 0.006046295166015625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.14110565185546875,
+					"buildings": 0.17644500732421875,
+					"roads.streets.bus + roads.streets.service": 0.00576019287109375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0178375244140625,
+					"land.vegetation": 0.07025146484375,
+					"land.urban": 0.0417633056640625,
+					"roads.highways + roads.motorways": 0.08768081665039062,
+					"transit.rail": 0.00019073486328125,
+					"transit.aerialways + transit.rail": 0.000102996826171875,
+					"sites": 0.03189849853515625,
+					"roads.motorways": 0.051372528076171875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00237274169921875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.005214691162109375,
+					"roads.paths": 0.000102996826171875,
+					"boundaries.country + boundaries.state": 0.0000457763671875,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.043308258056640625,
+					"boundaries.country": 0.000026702880859375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000003814697265625,
+					"water.rivers": 0.000003814697265625,
+					"land.sand": 0.00040435791015625
+				},
+				"omt": {
+					"background": 0.06600570678710938,
+					"unclassified": 0.26309967041015625,
+					"roads.footway + roads.paths + roads.steps": 0.005779266357421875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.14249038696289062,
+					"buildings": 0.17656326293945312,
+					"roads.streets.bus + roads.streets.service": 0.005809783935546875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.017871856689453125,
+					"land.vegetation": 0.07135772705078125,
+					"land.urban": 0.0535888671875,
+					"roads.highways + roads.motorways": 0.08782958984375,
+					"transit.rail": 0.0001678466796875,
+					"transit.aerialways + transit.rail": 0.000091552734375,
+					"roads.motorways": 0.050640106201171875,
+					"sites": 0.009838104248046875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00193023681640625,
+					"roads.paths": 0.000102996826171875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00272369384765625,
+					"boundaries.country + boundaries.state": 0.000011444091796875,
+					"land.forest": 0.0000762939453125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.043315887451171875,
+					"boundaries.country": 0.000034332275390625,
+					"land.sand": 0.000400543212890625,
+					"land.rock": 0.000270843505859375
+				},
+				"protomaps": {
+					"background": 0.10825729370117188,
+					"unclassified": 0.23104095458984375,
+					"buildings": 0.1903076171875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.07158660888671875,
+					"roads.streets.bus + roads.streets.service": 0.0061492919921875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.017826080322265625,
+					"land.vegetation": 0.08868026733398438,
+					"land.urban": 0.08723068237304688,
+					"roads.highways + roads.motorways": 0.088531494140625,
+					"roads.footway + roads.paths + roads.steps": 0.00205230712890625,
+					"sites": 0.00975799560546875,
+					"transit.rail": 0.000331878662109375,
+					"transit.aerialways + transit.rail": 0.000064849853515625,
+					"boundaries.country + boundaries.state": 0.000030517578125,
+					"roads.motorways": 0.050441741943359375,
+					"roads.paths": 0.00009918212890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0005950927734375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.002918243408203125,
+					"land.forest": 0.00006866455078125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.04332733154296875,
+					"boundaries.country": 0.000034332275390625,
+					"land.sand": 0.000415802001953125,
+					"land.rock": 0.00025177001953125
+				}
+			}
+		},
+		{
+			"view": "tokyo-z16",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.0071868896484375,
+				"shortbread~protomaps": 0.0259857177734375,
+				"omt~protomaps": 0.018878936767578125
+			},
+			"full": {
+				"shortbread~omt": 0.012897491455078125,
+				"shortbread~protomaps": 0.042694091796875,
+				"omt~protomaps": 0.036571502685546875
+			},
+			"classes": {
+				"shortbread": {
+					"buildings": 0.23492050170898438,
+					"unclassified": 0.3227195739746094,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.038951873779296875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.20254898071289062,
+					"roads.footway + roads.paths + roads.steps": 0.005985260009765625,
+					"roads.streets.bus + roads.streets.service": 0.009029388427734375,
+					"roads.highways + roads.motorways": 0.06737136840820312,
+					"land.urban": 0.026767730712890625,
+					"background": 0.0572967529296875,
+					"roads.paths": 0.00380706787109375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.003692626953125,
+					"transit.rail": 0.009674072265625,
+					"transit.aerialways + transit.rail": 0.011524200439453125,
+					"roads.motorways": 0.000141143798828125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00077056884765625,
+					"sites": 0.001789093017578125,
+					"land.forest": 0.000263214111328125,
+					"boundaries.country + boundaries.state": 0.000034332275390625,
+					"land.vegetation": 0.002712249755859375
+				},
+				"omt": {
+					"buildings": 0.23418807983398438,
+					"unclassified": 0.2532920837402344,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.21586990356445312,
+					"roads.footway + roads.paths + roads.steps": 0.006011962890625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03556060791015625,
+					"roads.streets.bus + roads.streets.service": 0.008594512939453125,
+					"roads.highways + roads.motorways": 0.06689834594726562,
+					"land.urban": 0.02507781982421875,
+					"background": 0.1289825439453125,
+					"transit.rail": 0.009441375732421875,
+					"transit.aerialways + transit.rail": 0.011493682861328125,
+					"roads.motorways": 0.00009918212890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000881195068359375,
+					"land.forest": 0.00032806396484375,
+					"land.vegetation": 0.00281524658203125,
+					"sites": 0.00026702880859375,
+					"boundaries.country + boundaries.state": 0.000011444091796875,
+					"roads.paths": 0.000179290771484375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00000762939453125
+				},
+				"protomaps": {
+					"buildings": 0.2370147705078125,
+					"unclassified": 0.281036376953125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.175384521484375,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.035839080810546875,
+					"roads.streets.bus + roads.streets.service": 0.008640289306640625,
+					"roads.highways + roads.motorways": 0.06709671020507812,
+					"background": 0.14003372192382812,
+					"transit.rail": 0.00946044921875,
+					"transit.aerialways + transit.rail": 0.01160430908203125,
+					"roads.footway + roads.paths + roads.steps": 0.004993438720703125,
+					"roads.motorways": 0.000133514404296875,
+					"land.urban": 0.0244293212890625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00087738037109375,
+					"land.forest": 0.000232696533203125,
+					"land.vegetation": 0.002727508544921875,
+					"sites": 0.000286102294921875,
+					"roads.paths": 0.000179290771484375,
+					"boundaries.country + boundaries.state": 0.00002288818359375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00000762939453125
+				}
+			}
+		},
+		{
+			"view": "schiphol-airport-z15",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.01041412353515625,
+				"shortbread~protomaps": 0.010433197021484375,
+				"omt~protomaps": 0.00002288818359375
+			},
+			"full": {
+				"shortbread~omt": 0.02289581298828125,
+				"shortbread~protomaps": 0.04798126220703125,
+				"omt~protomaps": 0.034534454345703125
+			},
+			"classes": {
+				"shortbread": {
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03699493408203125,
+					"unclassified": 0.20618438720703125,
+					"background": 0.3039093017578125,
+					"roads.streets.bus + roads.streets.service": 0.015644073486328125,
+					"buildings": 0.26720428466796875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.06969451904296875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.0004425048828125,
+					"transit.rail": 0.000518798828125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00179290771484375,
+					"transit.aerialways + transit.rail": 0.000057220458984375,
+					"roads.footway + roads.paths + roads.steps": 0.000396728515625,
+					"land.urban": 0.001056671142578125,
+					"roads.paths": 0.00038909912109375,
+					"land.vegetation": 0.033199310302734375,
+					"sites": 0.00045013427734375,
+					"roads.highways + roads.motorways": 0.03322601318359375,
+					"roads.motorways": 0.000030517578125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.002971649169921875,
+					"boundaries.country": 0.00006866455078125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.015270233154296875,
+					"boundaries.country + boundaries.state": 0.000026702880859375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000003814697265625,
+					"water.rivers": 0.000003814697265625,
+					"land.agriculture": 0.010463714599609375
+				},
+				"omt": {
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.21395492553710938,
+					"unclassified": 0.1994476318359375,
+					"background": 0.14110183715820312,
+					"roads.streets.bus + roads.streets.service": 0.016117095947265625,
+					"buildings": 0.2699317932128906,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0696258544921875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000446319580078125,
+					"land.urban": 0.002197265625,
+					"roads.footway + roads.paths + roads.steps": 0.000675201416015625,
+					"transit.aerialways + transit.rail": 0.000041961669921875,
+					"transit.rail": 0.000446319580078125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000415802001953125,
+					"roads.paths": 0.000186920166015625,
+					"land.vegetation": 0.03394317626953125,
+					"sites": 0.0001373291015625,
+					"roads.highways + roads.motorways": 0.033191680908203125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.002780914306640625,
+					"roads.motorways": 0.00000762939453125,
+					"boundaries.country": 0.00006866455078125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.015270233154296875,
+					"boundaries.country + boundaries.state": 0.00000762939453125,
+					"water.rivers": 0.000003814697265625
+				},
+				"protomaps": {
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.038238525390625,
+					"unclassified": 0.19927215576171875,
+					"background": 0.321044921875,
+					"roads.streets.bus + roads.streets.service": 0.0159759521484375,
+					"buildings": 0.26779937744140625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.06958770751953125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.00045013427734375,
+					"transit.rail": 0.00035858154296875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000324249267578125,
+					"roads.footway + roads.paths + roads.steps": 0.0003814697265625,
+					"land.urban": 0.00092315673828125,
+					"transit.aerialways + transit.rail": 0.00002288818359375,
+					"roads.paths": 0.00022125244140625,
+					"land.vegetation": 0.034027099609375,
+					"roads.highways + roads.motorways": 0.0332183837890625,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.002796173095703125,
+					"roads.motorways": 0.00000762939453125,
+					"sites": 0.000034332275390625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.0152740478515625,
+					"boundaries.country": 0.000034332275390625,
+					"water.rivers": 0.00000762939453125
+				}
+			}
+		},
+		{
+			"view": "hoover-dam-z16",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0,
+				"shortbread~protomaps": 0.00998687744140625,
+				"omt~protomaps": 0.009075164794921875
+			},
+			"full": {
+				"shortbread~omt": 0.012451171875,
+				"shortbread~protomaps": 0.009700775146484375,
+				"omt~protomaps": 0.022998809814453125
+			},
+			"classes": {
+				"shortbread": {
+					"land.rock": 0.37181854248046875,
+					"unclassified": 0.047534942626953125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.3541221618652344,
+					"background": 0.033473968505859375,
+					"sites": 0.01016998291015625,
+					"roads.streets.bus + roads.streets.service": 0.00238800048828125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0100250244140625,
+					"boundaries.country": 0.000423431396484375,
+					"water.rivers": 0.00014495849609375,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.02475738525390625,
+					"roads.footway + roads.paths + roads.steps": 0.00171661376953125,
+					"land.urban": 0.000041961669921875,
+					"boundaries.country + boundaries.state": 0.00293731689453125,
+					"transit.rail": 0.000141143798828125,
+					"buildings": 0.07497024536132812,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00012969970703125,
+					"roads.motorways": 0.00012969970703125,
+					"roads.paths": 0.0001220703125,
+					"water.piers": 0.06473159790039062,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00022125244140625
+				},
+				"omt": {
+					"land.rock": 0.4424171447753906,
+					"unclassified": 0.04386138916015625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.3531608581542969,
+					"boundaries.country": 0.000835418701171875,
+					"background": 0.04128265380859375,
+					"roads.streets.bus + roads.streets.service": 0.0023956298828125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0099639892578125,
+					"water.rivers": 0.000579833984375,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.024913787841796875,
+					"land.urban": 0.000041961669921875,
+					"roads.footway + roads.paths + roads.steps": 0.001895904541015625,
+					"boundaries.country + boundaries.state": 0.00293731689453125,
+					"buildings": 0.0756072998046875,
+					"sites": 0.0000152587890625,
+					"transit.rail": 0.00006103515625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00002288818359375,
+					"roads.motorways": 0.00000762939453125
+				},
+				"protomaps": {
+					"background": 0.5052566528320312,
+					"unclassified": 0.0379180908203125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.35774993896484375,
+					"roads.streets.bus + roads.streets.service": 0.002445220947265625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.010280609130859375,
+					"boundaries.country": 0.00083160400390625,
+					"roads.footway + roads.paths + roads.steps": 0.00048065185546875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0054168701171875,
+					"land.urban": 0.000095367431640625,
+					"boundaries.country + boundaries.state": 0.00295257568359375,
+					"buildings": 0.0761260986328125,
+					"transit.rail": 0.00003814697265625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000019073486328125,
+					"water.rivers": 0.00038909912109375
+				}
+			}
+		},
+		{
+			"view": "zermatt-lifts-z15",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.000148773193359375,
+				"shortbread~protomaps": 0.00023651123046875,
+				"omt~protomaps": 0.000072479248046875
+			},
+			"full": {
+				"shortbread~omt": 0.015216827392578125,
+				"shortbread~protomaps": 0.0326995849609375,
+				"omt~protomaps": 0.0300140380859375
+			},
+			"classes": {
+				"shortbread": {
+					"land.rock": 0.00157928466796875,
+					"unclassified": 0.19350814819335938,
+					"land.vegetation": 0.09708023071289062,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.10535049438476562,
+					"land.forest": 0.11053085327148438,
+					"buildings": 0.2415618896484375,
+					"land.urban": 0.22343063354492188,
+					"boundaries.country + boundaries.state": 0.0002593994140625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.01190948486328125,
+					"transit.aerialways + transit.rail": 0.0006561279296875,
+					"roads.paths": 0.000453948974609375,
+					"transit.rail": 0.00180816650390625,
+					"roads.footway + roads.paths + roads.steps": 0.000949859619140625,
+					"roads.motorways": 0.000087738037109375,
+					"roads.streets.bus + roads.streets.service": 0.00057220458984375,
+					"boundaries.country": 0.00017547607421875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000881195068359375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0000457763671875,
+					"water.rivers": 0.000347137451171875,
+					"background": 0.0087127685546875,
+					"sites": 0.000049591064453125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000011444091796875,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00003814697265625
+				},
+				"omt": {
+					"land.rock": 0.00157928466796875,
+					"unclassified": 0.19375228881835938,
+					"land.vegetation": 0.0969085693359375,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.10565185546875,
+					"land.forest": 0.11054611206054688,
+					"buildings": 0.24151992797851562,
+					"land.urban": 0.21901321411132812,
+					"boundaries.country + boundaries.state": 0.000255584716796875,
+					"transit.aerialways + transit.rail": 0.000667572021484375,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.004726409912109375,
+					"boundaries.country": 0.002899169921875,
+					"water.rivers": 0.0047760009765625,
+					"roads.paths": 0.000377655029296875,
+					"transit.rail": 0.001796722412109375,
+					"roads.footway + roads.paths + roads.steps": 0.001003265380859375,
+					"roads.motorways": 0.00008392333984375,
+					"roads.streets.bus + roads.streets.service": 0.000522613525390625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.00002288818359375,
+					"sites": 0.0044708251953125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000675201416015625,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.0000457763671875,
+					"background": 0.00870513916015625
+				},
+				"protomaps": {
+					"land.rock": 0.000003814697265625,
+					"unclassified": 0.19339752197265625,
+					"land.vegetation": 0.096923828125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.1059112548828125,
+					"land.forest": 0.11053085327148438,
+					"buildings": 0.241424560546875,
+					"land.urban": 0.21901702880859375,
+					"roads.paths": 0.000400543212890625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.004871368408203125,
+					"boundaries.country": 0.0028228759765625,
+					"water.rivers": 0.00469207763671875,
+					"transit.rail": 0.00189971923828125,
+					"transit.aerialways + transit.rail": 0.00063323974609375,
+					"roads.footway + roads.paths + roads.steps": 0.001049041748046875,
+					"roads.motorways": 0.0000762939453125,
+					"roads.streets.bus + roads.streets.service": 0.00057220458984375,
+					"boundaries.country + boundaries.state": 0.00020599365234375,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.track": 0.000030517578125,
+					"sites": 0.00450897216796875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00067138671875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000041961669921875,
+					"background": 0.01031494140625
+				}
+			}
+		},
+		{
+			"view": "berlin-z17",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.030307769775390625,
+				"shortbread~protomaps": 0.054294586181640625,
+				"omt~protomaps": 0.050079345703125
+			},
+			"full": {
+				"shortbread~omt": 0.034881591796875,
+				"shortbread~protomaps": 0.0620880126953125,
+				"omt~protomaps": 0.057277679443359375
+			},
+			"classes": {
+				"shortbread": {
+					"unclassified": 0.16942596435546875,
+					"background": 0.19780731201171875,
+					"roads.streets.bus + roads.streets.service": 0.0072479248046875,
+					"land.urban": 0.02520751953125,
+					"buildings": 0.16743850708007812,
+					"roads.footway + roads.paths + roads.steps": 0.002147674560546875,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.050189971923828125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.19736099243164062,
+					"boundaries.country": 0.00017547607421875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03423309326171875,
+					"sites": 0.001918792724609375,
+					"transit.rail": 0.000064849853515625,
+					"land.vegetation": 0.137451171875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.000019073486328125,
+					"water.rivers": 0.000030517578125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.003093719482421875,
+					"roads.motorways": 0.000011444091796875,
+					"roads.paths": 0.006175994873046875
+				},
+				"omt": {
+					"unclassified": 0.14497756958007812,
+					"background": 0.23096847534179688,
+					"roads.streets.bus + roads.streets.service": 0.0073394775390625,
+					"land.urban": 0.027790069580078125,
+					"buildings": 0.16745758056640625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.060855865478515625,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.19221878051757812,
+					"water.rivers": 0.003753662109375,
+					"boundaries.country": 0.0015869140625,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.03423309326171875,
+					"roads.footway + roads.paths + roads.steps": 0.001934051513671875,
+					"sites": 0.0000457763671875,
+					"transit.rail": 0.00006866455078125,
+					"land.vegetation": 0.12676620483398438,
+					"roads.motorways": 0.000003814697265625
+				},
+				"protomaps": {
+					"unclassified": 0.14225006103515625,
+					"background": 0.25012969970703125,
+					"roads.streets.bus + roads.streets.service": 0.007350921630859375,
+					"land.urban": 0.021587371826171875,
+					"buildings": 0.1688995361328125,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.04969024658203125,
+					"water.lakes + water.ocean + water.piers + water.rivers": 0.191009521484375,
+					"boundaries.country": 0.00174713134765625,
+					"water.rivers": 0.003795623779296875,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.034210205078125,
+					"roads.footway + roads.paths + roads.steps": 0.001941680908203125,
+					"transit.rail": 0.00006866455078125,
+					"land.vegetation": 0.12730789184570312,
+					"sites": 0.000003814697265625,
+					"transit.aerialways + transit.rail": 0.00000762939453125
+				}
+			}
+		},
+		{
+			"view": "new-york-z17",
+			"complete": true,
+			"failures": [],
+			"geometry": {
+				"shortbread~omt": 0.005649566650390625,
+				"shortbread~protomaps": 0.0278778076171875,
+				"omt~protomaps": 0.019985198974609375
+			},
+			"full": {
+				"shortbread~omt": 0.007823944091796875,
+				"shortbread~protomaps": 0.05522918701171875,
+				"omt~protomaps": 0.04744720458984375
+			},
+			"classes": {
+				"shortbread": {
+					"buildings": 0.12209320068359375,
+					"unclassified": 0.22005081176757812,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.08899307250976562,
+					"background": 0.040615081787109375,
+					"land.urban": 0.08477783203125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.003025054931640625,
+					"roads.highways + roads.motorways": 0.11885833740234375,
+					"land.vegetation": 0.22118759155273438,
+					"roads.footway + roads.paths + roads.steps": 0.003063201904296875,
+					"roads.motorways": 0.03429412841796875,
+					"transit.aerialways + transit.rail": 0.000011444091796875,
+					"boundaries.country + boundaries.state": 0.000003814697265625,
+					"roads.streets.bus + roads.streets.service": 0.0074615478515625,
+					"sites": 0.053974151611328125,
+					"transit.rail": 0.000171661376953125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.001247406005859375,
+					"roads.paths": 0.000041961669921875,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00012969970703125
+				},
+				"omt": {
+					"buildings": 0.12202835083007812,
+					"unclassified": 0.22153091430664062,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0890960693359375,
+					"land.urban": 0.09927749633789062,
+					"background": 0.0501251220703125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00305938720703125,
+					"roads.highways + roads.motorways": 0.1191253662109375,
+					"land.vegetation": 0.22545242309570312,
+					"roads.footway + roads.paths + roads.steps": 0.003055572509765625,
+					"roads.motorways": 0.03420257568359375,
+					"transit.aerialways + transit.rail": 0.000011444091796875,
+					"roads.streets.bus + roads.streets.service": 0.00757598876953125,
+					"transit.rail": 0.00017547607421875,
+					"sites": 0.02374267578125,
+					"roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.00012969970703125,
+					"land.forest": 0.00008392333984375,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00128173828125,
+					"roads.paths": 0.0000457763671875
+				},
+				"protomaps": {
+					"buildings": 0.1262359619140625,
+					"unclassified": 0.1471099853515625,
+					"roads.footway + roads.paths + roads.steps + roads.streets.pedestrian": 0.0639190673828125,
+					"background": 0.083740234375,
+					"roads.streets.bus + roads.streets.service": 0.008575439453125,
+					"airport + roads.highways + roads.streets.pedestrian + roads.streets.residential + roads.streets.service + roads.streets.track": 0.003139495849609375,
+					"roads.highways + roads.motorways": 0.11931991577148438,
+					"land.urban": 0.14257049560546875,
+					"land.vegetation": 0.24422454833984375,
+					"roads.footway + roads.paths + roads.steps": 0.001018524169921875,
+					"sites": 0.023590087890625,
+					"transit.rail": 0.000377655029296875,
+					"transit.aerialways + transit.rail": 0.000011444091796875,
+					"roads.motorways": 0.034442901611328125,
+					"boundaries.country + boundaries.state": 0.000011444091796875,
+					"land.forest": 0.0000762939453125,
+					"roads.paths + roads.streets.pedestrian + roads.streets.residential": 0.00157928466796875,
+					"roads.paths": 0.000057220458984375
+				}
+			}
+		}
+	]
+}
