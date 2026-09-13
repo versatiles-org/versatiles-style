@@ -6,6 +6,7 @@ import { airport } from './airport.js';
 import { background } from './background.js';
 import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
+import { pois } from './pois.js';
 import { buildings, buildings3d } from './buildings.js';
 import { featureLabels, placeLabels, addresses } from './labels.js';
 import { landcover } from './landcover.js';
@@ -61,7 +62,7 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* boundaries(ctx);
 	yield* addresses(ctx);
 	yield* markings(ctx);
-	// yield* pois(ctx);        // `poi`
+	yield* pois(ctx);
 	yield slot(SLOT_BELOW_LABELS);
 	yield* featureLabels(ctx);
 	// Transit stops sit between the two label bands so a stop outranks the street name it stands on;

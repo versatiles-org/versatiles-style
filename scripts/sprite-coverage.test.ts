@@ -77,3 +77,41 @@ describe('sprite coverage', () => {
 		expect(used, 'the public sheets are opt-in for users; built-in styles should not depend on them').toEqual([]);
 	});
 });
+
+// ── Schemas that are not published ────────────────────────────────────────────
+//
+// The checks above walk `getStyleVariants()`, which is Shortbread only: SCHEMA-SUPPORT-PLAN.md §5.5
+// decided against publishing variants for other schemas, so their icon references are invisible to them.
+// That is risk 13 — and the same §5.5 turns it into a design constraint: another schema must reuse the
+// icons `base` already carries, never grow the sheet, since every map downloads it.
+//
+// Only direction (1) is checked here. Direction (2) — an icon built but unused — deliberately stays
+// Shortbread-only: an icon that only the OpenMapTiles style referenced would otherwise count as "used"
+// and keep dead weight in a sheet the CDN ships for Shortbread maps.
+describe('unpublished schemas reuse the existing icons', () => {
+	it('every sprite the OpenMapTiles style references exists in the sheets', async () => {
+		const { resolveOsm } = await import('../src/options/index.js');
+		const { buildContext } = await import('../src/omt/context.js');
+		const { buildStyleLayers } = await import('../src/omt/layers/index.js');
+
+		const available = availableIds();
+		const missing = new Map<string, string[]>();
+		const walk = (value: unknown, layerId: string): void => {
+			if (typeof value === 'string') {
+				if (SHEET_ID_RE.test(value) && !value.startsWith('noto_') && !available.has(value)) {
+					missing.set(value, [...(missing.get(value) ?? []), layerId]);
+				}
+				return;
+			}
+			if (Array.isArray(value)) for (const item of value) walk(item, layerId);
+			if (value && typeof value === 'object') for (const v of Object.values(value)) walk(v, layerId);
+		};
+		for (const layer of buildStyleLayers(buildContext(resolveOsm()))) {
+			walk((layer as { layout?: unknown }).layout, layer.id);
+		}
+		expect(
+			[...missing].map(([id, layers]) => `${id} (${layers.join(', ')})`),
+			'sprites referenced by the OpenMapTiles style that no sheet contains'
+		).toEqual([]);
+	});
+});

@@ -184,6 +184,7 @@ describe('group tagging', () => {
 			'land.vegetation',
 			'land.wetland',
 			'markings',
+			'pois',
 			'roads.footway',
 			'roads.highways',
 			'roads.motorways',
