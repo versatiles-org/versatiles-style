@@ -26,8 +26,20 @@ import { emitRoads, type RoadVocabulary } from '../../cartography/roads.js';
 
 const LINES: FilterSpecification = ['==', ['geometry-type'], 'LineString'];
 
-/** `kind_detail` values per structural type, keyed by the layer id the shared style dispatches on. */
-const PATHS: Record<string, string> = { footway: 'footway', steps: 'steps', path: 'path', cycleway: 'cycleway' };
+/**
+ * `kind_detail` values per structural type, keyed by the layer id the shared style dispatches on.
+ *
+ * Protomaps splits OSM's footways by their `footway=*` tag: `sidewalk` (510 in the cached tiles) and
+ * `crossing` (301) next to plain `footway` (2542). Shortbread and OpenMapTiles carry all three as footways,
+ * so they are drawn as one here too; with `footway` alone, Protomaps drew half the footway network of a
+ * city. Indoor `corridor`s stay out, as neither of the other schemas draws them.
+ */
+const PATHS: Record<string, string[]> = {
+	footway: ['footway', 'sidewalk', 'crossing'],
+	steps: ['steps'],
+	path: ['path'],
+	cycleway: ['cycleway'],
+};
 const RAIL: { id: string; detail: string }[] = [
 	{ id: 'rail', detail: 'rail' },
 	{ id: 'lightrail', detail: 'light_rail' },
@@ -92,8 +104,12 @@ function buildStructures(): MaplibreLayerDefinition[] {
 					filter: ['==', ['get', 'kind'], 'pedestrian'] as FilterSpecification,
 				});
 
-			for (const [id, detail] of Object.entries(PATHS)) {
-				line(prefix + 'way-' + id + suffix, ['==', ['get', 'kind_detail'], detail]);
+			for (const [id, details] of Object.entries(PATHS)) {
+				const detail: FilterSpecification =
+					details.length === 1
+						? ['==', ['get', 'kind_detail'], details[0]]
+						: ['in', ['get', 'kind_detail'], ['literal', details]];
+				line(prefix + 'way-' + id + suffix, detail);
 			}
 
 			for (const t of ['track', 'pedestrian', 'service', 'residential', 'unclassified', 'livingstreet', 'busway']) {
