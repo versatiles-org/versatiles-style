@@ -197,7 +197,147 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	},
 };
 
+/**
+ * Shortbread source-layer → Protomaps, for all 26.
+ *
+ * Verified with `npm run schema-values -- protomaps …`, which reads tiles straight out of the PMTiles
+ * archive. Protomaps decomposes far more coarsely than either other schema — **9 source-layers** against
+ * Shortbread's 26 and OpenMapTiles' 16 — and recovers the detail with a second field: `kind` is the
+ * coarse bucket, `kind_detail` the original OSM value.
+ *
+ * Two consequences run through the table. First, `kind_detail` keeps distinctions OpenMapTiles loses:
+ * `residential`, `unclassified` and `service` are separate values here, where OpenMapTiles collapses the
+ * first two into `minor`. On roads, Protomaps is the *closer* match to Shortbread of the two. Second,
+ * there are no label layers at all: names live on the feature layers, so Shortbread's six label
+ * source-layers have no counterparts of their own and are read from the geometry layer instead.
+ */
+export const SHORTBREAD_TO_PROTOMAPS: Record<string, LayerMapping> = {
+	addresses: {
+		targets: ['buildings'],
+		confidence: 'partial',
+		note: 'verified: no address layer — `buildings` carries `addr_housenumber`, so a house number is a building attribute here, and there is no `unit`.',
+	},
+	aerialways: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: `kind: aerialway` on the roads layer (observed at Zermatt); the lift type is in `kind_detail`.',
+	},
+	boundaries: {
+		targets: ['boundaries'],
+		confidence: 'partial',
+		note: 'verified: same layer name, different shape — the admin level is `kind_detail` (2, 3, 4 …) and the class is `kind` (country / region / county); `disputed` is a boolean as in Shortbread.',
+	},
+	boundary_labels: {
+		targets: ['places'],
+		confidence: 'partial',
+		note: 'country and region labels are `places` kinds; no `way_area`, but `population_rank` and `sort_key` are available for sizing.',
+	},
+	bridges: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: `is_bridge` is a boolean flag on the line — the same shape as Shortbread — but no bridge *area* was observed, so the deck polygon is lost.',
+	},
+	buildings: {
+		targets: ['buildings'],
+		confidence: 'exact',
+		note: 'verified: `height` and `min_height` under exactly Shortbread’s names, plus `kind`/`kind_detail`. Starts z11 rather than z14.',
+	},
+	dam_lines: { targets: [], confidence: 'none', note: 'no dam kind observed in `water`, `landuse` or `roads`.' },
+	dam_polygons: { targets: [], confidence: 'none', note: 'as dam_lines.' },
+	ferries: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: `kind: ferry` on the roads layer, which also carries its name.',
+	},
+	land: {
+		targets: ['landcover', 'landuse'],
+		confidence: 'partial',
+		note: 'verified: split by *zoom*, not by meaning — `landcover` is 7 coarse kinds to z7, `landuse` the detailed set from z2. Both keyed on `kind`.',
+	},
+	ocean: {
+		targets: ['water'],
+		confidence: 'partial',
+		note: 'verified: `kind: ocean` inside `water`, as in OpenMapTiles — a filter, not a layer of its own.',
+	},
+	pier_lines: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: `kind_detail: pier` on the roads layer.',
+	},
+	pier_polygons: {
+		targets: ['landuse'],
+		confidence: 'partial',
+		note: 'verified: `kind: pier` as landuse polygons — the two halves of a pier live in two different layers here.',
+	},
+	place_labels: {
+		targets: ['places'],
+		confidence: 'partial',
+		note: 'verified: `kind` plus `population` *and* `population_rank`, so unlike OpenMapTiles the population sort key survives.',
+	},
+	pois: {
+		targets: ['pois'],
+		confidence: 'partial',
+		note: 'verified: same layer name, `kind`/`kind_detail` instead of raw OSM tags — the same re-derivation OpenMapTiles needed.',
+	},
+	public_transport: {
+		targets: ['pois'],
+		confidence: 'partial',
+		note: 'verified: `kind: station` and platform kinds are POIs here, not their own layer.',
+	},
+	sites: {
+		targets: ['landuse'],
+		confidence: 'partial',
+		note: 'verified: school, university, college, kindergarten, military and nature_reserve are `landuse` kinds; no prison or construction kind was observed.',
+	},
+	street_labels: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: no label layer — `roads` carries `name`, `ref` and six `shield_text` slots itself.',
+	},
+	street_labels_points: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'no separate point layer; junction labels would have to come from the same layer by geometry.',
+	},
+	street_polygons: {
+		targets: ['landuse'],
+		confidence: 'partial',
+		note: 'verified: pedestrian areas are `landuse` `kind: pedestrian` (387 polygons sampled) — a landuse concept here, not a road one.',
+	},
+	streets: {
+		targets: ['roads'],
+		confidence: 'partial',
+		note: 'verified: `kind` is 9 coarse buckets and `kind_detail` the OSM value, so residential/unclassified/service stay distinct — closer to Shortbread than OpenMapTiles. `is_bridge`/`is_tunnel`/`is_link` are booleans, as in Shortbread.',
+	},
+	streets_polygons_labels: {
+		targets: ['landuse'],
+		confidence: 'partial',
+		note: 'follows street_polygons; the pedestrian-area name is on the landuse polygon.',
+	},
+	water_lines: {
+		targets: ['water'],
+		confidence: 'partial',
+		note: 'verified: river / stream / canal are `kind` values on `water`, which holds both lines and polygons — so a geometry-type filter is needed where Shortbread has two layers.',
+	},
+	water_lines_labels: {
+		targets: ['water'],
+		confidence: 'partial',
+		note: 'verified: `water` carries its own names; no separate label layer.',
+	},
+	water_polygons: {
+		targets: ['water'],
+		confidence: 'partial',
+		note: 'verified: lake / water / dock / swimming_pool as `kind`, with `kind_detail` refining; mixed geometry with the lines.',
+	},
+	water_polygons_labels: {
+		targets: ['water'],
+		confidence: 'partial',
+		note: 'verified: names on the water features themselves; no `way_area`, so lake-label sizing must be re-derived as it was for OpenMapTiles.',
+	},
+};
+
 /** Every mapping table the gate knows, keyed by the schema name `npm run vendor-schema` uses. */
 export const MAPPINGS: Record<string, Record<string, LayerMapping>> = {
 	omt: SHORTBREAD_TO_OMT,
+	protomaps: SHORTBREAD_TO_PROTOMAPS,
 };

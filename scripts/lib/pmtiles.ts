@@ -35,9 +35,15 @@ const COMPRESSION = { 1: 'none', 2: 'gzip', 3: 'brotli', 4: 'zstd' } as const;
 
 export type PMTilesHeader = {
 	version: number;
+	rootDirOffset: number;
+	rootDirLength: number;
 	metadataOffset: number;
 	metadataLength: number;
+	leafDirsOffset: number;
+	tileDataOffset: number;
 	internalCompression: (typeof COMPRESSION)[keyof typeof COMPRESSION];
+	/** Compression of the tile bodies themselves, usually gzip. */
+	tileCompression: (typeof COMPRESSION)[keyof typeof COMPRESSION];
 	minzoom: number;
 	maxzoom: number;
 };
@@ -58,11 +64,20 @@ export function readHeader(buf: Uint8Array): PMTilesHeader {
 	const internalCompression = COMPRESSION[compressionByte];
 	if (!internalCompression) throw new Error(`pmtiles: unknown internal compression ${compressionByte}`);
 
+	const tileCompressionByte = buf[98] as keyof typeof COMPRESSION;
+	const tileCompression = COMPRESSION[tileCompressionByte];
+	if (!tileCompression) throw new Error(`pmtiles: unknown tile compression ${tileCompressionByte}`);
+
 	return {
 		version,
+		rootDirOffset: u64(8),
+		rootDirLength: u64(16),
 		metadataOffset: u64(24),
 		metadataLength: u64(32),
+		leafDirsOffset: u64(40),
+		tileDataOffset: u64(56),
 		internalCompression,
+		tileCompression,
 		minzoom: buf[100],
 		maxzoom: buf[101],
 	};
@@ -126,4 +141,149 @@ export async function fetchMetadata(
 	const header = readHeader(await range(url, 0, 127, fetchFn));
 	const block = await range(url, header.metadataOffset, header.metadataLength, fetchFn);
 	return { header, metadata: readMetadata(block, header, header.metadataOffset) };
+}
+
+// ── Reading tiles ─────────────────────────────────────────────────────────────
+//
+// Everything below is only needed to *sample* a tileset — `npm run schema-values` reads a handful of
+// tiles to find out which values a field actually carries, because a schema record states field names
+// and nothing about their contents. It is a strictly bigger job than reading the metadata: tiles are
+// addressed by a Hilbert index and found through one or two levels of directory.
+
+/** A directory entry: a tile, or (when `runLength` is 0) a pointer to a leaf directory. */
+type Entry = { tileId: number; offset: number; length: number; runLength: number };
+
+/** Read a varint from `buf` at `pos`, returning the value and the next position. */
+function varint(buf: Uint8Array, pos: number): [number, number] {
+	let result = 0;
+	let shift = 0;
+	for (;;) {
+		const byte = buf[pos++];
+		if (byte === undefined) throw new Error('pmtiles: truncated varint in a directory');
+		result += (byte & 0x7f) * 2 ** shift;
+		if ((byte & 0x80) === 0) return [result, pos];
+		shift += 7;
+	}
+}
+
+/**
+ * Parse a directory.
+ *
+ * The format is column-oriented and delta-coded: a count, then every tile id as a delta from the last,
+ * then every run length, then every length, then every offset — where an offset of 0 means "immediately
+ * after the previous entry", which is how a clustered archive stores runs of adjacent tiles.
+ */
+function parseDirectory(buf: Uint8Array): Entry[] {
+	const [count, start] = varint(buf, 0);
+	let pos = start;
+	const entries: Entry[] = Array.from({ length: count }, () => ({ tileId: 0, offset: 0, length: 0, runLength: 0 }));
+
+	let lastId = 0;
+	for (let i = 0; i < count; i++) {
+		let delta: number;
+		[delta, pos] = varint(buf, pos);
+		lastId += delta;
+		entries[i].tileId = lastId;
+	}
+	for (let i = 0; i < count; i++) [entries[i].runLength, pos] = varint(buf, pos);
+	for (let i = 0; i < count; i++) [entries[i].length, pos] = varint(buf, pos);
+	for (let i = 0; i < count; i++) {
+		let value: number;
+		[value, pos] = varint(buf, pos);
+		entries[i].offset = value === 0 && i > 0 ? entries[i - 1].offset + entries[i - 1].length : value - 1;
+	}
+	return entries;
+}
+
+/**
+ * The Hilbert index of a tile, which is how PMTiles addresses them.
+ *
+ * Zoom levels are laid out one after another, each filling a Hilbert curve over its 2^z × 2^z grid, so
+ * neighbouring tiles are usually adjacent in the file — which is what makes a range request over a run
+ * of tiles worthwhile, and why directories can delta-code so well.
+ */
+export function zxyToTileId(z: number, x: number, y: number): number {
+	let acc = 0;
+	for (let t = 0; t < z; t++) acc += (1 << t) * (1 << t);
+	let tx = x;
+	let ty = y;
+	let d = 0;
+	for (let s = 2 ** z / 2; s > 0; s /= 2) {
+		const rx = (tx & s) > 0 ? 1 : 0;
+		const ry = (ty & s) > 0 ? 1 : 0;
+		d += s * s * ((3 * rx) ^ ry);
+		// rotate the quadrant
+		if (ry === 0) {
+			if (rx === 1) {
+				tx = s - 1 - tx;
+				ty = s - 1 - ty;
+			}
+			[tx, ty] = [ty, tx];
+		}
+	}
+	return acc + d;
+}
+
+/** The entry covering `tileId`, or undefined. Entries with a run length cover a span of ids. */
+function findEntry(entries: Entry[], tileId: number): Entry | undefined {
+	let lo = 0;
+	let hi = entries.length - 1;
+	while (lo <= hi) {
+		const mid = (lo + hi) >> 1;
+		if (tileId < entries[mid].tileId) hi = mid - 1;
+		else if (tileId > entries[mid].tileId) lo = mid + 1;
+		else return entries[mid];
+	}
+	// Not an exact hit: the candidate is the last entry at or before the id, if its run covers it.
+	const candidate = entries[hi];
+	if (!candidate) return undefined;
+	if (candidate.runLength === 0) return candidate; // a leaf pointer covers everything after it
+	return tileId < candidate.tileId + candidate.runLength ? candidate : undefined;
+}
+
+/**
+ * An archive opened for tile reads: the header and root directory, fetched once and reused.
+ *
+ * Leaf directories are cached too, because the sample tiles cluster geographically and repeatedly land
+ * in the same leaf.
+ */
+export class PMTilesSource {
+	private readonly leaves = new Map<number, Entry[]>();
+
+	private constructor(
+		readonly url: string,
+		readonly header: PMTilesHeader,
+		private readonly root: Entry[],
+		private readonly fetchFn: FetchLike
+	) {}
+
+	static async open(url: string, fetchFn: FetchLike = fetch): Promise<PMTilesSource> {
+		const header = readHeader(await range(url, 0, 127, fetchFn));
+		const rootBuf = await range(url, header.rootDirOffset, header.rootDirLength, fetchFn);
+		return new PMTilesSource(url, header, parseDirectory(decompress(rootBuf, header.internalCompression)), fetchFn);
+	}
+
+	/** The decompressed body of one tile, or undefined where the archive has none. */
+	async getTile(z: number, x: number, y: number): Promise<Uint8Array | undefined> {
+		const tileId = zxyToTileId(z, x, y);
+		let entries = this.root;
+		// The spec allows one level of leaf directory; loop rather than assume, but bound it.
+		for (let depth = 0; depth < 4; depth++) {
+			const entry = findEntry(entries, tileId);
+			if (!entry || entry.length === 0) return undefined;
+			if (entry.runLength > 0) {
+				const body = await range(this.url, this.header.tileDataOffset + entry.offset, entry.length, this.fetchFn);
+				return decompress(body, this.header.tileCompression);
+			}
+			const cached = this.leaves.get(entry.offset);
+			if (cached) {
+				entries = cached;
+				continue;
+			}
+			const leafBuf = await range(this.url, this.header.leafDirsOffset + entry.offset, entry.length, this.fetchFn);
+			entries = parseDirectory(decompress(leafBuf, this.header.internalCompression));
+			this.leaves.set(entry.offset, entries);
+		}
+		throw new Error('pmtiles: directory nesting deeper than expected');
+	}
 }

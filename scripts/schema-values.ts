@@ -31,13 +31,36 @@ import { fileURLToPath } from 'node:url';
 import { gunzipSync } from 'node:zlib';
 import process from 'node:process';
 import { decodeTile, type MvtValue } from './lib/mvt.js';
+import { PMTilesSource } from './lib/pmtiles.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = resolve(ROOT, 'scripts/tiles');
 
-/** TileJSON per schema name, matching `npm run vendor-schema`. */
-const SOURCES: Record<string, string> = {
-	omt: 'https://tiles.openfreemap.org/planet',
+/**
+ * Where each schema's tiles come from, matching `npm run vendor-schema`.
+ *
+ * Two shapes, because the tilesets are published differently: OpenFreeMap serves a TileJSON naming a
+ * tile URL template, while Protomaps ships one PMTiles archive that tiles are read out of directly
+ * (see `scripts/lib/pmtiles.ts`). The archive is dated with no "latest" alias, so it is resolved by
+ * walking back from today.
+ */
+type TileSource = { kind: 'tilejson'; url: string } | { kind: 'pmtiles'; resolveUrl: () => Promise<string> };
+
+async function latestProtomapsBuild(): Promise<string> {
+	const pad = (n: number) => String(n).padStart(2, '0');
+	for (let back = 0; back < 21; back++) {
+		const d = new Date();
+		d.setUTCDate(d.getUTCDate() - back);
+		const url = `https://build.protomaps.com/${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}.pmtiles`;
+		const res = await fetch(url, { headers: { Range: 'bytes=0-0' } });
+		if (res.status === 206) return url;
+	}
+	throw new Error('schema-values: no Protomaps build found in the last 21 days');
+}
+
+const SOURCES: Record<string, TileSource> = {
+	omt: { kind: 'tilejson', url: 'https://tiles.openfreemap.org/planet' },
+	protomaps: { kind: 'pmtiles', resolveUrl: latestProtomapsBuild },
 };
 
 /**
@@ -80,15 +103,48 @@ function tileOf(z: number, lon: number, lat: number): { z: number; x: number; y:
 	return { z, x, y };
 }
 
-async function fetchTile(template: string, name: string, z: number, x: number, y: number, refresh: boolean) {
-	const file = resolve(CACHE, `${name}-${z}-${x}-${y}.pbf`);
+/** Reads one tile, whichever way its tileset is published. */
+type TileReader = { label: string; read: (z: number, x: number, y: number) => Promise<Uint8Array | undefined> };
+
+async function openReader(schema: string, source: TileSource): Promise<TileReader> {
+	if (source.kind === 'pmtiles') {
+		const url = await source.resolveUrl();
+		const archive = await PMTilesSource.open(url);
+		return { label: url, read: (z, x, y) => archive.getTile(z, x, y) };
+	}
+	const response = await fetch(source.url);
+	if (!response.ok) throw new Error(`${source.url} → HTTP ${response.status}`);
+	const tileJSON = (await response.json()) as { tiles?: string[]; version?: string };
+	const template = tileJSON.tiles?.[0];
+	if (!template) throw new Error(`${source.url} carries no tiles template`);
+	return {
+		label: `${template}${tileJSON.version ? ` v${tileJSON.version}` : ''}`,
+		read: async (z, x, y) => {
+			const url = template.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y));
+			const res = await fetch(url);
+			if (!res.ok) throw new Error(`${url} → HTTP ${res.status}`);
+			let body = new Uint8Array(await res.arrayBuffer());
+			// Some tile servers return raw gzip with no Content-Encoding for fetch to undo.
+			if (body[0] === 0x1f && body[1] === 0x8b) body = gunzipSync(body);
+			return body;
+		},
+	};
+	void schema;
+}
+
+async function fetchTile(
+	reader: TileReader,
+	schema: string,
+	name: string,
+	z: number,
+	x: number,
+	y: number,
+	refresh: boolean
+) {
+	const file = resolve(CACHE, `${schema}-${name}-${z}-${x}-${y}.pbf`);
 	if (!refresh && existsSync(file)) return readFileSync(file);
-	const url = template.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y));
-	const response = await fetch(url);
-	if (!response.ok) throw new Error(`${url} → HTTP ${response.status}`);
-	let body = new Uint8Array(await response.arrayBuffer());
-	// Some tile servers return raw gzip with no Content-Encoding for fetch to undo.
-	if (body[0] === 0x1f && body[1] === 0x8b) body = gunzipSync(body);
+	const body = await reader.read(z, x, y);
+	if (!body) return undefined;
 	mkdirSync(CACHE, { recursive: true });
 	writeFileSync(file, body);
 	return body;
@@ -96,7 +152,7 @@ async function fetchTile(template: string, name: string, z: number, x: number, y
 
 /** Fields whose values are worth enumerating: low-cardinality, and what filters actually test. */
 const INTERESTING =
-	/^(class|subclass|brunnel|kind|type|category|intermittent|surface|service|network|capital|ramp|oneway|expressway|access|bicycle|foot|toll|indoor|layer|level|admin_level|disputed|maritime|rank|hide_3d)$/;
+	/^(class|subclass|brunnel|kind|kind_detail|type|category|intermittent|surface|service|network|capital|ramp|oneway|expressway|access|bicycle|foot|toll|indoor|layer|level|admin_level|disputed|maritime|rank|hide_3d|is_bridge|is_tunnel|is_link|sort_rank|population_rank)$/;
 /**
  * Above this many distinct values a field is an identifier or a name, not a vocabulary, and listing it
  * buries the report — `poi.rank` alone has 659. `--all` lifts the cutoff, which is what the POI port
@@ -113,20 +169,16 @@ async function main(): Promise<void> {
 	const positional = args.filter((a) => !a.startsWith('--'));
 	const name = positional[0];
 	const only = new Set(positional.slice(1));
-	const tileJSONUrl = name ? SOURCES[name] : undefined;
-	if (!tileJSONUrl) {
+	const source = name ? SOURCES[name] : undefined;
+	if (!source) {
 		console.error(
 			`Usage: npm run schema-values -- <${Object.keys(SOURCES).join('|')}> [source-layer…] [--refresh] [--all]`
 		);
 		process.exit(1);
 	}
 
-	const response = await fetch(tileJSONUrl);
-	if (!response.ok) throw new Error(`${tileJSONUrl} → HTTP ${response.status}`);
-	const tileJSON = (await response.json()) as { tiles?: string[]; version?: string };
-	const template = tileJSON.tiles?.[0];
-	if (!template) throw new Error(`${tileJSONUrl} carries no tiles template`);
-	console.log(`${name} ${tileJSON.version ?? ''} — ${template}\n`);
+	const reader = await openReader(name, source);
+	console.log(`${name} — ${reader.label}\n`);
 
 	// layer → field → value → { count, tiles, geometry }
 	//
@@ -143,7 +195,11 @@ async function main(): Promise<void> {
 
 	for (const spot of SAMPLE) {
 		const { z, x, y } = tileOf(spot.z, spot.lon, spot.lat);
-		const buf = await fetchTile(template, spot.name, z, x, y, refresh);
+		const buf = await fetchTile(reader, name, spot.name, z, x, y, refresh);
+		if (!buf) {
+			console.log(`  ${`${spot.name}/z${z}`.padEnd(22)} (no tile in the archive)`);
+			continue;
+		}
 		const layers = decodeTile(buf);
 		const label = `${spot.name}/z${z}`;
 		console.log(
