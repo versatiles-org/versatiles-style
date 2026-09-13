@@ -75,11 +75,18 @@ function buildStructures(): MaplibreLayerDefinition[] {
 			});
 
 		for (const suffix of suffixes) {
-			if (suffix === ':outline')
+			// Pedestrian areas are a landuse concept here, not a road one — verified as `landuse`
+			// `kind: pedestrian`, 387 polygons in the sample.
+			//
+			// Surface level only. `landuse` carries just `kind` and `sort_rank`: there is no `is_tunnel` or
+			// `is_bridge` on it, so a plaza on a bridge cannot be told from one on the ground. The other
+			// two schemas emit a tunnel and a bridge variant too, each filtered on its flag; emitting them
+			// here without a flag made both match *every* plaza, and since the shared style draws those
+			// variants as an opaque road-surface fill, every pedestrian area came out solid white — seen
+			// over Washingtonplatz at Berlin Hauptbahnhof.
+			if (suffix === ':outline' && c === 'street')
 				results.push({
-					// Pedestrian areas are a landuse concept here, not a road one — verified as
-					// `landuse` `kind: pedestrian`, 387 polygons in the sample.
-					id: prefix + 'street-pedestrian-zone',
+					id: 'street-pedestrian-zone',
 					type: 'fill',
 					'source-layer': 'landuse',
 					filter: ['==', ['get', 'kind'], 'pedestrian'] as FilterSpecification,
