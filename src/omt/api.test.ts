@@ -212,3 +212,18 @@ describe('omt() subway stations', () => {
 		expect(subway.layout?.['icon-size']).toEqual(station.layout?.['icon-size']);
 	});
 });
+
+describe('airport areas', () => {
+	const areaFilter = (style: { layers: unknown[] }) =>
+		JSON.stringify((style.layers as { id: string; filter?: unknown }[]).find((l) => l.id === 'airport-area')?.filter);
+
+	it('fill only runway and taxiway areas, as Shortbread does — no aprons or helipads', async () => {
+		const { protomaps } = await import('../protomaps/api.js');
+		const pm = protomaps({ urls: { protomaps: 'pmtiles://https://example.org/x.pmtiles' } });
+		for (const filter of [areaFilter(omt()), areaFilter(pm), areaFilter(osm())]) {
+			expect(filter).toContain('"runway","taxiway"');
+			expect(filter).not.toContain('apron');
+			expect(filter).not.toContain('helipad');
+		}
+	});
+});

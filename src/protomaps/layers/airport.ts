@@ -21,7 +21,9 @@ export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
 
 	yield b.fill('airport-area', {
 		sourceLayer: 'landuse',
-		filter: ['in', ['get', 'kind'], ['literal', ['runway', 'taxiway', 'apron']]],
+		// Shortbread's two paved kinds. Not `apron`, which Shortbread has no counterpart for (and which the
+		// cached Protomaps tiles do not carry anyway).
+		filter: ['in', ['get', 'kind'], ['literal', ['runway', 'taxiway']]],
 		color: c.roadStreet,
 		opacity: { 13: 0, 14: 1 },
 		group: 'airport',

@@ -27,9 +27,11 @@ import * as b from '../../dsl/index.js';
 const AREAS: FilterSpecification = [
 	'all',
 	['==', ['geometry-type'], 'Polygon'],
-	// `aerodrome` is deliberately excluded: it is the whole airport boundary, an area Shortbread has no
-	// counterpart for, and filling it would tint several square kilometres in the street colour.
-	['in', ['get', 'class'], ['literal', ['apron', 'runway', 'helipad']]],
+	// Shortbread's two paved kinds, and nothing else. `aerodrome` is the whole airport boundary, which
+	// would tint several square kilometres in the street colour. `apron` and `helipad` have no counterpart
+	// in Shortbread's tiles: filled, the aprons made Schiphol a tenth of the picture larger in white than
+	// in the other two schemas.
+	['in', ['get', 'class'], ['literal', ['runway', 'taxiway']]],
 ];
 
 /** A centreline of one class. Lines only, for the reason in the header. */
