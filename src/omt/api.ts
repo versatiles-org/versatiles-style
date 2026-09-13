@@ -128,6 +128,7 @@ export const omt = Object.assign(omtFn, {
 	 * point of §5.3: `guessStyle(tileJSON, { schemas: [omt] })`.
 	 */
 	tileset: {
+		id: 'openmaptiles',
 		sourceLayers: Object.keys(OMT_SCHEMA),
 		build: (source, urls) => omtFn({ urls: { ...urls, omt: source } }),
 	} satisfies SchemaDescriptor,

@@ -6,6 +6,7 @@ describe('exports', () => {
 		expect(typeof lib.osm).toBe('function');
 		expect(typeof lib.satellite).toBe('function');
 		expect(typeof lib.guessStyle).toBe('function');
+		expect(typeof lib.guessSchema).toBe('function');
 		expect(typeof lib.getStyleVariants).toBe('function');
 	});
 
@@ -15,9 +16,10 @@ describe('exports', () => {
 		expect(typeof lib.inlineSources).toBe('function');
 	});
 
-	it('osm() and satellite() are synchronous; guessStyle() is not', () => {
+	it('osm(), satellite() and guessSchema() are synchronous; guessStyle() is not', () => {
 		expect(lib.osm()).not.toBeInstanceOf(Promise);
 		expect(lib.satellite()).not.toBeInstanceOf(Promise);
+		expect(lib.guessSchema({ tiles: [] })).not.toBeInstanceOf(Promise);
 		expect(lib.guessStyle('https://tiles.example.com/tiles.json')).toBeInstanceOf(Promise);
 	});
 

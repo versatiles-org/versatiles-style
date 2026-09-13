@@ -13,6 +13,7 @@
   - [`osm()`](#osmoptions-stylespecification)
   - [`satellite()`](#satelliteoptions-stylespecification)
   - [`guessStyle()`](#guessstylesource-options-promise-stylespecification)
+  - [`guessSchema()`](#guessschematilejson-schemaguess)
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
@@ -22,7 +23,7 @@
 
 ## Core Principles
 
-- `osm()` and `satellite()` are **synchronous** — no hidden I/O. Only `guessStyle()` is async, because it must read a TileJSON before it can decide what to build.
+- `osm()`, `satellite()` and `guessSchema()` are **synchronous** — no hidden I/O. Only `guessStyle()` is async, because it must read a TileJSON before it can decide what to build.
 - All URL configuration lives in a `urls` object; everything else in options is about rendering
 - In `urls`, each key accepts a URL string (MapLibre fetches the TileJSON at map load time) or a pre-fetched `TileJSONSpecification` object. A string containing `{z}` is treated as a raw tile template rather than a TileJSON URL.
 - A source is emitted with **either** `url` **or** `tiles`, never both — MapLibre gives explicit source options precedence over the document it fetches, so emitting both means fetching a TileJSON and then discarding it.
@@ -497,6 +498,45 @@ From a URL, a Shortbread or satellite style still _references_ the document; pas
 [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
 From an object, the source is inlined already. `urls.glyphsPattern` and `urls.sprite` apply to the
 Shortbread, satellite and inspector styles alike.
+
+---
+
+## `guessSchema(tileJSON): SchemaGuess`
+
+```ts
+guessSchema(tileJSON: TileJSONSpecification): SchemaGuess
+
+type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps'
+
+type SchemaGuess =
+  | { type: 'vector'; schema: SchemaName | undefined; candidates: SchemaScore[] }
+  | { type: 'raster' }
+  | { type: 'unknown' }                // not a TileJSON
+
+type SchemaScore = {
+  schema:  SchemaName
+  matched: string[]                    // tileset source-layers counted as this schema's
+  missing: string[]                    // this schema's source-layers the tileset lacks
+  extra:   string[]                    // tileset source-layers not counted as this schema's
+  score:   number                      // matched / all tileset source-layers, 0–1
+}
+```
+
+Recognises the vector schema of a tileset. Synchronous and free of I/O, and takes only a TileJSON
+object — download one with [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
+first. It never throws.
+
+It reads `vector_layers` and nothing else; `name` and `attribution` describe who built a tileset, not
+what is in it. A source-layer id only one schema uses counts for that schema. The six ids two schemas
+share (`boundaries`, `buildings`, `pois`, `landcover`, `landuse`, `water`) are decided by their
+`fields` — `class` against `kind`, `admin_level` against `kind_detail` — and count for every schema that
+uses them when the fields tell nothing. A schema is recognised when at least half the tileset's
+source-layers are its, or at least eight are, and it scores strictly higher than every other schema;
+otherwise `schema` is `undefined`. `candidates` lists all three, best first.
+
+It knows all three schemas without importing their styles, so it adds a small table to the root entry
+rather than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that
+schema's function is passed in `schemas`.
 
 ---
 

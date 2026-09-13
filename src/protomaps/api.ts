@@ -146,6 +146,7 @@ export const protomaps = Object.assign(protomapsFn, {
 	 * point of §5.3: `guessStyle(tileJSON, { schemas: [protomaps] })`.
 	 */
 	tileset: {
+		id: 'protomaps',
 		sourceLayers: Object.keys(PROTOMAPS_SCHEMA),
 		build: (source, urls) => protomapsFn({ urls: { ...urls, protomaps: source } }),
 	} satisfies SchemaDescriptor,

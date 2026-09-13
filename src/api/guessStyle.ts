@@ -7,6 +7,8 @@ import { osm } from './osm.js';
 import { checkKeys } from '../options/keys.js';
 import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
+import { guessSchema, qualifies } from './guessSchema.js';
+import { SCHEMA_NAMES } from '../lib/schema-signatures.js';
 
 /**
  * Options for {@link guessStyle}.
@@ -34,8 +36,10 @@ import type { SchemaBuilder } from './schema-builder.js';
  * async, already does runtime detection, already takes a function-valued option (`fetch`), and its
  * options never pass through `minimizeOptions`/`toCode`, so nothing here has to round-trip.
  *
- * The list is **additive**: Shortbread is always tried first, so passing `schemas` can only widen what
- * is recognised, never change what a tileset resolved to before.
+ * The list is **additive**: which built-in schema a tileset is comes from `guessSchema`, which does not
+ * depend on `schemas` at all — injecting `omt` only decides whether a tileset already detected as
+ * OpenMapTiles gets its style or the inspector style. A schema of the caller's own (any other
+ * `tileset.id`) is tried after that, by its `sourceLayers`, in the order given.
  */
 export type GuessStyleOptions = {
 	urls?: Pick<OsmUrlsOptions, 'base' | 'glyphsPattern' | 'sprite'>;
@@ -49,36 +53,10 @@ function isVectorTileJSON(tj: TileJSONSpecification): tj is TileJSONSpecificatio
 	return 'vector_layers' in tj && Array.isArray((tj as TileJSONSpecificationVector).vector_layers);
 }
 
-/** A tileset must carry this many of a schema's source-layers to be recognised by count alone. */
-const STRONG_MATCH_COUNT = 8;
-
-/**
- * Does this tileset look like the given schema's?
- *
- * Recognised when **at least half** its source-layers are the schema's, or when it carries at least
- * `STRONG_MATCH_COUNT` of them outright. The candidate ids come from the schema's own vendored record
- * rather than a list kept by hand here, which is one fewer copy of a fact that has drifted before.
- *
- * ── Why not "3 or more", as this was ──────────────────────────────────────────
- *
- * Three is a low bar for a coincidence. Vendoring the Protomaps record showed it plainly: Protomaps
- * carries `boundaries`, `buildings` and `pois` — three generic names that Shortbread also uses, with
- * entirely different fields behind them — so a Protomaps tileset scored exactly 3 and was handed a full
- * 287-layer Shortbread style. Nearly every layer of it reads a source-layer the tiles do not have, and
- * the three that do read fields that are not there, so the result was a blank map where the inspector
- * style would have been useful.
- *
- * The two clauses cover the two honest cases. A **rate** test catches a tileset that is mostly this
- * schema, including a small extract of a handful of layers. A **count** test catches a tileset that is
- * this schema plus a pile of extra layers of its own, where the rate would fall below half. Protomaps
- * satisfies neither: 3 of 9 is 33%, and 3 is far short of 8.
- */
+/** Whether a caller's own schema — one `guessSchema` does not know — looks like this tileset. */
 function looksLike(tj: TileJSONSpecificationVector, sourceLayers: readonly string[]): boolean {
-	const ids = tj.vector_layers.map((l) => l.id);
-	if (ids.length === 0) return false;
 	const known = new Set(sourceLayers);
-	const matches = ids.filter((id) => known.has(id)).length;
-	return matches / ids.length >= 0.5 || matches >= STRONG_MATCH_COUNT;
+	return qualifies(tj.vector_layers.filter((l) => known.has(l.id)).length, tj.vector_layers.length);
 }
 
 // Deterministic hue from a string (djb2 hash → 0–359).
@@ -211,7 +189,8 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  *
  * Styles by tileset:
  * - Shortbread vector tiles → full `osm()` style
- * - Vector tiles matching an injected schema (`options.schemas`) → that schema's style
+ * - OpenMapTiles or Protomaps vector tiles, with that schema injected (`options.schemas`) → its style
+ * - Vector tiles matching a caller's own injected schema → that schema's style
  * - Unknown vector tiles → inspector style (one color-coded fill+line+label per source-layer)
  * - Raster tiles with satellite name hint → `satellite()` style
  * - Other raster tiles → minimal single-layer raster style
@@ -253,9 +232,16 @@ export async function guessStyle(
 
 		assertTileJSONSpecification(tileJSON);
 		if (isVectorTileJSON(tileJSON)) {
-			// Shortbread first, then whatever the caller injected, in the order given.
-			for (const schema of [osm, ...(options?.schemas ?? [])]) {
-				if (looksLike(tileJSON, schema.tileset.sourceLayers)) return schema.tileset.build(osmSource, urls);
+			const builders = [osm, ...(options?.schemas ?? [])];
+			// A built-in schema is recognised by `guessSchema`, and built only if its builder is at hand:
+			// Shortbread always, the others when injected.
+			const guess = guessSchema(tileJSON);
+			const detected = guess.type === 'vector' && builders.find((b) => b.tileset.id === guess.schema);
+			if (detected) return detected.tileset.build(osmSource, urls);
+			// A caller's own schema, in the order given.
+			for (const builder of builders) {
+				if ((SCHEMA_NAMES as readonly string[]).includes(builder.tileset.id)) continue;
+				if (looksLike(tileJSON, builder.tileset.sourceLayers)) return builder.tileset.build(osmSource, urls);
 			}
 			return buildInspectorStyle(tileJSON, urls);
 		}

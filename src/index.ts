@@ -88,8 +88,9 @@
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────
 
-export { osm, satellite, guessStyle } from './api/index.js';
+export { osm, satellite, guessStyle, guessSchema } from './api/index.js';
 export type { GuessStyleOptions } from './api/guessStyle.js';
+export type { SchemaGuess, SchemaName, SchemaScore } from './api/guessSchema.js';
 
 // ── v6 types ──────────────────────────────────────────────────────────────────
 

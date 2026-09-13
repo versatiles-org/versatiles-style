@@ -138,6 +138,7 @@ export const osm = Object.assign(osmFn, {
 
 	/** How `guessStyle` recognises a Shortbread tileset and builds a style for it. */
 	tileset: {
+		id: 'shortbread',
 		sourceLayers: Object.keys(SHORTBREAD_SCHEMA),
 		// `osmFn`, not `osm`: referring to the exported const inside its own initialiser makes its type
 		// circular, which TypeScript resolves by widening the whole statics object to `any`.

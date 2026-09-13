@@ -14,6 +14,12 @@ import type { OsmUrlsOptions } from '../options/index.js';
  * cost a whole file's type-checking before this module existed.
  */
 export type SchemaDescriptor = {
+	/**
+	 * Which schema this builds. For the built-in schemas it is the name `guessSchema` reports
+	 * (`'shortbread'`, `'openmaptiles'`, `'protomaps'`), which is how `guessStyle` finds the builder for a
+	 * detected tileset. Any other id marks a caller's own schema, recognised by `sourceLayers` alone.
+	 */
+	readonly id: string;
 	/** Source-layer ids this schema's tileset carries, for detection. */
 	readonly sourceLayers: readonly string[];
 	/** Build a style for a tileset already detected as this schema. */
