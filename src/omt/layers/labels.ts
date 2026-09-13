@@ -1,7 +1,7 @@
 import type { ExpressionSpecification, FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import type { Color } from '../../color/index.js';
 import * as b from '../../dsl/index.js';
+import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../../cartography/labels.js';
 
 // Text labels for OpenMapTiles, in the same two bands as the Shortbread module: `featureLabels`
 // (motorway refs/shields, street names, water names), then transit stops, then `placeLabels`
@@ -47,22 +47,14 @@ const POINTS: ExpressionSpecification = ['==', ['geometry-type'], 'Point'];
  *  so it is used directly — and a missing rank sorts last rather than first. */
 const RANK_SORT_KEY = ['to-number', ['get', 'rank'], 99];
 
-type PlaceDef = {
-	id: string;
-	/** `place` classes this label draws, or a ready-made filter for the capital cases. */
-	filter: ExpressionSpecification;
-	minzoom: number;
-	maxzoom?: number;
-	size: b.SizeValue;
-	color?: (ctx: LayerContext) => Color;
-	uppercase?: boolean;
-};
+/** Where settlement labels come from, and what decides which one survives a collision. */
+const PLACE_SOURCE = { sourceLayer: 'place', sortKey: RANK_SORT_KEY };
 
 const byClass = (...classes: string[]): ExpressionSpecification =>
 	classes.length === 1 ? ['==', ['get', 'class'], classes[0]] : ['in', ['get', 'class'], ['literal', [...classes]]];
 
 // Districts and quarters are uppercased and lighter, as in the Shortbread module. Sizes carried over.
-const PLACES_SMALL: PlaceDef[] = [
+const PLACES_SMALL: PlaceLabelDef[] = [
 	{ id: 'neighbourhood', filter: byClass('neighbourhood', 'borough'), minzoom: 14, size: 12, uppercase: true },
 	{ id: 'quarter', filter: byClass('quarter'), minzoom: 13, size: 13, uppercase: true },
 	{ id: 'suburb', filter: byClass('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
@@ -73,7 +65,7 @@ const PLACES_SMALL: PlaceDef[] = [
 
 // `capital` is an admin level, not a boolean: 2 marks a national capital, 4 a state capital. A city that
 // is neither keeps the plain `city` label, which is why each filter excludes the levels above it.
-const PLACES_LARGE: PlaceDef[] = [
+const PLACES_LARGE: PlaceLabelDef[] = [
 	{
 		id: 'city',
 		filter: ['all', byClass('city'), ['!', ['in', ['get', 'capital'], ['literal', [2, 4]]]]],
@@ -102,13 +94,6 @@ const COUNTRIES: { id: string; rank: ExpressionSpecification; minzoom: number; m
 /** Street classes that carry a name worth drawing — Shortbread's list, with `minor` for its three. */
 const STREET_CLASSES = ['minor', 'tertiary', 'secondary', 'primary', 'trunk', 'track'];
 
-function placeText(ctx: LayerContext): Color {
-	return ctx.c.label;
-}
-function placeSecondary(ctx: LayerContext): Color {
-	return ctx.c.label.blend(0.05, ctx.bg);
-}
-
 // House numbers. `housenumber` is the whole layer and its only field — OpenMapTiles carries no `unit`,
 // so Shortbread's `housenumber/unit` concatenation for sub-addresses (issue #118) has nothing to read
 // and the number is drawn alone.
@@ -130,17 +115,7 @@ export function* addresses(ctx: LayerContext): Generator<b.TaggedLayer> {
 export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
-	const streetBase: b.StyleProps = {
-		color: c.label,
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		symbolPlacement: 'line',
-		textAnchor: 'center',
-		minzoom: 12,
-		size: { 12: 10, 15: 13 },
-	};
+	const streetBase = labelStyles(ctx).street;
 
 	// Motorway exit numbers. Every point feature in `transportation_name` is a `subclass: junction`, so
 	// the geometry filter and the subclass say the same thing twice — deliberately, because a future
@@ -197,14 +172,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	}
 
 	// ── Water labels ────────────────────────────────────────────────────────────
-	const waterBase: b.StyleProps = {
-		color: c.labelWater,
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		textAnchor: 'center',
-	};
+	const waterBase = labelStyles(ctx).water;
 
 	// Bucketed by `class`, not by area — see finding 2, and the regression it records. Larger classes come
 	// first so they win symbol collisions, as in the Shortbread module.
@@ -251,29 +219,9 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 }
 
 export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
+	const { place: placeBase, boundary: boundaryBase } = labelStyles(ctx);
 
-	const placeBase: b.StyleProps = {
-		color: placeText(ctx),
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-	};
-	const boundaryBase: b.StyleProps = {
-		color: c.label,
-		font: ctx.fonts.normal,
-		textTransform: 'uppercase',
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		textAnchor: 'top',
-		textOffset: [0, 0.2],
-		textPadding: 0,
-		textOptional: true,
-	};
-
-	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
+	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
 
 	// State labels come from `place` (class `state`, 1267 features in the sample) rather than a
 	// boundary-label layer. `province` joins it: OpenMapTiles files the same administrative level under
@@ -290,7 +238,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'labels.states',
 	});
 
-	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p);
+	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
 
 	for (const country of COUNTRIES) {
 		yield b.symbol('label-boundary-country-' + country.id, {
@@ -304,19 +252,4 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			group: 'labels.countries',
 		});
 	}
-}
-
-function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.TaggedLayer {
-	return b.symbol('label-place-' + p.id, {
-		sourceLayer: 'place',
-		filter: p.filter,
-		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': RANK_SORT_KEY },
-		...base,
-		minzoom: p.minzoom,
-		maxzoom: p.maxzoom ?? 15,
-		size: p.size,
-		...(p.color ? { color: p.color(ctx) } : {}),
-		...(p.uppercase ? { textTransform: 'uppercase' } : {}),
-		group: 'labels.places',
-	});
 }

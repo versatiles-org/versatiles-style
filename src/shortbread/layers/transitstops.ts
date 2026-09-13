@@ -1,21 +1,16 @@
-import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/index.js';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { transitStops as draw, type StopDef } from '../../cartography/transitstops.js';
 
-// Public-transport stop icons + names (bus, tram, stations, airports).
-// All share a common symbol style (the old `symbol-*` rule); each adds its icon + min-zoom.
+// Which Shortbread features are a stop. The symbol style is shared — see
+// `src/cartography/transitstops.ts`.
 
-type StopDef = {
-	id: string;
-	filter: FilterSpecification;
-	minzoom: number;
-	image: string;
-	iconSize: Record<number, number>;
-};
+const SOURCE = 'public_transport';
 
 const STOPS: StopDef[] = [
 	{
 		id: 'bus',
+		sourceLayer: SOURCE,
 		filter: ['==', ['get', 'kind'], 'bus_stop'],
 		minzoom: 16,
 		image: 'base:icon-bus',
@@ -23,6 +18,7 @@ const STOPS: StopDef[] = [
 	},
 	{
 		id: 'tram',
+		sourceLayer: SOURCE,
 		filter: ['==', ['get', 'kind'], 'tram_stop'],
 		minzoom: 15,
 		image: 'base:transport-tram',
@@ -36,6 +32,7 @@ const STOPS: StopDef[] = [
 	// what it matches. See https://shortbread-tiles.org/schema/1.1/#layer-public_transport
 	{
 		id: 'station',
+		sourceLayer: SOURCE,
 		filter: ['in', ['get', 'kind'], ['literal', ['station', 'halt']]],
 		minzoom: 13,
 		image: 'base:icon-rail',
@@ -43,6 +40,7 @@ const STOPS: StopDef[] = [
 	},
 	{
 		id: 'airfield',
+		sourceLayer: SOURCE,
 		filter: ['all', ['==', ['get', 'kind'], 'aerodrome'], ['!', ['has', 'iata']]],
 		minzoom: 13,
 		image: 'base:icon-airfield',
@@ -50,6 +48,7 @@ const STOPS: StopDef[] = [
 	},
 	{
 		id: 'airport',
+		sourceLayer: SOURCE,
 		filter: ['all', ['==', ['get', 'kind'], 'aerodrome'], ['has', 'iata']],
 		minzoom: 12,
 		image: 'base:icon-airport',
@@ -57,34 +56,6 @@ const STOPS: StopDef[] = [
 	},
 ];
 
-export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
-
-	// Shared base style (the old `symbol-*` wildcard).
-	const base: b.StyleProps = {
-		symbolPlacement: 'point',
-		iconOpacity: 0.7,
-		iconKeepUpright: true,
-		font: ctx.fonts.normal,
-		size: 10,
-		color: c.labelSymbol,
-		iconAnchor: 'bottom',
-		textAnchor: 'top',
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-	};
-
-	for (const stop of STOPS) {
-		yield b.symbol('symbol-transit-' + stop.id, {
-			sourceLayer: 'public_transport',
-			filter: stop.filter,
-			layout: { 'text-field': ctx.nameField },
-			...base,
-			minzoom: stop.minzoom,
-			image: stop.image,
-			iconSize: stop.iconSize,
-			group: 'transit.stops',
-		});
-	}
+export function* transitStops(ctx: LayerContext): Generator<TaggedLayer> {
+	yield* draw(ctx, STOPS);
 }

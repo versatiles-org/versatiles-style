@@ -1,6 +1,6 @@
-import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/index.js';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { transitStops as draw, type StopDef } from '../../cartography/transitstops.js';
 
 // Public-transport stop icons + names for OpenMapTiles. All share one symbol style, as in Shortbread;
 // each adds its icon, filter and min-zoom.
@@ -36,15 +36,6 @@ import * as b from '../../dsl/index.js';
 // Not drawn, for the same reason plus precedent: `ferry_terminal` and the two `entrance` subclasses.
 // `base` has no glyph for either, and Shortbread draws neither — so adding them would make this schema's
 // coverage diverge from the other's in the one direction §23 warns about.
-
-type StopDef = {
-	id: string;
-	sourceLayer: 'poi' | 'aerodrome_label';
-	filter: FilterSpecification;
-	minzoom: number;
-	image: string;
-	iconSize: Record<number, number>;
-};
 
 const STOPS: StopDef[] = [
 	{
@@ -100,34 +91,6 @@ const STOPS: StopDef[] = [
 	},
 ];
 
-export function* transitStops(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
-
-	// Shared base style, identical to the Shortbread module's.
-	const base: b.StyleProps = {
-		symbolPlacement: 'point',
-		iconOpacity: 0.7,
-		iconKeepUpright: true,
-		font: ctx.fonts.normal,
-		size: 10,
-		color: c.labelSymbol,
-		iconAnchor: 'bottom',
-		textAnchor: 'top',
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-	};
-
-	for (const stop of STOPS) {
-		yield b.symbol('symbol-transit-' + stop.id, {
-			sourceLayer: stop.sourceLayer,
-			filter: stop.filter,
-			layout: { 'text-field': ctx.nameField },
-			...base,
-			minzoom: stop.minzoom,
-			image: stop.image,
-			iconSize: stop.iconSize,
-			group: 'transit.stops',
-		});
-	}
+export function* transitStops(ctx: LayerContext): Generator<TaggedLayer> {
+	yield* draw(ctx, STOPS);
 }

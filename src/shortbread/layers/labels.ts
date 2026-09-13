@@ -1,7 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import type { Color } from '../../color/index.js';
 import * as b from '../../dsl/index.js';
+import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../../cartography/labels.js';
 
 // Text labels, rendered topmost above the icons. They come in two bands, because MapLibre resolves
 // symbol collisions in layer order and the transit stops belong between them: `featureLabels`
@@ -11,44 +11,31 @@ import * as b from '../../dsl/index.js';
 
 const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
 
-type PlaceDef = {
-	kind: string;
-	minzoom: number;
-	maxzoom?: number;
-	size: b.SizeValue;
-	color?: (ctx: LayerContext) => Color;
-	uppercase?: boolean;
-};
+/** Where settlement labels come from, and what decides which one survives a collision. */
+const PLACE_SOURCE = { sourceLayer: 'place_labels', sortKey: POP_SORT_KEY };
 
 // Old VersaTiles place labels: settlement text is a dark blue-grey; districts/quarters are a lighter
 // variant, uppercased. Text sizes restored from the old style.
-const PLACES_SMALL: PlaceDef[] = [
-	{ kind: 'neighbourhood', minzoom: 14, size: 12, uppercase: true },
-	{ kind: 'quarter', minzoom: 13, size: 13, uppercase: true },
-	{ kind: 'suburb', minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
-	{ kind: 'hamlet', minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
-	{ kind: 'village', minzoom: 10, size: { 9: 11, 12: 14 } },
-	{ kind: 'town', minzoom: 7, size: { 8: 11, 12: 14 } },
+const byKind = (kind: string): FilterSpecification => ['==', ['get', 'kind'], kind];
+
+const PLACES_SMALL: PlaceLabelDef[] = [
+	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, size: 12, uppercase: true },
+	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, size: 13, uppercase: true },
+	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
+	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ id: 'village', filter: byKind('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
+	{ id: 'town', filter: byKind('town'), minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
 // minzoom = the Shortbread place_labels schema minzoom for each kind.
-const PLACES_LARGE: PlaceDef[] = [
-	{ kind: 'city', minzoom: 6, maxzoom: 14, size: { 7: 11, 10: 14 } },
-	{ kind: 'state_capital', minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
-	{ kind: 'capital', minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
+const PLACES_LARGE: PlaceLabelDef[] = [
+	{ id: 'city', filter: byKind('city'), minzoom: 6, maxzoom: 14, size: { 7: 11, 10: 14 } },
+	{ id: 'statecapital', filter: byKind('state_capital'), minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
+	{ id: 'capital', filter: byKind('capital'), minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
 ];
 
 // Old VersaTiles settlement text is a dark blue-grey; districts/state are a lighter variant. Both are
 // derived from the `label` palette colour (so they invert correctly in dark mode) with its saturation
 // boosted to bring back the blue tint the OSM-Bright variant had desaturated away.
-function placeText(ctx: LayerContext): Color {
-	return ctx.c.label;
-}
-function placeSecondary(ctx: LayerContext): Color {
-	// State text: the label colour blended slightly toward `bg` (pure white in light mode / black in
-	// dark mode) — a grey-blue, lighter than the (bluer) settlement text.
-	return ctx.c.label.blend(0.05, ctx.bg);
-}
-
 const STREET_KINDS = [
 	'pedestrian',
 	'living_street',
@@ -97,17 +84,7 @@ export function* addresses(ctx: LayerContext): Generator<b.TaggedLayer> {
 export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
-	const streetBase: b.StyleProps = {
-		color: c.label,
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		symbolPlacement: 'line',
-		textAnchor: 'center',
-		minzoom: 12,
-		size: { 12: 10, 15: 13 },
-	};
+	const streetBase = labelStyles(ctx).street;
 	// motorway exit number + shield
 	yield b.symbol('label-motorway-exit', {
 		sourceLayer: 'street_labels_points',
@@ -178,14 +155,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// (points, z4+, pre-sorted by `way_area` so the largest win collisions) and `water_lines_labels`
 	// (lines, canals/rivers z12+, streams/ditches z14+). Neither was rendered before, so the map had
 	// no lake, sea or river names at all.
-	const waterBase: b.StyleProps = {
-		color: c.labelWater,
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		textAnchor: 'center',
-	};
+	const waterBase = labelStyles(ctx).water;
 
 	// Water-area labels are bucketed by `way_area`, because a name alone says nothing about whether a
 	// feature deserves a label at continental zoom. Berlin's "Wasserkaskaden am Fernsehturm" — a
@@ -247,30 +217,10 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 // Place and administrative names: settlements, states, countries. Emitted at the top of the label
 // stack, so a settlement name outranks every other symbol it collides with.
 export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
-	const { c } = ctx;
-
-	const placeBase: b.StyleProps = {
-		color: placeText(ctx),
-		font: ctx.fonts.normal,
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-	};
-	const boundaryBase: b.StyleProps = {
-		color: c.label,
-		font: ctx.fonts.normal,
-		textTransform: 'uppercase',
-		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
-		textAnchor: 'top',
-		textOffset: [0, 0.2],
-		textPadding: 0,
-		textOptional: true,
-	};
+	const { place: placeBase, boundary: boundaryBase } = labelStyles(ctx);
 
 	// small place labels
-	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p);
+	for (const p of PLACES_SMALL) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
 
 	// state boundary label
 	yield b.symbol('label-boundary-state', {
@@ -286,7 +236,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	});
 
 	// large place labels
-	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p);
+	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
 
 	// country boundary labels
 	yield b.symbol('label-boundary-country-small', {
@@ -323,20 +273,5 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		maxzoom: 9,
 		size: { 2: 8, 5: 13 },
 		group: 'labels.countries',
-	});
-}
-
-function placeLabel(ctx: LayerContext, base: b.StyleProps, p: PlaceDef): b.TaggedLayer {
-	return b.symbol('label-place-' + p.kind.replace(/_/g, ''), {
-		sourceLayer: 'place_labels',
-		filter: ['==', ['get', 'kind'], p.kind],
-		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': POP_SORT_KEY },
-		...base,
-		minzoom: p.minzoom,
-		maxzoom: p.maxzoom ?? 15,
-		size: p.size,
-		...(p.color ? { color: p.color(ctx) } : {}),
-		...(p.uppercase ? { textTransform: 'uppercase' } : {}),
-		group: 'labels.places',
 	});
 }
