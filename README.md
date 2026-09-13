@@ -199,9 +199,9 @@ subgraph 1["api"]
 2["code.ts"]
 3["guessStyle.ts"]
 1E["osm.ts"]
-2D["satellite.ts"]
-2E["index.ts"]
-2F["schema-builder.ts"]
+2F["satellite.ts"]
+2G["index.ts"]
+2H["schema-builder.ts"]
 end
 subgraph 4["lib"]
 5["index.ts"]
@@ -213,7 +213,7 @@ L["tileSource.ts"]
 M["styleMeta.ts"]
 19["opacity.ts"]
 1Y["languages.ts"]
-2I["schema-audit.ts"]
+2K["schema-audit.ts"]
 end
 subgraph 7["options"]
 8["keys.ts"]
@@ -248,7 +248,7 @@ E["gray.ts"]
 F["muted.ts"]
 G["natural.ts"]
 H["toner.ts"]
-33["types.ts"]
+35["types.ts"]
 end
 subgraph 17["features"]
 18["satellite-overlay.ts"]
@@ -266,7 +266,7 @@ subgraph 1A["types"]
 1B["index.ts"]
 1C["tilejson.ts"]
 1D["vector_layer.ts"]
-34["maplibre.ts"]
+36["maplibre.ts"]
 end
 subgraph 1F["color"]
 1G["index.ts"]
@@ -287,7 +287,7 @@ subgraph 26["layers"]
 27["* (13 files)"]
 end
 2B["schema.ts"]
-2C["layer-groups-map.ts"]
+2E["layer-groups-map.ts"]
 end
 subgraph 23["dsl"]
 24["context.ts"]
@@ -295,29 +295,32 @@ subgraph 23["dsl"]
 29["build.ts"]
 2A["index.ts"]
 end
-2G["index.ts"]
-2H["variants.ts"]
-subgraph 2J["omt"]
-2K["api.ts"]
-2L["context.ts"]
-2M["schema.ts"]
-2N["layer-groups-map.ts"]
-subgraph 2O["layers"]
-2P["index.ts"]
-2Q["airport.ts"]
-2R["background.ts"]
-2S["boundaries.ts"]
-2T["buildings.ts"]
-2U["labels.ts"]
-2V["landcover.ts"]
-2W["markings.ts"]
-2X["pois.ts"]
-2Y["roads.ts"]
-2Z["sites.ts"]
-30["transitstops.ts"]
-31["water.ts"]
+subgraph 2C["cartography"]
+2D["roads.ts"]
 end
-32["index.ts"]
+2I["index.ts"]
+2J["variants.ts"]
+subgraph 2L["omt"]
+2M["api.ts"]
+2N["context.ts"]
+2O["schema.ts"]
+2P["layer-groups-map.ts"]
+subgraph 2Q["layers"]
+2R["index.ts"]
+2S["airport.ts"]
+2T["background.ts"]
+2U["boundaries.ts"]
+2V["buildings.ts"]
+2W["labels.ts"]
+2X["landcover.ts"]
+2Y["markings.ts"]
+2Z["pois.ts"]
+30["roads.ts"]
+31["sites.ts"]
+32["transitstops.ts"]
+33["water.ts"]
+end
+34["index.ts"]
 end
 end
 3-->5
@@ -325,7 +328,7 @@ end
 3-->8
 3-->1B
 3-->1E
-3-->2D
+3-->2F
 5-->6
 5-->K
 5-->I
@@ -405,7 +408,7 @@ Z-->5
 1E-->N
 1E-->1Z
 1E-->21
-1E-->2C
+1E-->2E
 1E-->27
 1E-->2B
 1E-->C
@@ -459,67 +462,67 @@ Z-->5
 27-->28
 27-->2A
 27-->2B
+27-->2D
 28-->29
 29-->1G
 29-->19
 2A-->28
 2A-->29
 2A-->24
-2C-->N
-2C-->22
-2C-->27
-2D-->1P
-2D-->5
-2D-->N
-2D-->1Z
-2D-->21
-2D-->2
-2D-->1E
-2E-->3
-2E-->1E
-2E-->2D
-2G-->2E
-2G-->1G
-2G-->5
-2G-->N
-2G-->1B
-2G-->2H
-2H-->2E
-2H-->N
-2K-->2
-2K-->1G
-2K-->1P
-2K-->5
-2K-->1Y
-2K-->N
-2K-->1Z
-2K-->C
-2K-->2L
-2K-->2N
-2K-->2P
-2K-->2M
-2L-->24
-2L-->2M
-2N-->N
-2N-->2L
-2N-->2P
-2P-->28
-2P-->2A
-2P-->2M
-2P-->2Q
+2D-->2A
+2E-->N
+2E-->22
+2E-->27
+2F-->1P
+2F-->5
+2F-->N
+2F-->1Z
+2F-->21
+2F-->2
+2F-->1E
+2G-->3
+2G-->1E
+2G-->2F
+2I-->2G
+2I-->1G
+2I-->5
+2I-->N
+2I-->1B
+2I-->2J
+2J-->2G
+2J-->N
+2M-->2
+2M-->1G
+2M-->1P
+2M-->5
+2M-->1Y
+2M-->N
+2M-->1Z
+2M-->C
+2M-->2N
+2M-->2P
+2M-->2R
+2M-->2O
+2N-->24
+2N-->2O
+2P-->N
+2P-->2N
 2P-->2R
-2P-->2S
-2P-->2T
-2P-->2U
-2P-->2V
-2P-->2W
-2P-->2X
-2P-->2Y
-2P-->2Z
-2P-->30
-2P-->31
-2Q-->2A
+2R-->28
 2R-->2A
+2R-->2O
+2R-->2S
+2R-->2T
+2R-->2U
+2R-->2V
+2R-->2W
+2R-->2X
+2R-->2Y
+2R-->2Z
+2R-->30
+2R-->31
+2R-->32
+2R-->33
 2S-->2A
 2T-->2A
 2U-->2A
@@ -528,12 +531,14 @@ Z-->5
 2X-->2A
 2Y-->2A
 2Z-->2A
-30-->2A
+30-->2D
 31-->2A
-32-->2K
-32-->2M
+32-->2A
+33-->2A
+34-->2M
+34-->2O
 
-class 0,1,4,7,B,17,1A,1F,20,26,23,2J,2O subgraphs;
+class 0,1,4,7,B,17,1A,1F,20,26,23,2C,2L,2Q subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 
