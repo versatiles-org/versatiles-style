@@ -29,27 +29,47 @@ const PLACE_SOURCE = { sourceLayer: 'places', sortKey: POP_SORT_KEY };
 const byKind = (...kinds: string[]): ExpressionSpecification =>
 	kinds.length === 1 ? ['==', ['get', 'kind'], kinds[0]] : ['in', ['get', 'kind'], ['literal', [...kinds]]];
 
+// ── Places: the type is in `kind_detail` ──────────────────────────────────────
+//
+// Protomaps files settlements under three coarse kinds and puts the type Shortbread calls `kind` in
+// `kind_detail` (every cached tile, z2–15):
+//
+//   kind: locality       kind_detail: city, town, village, hamlet, isolated_dwelling, locality, farm
+//   kind: neighbourhood  kind_detail: neighbourhood, suburb
+//   kind: macrohood      kind_detail: quarter
+//
+// So the type is read as `kind_detail`, falling back to `kind` for a feature without one. Filtering on
+// `kind: city` — as this module once did — matched nothing, and Protomaps drew no settlement labels.
+//
+// `capital` is a string: `yes` for a national capital, and an admin level (`4` for a state capital, but
+// also `5`–`8`) otherwise. Only `yes` and `4` are capitals in Shortbread's sense; the rest stay cities
+// and towns. `2` is accepted as a national capital too, for builds that write the admin level there.
+const PLACE_TYPE: ExpressionSpecification = ['coalesce', ['get', 'kind_detail'], ['get', 'kind']];
+const byType = (type: string): ExpressionSpecification => ['==', PLACE_TYPE, type];
+const CAPITAL: ExpressionSpecification = ['to-string', ['get', 'capital']];
+const IS_CAPITAL: ExpressionSpecification = ['in', CAPITAL, ['literal', ['yes', '2']]];
+const IS_STATE_CAPITAL: ExpressionSpecification = ['==', CAPITAL, '4'];
+const NOT_A_CAPITAL: ExpressionSpecification = ['!', ['in', CAPITAL, ['literal', ['yes', '2', '4']]]];
+
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, size: 12, uppercase: true },
-	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, size: 13, uppercase: true },
-	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
-	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
-	{ id: 'village', filter: byKind('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
-	{ id: 'town', filter: byKind('town'), minzoom: 7, size: { 8: 11, 12: 14 } },
+	{ id: 'neighbourhood', filter: byType('neighbourhood'), minzoom: 14, size: 12, uppercase: true },
+	{ id: 'quarter', filter: byType('quarter'), minzoom: 13, size: 13, uppercase: true },
+	{ id: 'suburb', filter: byType('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
+	{ id: 'hamlet', filter: byType('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ id: 'village', filter: byType('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
+	{ id: 'town', filter: ['all', byType('town'), NOT_A_CAPITAL], minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
 
-// `capital` marks a national capital; Protomaps has no separate state-capital flag, so that layer
-// matches nothing rather than being dropped — the group's layer list stays the same across schemas.
 const PLACES_LARGE: PlaceLabelDef[] = [
 	{
 		id: 'city',
-		filter: ['all', byKind('city'), ['!', ['has', 'capital']]],
+		filter: ['all', byType('city'), NOT_A_CAPITAL],
 		minzoom: 6,
 		maxzoom: 14,
 		size: { 7: 11, 10: 14 },
 	},
-	{ id: 'statecapital', filter: ['==', ['get', 'capital'], 4], minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
-	{ id: 'capital', filter: ['==', ['get', 'capital'], 2], minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
+	{ id: 'statecapital', filter: IS_STATE_CAPITAL, minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
+	{ id: 'capital', filter: IS_CAPITAL, minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
 ];
 
 /** Country bands by `population_rank`, the nearest thing to Shortbread's `way_area` buckets. */
