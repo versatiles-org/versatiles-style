@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { featureFilter, type FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { protomaps } from './api.js';
 
 const urls = { protomaps: 'pmtiles://https://example.org/x.pmtiles' };
@@ -43,5 +44,23 @@ describe('protomaps() features.landcover', () => {
 
 	it('still rejects feature keys it does not know', () => {
 		expect(() => protomaps({ urls, features: { contours: true } } as never)).toThrow(/features\.contours/);
+	});
+});
+
+describe('protomaps() parks', () => {
+	const layers = protomaps({ urls }).layers as { id: string; filter?: FilterSpecification }[];
+	const park = layers.find((l) => l.id === 'land-park')!;
+	const matches = (kind: string) =>
+		featureFilter(park.filter, 'filter').filter({ zoom: 14 }, { type: 3, properties: { kind } });
+
+	it('fills parks, village greens and recreation grounds, as Shortbread does', () => {
+		expect(['park', 'village_green', 'recreation_ground'].every(matches)).toBe(true);
+	});
+
+	it('does not fill nature reserves, which are boundaries over other land cover', () => {
+		expect(matches('nature_reserve')).toBe(false);
+		expect(layers.filter((l) => JSON.stringify(l.filter ?? null).includes('nature_reserve')).map((l) => l.id)).toEqual(
+			[]
+		);
 	});
 });

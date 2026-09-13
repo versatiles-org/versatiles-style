@@ -121,9 +121,12 @@ const LAND: LandDef[] = [
 		group: 'land.agriculture',
 	},
 	{
+		// Shortbread's kinds. Not `nature_reserve`: a reserve is a protection boundary laid over whatever
+		// is inside it — farmland, water, forest — and filled as a park it painted the whole Dutch polder
+		// at z12 park-green, where the other schemas show the land cover beneath.
 		id: 'park',
 		from: 'landuse',
-		kinds: ['park', 'village_green', 'recreation_ground', 'nature_reserve'],
+		kinds: ['park', 'village_green', 'recreation_ground'],
 		color: (c) => c.naturePark.fade(0.5),
 		appear: 11,
 		group: 'land.urban',
