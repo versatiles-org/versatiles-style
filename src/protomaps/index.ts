@@ -12,5 +12,5 @@ export type {
 	ProtomapsFeaturesOptions,
 	ResolvedProtomapsUrls,
 	ResolvedProtomapsFeatures,
-} from '../options/index.js';
+} from './options.js';
 export { PROTOMAPS_SCHEMA, type ProtomapsLayer } from './schema.js';

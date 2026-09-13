@@ -1,6 +1,6 @@
 import { buildContext } from './context.js';
 import { omtLayers } from './layers/index.js';
-import { resolveOmt } from '../options/index.js';
+import { resolveOmt } from './options.js';
 import type { LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 // This schema's own layer-group map, with its own module-level cache.

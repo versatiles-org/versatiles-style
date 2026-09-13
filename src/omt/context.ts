@@ -1,5 +1,5 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { ResolvedOmt } from '../options/index.js';
+import type { ResolvedOmt } from './options.js';
 import { buildLayerContext } from '../dsl/context.js';
 import type { LayerContext } from '../dsl/context.js';
 import { OMT_SCHEMA } from './schema.js';

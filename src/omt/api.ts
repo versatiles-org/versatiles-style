@@ -1,7 +1,6 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { OmtOptions, ResolvedOmt } from '../options/index.js';
-import { colorOptionsKeys, resolveOmt } from '../options/index.js';
-import { minimizeOmtOptions } from '../options/minimize.js';
+import { colorOptionsKeys } from '../options/index.js';
+import { minimizeOmtOptions, resolveOmt, type OmtOptions, type ResolvedOmt } from './options.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
 import {

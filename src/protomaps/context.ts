@@ -1,5 +1,5 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { ResolvedProtomaps } from '../options/index.js';
+import type { ResolvedProtomaps } from './options.js';
 import { buildLayerContext } from '../dsl/context.js';
 import type { LayerContext } from '../dsl/context.js';
 import { PROTOMAPS_SCHEMA } from './schema.js';

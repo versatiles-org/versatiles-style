@@ -1,8 +1,12 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { ProtomapsOptions, ResolvedProtomaps } from '../options/index.js';
-import { colorOptionsKeys, resolveProtomaps } from '../options/index.js';
-import { PROTOMAPS_PLACEHOLDER } from '../options/urls.js';
-import { minimizeProtomapsOptions } from '../options/minimize.js';
+import { colorOptionsKeys } from '../options/index.js';
+import {
+	minimizeProtomapsOptions,
+	resolveProtomaps,
+	PROTOMAPS_PLACEHOLDER,
+	type ProtomapsOptions,
+	type ResolvedProtomaps,
+} from './options.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
 import {

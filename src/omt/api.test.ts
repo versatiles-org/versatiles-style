@@ -138,6 +138,16 @@ describe('bundle isolation (§5.3)', () => {
 		expect(omtFiles.map((f) => f.slice(SRC.length + 1))).toEqual([]);
 	});
 
+	it('the root entry does not reach any other schema’s modules either', () => {
+		// The check above was once passing while `src/options/omt.ts` and `src/options/protomaps.ts` sat in
+		// the shared options barrel — reachable from the root, and so in the CDN bundle. Per-schema option
+		// code now lives in each schema's own directory, and this asserts the whole rule rather than one
+		// directory's worth of it.
+		const reachable = [...reachableFrom('index.ts')].map((f) => f.slice(SRC.length + 1));
+		const perSchema = reachable.filter((f) => f.startsWith('omt/') || f.startsWith('protomaps/'));
+		expect(perSchema).toEqual([]);
+	});
+
 	it('the omt entry does reach them, so the walk means something', () => {
 		const omtFiles = [...reachableFrom('omt/index.ts')].filter((f) => f.includes(`${'/'}omt${'/'}`));
 		expect(omtFiles.length).toBeGreaterThan(5);

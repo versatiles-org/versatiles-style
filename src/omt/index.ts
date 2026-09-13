@@ -15,5 +15,5 @@ export type {
 	OmtFeaturesOptions,
 	ResolvedOmtUrls,
 	ResolvedOmtFeatures,
-} from '../options/index.js';
+} from './options.js';
 export { OMT_SCHEMA, type OmtLayer } from './schema.js';

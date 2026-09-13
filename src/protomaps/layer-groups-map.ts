@@ -1,6 +1,6 @@
 import { buildContext } from './context.js';
 import { protomapsLayers } from './layers/index.js';
-import { resolveProtomaps } from '../options/index.js';
+import { resolveProtomaps } from './options.js';
 import type { LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 // This schema's own layer-group map, with its own module-level cache.

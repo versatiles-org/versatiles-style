@@ -24,51 +24,8 @@ export type OsmUrlsOptions = {
 	sprite?: SpriteEntries;
 };
 
-/**
- * OpenMapTiles URLs. `omt` replaces `osm` as the vector tile source, and unlike every other URL here it
- * does **not** default relative to `base`: the VersaTiles CDN serves Shortbread tiles, so there is no
- * OpenMapTiles tileset behind it (SCHEMA-SUPPORT-PLAN.md §5.5). Glyphs, sprites and elevation still come
- * from `base` — those are the style's own assets, not the tileset's.
- */
-export type OmtUrlsOptions = {
-	base?: string;
-	omt?: TileSource;
-	elevation?: TileSource;
-	glyphsPattern?: string;
-	sprite?: SpriteEntries;
-};
-
-/**
- * Protomaps URLs. As with OpenMapTiles, the vector source does not default relative to `base` — the
- * VersaTiles CDN serves Shortbread tiles (§5.5) — but unlike it, there is no hosted tile endpoint to
- * fall back on either: Protomaps publishes a PMTiles archive, and its docs discourage hotlinking the
- * daily builds. So `protomaps` has **no default** and must be supplied by the caller, normally as a
- * `pmtiles://` URL that the MapLibre PMTiles plugin resolves.
- */
-export type ProtomapsUrlsOptions = {
-	base?: string;
-	protomaps?: TileSource;
-	elevation?: TileSource;
-	glyphsPattern?: string;
-	sprite?: SpriteEntries;
-};
-
 export type SatelliteUrlsOptions = OsmUrlsOptions & {
 	satellite?: TileSource;
-};
-
-export type ResolvedProtomapsUrls = {
-	protomaps: TileSource;
-	elevation: TileSource;
-	glyphsPattern: string;
-	sprite: SpriteEntries;
-};
-
-export type ResolvedOmtUrls = {
-	omt: TileSource;
-	elevation: TileSource;
-	glyphsPattern: string;
-	sprite: SpriteEntries;
 };
 
 export type ResolvedOsmUrls = {
@@ -116,7 +73,14 @@ export function resolveBase(base?: string): string {
  * Resolve a tile source against `base`. A pre-fetched TileJSON is used as-is; only
  * strings are made absolute. This is what keeps style building free of I/O.
  */
-function resolveTileSource(base: string, value: TileSource | undefined, fallback: string): TileSource {
+/**
+ * Resolve a tile source: a pre-fetched TileJSON object passes through, a URL (or the fallback) is made
+ * absolute against `base`.
+ *
+ * Exported because each schema resolves its own URLs in its own directory — see the note on
+ * `src/options/index.ts` about why per-schema option code does not live here.
+ */
+export function resolveTileSource(base: string, value: TileSource | undefined, fallback: string): TileSource {
 	if (typeof value === 'object') return value;
 	return resolveUrl(base, value ?? fallback);
 }
@@ -126,49 +90,6 @@ export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOs
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
-		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
-		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
-	};
-}
-
-/**
- * OpenFreeMap: unmodified OpenMapTiles, no API key, no request limits, commercial use allowed. Used as
- * the default so `omt()` builds a working style with no arguments, exactly as `osm()` does.
- * Attribution comes from the tileset's own TileJSON: "OpenFreeMap © OpenMapTiles Data from OpenStreetMap".
- */
-const DEFAULT_OMT_TILES = 'https://tiles.openfreemap.org/planet';
-
-export function resolveOmtUrls(urls?: OmtUrlsOptions, path = 'urls'): ResolvedOmtUrls {
-	checkKeys(urls, { base: true, omt: true, elevation: true, glyphsPattern: true, sprite: true }, path);
-	const base = urls?.base ?? DEFAULT_BASE;
-	return {
-		omt: resolveTileSource(base, urls?.omt, DEFAULT_OMT_TILES),
-		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
-		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
-		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
-	};
-}
-
-/**
- * The reference Protomaps basemap, as a `pmtiles://` URL with the build date left in. It is deliberately
- * not a working URL: Protomaps publishes a PMTiles archive rather than a hosted tile endpoint, and its
- * docs discourage hotlinking the daily builds, so unlike OpenFreeMap there is nothing honest to default
- * to. The caller must name the archive they serve.
- */
-export const PROTOMAPS_PLACEHOLDER = 'pmtiles://https://build.protomaps.com/<YYYYMMDD>.pmtiles';
-
-/**
- * Resolving leaves the placeholder in place rather than throwing, so `protomaps.defaults` and
- * `minimizeOptions` still work — every other default is meaningful and worth being able to read.
- * `protomaps()` is where a missing URL is refused, because that is where it would otherwise produce a
- * style that quietly 404s.
- */
-export function resolveProtomapsUrls(urls?: ProtomapsUrlsOptions, path = 'urls'): ResolvedProtomapsUrls {
-	checkKeys(urls, { base: true, protomaps: true, elevation: true, glyphsPattern: true, sprite: true }, path);
-	const base = urls?.base ?? DEFAULT_BASE;
-	return {
-		protomaps: resolveTileSource(base, urls?.protomaps, PROTOMAPS_PLACEHOLDER),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
