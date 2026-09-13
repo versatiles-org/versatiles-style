@@ -117,33 +117,89 @@ export function readMetadata(buf: Uint8Array, header: PMTilesHeader, bufStart = 
 }
 
 /** A `fetch`-shaped function, so a caller can supply their own (tests, proxies, retries). */
-export type FetchLike = (url: string, init?: { headers?: Record<string, string> }) => Promise<Response>;
+export type FetchLike = (
+	url: string,
+	init?: { headers?: Record<string, string>; signal?: AbortSignal }
+) => Promise<Response>;
 
 /**
- * One range request, retried once.
+ * How long one range request may take before it is abandoned.
+ *
+ * Without a bound, a stalled connection to a 138 GB archive hangs until the socket eventually gives up
+ * — minutes, during which the caller has no idea anything is wrong. Generous enough for a cold
+ * directory read over a slow link, short enough that a retry still beats waiting.
+ */
+const REQUEST_TIMEOUT_MS = 5_000;
+
+/** Attempts per range request: one retry. */
+const ATTEMPTS = 2;
+
+/** Everything known about a failed request, for an error message worth reading. */
+function describe(url: string, from: number, length: number, attempt: number, error: unknown): string {
+	const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+	// undici hides the real cause (ECONNRESET, ETIMEDOUT, …) one level down.
+	const cause = error instanceof Error && error.cause ? ` (cause: ${String(error.cause)})` : '';
+	return `bytes ${from}–${from + length - 1} of ${url}, attempt ${attempt}/${ATTEMPTS}: ${reason}${cause}`;
+}
+
+/** A permanent answer is not worth retrying; a 5xx, a timeout or a dropped socket is. */
+function isRetryable(error: unknown): boolean {
+	return !(error instanceof PermanentError);
+}
+
+/** An upstream answer that will not change on a retry — a 404, or a server ignoring Range. */
+class PermanentError extends Error {}
+
+/**
+ * One range request, bounded in time and retried once.
  *
  * Reading an archive means several requests in quick succession against a large remote file, and a
  * dropped connection there is common enough to be worth absorbing — it surfaced repeatedly as
  * `TypeError: fetch failed` while building the dev tile proxy. One retry is the difference between a
- * blank map and a slow one.
+ * blank map and a slow one; a timeout is the difference between a slow map and a hung one.
+ *
+ * A retry is announced on stderr rather than swallowed: a run that silently takes twice as long is
+ * worse to debug than one that says why.
  */
 async function range(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
-	try {
-		return await rangeOnce(url, from, length, fetchFn);
-	} catch {
-		return rangeOnce(url, from, length, fetchFn);
+	let lastError: unknown;
+	let tried = 0;
+	for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+		tried = attempt;
+		try {
+			return await rangeOnce(url, from, length, fetchFn);
+		} catch (error) {
+			lastError = error;
+			if (!isRetryable(error) || attempt === ATTEMPTS) break;
+			console.warn(`pmtiles: retrying ${describe(url, from, length, attempt, error)}`);
+		}
 	}
+	// `tried`, not `ATTEMPTS`: a permanent answer stops after one go, and saying "attempt 2/2" about a
+	// request that was made once sends the reader looking for a retry that never happened.
+	throw new Error(`pmtiles: failed reading ${describe(url, from, length, tried, lastError)}`, {
+		cause: lastError,
+	});
 }
 
 async function rangeOnce(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
 	const to = from + length - 1;
-	const res = await fetchFn(url, { headers: { Range: `bytes=${from}-${to}` } });
+	const res = await fetchFn(url, {
+		headers: { Range: `bytes=${from}-${to}` },
+		signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+	});
 	// 206 is the expected answer; a 200 means the server ignored the range and sent the whole archive,
-	// which for a planet build must not be read into memory.
-	if (res.status === 200)
-		throw new Error(`pmtiles: ${url} ignored the Range header — refusing to read the whole archive`);
-	if (res.status !== 206) throw new Error(`pmtiles: ${url} → HTTP ${res.status}`);
-	return new Uint8Array(await res.arrayBuffer());
+	// which for a planet build must not be read into memory. Neither improves on a retry.
+	if (res.status === 200) {
+		throw new PermanentError(`${url} ignored the Range header — refusing to read the whole archive`);
+	}
+	if (res.status === 404 || res.status === 403) throw new PermanentError(`${url} → HTTP ${res.status}`);
+	if (res.status !== 206) throw new Error(`${url} → HTTP ${res.status}`);
+	const body = new Uint8Array(await res.arrayBuffer());
+	// A short read means the connection dropped mid-body; the parser would fail far from the cause.
+	if (body.length !== length) {
+		throw new Error(`${url} returned ${body.length} bytes for a ${length}-byte range`);
+	}
+	return body;
 }
 
 /**

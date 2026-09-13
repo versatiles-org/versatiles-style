@@ -35,6 +35,31 @@ import { PMTilesSource } from '../scripts/lib/pmtiles.js';
 /** Where tiles land. Gitignored; delete it to invalidate everything. */
 const CACHE_DIR = resolve(import.meta.dirname, '.tiles');
 
+/**
+ * How long one upstream tile request may take.
+ *
+ * A stalled fetch otherwise holds a MapLibre tile slot until the socket gives up, and the map shows a
+ * hole with no explanation. OpenFreeMap has been observed taking tens of seconds from here, so this is
+ * deliberately generous — the retry that follows is the fast path, not this bound.
+ */
+const TILE_TIMEOUT_MS = 5_000;
+
+/** The TileJSON is fetched once per server run, so it can afford to wait longer. */
+const METADATA_TIMEOUT_MS = 5_000;
+
+/** Attempts per upstream tile: one retry. */
+const ATTEMPTS = 2;
+
+/** A request slower than this is worth mentioning even when it succeeds. */
+const SLOW_MS = 3_000;
+
+/** Read an error the way undici reports it: the useful part is usually in `cause`. */
+function explain(error: unknown): string {
+	if (!(error instanceof Error)) return String(error);
+	const cause = error.cause ? ` (cause: ${String(error.cause)})` : '';
+	return `${error.name}: ${error.message}${cause}`;
+}
+
 type Upstream = { kind: 'xyz'; tileJSON: string } | { kind: 'pmtiles'; resolveUrl: () => Promise<string> };
 
 /**
@@ -72,6 +97,9 @@ type Resolved = {
 
 const resolved = new Map<string, Promise<Resolved>>();
 
+/** An upstream answer that will not change on a retry. */
+class PermanentError extends Error {}
+
 /** Strip a gzip wrapper if the upstream left one on; MapLibre is served plain protobuf. */
 function gunzipIfNeeded(body: Uint8Array): Uint8Array {
 	return body[0] === 0x1f && body[1] === 0x8b ? gunzipSync(body) : body;
@@ -93,7 +121,7 @@ async function resolveSource(schema: string, upstream: Upstream): Promise<Resolv
 		};
 	}
 
-	const res = await fetch(upstream.tileJSON);
+	const res = await fetch(upstream.tileJSON, { signal: AbortSignal.timeout(METADATA_TIMEOUT_MS) });
 	if (!res.ok) throw new Error(`tile-cache: ${upstream.tileJSON} → HTTP ${res.status}`);
 	const tj = (await res.json()) as {
 		tiles?: string[];
@@ -110,11 +138,26 @@ async function resolveSource(schema: string, upstream: Upstream): Promise<Resolv
 			// asks the upstream for a tile literally named "{z}".
 			const path = template.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y));
 			const url = new URL(path, upstream.tileJSON).href;
-			const tile = await fetch(url);
-			// 404 is how most tile servers say "nothing here", which is not an error.
-			if (tile.status === 404 || tile.status === 204) return undefined;
-			if (!tile.ok) throw new Error(`${url} → HTTP ${tile.status}`);
-			return gunzipIfNeeded(new Uint8Array(await tile.arrayBuffer()));
+
+			let lastError: unknown;
+			for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+				try {
+					const tile = await fetch(url, { signal: AbortSignal.timeout(TILE_TIMEOUT_MS) });
+					// 404 and 204 are how tile servers say "nothing here", which is not a failure.
+					if (tile.status === 404 || tile.status === 204) return undefined;
+					// A 4xx will say the same thing next time; a 5xx or a dropped socket may not.
+					if (tile.status >= 400 && tile.status < 500) {
+						throw new PermanentError(`${url} → HTTP ${tile.status}`);
+					}
+					if (!tile.ok) throw new Error(`${url} → HTTP ${tile.status}`);
+					return gunzipIfNeeded(new Uint8Array(await tile.arrayBuffer()));
+				} catch (error) {
+					lastError = error;
+					if (error instanceof PermanentError || attempt === ATTEMPTS) break;
+					console.warn(`  tile-cache: retrying ${schema} ${z}/${x}/${y} — ${explain(error)}`);
+				}
+			}
+			throw new Error(`${schema} ${z}/${x}/${y} from ${url}: ${explain(lastError)}`, { cause: lastError });
 		},
 		minzoom: tj.minzoom ?? 0,
 		maxzoom: tj.maxzoom ?? 14,
@@ -144,12 +187,16 @@ function sourceFor(schema: string): Promise<Resolved> {
  */
 const inFlight = new Map<string, Promise<Uint8Array | undefined>>();
 
-async function readTile(schema: string, z: number, x: number, y: number): Promise<Uint8Array | undefined> {
+/** Where a tile came from, so the log can say whether the cache is doing its job. */
+export type TileResult = { tile?: Uint8Array; hit: boolean; ms: number };
+
+async function readTile(schema: string, z: number, x: number, y: number): Promise<TileResult> {
+	const started = Date.now();
 	const file = resolve(CACHE_DIR, schema, String(z), String(x), `${y}.pbf`);
 	if (existsSync(file)) {
 		const cached = readFileSync(file);
 		// A zero-byte file is how "upstream has no tile here" is remembered.
-		return cached.length === 0 ? undefined : cached;
+		return { tile: cached.length === 0 ? undefined : cached, hit: true, ms: Date.now() - started };
 	}
 
 	const key = `${schema}/${z}/${x}/${y}`;
@@ -157,7 +204,10 @@ async function readTile(schema: string, z: number, x: number, y: number): Promis
 	if (!pending) {
 		pending = (async () => {
 			const source = await sourceFor(schema);
-			if (z < source.minzoom || z > source.maxzoom) return undefined;
+			if (z < source.minzoom || z > source.maxzoom) {
+				console.log(`  tile-cache: ${key} outside z${source.minzoom}–${source.maxzoom}, not fetched`);
+				return undefined;
+			}
 			const tile = await source.getTile(z, x, y);
 			mkdirSync(dirname(file), { recursive: true });
 			writeFileSync(file, tile ?? new Uint8Array(0));
@@ -169,7 +219,14 @@ async function readTile(schema: string, z: number, x: number, y: number): Promis
 		void pending.finally(() => inFlight.delete(key)).catch(() => undefined);
 		inFlight.set(key, pending);
 	}
-	return pending;
+	const tile = await pending;
+	const ms = Date.now() - started;
+	// A slow miss is the thing worth knowing about: it is what makes the map feel stuck, and it only
+	// happens once per tile because the next read comes off disk.
+	if (ms >= SLOW_MS) {
+		console.warn(`  tile-cache: ${key} took ${ms}ms from upstream (${tile ? tile.length : 0} bytes)`);
+	}
+	return { tile, hit: false, ms };
 }
 
 const TILE_PATH = /^\/([a-z]+)\/(\d+)\/(\d+)\/(\d+)(?:\.pbf)?$/;
@@ -205,10 +262,14 @@ export function tileCache(): Plugin {
 						const tileMatch = TILE_PATH.exec(path);
 						if (!tileMatch) return next();
 						const [, schema, z, x, y] = tileMatch;
-						const tile = await readTile(schema, Number(z), Number(x), Number(y));
+						const { tile, hit, ms } = await readTile(schema, Number(z), Number(x), Number(y));
 						res.setHeader('Content-Type', 'application/x-protobuf');
 						// The style author reloads constantly; let the browser skip the round trip too.
 						res.setHeader('Cache-Control', 'max-age=3600');
+						// Visible in the browser's network panel, so a slow tile can be traced without the
+						// server log: which source answered, and whether it came off disk.
+						res.setHeader('X-Tile-Cache', hit ? 'hit' : 'miss');
+						res.setHeader('Server-Timing', `tile;dur=${ms}`);
 						if (!tile) {
 							res.statusCode = 204;
 							res.end();
@@ -216,11 +277,14 @@ export function tileCache(): Plugin {
 						}
 						res.end(Buffer.from(tile));
 					} catch (error) {
-						// Surface the reason in the response body: a failing tile is otherwise a blank map.
+						// A failing tile is otherwise a hole in the map with no explanation, so say why in
+						// three places: the response body, the browser console via a header, and the terminal.
+						const reason = explain(error);
 						res.statusCode = 500;
 						res.setHeader('Content-Type', 'text/plain');
-						res.end(`tile-cache: ${String(error)}`);
-						server.config.logger.error(`tile-cache ${path}: ${String(error)}`);
+						res.setHeader('X-Tile-Cache', 'error');
+						res.end(`tile-cache: ${reason}`);
+						server.config.logger.error(`  tile-cache FAILED ${path}: ${reason}`, { timestamp: true });
 					}
 				})();
 			});
