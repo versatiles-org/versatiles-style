@@ -7,6 +7,7 @@ import { background } from './background.js';
 import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { buildings, buildings3d } from './buildings.js';
+import { featureLabels, placeLabels, addresses } from './labels.js';
 import { landcover } from './landcover.js';
 import { roads } from './roads.js';
 import { sites } from './sites.js';
@@ -58,15 +59,16 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield slot(SLOT_BELOW_SYMBOLS);
 	// OSM Bright overlay order is boundaries → markings → POIs (POIs sit above road markings).
 	yield* boundaries(ctx);
-	// yield* addresses(ctx);   // `housenumber`
+	yield* addresses(ctx);
 	yield* markings(ctx);
 	// yield* pois(ctx);        // `poi`
 	yield slot(SLOT_BELOW_LABELS);
-	// yield* featureLabels(ctx);  // `transportation_name`, `water_name`, `waterway`
+	yield* featureLabels(ctx);
 	// Transit stops sit between the two label bands so a stop outranks the street name it stands on;
 	// see the Shortbread assembler for why emitting them before the labels drops most of them.
 	yield* transitStops(ctx);
-	// yield* placeLabels(ctx);    // `place` (+ `mountain_peak`, which Shortbread has no layer for)
+	// `mountain_peak` has no Shortbread counterpart and is therefore not drawn; see the conformance test.
+	yield* placeLabels(ctx);
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);
 }

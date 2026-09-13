@@ -50,26 +50,29 @@ describe('coverage, while the port is incomplete', () => {
 			'aeroway',
 			'boundary',
 			'building',
+			'housenumber',
 			'landcover',
 			'landuse',
+			'place',
 			'poi',
 			'transportation',
+			'transportation_name',
 			'water',
+			'water_name',
 			'waterway',
 		]);
 	});
 
 	it('lists every source-layer still to be bound', () => {
 		expect(audit.unrendered).toEqual([
-			'housenumber',
+			// Both deliberate, not pending. `mountain_peak` (peak / cliff / saddle, with `ele` and `rank`)
+			// has no Shortbread counterpart at all, and adding a layer only this schema draws would make the
+			// two maps diverge in the direction §23 warns about — it is a candidate for later, not a gap.
 			'mountain_peak',
-			// `park` is deliberate, not pending: it holds protected areas, and its `class` was sampled at
-			// 56+ values including raw localised titles ("Natura 2000-gebied", "Ruhezone I/5"), so nothing
-			// filters on it. Urban parks come from `landcover` (`subclass: park`) instead.
+			// `park` holds protected areas, and its `class` was sampled at 56+ values including raw localised
+			// titles ("Natura 2000-gebied", "Ruhezone I/5"), so nothing filters on it. Urban parks come from
+			// `landcover` (`subclass: park`) instead.
 			'park',
-			'place',
-			'transportation_name',
-			'water_name',
 		]);
 	});
 });
@@ -166,6 +169,12 @@ describe('group tagging', () => {
 			'boundaries.country',
 			'boundaries.state',
 			'buildings',
+			'labels.addresses',
+			'labels.countries',
+			'labels.places',
+			'labels.states',
+			'labels.streets',
+			'labels.water',
 			'land.agriculture',
 			'land.forest',
 			'land.glacier',
