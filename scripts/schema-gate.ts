@@ -34,12 +34,14 @@ import { getLayerGroupMap } from '../src/shortbread/layer-groups-map.js';
 import { auditSchema, auditGroupBinding, schemaUsage, type SchemaRecord } from '../src/lib/schema-audit.js';
 import { SHORTBREAD_SCHEMA } from '../src/shortbread/schema.js';
 import { OMT_SCHEMA } from '../src/omt/schema.js';
+import { PROTOMAPS_SCHEMA } from '../src/protomaps/schema.js';
 import { MAPPINGS, type Confidence, type LayerMapping } from './config/schema-mapping.js';
 
 /** Every vendored schema record, keyed by the name `npm run vendor-schema` uses. */
 const SCHEMAS: Record<string, SchemaRecord> = {
 	shortbread: SHORTBREAD_SCHEMA,
 	omt: OMT_SCHEMA,
+	protomaps: PROTOMAPS_SCHEMA,
 };
 
 /** The schema the current cartography was written for; auditing it against itself is the control. */

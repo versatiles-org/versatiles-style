@@ -2,6 +2,7 @@
  * Vendor a tileset's schema record from its live TileJSON.
  *
  *   npm run vendor-schema -- omt              # print the record
+ *   npm run vendor-schema -- protomaps --write    # from a PMTiles archive, not a TileJSON
  *   npm run vendor-schema -- omt --write      # write it to src/omt/schema.ts
  *   npm run vendor-schema -- shortbread --check   # is the vendored record still current?
  *
@@ -26,6 +27,7 @@
  *     the vendored file for no gain.
  */
 import { writeFileSync, readFileSync } from 'node:fs';
+import { fetchMetadata } from './lib/pmtiles.js';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
@@ -33,8 +35,18 @@ import process from 'node:process';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 type Source = {
-	/** TileJSON URL. Resolved at run time — never vendored, see wrinkle 1 above. */
+	/**
+	 * Where the schema comes from, resolved at run time — never vendored, see wrinkle 1.
+	 *
+	 * `tilejson` reads a TileJSON document. `pmtiles` reads the metadata out of a PMTiles archive with two
+	 * range requests, because Protomaps publishes no TileJSON: its schema lives inside the archive
+	 * (SCHEMA-SUPPORT-PLAN.md §7 step 7).
+	 */
+	kind?: 'tilejson' | 'pmtiles';
+	/** For `tilejson`, the document URL. For `pmtiles`, ignored — see `resolveUrl`. */
 	url: string;
+	/** For `pmtiles`, finds the current archive: builds are dated and there is no "latest" alias. */
+	resolveUrl?: () => Promise<string>;
 	/** Where the generated record lives, relative to the repo root. */
 	out: string;
 	/** Exported names in the generated module. */
@@ -55,6 +67,25 @@ const SOURCES: Record<string, Source> = {
 			'https://shortbread-tiles.org/schema/1.1/',
 		].join('\n'),
 	},
+	protomaps: {
+		kind: 'pmtiles',
+		url: 'https://build.protomaps.com/<latest>.pmtiles',
+		resolveUrl: latestProtomapsBuild,
+		out: 'src/protomaps/schema.ts',
+		recordName: 'PROTOMAPS_SCHEMA',
+		typeName: 'ProtomapsLayer',
+		header: [
+			"The Protomaps Basemap schema, read from the daily planet build's PMTiles metadata — Protomaps",
+			'publishes no TileJSON, so the schema lives inside the archive. Prose specification:',
+			'https://docs.protomaps.com/basemaps/layers',
+			'',
+			'Attribution required by the tileset: "© OpenStreetMap contributors, © Protomaps".',
+			'',
+			'Two things set this schema apart from the others: it reaches z15 where Shortbread and',
+			'OpenMapTiles stop at z14, and it classifies with `kind` / `kind_detail` rather than',
+			'`class` / `subclass`.',
+		].join('\n'),
+	},
 	omt: {
 		url: 'https://tiles.openfreemap.org/planet',
 		out: 'src/omt/schema.ts',
@@ -73,6 +104,23 @@ const SOURCES: Record<string, Source> = {
 type VectorLayer = { id: string; minzoom?: number; maxzoom?: number; fields?: Record<string, string> };
 type TileJSON = { name?: string; version?: string; minzoom?: number; maxzoom?: number; vector_layers?: VectorLayer[] };
 
+/**
+ * Protomaps publishes a dated archive per day and no "latest" alias, so the current one is found by
+ * walking back from today. Three weeks is generous: the builds are daily, and a gap that long means
+ * something is wrong that a silent fallback should not paper over.
+ */
+async function latestProtomapsBuild(): Promise<string> {
+	const pad = (n: number) => String(n).padStart(2, '0');
+	for (let back = 0; back < 21; back++) {
+		const d = new Date();
+		d.setUTCDate(d.getUTCDate() - back);
+		const url = `https://build.protomaps.com/${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}.pmtiles`;
+		const res = await fetch(url, { headers: { Range: 'bytes=0-0' } });
+		if (res.status === 206) return url;
+	}
+	throw new Error('vendor-schema: no Protomaps build found in the last 21 days');
+}
+
 type SchemaLayer = { minzoom: number; maxzoom: number; fields: string[] };
 
 /** TileJSON `vector_layers` → the record shape the style and its conformance tests consume. */
@@ -89,13 +137,13 @@ function toRecord(tileJSON: TileJSON): Record<string, SchemaLayer> {
 	return record;
 }
 
-function emit(source: Source, tileJSON: TileJSON, record: Record<string, SchemaLayer>): string {
+function emit(source: Source, tileJSON: TileJSON, record: Record<string, SchemaLayer>, from: string): string {
 	const version = tileJSON.version ? ` v${tileJSON.version}` : '';
 	const lines = [
 		'/**',
 		...source.header.split('\n').map((l) => (l ? ` * ${l}` : ' *')),
 		' *',
-		` * Generated from ${source.url}${version}`,
+		` * Generated from ${from}${version}`,
 		' * by `npm run vendor-schema`. Do not edit by hand; re-run the script instead, and use',
 		' * `npm run vendor-schema -- <name> --check` to find out whether this file has gone stale.',
 		' */',
@@ -152,12 +200,21 @@ async function main(): Promise<void> {
 		process.exit(1);
 	}
 
-	const response = await fetch(source.url);
-	if (!response.ok) throw new Error(`${source.url} → HTTP ${response.status}`);
-	const tileJSON = (await response.json()) as TileJSON;
+	let from = source.url;
+	let tileJSON: TileJSON;
+	if (source.kind === 'pmtiles') {
+		from = await source.resolveUrl!();
+		const { header, metadata } = await fetchMetadata(from);
+		// The archive header is authoritative for the zoom range; the metadata carries `vector_layers`.
+		tileJSON = { ...(metadata as TileJSON), minzoom: header.minzoom, maxzoom: header.maxzoom };
+	} else {
+		const response = await fetch(source.url);
+		if (!response.ok) throw new Error(`${source.url} → HTTP ${response.status}`);
+		tileJSON = (await response.json()) as TileJSON;
+	}
 	const live = toRecord(tileJSON);
 	const layerCount = Object.keys(live).length;
-	if (layerCount === 0) throw new Error(`${source.url} carries no vector_layers`);
+	if (layerCount === 0) throw new Error(`${from} carries no vector_layers`);
 
 	if (args.includes('--check')) {
 		const vendored = await loadVendored(source);
@@ -167,16 +224,16 @@ async function main(): Promise<void> {
 		}
 		const changes = diff(vendored, live);
 		if (changes.length === 0) {
-			console.log(`✓ ${source.out} matches ${source.url} (${layerCount} source-layers).`);
+			console.log(`✓ ${source.out} matches ${from} (${layerCount} source-layers).`);
 			return;
 		}
-		console.error(`✗ ${source.out} is stale against ${source.url} — ${changes.length} difference(s):\n`);
+		console.error(`✗ ${source.out} is stale against ${from} — ${changes.length} difference(s):\n`);
 		for (const line of changes) console.error(`  ${line}`);
 		console.error(`\nRe-vendor with: npm run vendor-schema -- ${name} --write`);
 		process.exit(1);
 	}
 
-	const code = emit(source, tileJSON, live);
+	const code = emit(source, tileJSON, live, from);
 	if (!args.includes('--write')) {
 		process.stdout.write(code);
 		return;

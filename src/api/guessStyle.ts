@@ -49,20 +49,36 @@ function isVectorTileJSON(tj: TileJSONSpecification): tj is TileJSONSpecificatio
 	return 'vector_layers' in tj && Array.isArray((tj as TileJSONSpecificationVector).vector_layers);
 }
 
+/** A tileset must carry this many of a schema's source-layers to be recognised by count alone. */
+const STRONG_MATCH_COUNT = 8;
+
 /**
  * Does this tileset look like the given schema's?
  *
- * The same heuristic that has always identified Shortbread — at least 3 matching source-layers, or a
- * ≥50% match rate — now applied to whichever schema is being tested. The candidate ids come from the
- * schema's own vendored record rather than a list kept by hand here, which is one fewer copy of a fact
- * that has drifted before.
+ * Recognised when **at least half** its source-layers are the schema's, or when it carries at least
+ * `STRONG_MATCH_COUNT` of them outright. The candidate ids come from the schema's own vendored record
+ * rather than a list kept by hand here, which is one fewer copy of a fact that has drifted before.
+ *
+ * ── Why not "3 or more", as this was ──────────────────────────────────────────
+ *
+ * Three is a low bar for a coincidence. Vendoring the Protomaps record showed it plainly: Protomaps
+ * carries `boundaries`, `buildings` and `pois` — three generic names that Shortbread also uses, with
+ * entirely different fields behind them — so a Protomaps tileset scored exactly 3 and was handed a full
+ * 287-layer Shortbread style. Nearly every layer of it reads a source-layer the tiles do not have, and
+ * the three that do read fields that are not there, so the result was a blank map where the inspector
+ * style would have been useful.
+ *
+ * The two clauses cover the two honest cases. A **rate** test catches a tileset that is mostly this
+ * schema, including a small extract of a handful of layers. A **count** test catches a tileset that is
+ * this schema plus a pile of extra layers of its own, where the rate would fall below half. Protomaps
+ * satisfies neither: 3 of 9 is 33%, and 3 is far short of 8.
  */
 function looksLike(tj: TileJSONSpecificationVector, sourceLayers: readonly string[]): boolean {
 	const ids = tj.vector_layers.map((l) => l.id);
 	if (ids.length === 0) return false;
 	const known = new Set(sourceLayers);
 	const matches = ids.filter((id) => known.has(id)).length;
-	return matches >= 3 || matches / ids.length >= 0.5;
+	return matches / ids.length >= 0.5 || matches >= STRONG_MATCH_COUNT;
 }
 
 // Deterministic hue from a string (djb2 hash → 0–359).

@@ -387,3 +387,63 @@ describe('guessStyle() — urls', () => {
 		await expect(guessStyle(tj as TileJSONSpecification, { base: BASE } as never)).resolves.toStrictEqual(blank);
 	});
 });
+
+// ── Schema detection is not fooled by a coincidental name overlap ─────────────
+//
+// Vendoring the Protomaps record surfaced a real misdetection: it carries `boundaries`, `buildings` and
+// `pois`, three generic names Shortbread also uses with entirely different fields behind them. Under the
+// old "3 or more matching layers" rule that scored exactly 3, and a Protomaps tileset was handed a full
+// Shortbread style whose every layer reads data the tiles do not have.
+describe('detection thresholds', () => {
+	const tileJSON = (layers: string[]) => ({
+		tilejson: '3.0.0',
+		tiles: ['https://example.org/{z}/{x}/{y}.pbf'],
+		vector_layers: layers.map((id) => ({ id })),
+	});
+	const sourceOf = async (layers: string[]) => Object.keys((await guessStyle(tileJSON(layers) as never)).sources)[0];
+
+	it('does not mistake Protomaps for Shortbread', async () => {
+		// The three names both schemas happen to use, plus the six they do not share.
+		const protomaps = ['boundaries', 'buildings', 'pois', 'earth', 'landcover', 'landuse', 'places', 'roads', 'water'];
+		expect(await sourceOf(protomaps)).toBe('tiles'); // the inspector style, which is the honest answer
+	});
+
+	it('still recognises a small Shortbread extract, where the rate is high', async () => {
+		expect(await sourceOf(['streets', 'water_polygons', 'buildings', 'land'])).toBe('versatiles-shortbread');
+	});
+
+	it('still recognises Shortbread carrying extra layers of its own, where the rate is low', async () => {
+		const withExtras = [...SHORTBREAD_LAYERS, ...Array.from({ length: 30 }, (_, i) => `custom_${i}`)];
+		expect(await sourceOf(withExtras)).toBe('versatiles-shortbread');
+	});
+});
+
+/** The Shortbread source-layers, as the vendored record lists them. */
+const SHORTBREAD_LAYERS = [
+	'addresses',
+	'aerialways',
+	'boundaries',
+	'boundary_labels',
+	'bridges',
+	'buildings',
+	'dam_lines',
+	'dam_polygons',
+	'ferries',
+	'land',
+	'ocean',
+	'pier_lines',
+	'pier_polygons',
+	'place_labels',
+	'pois',
+	'public_transport',
+	'sites',
+	'street_labels',
+	'street_labels_points',
+	'street_polygons',
+	'streets',
+	'streets_polygons_labels',
+	'water_lines',
+	'water_lines_labels',
+	'water_polygons',
+	'water_polygons_labels',
+];
