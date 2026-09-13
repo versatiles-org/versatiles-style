@@ -4,7 +4,8 @@
 		"lib": ["ESNext", "DOM"],
 		"paths": {
 			"@versatiles/style": ["../src/index.ts"]
-		}
+		},
+		"types": ["vite/client"]
 	},
 	"include": ["./**/*.ts"],
 	"exclude": []

@@ -1,11 +1,14 @@
 import { inlineSources, osm, satellite, type Palette, type StyleSpecification } from '@versatiles/style';
 import { omt } from '@versatiles/style/omt';
 import { protomaps } from '@versatiles/style/protomaps';
-import type * as MaplibreGL from 'maplibre-gl';
-declare const maplibregl: typeof import('maplibre-gl');
-// maplibre-gl-inspect is loaded as a global from a CDN in index.html (alongside maplibre-gl).
+// The package in node_modules, not a CDN build: the dev page then runs the MapLibre version this repo
+// declares and type-checks against, rather than whatever the CDN happens to serve.
+import * as maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+// maplibre-gl-inspect is still loaded as a global from a CDN in index.html. It needs no global
+// `maplibregl`: its only use of one is a fallback popup, and a popup is always passed in below.
 // `sources` and `render()` are public members; we drive both ourselves, see `collectVectorLayers`.
-type Inspect = MaplibreGL.IControl & { sources: Record<string, string[]>; render(): void };
+type Inspect = maplibregl.IControl & { sources: Record<string, string[]>; render(): void };
 declare const MaplibreInspect: new (options?: Record<string, unknown>) => Inspect;
 
 /**
@@ -62,7 +65,7 @@ terrainToggle.checked = getBool('terrain');
 hillshadeToggle.checked = getBool('hillshade');
 landcoverToggle.checked = getBool('landcover');
 
-let map: MaplibreGL.Map | undefined;
+let map: maplibregl.Map | undefined;
 let inspect: Inspect | undefined;
 let inspecting = false;
 // ── Inspect mode ────────────────────────────────────────────────────────────────
@@ -95,7 +98,7 @@ async function collectVectorLayers(style: StyleSpecification): Promise<Record<st
 // gone. Build the style here so the two stay consistent.
 function buildInspectStyle(
 	style: StyleSpecification,
-	coloredLayers: MaplibreGL.LayerSpecification[],
+	coloredLayers: maplibregl.LayerSpecification[],
 	options: { backgroundColor: string }
 ): StyleSpecification {
 	const inspectStyle: StyleSpecification = {

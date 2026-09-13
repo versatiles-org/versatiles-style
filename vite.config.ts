@@ -38,6 +38,18 @@ export default defineConfig({
 			},
 		},
 	],
+	optimizeDeps: {
+		/*
+		 * Serve maplibre-gl straight from node_modules instead of pre-bundling it.
+		 *
+		 * MapLibre v6 finds its web worker relative to its own module:
+		 * `new URL('./maplibre-gl-worker.mjs', import.meta.url)`. Pre-bundling moves the module into
+		 * `node_modules/.vite/deps/`, where no worker file exists, so the worker 404s and the map loads but
+		 * never parses a tile. Excluded, `import.meta.url` stays in `maplibre-gl/dist/` next to the worker
+		 * — and nothing is lost, because the package is already ESM with no dependencies of its own.
+		 */
+		exclude: ['maplibre-gl'],
+	},
 	resolve: {
 		alias: {
 			// The subpath entries first: an alias map is matched in order, and a bare
