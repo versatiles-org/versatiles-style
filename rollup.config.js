@@ -24,6 +24,7 @@ const ENTRIES = [
 	{ name: 'index', input: 'src/index.ts' },
 	{ name: 'omt', input: 'src/omt/index.ts' },
 	{ name: 'protomaps', input: 'src/protomaps/index.ts' },
+	{ name: 'migrate', input: 'src/migrate/index.ts' },
 ];
 
 // Where the TypeScript plugin writes an entry's declaration, mirroring `rootDir: src`.
@@ -68,6 +69,9 @@ const browserConfig = [
 const nodeConfig = [
 	{
 		input: Object.fromEntries(ENTRIES.map(({ name, input }) => [name, input])),
+		// A declared dependency, installed beside the package: `migrate` evaluates expressions with it at
+		// runtime, and bundling it would ship a second copy to every consumer who also has MapLibre.
+		external: [/^@maplibre\/maplibre-gl-style-spec/],
 		output: {
 			dir: 'dist',
 			format: 'es',

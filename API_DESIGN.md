@@ -14,6 +14,7 @@
   - [`satellite()`](#satelliteoptions-stylespecification)
   - [`guessStyle()`](#guessstylesource-options-promise-stylespecification)
   - [`guessSchema()`](#guessschematilejson-schemaguess)
+  - [`guessOptions()` and `deriveOptions()`](#guessoptionsstyle-options-promiseoptionsguess)
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
@@ -537,6 +538,74 @@ otherwise `schema` is `undefined`. `candidates` lists all three, best first.
 It knows all three schemas without importing their styles, so it adds a small table to the root entry
 rather than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that
 schema's function is passed in `schemas`.
+
+---
+
+## `guessOptions(style, options?): Promise<OptionsGuess>`
+
+```ts
+import { guessOptions, deriveOptions } from '@versatiles/style/migrate';
+
+guessOptions(
+  style: string | StyleSpecification,   // the URL of a style document, or the style itself
+  options?: {
+    fetch?: typeof globalThis.fetch     // for the style and every TileJSON
+    base?:  string                      // resolves a relative style URL
+  }
+): Promise<OptionsGuess>
+
+deriveOptions(
+  style: StyleSpecification,
+  tileJSONs?: Record<string, TileJSONSpecification>   // per source id, when already at hand
+): OptionsGuess
+
+type OptionsGuess =
+  | { kind: 'osm';       options: OsmOptions;       report: GuessReport }
+  | { kind: 'satellite'; options: SatelliteOptions; report: GuessReport }
+  | { kind: 'unknown';                              report: GuessReport }
+
+type GuessReport = {
+  sources:   { id: string; type: string; guess: SchemaGuess }[]
+  evidence:  { probe: string; zoom: number; layers: string[] }[]  // what was read, from which layers
+  unmatched: string[]                                             // layers nothing read
+  warnings:  string[]                                             // what was not carried over
+}
+```
+
+For moving a map onto VersaTiles: reads a MapLibre style built for **OpenMapTiles, Protomaps or
+Shortbread** tiles and returns the options for `osm()` — or `satellite()`, when the style draws imagery
+that its vector fills do not cover — whose style looks most like it. The options are minimised, so they
+can go straight into `osm.toCode()`. Mapbox styles are not supported.
+
+It lives in its own subpath because it carries the style spec's expression engine, which a caller who
+only builds styles should not download. `guessOptions` downloads the style when given a URL, and the
+TileJSON of every vector source; `deriveOptions` is the synchronous core and does no I/O. Neither
+throws: what cannot be read yields `kind: 'unknown'` with the reason in `report.warnings`.
+
+**How it reads a style.** Nothing is rendered. For each of about sixty _probes_ — a motorway, a forest,
+a city label, each with the feature that stands for it in each schema — the style's filters and paint
+properties are evaluated with the style spec's own expression engine. That gives, per probe, the fill
+colour, the casing, the label colour, halo and size, or the fact that the style draws nothing for it.
+A source's schema comes from its TileJSON (`guessSchema`), or from the source-layers the style reads
+when there is no TileJSON — as for a `mapbox://` URL.
+
+**How it finds the colours.** `osm()` rarely paints a palette colour as it is: a river is the water
+colour saturated and blended, a halo carries the halo colour's alpha. Rather than restating those
+derivations, `osm()` is built with perturbed and random palettes, and each probe's colour is fitted
+as an affine function of the palette keys it depends on. The foreign style's colours are then inverted
+through that model in one least-squares solve. The nearest palette becomes `theme`, and a colour
+becomes a `colors` override only where it clearly differs from the palette. The calibration takes
+about half a second the first time, once per target and light or dark mode.
+
+**What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
+language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), extruded
+buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
+the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
+properties become `raster`, and its vector layers `osmOverlay`.
+
+**What it does not carry over**, and says so in the warnings: fonts and icons (VersaTiles glyphs and
+sprites are used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
+listed in `report.unmatched`. Tile URLs are not copied: the options build a style on VersaTiles tiles.
 
 ---
 

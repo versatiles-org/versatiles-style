@@ -17,6 +17,10 @@
 			"types": "./dist/protomaps.d.ts",
 			"default": "./dist/protomaps.js"
 		},
+		"./migrate": {
+			"types": "./dist/migrate.d.ts",
+			"default": "./dist/migrate.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"sideEffects": false,
