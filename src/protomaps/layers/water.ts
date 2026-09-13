@@ -31,6 +31,19 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 /** Carried over from the Shortbread table, not measured — as in the OpenMapTiles port. */
 const LINE_MINZOOM: Record<string, number> = { canal: 9, stream: 13 };
 
+/**
+ * A river area: `kind: water, kind_detail: river` in the tiles (197 in the cache), or `kind: river` for a
+ * build that spells it that way. Canal areas (`kind_detail: canal`) stay with the lakes, as in Shortbread,
+ * whose tiles file them as plain `water`. Matching `kind: river | canal` alone — as this module once did —
+ * matched no polygon, so every river was drawn by `water.lakes` and `layers.water.rivers` hid nothing.
+ */
+const IS_RIVER_AREA: ExpressionSpecification = [
+	'any',
+	['in', ['get', 'kind'], ['literal', ['river', 'canal']]],
+	['==', ['get', 'kind_detail'], 'river'],
+];
+const NOT_RIVER_AREA: ExpressionSpecification = ['!=', ['get', 'kind_detail'], 'river'];
+
 /** Shortbread's `tunnel`/`bridge` booleans, which Protomaps happens to spell the same way. */
 const AT_GRADE: ExpressionSpecification = ['all', ['!=', ['get', 'tunnel'], true], ['!=', ['get', 'bridge'], true]];
 
@@ -47,14 +60,20 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	yield b.fill('water-area', {
 		sourceLayer: 'water',
 		// `water` is the generic kind, `lake` the named one; `dock` and `swimming_pool` stand in for
-		// Shortbread's small-water fills.
-		filter: ['all', AREAS, ['in', ['get', 'kind'], ['literal', ['lake', 'water', 'dock', 'swimming_pool']]]],
+		// Shortbread's small-water fills. River areas are generic `water` too, told apart only by
+		// `kind_detail: river`, so they are excluded here and drawn below.
+		filter: [
+			'all',
+			AREAS,
+			['in', ['get', 'kind'], ['literal', ['lake', 'water', 'dock', 'swimming_pool']]],
+			NOT_RIVER_AREA,
+		],
 		color: c.water,
 		group: 'water.lakes',
 	});
 	yield b.fill('water-area-river', {
 		sourceLayer: 'water',
-		filter: ['all', AREAS, ['in', ['get', 'kind'], ['literal', ['river', 'canal']]]],
+		filter: ['all', AREAS, IS_RIVER_AREA],
 		color: c.water,
 		group: 'water.rivers',
 	});
