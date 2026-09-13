@@ -83,12 +83,20 @@ const PLACES_LARGE: PlaceLabelDef[] = [
 	{ id: 'capital', filter: ['==', ['get', 'capital'], 2], minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
 ];
 
-/** Country label bands. Replaces Shortbread's three `way_area` buckets with `rank` (finding 1). */
+/**
+ * Country label bands. Replaces Shortbread's three `way_area` buckets with `rank` (finding 1).
+ *
+ * The zooms follow the data Shortbread's tiles carry, not its style: its `boundary_labels` hold only the
+ * largest countries at z2, the first medium ones at z3 and small ones from z5, so its map thins out
+ * country names at low zoom whatever the style says. Starting the medium bucket at z3 and the small one
+ * at z5 gives this schema the same density: in the world view at z2 its tiles hold 171 country names,
+ * Shortbread's 13.
+ */
 const COUNTRIES: { id: string; rank: ExpressionSpecification; minzoom: number; maxzoom: number; size: b.SizeValue }[] =
 	[
 		{ id: 'large', rank: ['<=', ['get', 'rank'], 1], minzoom: 2, maxzoom: 9, size: { 2: 8, 5: 13 } },
-		{ id: 'medium', rank: ['==', ['get', 'rank'], 2], minzoom: 2, maxzoom: 10, size: { 3: 8, 5: 12 } },
-		{ id: 'small', rank: ['>=', ['get', 'rank'], 3], minzoom: 4, maxzoom: 10, size: { 4: 8, 5: 11 } },
+		{ id: 'medium', rank: ['==', ['get', 'rank'], 2], minzoom: 3, maxzoom: 10, size: { 3: 8, 5: 12 } },
+		{ id: 'small', rank: ['>=', ['get', 'rank'], 3], minzoom: 5, maxzoom: 10, size: { 4: 8, 5: 11 } },
 	];
 
 /** Street classes that carry a name worth drawing — Shortbread's list, with `minor` for its three. */

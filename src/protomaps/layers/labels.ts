@@ -72,18 +72,26 @@ const PLACES_LARGE: PlaceLabelDef[] = [
 	{ id: 'capital', filter: IS_CAPITAL, minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
 ];
 
-/** Country bands by `population_rank`, the nearest thing to Shortbread's `way_area` buckets. */
+/**
+ * Country bands by `population_rank`, the nearest thing to Shortbread's `way_area` buckets.
+ *
+ * The zooms follow the data Shortbread's tiles carry, not its style: its `boundary_labels` hold only the
+ * largest countries at z2, the first medium ones at z3 and small ones from z5, so its map thins out
+ * country names at low zoom whatever the style says. Starting the medium bucket at z3 and the small one
+ * at z5 gives this schema the same density: in the world view at z2 its tiles hold 72 country names,
+ * Shortbread's 13.
+ */
 const COUNTRIES: { id: string; rank: ExpressionSpecification; minzoom: number; maxzoom: number; size: b.SizeValue }[] =
 	[
 		{ id: 'large', rank: ['>=', ['get', 'population_rank'], 14], minzoom: 2, maxzoom: 9, size: { 2: 8, 5: 13 } },
 		{
 			id: 'medium',
 			rank: ['all', ['<', ['get', 'population_rank'], 14], ['>=', ['get', 'population_rank'], 11]],
-			minzoom: 2,
+			minzoom: 3,
 			maxzoom: 10,
 			size: { 3: 8, 5: 12 },
 		},
-		{ id: 'small', rank: ['<', ['get', 'population_rank'], 11], minzoom: 4, maxzoom: 10, size: { 4: 8, 5: 11 } },
+		{ id: 'small', rank: ['<', ['get', 'population_rank'], 11], minzoom: 5, maxzoom: 10, size: { 4: 8, 5: 11 } },
 	];
 
 const STREET_KINDS = ['minor_road', 'major_road', 'highway'];

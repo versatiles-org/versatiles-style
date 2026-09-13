@@ -227,3 +227,14 @@ describe('airport areas', () => {
 		}
 	});
 });
+
+describe('country labels', () => {
+	it('start by bucket at the zooms Shortbread tiles carry them: large z2, medium z3, small z5', async () => {
+		const { protomaps } = await import('../protomaps/api.js');
+		const pm = protomaps({ urls: { protomaps: 'pmtiles://https://example.org/x.pmtiles' } });
+		for (const style of [omt(), pm]) {
+			const minzoom = (id: string) => style.layers.find((l) => l.id === 'label-boundary-country-' + id)?.minzoom;
+			expect([minzoom('large'), minzoom('medium'), minzoom('small')]).toEqual([2, 3, 5]);
+		}
+	});
+});
