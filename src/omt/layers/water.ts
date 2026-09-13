@@ -1,4 +1,4 @@
-import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec';
+import type { ExpressionSpecification, FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
 import * as b from '../../dsl/index.js';
 
@@ -28,8 +28,7 @@ import * as b from '../../dsl/index.js';
 //     below the land fills is a real question this port has not answered.
 //  2. **`brunnel` replaces `tunnel`/`bridge`.** Shortbread carries two booleans; OpenMapTiles carries
 //     one enum (`bridge` / `tunnel` / `ford`), so the two exclusions become two `!=` tests on one field.
-//  3. **No dams and no pier polygons.** `water.piers` has nothing to bind to — see the group note at
-//     the bottom of this file.
+//  3. **Piers live in `transportation`, and dams do not exist.** See the group note at the bottom.
 
 // Waterway line widths, carried over unchanged from the Shortbread module (OSM Bright curves,
 // base ~1.2–1.3). `river` is wider and starts earlier.
@@ -103,16 +102,31 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		});
 	}
 
-	// ── `water.piers` yields nothing, deliberately ──────────────────────────────
+	// ── Piers, and the dams that are not there ──────────────────────────────────
 	//
-	// Shortbread draws six layers here from four source-layers: `dam_lines`, `dam_polygons`,
-	// `pier_lines` and `pier_polygons`. OpenMapTiles has no dam concept at all (its `waterway` classes
-	// are the five flowing kinds, and `water` has no dam class), and no polygon piers — `transportation`
-	// is lines only. A linear pier is *expected* under `transportation.subclass`, but that is a value
-	// claim the record cannot support, and piers belong to the roads module's source-layer rather than
-	// this one, so it is left for the port of that module to decide.
+	// Shortbread draws six layers here from four source-layers: `dam_lines`, `dam_polygons`, `pier_lines`
+	// and `pier_polygons`. Piers survive: `npm run schema-values -- omt transportation` found
+	// `class: pier` as 48 polygons and 5 lines, so both halves exist — in `transportation`, which is why
+	// they need its geometry filters and why this module reads a second source-layer.
 	//
-	// This is the one place the gate's verdict is visible in code: `water.piers` loses 3 of its 4 layers,
-	// which is why it appears in the gate's "survive but lose part of themselves" list rather than among
-	// the groups that bind cleanly.
+	// Dams do not. The Hoover Dam tile carries the dam only as a POI point and an access road: no dam
+	// class in `waterway`, `water` or `transportation`, at any geometry type. It is the single concept
+	// the whole gate found to be wholly absent from OpenMapTiles, and `water-dam`/`water-dam-area` are
+	// therefore the only two Shortbread layers with no counterpart anywhere in this port.
+	const PIER: FilterSpecification = ['==', ['get', 'class'], 'pier'];
+	yield b.fill('water-pier-area', {
+		sourceLayer: 'transportation',
+		filter: ['all', ['==', ['geometry-type'], 'Polygon'], PIER],
+		color: c.land,
+		opacity: { 12: 0, 13: 1 },
+		group: 'water.piers',
+	});
+	yield b.line('water-pier', {
+		sourceLayer: 'transportation',
+		filter: ['all', ['==', ['geometry-type'], 'LineString'], PIER],
+		color: c.land,
+		lineCap: 'round',
+		lineJoin: 'round',
+		group: 'water.piers',
+	});
 }

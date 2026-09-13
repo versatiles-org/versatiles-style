@@ -1,5 +1,5 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { ResolvedOsm } from '../options/index.js';
+import type { ResolvedOmt } from '../options/index.js';
 import { buildLayerContext } from '../dsl/context.js';
 import type { LayerContext } from '../dsl/context.js';
 import { OMT_SCHEMA } from './schema.js';
@@ -33,7 +33,7 @@ function buildNameField(
 	return ['coalesce', ['get', 'name:' + language], ['get', 'name_' + language], ['get', 'name']];
 }
 
-export function buildContext(resolved: ResolvedOsm): LayerContext {
+export function buildContext(resolved: ResolvedOmt): LayerContext {
 	return buildLayerContext(resolved, { source: SOURCE_NAME, nameField: buildNameField });
 }
 

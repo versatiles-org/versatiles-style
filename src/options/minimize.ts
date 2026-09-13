@@ -1,4 +1,5 @@
 import { resolveOsm, type OsmOptions } from './osm.js';
+import { resolveOmt, type OmtOptions } from './omt.js';
 import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
@@ -55,6 +56,12 @@ function minimizeThemed<T extends { theme?: ThemeOptions }>(
 export function minimizeOsmOptions(options: OsmOptions = {}): OsmOptions {
 	resolveOsm(options); // rejects unknown keys; the resolved result is not needed
 	return minimizeThemed(options, (theme) => resolveOsm({ theme }), 'colorful');
+}
+
+/** The smallest `OmtOptions` that builds the same style as `options`. */
+export function minimizeOmtOptions(options: OmtOptions = {}): OmtOptions {
+	resolveOmt(options); // rejects unknown keys; the resolved result is not needed
+	return minimizeThemed(options, (theme) => resolveOmt({ theme }), 'colorful');
 }
 
 /** The smallest `SatelliteOptions` that builds the same style as `options`. */

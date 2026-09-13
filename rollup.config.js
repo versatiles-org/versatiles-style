@@ -20,7 +20,10 @@ const browser = BUILD === 'browser';
  * contain Shortbread only, which is what makes the per-schema bundle cost zero by construction
  * rather than by a build flag.
  */
-const ENTRIES = [{ name: 'index', input: 'src/index.ts' }];
+const ENTRIES = [
+	{ name: 'index', input: 'src/index.ts' },
+	{ name: 'omt', input: 'src/omt/index.ts' },
+];
 
 // Where the TypeScript plugin writes an entry's declaration, mirroring `rootDir: src`.
 const declarationOf = (input, dir) => `${dir}/${input.replace(/^src\//, '').replace(/\.ts$/, '.d.ts')}`;

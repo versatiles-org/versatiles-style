@@ -90,7 +90,7 @@ describe('sprite coverage', () => {
 // and keep dead weight in a sheet the CDN ships for Shortbread maps.
 describe('unpublished schemas reuse the existing icons', () => {
 	it('every sprite the OpenMapTiles style references exists in the sheets', async () => {
-		const { resolveOsm } = await import('../src/options/index.js');
+		const { resolveOmt } = await import('../src/options/index.js');
 		const { buildContext } = await import('../src/omt/context.js');
 		const { buildStyleLayers } = await import('../src/omt/layers/index.js');
 
@@ -106,7 +106,7 @@ describe('unpublished schemas reuse the existing icons', () => {
 			if (Array.isArray(value)) for (const item of value) walk(item, layerId);
 			if (value && typeof value === 'object') for (const v of Object.values(value)) walk(v, layerId);
 		};
-		for (const layer of buildStyleLayers(buildContext(resolveOsm()))) {
+		for (const layer of buildStyleLayers(buildContext(resolveOmt()))) {
 			walk((layer as { layout?: unknown }).layout, layer.id);
 		}
 		expect(

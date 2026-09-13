@@ -1,7 +1,8 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import { colorOptionsKeys } from '../options/index.js';
-import type { ColorsOptions, ResolvedOsm, ResolvedOsmFeatures, ResolvedLayerGroups } from '../options/index.js';
+import type { ColorsOptions, ResolvedColors, ResolvedLayerGroups } from '../options/index.js';
+import type { Palette } from '../options/index.js';
 import { isDarkPalette } from '../themes/index.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;
@@ -19,7 +20,10 @@ export type LayerContext = {
 	fg: Color;
 	/** Resolved font names. */
 	fonts: { normal: string; bold: string };
-	features: ResolvedOsmFeatures;
+	/** The resolved feature flags a layer module may read. Deliberately narrower than any schema's
+	 *  `features` option: only `buildings` changes which layers are emitted, and `landcover` is a
+	 *  Shortbread tileset extension applied to the finished style, not consulted here. */
+	features: { buildings: 'flat' | 'extruded' };
 	/** Fully-resolved per-group visibility/opacity. Each layer gates itself on its own group. */
 	layers: ResolvedLayerGroups;
 	/** Language-aware `text-field` expression for label/symbol layers. */
@@ -44,8 +48,21 @@ export type ContextSeam = {
 	) => DataDrivenPropertyValueSpecification<FormattedSpecification>;
 };
 
+/**
+ * The resolved options a context is derived from — structurally what every schema's resolver returns,
+ * narrowed to what the derivation reads. `ResolvedOsm` and `ResolvedOmt` both satisfy it, which is what
+ * lets one derivation serve both without either schema's type leaking into the DSL.
+ */
+export type ContextOptions = {
+	theme: Palette;
+	colors: ResolvedColors;
+	features: { buildings: 'flat' | 'extruded' };
+	layers: ResolvedLayerGroups;
+	text: { fontNormal: string; fontBold: string; language: string; languageStrict: boolean };
+};
+
 /** Build the schema-neutral part of a layer context, given the parts only the schema can supply. */
-export function buildLayerContext(resolved: ResolvedOsm, seam: ContextSeam): LayerContext {
+export function buildLayerContext(resolved: ContextOptions, seam: ContextSeam): LayerContext {
 	const c = Object.fromEntries(colorOptionsKeys.map((key) => [key, Color.parse(resolved.colors[key])])) as ColorSet;
 
 	// `bg` is the pure "background" reference — fully white in light mode, fully black in dark mode —

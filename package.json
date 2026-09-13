@@ -9,6 +9,10 @@
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
+		"./omt": {
+			"types": "./dist/omt.d.ts",
+			"default": "./dist/omt.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"sideEffects": false,

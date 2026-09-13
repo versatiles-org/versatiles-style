@@ -1,11 +1,12 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
-import type { OsmOptions, ResolvedLayout, ResolvedOsm } from '../options/index.js';
+import type { OsmOptions, ResolvedOsm } from '../options/index.js';
 import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
 import {
+	applyLayout,
 	addTerrain,
 	addHillshade,
 	addLandcover,
@@ -14,6 +15,7 @@ import {
 	applyProjection,
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
+import { getLanguages } from '../lib/languages.js';
 import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
 import { minimizeOsmOptions } from '../options/minimize.js';
@@ -42,72 +44,6 @@ function buildBase(resolved: ResolvedOsm): StyleSpecification {
 	};
 
 	return style;
-}
-
-// ── Apply text/icon scale + spacing ───────────────────────────────────────────
-
-// Multiply a size value (number or ['interpolate', …, z, v, …] ramp) in place by `factor`.
-function scaleValue(value: unknown, factor: number): unknown {
-	if (typeof value === 'number') return value * factor;
-	if (Array.isArray(value) && value[0] === 'interpolate') {
-		for (let i = 4; i < value.length; i += 2) {
-			if (typeof value[i] === 'number') (value as unknown[])[i] = (value[i] as number) * factor;
-		}
-		return value;
-	}
-	return value;
-}
-
-// MapLibre's default symbol-spacing (px) for line-placed symbols.
-const DEFAULT_SYMBOL_SPACING = 250;
-
-function applyLayout(style: StyleSpecification, layout: ResolvedLayout) {
-	const labelScale = layout.scale.labels;
-	const iconScale = layout.scale.icons;
-	const labelSpacing = layout.spacing.labels;
-	const iconSpacing = layout.spacing.icons;
-	if (labelScale === 1 && iconScale === 1 && labelSpacing === 1 && iconSpacing === 1) return;
-
-	for (const layer of style.layers) {
-		if (layer.type !== 'symbol') continue;
-		const lyt = layer.layout as Record<string, unknown> | undefined;
-		if (!lyt) continue;
-
-		// A layer that renders text is a "label"; otherwise it is an "icon" (marking / POI glyph).
-		const isLabel = lyt['text-field'] != null;
-
-		// ── scale ──
-		if (labelScale !== 1 && lyt['text-size'] != null) {
-			lyt['text-size'] = scaleValue(lyt['text-size'], labelScale);
-		}
-		if (iconScale !== 1 && lyt['icon-image'] != null) {
-			lyt['icon-size'] = lyt['icon-size'] == null ? iconScale : scaleValue(lyt['icon-size'], iconScale);
-		}
-
-		// ── spacing ── (only affects line-placed symbols; labels use the label factor, icons the icon one)
-		const spacing = isLabel ? labelSpacing : iconSpacing;
-		if (spacing !== 1) {
-			const current = lyt['symbol-spacing'];
-			if (current != null) {
-				lyt['symbol-spacing'] = scaleValue(current, spacing);
-			} else if (lyt['symbol-placement'] === 'line') {
-				lyt['symbol-spacing'] = DEFAULT_SYMBOL_SPACING * spacing;
-			}
-		}
-	}
-}
-
-// ── Languages introspection helper ────────────────────────────────────────────
-
-function getLanguages(tileJSON: TileJSONSpecification): string[] {
-	const langs = new Set<string>();
-	const vl = (tileJSON as TileJSONSpecificationVector).vector_layers ?? [];
-	for (const layer of vl) {
-		for (const key of Object.keys(layer.fields ?? {})) {
-			if (key.startsWith('name_')) langs.add(key.slice(5));
-		}
-	}
-	return [...langs].sort();
 }
 
 function supportsLandcover(tileJSON: TileJSONSpecification): boolean {

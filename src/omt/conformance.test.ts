@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveOsm, resolveLayerGroups } from '../options/index.js';
+import { resolveOmt, resolveLayerGroups } from '../options/index.js';
 import { auditSchema } from '../lib/schema-audit.js';
 import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
@@ -17,7 +17,7 @@ import type { StyleSpecification } from '../types/index.js';
 // record lists field names and not the values behind them — so `class: lake` being right is a claim no
 // offline test can settle. That needs tiles, and §8.2 is where it belongs.
 
-const style = { version: 8, sources: {}, layers: buildStyleLayers(buildContext(resolveOsm())) } as StyleSpecification;
+const style = { version: 8, sources: {}, layers: buildStyleLayers(buildContext(resolveOmt())) } as StyleSpecification;
 const audit = auditSchema(style, OMT_SCHEMA);
 
 describe('the ported layers read data OpenMapTiles carries', () => {
@@ -104,10 +104,10 @@ describe('the schema seam', () => {
 	});
 
 	it('reads OpenMapTiles’ own name-field convention', () => {
-		const ctx = buildContext(resolveOsm({ text: { language: 'de' } }));
+		const ctx = buildContext(resolveOmt({ text: { language: 'de' } }));
 		expect(ctx.nameField).toEqual(['coalesce', ['get', 'name:de'], ['get', 'name_de'], ['get', 'name']]);
 		// Strict drops the local-name fallback but keeps both spellings of the requested language.
-		const strict = buildContext(resolveOsm({ text: { language: 'de', languageStrict: true } }));
+		const strict = buildContext(resolveOmt({ text: { language: 'de', languageStrict: true } }));
 		expect(strict.nameField).toEqual(['coalesce', ['get', 'name:de'], ['get', 'name_de']]);
 	});
 });
@@ -141,7 +141,7 @@ describe('group tagging', () => {
 	// both schemas must tag every data layer with a group that resolves against the *same* option tree. A
 	// group a schema cannot express should be an option that is absent — never one that silently does
 	// nothing (risk 3), and never an untagged layer a caller cannot hide at all.
-	const tagged = [...omtLayers(buildContext(resolveOsm()))];
+	const tagged = [...omtLayers(buildContext(resolveOmt()))];
 
 	it('tags every layer that reads tile data', () => {
 		const untagged = tagged.filter((t) => !t.group && t.layer.type !== 'background').map((t) => t.layer.id);
@@ -202,6 +202,7 @@ describe('group tagging', () => {
 			'transit.stops',
 			'water.lakes',
 			'water.ocean',
+			'water.piers',
 			'water.rivers',
 		]);
 	});

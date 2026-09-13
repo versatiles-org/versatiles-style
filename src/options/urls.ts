@@ -24,8 +24,29 @@ export type OsmUrlsOptions = {
 	sprite?: SpriteEntries;
 };
 
+/**
+ * OpenMapTiles URLs. `omt` replaces `osm` as the vector tile source, and unlike every other URL here it
+ * does **not** default relative to `base`: the VersaTiles CDN serves Shortbread tiles, so there is no
+ * OpenMapTiles tileset behind it (SCHEMA-SUPPORT-PLAN.md §5.5). Glyphs, sprites and elevation still come
+ * from `base` — those are the style's own assets, not the tileset's.
+ */
+export type OmtUrlsOptions = {
+	base?: string;
+	omt?: TileSource;
+	elevation?: TileSource;
+	glyphsPattern?: string;
+	sprite?: SpriteEntries;
+};
+
 export type SatelliteUrlsOptions = OsmUrlsOptions & {
 	satellite?: TileSource;
+};
+
+export type ResolvedOmtUrls = {
+	omt: TileSource;
+	elevation: TileSource;
+	glyphsPattern: string;
+	sprite: SpriteEntries;
 };
 
 export type ResolvedOsmUrls = {
@@ -83,6 +104,24 @@ export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOs
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
+		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
+		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
+		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
+	};
+}
+
+/**
+ * OpenFreeMap: unmodified OpenMapTiles, no API key, no request limits, commercial use allowed. Used as
+ * the default so `omt()` builds a working style with no arguments, exactly as `osm()` does.
+ * Attribution comes from the tileset's own TileJSON: "OpenFreeMap © OpenMapTiles Data from OpenStreetMap".
+ */
+const DEFAULT_OMT_TILES = 'https://tiles.openfreemap.org/planet';
+
+export function resolveOmtUrls(urls?: OmtUrlsOptions, path = 'urls'): ResolvedOmtUrls {
+	checkKeys(urls, { base: true, omt: true, elevation: true, glyphsPattern: true, sprite: true }, path);
+	const base = urls?.base ?? DEFAULT_BASE;
+	return {
+		omt: resolveTileSource(base, urls?.omt, DEFAULT_OMT_TILES),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
