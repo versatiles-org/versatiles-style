@@ -64,12 +64,13 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	yield b.fill('water-area', {
 		sourceLayer: 'water',
 		// `water` is the generic kind, `lake` the named one; `dock` and `swimming_pool` stand in for
-		// Shortbread's small-water fills. River areas are generic `water` too, told apart only by
-		// `kind_detail: river`, so they are excluded here and drawn below.
+		// Shortbread's small-water fills, and `fountain` basins are water in Shortbread and OpenMapTiles
+		// too. River areas are generic `water` as well, told apart only by `kind_detail: river`, so they
+		// are excluded here and drawn below.
 		filter: [
 			'all',
 			AREAS,
-			['in', ['get', 'kind'], ['literal', ['lake', 'water', 'dock', 'swimming_pool']]],
+			['in', ['get', 'kind'], ['literal', ['lake', 'water', 'dock', 'swimming_pool', 'fountain']]],
 			NOT_RIVER_AREA,
 		],
 		color: c.water,

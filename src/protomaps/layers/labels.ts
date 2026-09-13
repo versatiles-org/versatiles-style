@@ -20,7 +20,7 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 // consequence: a great lake goes unnamed at world zoom rather than every pond being named at z4.
 
 const LINES: ExpressionSpecification = ['==', ['geometry-type'], 'LineString'];
-const AREAS: ExpressionSpecification = ['==', ['geometry-type'], 'Polygon'];
+const POINTS: ExpressionSpecification = ['==', ['geometry-type'], 'Point'];
 
 /** Shortbread's sort key, which Protomaps can reproduce exactly. */
 const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
@@ -149,15 +149,21 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// do not have, which renders nothing and hides the fact.
 
 	// Water areas, bucketed by kind — no `way_area` here either. See the header.
+	//
+	// The names are on **points**. Every water polygon in the tiles is unnamed; each named water body has
+	// a separate point feature of the same `kind` (in the cached tiles: 123 `water`, 68 `fountain`, 15 `sea`,
+	// 11 `bay`). Reading polygons, as these layers once did, labelled no lake, sea or fountain at all.
+	// Fountains get Shortbread's smallest bucket: they are the ponds and cascades it labels from z15.
 	const WATER_AREAS: { id: string; kinds: string[]; appear: number; size: Record<number, number> }[] = [
 		{ id: 'major', kinds: ['ocean', 'sea'], appear: 4, size: { 4: 11, 10: 14 } },
 		{ id: 'large', kinds: ['bay', 'strait'], appear: 8, size: { 8: 10, 12: 13 } },
 		{ id: 'medium', kinds: ['lake', 'water', 'dock'], appear: 11, size: { 11: 10, 14: 12 } },
+		{ id: 'small', kinds: ['fountain'], appear: 15, size: { 14: 10, 17: 12 } },
 	];
 	for (const bucket of WATER_AREAS) {
 		yield b.symbol('label-water-area-' + bucket.id, {
 			sourceLayer: 'water',
-			filter: ['all', AREAS, byKind(...bucket.kinds)] as FilterSpecification,
+			filter: ['all', POINTS, byKind(...bucket.kinds)] as FilterSpecification,
 			layout: { 'text-field': ctx.nameField },
 			...waterBase,
 			symbolPlacement: 'point',

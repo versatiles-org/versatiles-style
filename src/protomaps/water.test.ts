@@ -26,8 +26,33 @@ describe('protomaps() water areas', () => {
 		[{ kind: 'water', kind_detail: 'canal' }],
 		[{ kind: 'water', kind_detail: 'basin' }],
 		[{ kind: 'lake' }],
+		[{ kind: 'fountain' }],
 	])('draws %o as a lake, as Shortbread files it', (properties) => {
 		expect(fillsFor(properties)).toEqual(['water-area']);
+	});
+});
+
+describe('protomaps() water names', () => {
+	const labels = (style.layers as { id: string; filter?: FilterSpecification }[]).filter((l) =>
+		l.id.startsWith('label-water-area-')
+	);
+	/** The water-area label layers whose filter accepts a feature of this geometry and kind. */
+	const labelsFor = (type: 1 | 3, kind: string) =>
+		labels
+			.filter((l) => featureFilter(l.filter, 'filter').filter({ zoom: 16 }, { type, properties: { kind, name: 'x' } }))
+			.map((l) => l.id);
+
+	it.each([
+		['sea', 'label-water-area-major'],
+		['bay', 'label-water-area-large'],
+		['water', 'label-water-area-medium'],
+		['fountain', 'label-water-area-small'],
+	])('labels the named point of a %s in %s', (kind, layer) => {
+		expect(labelsFor(1, kind)).toEqual([layer]);
+	});
+
+	it('does not label the polygons, which Protomaps leaves unnamed', () => {
+		expect(labelsFor(3, 'water')).toEqual([]);
 	});
 });
 
