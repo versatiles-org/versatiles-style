@@ -64,19 +64,7 @@ describe('assembled layers', () => {
 		expect(landLayer.filter).toEqual([
 			'in',
 			['get', 'kind'],
-			[
-				'literal',
-				[
-					'brownfield',
-					'farmland',
-					'farmyard',
-					'greenfield',
-					'greenhouse_horticulture',
-					'orchard',
-					'plant_nursery',
-					'vineyard',
-				],
-			],
+			['literal', ['farmland', 'farmyard', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard']],
 		]);
 	});
 

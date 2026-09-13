@@ -58,17 +58,11 @@ const LAND: LandDef[] = [
 		group: 'land.urban',
 	},
 	{
+		// Not `brownfield` or `greenfield`: both are land set aside for building, not farmland, and neither
+		// OpenMapTiles nor Protomaps carries them, so filling them in the farmland colour made Shortbread
+		// the one schema with fields on building sites (Tokyo, the land around Schiphol).
 		id: 'agriculture',
-		kinds: [
-			'brownfield',
-			'farmland',
-			'farmyard',
-			'greenfield',
-			'greenhouse_horticulture',
-			'orchard',
-			'plant_nursery',
-			'vineyard',
-		],
+		kinds: ['farmland', 'farmyard', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard'],
 		color: (c) => c.natureAgriculture,
 		appear: 10,
 		landcover: true,
