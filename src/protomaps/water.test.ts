@@ -30,3 +30,10 @@ describe('protomaps() water areas', () => {
 		expect(fillsFor(properties)).toEqual(['water-area']);
 	});
 });
+
+describe('protomaps() waterway zooms', () => {
+	it('starts river lines at z9, as Shortbread does', () => {
+		const river = style.layers.find((l) => l.id === 'water-river')!;
+		expect(river.minzoom).toBe(9);
+	});
+});

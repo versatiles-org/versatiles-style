@@ -99,9 +99,11 @@ describe('the schema seam', () => {
 		// ocean fill is ungated here — if the Shortbread record were being consulted it would be z4.
 		const ocean = style.layers.find((l) => l.id === 'water-ocean') as { minzoom?: number };
 		expect(ocean.minzoom).toBeUndefined();
-		// `waterway` starts at z3, so a river line cannot be floored earlier than that.
-		const river = style.layers.find((l) => l.id === 'water-river') as { minzoom?: number };
-		expect(river.minzoom).toBe(3);
+		// `transportation` starts at z4, where Shortbread's `pier_lines` start at z12: a pier line with no
+		// zoom of its own is floored at z4. (The river line used to show this at z3; it now starts at z9 on
+		// purpose, to match Shortbread — see `LINE_MINZOOM` in `layers/water.ts`.)
+		const pier = style.layers.find((l) => l.id === 'water-pier') as { minzoom?: number };
+		expect(pier.minzoom).toBe(4);
 	});
 
 	it('reads OpenMapTiles’ own name-field convention', () => {

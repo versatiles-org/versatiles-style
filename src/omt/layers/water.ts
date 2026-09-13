@@ -48,7 +48,10 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 // Unlike the Shortbread table these numbers are NOT measured: the value sample confirms *which* classes
 // exist, not the zoom each one starts at, which needs a zoom sweep. Measuring them the way the
 // Shortbread comment describes is outstanding.
-const LINE_MINZOOM: Record<string, number> = { canal: 9, stream: 13, ditch: 14, drain: 14 };
+//
+// `river` starts at z9 as in Shortbread, whose tiles carry no rivers below that. OpenMapTiles has them
+// from z3, and drawing them there put river lines on a z4 map of Europe that the other schemas show bare.
+const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 13, ditch: 14, drain: 14 };
 
 /** Shortbread's `tunnel`/`bridge` booleans, as OpenMapTiles' single `brunnel` enum. */
 const AT_GRADE: ExpressionSpecification = [
