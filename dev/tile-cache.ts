@@ -4,6 +4,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { PMTilesSource } from '../scripts/lib/pmtiles.js';
+import { createLimiter, type Limiter } from '../scripts/lib/limit.js';
 
 /**
  * A caching tile proxy for the dev server, covering all three schemas.
@@ -39,8 +40,8 @@ const CACHE_DIR = resolve(import.meta.dirname, '.tiles');
  * How long one upstream tile request may take.
  *
  * A stalled fetch otherwise holds a MapLibre tile slot until the socket gives up, and the map shows a
- * hole with no explanation. OpenFreeMap has been observed taking tens of seconds from here, so this is
- * deliberately generous — the retry that follows is the fast path, not this bound.
+ * hole with no explanation. The clock starts once the request has a connection slot (see
+ * `concurrency` on each source), so this bounds the transfer, not the time spent queued behind others.
  */
 const TILE_TIMEOUT_MS = 5_000;
 
@@ -50,7 +51,11 @@ const METADATA_TIMEOUT_MS = 5_000;
 /** Attempts per upstream tile: one retry. */
 const ATTEMPTS = 2;
 
-/** A request slower than this is worth mentioning even when it succeeds. */
+/**
+ * A transfer slower than this is logged even when it succeeds. Measured from when the request got a
+ * connection slot — time spent queued is expected and is not what this is for. The total a browser
+ * request waited, queue included, is in its `Server-Timing` header instead.
+ */
 const SLOW_MS = 3_000;
 
 /** Read an error the way undici reports it: the useful part is usually in `cause`. */
@@ -60,7 +65,17 @@ function explain(error: unknown): string {
 	return `${error.name}: ${error.message}${cause}`;
 }
 
-type Upstream = { kind: 'xyz'; tileJSON: string } | { kind: 'pmtiles'; resolveUrl: () => Promise<string> };
+type Upstream = ({ kind: 'xyz'; tileJSON: string } | { kind: 'pmtiles'; resolveUrl: () => Promise<string> }) & {
+	/**
+	 * Parallel upstream requests for this source; unset means unlimited.
+	 *
+	 * Firing every request MapLibre makes at once was slower, not faster: past a few connections to one
+	 * host the requests mostly compete for the same link, each one slows down, more of them cross the
+	 * timeout, and the retries add load on top. For an archive this limits *range* requests, which
+	 * include the leaf directories, not just tiles.
+	 */
+	concurrency?: number;
+};
 
 /**
  * Protomaps publishes one dated archive per day and no "latest" alias, so the newest is found by
@@ -79,9 +94,10 @@ async function latestProtomapsBuild(): Promise<string> {
 }
 
 const SOURCES: Record<string, Upstream> = {
+	// Unlimited: the VersaTiles tile server has answered in ~100 ms throughout, with no timeouts seen.
 	shortbread: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/osm/tiles.json' },
-	omt: { kind: 'xyz', tileJSON: 'https://tiles.openfreemap.org/planet' },
-	protomaps: { kind: 'pmtiles', resolveUrl: latestProtomapsBuild },
+	omt: { kind: 'xyz', tileJSON: 'https://tiles.openfreemap.org/planet', concurrency: 4 },
+	protomaps: { kind: 'pmtiles', resolveUrl: latestProtomapsBuild, concurrency: 2 },
 };
 
 /** What a schema's upstream turned out to be, resolved once and kept. */
@@ -110,8 +126,11 @@ async function resolveSource(schema: string, upstream: Upstream): Promise<Resolv
 		const url = await upstream.resolveUrl();
 		// Sequential, and through the open archive: opening it already read the header, and asking
 		// `fetchMetadata` separately would read it again — four range requests where two will do.
-		const archive = await PMTilesSource.open(url);
+		// The limit lives inside the reader, because one tile can take two range requests (a leaf
+		// directory, then the tile) and both have to count against it.
+		const archive = await PMTilesSource.open(url, { concurrency: upstream.concurrency });
 		const metadata = (await archive.getMetadata()) as { vector_layers?: unknown[] };
+		console.log(`  tile-cache: ${schema} → ${url} (${upstream.concurrency ?? 'default'} parallel)`);
 		return {
 			getTile: (z, x, y) => archive.getTile(z, x, y),
 			minzoom: archive.header.minzoom,
@@ -131,6 +150,8 @@ async function resolveSource(schema: string, upstream: Upstream): Promise<Resolv
 	};
 	const template = tj.tiles?.[0];
 	if (!template) throw new Error(`tile-cache: ${upstream.tileJSON} carries no tiles template`);
+	const limiter: Limiter | undefined = upstream.concurrency ? createLimiter(upstream.concurrency) : undefined;
+	console.log(`  tile-cache: ${schema} → ${template} (${upstream.concurrency ?? 'unlimited'} parallel)`);
 	return {
 		getTile: async (z, x, y) => {
 			// Substitute *before* resolving: the VersaTiles document serves a relative template, and
@@ -142,15 +163,29 @@ async function resolveSource(schema: string, upstream: Upstream): Promise<Resolv
 			let lastError: unknown;
 			for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
 				try {
-					const tile = await fetch(url, { signal: AbortSignal.timeout(TILE_TIMEOUT_MS) });
-					// 404 and 204 are how tile servers say "nothing here", which is not a failure.
-					if (tile.status === 404 || tile.status === 204) return undefined;
-					// A 4xx will say the same thing next time; a 5xx or a dropped socket may not.
-					if (tile.status >= 400 && tile.status < 500) {
-						throw new PermanentError(`${url} → HTTP ${tile.status}`);
-					}
-					if (!tile.ok) throw new Error(`${url} → HTTP ${tile.status}`);
-					return gunzipIfNeeded(new Uint8Array(await tile.arrayBuffer()));
+					// A slot per attempt: the timeout starts only once this request is actually running, and a
+					// retry rejoins the back of the queue rather than holding a slot through its own failure.
+					const once = async () => {
+						const started = Date.now();
+						const tile = await fetch(url, { signal: AbortSignal.timeout(TILE_TIMEOUT_MS) });
+						// 404 and 204 are how tile servers say "nothing here", which is not a failure.
+						if (tile.status === 404 || tile.status === 204) return undefined;
+						// A 4xx will say the same thing next time; a 5xx or a dropped socket may not.
+						if (tile.status >= 400 && tile.status < 500) {
+							throw new PermanentError(`${url} → HTTP ${tile.status}`);
+						}
+						if (!tile.ok) throw new Error(`${url} → HTTP ${tile.status}`);
+						const body = gunzipIfNeeded(new Uint8Array(await tile.arrayBuffer()));
+						const ms = Date.now() - started;
+						if (ms >= SLOW_MS) {
+							const waiting = limiter ? `, ${limiter.queued} waiting` : '';
+							console.warn(
+								`  tile-cache: slow transfer ${schema} ${z}/${x}/${y} took ${ms}ms (${body.length} bytes${waiting})`
+							);
+						}
+						return body;
+					};
+					return await (limiter ? limiter.run(once) : once());
 				} catch (error) {
 					lastError = error;
 					if (error instanceof PermanentError || attempt === ATTEMPTS) break;
@@ -208,6 +243,10 @@ async function readTile(schema: string, z: number, x: number, y: number): Promis
 				console.log(`  tile-cache: ${key} outside z${source.minzoom}–${source.maxzoom}, not fetched`);
 				return undefined;
 			}
+			// Slow transfers are logged where they happen — the HTTP fetch below, or the range read in the
+			// PMTiles reader — exactly once each. This used to log from every request *waiting* on a fetch,
+			// so a tile the browser asked for twice appeared twice with two durations, and the durations
+			// included queue time, overstating how much of the network was slow.
 			const tile = await source.getTile(z, x, y);
 			mkdirSync(dirname(file), { recursive: true });
 			writeFileSync(file, tile ?? new Uint8Array(0));
@@ -220,13 +259,7 @@ async function readTile(schema: string, z: number, x: number, y: number): Promis
 		inFlight.set(key, pending);
 	}
 	const tile = await pending;
-	const ms = Date.now() - started;
-	// A slow miss is the thing worth knowing about: it is what makes the map feel stuck, and it only
-	// happens once per tile because the next read comes off disk.
-	if (ms >= SLOW_MS) {
-		console.warn(`  tile-cache: ${key} took ${ms}ms from upstream (${tile ? tile.length : 0} bytes)`);
-	}
-	return { tile, hit: false, ms };
+	return { tile, hit: false, ms: Date.now() - started };
 }
 
 const TILE_PATH = /^\/([a-z]+)\/(\d+)\/(\d+)\/(\d+)(?:\.pbf)?$/;

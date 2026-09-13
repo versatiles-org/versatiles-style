@@ -1,4 +1,5 @@
 import { gunzipSync, brotliDecompressSync, zstdDecompressSync } from 'node:zlib';
+import { createLimiter, type Limiter } from './limit.js';
 
 /**
  * Just enough of the PMTiles v3 format to read an archive's metadata.
@@ -126,13 +127,29 @@ export type FetchLike = (
  * How long one range request may take before it is abandoned.
  *
  * Without a bound, a stalled connection to a 138 GB archive hangs until the socket eventually gives up
- * — minutes, during which the caller has no idea anything is wrong. Generous enough for a cold
- * directory read over a slow link, short enough that a retry still beats waiting.
+ * — minutes, during which the caller has no idea anything is wrong. The clock starts when the request
+ * gets a connection slot (see `DEFAULT_CONCURRENCY`), not when it is queued, so this bounds the
+ * transfer itself and a busy queue cannot make a healthy request time out.
  */
 const REQUEST_TIMEOUT_MS = 5_000;
 
+/**
+ * Parallel range requests per open archive.
+ *
+ * Deliberately low. Reading `build.protomaps.com` with a request per tile MapLibre asked for, all at
+ * once, timed out routinely: the requests shared one link, each got slower, more crossed the timeout,
+ * and their retries added still more load. Two keeps every running request quick enough to finish.
+ */
+const DEFAULT_CONCURRENCY = 2;
+
 /** Attempts per range request: one retry. */
 const ATTEMPTS = 2;
+
+/**
+ * A range request slower than this is logged even when it succeeds. Measured from when it got a slot,
+ * so it reports a slow link and never a long queue — queueing is the limiter doing its job.
+ */
+const SLOW_MS = 3_000;
 
 /** Everything known about a failed request, for an error message worth reading. */
 function describe(url: string, from: number, length: number, attempt: number, error: unknown): string {
@@ -161,13 +178,22 @@ class PermanentError extends Error {}
  * A retry is announced on stderr rather than swallowed: a run that silently takes twice as long is
  * worse to debug than one that says why.
  */
-async function range(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
+async function range(
+	url: string,
+	from: number,
+	length: number,
+	fetchFn: FetchLike,
+	limiter?: Limiter
+): Promise<Uint8Array> {
 	let lastError: unknown;
 	let tried = 0;
 	for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
 		tried = attempt;
 		try {
-			return await rangeOnce(url, from, length, fetchFn);
+			// A slot per *attempt*, not per request: a retry goes back to the end of the queue instead of
+			// holding a slot through its own failure, and its timeout starts only once it is running.
+			const once = () => rangeOnce(url, from, length, fetchFn);
+			return await (limiter ? limiter.run(once) : once());
 		} catch (error) {
 			lastError = error;
 			if (!isRetryable(error) || attempt === ATTEMPTS) break;
@@ -183,6 +209,7 @@ async function range(url: string, from: number, length: number, fetchFn: FetchLi
 
 async function rangeOnce(url: string, from: number, length: number, fetchFn: FetchLike): Promise<Uint8Array> {
 	const to = from + length - 1;
+	const started = Date.now();
 	const res = await fetchFn(url, {
 		headers: { Range: `bytes=${from}-${to}` },
 		signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -199,6 +226,8 @@ async function rangeOnce(url: string, from: number, length: number, fetchFn: Fet
 	if (body.length !== length) {
 		throw new Error(`${url} returned ${body.length} bytes for a ${length}-byte range`);
 	}
+	const ms = Date.now() - started;
+	if (ms >= SLOW_MS) console.warn(`pmtiles: slow read, bytes ${from}–${to} of ${url} took ${ms}ms (${length} bytes)`);
 	return body;
 }
 
@@ -319,20 +348,39 @@ function findEntry(entries: Entry[], tileId: number): Entry | undefined {
  * Leaf directories are cached too, because the sample tiles cluster geographically and repeatedly land
  * in the same leaf.
  */
+export type PMTilesOptions = {
+	/** Supply your own `fetch` (tests, proxies). Defaults to the global one. */
+	fetch?: FetchLike;
+	/** Parallel range requests to this archive. Defaults to `DEFAULT_CONCURRENCY` (2). */
+	concurrency?: number;
+};
+
 export class PMTilesSource {
-	private readonly leaves = new Map<number, Entry[]>();
+	/**
+	 * Leaf directories by offset — as promises, not results.
+	 *
+	 * Caching only the parsed result left a gap: every tile that needed the same leaf while it was still
+	 * downloading started its own download of it. Neighbouring tiles share leaves, MapLibre asks for a
+	 * screenful at once, and with only two connection slots those duplicate 100–140 KB directory reads
+	 * crowded out the tiles themselves.
+	 */
+	private readonly leaves = new Map<number, Promise<Entry[]>>();
 
 	private constructor(
 		readonly url: string,
 		readonly header: PMTilesHeader,
 		private readonly root: Entry[],
-		private readonly fetchFn: FetchLike
+		private readonly fetchFn: FetchLike,
+		private readonly limiter: Limiter
 	) {}
 
-	static async open(url: string, fetchFn: FetchLike = fetch): Promise<PMTilesSource> {
-		const header = readHeader(await range(url, 0, 127, fetchFn));
-		const rootBuf = await range(url, header.rootDirOffset, header.rootDirLength, fetchFn);
-		return new PMTilesSource(url, header, parseDirectory(decompress(rootBuf, header.internalCompression)), fetchFn);
+	static async open(url: string, options: PMTilesOptions = {}): Promise<PMTilesSource> {
+		const fetchFn = options.fetch ?? fetch;
+		const limiter = createLimiter(options.concurrency ?? DEFAULT_CONCURRENCY);
+		const header = readHeader(await range(url, 0, 127, fetchFn, limiter));
+		const rootBuf = await range(url, header.rootDirOffset, header.rootDirLength, fetchFn, limiter);
+		const root = parseDirectory(decompress(rootBuf, header.internalCompression));
+		return new PMTilesSource(url, header, root, fetchFn, limiter);
 	}
 
 	/**
@@ -342,8 +390,9 @@ export class PMTilesSource {
 	 * re-read the header just to find where the metadata lives.
 	 */
 	async getMetadata(): Promise<unknown> {
-		const block = await range(this.url, this.header.metadataOffset, this.header.metadataLength, this.fetchFn);
-		return readMetadata(block, this.header, this.header.metadataOffset);
+		const { metadataOffset, metadataLength } = this.header;
+		const block = await range(this.url, metadataOffset, metadataLength, this.fetchFn, this.limiter);
+		return readMetadata(block, this.header, metadataOffset);
 	}
 
 	/** The decompressed body of one tile, or undefined where the archive has none. */
@@ -355,18 +404,27 @@ export class PMTilesSource {
 			const entry = findEntry(entries, tileId);
 			if (!entry || entry.length === 0) return undefined;
 			if (entry.runLength > 0) {
-				const body = await range(this.url, this.header.tileDataOffset + entry.offset, entry.length, this.fetchFn);
+				const offset = this.header.tileDataOffset + entry.offset;
+				const body = await range(this.url, offset, entry.length, this.fetchFn, this.limiter);
 				return decompress(body, this.header.tileCompression);
 			}
-			const cached = this.leaves.get(entry.offset);
-			if (cached) {
-				entries = cached;
-				continue;
-			}
-			const leafBuf = await range(this.url, this.header.leafDirsOffset + entry.offset, entry.length, this.fetchFn);
-			entries = parseDirectory(decompress(leafBuf, this.header.internalCompression));
-			this.leaves.set(entry.offset, entries);
+			entries = await this.leaf(entry);
 		}
 		throw new Error('pmtiles: directory nesting deeper than expected');
+	}
+
+	/** A leaf directory, fetched at most once however many tiles ask for it concurrently. */
+	private leaf(entry: Entry): Promise<Entry[]> {
+		let pending = this.leaves.get(entry.offset);
+		if (!pending) {
+			const offset = this.header.leafDirsOffset + entry.offset;
+			pending = range(this.url, offset, entry.length, this.fetchFn, this.limiter).then((buf) =>
+				parseDirectory(decompress(buf, this.header.internalCompression))
+			);
+			// A failed read must not stay cached, or every tile in that leaf fails until restart.
+			pending.catch(() => this.leaves.delete(entry.offset));
+			this.leaves.set(entry.offset, pending);
+		}
+		return pending;
 	}
 }
