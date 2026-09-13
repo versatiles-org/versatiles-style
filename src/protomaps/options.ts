@@ -103,19 +103,22 @@ export function resolveProtomapsUrls(urls?: ProtomapsUrlsOptions, path = 'urls')
 }
 
 /**
- * Protomaps features: the OSM set minus `landcover`, which exists for the Shortbread low-zoom
- * landcover extension and has no counterpart here. Leaving it out means
- * `omt({ features: { landcover: true } })` throws rather than silently doing nothing (§5.3, risk 3).
+ * Protomaps features: the same set as `osm()`'s. `landcover` draws Protomaps' coarse low-zoom
+ * `landcover` layer (z0–7), the counterpart of Shortbread's low-zoom landcover extension — and, as there,
+ * it is off by default, so the three schemas draw the same map unless asked otherwise.
  */
 export type ProtomapsFeaturesOptions = {
 	terrain?: TerrainOptions;
 	hillshade?: HillshadeOptions;
+	/** Coarse land cover at low zoom, from Protomaps' `landcover` layer. Default: false. */
+	landcover?: boolean;
 	buildings?: 'flat' | 'extruded';
 };
 
 export type ResolvedProtomapsFeatures = {
 	terrain: ResolvedTerrain;
 	hillshade: ResolvedHillshade;
+	landcover: boolean;
 	buildings: 'flat' | 'extruded';
 };
 
@@ -123,10 +126,11 @@ export function resolveProtomapsFeatures(
 	features?: ProtomapsFeaturesOptions,
 	path = 'features'
 ): ResolvedProtomapsFeatures {
-	checkKeys(features, { terrain: true, hillshade: true, buildings: true }, path);
+	checkKeys(features, { terrain: true, hillshade: true, landcover: true, buildings: true }, path);
 	return {
 		terrain: resolveTerrain(features?.terrain, `${path}.terrain`),
 		hillshade: resolveHillshade(features?.hillshade, `${path}.hillshade`),
+		landcover: features?.landcover ?? false,
 		buildings: features?.buildings ?? 'flat',
 	};
 }
@@ -135,11 +139,10 @@ export function resolveProtomapsFeatures(
  * Options for `omt()`.
  *
  * The third schema, and the same story as the second (§19 was too pessimistic). They differ in exactly
- * two places, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `sun`, `sky`, `projection` —
- * is identical, because the option vocabulary names concepts rather than layers (§2):
+ * one place, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `features`, `sun`, `sky`,
+ * `projection` — is identical, because the option vocabulary names concepts rather than layers (§2):
  *
- *  - `urls.omt` replaces `urls.osm`, and does not default relative to `base` (§5.5);
- *  - `features` has no `landcover`, a Shortbread tileset extension.
+ *  - `urls.protomaps` replaces `urls.osm`, and has no default (see `PROTOMAPS_PLACEHOLDER`).
  *
  * The `layers` tree is the *same* tree: every group Shortbread controls is expressible here.
  */

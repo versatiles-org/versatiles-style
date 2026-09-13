@@ -98,8 +98,8 @@ function protomapsFn(options?: ProtomapsOptions): StyleSpecification {
 	if (resolved.features.hillshade !== false) {
 		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 	}
-	// No `addLandcover`: Protomaps ships a coarse low-zoom `landcover` layer natively, which the
-	// cartography simply draws, so there is nothing for the option to switch on.
+	// No `addLandcover`: Protomaps' coarse low-zoom band is its own `landcover` layer, emitted by the
+	// landcover module when `features.landcover` is on (see `layers/landcover.ts`).
 
 	configure3DLighting(style, resolved.sun);
 

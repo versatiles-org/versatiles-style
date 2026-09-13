@@ -11,7 +11,10 @@ import type { StyleSpecification } from '../types/index.js';
 // proves the layers read source-layers and fields Protomaps has, and are not drawn before their data;
 // it cannot prove a filter matches anything, which needs tiles (§8.2).
 
-const ctx = buildContext(resolveProtomaps({ urls: { protomaps: 'pmtiles://https://example.org/x.pmtiles' } }));
+// `landcover` on, so the audit covers every layer the style can emit, the low-zoom band included.
+const ctx = buildContext(
+	resolveProtomaps({ urls: { protomaps: 'pmtiles://https://example.org/x.pmtiles' }, features: { landcover: true } })
+);
 const style = { version: 8, sources: {}, layers: buildStyleLayers(ctx) } as StyleSpecification;
 const audit = auditSchema(style, PROTOMAPS_SCHEMA);
 

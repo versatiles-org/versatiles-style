@@ -29,8 +29,9 @@ export function getLayerGroupMap(): LayerGroupMap {
 	const map: LayerGroupMap = {};
 	// `buildings: 'flat'` and `'extruded'` are mutually exclusive, so neither build alone lists every
 	// layer the group can control; both are walked and their IDs unioned, as in the Shortbread map.
+	// `landcover` only adds layers, so it is on in both.
 	for (const buildings of ['flat', 'extruded'] as const) {
-		const ctx = buildContext(resolveProtomaps({ features: { buildings } }));
+		const ctx = buildContext(resolveProtomaps({ features: { buildings, landcover: true } }));
 		for (const { layer, group } of protomapsLayers(ctx)) {
 			if (group) insert(map, group, layer.id);
 		}

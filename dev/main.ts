@@ -118,9 +118,9 @@ function buildInspectStyle(
 /** Which controls mean anything for the chosen base map. */
 function applyControlAvailability(base: Base): void {
 	const isSatellite = base === 'satellite';
-	// `features.landcover` is a Shortbread tileset extension; the other two schemas reject the option
-	// outright, so it is not merely inert there.
-	landcoverToggle.disabled = base !== 'osm';
+	// `features.landcover` exists for Shortbread (its low-zoom tileset extension) and Protomaps (its own
+	// coarse `landcover` layer); OpenMapTiles has no such data and rejects the option outright.
+	landcoverToggle.disabled = base !== 'osm' && base !== 'protomaps';
 	buildingsToggle.disabled = isSatellite;
 }
 
@@ -153,7 +153,7 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 		case 'protomaps':
 			style = protomaps({
 				theme,
-				features: { terrain, hillshade, buildings },
+				features: { terrain, hillshade, landcover, buildings },
 				urls: { protomaps: TILE_SOURCE.protomaps },
 			});
 			note = 'Protomaps (daily build)';

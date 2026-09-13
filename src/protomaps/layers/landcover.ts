@@ -14,11 +14,11 @@ import * as b from '../../dsl/index.js';
 //
 // OpenMapTiles splits `landcover`/`landuse`/`park` semantically; Protomaps splits by **zoom**, coarse
 // below and detailed above. That is exactly the job Shortbread's optional low-zoom landcover extension
-// does — except Protomaps ships it as standard, which is why `features.landcover` is not an option for
-// this schema: there is nothing to switch on.
+// does, so the coarse band is drawn under the same option, `features.landcover`, and like Shortbread's
+// it is off by default: without it, the three schemas draw the same bare land at low zoom.
 //
-// The two bands overlap between z2 and z7. Both are drawn, coarse first: where they disagree the
-// detailed `landuse` fill paints over the coarse one, and where `landuse` has nothing yet the coarse
+// With it, the two bands overlap between z2 and z7. Both are drawn, coarse first: where they disagree
+// the detailed `landuse` fill paints over the coarse one, and where `landuse` has nothing yet the coarse
 // fill still covers the ground.
 //
 // Every kind below is from `npm run schema-values -- protomaps landcover landuse`.
@@ -199,7 +199,7 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 		group: 'land.glacier',
 	});
 
-	for (const def of [...LOW_ZOOM, ...LAND]) {
+	for (const def of ctx.features.landcover ? [...LOW_ZOOM, ...LAND] : LAND) {
 		yield b.fill('land-' + def.id, {
 			sourceLayer: def.from,
 			filter:

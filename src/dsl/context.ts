@@ -21,9 +21,10 @@ export type LayerContext = {
 	/** Resolved font names. */
 	fonts: { normal: string; bold: string };
 	/** The resolved feature flags a layer module may read. Deliberately narrower than any schema's
-	 *  `features` option: only `buildings` changes which layers are emitted, and `landcover` is a
-	 *  Shortbread tileset extension applied to the finished style, not consulted here. */
-	features: { buildings: 'flat' | 'extruded' };
+	 *  `features` option: only these change which layers are emitted. `landcover` is read by Protomaps,
+	 *  whose coarse low-zoom band is its own layers; Shortbread applies it to the finished style instead
+	 *  (`addLandcover`), and OpenMapTiles has no such data. */
+	features: { buildings: 'flat' | 'extruded'; landcover: boolean };
 	/** Fully-resolved per-group visibility/opacity. Each layer gates itself on its own group. */
 	layers: ResolvedLayerGroups;
 	/** Language-aware `text-field` expression for label/symbol layers. */
@@ -56,7 +57,7 @@ export type ContextSeam = {
 export type ContextOptions = {
 	theme: Palette;
 	colors: ResolvedColors;
-	features: { buildings: 'flat' | 'extruded' };
+	features: { buildings: 'flat' | 'extruded'; landcover?: boolean };
 	layers: ResolvedLayerGroups;
 	text: { fontNormal: string; fontBold: string; language: string; languageStrict: boolean };
 };
@@ -76,7 +77,7 @@ export function buildLayerContext(resolved: ContextOptions, seam: ContextSeam): 
 		c,
 		bg,
 		fg,
-		features: resolved.features,
+		features: { buildings: resolved.features.buildings, landcover: resolved.features.landcover ?? false },
 		layers: resolved.layers,
 		fonts: { normal: resolved.text.fontNormal, bold: resolved.text.fontBold },
 		nameField: seam.nameField(resolved.text.language, resolved.text.languageStrict),
