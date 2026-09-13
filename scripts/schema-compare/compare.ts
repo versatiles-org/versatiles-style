@@ -25,15 +25,12 @@
 import sharp from 'sharp';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { osm } from '../../src/api/osm.js';
-import { omt } from '../../src/omt/api.js';
-import { protomaps } from '../../src/protomaps/api.js';
 import { getLayerGroupMap as shortbreadGroups, type LayerGroupMap } from '../../src/shortbread/layer-groups-map.js';
 import { getLayerGroupMap as omtGroups } from '../../src/omt/layer-groups-map.js';
 import { getLayerGroupMap as protomapsGroups } from '../../src/protomaps/layer-groups-map.js';
 import type { OsmOptions, ResolvedColors } from '../../src/options/index.js';
-import type { StyleSpecification, TileJSONSpecification } from '../../src/types/index.js';
-import { NativeMap, tileTemplate } from '../lib/native-render.js';
+import type { StyleSpecification } from '../../src/types/index.js';
+import { NativeMap } from '../lib/native-render.js';
 import { CACHE_DIR, explain, readTile, sourceMetadata, type SourceMetadata } from '../lib/tile-cache.js';
 import {
 	PAIRS,
@@ -49,7 +46,8 @@ import {
 import { imageName, renderReport } from './report.js';
 import { classShares, colorClasses, diff, heatmap, sentinelPalette, type ColorClass } from './score.js';
 import { HEIGHT, VIEWS, WIDTH, randomViews, tilesForView, type View } from './views.js';
-import { coverage, isolateGroup, leafGroups, overlap } from './groups.js';
+import { coverage, differingGroups, isolateGroup, leafGroups, oddOneOut, overlap, overlayPixels } from './groups.js';
+import { COMMON_OPTIONS, GEOMETRY_OPTIONS, buildStyle } from './styles.js';
 
 const DIR = import.meta.dirname;
 const OUT = resolve(DIR, 'out');
@@ -89,31 +87,11 @@ function parseArgs(argv: string[]) {
 
 // ── styles ─────────────────────────────────────────────────────────────────────
 
-/** Everything that is not about the schema is held fixed, so only the schema varies. */
+/** The options of each pass; see `styles.ts` for what is held fixed. */
 function optionsFor(pass: Pass, sentinel: ResolvedColors): OsmOptions {
-	const common: OsmOptions = { theme: 'colorful', projection: 'mercator', sky: false };
-	const geometry: OsmOptions = { ...common, layers: { labels: false, icons: false } };
-	if (pass === 'full') return common;
-	if (pass === 'geometry') return geometry;
-	return { ...geometry, colors: sentinel };
-}
-
-function buildStyle(schema: Schema, metadata: SourceMetadata, options: OsmOptions): StyleSpecification {
-	const tileJSON = {
-		tilejson: '3.0.0',
-		tiles: [tileTemplate(schema)],
-		minzoom: metadata.minzoom,
-		maxzoom: metadata.maxzoom,
-		vector_layers: metadata.vectorLayers,
-	} as TileJSONSpecification;
-	switch (schema) {
-		case 'shortbread':
-			return osm({ ...options, urls: { osm: tileJSON } });
-		case 'omt':
-			return omt({ ...options, urls: { omt: tileJSON } });
-		case 'protomaps':
-			return protomaps({ ...options, urls: { protomaps: tileJSON } });
-	}
+	if (pass === 'full') return COMMON_OPTIONS;
+	if (pass === 'geometry') return GEOMETRY_OPTIONS;
+	return { ...GEOMETRY_OPTIONS, colors: sentinel };
 }
 
 /**
@@ -160,7 +138,9 @@ async function compareGroups(
 	views: View[],
 	results: Results,
 	metadata: Record<Schema, SourceMetadata>,
-	cache: { offline: boolean }
+	cache: { offline: boolean },
+	/** Geometry renders from the regular run, the faded background of the overlays. */
+	backgrounds: ReadonlyMap<string, Record<Schema, Uint8Array>>
 ) {
 	const tree = shortbreadGroups();
 	const byView = new Map(results.views.map((r) => [r.view, r]));
@@ -168,7 +148,7 @@ async function compareGroups(
 		const out = new Map<string, Partial<Record<Schema, Uint8Array>>>();
 		await Promise.all(
 			SCHEMAS.map(async (schema) => {
-				const options: OsmOptions = { theme: 'colorful', projection: 'mercator', sky: false, layers };
+				const options: OsmOptions = { ...COMMON_OPTIONS, layers };
 				const map = new NativeMap(buildStyle(schema, metadata[schema], options), cache);
 				for (const view of views) {
 					const rendered = await map.render({ center: view.center, zoom: view.zoom, width: WIDTH, height: HEIGHT });
@@ -194,10 +174,18 @@ async function compareGroups(
 				Uint8Array
 			>;
 			const result = byView.get(view.id)!;
+			const pairs = Object.fromEntries(PAIRS.map((pair) => [pairId(pair), overlap(masks[pair[0]], masks[pair[1]])]));
 			result.groups ??= {};
-			result.groups[group] = Object.fromEntries(
-				PAIRS.map((pair) => [pairId(pair), overlap(masks[pair[0]], masks[pair[1]])])
-			);
+			result.groups[group] = pairs;
+
+			// A picture of where the group differs: from the schema that stands apart.
+			if (differingGroups({ [group]: pairs }).length > 0) {
+				const odd = oddOneOut(pairs);
+				const majority = SCHEMAS.find((s) => s !== odd)!;
+				const background = backgrounds.get(view.id)?.[majority] ?? base[majority]!;
+				const file = resolve(OUT, imageName(view.id, 'group', group));
+				writeFileSync(file, await png(overlayPixels(masks, odd, background)));
+			}
 		}
 	}
 	console.log();
@@ -259,6 +247,7 @@ async function main() {
 	}
 
 	const results: Results = { builds, views: [] };
+	const backgrounds = new Map<string, Record<Schema, Uint8Array>>();
 	for (const view of views) {
 		const started = Date.now();
 		const result: ViewResult = {
@@ -286,6 +275,7 @@ async function main() {
 				})
 			);
 			if (SCHEMAS.some((schema) => !pixels[schema])) continue;
+			if (pass === 'geometry' && args.byGroup) backgrounds.set(view.id, pixels);
 
 			if (pass === 'sentinel') {
 				const classes = mergeClasses(
@@ -316,7 +306,7 @@ async function main() {
 	for (const pass of args.passes) for (const schema of SCHEMAS) maps[pass][schema].release();
 
 	// 3b. each layer group alone
-	if (args.byGroup) await compareGroups(views, results, metadata, cache);
+	if (args.byGroup) await compareGroups(views, results, metadata, cache, backgrounds);
 
 	// 4. judge, report, save
 	const baseline = existsSync(BASELINE) ? (JSON.parse(readFileSync(BASELINE, 'utf8')) as Results) : undefined;
@@ -337,7 +327,7 @@ async function main() {
 	}
 
 	writeFileSync(resolve(OUT, 'results.json'), JSON.stringify(results, null, '\t'));
-	writeFileSync(resolve(OUT, 'index.html'), renderReport(results, findings, args.passes));
+	writeFileSync(resolve(OUT, 'index.html'), renderReport({ results, baseline, findings, passes: args.passes }));
 
 	for (const f of findings ?? []) console.log(`  ${f.kind === 'regression' ? '✗' : '✓'} ${f.view}: ${f.message}`);
 	const regressions = (findings ?? []).filter((f) => f.kind === 'regression').length;
