@@ -147,6 +147,20 @@ describe('readProbe', () => {
 		);
 	});
 
+	it('reads no halo colour from a transparent halo', () => {
+		const s = style([
+			{
+				id: 'street',
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'transportation_name',
+				layout: { 'text-field': '{name}' },
+				paint: { 'text-color': '#666', 'text-halo-color': 'rgba(0,0,0,0)', 'text-halo-width': 1 },
+			},
+		]);
+		expect(Object.keys(readProbe(s, OMT, probe('label-street-primary'))!.colors)).toEqual(['text']);
+	});
+
 	it('skips labels that show nothing, and reads icons without text', () => {
 		const symbol = { type: 'symbol', source: 'omt', 'source-layer': 'poi' };
 		const s = style([

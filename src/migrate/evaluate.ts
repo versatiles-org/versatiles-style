@@ -322,11 +322,12 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			const opacity = evaluateProperty(layer, 'paint', 'text-opacity', zoom, feature);
 			if (typeof opacity === 'number' && opacity <= 0.01) continue;
 			const color = toRGBA(evaluateProperty(layer, 'paint', 'text-color', zoom, feature), opacity);
-			if (color) colors.text = color;
+			// a fully transparent colour says nothing about hue: no text colour, or no halo, was set
+			if (color && color[3] > 0.01) colors.text = color;
 			const haloWidth = evaluateProperty(layer, 'paint', 'text-halo-width', zoom, feature);
 			if (typeof haloWidth === 'number' && haloWidth > 0) {
 				const halo = toRGBA(evaluateProperty(layer, 'paint', 'text-halo-color', zoom, feature), opacity);
-				if (halo) colors.halo = halo;
+				if (halo && halo[3] > 0.01) colors.halo = halo;
 			}
 			const size = evaluateProperty(layer, 'layout', 'text-size', zoom, feature);
 			if (typeof size === 'number') textSize = size;

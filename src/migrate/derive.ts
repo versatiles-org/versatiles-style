@@ -8,6 +8,7 @@ import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
 import {
 	colorOptionsKeys,
 	resolveSatellite,
+	resolveText,
 	type ColorsOptions,
 	type LayerGroupOptions,
 	type OsmOptions,
@@ -245,6 +246,9 @@ function readInput(
 
 // ── kind ──────────────────────────────────────────────────────────────────────
 
+/** The zoom a raster layer is read at to tell whether it is imagery. */
+const IMAGERY_ZOOM = 12;
+
 const RASTER_KEYS = {
 	'raster-opacity': 'opacity',
 	'raster-hue-rotate': 'hueRotate',
@@ -268,7 +272,9 @@ function findImagery(
 	for (let i = 0; i < layers.length; i++) {
 		const layer = layers[i];
 		if (layer.type !== 'raster' || layer.layout?.visibility === 'none') continue;
-		const opacity = evaluateProperty(layer, 'paint', 'raster-opacity', 12, empty);
+		// imagery shows the ground up close; a raster that stops early is shading for the overview
+		if (layer.maxzoom !== undefined && layer.maxzoom <= IMAGERY_ZOOM) continue;
+		const opacity = evaluateProperty(layer, 'paint', 'raster-opacity', IMAGERY_ZOOM, empty);
 		if (typeof opacity === 'number' && opacity < 0.5) continue;
 
 		const fills = [...readings.values()].filter((r) => r.probe.kind === 'fill');
@@ -278,7 +284,7 @@ function findImagery(
 		const options: Record<string, number> = {};
 		for (const [property, key] of Object.entries(RASTER_KEYS)) {
 			if (layer.paint?.[property as keyof typeof layer.paint] === undefined) continue;
-			const value = evaluateProperty(layer, 'paint', property, 12, empty);
+			const value = evaluateProperty(layer, 'paint', property, IMAGERY_ZOOM, empty);
 			if (typeof value === 'number') options[key] = value;
 		}
 		return { layer: layer.id, options };
@@ -476,8 +482,8 @@ function deriveCommon(
 	report: GuessReport
 ): Common {
 	const content: Common['content'] = {};
-	const text = deriveText(readings, report);
-	if (text) content.text = text;
+	const text = { ...deriveText(readings, report), ...deriveFonts(readings) };
+	if (Object.keys(text).length > 0) content.text = text;
 	const scale = deriveLabelScale(readings);
 	if (scale !== undefined) content.layout = { scale: { labels: scale } };
 
@@ -505,10 +511,10 @@ function deriveCommon(
 	if (style.light) globals.sun = deriveSun(style.light);
 
 	const fonts = new Set<string>();
-	for (const reading of readings.values()) reading.textFont?.forEach((font) => fonts.add(font));
-	const foreign = [...fonts].filter((font) => !/^noto_sans_/.test(font));
+	for (const reading of readings.values()) if (reading.textFont?.[0]) fonts.add(reading.textFont[0]);
+	const foreign = [...fonts].filter((font) => fontFamily(font) !== 'noto_sans');
 	if (foreign.length > 0) {
-		report.warnings.push(`fonts are not carried over (${foreign.join(', ')}); VersaTiles glyphs are used`);
+		report.warnings.push(`font families are not carried over (${foreign.join(', ')}); only regular or bold is`);
 	}
 	if (style.sprite) report.warnings.push('icons are not carried over; the VersaTiles sprite is used');
 	if (schemas.size > 1) report.warnings.push('more than one vector source: all were read as one map');
@@ -542,6 +548,44 @@ function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: GuessRe
 		return { language, ...(!fallback.includes(NAME_MARKER) && { languageStrict: true }) };
 	}
 	return undefined;
+}
+
+/** Words naming a face rather than a family. */
+const FACE_WORD = /_(regular|italic|oblique|medium|book|light|thin|bold|semi_?bold|demi_?bold|black|heavy|extra_?\w+)$/;
+
+/** `Noto Sans Bold Italic` and `noto_sans_bold` are both the family `noto_sans`. */
+function fontFamily(font: string): string {
+	let family = font.toLowerCase().replace(/[\s-]+/g, '_');
+	while (FACE_WORD.test(family)) family = family.replace(FACE_WORD, '');
+	return family;
+}
+
+/** A font counts as bold when its name says so; anything lighter, Medium included, as regular. */
+const BOLD_FONT = /bold|black|heavy|demi/i;
+
+/**
+ * Regular or bold, per the role a font plays in the target: `text.fontNormal` for the labels the
+ * target sets in its regular font, `text.fontBold` for those it sets in bold. Each follows the weight
+ * most of the style's labels in that role are set in — by name only; font families are not matched.
+ * Both are always given when read, so a satellite overlay, whose normal font is bold, gets them too;
+ * minimising drops whichever equals the target's own.
+ */
+function deriveFonts(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
+	const base = modelFor(osmTarget(), 'light').base;
+	const { fontNormal, fontBold } = resolveText();
+	const votes = { fontNormal: [0, 0], fontBold: [0, 0] };
+	for (const reading of readings.values()) {
+		const foreign = reading.textFont?.[0];
+		const own = base.get(reading.probe.id)?.textFont?.[0];
+		if (!foreign || !own) continue;
+		const role = own === fontBold ? votes.fontBold : votes.fontNormal;
+		role[BOLD_FONT.test(foreign) ? 1 : 0]++;
+	}
+	const weight = ([regular, bold]: number[]) => (bold > regular ? fontBold : fontNormal);
+	const text: TextOptions = {};
+	if (votes.fontNormal[0] + votes.fontNormal[1] > 0) text.fontNormal = weight(votes.fontNormal);
+	if (votes.fontBold[0] + votes.fontBold[1] > 0) text.fontBold = weight(votes.fontBold);
+	return text;
 }
 
 /** The label size relative to the target's: the median ratio over every label read, in steps of 0.05. */

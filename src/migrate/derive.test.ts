@@ -64,6 +64,17 @@ describe('deriveOptions — round trips through the package builders', () => {
 		});
 	});
 
+	it('recovers regular and bold fonts swapped, for osm() and for a satellite overlay', () => {
+		const text = { fontNormal: 'noto_sans_bold', fontBold: 'noto_sans_regular' };
+		expect(osmOptions(deriveOptions(osm({ text }))).text).toEqual(text);
+
+		// the overlay sets its normal labels in bold by default
+		const overlay = satelliteOptions(
+			deriveOptions(satellite({ osmOverlay: { text: { fontNormal: 'noto_sans_regular' } } }))
+		);
+		expect(overlay).toEqual({ osmOverlay: { text: { fontNormal: 'noto_sans_regular' } } });
+	});
+
 	it('hides a whole branch when all of its groups are hidden', () => {
 		const options = osmOptions(deriveOptions(osm({ layers: { labels: false } })));
 		expect(options.layers).toEqual({ labels: false });
@@ -186,6 +197,27 @@ describe('deriveOptions — foreign styles', () => {
 		expect(report.warnings).toContainEqual(expect.stringContaining('icons are not carried over'));
 	});
 
+	it('carries over the weight of the label fonts, not their family', () => {
+		const withFont = (font: string[]) =>
+			omtStyle({}, [
+				{
+					id: 'city',
+					type: 'symbol',
+					source: 'openmaptiles',
+					'source-layer': 'place',
+					layout: { 'text-field': '{name}', 'text-font': font },
+				},
+			]);
+
+		const semibold = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']));
+		expect(osmOptions(semibold).text).toEqual({ fontNormal: 'noto_sans_bold' });
+		expect(semibold.report.warnings).toContainEqual(expect.stringContaining('Open Sans Semibold'));
+
+		const noto = deriveOptions(withFont(['Noto Sans Medium']));
+		expect(osmOptions(noto).text).toBeUndefined();
+		expect(noto.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
+	});
+
 	it('defaults to mercator, and keeps a projection MapLibre implements', () => {
 		expect(osmOptions(deriveOptions(omtStyle())).projection).toBe('mercator');
 		expect(osmOptions(deriveOptions(omtStyle({ projection: { type: 'globe' } }))).projection).toBeUndefined();
@@ -250,6 +282,13 @@ describe('deriveOptions — foreign styles', () => {
 		const options = satelliteOptions(deriveOptions(over));
 		expect(options.raster).toEqual({ saturation: -0.2 });
 		expect(options.osmOverlay).toBeDefined();
+
+		const early = { ...imagery, maxzoom: 7 };
+		const shading = {
+			...base,
+			layers: [...base.layers.slice(0, 2), early, ...base.layers.slice(2)],
+		} as StyleSpecification;
+		expect(deriveOptions(shading).kind).toBe('osm');
 
 		const faint = { ...imagery, paint: { 'raster-opacity': 0.3 } };
 		const translucent = { ...base, layers: [...base.layers, faint] } as StyleSpecification;

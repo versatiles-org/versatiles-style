@@ -598,14 +598,18 @@ becomes a `colors` override only where it clearly differs from the palette. The 
 about half a second the first time, once per target and light or dark mode.
 
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
-language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), extruded
+language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), whether
+labels are set regular or bold (`text.fontNormal`, `text.fontBold` — by the font's name), extruded
 buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 
-**What it does not carry over**, and says so in the warnings: fonts and icons (VersaTiles glyphs and
-sprites are used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
+**What it does not carry over**, and says so in the warnings: font families and icons (VersaTiles
+glyphs and sprites are used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
 listed in `report.unmatched`. Tile URLs are not copied: the options build a style on VersaTiles tiles.
+
+To judge a migration by eye, `npm run migrate-compare -- <style URL> …` renders each style next to its
+migration at a few places, with live tiles on both sides, into `scripts/migrate-compare/out/index.html`.
 
 ---
 

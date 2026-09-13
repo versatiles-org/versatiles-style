@@ -55,6 +55,7 @@
 		"format": "prettier --write --log-level warn .",
 		"format:check": "prettier --check .",
 		"lint": "eslint --color .",
+		"migrate-compare": "tsx scripts/migrate-compare.ts",
 		"prepack": "npm run build",
 		"release": "vrt release-npm",
 		"schema-gate": "tsx scripts/schema-gate.ts",

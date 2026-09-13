@@ -14,3 +14,4 @@ scripts/tiles/
 scripts/compare/report-baseline.md
 scripts/compare/report.md
 scripts/compare/styles/style.*.json
+scripts/migrate-compare/
