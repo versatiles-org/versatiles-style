@@ -36,4 +36,9 @@ describe('protomaps() waterway zooms', () => {
 		const river = style.layers.find((l) => l.id === 'water-river')!;
 		expect(river.minzoom).toBe(9);
 	});
+
+	it('starts stream lines at z14, as Shortbread does', () => {
+		const stream = style.layers.find((l) => l.id === 'water-stream')!;
+		expect(stream.minzoom).toBe(14);
+	});
 });

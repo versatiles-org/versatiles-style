@@ -9,4 +9,9 @@ describe('omt() waterway zooms', () => {
 		expect(minzoom(omt(), 'water-river')).toBe(9);
 		expect(minzoom(omt(), 'water-river')).toBe(minzoom(osm(), 'water-river'));
 	});
+
+	it('starts stream lines at z14, as Shortbread does, although OpenMapTiles tiles them from z13', () => {
+		expect(minzoom(omt(), 'water-stream')).toBe(14);
+		expect(minzoom(omt(), 'water-stream')).toBe(minzoom(osm(), 'water-stream'));
+	});
 });

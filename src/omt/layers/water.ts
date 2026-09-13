@@ -49,9 +49,10 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 // exist, not the zoom each one starts at, which needs a zoom sweep. Measuring them the way the
 // Shortbread comment describes is outstanding.
 //
-// `river` starts at z9 as in Shortbread, whose tiles carry no rivers below that. OpenMapTiles has them
-// from z3, and drawing them there put river lines on a z4 map of Europe that the other schemas show bare.
-const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 13, ditch: 14, drain: 14 };
+// `river` starts at z9 and `stream` at z14 as in Shortbread, whose tiles carry neither earlier.
+// OpenMapTiles has rivers from z3 and streams from z13; drawing them there put river lines on a z4 map of
+// Europe and streams on a z13 Black Forest that the other schemas show without.
+const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 14, ditch: 14, drain: 14 };
 
 /** Shortbread's `tunnel`/`bridge` booleans, as OpenMapTiles' single `brunnel` enum. */
 const AT_GRADE: ExpressionSpecification = [

@@ -30,9 +30,10 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 
 /**
  * Carried over from the Shortbread table, not measured — as in the OpenMapTiles port. `river` starts at z9
- * as in Shortbread, whose tiles have no rivers below that; Protomaps carries river lines from z6.
+ * and `stream` at z14 as in Shortbread, whose tiles have neither earlier; Protomaps carries river lines
+ * from z6 and streams from z13.
  */
-const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 13 };
+const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 14 };
 
 /**
  * A river area: `kind: water, kind_detail: river` in the tiles (197 in the cache), or `kind: river` for a
