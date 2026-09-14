@@ -20,7 +20,7 @@ import {
 	type SunOptions,
 } from './parts.js';
 import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
-import { OVERLAY_DEFAULTS } from '../features/satellite-overlay.js';
+import { OVERLAY_DEFAULTS, OVERLAY_FONTS } from '../features/satellite-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -48,15 +48,16 @@ export type ResolvedSatellite = {
 };
 
 /**
- * The overlay's imagery defaults, with the caller's own values layered on top so an explicit
- * `colors.label` or `text.fontNormal` still wins. See `features/satellite-overlay.ts`.
+ * The overlay's imagery colours, with the caller's own values layered on top so an explicit
+ * `colors.label` still wins. Its fonts are not merged here but passed as the fallback of
+ * `text.fonts` (`OVERLAY_FONTS`), so a caller who sets one font topic keeps the overlay's others.
+ * See `features/satellite-overlay.ts`.
  */
 function overlayDefaults(overlay: boolean | OsmOverlayOptions | undefined): OsmOverlayOptions {
 	const o = typeof overlay === 'object' ? overlay : {};
 	return {
 		...o,
 		colors: { ...OVERLAY_DEFAULTS.colors, ...o.colors },
-		text: { ...OVERLAY_DEFAULTS.text, ...o.text },
 	};
 }
 
@@ -74,7 +75,9 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// saturated palette, so roads and labels stay out of the imagery's way. An explicit
 	// `osmOverlay.theme` still wins.
 	const osmOverlay =
-		overlay === false ? false : resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay');
+		overlay === false
+			? false
+			: resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay', OVERLAY_FONTS);
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),

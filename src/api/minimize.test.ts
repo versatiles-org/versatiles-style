@@ -41,7 +41,13 @@ describe('osm.minimizeOptions', () => {
 			'colours + recolor',
 			{ theme: 'muted', colors: { land: '#ff00ff' }, recolor: { gamma: 1.5, tint: { amount: 0.3, color: '#00ff00' } } },
 		],
-		['text + layout', { text: { language: 'de', fontBold: 'noto_sans_regular' }, layout: { scale: { labels: 1.5 } } }],
+		[
+			'text + layout',
+			{
+				text: { language: 'de', fonts: { water: 'fira_sans_italic', pois: { general: 'noto_sans_regular' } } },
+				layout: { scale: { labels: 1.5 } },
+			},
+		],
 		[
 			'features + layers',
 			{ features: { hillshade: true, landcover: true }, layers: { labels: false, roads: { paths: 0.5 } } },

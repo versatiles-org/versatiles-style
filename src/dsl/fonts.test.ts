@@ -5,8 +5,12 @@ import { satellite } from '../api/satellite.js';
 import { omt } from '../omt/api.js';
 import { protomaps } from '../protomaps/api.js';
 import type { MaplibreLayer, StyleSpecification } from '../types/index.js';
+import { resolveFonts, uniformFonts } from '../options/fonts.js';
 
-const FONTS = { normal: 'normal_face', bold: 'bold_face' };
+const FONTS = resolveFonts(
+	{ streets: { refs: 'bold_face' }, pois: { general: 'bold_face' } },
+	uniformFonts('normal_face')
+);
 
 const textLayer = (): MaplibreLayer =>
 	({ id: 't', type: 'symbol', layout: { 'text-field': ['get', 'name'] } }) as unknown as MaplibreLayer;
@@ -38,7 +42,7 @@ describe('fontTopic', () => {
 });
 
 describe('applyFont', () => {
-	it('sets the bold face for motorway refs and POI names, the normal face everywhere else', () => {
+	it('sets the face its topic resolves to', () => {
 		const set = (group: string) => {
 			const layer = textLayer();
 			applyFont(layer, group, FONTS);

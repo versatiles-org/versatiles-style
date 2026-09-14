@@ -123,6 +123,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   object that builds the same style — for storing a style in a URL or config file.
 - `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
   wrapped in `inlineSources`.
+- `text.fonts` sets the glyph face per label topic — `boundaries`, `places`, `streets`, `water`, `pois`
+  and `addresses`, each with sub-topics — as one string, a tree, or with `default` for whatever a level
+  does not name. `osm.fontGroups` lists the layers each topic sets.
 - `layout.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.
 - `layout.spacing` thins point labels too — places, POIs and house numbers — by widening their collision

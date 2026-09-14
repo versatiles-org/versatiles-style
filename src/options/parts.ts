@@ -16,6 +16,7 @@
 export * from './theme.js';
 export * from './colors.js';
 export * from './recolor.js';
+export * from './fonts.js';
 export * from './text.js';
 export * from './layout.js';
 export * from './features-hillshade.js';

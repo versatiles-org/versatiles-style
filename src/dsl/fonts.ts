@@ -1,5 +1,7 @@
 import type { MaplibreLayer } from '../types/index.js';
-import type { LayerContext } from './context.js';
+import { FONT_GROUPS, fontOf, type FontTopic, type ResolvedFonts } from '../options/fonts.js';
+
+export type { FontTopic } from '../options/fonts.js';
 
 /**
  * Which font a text layer is set in: a leaf of the font tree, named like the label groups.
@@ -8,23 +10,10 @@ import type { LayerContext } from './context.js';
  * `layers:` gates on — so the font a layer gets and the visibility option that controls it cannot name
  * different things. `buildLayers` sets `text-font` from it after gating.
  */
-export const FONT_TOPICS = [
-	'boundaries.countries',
-	'boundaries.states',
-	'places.cities',
-	'places.villages',
-	'places.districts',
-	'streets.names',
-	'streets.refs',
-	'streets.exits',
-	'water.lakes',
-	'water.rivers',
-	'pois.general',
-	'pois.transit',
+export const FONT_TOPICS: readonly FontTopic[] = [
+	...Object.entries(FONT_GROUPS).flatMap(([group, leaves]) => leaves.map((leaf) => `${group}.${leaf}` as FontTopic)),
 	'addresses',
-] as const;
-
-export type FontTopic = (typeof FONT_TOPICS)[number];
+];
 
 /**
  * Groups outside `labels` whose layers carry text. POI names and stop names are drawn with their icons,
@@ -46,19 +35,11 @@ export function fontTopic(group: string | undefined): FontTopic | undefined {
 	return ICON_GROUP_TOPICS[group];
 }
 
-/** Topics set in the bold face; every other topic uses the normal one. */
-const BOLD_TOPICS: ReadonlySet<FontTopic> = new Set(['streets.refs', 'pois.general']);
-
-/** The face a topic is set in. */
-function fontFor(fonts: LayerContext['fonts'], topic: FontTopic): string {
-	return BOLD_TOPICS.has(topic) ? fonts.bold : fonts.normal;
-}
-
 /**
  * Set `text-font` on a text layer from its group's topic. A text layer whose group has no topic would
  * fall back to MapLibre's default font, which the VersaTiles glyph server does not have, so it throws.
  */
-export function applyFont(layer: MaplibreLayer, group: string | undefined, fonts: LayerContext['fonts']): void {
+export function applyFont(layer: MaplibreLayer, group: string | undefined, fonts: ResolvedFonts): void {
 	if (layer.type !== 'symbol') return;
 	const layout = layer.layout as Record<string, unknown> | undefined;
 	if (layout?.['text-field'] == null) return;
@@ -66,5 +47,5 @@ export function applyFont(layer: MaplibreLayer, group: string | undefined, fonts
 	if (topic === undefined) {
 		throw new Error(`buildLayers: text layer "${layer.id}" is in group "${group}", which has no font topic`);
 	}
-	layout['text-font'] = [fontFor(fonts, topic)];
+	layout['text-font'] = [fontOf(fonts, topic)];
 }

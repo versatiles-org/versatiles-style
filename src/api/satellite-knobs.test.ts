@@ -162,6 +162,15 @@ describe('satellite() knob: osmOverlay', () => {
 		expect(field).toStrictEqual(['coalesce', ['get', 'name_de'], ['get', 'name']]);
 	});
 
+	it('sets every overlay label in bold, and keeps the others bold when one font topic is set', () => {
+		const font = (s: StyleSpecification, id: string) =>
+			((layer(s, id)?.layout as Record<string, unknown>)['text-font'] as string[])[0];
+		expect(font(build(), 'label-place-village')).toBe('noto_sans_bold');
+		const s = build({ osmOverlay: { text: { fonts: { water: 'my_italic' } } } });
+		expect(font(s, 'label-water-river')).toBe('my_italic');
+		expect(font(s, 'label-place-village')).toBe('noto_sans_bold');
+	});
+
 	it('forwards the layers knob to the overlay (hidden groups are dropped)', () => {
 		const s = build({ osmOverlay: { layers: { labels: false } } });
 		expect(layer(s, 'label-place-village')).toBeUndefined();

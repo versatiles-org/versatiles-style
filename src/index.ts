@@ -103,6 +103,9 @@ export type {
 
 	// ── Input option types ──
 	ColorsOptions,
+	FontName,
+	FontOptions,
+	FontTopic,
 	HillshadeOptions,
 	LayerGroupOptions,
 	LayoutOptions,
@@ -124,6 +127,7 @@ export type {
 	ThemeOptions,
 
 	// ── Resolved option types ──
+	ResolvedFonts,
 	ResolvedHillshade,
 	ResolvedLayerGroups,
 	ResolvedLayout,

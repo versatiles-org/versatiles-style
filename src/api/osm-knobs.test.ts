@@ -80,15 +80,44 @@ describe('osm() knob: text', () => {
 		expect(layout(s, 'label-place-village')['text-field']).toStrictEqual(['get', 'name_de']);
 	});
 
-	it('fontNormal defaults to noto_sans_regular', () => {
-		expect(layout(build(), 'label-place-village')['text-font']).toStrictEqual(['noto_sans_regular']);
+	const font = (s: StyleSpecification, id: string) => (layout(s, id)['text-font'] as string[])[0];
+
+	it('fonts default to Noto Sans, bold for motorway refs and POI names', () => {
+		const s = build();
+		expect(font(s, 'label-place-village')).toBe('noto_sans_regular');
+		expect(font(s, 'label-motorway-exit')).toBe('noto_sans_regular');
+		expect(font(s, 'label-motorway-shield')).toBe('noto_sans_bold');
+		expect(font(s, 'poi-amenity')).toBe('noto_sans_bold');
 	});
 
-	it('fontNormal / fontBold override the emitted text-font', () => {
-		const s = build({ text: { fontNormal: 'my_regular', fontBold: 'my_bold' } });
-		// label-place-village renders with the normal font; the motorway shield uses bold.
-		expect(layout(s, 'label-place-village')['text-font']).toStrictEqual(['my_regular']);
-		expect(layout(s, 'label-motorway-shield')['text-font']).toStrictEqual(['my_bold']);
+	it('a string in text.fonts sets every text layer', () => {
+		const s = build({ text: { fonts: 'my_face' } });
+		const faces = new Set(s.layers.map((l) => (layout(s, l.id)['text-font'] as string[] | undefined)?.[0]));
+		faces.delete(undefined);
+		expect([...faces]).toEqual(['my_face']);
+	});
+
+	it('a group sets its layers, a topic only its own, `default` the rest', () => {
+		const s = build({
+			text: { fonts: { water: 'water_face', places: { default: 'place_face', cities: 'city_face' } } },
+		});
+		expect(font(s, 'label-water-area-large')).toBe('water_face');
+		expect(font(s, 'label-water-river')).toBe('water_face');
+		expect(font(s, 'label-place-city')).toBe('city_face');
+		expect(font(s, 'label-place-village')).toBe('place_face');
+		expect(font(s, 'label-place-suburb')).toBe('place_face');
+		expect(font(s, 'label-street-residential')).toBe('noto_sans_regular');
+		expect(font(s, 'poi-amenity')).toBe('noto_sans_bold');
+	});
+
+	it('pois.transit sets the transit stop names', () => {
+		const s = build({ text: { fonts: { pois: { transit: 'stop_face' } } } });
+		expect(font(s, 'symbol-transit-bus')).toBe('stop_face');
+		expect(font(s, 'poi-amenity')).toBe('noto_sans_bold');
+	});
+
+	it('rejects a misspelled topic', () => {
+		expect(() => build({ text: { fonts: { water: { river: 'x' } } as never } })).toThrow('unknown option');
 	});
 });
 

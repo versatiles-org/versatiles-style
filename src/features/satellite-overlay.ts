@@ -1,5 +1,7 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
 import { scaleLayerOpacity } from '../lib/opacity.js';
+import { uniformFonts, type ResolvedFonts } from '../options/fonts.js';
+import { DEFAULT_FONT_BOLD } from '../options/text.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -10,7 +12,7 @@ import { scaleLayerOpacity } from '../lib/opacity.js';
  *
  * Two of those adjustments are expressed as option defaults instead of transforms, so callers can
  * still override them: white label text on a black halo (`colors.label` / `colors.labelHalo`) and a
- * bold font (`text.fontNormal`). What is left here is what the option surface cannot express.
+ * bold font (`text.fonts`). What is left here is what the option surface cannot express.
  */
 
 /**
@@ -89,9 +91,10 @@ export const OVERLAY_DEFAULTS = {
 		 */
 		labelWater: '#8FC1ED',
 	},
-	/** v5 set every symbol layer bold, so labels hold up against a busy photo. */
-	text: { fontNormal: 'noto_sans_bold' },
 } as const;
+
+/** v5 set every symbol layer bold, so labels hold up against a busy photo. */
+export const OVERLAY_FONTS: ResolvedFonts = uniformFonts(DEFAULT_FONT_BOLD);
 
 /** Filter and adjust a built OSM style's layers for use over imagery. */
 export function toOverlayLayers(layers: StyleSpecification['layers'], haloColor: string): StyleSpecification['layers'] {

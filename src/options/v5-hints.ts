@@ -41,7 +41,7 @@ function buildTables(): { osm: Hints; satellite: Hints } {
 		'recolor.rotate': 'recolor.rotateHue',
 		'recolor.tintColor': 'recolor.tint.color',
 		'recolor.blendColor': 'recolor.blend.color',
-		fonts: 'text.fontNormal and text.fontBold',
+		fonts: 'text.fonts',
 		language: 'text.language',
 		languageStrict: 'text.languageStrict',
 		textScale: 'layout.scale.labels',

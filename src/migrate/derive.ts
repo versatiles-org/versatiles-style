@@ -8,8 +8,12 @@ import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
 import {
 	colorOptionsKeys,
 	resolveSatellite,
-	resolveText,
+	DEFAULT_FONT_BOLD,
+	DEFAULT_FONT_REGULAR,
+	DEFAULT_FONTS,
+	fontOf,
 	type ColorsOptions,
+	type FontOptions,
 	type LayerGroupOptions,
 	type OsmOptions,
 	type Palette,
@@ -41,6 +45,7 @@ import {
 } from './evaluate.js';
 import { colorDistance, luminance, toHex } from './math.js';
 import { PROBES, type Probe } from './probes.js';
+import { FONT_TOPICS } from '../dsl/fonts.js';
 
 /**
  * `deriveOptions` — the options for `osm()` or `satellite()` that rebuild a foreign style as closely as
@@ -579,28 +584,37 @@ function fontFamily(font: string): string {
 const BOLD_FONT = /bold|black|heavy|demi/i;
 
 /**
- * Regular or bold, per the role a font plays in the target: `text.fontNormal` for the labels the
- * target sets in its regular font, `text.fontBold` for those it sets in bold. Each follows the weight
- * most of the style's labels in that role are set in — by name only; font families are not matched.
- * Both are always given when read, so a satellite overlay, whose normal font is bold, gets them too;
- * minimising drops whichever equals the target's own.
+ * Regular or bold, per the role a font plays in the target: the `text.fonts` topics the target sets in
+ * its regular face, and those it sets in bold. Each role follows the weight most of the style's labels
+ * in that role are set in — by name only; font families are not matched. Every topic of a role that was
+ * read is given, so a satellite overlay, whose fonts are all bold, gets them too; minimising drops the
+ * topics that equal the target's own.
  */
 function deriveFonts(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
 	const base = modelFor(osmTarget(), 'light').base;
-	const { fontNormal, fontBold } = resolveText();
-	const votes = { fontNormal: [0, 0], fontBold: [0, 0] };
+	const votes = { regular: [0, 0], bold: [0, 0] };
 	for (const reading of readings.values()) {
 		const foreign = reading.textFont?.[0];
 		const own = base.get(reading.probe.id)?.textFont?.[0];
 		if (!foreign || !own) continue;
-		const role = own === fontBold ? votes.fontBold : votes.fontNormal;
+		const role = own === DEFAULT_FONT_BOLD ? votes.bold : votes.regular;
 		role[BOLD_FONT.test(foreign) ? 1 : 0]++;
 	}
-	const weight = ([regular, bold]: number[]) => (bold > regular ? fontBold : fontNormal);
-	const text: TextOptions = {};
-	if (votes.fontNormal[0] + votes.fontNormal[1] > 0) text.fontNormal = weight(votes.fontNormal);
-	if (votes.fontBold[0] + votes.fontBold[1] > 0) text.fontBold = weight(votes.fontBold);
-	return text;
+	const weight = ([regular, bold]: number[]) => (bold > regular ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR);
+	const read = { regular: votes.regular[0] + votes.regular[1] > 0, bold: votes.bold[0] + votes.bold[1] > 0 };
+	if (!read.regular && !read.bold) return {};
+
+	// Every topic of the role that was read, spelled out; minimising drops what equals the target's own.
+	const fonts: Record<string, Record<string, string> | string> = {};
+	for (const topic of FONT_TOPICS) {
+		const role = fontOf(DEFAULT_FONTS, topic) === DEFAULT_FONT_BOLD ? 'bold' : 'regular';
+		if (!read[role]) continue;
+		const face = weight(votes[role]);
+		const [group, leaf] = topic.split('.');
+		if (leaf === undefined) fonts[group] = face;
+		else ((fonts[group] ??= {}) as Record<string, string>)[leaf] = face;
+	}
+	return { fonts: fonts as FontOptions };
 }
 
 /** The label size relative to the target's: the median ratio over every label read, in steps of 0.05. */

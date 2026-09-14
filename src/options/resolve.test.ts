@@ -220,14 +220,70 @@ describe('resolveText', () => {
 		const t = resolveText();
 		expect(t.language).toBe('local');
 		expect(t.languageStrict).toBe(false);
-		expect(t.fontNormal).toBe('noto_sans_regular');
-		expect(t.fontBold).toBe('noto_sans_bold');
+		expect(t.fonts).toStrictEqual({
+			boundaries: { countries: 'noto_sans_regular', states: 'noto_sans_regular' },
+			places: { cities: 'noto_sans_regular', villages: 'noto_sans_regular', districts: 'noto_sans_regular' },
+			streets: { names: 'noto_sans_regular', refs: 'noto_sans_bold', exits: 'noto_sans_regular' },
+			water: { lakes: 'noto_sans_regular', rivers: 'noto_sans_regular' },
+			pois: { general: 'noto_sans_bold', transit: 'noto_sans_regular' },
+			addresses: 'noto_sans_regular',
+		});
 	});
 
-	it('uses custom font names', () => {
-		const t = resolveText({ fontNormal: 'Roboto Regular', fontBold: 'Roboto Bold' });
-		expect(t.fontNormal).toBe('Roboto Regular');
-		expect(t.fontBold).toBe('Roboto Bold');
+	it('a string sets every font topic', () => {
+		const { fonts } = resolveText({ fonts: 'roboto_regular' });
+		expect(fonts.streets.refs).toBe('roboto_regular');
+		expect(fonts.pois.general).toBe('roboto_regular');
+		expect(fonts.addresses).toBe('roboto_regular');
+	});
+
+	it('an object sets only the groups and topics it names', () => {
+		const { fonts } = resolveText({ fonts: { water: 'fira_sans_italic', pois: { transit: 'fira_sans_medium' } } });
+		expect(fonts.water).toStrictEqual({ lakes: 'fira_sans_italic', rivers: 'fira_sans_italic' });
+		expect(fonts.pois).toStrictEqual({ general: 'noto_sans_bold', transit: 'fira_sans_medium' });
+		expect(fonts.places.cities).toBe('noto_sans_regular');
+	});
+
+	it('`default` covers what the same object does not name, at the root and in a group', () => {
+		const { fonts } = resolveText({
+			fonts: { default: 'fira_sans_regular', streets: { default: 'fira_sans_light', refs: 'fira_sans_bold' } },
+		});
+		expect(fonts.streets).toStrictEqual({ names: 'fira_sans_light', refs: 'fira_sans_bold', exits: 'fira_sans_light' });
+		expect(fonts.pois.general).toBe('fira_sans_regular');
+		expect(fonts.addresses).toBe('fira_sans_regular');
+	});
+
+	it('a nearer setting wins over a farther one', () => {
+		const { fonts } = resolveText({ fonts: { default: 'a', water: 'b', places: { default: 'c', cities: 'd' } } });
+		expect(fonts.water.rivers).toBe('b');
+		expect(fonts.places).toStrictEqual({ cities: 'd', villages: 'c', districts: 'c' });
+		expect(fonts.boundaries.states).toBe('a');
+	});
+
+	it('resolves its own output to the same fonts', () => {
+		const { fonts } = resolveText({ fonts: { default: 'a', water: { rivers: 'b' } } });
+		expect(resolveText({ fonts }).fonts).toStrictEqual(fonts);
+	});
+
+	it('falls back to the fonts it is given for unset topics', () => {
+		const bold = resolveText({ fonts: 'noto_sans_bold' }).fonts;
+		const { fonts } = resolveText({ fonts: { water: 'x' } }, 'text', bold);
+		expect(fonts.water.lakes).toBe('x');
+		expect(fonts.places.cities).toBe('noto_sans_bold');
+	});
+
+	it('rejects unknown topics, a `default` on a leaf, and values that are not names', () => {
+		expect(() => resolveText({ fonts: { water: { river: 'x' } } as never })).toThrow(
+			'unknown option "fonts.water.river"'
+		);
+		expect(() => resolveText({ fonts: { sea: 'x' } as never })).toThrow('unknown option "fonts.sea"');
+		expect(() => resolveText({ fonts: { addresses: { default: 'x' } } as never })).toThrow(
+			'text.fonts.addresses: expected a font name string'
+		);
+		expect(() => resolveText({ fonts: { water: 5 } as never })).toThrow(
+			'text.fonts.water: expected a font name string or an object, got 5'
+		);
+		expect(() => resolveText({ fonts: '' })).toThrow('text.fonts: expected a font name string');
 	});
 
 	it('preserves explicit language', () => {

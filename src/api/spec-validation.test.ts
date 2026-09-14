@@ -28,7 +28,7 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 	['lang:en', { text: { language: 'en' } }],
 	['lang:de', { text: { language: 'de' } }],
 	['lang:de strict', { text: { language: 'de', languageStrict: true } }],
-	['custom fonts', { text: { fontNormal: 'my_regular', fontBold: 'my_bold' } }],
+	['custom fonts', { text: { fonts: { default: 'my_regular', water: 'my_italic', pois: { general: 'my_bold' } } } }],
 	// features
 	['terrain', { features: { terrain: true } }],
 	['hillshade', { features: { hillshade: true } }],

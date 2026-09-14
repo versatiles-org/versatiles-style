@@ -65,14 +65,28 @@ describe('deriveOptions — round trips through the package builders', () => {
 	});
 
 	it('recovers regular and bold fonts swapped, for osm() and for a satellite overlay', () => {
-		const text = { fontNormal: 'noto_sans_bold', fontBold: 'noto_sans_regular' };
-		expect(osmOptions(deriveOptions(osm({ text }))).text).toEqual(text);
-
-		// the overlay sets its normal labels in bold by default
-		const overlay = satelliteOptions(
-			deriveOptions(satellite({ osmOverlay: { text: { fontNormal: 'noto_sans_regular' } } }))
+		const swapped = {
+			default: 'noto_sans_bold',
+			streets: { refs: 'noto_sans_regular' },
+			pois: { general: 'noto_sans_regular' },
+		};
+		const derived = osmOptions(deriveOptions(osm({ text: { fonts: swapped } })));
+		expect(Object.keys(derived)).toEqual(['text']);
+		expect(osm.resolveOptions(derived).text.fonts).toStrictEqual(
+			osm.resolveOptions({ text: { fonts: swapped } }).text.fonts
 		);
-		expect(overlay).toEqual({ osmOverlay: { text: { fontNormal: 'noto_sans_regular' } } });
+
+		// the overlay sets every label in bold by default; here only the refs and POI names stay bold
+		const regular = {
+			default: 'noto_sans_regular',
+			streets: { refs: 'noto_sans_bold' },
+			pois: { general: 'noto_sans_bold' },
+		};
+		const overlay = satelliteOptions(deriveOptions(satellite({ osmOverlay: { text: { fonts: regular } } })));
+		expect(Object.keys(overlay)).toEqual(['osmOverlay']);
+		const fontsOf = (options: SatelliteOptions) =>
+			(satellite.resolveOptions(options).osmOverlay as { text: { fonts: unknown } }).text.fonts;
+		expect(fontsOf(overlay)).toStrictEqual(fontsOf({ osmOverlay: { text: { fonts: regular } } }));
 	});
 
 	it('hides a whole branch when all of its groups are hidden', () => {
@@ -210,7 +224,9 @@ describe('deriveOptions — foreign styles', () => {
 			]);
 
 		const semibold = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']));
-		expect(osmOptions(semibold).text).toEqual({ fontNormal: 'noto_sans_bold' });
+		// the style's labels are all regular-role probes, so every topic osm() sets in regular turns bold
+		const bold = osm.resolveOptions({ text: { fonts: 'noto_sans_bold' } }).text.fonts;
+		expect(osm.resolveOptions(osmOptions(semibold)).text.fonts).toStrictEqual(bold);
 		expect(semibold.report.warnings).toContainEqual(expect.stringContaining('Open Sans Semibold'));
 
 		const noto = deriveOptions(withFont(['Noto Sans Medium']));

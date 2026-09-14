@@ -161,9 +161,21 @@ type LayerGroupOptions = {
 type TextOptions = {
   language?: string; // 'local', 'user', 'de', 'en', …; default: 'local'
   languageStrict?: boolean; // omit labels with no translation; default: false
-  fontNormal?: string; // regular font name
-  fontBold?: string; // bold font name
+  fonts?: FontOptions; // glyph names per label topic; default: Noto Sans, see below
 };
+
+// A glyph name ('noto_sans_regular', 'fira_sans_semibold_italic', …) or a tree of them.
+type FontOptions =
+  | string
+  | {
+      default?: string;
+      boundaries?: string | { default?: string; countries?: string; states?: string };
+      places?: string | { default?: string; cities?: string; villages?: string; districts?: string };
+      streets?: string | { default?: string; names?: string; refs?: string; exits?: string };
+      water?: string | { default?: string; lakes?: string; rivers?: string };
+      pois?: string | { default?: string; general?: string; transit?: string };
+      addresses?: string;
+    };
 
 type LayoutOptions = {
   scale?: number | { labels?: number; icons?: number }; // size multiplier
@@ -183,6 +195,22 @@ place labels closer than their own boxes — MapLibre never overlaps them.
 when the map is tilted: lying on the ground (`'map'`, MapLibre's own behaviour) or standing up facing
 the viewer (`'viewport'`), which keeps them readable at high pitch and with terrain. Point labels face
 the viewer either way.
+
+`text.fonts` sets the glyph face of each label topic. The topics are the groups of `layers.labels`,
+plus `pois.general` (POI names) and `pois.transit` (transit stop names); `osm.fontGroups` lists the
+layers each one sets. A string sets everything below it, an object only the children it names, and
+`default` the children the same object does not name — per topic, the nearest setting wins, and a
+topic nobody sets keeps the style's own font. The defaults are Noto Sans, bold for motorway refs and
+POI names: `{ default: 'noto_sans_regular', streets: { refs: 'noto_sans_bold' }, pois: { general:
+'noto_sans_bold' } }`. The satellite overlay sets every topic in `noto_sans_bold`, and setting one
+overlay topic keeps the others bold. Names are not checked, since `osm()` cannot know which faces a
+glyph server has.
+
+```ts
+osm({ text: { fonts: 'fira_sans_regular' } }); // every label
+osm({ text: { fonts: { water: 'fira_sans_regular_italic' } } }); // lake and river names only
+osm({ text: { fonts: { default: 'fira_sans_regular', pois: { general: 'fira_sans_semibold' } } } });
+```
 
 `'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` at call time (falls back to `'local'` in Node.js). Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
 
@@ -650,7 +678,7 @@ about half a second the first time, once per target and light or dark mode.
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
 language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), whether
 street and river names stand up in a tilted map (`layout.pitchAlignment`), whether
-labels are set regular or bold (`text.fontNormal`, `text.fontBold` — by the font's name), extruded
+labels are set regular or bold (`text.fonts`, per topic — by the font's name), extruded
 buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
@@ -835,7 +863,7 @@ delivering the second.
 | `colorful({ hideLabels: true })`                                                                          | `osm({ layers: { labels: false } })`                              |
 | `colorful({ textScale: 1.2 })`                                                                            | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
 | `colorful({ iconScale: 1.2 })`                                                                            | `osm({ layout: { scale: { icons: 1.2 } } })`                      |
-| `colorful({ fonts: {…} })`                                                                                | `osm({ text: { fontNormal, fontBold } })`                         |
+| `colorful({ fonts: {…} })`                                                                                | `osm({ text: { fonts: {…} } })`                                   |
 | `colorful({ language: null })`                                                                            | `osm({ text: { language: 'local' } })`                            |
 | `colorful({ language: 'de', languageStrict: true })`                                                      | `osm({ text: { language: 'de', languageStrict: true } })`         |
 | `await colorful({ terrain: true })`                                                                       | `osm({ features: { terrain: true } })`                            |
@@ -932,7 +960,7 @@ Every other v5 export still resolves — `Color`, `RGB`/`HSL`/`HSV`, `RandomColo
 | `StyleBuilderOptions`   | `OsmOptions`                                                                           |
 | `StyleBuilderColors`    | `ColorsOptions`                                                                        |
 | `StyleBuilderColorKey`  | `keyof ColorsOptions` (or the `osm.colorKeys` array)                                   |
-| `StyleBuilderFonts`     | `TextOptions` (`fontNormal` / `fontBold`)                                              |
+| `StyleBuilderFonts`     | `FontOptions` (`text.fonts`)                                                           |
 | `StyleBuilderFunction`  | — the palette builders are gone; use `osm()`                                           |
 | `SatelliteStyleOptions` | `SatelliteOptions`                                                                     |
 | `Language`              | — it was just `string \| null`; use `text.language`, with `'local'` in place of `null` |

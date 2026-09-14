@@ -1,7 +1,7 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
-import { DEFAULT_BASE, resolveOsmUrls, resolveText } from '../options/index.js';
+import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.js';
 import { osm } from './osm.js';
 import { checkKeys } from '../options/keys.js';
@@ -117,7 +117,7 @@ function buildInspectorStyle(tj: TileJSONSpecificationVector, urls: GuessStyleOp
 			'source-layer': vl.id,
 			layout: {
 				'text-field': ['get', 'name'],
-				'text-font': [resolveText().fontNormal],
+				'text-font': [DEFAULT_FONT_REGULAR],
 				'text-size': 11,
 				'text-max-width': 6,
 			},
