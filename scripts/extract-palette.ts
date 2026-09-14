@@ -3,6 +3,7 @@
  *
  *   npm run extract-palette                       # osm-bright: comparison table + paste-ready object
  *   npm run extract-palette -- positron           # another known OMT style, by name
+ *   npm run extract-palette -- openfreemap-liberty  # OpenFreeMap's forks: openfreemap-{bright,dark,fiord,liberty,positron}
  *   npm run extract-palette -- https://…/style.json
  *   npm run extract-palette -- osm-bright --json  # just the object, for piping into a file
  *   npm run extract-palette -- osm-bright --palette gray-dark
@@ -19,10 +20,11 @@
  *     `#6a4` at `fill-opacity: 0.1`; taken alone the colour reads as solid green and compares to
  *     our `#66AA4420` at ΔE 59, when the two are in fact the same wash (ΔE 1.8). Every extracted
  *     colour therefore has its layer's opacity folded into its alpha.
- *  2. Either property may be a `{ stops }` ramp instead of a constant (buildings, glacier).
+ *  2. Either property may be a zoom ramp instead of a constant (buildings, glacier) — legacy
+ *     `{ stops }` or an `interpolate`/`step` expression.
  *  3. OMT styles use two filter dialects — legacy (`["==","class","wood"]`) and expression
- *     (`["==",["get","class"],"wood"]`) — sometimes within one style, so the class a layer draws
- *     cannot be found by string matching alone.
+ *     (`["==",["get","class"],"wood"]`, `["match",["get","class"],[…],true,false]`) — sometimes
+ *     within one style, so the class a layer draws cannot be found by string matching alone.
  *
  * ── Scope: area colours only ──────────────────────────────────────────────────
  *
@@ -50,6 +52,11 @@ const KNOWN: Record<string, string> = {
 	'dark-matter': 'https://raw.githubusercontent.com/openmaptiles/dark-matter-gl-style/master/style.json',
 	'maptiler-basic': 'https://raw.githubusercontent.com/openmaptiles/maptiler-basic-gl-style/master/style.json',
 	'maptiler-terrain': 'https://raw.githubusercontent.com/openmaptiles/maptiler-terrain-gl-style/master/style.json',
+	'openfreemap-bright':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/bright/style.json',
+	'openfreemap-dark':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/dark/style.json',
+	'openfreemap-fiord':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/fiord/style.json',
+	'openfreemap-liberty':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/liberty/style.json',
+	'openfreemap-positron':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/positron/style.json',
 };
 
 /**
@@ -74,6 +81,7 @@ const RULES: Rule[] = [
 	{ layer: 'landcover', field: 'class', values: ['wetland', 'swamp', 'marsh', 'bog'], key: 'natureWetland' },
 	{ layer: 'landcover', field: 'class', values: ['farmland', 'agriculture'], key: 'natureAgriculture' },
 	{ layer: 'landcover', field: 'subclass', values: ['glacier', 'ice_shelf'], key: 'glacier' },
+	{ layer: 'landcover', field: 'class', values: ['ice'], key: 'glacier' },
 	{ layer: 'landuse', field: 'class', values: ['farmland', 'agriculture'], key: 'natureAgriculture' },
 
 	// Parks and managed green. OMT puts public parks in their own `park` source-layer, usually
@@ -119,12 +127,18 @@ type StyleLayer = {
 	paint?: Record<string, unknown>;
 };
 
-/** Take the last stop of a `{ stops }` ramp, or the value itself. Ramps are the high-zoom end. */
+/**
+ * Take the last stop of a ramp, or the value itself. The last stop is the high-zoom end.
+ *
+ * Ramps come as legacy `{ stops }` or as `["interpolate", …]` / `["step", …]` expressions; in both
+ * expression forms the final element is the last stop's output.
+ */
 function flatten(value: unknown): unknown {
 	if (value && typeof value === 'object' && 'stops' in value) {
 		const stops = (value as { stops: [number, unknown][] }).stops;
 		return stops.at(-1)?.[1];
 	}
+	if (Array.isArray(value) && (value[0] === 'interpolate' || value[0] === 'step')) return value.at(-1);
 	return value;
 }
 
@@ -133,6 +147,8 @@ function flatten(value: unknown): unknown {
  *
  * Legacy filters name the field as a bare string (`["==", "class", "wood"]`); expression filters
  * wrap it (`["==", ["get", "class"], "wood"]`). `in` takes either a value list or a `["literal", […]]`.
+ * `match` lists its values as labels (`["match", ["get", "class"], ["a", "b"], true, false]`); only
+ * labels whose output is `true` count, so a negated match (`…, ["pier"], false, true`) adds nothing.
  */
 function filterValues(filter: unknown, into = new Map<string, Set<string>>()): Map<string, Set<string>> {
 	if (!Array.isArray(filter)) return into;
@@ -149,6 +165,19 @@ function filterValues(filter: unknown, into = new Map<string, Set<string>>()): M
 			const raw = rest.slice(1).flatMap((v) => (Array.isArray(v) && v[0] === 'literal' ? (v[1] as string[]) : [v]));
 			const set = into.get(field) ?? new Set<string>();
 			for (const v of raw) if (typeof v === 'string') set.add(v);
+			into.set(field, set);
+		}
+	}
+
+	if (op === 'match') {
+		const field = fieldOf(rest[0]);
+		if (field === 'class' || field === 'subclass') {
+			const set = into.get(field) ?? new Set<string>();
+			// rest = [input, label, output, label, output, …, fallback]
+			for (let i = 1; i + 1 < rest.length; i += 2) {
+				if (rest[i + 1] !== true) continue;
+				for (const v of [rest[i]].flat()) if (typeof v === 'string') set.add(v);
+			}
 			into.set(field, set);
 		}
 	}
