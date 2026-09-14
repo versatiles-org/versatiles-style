@@ -140,7 +140,8 @@ because it has to read the TileJSON before it can decide what to build. All thre
 
 - `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/functions/osm.html)
   - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`), or its dark theme with a `-dark` suffix (`'colorful-dark'`, …).
-  - `text`, `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/interfaces/OsmOptions.html).
+  - `text`: label language, and `fonts` — a glyph name per label topic (`{ water: 'fira_sans_regular_italic' }`).
+  - `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/interfaces/OsmOptions.html).
 - `satellite(options)` - raster/satellite style with an optional OSM overlay. [Documentation](https://versatiles.org/versatiles-style/functions/satellite.html) — see [SatelliteOptions](https://versatiles.org/versatiles-style/interfaces/SatelliteOptions.html).
 - `guessStyle(source)` - inspect a tileset, given as a TileJSON URL or object, and return the most appropriate style. [Documentation](https://versatiles.org/versatiles-style/functions/guessStyle.html)
 
@@ -156,13 +157,21 @@ import { guessSchema } from '@versatiles/style';
 const guess = guessSchema(tileJSON); // { type: 'vector', schema: 'openmaptiles', candidates: [...] }
 ```
 
-- `guessOptions(style)` - from `@versatiles/style/migrate`: read a MapLibre style built for OpenMapTiles, Protomaps or Shortbread tiles, and return the `osm()` or `satellite()` options whose style looks most like it — for moving a map onto VersaTiles. `deriveOptions(style, tileJSONs?)` is its synchronous, I/O-free core.
+- `guessOptions(style)` - from `@versatiles/style/migrate`: read a MapLibre style built for OpenMapTiles, Protomaps or Shortbread tiles, and return the `osm()` or `satellite()` options whose style looks most like it — for moving a map onto VersaTiles. `deriveOptions(style, tileJSONs?, fontNames?)` is its synchronous, I/O-free core.
 
 ```javascript
 import { osm } from '@versatiles/style';
 import { guessOptions } from '@versatiles/style/migrate';
 const guess = await guessOptions('https://example.org/my-style/style.json');
 if (guess.kind === 'osm') map.setStyle(osm(guess.options)); // guess.report says what was not carried over
+```
+
+- `fetchFontFaces(urls?)` and `fontCovers(face, language)` - for a font picker over `text.fonts`: the faces a glyph server publishes (from its `font_families.json`), with titles, and whether a face has the glyphs for a label language. `osm.fontGroups` lists the layers each font topic sets.
+
+```javascript
+import { fetchFontFaces, fontCovers } from '@versatiles/style';
+const faces = await fetchFontFaces(); // undefined when the server publishes no list
+const forGreek = faces?.filter((face) => fontCovers(face, 'el') !== false);
 ```
 
 ---

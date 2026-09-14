@@ -18,6 +18,7 @@
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
+    - [`fontCovers()`](#fontcoversface-language-boolean--undefined)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
   - [Other exports](#other-exports)
@@ -451,7 +452,8 @@ means the tiles carry the low-zoom landcover extension. Missing metadata counts 
 value equal to its default is dropped, with colours compared against the chosen palette's own
 defaults. `osm(osm.minimizeOptions(x))` builds the same style as `osm(x)` — including for a full
 `osm.resolveOptions()` object that a UI has edited — so it is the thing to store in a URL or a config
-file.
+file. `text.fonts` is written as the smallest tree that resolves to the same fonts: a resolved object
+with every topic in `fira_sans_regular` becomes `fonts: 'fira_sans_regular'`.
 
 `osm.toCode(options)` returns a runnable snippet for those options, minimised first:
 

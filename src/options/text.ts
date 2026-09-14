@@ -2,8 +2,11 @@ import { checkKeys } from './keys.js';
 import { resolveFonts, uniformFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
 
 export type TextOptions = {
+	/** `'local'` (each feature's own name), `'user'` (the browser language), or a code such as `'de'`. Default `'local'`. */
 	language?: string;
+	/** Omit labels that have no name in `language`, instead of falling back to the local name. Default `false`. */
 	languageStrict?: boolean;
+	/** A glyph name per label topic — see `FontOptions`. Default: Noto Sans, bold for motorway refs and POI names. */
 	fonts?: FontOptions;
 };
 
