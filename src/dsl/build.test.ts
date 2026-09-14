@@ -11,7 +11,6 @@ import type { MaplibreLayer } from '../types/index.js';
 // was only covered incidentally by full-style builds.
 
 const paintOf = (t: b.TaggedLayer) => (t.layer as { paint?: Record<string, unknown> }).paint ?? {};
-const layoutOf = (t: b.TaggedLayer) => (t.layer as { layout?: Record<string, unknown> }).layout ?? {};
 
 // ── builders: structure ──────────────────────────────────────────────────────────
 
@@ -109,13 +108,7 @@ describe('builders — size / zoom-stops processing', () => {
 	});
 });
 
-describe('builders — font & dispatch', () => {
-	it('font is wrapped in an array (text-font)', () => {
-		expect(layoutOf(b.symbol('s', { sourceLayer: 'pois', font: 'noto_sans_regular' }))['text-font']).toStrictEqual([
-			'noto_sans_regular',
-		]);
-	});
-
+describe('builders — dispatch', () => {
 	it('symbol `color` writes BOTH icon-color and text-color', () => {
 		expect(paintOf(b.symbol('s', { sourceLayer: 'pois', color: '#123456' }))).toStrictEqual({
 			'icon-color': 'rgb(18,52,86)',

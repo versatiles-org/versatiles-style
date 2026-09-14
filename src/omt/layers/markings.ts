@@ -39,7 +39,6 @@ function arrow(ctx: LayerContext, direction: 1 | -1): b.DataBuildOpts {
 		// SDF arrow tinted to fg (black in light / white in dark) so it adapts to dark mode.
 		color: ctx.fg,
 		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
-		font: ctx.fonts.normal,
 		group: 'markings',
 	};
 }

@@ -33,7 +33,6 @@ export function labelStyles(ctx: LayerContext): LabelStyles {
 	return {
 		street: {
 			color: c.label,
-			font: ctx.fonts.normal,
 			textHaloColor: c.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
@@ -44,7 +43,6 @@ export function labelStyles(ctx: LayerContext): LabelStyles {
 		},
 		water: {
 			color: c.labelWater,
-			font: ctx.fonts.normal,
 			textHaloColor: c.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
@@ -52,14 +50,12 @@ export function labelStyles(ctx: LayerContext): LabelStyles {
 		},
 		place: {
 			color: c.label,
-			font: ctx.fonts.normal,
 			textHaloColor: c.labelHalo,
 			textHaloWidth: 2,
 			textHaloBlur: 1,
 		},
 		boundary: {
 			color: c.label,
-			font: ctx.fonts.normal,
 			textTransform: 'uppercase',
 			textHaloColor: c.labelHalo,
 			textHaloWidth: 2,

@@ -26,7 +26,6 @@ export type StyleProps = {
 	opacity?: number | Record<number, number>;
 	image?: unknown;
 	text?: unknown;
-	font?: string;
 	minzoom?: number;
 	maxzoom?: number;
 	fillOutlineColor?: ColorValue;
@@ -78,13 +77,14 @@ export type BuildOpts = StyleProps & StructuralProps;
 
 // ── MapLibre property metadata ────────────────────────────────────────────────
 //
-// Maps each StyleProps key (and the type-dependent shorthands color/size/opacity/image/text/font)
+// Maps each StyleProps key (and the type-dependent shorthands color/size/opacity/image/text)
 // to its MapLibre property: which `parent` (paint/layout/layer) it lives under and how its value
-// is processed (`color` → parse, `fonts` → wrap in array, `plain` → passthrough / zoom-stops).
+// is processed (`color` → parse, `plain` → passthrough / zoom-stops). `text-font` is not among them:
+// fonts follow a layer's group, and `buildLayers` sets them (see `fonts.ts`).
 // Scoped to exactly the keys the builders support.
 
 type PropParent = 'layer' | 'layout' | 'paint';
-type PropValueType = 'color' | 'fonts' | 'plain';
+type PropValueType = 'color' | 'plain';
 type PropDef = { parent: PropParent; types: string; key: string; short?: string; valueType: PropValueType };
 
 const PROPERTY_DEFS: PropDef[] = [
@@ -103,7 +103,6 @@ const PROPERTY_DEFS: PropDef[] = [
 	{ parent: 'layout', types: 'symbol', key: 'symbol-placement', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-anchor', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-field', short: 'text', valueType: 'plain' },
-	{ parent: 'layout', types: 'symbol', key: 'text-font', short: 'font', valueType: 'fonts' },
 	{ parent: 'layout', types: 'symbol', key: 'text-offset', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-optional', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-padding', valueType: 'plain' },
@@ -168,11 +167,6 @@ function processColor(value: RuleValue): string {
 	throw new Error(`build.processColor: expected a color string or Color, got ${typeof value}`);
 }
 
-function processFont(value: RuleValue): string[] {
-	if (typeof value === 'string') return [value];
-	throw new Error(`build.processFont: expected a font name string, got ${typeof value}`);
-}
-
 // Zoom-stops object `{ z: v }` → ['interpolate', <interp>, ['zoom'], z1, v1, …] (zooms sorted).
 // `base` selects the interpolation: linear by default, ['exponential', base] when given.
 function processZoomStops(
@@ -234,9 +228,6 @@ function applyProps(layer: MaplibreLayer, props: StyleProps): void {
 			switch (def.valueType) {
 				case 'color':
 					value = processExpression(raw as RuleValue, processColor);
-					break;
-				case 'fonts':
-					value = processExpression(raw as RuleValue, processFont);
 					break;
 				default:
 					value = processExpression(raw as RuleValue);

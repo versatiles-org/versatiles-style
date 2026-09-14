@@ -24,7 +24,6 @@ export function* markings(ctx: LayerContext): Generator<b.TaggedLayer> {
 		image: 'base:marking-oneway',
 		color: ctx.fg,
 		opacity: { 16: 0, 17: 0.4, 20: 0.4 },
-		font: ctx.fonts.normal,
 		group: 'markings',
 	});
 }

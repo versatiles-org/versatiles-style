@@ -14,6 +14,7 @@
  */
 export * from './build.js';
 export { buildLayers, mergeIdenticalLayers } from './assemble.js';
+export { FONT_TOPICS, fontTopic, type FontTopic } from './fonts.js';
 export type { DataFloors, MergeTable } from './assemble.js';
 export { buildLayerContext } from './context.js';
 export type { LayerContext, ColorSet, ContextSeam } from './context.js';

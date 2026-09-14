@@ -149,7 +149,6 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textOptional: true,
 		symbolPlacement: 'point',
 		iconOptional: true,
-		font: ctx.fonts.bold,
 		color: iconColor,
 		textHaloColor: ctx.bg,
 		textHaloWidth: 0.5,

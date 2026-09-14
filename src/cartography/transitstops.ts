@@ -31,7 +31,6 @@ export function* transitStops(ctx: LayerContext, stops: readonly StopDef[]): Gen
 		symbolPlacement: 'point',
 		iconOpacity: 0.7,
 		iconKeepUpright: true,
-		font: ctx.fonts.normal,
 		size: 10,
 		color: c.labelSymbol,
 		iconAnchor: 'bottom',
