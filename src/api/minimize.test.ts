@@ -49,9 +49,25 @@ describe('osm.minimizeOptions', () => {
 		});
 	});
 
+	it('keeps tint and blend exactly as strong as they resolve', () => {
+		// an amount left out is 0.5 when the object is there, and 0 when it is not
+		expect(osm.minimizeOptions({ recolor: { tint: { color: '#00ff00', amount: 0 } } })).toEqual({});
+		expect(osm.minimizeOptions({ recolor: { blend: { color: '#00ff00', amount: 0 }, gamma: 2 } })).toEqual({
+			recolor: { gamma: 2 },
+		});
+		expect(osm.minimizeOptions({ recolor: { tint: { color: '#00ff00' } } })).toEqual({
+			recolor: { tint: { color: '#00ff00', amount: 0.5 } },
+		});
+		expect(osm.minimizeOptions({ recolor: { blend: {} } })).toEqual({ recolor: { blend: { amount: 0.5 } } });
+		const resolved = osm.resolveOptions({ recolor: { tint: { color: '#00ff00', amount: 0.3 } } });
+		expect(osm.minimizeOptions(resolved)).toEqual({ recolor: { tint: { color: '#00ff00', amount: 0.3 } } });
+	});
+
 	const CASES: [string, OsmOptions][] = [
 		['defaults', {}],
 		['dark theme', { theme: 'natural-dark' }],
+		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
+		['tint and blend without amount', { recolor: { tint: { color: '#00ff00' }, blend: {} } }],
 		[
 			'colours + recolor',
 			{ theme: 'muted', colors: { land: '#ff00ff' }, recolor: { gamma: 1.5, tint: { amount: 0.3, color: '#00ff00' } } },
@@ -145,6 +161,8 @@ describe('satellite.minimizeOptions', () => {
 			'overlay configured',
 			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
+		['overlay tint amount 0', { osmOverlay: { recolor: { tint: { color: '#00ff00', amount: 0 } } } }],
+		['overlay blend without amount', { osmOverlay: { recolor: { blend: { color: '#00ff00' } } } }],
 		['overlay fonts', { osmOverlay: { text: { fonts: { default: 'a', places: { cities: 'b' } } } } }],
 		['overlay layers', { osmOverlay: { layers: { land: false, water: 0.3, sites: false, roads: { streets: 0.5 } } } }],
 	];

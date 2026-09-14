@@ -291,12 +291,12 @@ type RecolorOptions = {
   invertBrightness?: boolean; // flip lightness of all colors
   rotateHue?: number; // hue rotation in degrees; 0 = no change
   saturate?: number; // -1 = grayscale, 0 = no change, +1 = double
-  tint?: { color: string; amount?: number }; // amount 0–1; default: 1
+  tint?: { color?: string; amount?: number }; // amount 0–1; default: 0.5; color default: #ff0000
   // mode-dependent (absolute operations; effect differs between light and dark palettes):
   gamma?: number; // > 0; 1 = no change, < 1 = brighten midtones, > 1 = darken
   contrast?: number; // > 0; 1 = no change, < 1 = flatten, > 1 = increase
   brightness?: number; // 0 = no change; positive = brighter, negative = darker
-  blend?: { color: string; amount?: number }; // amount 0–1; default: 1
+  blend?: { color?: string; amount?: number }; // amount 0–1; default: 0.5; color default: #ff0000
 };
 ```
 
