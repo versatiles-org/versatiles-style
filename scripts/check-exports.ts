@@ -112,6 +112,30 @@ function isReferenceType(type: ts.Type): boolean {
 	);
 }
 
+/**
+ * Record the local named types a declaration's type annotation spells out.
+ *
+ * The type graph alone misses an alias of an instantiated generic: for `type ResolvedColors =
+ * Required<ColorsOptions>`, a property typed `ResolvedColors` has the alias symbol `Required` (external,
+ * ignored) with the argument `ColorsOptions` (exported), so `ResolvedColors` itself never appears. The
+ * annotation as written still names it. Nested type literals are left out: their members are declarations
+ * of their own, which the type walk reaches.
+ */
+function recordWrittenNames(decl: ts.Node, via: string): void {
+	const annotation = (decl as { type?: ts.TypeNode }).type;
+	if (!annotation) return;
+	const visit = (node: ts.Node): void => {
+		if (ts.isTypeLiteralNode(node)) return;
+		if (ts.isTypeReferenceNode(node)) {
+			const found = checker.getSymbolAtLocation(node.typeName);
+			const sym = found && resolveAlias(found);
+			if (sym && sym.flags & NAMED_TYPE_FLAGS && isLocal(sym)) record(sym, via);
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(annotation);
+}
+
 function walkType(type: ts.Type, isRoot: boolean, via: string, seen: Set<ts.Type>): void {
 	// `seen` is scoped to a single root expansion and only guards against
 	// structural cycles. Cross-symbol dedup happens via `visited`, so a named
@@ -144,9 +168,11 @@ function walkType(type: ts.Type, isRoot: boolean, via: string, seen: Set<ts.Type
 
 	for (const prop of type.getProperties()) {
 		const decl = prop.valueDeclaration ?? prop.declarations?.[0] ?? entry;
+		prop.declarations?.forEach((d) => recordWrittenNames(d, via));
 		walkType(checker.getTypeOfSymbolAtLocation(prop, decl), false, via, seen);
 	}
 	for (const sig of [...type.getCallSignatures(), ...type.getConstructSignatures()]) {
+		if (sig.declaration) recordWrittenNames(sig.declaration, via);
 		for (const p of sig.getParameters()) {
 			const decl = p.valueDeclaration ?? p.declarations?.[0] ?? entry;
 			walkType(checker.getTypeOfSymbolAtLocation(p, decl), false, via, seen);

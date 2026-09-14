@@ -127,6 +127,7 @@ export type {
 	ThemeOptions,
 
 	// ── Resolved option types ──
+	ResolvedColors,
 	ResolvedFonts,
 	ResolvedHillshade,
 	ResolvedLayerGroups,
