@@ -177,5 +177,5 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 /** The smallest `OmtOptions` that builds the same style as `options`. */
 export function minimizeOmtOptions(options: OmtOptions = {}): OmtOptions {
 	resolveOmt(options); // rejects unknown keys; the resolved result is not needed
-	return minimizeThemed(options, (theme) => resolveOmt({ theme }), 'colorful');
+	return minimizeThemed(options, (theme) => resolveOmt({ theme }), 'colorful', { resolveUrls: resolveOmtUrls });
 }

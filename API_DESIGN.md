@@ -452,8 +452,17 @@ means the tiles carry the low-zoom landcover extension. Missing metadata counts 
 value equal to its default is dropped, with colours compared against the chosen palette's own
 defaults. `osm(osm.minimizeOptions(x))` builds the same style as `osm(x)` — including for a full
 `osm.resolveOptions()` object that a UI has edited — so it is the thing to store in a URL or a config
-file. `text.fonts` is written as the smallest tree that resolves to the same fonts: a resolved object
-with every topic in `fira_sans_regular` becomes `fonts: 'fira_sans_regular'`.
+file. A resolved object comes back as small as the options that made it:
+
+- `text.fonts` is written as the smallest tree that resolves to the same fonts: every topic in
+  `fira_sans_regular` becomes `fonts: 'fira_sans_regular'`.
+- `layers` collapses every group whose sub-groups all hold the same value: thirteen `false` labels
+  become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
+  `transit.stops` itself, so the alias has no effect there.
+- `features.terrain`, `features.hillshade` and `sun` become `true` when they equal what `true` resolves to.
+- `urls` goes back to `urls.base` when the URLs are its default paths, and is left out on the default base.
+- Colours compare by value, so `#bfd9f2` from an `<input type="color">` equals the palette's `#BFD9F2`.
+- `recolor.tint` and `recolor.blend` are removed at an amount of 0, and otherwise always carry their amount.
 
 `osm.toCode(options)` returns a runnable snippet for those options, minimised first:
 

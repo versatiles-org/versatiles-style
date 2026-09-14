@@ -283,7 +283,8 @@ describe('deriveOptions — foreign styles', () => {
 			[{ id: 'hills', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.3 } }]
 		);
 		const options = osmOptions(deriveOptions(style));
-		expect(options.sun).toEqual({ direction: 90, altitude: 60, anchor: 'map', color: '#ffeedd', intensity: 0.4 });
+		// the polar angle 30° is an altitude of 60°, which is what `sun: true` resolves to, so it is not written
+		expect(options.sun).toEqual({ direction: 90, anchor: 'map', color: '#ffeedd', intensity: 0.4 });
 		expect(options.sky).toEqual({ skyColor: '#ff0000', atmosphereBlend: 0.5 });
 		expect(options.features).toMatchObject({ terrain: true, hillshade: { exaggeration: 0.3 } });
 	});

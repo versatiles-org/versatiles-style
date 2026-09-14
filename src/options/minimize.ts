@@ -4,6 +4,12 @@ import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
 import { minimizeFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
 import { resolveRecolor, type RecolorOptions } from './recolor.js';
+import { resolveLayerGroups, type LayerGroupOptions } from './layer-groups.js';
+import { resolveTerrain } from './features-terrain.js';
+import { resolveHillshade } from './features-hillshade.js';
+import { resolveSun } from './sun.js';
+import { DEFAULT_BASE, resolveOsmUrls, resolveSatelliteUrls } from './urls.js';
+import { Color } from '../color/index.js';
 import { getOverlayLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 type Plain = Record<string, unknown>;
@@ -15,26 +21,69 @@ function isPlain(value: unknown): value is Plain {
 	return proto === Object.prototype || proto === null;
 }
 
+const COLOR = /^\s*(#|rgba?\()/i;
+
+/**
+ * Whether two option values build the same thing. Colours compare by value: `<input type="color">`
+ * writes `#bfd9f2` where a palette says `#BFD9F2`, and both parse to the same colour.
+ */
+function sameValue(a: unknown, b: unknown): boolean {
+	if (typeof a === 'string' && typeof b === 'string' && a !== b && COLOR.test(a) && COLOR.test(b)) {
+		try {
+			return Color.parse(a).asHex() === Color.parse(b).asHex();
+		} catch {
+			return false;
+		}
+	}
+	return JSON.stringify(a) === JSON.stringify(b);
+}
+
+/**
+ * What each `boolean | object` option that is off by default resolves to when set to `true`. A value
+ * equal to it is written as `true`, and only what differs from it is kept otherwise.
+ */
+const ENABLED = {
+	features: { terrain: resolveTerrain(true), hillshade: resolveHillshade(true) },
+	sun: resolveSun(true),
+};
+
 /**
  * `value` minus everything equal to `defaults`, recursively; `undefined` when nothing is left.
  *
  * `true` counts as the default of a `boolean | object` option whose default is enabled, because
- * resolving turns that `true` into the default object.
+ * resolving turns that `true` into the default object. For one that is off by default, `enabled` is
+ * what `true` resolves to (see `ENABLED`).
  */
-function withoutDefaults(value: unknown, defaults: unknown): unknown {
+function withoutDefaults(value: unknown, defaults: unknown, enabled?: unknown): unknown {
 	if (value === undefined) return undefined;
 	if (value === true && isPlain(defaults)) return undefined;
 	if (isPlain(value)) {
+		if (!isPlain(defaults) && isPlain(enabled)) return withoutDefaults(value, enabled) ?? true;
 		const base = isPlain(defaults) ? defaults : {};
+		const on = isPlain(enabled) ? enabled : {};
 		const out: Plain = {};
 		for (const [key, entry] of Object.entries(value)) {
-			const rest = withoutDefaults(entry, base[key]);
+			const rest = withoutDefaults(entry, base[key], on[key]);
 			if (rest !== undefined) out[key] = rest;
 		}
 		return Object.keys(out).length > 0 ? out : undefined;
 	}
-	return JSON.stringify(value) === JSON.stringify(defaults) ? undefined : value;
+	return sameValue(value, defaults) ? undefined : value;
 }
+
+/** `out`'s keys in the order `source` has them, so a minimised object reads like its input. */
+function inOrderOf<T extends object>(source: object, out: Plain): T {
+	const keys = [...Object.keys(source), ...Object.keys(out)];
+	return Object.fromEntries([...new Set(keys)].filter((key) => key in out).map((key) => [key, out[key]])) as T;
+}
+
+/** The schema-specific parts `minimizeThemed` needs beyond the defaults. */
+export type MinimizeParts = {
+	/** The schema's `urls` resolver, so that resolved, absolute URLs collapse back to `urls.base`. */
+	resolveUrls?(urls: Plain): object;
+	/** The layer groups that draw anything, when that is not all of them (the satellite overlay). */
+	layerGroups?: LayerGroupMap;
+};
 
 /**
  * Minimise an options object that carries a `theme`.
@@ -45,36 +94,45 @@ function withoutDefaults(value: unknown, defaults: unknown): unknown {
  *
  * `text.fonts` is minimised on its own (`minimizeFonts`): a string or `default` in the input stands for
  * many resolved topics, so comparing it key by key against the resolved tree would keep all of it.
- * `recolor.tint` and `recolor.blend` are too (`minimizeMix`).
+ * `recolor.tint` and `recolor.blend` (`minimizeMix`), `layers` (`minimizeLayers`) and `urls`
+ * (`minimizeUrls`) are too.
  */
 export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	options: T,
 	defaultsFor: (theme: ResolvedTheme) => unknown,
-	defaultPalette: Palette
+	defaultPalette: Palette,
+	parts: MinimizeParts = {}
 ): T {
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
 	const defaults = defaultsFor(theme) as { text?: { fonts?: ResolvedFonts } };
+	const input = rest as { text?: { fonts?: FontOptions }; recolor?: RecolorOptions; layers?: unknown; urls?: unknown };
 
-	const text = (rest as { text?: { fonts?: FontOptions } }).text;
+	const text = input.text;
 	const fontDefaults = defaults.text?.fonts;
 	const minimizeTheFonts = text?.fonts !== undefined && fontDefaults !== undefined;
 	const fonts = minimizeTheFonts ? minimizeFonts(text.fonts, fontDefaults) : undefined;
 
-	const recolor = (rest as { recolor?: RecolorOptions }).recolor;
+	const recolor = input.recolor;
 	const tint = minimizeMix(recolor, 'tint');
 	const blend = minimizeMix(recolor, 'blend');
+	const layers = minimizeLayers(input.layers, parts.layerGroups);
+	const urls = parts.resolveUrls ? minimizeUrls(input.urls, parts.resolveUrls) : undefined;
 
 	const remaining = {
 		...rest,
 		...(minimizeTheFonts && { text: { ...text, fonts: undefined } }),
 		...(recolor !== undefined && { recolor: { ...recolor, tint: undefined, blend: undefined } }),
+		layers: undefined,
+		...(parts.resolveUrls && { urls: undefined }),
 	};
-	const out = (withoutDefaults(remaining, defaults) ?? {}) as T & { text?: Plain; recolor?: Plain };
+	const out = (withoutDefaults(remaining, defaults, ENABLED) ?? {}) as Plain & { text?: Plain; recolor?: Plain };
 	if (fonts !== undefined) out.text = { ...out.text, fonts };
 	if (tint !== undefined) out.recolor = { ...out.recolor, tint };
 	if (blend !== undefined) out.recolor = { ...out.recolor, blend };
-	return (theme === defaultPalette ? out : { theme, ...out }) as T;
+	if (layers !== undefined) out.layers = layers;
+	if (urls !== undefined) out.urls = urls;
+	return inOrderOf<T>(options, theme === defaultPalette ? out : { theme, ...out });
 }
 
 /**
@@ -90,46 +148,125 @@ function minimizeMix(recolor: RecolorOptions | undefined, key: 'tint' | 'blend')
 	if (recolor?.[key] === undefined) return undefined;
 	const { color, amount } = resolveRecolor({ [key]: recolor[key] })[key];
 	if (!(amount > 0)) return undefined;
-	return color === resolveRecolor()[key].color ? { amount } : { color, amount };
+	return sameValue(color, resolveRecolor()[key].color) ? { amount } : { color, amount };
+}
+
+type GroupScalar = boolean | number;
+type GroupTree = { [key: string]: GroupScalar | GroupTree };
+
+/**
+ * `layers` in its smallest spelling: resolved, then every branch whose groups all hold the same value
+ * collapsed to that value, then every group left visible dropped. `{ labels: false }` resolves to
+ * thirteen `false` leaves and comes back as `{ labels: false }`.
+ *
+ * `icons` is left out. It is only a fallback for `pois`, `markings` and `transit.stops`, which the
+ * resolved tree always sets, so its own resolved value changes nothing — and writing it would hide
+ * those groups wherever the output leaves them unset.
+ *
+ * `drawn` limits this to the groups that draw anything: a group the satellite overlay drops neither
+ * blocks a collapse nor is written.
+ */
+function minimizeLayers(layers: unknown, drawn?: LayerGroupMap): unknown {
+	if (layers === undefined) return undefined;
+	const { icons: _alias, ...resolved } = resolveLayerGroups(layers as LayerGroupOptions) as unknown as GroupTree;
+	const collapsed = collapseGroups(resolved, drawn);
+	if (typeof collapsed !== 'object') return collapsed === true ? undefined : collapsed;
+	return withoutVisible(collapsed);
+}
+
+function collapseGroups(node: GroupTree, drawn?: LayerGroupMap): GroupScalar | GroupTree {
+	const out: GroupTree = {};
+	for (const [key, child] of Object.entries(node)) {
+		const groups = drawn?.[key];
+		if (drawn !== undefined && groups === undefined) continue;
+		out[key] = typeof child === 'object' ? collapseGroups(child, Array.isArray(groups) ? undefined : groups) : child;
+	}
+	const [first, ...others] = Object.values(out);
+	const uniform = first !== undefined && typeof first !== 'object' && others.every((value) => value === first);
+	return uniform ? first : out;
+}
+
+/** A group left out of an object is visible, since no scalar above it cascades down. */
+function withoutVisible(node: GroupTree): GroupTree | undefined {
+	const out: GroupTree = {};
+	for (const [key, child] of Object.entries(node)) {
+		const rest = typeof child === 'object' ? withoutVisible(child) : child === true ? undefined : child;
+		if (rest !== undefined) out[key] = rest;
+	}
+	return Object.keys(out).length > 0 ? out : undefined;
+}
+
+/** A base no real URL has, to read each URL's default path off. */
+const PROBE_BASE = 'https://probe.invalid';
+
+/**
+ * `urls` as the fewest keys that resolve to the same URLs.
+ *
+ * Resolved URLs are absolute, so comparing them against the defaults keeps every one that is not on
+ * the default base. Instead, each URL that is its default path under some base proposes that base,
+ * and the base that leaves the fewest keys wins — written as `urls.base`, or left out when it is the
+ * default base. A URL that still differs is kept in the caller's spelling when that resolves the same.
+ */
+function minimizeUrls(urls: unknown, resolveUrls: (urls: Plain) => object): Plain | undefined {
+	if (!isPlain(urls)) return undefined;
+	const resolveWith = (options: Plain): Plain | undefined => {
+		try {
+			return resolveUrls(options) as Plain;
+		} catch {
+			return undefined;
+		}
+	};
+	const resolved = resolveUrls(urls) as Plain;
+	const probe = resolveWith({ base: PROBE_BASE }) ?? {};
+
+	const bases = new Set([DEFAULT_BASE, ...(typeof urls.base === 'string' ? [urls.base] : [])]);
+	for (const [key, url] of Object.entries(resolved)) {
+		const fallback = probe[key];
+		if (typeof url !== 'string' || typeof fallback !== 'string' || !fallback.startsWith(PROBE_BASE)) continue;
+		const path = fallback.slice(PROBE_BASE.length);
+		if (url.endsWith(path) && url.length > path.length) bases.add(url.slice(0, -path.length));
+	}
+
+	let best: Plain | undefined;
+	for (const base of bases) {
+		const defaults = resolveWith({ base });
+		if (defaults === undefined) continue;
+		const out: Plain = base === DEFAULT_BASE ? {} : { base };
+		for (const [key, url] of Object.entries(resolved)) {
+			if (sameValue(url, defaults[key])) continue;
+			const own = urls[key];
+			out[key] = own !== undefined && sameValue(resolveWith({ base, [key]: own })?.[key], url) ? own : url;
+		}
+		if (best === undefined || Object.keys(out).length < Object.keys(best).length) best = out;
+	}
+	return best !== undefined && Object.keys(best).length > 0 ? best : undefined;
 }
 
 /** The smallest `OsmOptions` that builds the same style as `options`. */
 export function minimizeOsmOptions(options: OsmOptions = {}): OsmOptions {
 	resolveOsm(options); // rejects unknown keys; the resolved result is not needed
-	return minimizeThemed(options, (theme) => resolveOsm({ theme }), 'colorful');
-}
-
-/**
- * `layers` without the groups that `groups` does not list. A scalar on a group that is listed stays,
- * since it cascades to children that are.
- */
-function withinGroups(layers: Plain, groups: LayerGroupMap): Plain {
-	const out: Plain = {};
-	for (const [key, value] of Object.entries(layers)) {
-		const node = groups[key];
-		if (node === undefined) continue;
-		out[key] = isPlain(value) && !Array.isArray(node) ? withinGroups(value, node) : value;
-	}
-	return out;
+	return minimizeThemed(options, (theme) => resolveOsm({ theme }), 'colorful', { resolveUrls: resolveOsmUrls });
 }
 
 /** The smallest `SatelliteOptions` that builds the same style as `options`. */
 export function minimizeSatelliteOptions(options: SatelliteOptions = {}): SatelliteOptions {
 	resolveSatellite(options); // rejects unknown keys; the resolved result is not needed
-	const { osmOverlay, ...rest } = options;
-	const out = (withoutDefaults(rest, resolveSatellite()) ?? {}) as SatelliteOptions;
-	if (osmOverlay === false) return { ...out, osmOverlay: false };
-	if (osmOverlay === undefined || osmOverlay === true) return out;
-	// Groups the overlay draws no layer of (land, water, …) change nothing, so they go first.
-	const layers = osmOverlay.layers;
-	const drawn = isPlain(layers) ? withinGroups(layers, getOverlayLayerGroupMap()) : layers;
-	// The overlay defaults to `gray` and its colours follow its own theme. Compare against what
-	// `satellite()` itself resolves for that theme, not plain overlay defaults: it layers the imagery
-	// defaults (white labels, dark halo, bold font) on top, and those must minimise away too.
-	const overlay = minimizeThemed<OsmOverlayOptions>(
-		{ ...osmOverlay, layers: drawn as OsmOverlayOptions['layers'] },
-		(theme) => resolveSatellite({ osmOverlay: { theme } }).osmOverlay,
-		'gray'
-	);
-	return Object.keys(overlay).length > 0 ? { ...out, osmOverlay: overlay } : out;
+	const { osmOverlay, urls: rawUrls, ...rest } = options;
+	const out = (withoutDefaults(rest, resolveSatellite(), ENABLED) ?? {}) as Plain;
+	const urls = minimizeUrls(rawUrls, resolveSatelliteUrls);
+	if (urls !== undefined) out.urls = urls;
+	if (osmOverlay === false) out.osmOverlay = false;
+	if (isPlain(osmOverlay)) {
+		// The overlay defaults to `gray` and its colours follow its own theme. Compare against what
+		// `satellite()` itself resolves for that theme, not plain overlay defaults: it layers the imagery
+		// defaults (white labels, dark halo, bold font) on top, and those must minimise away too.
+		const overlay = minimizeThemed<OsmOverlayOptions>(
+			osmOverlay,
+			(theme) => resolveSatellite({ osmOverlay: { theme } }).osmOverlay,
+			'gray',
+			{ layerGroups: getOverlayLayerGroupMap() }
+		);
+		if (Object.keys(overlay).length > 0) out.osmOverlay = overlay;
+	}
+	return inOrderOf<SatelliteOptions>(options, out);
 }

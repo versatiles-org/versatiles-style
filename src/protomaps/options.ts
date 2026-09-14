@@ -202,5 +202,7 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 /** The smallest `ProtomapsOptions` that builds the same style as `options`. */
 export function minimizeProtomapsOptions(options: ProtomapsOptions = {}): ProtomapsOptions {
 	resolveProtomaps(options); // rejects unknown keys; the resolved result is not needed
-	return minimizeThemed(options, (theme) => resolveProtomaps({ theme }), 'colorful');
+	return minimizeThemed(options, (theme) => resolveProtomaps({ theme }), 'colorful', {
+		resolveUrls: resolveProtomapsUrls,
+	});
 }
