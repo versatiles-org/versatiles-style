@@ -17,6 +17,7 @@
   - [`guessOptions()` and `deriveOptions()`](#guessoptionsstyle-options-promiseoptionsguess)
   - [`isDarkMode()`](#isdarkmode-boolean)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
+  - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
   - [Other exports](#other-exports)
@@ -758,6 +759,38 @@ fetchTileJSON(
 Only needed when TileJSON metadata must be available at style-build time: to inline a source via `urls`, or to inspect a tileset with `osm.languages(tileJSON)`. For `osm` and `satellite`, passing a URL string in `urls` is simpler — the call stays synchronous and MapLibre resolves the document at map load.
 
 To resolve an already-built style rather than a single document, use [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification).
+
+---
+
+## `fetchFontFaces(urls?, options?): Promise<FontFaceInfo[] | undefined>`
+
+```ts
+fetchFontFaces(
+  urls?: { base?: string; glyphsPattern?: string },  // resolved as in osm()
+  options?: { fetch?: typeof globalThis.fetch }
+)
+
+type FontFaceInfo = {
+  id: string          // 'fira_sans_condensed_light_italic' — a value for text.fonts
+  family: string      // 'Fira Sans'
+  title: string       // 'Fira Sans Condensed Light Italic'
+  weight: number      // 300
+  italic: boolean
+  width: string       // 'normal' | 'condensed' | 'extra-condensed' | …
+  codeblocks: string  // the Unicode blocks the face covers, as the server publishes them
+}
+```
+
+The faces a glyph server publishes, for a font picker over `text.fonts`. It reads
+`font_families.json` from the directory that holds the `{fontstack}` folders of `glyphsPattern`
+(default `/assets/glyphs/{fontstack}/{range}.pbf` on `base`), which VersaTiles glyph servers publish,
+and returns the faces sorted by family, width, weight and italic.
+
+It resolves to `undefined` when there is no list to read — a pattern without a `{fontstack}` path
+segment, a server that does not publish the file, or a document that is not a face list — so a UI can
+fall back to a free text field. It rejects only when the request itself fails. Unlike the
+`KnownFontName` type, which is a snapshot of the VersaTiles server, this asks the server a style
+actually uses.
 
 ---
 

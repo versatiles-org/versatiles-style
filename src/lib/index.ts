@@ -15,4 +15,5 @@ export { STYLE_LICENSE, STYLE_METADATA, styleName } from './styleMeta.js';
 export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
 export { fetchTileJSON } from './fetchTileJSON.js';
+export { fetchFontFaces, type FontFaceInfo } from './fetchFontFaces.js';
 export { inlineSources } from './inlineSources.js';
