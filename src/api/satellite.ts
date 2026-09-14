@@ -13,6 +13,7 @@ import {
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
 import { minimizeSatelliteOptions } from '../options/minimize.js';
+import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { styleCode } from './code.js';
 
 // Stable slot IDs for satellite styles
@@ -162,6 +163,15 @@ export const satellite = Object.assign(satelliteFn, {
 	/** Fully resolved defaults. */
 	get defaults() {
 		return resolveSatellite();
+	},
+
+	/**
+	 * Maps each group of `osmOverlay.layers` to the layer IDs it controls in the overlay: `osm.layerGroups`
+	 * with only the layers the overlay draws. Groups it drops entirely (land, water, sites, airport,
+	 * buildings) are absent, and tunnels are missing from `roads` and `transit.rail`.
+	 */
+	get layerGroups() {
+		return getOverlayLayerGroupMap();
 	},
 
 	/**

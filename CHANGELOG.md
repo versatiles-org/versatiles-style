@@ -121,6 +121,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   extension that `features.landcover` needs.
 - `osm.minimizeOptions(options)` / `satellite.minimizeOptions(options)` return the smallest options
   object that builds the same style — for storing a style in a URL or config file.
+- `satellite.layerGroups` maps each group of `osmOverlay.layers` to the layers it controls in the
+  overlay: `osm.layerGroups` without land, water, sites, airport and buildings, which the overlay does not
+  draw, and without tunnels. `satellite.minimizeOptions()` drops those groups from `osmOverlay.layers`.
 - `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
   wrapped in `inlineSources`.
 - `text.fonts` sets the glyph face per label topic — `boundaries`, `places`, `streets`, `water`, `pois`

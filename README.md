@@ -309,22 +309,22 @@ subgraph 1J["color"]
 1S["recolor.ts"]
 end
 subgraph 24["shortbread"]
-25["index.ts"]
-26["context.ts"]
-29["groups.ts"]
-subgraph 2A["layers"]
-2B["* (13 files)"]
+25["layer-groups-map.ts"]
+29["context.ts"]
+subgraph 2B["layers"]
+2C["* (13 files)"]
 end
 2G["schema.ts"]
-2N["layer-groups-map.ts"]
+2N["index.ts"]
+2O["groups.ts"]
 end
-subgraph 27["dsl"]
-28["context.ts"]
-2C["assemble.ts"]
-2D["build.ts"]
-2E["fonts.ts"]
+subgraph 26["dsl"]
+27["group-maps.ts"]
+28["fonts.ts"]
+2A["context.ts"]
+2D["assemble.ts"]
+2E["build.ts"]
 2F["index.ts"]
-2O["group-maps.ts"]
 end
 subgraph 2H["cartography"]
 2I["boundaries.ts"]
@@ -485,9 +485,9 @@ Z-->A
 1I-->22
 1I-->T
 1I-->23
-1I-->25
 1I-->2N
-1I-->2B
+1I-->25
+1I-->2C
 1I-->2G
 1I-->E
 1I-->2
@@ -525,49 +525,52 @@ Z-->A
 1U-->7
 1V-->1U
 21-->1U
+23-->25
 23-->Z
 23-->19
 23-->1A
 23-->18
-25-->26
+25-->27
+25-->1C
+25-->T
 25-->29
-25-->2B
-26-->28
-28-->1K
-28-->T
-28-->E
-29-->2B
-2B-->2C
-2B-->2F
-2B-->2G
-2B-->2I
-2B-->2J
-2B-->2K
-2B-->2L
-2B-->2M
+25-->2C
+27-->28
+28-->Z
+29-->2A
+2A-->1K
+2A-->T
+2A-->E
 2C-->2D
-2C-->2E
-2D-->1K
-2D-->1D
-2E-->Z
-2F-->2C
+2C-->2F
+2C-->2G
+2C-->2I
+2C-->2J
+2C-->2K
+2C-->2L
+2C-->2M
+2D-->2E
+2D-->28
+2E-->1K
+2E-->1D
 2F-->2D
-2F-->28
 2F-->2E
+2F-->2A
+2F-->28
 2I-->2F
 2J-->2F
 2K-->2F
 2L-->2F
 2M-->2F
+2N-->29
 2N-->2O
-2N-->T
-2N-->26
-2N-->2B
-2O-->2E
+2N-->2C
+2O-->2C
 2P-->1T
 2P-->7
 2P-->T
 2P-->23
+2P-->2N
 2P-->25
 2P-->2
 2P-->1I
@@ -591,9 +594,9 @@ Z-->A
 30-->3
 30-->1I
 30-->2P
-30-->2E
+30-->28
 30-->T
-30-->2N
+30-->25
 30-->2G
 30-->E
 30-->2W
@@ -617,13 +620,13 @@ Z-->A
 34-->39
 34-->3M
 34-->36
-35-->28
+35-->2A
 35-->36
-37-->2O
+37-->27
 37-->35
 37-->39
 37-->3M
-39-->2C
+39-->2D
 39-->2F
 39-->36
 39-->3A
@@ -669,13 +672,13 @@ Z-->A
 3P-->3U
 3P-->47
 3P-->3R
-3Q-->28
+3Q-->2A
 3Q-->3R
-3S-->2O
+3S-->27
 3S-->3Q
 3S-->3U
 3S-->47
-3U-->2C
+3U-->2D
 3U-->2F
 3U-->3R
 3U-->3V
@@ -710,7 +713,7 @@ Z-->A
 48-->3P
 48-->3R
 
-class 0,1,4,9,D,1B,1E,1J,24,2A,27,2H,2V,33,38,3O,3T subgraphs;
+class 0,1,4,9,D,1B,1E,1J,24,2B,26,2H,2V,33,38,3O,3T subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

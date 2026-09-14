@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { getLayerGroupMap, type LayerGroupMap } from './layer-groups-map.js';
+import { getLayerGroupMap, getOverlayLayerGroupMap, type LayerGroupMap } from './layer-groups-map.js';
 import { osm } from '../api/osm.js';
+import { satellite } from '../api/satellite.js';
 
 const ids = (node: LayerGroupMap | string[] | undefined): string[] =>
 	Array.isArray(node) ? node : Object.values(node ?? {}).flatMap(ids);
@@ -113,6 +114,44 @@ describe('layerGroups', () => {
 				],
 				rivers: ['label-water-river', 'label-water-stream'],
 			},
+		});
+	});
+
+	describe('satellite.layerGroups', () => {
+		const overlay = getOverlayLayerGroupMap();
+		const paths = (node: LayerGroupMap, prefix = ''): string[] =>
+			Object.entries(node).flatMap(([key, child]) =>
+				Array.isArray(child) ? [`${prefix}${key}`] : paths(child, `${prefix}${key}.`)
+			);
+
+		it('is exposed as satellite.layerGroups and memoized', () => {
+			expect(satellite.layerGroups).toBe(overlay);
+		});
+
+		it("is osm's map without the groups the overlay drops", () => {
+			const dropped = paths(getLayerGroupMap()).filter((path) => !paths(overlay).includes(path));
+			expect(
+				dropped.every((path) => /^(land|water)\.|^(sites|airport|buildings)$/.test(path)),
+				dropped.join()
+			).toBe(true);
+			expect(Object.keys(overlay)).not.toContain('land');
+			expect(Object.keys(overlay)).not.toContain('buildings');
+		});
+
+		it('lists no tunnels and no empty group', () => {
+			for (const path of paths(overlay)) {
+				const listed = path.split('.').reduce<LayerGroupMap | string[]>((n, k) => (n as LayerGroupMap)[k], overlay);
+				expect(listed.length, path).toBeGreaterThan(0);
+			}
+			expect(ids(overlay).filter((id) => id.startsWith('tunnel-'))).toEqual([]);
+			expect(ids(getLayerGroupMap()).some((id) => id.startsWith('tunnel-'))).toBe(true);
+		});
+
+		it('lists exactly the grouped layers a satellite style draws', () => {
+			const drawn = new Set(satellite().layers.map((l) => l.id));
+			const osmGrouped = new Set(ids(getLayerGroupMap()));
+			const expected = [...drawn].filter((id) => osmGrouped.has(id));
+			expect([...new Set(ids(overlay))].sort()).toEqual(expected.sort());
 		});
 	});
 

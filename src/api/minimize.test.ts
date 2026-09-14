@@ -106,6 +106,18 @@ describe('satellite.minimizeOptions', () => {
 		});
 	});
 
+	it('drops overlay layer groups the overlay draws nothing of', () => {
+		expect(
+			satellite.minimizeOptions({ osmOverlay: { layers: { land: false, water: { ocean: 0.5 }, buildings: false } } })
+		).toEqual({});
+		expect(satellite.minimizeOptions({ osmOverlay: { layers: { land: false, roads: { steps: false } } } })).toEqual({
+			osmOverlay: { layers: { roads: { steps: false } } },
+		});
+		// a scalar cascades to groups the overlay does draw, so it stays
+		expect(satellite.minimizeOptions({ osmOverlay: { layers: 0.5 } })).toEqual({ osmOverlay: { layers: 0.5 } });
+		expect(satellite.minimizeOptions({ osmOverlay: satellite.defaults.osmOverlay })).toEqual({});
+	});
+
 	it("minimises overlay fonts against the overlay's all-bold fonts", () => {
 		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: 'noto_sans_bold' } } })).toEqual({});
 		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: { water: 'x' } } } })).toEqual({
@@ -134,6 +146,7 @@ describe('satellite.minimizeOptions', () => {
 			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
 		['overlay fonts', { osmOverlay: { text: { fonts: { default: 'a', places: { cities: 'b' } } } } }],
+		['overlay layers', { osmOverlay: { layers: { land: false, water: 0.3, sites: false, roads: { streets: 0.5 } } } }],
 	];
 
 	it.each(CASES)('%s: rebuilds the identical style', (_label, options) => {

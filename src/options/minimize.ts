@@ -3,6 +3,7 @@ import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
 import { minimizeFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
+import { getOverlayLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 type Plain = Record<string, unknown>;
 
@@ -70,6 +71,20 @@ export function minimizeOsmOptions(options: OsmOptions = {}): OsmOptions {
 	return minimizeThemed(options, (theme) => resolveOsm({ theme }), 'colorful');
 }
 
+/**
+ * `layers` without the groups that `groups` does not list. A scalar on a group that is listed stays,
+ * since it cascades to children that are.
+ */
+function withinGroups(layers: Plain, groups: LayerGroupMap): Plain {
+	const out: Plain = {};
+	for (const [key, value] of Object.entries(layers)) {
+		const node = groups[key];
+		if (node === undefined) continue;
+		out[key] = isPlain(value) && !Array.isArray(node) ? withinGroups(value, node) : value;
+	}
+	return out;
+}
+
 /** The smallest `SatelliteOptions` that builds the same style as `options`. */
 export function minimizeSatelliteOptions(options: SatelliteOptions = {}): SatelliteOptions {
 	resolveSatellite(options); // rejects unknown keys; the resolved result is not needed
@@ -77,11 +92,14 @@ export function minimizeSatelliteOptions(options: SatelliteOptions = {}): Satell
 	const out = (withoutDefaults(rest, resolveSatellite()) ?? {}) as SatelliteOptions;
 	if (osmOverlay === false) return { ...out, osmOverlay: false };
 	if (osmOverlay === undefined || osmOverlay === true) return out;
+	// Groups the overlay draws no layer of (land, water, …) change nothing, so they go first.
+	const layers = osmOverlay.layers;
+	const drawn = isPlain(layers) ? withinGroups(layers, getOverlayLayerGroupMap()) : layers;
 	// The overlay defaults to `gray` and its colours follow its own theme. Compare against what
 	// `satellite()` itself resolves for that theme, not plain overlay defaults: it layers the imagery
 	// defaults (white labels, dark halo, bold font) on top, and those must minimise away too.
 	const overlay = minimizeThemed<OsmOverlayOptions>(
-		osmOverlay,
+		{ ...osmOverlay, layers: drawn as OsmOverlayOptions['layers'] },
 		(theme) => resolveSatellite({ osmOverlay: { theme } }).osmOverlay,
 		'gray'
 	);

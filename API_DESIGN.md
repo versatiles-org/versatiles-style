@@ -517,6 +517,7 @@ Static properties for introspection:
 satellite.colorKeys: string[] // color keys available in osmOverlay.colors
 satellite.defaults:  ResolvedSatelliteOptions
 satellite.languages(tileJSON: TileJSONSpecification): string[]
+satellite.layerGroups: LayerGroupMap // osm.layerGroups, limited to the layers the overlay draws
 satellite.fontGroups: FontGroupMap // osm.fontGroups: the overlay keeps every text layer
 satellite.slots: {
   belowLabels:  string // below text labels, above icons/symbols
@@ -535,6 +536,13 @@ Likewise `satellite.defaults` and `satellite.resolveOptions()` leave the two sky
 `satellite.minimizeOptions` and `satellite.toCode` work the same way. Overlay colours are compared
 against the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise — and an overlay
 left at its defaults minimises away entirely, since the overlay is on by default.
+
+`osmOverlay.layers` takes the same `LayerGroupOptions` as `osm()`, but the overlay drops every fill and
+every land, water, site, airport and tunnel layer, so the imagery stays visible. `satellite.layerGroups`
+is `osm.layerGroups` with only what is left: `land`, `water`, `sites`, `airport` and `buildings` are
+absent, and `roads` and `transit.rail` have no tunnel layers. A UI over the overlay's layers should
+use this map, so that it does not offer switches that change nothing. Those groups are still accepted
+in `osmOverlay.layers`, and `satellite.minimizeOptions` removes them.
 
 The OSM vector overlay (roads, boundaries, labels and POIs over the imagery) is rendered by default.
 `true` uses the overlay's own defaults, `false` gives bare imagery with no vector layers, and an
