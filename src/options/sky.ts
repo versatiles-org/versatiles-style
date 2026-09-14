@@ -28,8 +28,11 @@ export type SkyOptions = {
 	skyHorizonBlend?: PropertyValueSpecification<number>;
 };
 
-/** Every sky value but `skyColor`, which is set only when the caller set it. */
-export type ResolvedSky = undefined | (Required<Omit<SkyOptions, 'skyColor'>> & Pick<SkyOptions, 'skyColor'>);
+/**
+ * `false` when the sky is off. Otherwise every sky value but `skyColor`, which is set only when the
+ * caller set it.
+ */
+export type ResolvedSky = false | (Required<Omit<SkyOptions, 'skyColor'>> & Pick<SkyOptions, 'skyColor'>);
 
 /**
  * The palette-independent sky defaults. Apart from `atmosphereBlend`, these are MapLibre's own, so a
@@ -52,7 +55,9 @@ export const SKY_DEFAULTS = {
  * `colors.water` on top of it and the sky would no longer follow.
  */
 export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSky {
-	if (sky === false) return undefined;
+	// `false`, not `undefined`: resolved options are fed back in as options, where `undefined` is the
+	// default — and the default sky is on.
+	if (sky === false) return false;
 	const options = typeof sky === 'object' ? sky : {};
 	checkKeys(
 		options,

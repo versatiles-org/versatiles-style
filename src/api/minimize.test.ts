@@ -135,6 +135,7 @@ describe('osm.minimizeOptions', () => {
 		['defaults', {}],
 		['dark theme', { theme: 'natural-dark' }],
 		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
+		['sky off', { sky: false }],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
 		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, sun: true }],
 		['base and one url', { urls: { base: 'https://tiles.example.org', elevation: '/dem/tiles.json' } }],
@@ -163,9 +164,11 @@ describe('osm.minimizeOptions', () => {
 		same(osm(osm.minimizeOptions(options)), osm(options));
 	});
 
-	it.each(CASES)('%s: rebuilds the identical style from an edited resolved object', (_label, options) => {
+	it.each(CASES)('%s: rebuilds the identical style from a resolved object', (_label, options) => {
+		// against `osm(options)`, not `osm(resolved)`: resolving must not lose anything either
 		const resolved = osm.resolveOptions(options);
-		same(osm(osm.minimizeOptions(resolved)), osm(resolved));
+		same(osm(resolved), osm(options));
+		same(osm(osm.minimizeOptions(resolved)), osm(options));
 	});
 });
 
@@ -247,6 +250,7 @@ describe('satellite.minimizeOptions', () => {
 			'overlay configured',
 			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
+		['sky off', { sky: false, osmOverlay: false }],
 		['overlay layers off', { osmOverlay: { layers: { roads: false, labels: { places: 0.5 } } } }],
 		['urls and toggles', { urls: { base: 'https://tiles.example.org' }, features: { hillshade: true }, sun: true }],
 		['overlay tint amount 0', { osmOverlay: { recolor: { tint: { color: '#00ff00', amount: 0 } } } }],
@@ -257,6 +261,12 @@ describe('satellite.minimizeOptions', () => {
 
 	it.each(CASES)('%s: rebuilds the identical style', (_label, options) => {
 		same(satellite(satellite.minimizeOptions(options)), satellite(options));
+	});
+
+	it.each(CASES)('%s: rebuilds the identical style from a resolved object', (_label, options) => {
+		const resolved = satellite.resolveOptions(options);
+		same(satellite(resolved), satellite(options));
+		same(satellite(satellite.minimizeOptions(resolved)), satellite(options));
 	});
 });
 

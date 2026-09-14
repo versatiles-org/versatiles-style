@@ -207,7 +207,7 @@ describe('resolveSky', () => {
 	it('fills every value but the palette-derived sky colour', () => {
 		expect(resolveSky(true)).toStrictEqual(SKY_DEFAULTS);
 		expect(resolveSky()).toStrictEqual(SKY_DEFAULTS);
-		expect(resolveSky(false)).toBeUndefined();
+		expect(resolveSky(false)).toBe(false);
 	});
 
 	it('keeps the sky colour and other values the caller set', () => {

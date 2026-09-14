@@ -698,15 +698,18 @@ describe('osm() knob: sky accepts a boolean', () => {
 		expect(build({ sky: { skyColor: '#123456' } }).sky).toMatchObject({ 'sky-color': '#123456' });
 	});
 
-	it('resolves to false so callers can detect it', () => {
-		expect(osm.resolveOptions({ sky: false }).sky).toBe(undefined);
+	it('resolves to false, which stays off when resolved options are fed back in', () => {
+		const resolved = osm.resolveOptions({ sky: false });
+		expect(resolved.sky).toBe(false);
 		expect(osm.resolveOptions().sky).not.toBe(false);
+		expect(osm(resolved)).not.toHaveProperty('sky');
+		expect(osm.minimizeOptions(resolved)).toEqual({ sky: false });
 	});
 });
 
 // Every theme used to get the same `#87CEEB`, which put a bright blue sky above a dark map in dark
 // mode and above a monochrome one in `toner` (issue #126). The defaults are now derived from the
-// palette: sky from its `water`, horizon from its `background`.
+// palette: the sky colour from its `water`.
 describe('osm() sky defaults follow the palette', () => {
 	const sky = (theme: unknown) => build({ theme } as never).sky as Record<string, string>;
 
