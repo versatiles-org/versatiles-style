@@ -26,6 +26,15 @@ export const DEFAULT_FONTS: ResolvedFonts = resolveFonts(
 );
 
 /**
+ * The language labels are drawn in: `'user'` becomes the browser's language (`'de'` for `de-AT`), or
+ * `'local'` where there is no browser. Every other value is returned as it is.
+ */
+export function labelLanguage(language: string): string {
+	if (language !== 'user') return language;
+	return (typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : undefined) || 'local';
+}
+
+/**
  * `fontDefaults` is what an unset font topic falls back to — `DEFAULT_FONTS`, or the satellite
  * overlay's all-bold fonts — so an overlay caller who sets one topic keeps the overlay's others.
  */
@@ -35,12 +44,10 @@ export function resolveText(
 	fontDefaults: ResolvedFonts = DEFAULT_FONTS
 ): ResolvedText {
 	checkKeys(text, { language: true, languageStrict: true, fonts: true }, path);
-	let language = text?.language ?? 'local';
-	if (language === 'user') {
-		language = (typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : undefined) ?? 'local';
-	}
 	return {
-		language,
+		// `'user'` stays as it is: the resolved options are stored and shared, so they must not carry
+		// the browser language of whoever resolved them. `labelLanguage` reads it at build time.
+		language: text?.language ?? 'local',
 		languageStrict: text?.languageStrict ?? false,
 		fonts: resolveFonts(text?.fonts, fontDefaults, `${path}.fonts`),
 	};

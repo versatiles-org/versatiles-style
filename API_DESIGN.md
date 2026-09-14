@@ -214,7 +214,7 @@ osm({ text: { fonts: { water: 'fira_sans_regular_italic' } } }); // lake and riv
 osm({ text: { fonts: { default: 'fira_sans_regular', pois: { general: 'fira_sans_semibold' } } } });
 ```
 
-`'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` at call time (falls back to `'local'` in Node.js). Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
+`'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` when the style is built, falling back to `'local'` where there is no `navigator`. `resolveOptions`, `minimizeOptions` and `toCode` keep `'user'` as it is, so stored options follow each viewer's browser. Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
 
 ### Colors
 

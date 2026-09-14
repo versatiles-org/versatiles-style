@@ -1,6 +1,6 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
-import { colorOptionsKeys } from '../options/index.js';
+import { colorOptionsKeys, labelLanguage } from '../options/index.js';
 import type { ColorsOptions, ResolvedColors, ResolvedFonts, ResolvedLayerGroups } from '../options/index.js';
 import type { Palette } from '../options/index.js';
 import { isDarkPalette } from '../themes/index.js';
@@ -80,6 +80,6 @@ export function buildLayerContext(resolved: ContextOptions, seam: ContextSeam): 
 		features: { buildings: resolved.features.buildings, landcover: resolved.features.landcover ?? false },
 		layers: resolved.layers,
 		fonts: resolved.text.fonts,
-		nameField: seam.nameField(resolved.text.language, resolved.text.languageStrict),
+		nameField: seam.nameField(labelLanguage(resolved.text.language), resolved.text.languageStrict),
 	};
 }

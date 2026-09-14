@@ -80,6 +80,41 @@ describe('osm() knob: text', () => {
 		expect(layout(s, 'label-place-village')['text-field']).toStrictEqual(['get', 'name_de']);
 	});
 
+	describe("language: 'user'", () => {
+		const withBrowserLanguage = <T>(language: string | undefined, run: () => T): T => {
+			vi.stubGlobal('navigator', language === undefined ? undefined : { language });
+			try {
+				return run();
+			} finally {
+				vi.unstubAllGlobals();
+			}
+		};
+
+		it('builds with the browser language', () => {
+			const s = withBrowserLanguage('fr-CH', () => build({ text: { language: 'user' } }));
+			expect(layout(s, 'label-place-village')['text-field']).toStrictEqual([
+				'coalesce',
+				['get', 'name_fr'],
+				['get', 'name'],
+			]);
+		});
+
+		it('falls back to the local name without a browser', () => {
+			const s = withBrowserLanguage(undefined, () => build({ text: { language: 'user' } }));
+			expect(layout(s, 'label-place-village')['text-field']).toStrictEqual(['get', 'name']);
+		});
+
+		it("stays 'user' in resolved and minimised options, whatever the browser language", () => {
+			withBrowserLanguage('fr-CH', () => {
+				expect(osm.resolveOptions({ text: { language: 'user' } }).text.language).toBe('user');
+				expect(osm.minimizeOptions(osm.resolveOptions({ text: { language: 'user' } }))).toEqual({
+					text: { language: 'user' },
+				});
+				expect(osm.toCode({ text: { language: 'user' } })).toContain('"user"');
+			});
+		});
+	});
+
 	const font = (s: StyleSpecification, id: string) => (layout(s, id)['text-font'] as string[])[0];
 
 	it('fonts default to Noto Sans, bold for motorway refs and POI names', () => {
