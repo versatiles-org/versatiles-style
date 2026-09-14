@@ -1,11 +1,13 @@
 import { checkKeys } from './keys.js';
+import type { KnownFontName } from './font-names.js';
 
 /**
  * A glyph name, as the glyph server publishes it: `'noto_sans_regular'`, `'fira_sans_semibold_italic'`,
  * … — or any name a custom server uses. Not checked: `osm()` does no I/O, so it cannot know which
- * faces a server has.
+ * faces a server has. The VersaTiles faces autocomplete (`KnownFontName`); `string & {}` keeps any other
+ * string valid without collapsing the union into plain `string`, which would lose the suggestions.
  */
-export type FontName = string;
+export type FontName = KnownFontName | (string & {});
 
 /**
  * The font topics, by group. The groups and their children are the label groups of `layers.labels`,

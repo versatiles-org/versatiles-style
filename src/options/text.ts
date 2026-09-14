@@ -1,5 +1,6 @@
 import { checkKeys } from './keys.js';
 import { resolveFonts, uniformFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
+import type { KnownFontName } from './font-names.js';
 
 export type TextOptions = {
 	language?: string;
@@ -13,8 +14,9 @@ export type ResolvedText = {
 	fonts: ResolvedFonts;
 };
 
-export const DEFAULT_FONT_REGULAR = 'noto_sans_regular';
-export const DEFAULT_FONT_BOLD = 'noto_sans_bold';
+// `satisfies` fails the typecheck if the glyph server stops publishing a default face.
+export const DEFAULT_FONT_REGULAR = 'noto_sans_regular' satisfies KnownFontName;
+export const DEFAULT_FONT_BOLD = 'noto_sans_bold' satisfies KnownFontName;
 
 /** The fonts of `osm()`, `omt()` and `protomaps()`: regular, with motorway refs and POI names in bold. */
 export const DEFAULT_FONTS: ResolvedFonts = resolveFonts(

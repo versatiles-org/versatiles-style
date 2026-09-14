@@ -204,7 +204,8 @@ topic nobody sets keeps the style's own font. The defaults are Noto Sans, bold f
 POI names: `{ default: 'noto_sans_regular', streets: { refs: 'noto_sans_bold' }, pois: { general:
 'noto_sans_bold' } }`. The satellite overlay sets every topic in `noto_sans_bold`, and setting one
 overlay topic keeps the others bold. Names are not checked, since `osm()` cannot know which faces a
-glyph server has.
+glyph server has; in TypeScript the faces of the VersaTiles glyph server autocomplete (`KnownFontName`,
+a snapshot refreshed with `npm run vendor-fonts`), and any other string is still accepted.
 
 ```ts
 osm({ text: { fonts: 'fira_sans_regular' } }); // every label
