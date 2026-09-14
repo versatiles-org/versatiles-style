@@ -462,6 +462,7 @@ file. A resolved object comes back as small as the options that made it:
   become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
   `transit.stops` itself, so the alias has no effect there.
 - `features.terrain`, `features.hillshade` and `sun` become `true` when they equal what `true` resolves to.
+- `layout.scale` and `layout.spacing` become one number when labels and icons agree: `{ labels: 2, icons: 2 }` is `2`.
 - `urls` goes back to `urls.base` when the URLs are its default paths, and is left out on the default base.
 - Colours compare by value, so `#bfd9f2` from an `<input type="color">` equals the palette's `#BFD9F2`.
 - `recolor.tint` and `recolor.blend` are removed at an amount of 0, and otherwise always carry their amount.

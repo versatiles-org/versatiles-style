@@ -102,6 +102,19 @@ describe('osm.minimizeOptions', () => {
 			expect(roundTrip({})).toEqual({});
 		});
 
+		it('writes layout.scale and layout.spacing as one number when labels and icons agree', () => {
+			expect(roundTrip({ layout: { scale: 2, spacing: 1.5 } })).toEqual({ layout: { scale: 2, spacing: 1.5 } });
+			expect(roundTrip({ layout: { scale: { labels: 2 }, spacing: { icons: 0.5 } } })).toEqual({
+				layout: { scale: { labels: 2 }, spacing: { icons: 0.5 } },
+			});
+			expect(
+				osm.minimizeOptions({ layout: { scale: { labels: 2, icons: 2 }, spacing: { labels: 1, icons: 1 } } })
+			).toEqual({ layout: { scale: 2 } });
+			expect(roundTrip({ layout: { scale: 1, pitchAlignment: 'viewport' } })).toEqual({
+				layout: { pitchAlignment: 'viewport' },
+			});
+		});
+
 		it('compares colours by value, not by spelling', () => {
 			const defaults = osm.resolveOptions();
 			const lower = Object.fromEntries(
@@ -136,6 +149,7 @@ describe('osm.minimizeOptions', () => {
 		['dark theme', { theme: 'natural-dark' }],
 		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
 		['sky off', { sky: false }],
+		['layout pairs', { layout: { scale: 2, spacing: { labels: 1.5 }, pitchAlignment: 'viewport' } }],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
 		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, sun: true }],
 		['base and one url', { urls: { base: 'https://tiles.example.org', elevation: '/dem/tiles.json' } }],
@@ -251,6 +265,7 @@ describe('satellite.minimizeOptions', () => {
 			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
 		['sky off', { sky: false, osmOverlay: false }],
+		['overlay layout', { osmOverlay: { layout: { scale: 1.5, spacing: { icons: 2 } } } }],
 		['overlay layers off', { osmOverlay: { layers: { roads: false, labels: { places: 0.5 } } } }],
 		['urls and toggles', { urls: { base: 'https://tiles.example.org' }, features: { hillshade: true }, sun: true }],
 		['overlay tint amount 0', { osmOverlay: { recolor: { tint: { color: '#00ff00', amount: 0 } } } }],

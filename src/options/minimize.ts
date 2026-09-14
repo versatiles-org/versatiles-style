@@ -4,6 +4,7 @@ import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
 import { minimizeFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
 import { resolveRecolor, type RecolorOptions } from './recolor.js';
+import { resolveLayout, type LayoutOptions } from './layout.js';
 import { resolveLayerGroups, type LayerGroupOptions } from './layer-groups.js';
 import { resolveTerrain } from './features-terrain.js';
 import { resolveHillshade } from './features-hillshade.js';
@@ -94,7 +95,7 @@ export type MinimizeParts = {
  *
  * `text.fonts` is minimised on its own (`minimizeFonts`): a string or `default` in the input stands for
  * many resolved topics, so comparing it key by key against the resolved tree would keep all of it.
- * `recolor.tint` and `recolor.blend` (`minimizeMix`), `layers` (`minimizeLayers`) and `urls`
+ * `recolor.tint` and `recolor.blend` (`minimizeMix`), `layout.scale` and `layout.spacing` (`minimizePair`), `layers` (`minimizeLayers`) and `urls`
  * (`minimizeUrls`) are too.
  */
 export function minimizeThemed<T extends { theme?: ThemeOptions }>(
@@ -106,7 +107,13 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
 	const defaults = defaultsFor(theme) as { text?: { fonts?: ResolvedFonts } };
-	const input = rest as { text?: { fonts?: FontOptions }; recolor?: RecolorOptions; layers?: unknown; urls?: unknown };
+	const input = rest as {
+		text?: { fonts?: FontOptions };
+		recolor?: RecolorOptions;
+		layout?: LayoutOptions;
+		layers?: unknown;
+		urls?: unknown;
+	};
 
 	const text = input.text;
 	const fontDefaults = defaults.text?.fonts;
@@ -116,6 +123,9 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	const recolor = input.recolor;
 	const tint = minimizeMix(recolor, 'tint');
 	const blend = minimizeMix(recolor, 'blend');
+	const layout = input.layout;
+	const scale = minimizePair(layout, 'scale');
+	const spacing = minimizePair(layout, 'spacing');
 	const layers = minimizeLayers(input.layers, parts.layerGroups);
 	const urls = parts.resolveUrls ? minimizeUrls(input.urls, parts.resolveUrls) : undefined;
 
@@ -123,13 +133,21 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 		...rest,
 		...(minimizeTheFonts && { text: { ...text, fonts: undefined } }),
 		...(recolor !== undefined && { recolor: { ...recolor, tint: undefined, blend: undefined } }),
+		...(layout !== undefined && { layout: { ...layout, scale: undefined, spacing: undefined } }),
 		layers: undefined,
 		...(parts.resolveUrls && { urls: undefined }),
 	};
-	const out = (withoutDefaults(remaining, defaults, ENABLED) ?? {}) as Plain & { text?: Plain; recolor?: Plain };
+	const out = (withoutDefaults(remaining, defaults, ENABLED) ?? {}) as Plain & {
+		text?: Plain;
+		recolor?: Plain;
+		layout?: Plain;
+	};
 	if (fonts !== undefined) out.text = { ...out.text, fonts };
 	if (tint !== undefined) out.recolor = { ...out.recolor, tint };
 	if (blend !== undefined) out.recolor = { ...out.recolor, blend };
+	if (scale !== undefined) out.layout = { ...out.layout, scale };
+	if (spacing !== undefined) out.layout = { ...out.layout, spacing };
+	if (out.layout !== undefined && layout !== undefined) out.layout = inOrderOf(layout, out.layout);
 	if (layers !== undefined) out.layers = layers;
 	if (urls !== undefined) out.urls = urls;
 	return inOrderOf<T>(options, theme === defaultPalette ? out : { theme, ...out });
@@ -149,6 +167,21 @@ function minimizeMix(recolor: RecolorOptions | undefined, key: 'tint' | 'blend')
 	const { color, amount } = resolveRecolor({ [key]: recolor[key] })[key];
 	if (!(amount > 0)) return undefined;
 	return sameValue(color, resolveRecolor()[key].color) ? { amount } : { color, amount };
+}
+
+/**
+ * `layout.scale` or `layout.spacing`, minimised: one number when labels and icons resolve to the same
+ * value — as a resolved object always spells `{ labels: 2, icons: 2 }` — and `undefined` at the default.
+ */
+function minimizePair(layout: LayoutOptions | undefined, key: 'scale' | 'spacing'): LayoutOptions[typeof key] {
+	if (layout?.[key] === undefined) return undefined;
+	const { labels, icons } = resolveLayout({ [key]: layout[key] })[key];
+	const defaults = resolveLayout()[key];
+	if (labels === icons) return labels === defaults.labels && icons === defaults.icons ? undefined : labels;
+	return {
+		...(labels === defaults.labels ? {} : { labels }),
+		...(icons === defaults.icons ? {} : { icons }),
+	};
 }
 
 type GroupScalar = boolean | number;
