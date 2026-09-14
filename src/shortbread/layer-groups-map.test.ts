@@ -70,4 +70,63 @@ describe('layerGroups', () => {
 		const removed = [...before].filter((id) => !after.has(id));
 		expect(removed.sort()).toEqual([...(getLayerGroupMap().pois as string[])].sort());
 	});
+
+	it('files every label layer under its topic', () => {
+		const labels = getLayerGroupMap().labels as LayerGroupMap;
+		const sorted = (node: LayerGroupMap | string[]): unknown =>
+			Array.isArray(node)
+				? [...node].sort()
+				: Object.fromEntries(Object.entries(node).map(([key, child]) => [key, sorted(child)]));
+		expect(sorted(labels)).toStrictEqual({
+			addresses: ['label-address-housenumber'],
+			boundaries: {
+				countries: ['label-boundary-country-large', 'label-boundary-country-medium', 'label-boundary-country-small'],
+				states: ['label-boundary-state'],
+			},
+			places: {
+				cities: ['label-place-capital', 'label-place-city', 'label-place-statecapital', 'label-place-town'],
+				villages: ['label-place-hamlet', 'label-place-village'],
+				districts: ['label-place-neighbourhood', 'label-place-quarter', 'label-place-suburb'],
+			},
+			streets: {
+				names: [
+					'label-street-livingstreet',
+					'label-street-pedestrian',
+					'label-street-pedestrian-zone',
+					'label-street-primary',
+					'label-street-residential',
+					'label-street-secondary',
+					'label-street-tertiary',
+					'label-street-track',
+					'label-street-trunk',
+					'label-street-unclassified',
+				],
+				refs: ['label-motorway-shield'],
+				exits: ['label-motorway-exit'],
+			},
+			water: {
+				lakes: [
+					'label-water-area-large',
+					'label-water-area-major',
+					'label-water-area-medium',
+					'label-water-area-small',
+				],
+				rivers: ['label-water-river', 'label-water-stream'],
+			},
+		});
+	});
+
+	it('hiding a label leaf removes exactly the layers it lists', () => {
+		const labels = getLayerGroupMap().labels as LayerGroupMap;
+		const before = new Set(osm().layers.map((l) => l.id));
+		for (const [group, node] of Object.entries(labels)) {
+			const leaves = Array.isArray(node) ? { [group]: node } : (node as Record<string, string[]>);
+			for (const [leaf, listed] of Object.entries(leaves)) {
+				const option = Array.isArray(node) ? { [group]: false } : { [group]: { [leaf]: false } };
+				const after = new Set(osm({ layers: { labels: option } }).layers.map((l) => l.id));
+				const removed = [...before].filter((id) => !after.has(id));
+				expect(removed.sort(), `labels.${group}.${leaf}`).toEqual([...listed].sort());
+			}
+		}
+	});
 });

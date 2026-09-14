@@ -80,10 +80,23 @@ export function placeSecondary(ctx: LayerContext): Color {
 	return ctx.c.label.blend(0.05, ctx.bg);
 }
 
+/** Which `layers.labels.places` group each settlement label belongs to. */
+const PLACE_GROUPS = {
+	capital: 'cities',
+	statecapital: 'cities',
+	city: 'cities',
+	town: 'cities',
+	village: 'villages',
+	hamlet: 'villages',
+	suburb: 'districts',
+	quarter: 'districts',
+	neighbourhood: 'districts',
+} as const;
+
 /** One settlement label: which features, at which zooms, in which size. */
 export type PlaceLabelDef = {
 	/** Suffix of the layer id: `label-place-<id>`. */
-	readonly id: string;
+	readonly id: keyof typeof PLACE_GROUPS;
 	readonly filter: FilterSpecification;
 	readonly minzoom: number;
 	readonly maxzoom?: number;
@@ -113,6 +126,6 @@ export function placeLabel(
 		maxzoom: def.maxzoom ?? 15,
 		size: def.size,
 		...(def.uppercase ? { textTransform: 'uppercase' } : {}),
-		group: 'labels.places',
+		group: 'labels.places.' + PLACE_GROUPS[def.id],
 	});
 }

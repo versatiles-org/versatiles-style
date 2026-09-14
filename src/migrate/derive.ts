@@ -415,6 +415,8 @@ function hiddenGroups(
 	const tileSchemas = new Set(schemas.values());
 	const layers: Record<string, unknown> = {};
 	const hidden: string[] = [];
+	/** Leaves with at least one probe the style could draw: the only ones whose visibility is known. */
+	const readable = new Set<string>();
 
 	const visit = (node: LayerGroupMap, path: string[]): boolean => {
 		let allHidden = true;
@@ -425,6 +427,7 @@ function hiddenGroups(
 				const probes = PROBES.filter(
 					(p) => child.includes(p.id) && model.base.has(p.id) && [...tileSchemas].some((schema) => p.features[schema])
 				);
+				if (probes.length > 0) readable.add(childPath.join('.'));
 				const isHidden = probes.length > 0 && probes.every((p) => !readings.has(p.id));
 				if (isHidden) hidden.push(childPath.join('.'));
 				else allHidden = false;
@@ -436,14 +439,19 @@ function hiddenGroups(
 	};
 	visit(getLayerGroupMap(), []);
 
-	// Collapse: a branch whose every leaf is hidden is hidden as a whole.
+	// Collapse: a branch is hidden as a whole when at least one of its leaves is hidden and every other
+	// leaf is either hidden too or has no probe to tell. `labels.water.lakes` has no probe, and lake
+	// names shared a group with the river probe until `labels.water` was split, so this keeps that reading.
 	const collapse = (node: LayerGroupMap, path: string[]): void => {
 		for (const [key, child] of Object.entries(node)) {
 			if (path.length === 0 && key === 'icons') continue;
 			const childPath = [...path, key];
 			const name = childPath.join('.');
 			const leaves = Array.isArray(child) ? [name] : leafPaths(child, childPath);
-			if (leaves.every((leaf) => hidden.includes(leaf))) {
+			if (
+				leaves.some((leaf) => hidden.includes(leaf)) &&
+				leaves.every((leaf) => hidden.includes(leaf) || !readable.has(leaf))
+			) {
 				setPath(layers, childPath, false);
 			} else if (!Array.isArray(child)) {
 				collapse(child, childPath);

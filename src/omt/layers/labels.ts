@@ -141,7 +141,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 9, 18: 11 },
-		group: 'labels.streets',
+		group: 'labels.streets.exits',
 	});
 	yield b.symbol('label-motorway-shield', {
 		sourceLayer: 'transportation_name',
@@ -156,7 +156,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 10, 18: 12, 20: 16 },
-		group: 'labels.streets',
+		group: 'labels.streets.refs',
 	});
 
 	// Street name labels. `pedestrian` is a `path` subclass here rather than a class of its own, and the
@@ -167,7 +167,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		filter: ['all', ['==', ['get', 'class'], 'path'], ['==', ['get', 'subclass'], 'pedestrian']] as FilterSpecification,
 		layout: { 'text-field': ctx.nameField },
 		...streetBase,
-		group: 'labels.streets',
+		group: 'labels.streets.names',
 	});
 	for (const cls of STREET_CLASSES) {
 		yield b.symbol('label-street-' + cls, {
@@ -175,7 +175,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['all', LINES, ['==', ['get', 'class'], cls]] as FilterSpecification,
 			layout: { 'text-field': ctx.nameField },
 			...streetBase,
-			group: 'labels.streets',
+			group: 'labels.streets.names',
 		});
 	}
 
@@ -198,7 +198,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			symbolPlacement: 'point',
 			appear: bucket.appear,
 			size: bucket.size,
-			group: 'labels.water',
+			group: 'labels.water.lakes',
 		});
 	}
 
@@ -212,7 +212,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 12,
 		size: { 12: 10, 15: 12 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 	yield b.symbol('label-water-stream', {
 		sourceLayer: 'waterway',
@@ -222,7 +222,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 14,
 		size: { 14: 9, 17: 11 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 }
 
@@ -243,7 +243,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		maxzoom: 10,
 		color: placeSecondary(ctx),
 		size: { 5: 8, 8: 12 },
-		group: 'labels.states',
+		group: 'labels.boundaries.states',
 	});
 
 	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
@@ -257,7 +257,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			minzoom: country.minzoom,
 			maxzoom: country.maxzoom,
 			size: country.size,
-			group: 'labels.countries',
+			group: 'labels.boundaries.countries',
 		});
 	}
 }

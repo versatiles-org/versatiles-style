@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `label-water-river` (rivers and canals, z12) and `label-water-stream` (streams and ditches, z14)
   read Shortbread's `water_polygons_labels` and `water_lines_labels`, which no VersaTiles style has
   ever rendered — v5 did not either, so the map had no water names at all. Adds a `labelWater`
-  colour and a `layers.labels.water` group.
+  colour and a `layers.labels.water` group, split into `lakes` and `rivers`.
 - **Styles now default to the `globe` projection** and accept a `projection` option
   (`'globe' | 'mercator' | 'vertical-perspective'`). Web Mercator's area distortion is worst at the
   low zooms where the whole world is visible; MapLibre returns to Mercator as you zoom in. This

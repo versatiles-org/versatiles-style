@@ -117,12 +117,37 @@ type LayerGroupOptions = {
     | boolean
     | number
     | {
-        places?: boolean | number; // label-place-* (neighbourhood → capital)
-        streets?: boolean | number; // label-street-* + label-motorway-*
-        states?: boolean | number; // label-boundary-state
-        countries?: boolean | number; // label-boundary-country-small/medium/large
+        boundaries?:
+          | boolean
+          | number
+          | {
+              countries?: boolean | number; // label-boundary-country-small/medium/large
+              states?: boolean | number; // label-boundary-state
+            };
+        places?:
+          | boolean
+          | number
+          | {
+              cities?: boolean | number; // label-place-capital, -statecapital, -city, -town
+              villages?: boolean | number; // label-place-village, -hamlet
+              districts?: boolean | number; // label-place-suburb, -quarter, -neighbourhood
+            };
+        streets?:
+          | boolean
+          | number
+          | {
+              names?: boolean | number; // label-street-*
+              refs?: boolean | number; // label-motorway-shield
+              exits?: boolean | number; // label-motorway-exit
+            };
+        water?:
+          | boolean
+          | number
+          | {
+              lakes?: boolean | number; // label-water-area-*
+              rivers?: boolean | number; // label-water-river, -stream
+            };
         addresses?: boolean | number; // label-address-housenumber
-        water?: boolean | number; // label-water-area, -river, -stream
       };
   icons?: boolean | number; // convenience alias for { pois, transit.stops, markings } together
 };

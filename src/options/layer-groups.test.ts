@@ -29,7 +29,13 @@ const DEFAULTS = {
 	pois: true,
 	boundaries: { country: true, state: true },
 	markings: true,
-	labels: { places: true, streets: true, states: true, countries: true, addresses: true, water: true },
+	labels: {
+		boundaries: { countries: true, states: true },
+		places: { cities: true, villages: true, districts: true },
+		streets: { names: true, refs: true, exits: true },
+		water: { lakes: true, rivers: true },
+		addresses: true,
+	},
 	icons: true,
 };
 
@@ -172,13 +178,27 @@ describe('resolveLayerGroups', () => {
 		expect(r.transit).toStrictEqual({ rail: 0.5, aerialways: 0.5, ferries: 0.5, stops: 0.5 });
 		expect(r.boundaries).toStrictEqual({ country: true, state: false });
 		expect(r.labels).toStrictEqual({
-			places: false,
-			streets: false,
-			states: false,
-			countries: false,
+			boundaries: { countries: false, states: false },
+			places: { cities: false, villages: false, districts: false },
+			streets: { names: false, refs: false, exits: false },
+			water: { lakes: false, rivers: false },
 			addresses: false,
-			water: false,
 		});
+	});
+
+	it('cascades a label group scalar to its children, and lets a child override it', () => {
+		const r = resolveLayerGroups({ labels: { water: 0.5, streets: { refs: false }, boundaries: false } });
+		expect(r.labels.water).toStrictEqual({ lakes: 0.5, rivers: 0.5 });
+		expect(r.labels.streets).toStrictEqual({ names: true, refs: false, exits: true });
+		expect(r.labels.boundaries).toStrictEqual({ countries: false, states: false });
+		expect(r.labels.places).toStrictEqual({ cities: true, villages: true, districts: true });
+	});
+
+	it('rejects the old flat label keys and `default`, which only the font tree has', () => {
+		expect(() => resolveLayerGroups({ labels: { states: false } as never })).toThrow('unknown option "labels.states"');
+		expect(() => resolveLayerGroups({ labels: { water: { default: false } } as never })).toThrow(
+			'unknown option "labels.water.default"'
+		);
 	});
 
 	// ── top-level scalar groups ────────────────────────────────────────────────────

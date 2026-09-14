@@ -132,7 +132,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 10, 18: 12, 20: 16 },
-		group: 'labels.streets',
+		group: 'labels.streets.refs',
 	});
 
 	for (const kind of STREET_KINDS) {
@@ -141,7 +141,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['all', LINES, ['==', ['get', 'kind'], kind]] as FilterSpecification,
 			layout: { 'text-field': ctx.nameField },
 			...streetBase,
-			group: 'labels.streets',
+			group: 'labels.streets.names',
 		});
 	}
 	// No `label-street-pedestrian-zone`: the pedestrian area is a `landuse` polygon here, and `landuse`
@@ -169,7 +169,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			symbolPlacement: 'point',
 			appear: bucket.appear,
 			size: bucket.size,
-			group: 'labels.water',
+			group: 'labels.water.lakes',
 		});
 	}
 
@@ -181,7 +181,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 12,
 		size: { 12: 10, 15: 12 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 	yield b.symbol('label-water-stream', {
 		sourceLayer: 'water',
@@ -191,7 +191,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 14,
 		size: { 14: 9, 17: 11 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 }
 
@@ -210,7 +210,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		maxzoom: 10,
 		color: placeSecondary(ctx),
 		size: { 5: 8, 8: 12 },
-		group: 'labels.states',
+		group: 'labels.boundaries.states',
 	});
 
 	for (const p of PLACES_LARGE) yield placeLabel(ctx, placeBase, p, PLACE_SOURCE);
@@ -224,7 +224,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			minzoom: country.minzoom,
 			maxzoom: country.maxzoom,
 			size: country.size,
-			group: 'labels.countries',
+			group: 'labels.boundaries.countries',
 		});
 	}
 }

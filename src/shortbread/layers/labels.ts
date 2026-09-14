@@ -99,7 +99,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 9, 18: 11 },
-		group: 'labels.streets',
+		group: 'labels.streets.exits',
 	});
 	yield b.symbol('label-motorway-shield', {
 		sourceLayer: 'street_labels',
@@ -114,7 +114,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 10, 18: 12, 20: 16 },
-		group: 'labels.streets',
+		group: 'labels.streets.refs',
 	});
 
 	// street name labels
@@ -124,7 +124,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			filter: ['==', ['get', 'kind'], kind],
 			layout: { 'text-field': ctx.nameField },
 			...streetBase,
-			group: 'labels.streets',
+			group: 'labels.streets.names',
 		});
 	}
 
@@ -147,7 +147,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		textAnchor: 'center',
 		minzoom: 14,
 		size: { 14: 10, 17: 12 },
-		group: 'labels.streets',
+		group: 'labels.streets.names',
 	});
 
 	// ── Water labels ────────────────────────────────────────────────────────────
@@ -194,7 +194,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 			symbolPlacement: 'point',
 			appear: bucket.appear,
 			size: bucket.size,
-			group: 'labels.water',
+			group: 'labels.water.lakes',
 		});
 	}
 
@@ -206,7 +206,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 12,
 		size: { 12: 10, 15: 12 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 
 	yield b.symbol('label-water-stream', {
@@ -217,7 +217,7 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		symbolPlacement: 'line',
 		minzoom: 14,
 		size: { 14: 9, 17: 11 },
-		group: 'labels.water',
+		group: 'labels.water.rivers',
 	});
 }
 
@@ -239,7 +239,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		maxzoom: 10,
 		color: placeSecondary(ctx),
 		size: { 5: 8, 8: 12 },
-		group: 'labels.states',
+		group: 'labels.boundaries.states',
 	});
 
 	// large place labels
@@ -254,7 +254,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 4,
 		maxzoom: 10,
 		size: { 4: 8, 5: 11 },
-		group: 'labels.countries',
+		group: 'labels.boundaries.countries',
 	});
 	yield b.symbol('label-boundary-country-medium', {
 		sourceLayer: 'boundary_labels',
@@ -269,7 +269,7 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 2,
 		maxzoom: 10,
 		size: { 3: 8, 5: 12 },
-		group: 'labels.countries',
+		group: 'labels.boundaries.countries',
 	});
 	yield b.symbol('label-boundary-country-large', {
 		sourceLayer: 'boundary_labels',
@@ -279,6 +279,6 @@ export function* placeLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		minzoom: 2,
 		maxzoom: 9,
 		size: { 2: 8, 5: 13 },
-		group: 'labels.countries',
+		group: 'labels.boundaries.countries',
 	});
 }
