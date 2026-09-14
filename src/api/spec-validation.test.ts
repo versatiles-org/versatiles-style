@@ -58,6 +58,7 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 	],
 	// layout + sun + sky
 	['scale + spacing', { layout: { scale: 1.5, spacing: 2 } }],
+	['spacing below 1 + viewport pitch', { layout: { spacing: 0.5, pitchAlignment: 'viewport' } }],
 	['custom sun + sky', { sun: { direction: 120, altitude: 20 }, sky: { skyColor: '#010203', atmosphereBlend: 0.7 } }],
 ];
 

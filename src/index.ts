@@ -110,6 +110,7 @@ export type {
 	OsmOptions,
 	OsmOverlayOptions,
 	OsmUrlsOptions,
+	PitchAlignment,
 	ProjectionOptions,
 	RecolorOptions,
 	SatelliteFeaturesOptions,

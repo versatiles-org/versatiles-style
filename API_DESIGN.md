@@ -143,8 +143,21 @@ type TextOptions = {
 type LayoutOptions = {
   scale?: number | { labels?: number; icons?: number }; // size multiplier
   spacing?: number | { labels?: number; icons?: number }; // exclusion-radius multiplier (>1 = fewer)
+  pitchAlignment?: 'map' | 'viewport'; // line labels in a tilted map; default: 'map'
 };
 ```
+
+`spacing` works in two ways, because MapLibre separates symbols by placement. Labels and markings
+along a line (street and river names, oneway arrows) repeat at `symbol-spacing`, which is multiplied.
+Symbols at a point (places, POIs, house numbers) keep their distance through collision padding, and
+MapLibre's 2 px default is too small to multiply, so each step above 1 adds 14 px: `spacing: 2` pads
+point labels by 16 px, `spacing: 3` by 30 px. Below 1 the padding shrinks to at most 0 px, which cannot
+place labels closer than their own boxes — MapLibre never overlaps them.
+
+`pitchAlignment` decides how labels that follow a line — street, river and motorway names — sit
+when the map is tilted: lying on the ground (`'map'`, MapLibre's own behaviour) or standing up facing
+the viewer (`'viewport'`), which keeps them readable at high pitch and with terrain. Point labels face
+the viewer either way.
 
 `'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` at call time (falls back to `'local'` in Node.js). Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
 
@@ -599,6 +612,7 @@ about half a second the first time, once per target and light or dark mode.
 
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
 language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), whether
+street and river names stand up in a tilted map (`layout.pitchAlignment`), whether
 labels are set regular or bold (`text.fontNormal`, `text.fontBold` — by the font's name), extruded
 buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint

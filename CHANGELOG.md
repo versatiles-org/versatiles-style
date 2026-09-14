@@ -123,6 +123,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   object that builds the same style — for storing a style in a URL or config file.
 - `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
   wrapped in `inlineSources`.
+- `layout.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
+  instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.
+- `layout.spacing` thins point labels too — places, POIs and house numbers — by widening their collision
+  padding (14 px per step above 1). It used to change only labels and markings along lines.
 
 
 ## [5.13.1] - 2026-08-15

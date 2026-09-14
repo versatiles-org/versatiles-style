@@ -144,6 +144,53 @@ describe('osm() knob: layout.spacing', () => {
 		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175 * 1.5);
 		expect(layout(s, 'label-street-residential')['symbol-spacing']).toBe(250 * 1.5);
 	});
+
+	it('default spacing leaves collision padding unset', () => {
+		expect(layout(build(), 'label-place-city')).not.toHaveProperty('text-padding');
+		expect(layout(build(), 'poi-amenity')).not.toHaveProperty('icon-padding');
+	});
+
+	it('spacing.labels widens the collision padding of point labels (from the 2px default)', () => {
+		const s = build({ layout: { spacing: { labels: 2 } } });
+		expect(layout(s, 'label-place-city')['text-padding']).toBe(16);
+		expect(layout(s, 'label-place-city')).not.toHaveProperty('symbol-spacing');
+	});
+
+	it('a point layer with text and icon takes the label factor for its text, the icon factor for its icon', () => {
+		const s = build({ layout: { spacing: { labels: 2, icons: 3 } } });
+		expect(layout(s, 'poi-amenity')['text-padding']).toBe(16);
+		expect(layout(s, 'poi-amenity')['icon-padding']).toBe(30);
+	});
+
+	it('spacing below 1 shrinks point padding, clamped at 0', () => {
+		expect(layout(build({ layout: { spacing: 0.5 } }), 'label-place-city')['text-padding']).toBe(0);
+		// label-boundary-country-large sets text-padding: 0 itself
+		expect(layout(build({ layout: { spacing: 2 } }), 'label-boundary-country-large')['text-padding']).toBe(14);
+	});
+});
+
+// ── layout.pitchAlignment ────────────────────────────────────────────────────────
+
+describe('osm() knob: layout.pitchAlignment', () => {
+	it("'map' (the default) leaves line labels to MapLibre, which lays them on the map", () => {
+		const s = build({ layout: { pitchAlignment: 'map' } });
+		expect(s).toStrictEqual(build());
+		expect(layout(s, 'label-street-residential')).not.toHaveProperty('text-pitch-alignment');
+	});
+
+	it("'viewport' stands line labels up, and leaves point labels and line icons alone", () => {
+		const s = build({ layout: { pitchAlignment: 'viewport' } });
+		expect(layout(s, 'label-street-residential')['text-pitch-alignment']).toBe('viewport');
+		expect(layout(s, 'label-water-river')['text-pitch-alignment']).toBe('viewport');
+		expect(layout(s, 'label-place-city')).not.toHaveProperty('text-pitch-alignment');
+		expect(layout(s, 'marking-oneway')).not.toHaveProperty('text-pitch-alignment');
+	});
+
+	it('rejects an unknown value', () => {
+		expect(() => build({ layout: { pitchAlignment: 'auto' as never } })).toThrow(
+			'osm.layout.pitchAlignment: unknown value "auto". Valid values: map, viewport.'
+		);
+	});
 });
 
 // ── features.terrain ─────────────────────────────────────────────────────────────

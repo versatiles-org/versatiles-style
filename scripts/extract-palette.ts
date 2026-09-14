@@ -52,11 +52,13 @@ const KNOWN: Record<string, string> = {
 	'dark-matter': 'https://raw.githubusercontent.com/openmaptiles/dark-matter-gl-style/master/style.json',
 	'maptiler-basic': 'https://raw.githubusercontent.com/openmaptiles/maptiler-basic-gl-style/master/style.json',
 	'maptiler-terrain': 'https://raw.githubusercontent.com/openmaptiles/maptiler-terrain-gl-style/master/style.json',
-	'openfreemap-bright':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/bright/style.json',
-	'openfreemap-dark':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/dark/style.json',
-	'openfreemap-fiord':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/fiord/style.json',
-	'openfreemap-liberty':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/liberty/style.json',
-	'openfreemap-positron':'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/positron/style.json',
+	'openfreemap-bright': 'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/bright/style.json',
+	'openfreemap-dark': 'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/dark/style.json',
+	'openfreemap-fiord': 'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/fiord/style.json',
+	'openfreemap-liberty':
+		'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/liberty/style.json',
+	'openfreemap-positron':
+		'https://raw.githubusercontent.com/hyperknot/openfreemap-styles/main/styles/positron/style.json',
 };
 
 /**

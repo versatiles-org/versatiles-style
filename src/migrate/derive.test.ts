@@ -46,7 +46,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 					colors: { water: '#3366CC', roadMotorway: '#CC0000', label: '#112233' },
 					layers: { buildings: false, pois: false, land: { rock: false } },
 					text: { language: 'de' },
-					layout: { scale: { labels: 1.5 } },
+					layout: { scale: { labels: 1.5 }, pitchAlignment: 'viewport' },
 					features: { terrain: { exaggeration: 2 } },
 					projection: 'mercator',
 				})
@@ -58,7 +58,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 			theme: 'natural',
 			layers: { buildings: false, pois: false, land: { rock: false } },
 			text: { language: 'de' },
-			layout: { scale: { labels: 1.5 } },
+			layout: { scale: { labels: 1.5 }, pitchAlignment: 'viewport' },
 			features: { terrain: { exaggeration: 2 } },
 			projection: 'mercator',
 		});

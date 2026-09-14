@@ -237,13 +237,18 @@ describe('resolveText', () => {
 
 describe('resolveLayout', () => {
 	it('fills defaults', () => {
-		expect(resolveLayout()).toStrictEqual({ scale: { labels: 1, icons: 1 }, spacing: { labels: 1, icons: 1 } });
+		expect(resolveLayout()).toStrictEqual({
+			scale: { labels: 1, icons: 1 },
+			spacing: { labels: 1, icons: 1 },
+			pitchAlignment: 'map',
+		});
 	});
 
 	it('applies scalar scale to both labels and icons', () => {
 		expect(resolveLayout({ scale: 1.5 })).toStrictEqual({
 			scale: { labels: 1.5, icons: 1.5 },
 			spacing: { labels: 1, icons: 1 },
+			pitchAlignment: 'map',
 		});
 	});
 
@@ -251,7 +256,15 @@ describe('resolveLayout', () => {
 		expect(resolveLayout({ scale: { labels: 1.2, icons: 0.8 } })).toStrictEqual({
 			scale: { labels: 1.2, icons: 0.8 },
 			spacing: { labels: 1, icons: 1 },
+			pitchAlignment: 'map',
 		});
+	});
+
+	it('keeps a pitch alignment and rejects an unknown one', () => {
+		expect(resolveLayout({ pitchAlignment: 'viewport' }).pitchAlignment).toBe('viewport');
+		expect(() => resolveLayout({ pitchAlignment: 'upright' as never })).toThrow(
+			'layout.pitchAlignment: unknown value "upright". Valid values: map, viewport.'
+		);
 	});
 });
 

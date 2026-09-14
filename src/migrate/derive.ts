@@ -13,6 +13,7 @@ import {
 	type LayerGroupOptions,
 	type OsmOptions,
 	type Palette,
+	type PitchAlignment,
 	type ResolvedColors,
 	type SatelliteOptions,
 	type SkyOptions,
@@ -485,7 +486,13 @@ function deriveCommon(
 	const text = { ...deriveText(readings, report), ...deriveFonts(readings) };
 	if (Object.keys(text).length > 0) content.text = text;
 	const scale = deriveLabelScale(readings);
-	if (scale !== undefined) content.layout = { scale: { labels: scale } };
+	const pitchAlignment = derivePitchAlignment(readings);
+	if (scale !== undefined || pitchAlignment !== undefined) {
+		content.layout = {
+			...(scale !== undefined && { scale: { labels: scale } }),
+			...(pitchAlignment !== undefined && { pitchAlignment }),
+		};
+	}
 
 	const features: Common['features'] = {};
 	if (readings.get('building')?.extruded) features.buildings = 'extruded';
@@ -601,6 +608,27 @@ function deriveLabelScale(readings: ReadonlyMap<string, ProbeReading>): number |
 	const median = ratios[Math.floor(ratios.length / 2)];
 	const scale = Math.round(median * 20) / 20;
 	return Math.abs(scale - 1) >= 0.1 ? scale : undefined;
+}
+
+/** The probes whose labels follow a line — the only labels `layout.pitchAlignment` changes. */
+const LINE_LABEL_PROBES = ['label-street-primary', 'label-street-residential', 'label-water-river'];
+
+/**
+ * `viewport` when most line labels stand up in a tilted map. A pitch alignment of `auto` follows the
+ * rotation alignment, whose own `auto` is `map` along a line. Zoom-dependent values are not read.
+ */
+function derivePitchAlignment(readings: ReadonlyMap<string, ProbeReading>): PitchAlignment | undefined {
+	let viewport = 0;
+	let map = 0;
+	for (const id of LINE_LABEL_PROBES) {
+		const layout = readings.get(id)?.label?.layer.layout as Record<string, unknown> | undefined;
+		if (!layout) continue;
+		let alignment = layout['text-pitch-alignment'] ?? 'auto';
+		if (alignment === 'auto') alignment = layout['text-rotation-alignment'] ?? 'auto';
+		if (alignment === 'viewport') viewport++;
+		else if (alignment === 'map' || alignment === 'auto') map++;
+	}
+	return viewport > map ? 'viewport' : undefined;
 }
 
 function deriveSun(light: NonNullable<StyleSpecification['light']>): SunOptions {
