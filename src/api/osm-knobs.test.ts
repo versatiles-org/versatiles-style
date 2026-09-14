@@ -599,12 +599,30 @@ describe('osm() static properties', () => {
 
 describe('osm() knob: sky', () => {
 	it('emits a style.sky populated from the resolved defaults', () => {
-		// Sky and horizon come from the palette (see the per-palette block below); the three blend
-		// factors are palette-independent.
+		// The sky colour comes from the palette; every other value is palette-independent.
 		const colors = osm.colors('colorful');
 		expect(build().sky).toStrictEqual({
 			'sky-color': colors.water,
+			'horizon-color': '#ffffff',
+			'fog-color': '#ffffff',
+			'sky-horizon-blend': 0.8,
+			'horizon-fog-blend': 0.8,
+			'fog-ground-blend': 0.5,
 			'atmosphere-blend': 0,
+		});
+	});
+
+	it('resolves every sky default but the palette-derived sky colour', () => {
+		expect(osm.resolveOptions().sky).toStrictEqual({
+			fogColor: '#ffffff',
+			horizonColor: '#ffffff',
+			atmosphereBlend: 0,
+			fogGroundBlend: 0.5,
+			horizonFogBlend: 0.8,
+			skyHorizonBlend: 0.8,
+		});
+		expect(osm.minimizeOptions(osm.resolveOptions({ sky: { fogGroundBlend: 0.2 } }))).toEqual({
+			sky: { fogGroundBlend: 0.2 },
 		});
 	});
 
@@ -613,16 +631,20 @@ describe('osm() knob: sky', () => {
 			sky: {
 				skyColor: '#010203',
 				horizonColor: '#0a0b0c',
+				fogColor: '#0d0e0f',
 				skyHorizonBlend: 0.1,
 				horizonFogBlend: 0.2,
+				fogGroundBlend: 0.3,
 				atmosphereBlend: 0.7,
 			},
 		});
 		expect(s.sky).toStrictEqual({
 			'sky-color': '#010203',
 			'horizon-color': '#0a0b0c',
+			'fog-color': '#0d0e0f',
 			'sky-horizon-blend': 0.1,
 			'horizon-fog-blend': 0.2,
+			'fog-ground-blend': 0.3,
 			'atmosphere-blend': 0.7,
 		});
 	});
@@ -735,11 +757,10 @@ describe('osm() knob: projection', () => {
 // pinned it: edit `colors.water` on top of `osm.resolveOptions()` and the sky stayed put. They now
 // leave the two colours unset and `osm()` derives them when it builds.
 describe('osm() resolved options round-trip without pinning the sky', () => {
-	it('leaves the palette-derived sky colours out of resolved options', () => {
+	it('leaves the palette-derived sky colour out of resolved options', () => {
 		const sky = osm.resolveOptions().sky;
 		expect(sky).not.toBe(false);
 		expect(sky).not.toHaveProperty('skyColor');
-		expect(sky).not.toHaveProperty('horizonColor');
 	});
 
 	it('lets the sky follow a colour edit made on top of resolved defaults', () => {

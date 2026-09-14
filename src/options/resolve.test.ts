@@ -5,7 +5,7 @@ import { resolveTheme } from './theme.js';
 import { PALETTES } from '../themes/index.js';
 import { resolveColors } from './colors.js';
 import { resolveSun } from './sun.js';
-import { resolveSky } from './sky.js';
+import { resolveSky, SKY_DEFAULTS } from './sky.js';
 import { resolveText } from './text.js';
 import { resolveLayout } from './layout.js';
 import { resolveOsmFeatures } from './features.js';
@@ -204,14 +204,18 @@ describe('resolveSun', () => {
 });
 
 describe('resolveSky', () => {
-	it('fills the blends but leaves the palette-derived colours unset', () => {
-		const sky = resolveSky(true);
-		expect(sky).toEqual({});
+	it('fills every value but the palette-derived sky colour', () => {
+		expect(resolveSky(true)).toStrictEqual(SKY_DEFAULTS);
+		expect(resolveSky()).toStrictEqual(SKY_DEFAULTS);
+		expect(resolveSky(false)).toBeUndefined();
 	});
 
-	it('keeps colours the caller set, and only those', () => {
-		expect(resolveSky({ skyColor: '#010203' })).toMatchObject({ skyColor: '#010203' });
-		expect(resolveSky({ skyColor: '#010203' })).not.toHaveProperty('horizonColor');
+	it('keeps the sky colour and other values the caller set', () => {
+		expect(resolveSky({ skyColor: '#010203', fogGroundBlend: 0.2 })).toStrictEqual({
+			...SKY_DEFAULTS,
+			skyColor: '#010203',
+			fogGroundBlend: 0.2,
+		});
 	});
 });
 

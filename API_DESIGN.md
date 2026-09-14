@@ -315,10 +315,12 @@ type SunOptions = {
 // `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
 // MapLibre only draws the sky when pitched or in globe projection.
 type SkyOptions = {
-  skyColor?: string; // color of the sky above the horizon; default: '#87CEEB'
+  skyColor?: string; // color of the sky above the horizon; default: the palette's `colors.water`
   horizonColor?: string; // color at the horizon; default: '#ffffff'
-  skyHorizonBlend?: number; // 0–1; blend between sky and horizon; default: 0.5
-  horizonFogBlend?: number; // 0–1; blend between horizon and fog; default: 0.5
+  fogColor?: string; // color of the fog; default: '#ffffff'
+  skyHorizonBlend?: number; // 0–1; blend between sky and horizon; default: 0.8
+  horizonFogBlend?: number; // 0–1; blend between horizon and fog; default: 0.8
+  fogGroundBlend?: number; // 0–1; blend between fog and ground; default: 0.5
   atmosphereBlend?: number; // 0–1; atmospheric haze intensity; default: 0
 };
 
@@ -439,10 +441,10 @@ osm.minimizeOptions(options?: OsmOptions): OsmOptions
 osm.toCode(options?: OsmOptions): string
 ```
 
-`osm.defaults` and `osm.resolveOptions()` leave `sky.skyColor` and `sky.horizonColor` unset unless
-you set them: `osm()` derives them from the palette's `water` and `background` when it builds. So a
+`osm.defaults` and `osm.resolveOptions()` fill in every `sky` value except `sky.skyColor`, which stays
+unset unless you set it: `osm()` takes it from the palette's `colors.water` when it builds. So a
 resolved object can be fed straight back in as options — edit `colors.water` on top of it and the sky
-still follows.
+still follows. A UI shows `colors.water` for the sky colour while it is unset.
 
 `osm.supportsLandcover(tileJSON)` tells whether a tileset can back `features.landcover`: it is true
 when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
@@ -538,9 +540,9 @@ satellite.minimizeOptions(options?: SatelliteOptions): SatelliteOptions
 satellite.toCode(options?: SatelliteOptions): string
 ```
 
-Likewise `satellite.defaults` and `satellite.resolveOptions()` leave the two sky colours unset;
-`satellite()` takes them from the overlay's palette, or a generic sky blue when `osmOverlay` is
-`false`.
+Likewise `satellite.defaults` and `satellite.resolveOptions()` leave `sky.skyColor` unset;
+`satellite()` takes it from the overlay's `colors.water`, or leaves it to MapLibre's own sky blue
+(`#88C6FC`) when `osmOverlay` is `false`.
 
 `satellite.minimizeOptions` and `satellite.toCode` work the same way. Overlay colours are compared
 against the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise — and an overlay

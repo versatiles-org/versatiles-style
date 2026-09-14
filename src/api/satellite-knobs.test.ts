@@ -298,15 +298,22 @@ describe('satellite() static properties', () => {
 
 // ── sky ──────────────────────────────────────────────────────────────────────────
 
+/** The sky values every style writes, whatever the palette. */
+const SKY_STYLE_DEFAULTS = {
+	'horizon-color': '#ffffff',
+	'fog-color': '#ffffff',
+	'sky-horizon-blend': 0.8,
+	'horizon-fog-blend': 0.8,
+	'fog-ground-blend': 0.5,
+	'atmosphere-blend': 0,
+};
+
 describe('satellite() knob: sky', () => {
-	it('takes sky and horizon from the overlay palette, like osm()', () => {
+	it('takes the sky colour from the overlay palette, like osm()', () => {
 		// The default overlay palette is `gray`; before this the satellite sky was hardcoded sky-blue
 		// whatever the overlay looked like, which is the defect #126 fixed for osm() but not here.
 		const gray = osm.colors('gray');
-		expect(build().sky).toStrictEqual({
-			'sky-color': gray.water,
-			'atmosphere-blend': 0,
-		});
+		expect(build().sky).toStrictEqual({ 'sky-color': gray.water, ...SKY_STYLE_DEFAULTS });
 	});
 
 	it('follows an explicit overlay theme', () => {
@@ -316,8 +323,9 @@ describe('satellite() knob: sky', () => {
 	});
 
 	it('keeps the generic sky blue for bare imagery, which has no palette', () => {
+		// no `sky-color` at all, so MapLibre's own sky blue applies
 		const s = build({ osmOverlay: false });
-		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
+		expect(s.sky).toStrictEqual(SKY_STYLE_DEFAULTS);
 	});
 
 	it('maps sky options onto style-spec properties', () => {
@@ -384,6 +392,6 @@ describe('satellite() knob: projection', () => {
 describe('satellite() resolved options round-trip without pinning the sky', () => {
 	it('lets the sky follow the overlay toggle on top of resolved defaults', () => {
 		const s = build({ ...satellite.resolveOptions(), osmOverlay: false });
-		expect(s.sky).toStrictEqual({ 'atmosphere-blend': 0 });
+		expect(s.sky).toStrictEqual(SKY_STYLE_DEFAULTS);
 	});
 });

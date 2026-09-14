@@ -1,23 +1,21 @@
 import type { StyleSpecification } from '../types/index.js';
 import type { ResolvedSky } from '../options/index.js';
 
-// Writes the resolved sky configuration into the style's top-level `sky` property.
-// MapLibre renders the sky when the map is pitched / in globe projection; the values
-// map 1:1 onto the style-spec `sky` keys (fog-color / fog-ground-blend are left at
-// their MapLibre defaults — they are not exposed as options).
-// `palette` supplies the sky and horizon colours the caller did not set: resolved options leave them
-// unset so they keep following the palette (see `resolveSky`).
+// Writes the resolved sky configuration into the style's top-level `sky` property, one style-spec key
+// per resolved value. MapLibre renders the sky when the map is pitched / in globe projection.
+// `skyColor` is written only when set: the callers fill it in from the palette's `water`, since resolved
+// options leave it unset so it keeps following the palette (see `resolveSky`).
 export function applySky(style: StyleSpecification, sky: ResolvedSky) {
 	// `sky: false` omits the block rather than writing transparent values.
 	if (sky) {
 		style.sky = {
-			...(sky.fogColor === undefined ? {} : { 'fog-color': sky.fogColor }),
-			...(sky.horizonColor === undefined ? {} : { 'horizon-color': sky.horizonColor }),
 			...(sky.skyColor === undefined ? {} : { 'sky-color': sky.skyColor }),
-			'atmosphere-blend': sky.atmosphereBlend ?? 0,
-			...(sky.fogGroundBlend === undefined ? {} : { 'fog-ground-blend': sky.fogGroundBlend }),
-			...(sky.horizonFogBlend === undefined ? {} : { 'horizon-fog-blend': sky.horizonFogBlend }),
-			...(sky.skyHorizonBlend === undefined ? {} : { 'sky-horizon-blend': sky.skyHorizonBlend }),
+			'horizon-color': sky.horizonColor,
+			'fog-color': sky.fogColor,
+			'sky-horizon-blend': sky.skyHorizonBlend,
+			'horizon-fog-blend': sky.horizonFogBlend,
+			'fog-ground-blend': sky.fogGroundBlend,
+			'atmosphere-blend': sky.atmosphereBlend,
 		};
 	} else {
 		delete style.sky;
