@@ -29,6 +29,18 @@ function expectColors(actual: ColorsOptions | undefined, expected: ColorsOptions
 
 const PM_URL = 'https://example.org/protomaps.json';
 
+/** A glyph server's font list, as `guessOptions` passes it on: the faces these tests carry over. */
+const FONT_NAMES = [
+	'noto_sans_regular',
+	'noto_sans_bold',
+	'open_sans_regular',
+	'open_sans_semibold',
+	'open_sans_bold',
+	'fira_sans_regular',
+	'fira_sans_regular_italic',
+	'fira_sans_bold',
+];
+
 describe('deriveOptions — round trips through the package builders', () => {
 	it('derives nothing from the default osm() style', () => {
 		expect(osmOptions(deriveOptions(osm()))).toEqual({});
@@ -80,6 +92,16 @@ describe('deriveOptions — round trips through the package builders', () => {
 		};
 		const overlay = satelliteOptions(deriveOptions(satellite({ osmOverlay: { text: { fonts: regular } } })));
 		expect(overlay).toEqual({ osmOverlay: { text: { fonts: regular } } });
+	});
+
+	it('recovers the fonts of every topic, including topics no probe reads', () => {
+		const fonts = {
+			default: 'fira_sans_regular',
+			streets: { refs: 'fira_sans_bold' },
+			water: 'fira_sans_regular_italic',
+			pois: { general: 'fira_sans_bold' },
+		};
+		expect(osmOptions(deriveOptions(osm({ text: { fonts } }), {}, FONT_NAMES))).toEqual({ text: { fonts } });
 	});
 
 	it('hides a whole branch when all of its groups are hidden', () => {
@@ -172,7 +194,7 @@ function omtStyle(extra: Partial<StyleSpecification> = {}, layers: unknown[] = [
 				type: 'symbol',
 				source: 'openmaptiles',
 				'source-layer': 'place',
-				layout: { 'text-field': '{name:latin}', 'text-font': ['Open Sans Regular'] },
+				layout: { 'text-field': '{name:latin}', 'text-font': ['Metropolis Regular'] },
 				paint: { 'text-color': '#333' },
 			},
 			...layers,
@@ -200,11 +222,11 @@ describe('deriveOptions — foreign styles', () => {
 
 	it('warns about what it cannot carry over', () => {
 		const { report } = deriveOptions(omtStyle({ sprite: 'https://example.org/sprite' }));
-		expect(report.warnings).toContainEqual(expect.stringContaining('Open Sans Regular'));
+		expect(report.warnings).toContainEqual(expect.stringContaining('Metropolis Regular'));
 		expect(report.warnings).toContainEqual(expect.stringContaining('icons are not carried over'));
 	});
 
-	it('carries over the weight of the label fonts, not their family', () => {
+	it('carries over fonts the glyph server has, and only the weight of those it has not', () => {
 		const withFont = (font: string[]) =>
 			omtStyle({}, [
 				{
@@ -216,10 +238,27 @@ describe('deriveOptions — foreign styles', () => {
 				},
 			]);
 
-		const semibold = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']));
-		// the style's labels are all regular-role probes, so every topic osm() sets in regular turns bold
-		expect(osmOptions(semibold).text).toEqual({ fonts: 'noto_sans_bold' });
-		expect(semibold.report.warnings).toContainEqual(expect.stringContaining('Open Sans Semibold'));
+		// Open Sans is on the server: the place and boundary labels keep their face, and every other topic
+		// takes the family, in the weight the style gives its labels
+		const openSans = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']), {}, FONT_NAMES);
+		expect(osmOptions(openSans).text).toEqual({
+			fonts: { default: 'open_sans_bold', boundaries: 'open_sans_semibold', places: 'open_sans_semibold' },
+		});
+		expect(openSans.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
+
+		// Metropolis is not: only the weight carries over, on Noto Sans
+		const metropolis = deriveOptions(withFont(['Metropolis Semibold']), {}, FONT_NAMES);
+		expect(osmOptions(metropolis).text).toEqual({ fonts: 'noto_sans_bold' });
+		expect(metropolis.report.warnings).toContainEqual(
+			expect.stringContaining('the glyph server does not publish are not carried over (Metropolis Semibold)')
+		);
+
+		// without a font list only the target's own Noto Sans is known, so Open Sans is only a weight too
+		const unlisted = deriveOptions(withFont(['Open Sans Semibold']));
+		expect(osmOptions(unlisted).text).toEqual({ fonts: 'noto_sans_bold' });
+		expect(unlisted.report.warnings).toContainEqual(
+			expect.stringContaining('unknown without the glyph server font list are not carried over (Open Sans Semibold)')
+		);
 
 		const noto = deriveOptions(withFont(['Noto Sans Medium']));
 		expect(osmOptions(noto).text).toBeUndefined();

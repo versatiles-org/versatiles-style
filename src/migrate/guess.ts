@@ -1,4 +1,4 @@
-import { loadTileSource, resolveUrl } from '../lib/index.js';
+import { fetchFontFaces, loadTileSource, resolveUrl } from '../lib/index.js';
 import { checkKeys } from '../options/keys.js';
 import type { FetchLike } from '../options/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
@@ -12,8 +12,10 @@ export type GuessOptionsOptions = {
 };
 
 /**
- * The asynchronous half of {@link deriveOptions}: downloads the style when given its URL, then the
- * TileJSON of every vector source that references one, and derives the options from both.
+ * The asynchronous half of {@link deriveOptions}: downloads the style when given its URL, the TileJSON of
+ * every vector source that references one, and the font list of the glyph server the options will use —
+ * `osm()`'s default, via `fetchFontFaces()` — and derives the options from all three. Without a font
+ * list, fonts carry over their weight only.
  *
  * A TileJSON that cannot be downloaded is not fatal — the schema is then recognised from the
  * source-layers the style reads — and is reported in `report.warnings`. Never throws: an invalid
@@ -57,7 +59,15 @@ export async function guessOptions(
 			})
 		);
 
-		const guess = deriveOptions(document, tileJSONs);
+		// The glyph server of `osm()`'s default URLs: the options carry no `urls`, so that is where they load
+		// fonts from. Its font list is optional, so a failure is not reported here; `deriveOptions` names
+		// the fonts it could not carry over.
+		const fontNames = await fetchFontFaces(undefined, { fetch: fetchFn }).then(
+			(faces) => faces?.map((face) => face.id),
+			() => undefined
+		);
+
+		const guess = deriveOptions(document, tileJSONs, fontNames);
 		guess.report.warnings.unshift(...warnings);
 		return guess;
 	} catch (error) {

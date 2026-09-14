@@ -2,7 +2,7 @@ import { osm } from '../api/osm.js';
 import { satellite } from '../api/satellite.js';
 import { guessSchema, type SchemaGuess } from '../api/guessSchema.js';
 import type { SchemaName } from '../lib/schema-signatures.js';
-import { getLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { getFontGroupMap, getLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
 import {
@@ -14,6 +14,7 @@ import {
 	fontOf,
 	type ColorsOptions,
 	type FontOptions,
+	type FontTopic,
 	type LayerGroupOptions,
 	type OsmOptions,
 	type Palette,
@@ -118,14 +119,15 @@ const LANGUAGE_PROBES = [
 
 export function deriveOptions(
 	style: StyleSpecification,
-	tileJSONs: Readonly<Record<string, TileJSONSpecification>> = {}
+	tileJSONs: Readonly<Record<string, TileJSONSpecification>> = {},
+	fontNames?: readonly string[]
 ): OptionsGuess {
 	const report: GuessReport = { sources: [], evidence: [], unmatched: [], warnings: [] };
 	try {
 		if (!style || typeof style !== 'object' || !Array.isArray(style.layers) || typeof style.sources !== 'object') {
 			throw new TypeError('not a MapLibre style: expected `sources` and `layers`');
 		}
-		return derive(style, tileJSONs, report);
+		return derive(style, tileJSONs, fontNames, report);
 	} catch (error) {
 		report.warnings.push(`deriveOptions: ${error instanceof Error ? error.message : String(error)}`);
 		return { kind: 'unknown', report };
@@ -135,6 +137,7 @@ export function deriveOptions(
 function derive(
 	style: StyleSpecification,
 	tileJSONs: Readonly<Record<string, TileJSONSpecification>>,
+	fontNames: readonly string[] | undefined,
 	report: GuessReport
 ): OptionsGuess {
 	// ── 1. sources ──
@@ -164,7 +167,7 @@ function derive(
 		return { kind: 'unknown', report };
 	}
 
-	const common = deriveCommon(style, readings, schemas, report);
+	const common = deriveCommon(style, readings, schemas, fontNames, report);
 	const hasOverlay = [...readings.values()].some((r) => r.probe.kind === 'line' || r.probe.kind === 'symbol');
 
 	let guess: OptionsGuess;
@@ -493,10 +496,11 @@ function deriveCommon(
 	style: StyleSpecification,
 	readings: ReadonlyMap<string, ProbeReading>,
 	schemas: ReadonlyMap<string, SchemaName>,
+	fontNames: readonly string[] | undefined,
 	report: GuessReport
 ): Common {
 	const content: Common['content'] = {};
-	const text = { ...deriveText(readings, report), ...deriveFonts(readings) };
+	const text = { ...deriveText(readings, report), ...deriveFonts(readings, fontNames, report) };
 	if (Object.keys(text).length > 0) content.text = text;
 	const scale = deriveLabelScale(readings);
 	const pitchAlignment = derivePitchAlignment(readings);
@@ -530,12 +534,6 @@ function deriveCommon(
 
 	if (style.light) globals.sun = deriveSun(style.light);
 
-	const fonts = new Set<string>();
-	for (const reading of readings.values()) if (reading.textFont?.[0]) fonts.add(reading.textFont[0]);
-	const foreign = [...fonts].filter((font) => fontFamily(font) !== 'noto_sans');
-	if (foreign.length > 0) {
-		report.warnings.push(`font families are not carried over (${foreign.join(', ')}); only regular or bold is`);
-	}
 	if (style.sprite) report.warnings.push('icons are not carried over; the VersaTiles sprite is used');
 	if (schemas.size > 1) report.warnings.push('more than one vector source: all were read as one map');
 	return { content, features, globals };
@@ -583,34 +581,131 @@ function fontFamily(font: string): string {
 /** A font counts as bold when its name says so; anything lighter, Medium included, as regular. */
 const BOLD_FONT = /bold|black|heavy|demi/i;
 
+/** A font name as the glyph server spells its id: `Open Sans Bold` → `open_sans_bold`. */
+function glyphId(font: string): string {
+	return font
+		.toLowerCase()
+		.replace(/[-_\s]+/g, ' ')
+		.trim()
+		.replace(/ /g, '_');
+}
+
+/** The first of the most frequent keys. */
+function mostVoted<T>(votes: ReadonlyMap<T, number>): T | undefined {
+	let best: T | undefined;
+	let most = 0;
+	for (const [key, count] of votes) {
+		if (count > most) [best, most] = [key, count];
+	}
+	return best;
+}
+
+const vote = <T>(votes: Map<T, number>, key: T) => votes.set(key, (votes.get(key) ?? 0) + 1);
+
 /**
- * Regular or bold, per the role a font plays in the target: the `text.fonts` topics the target sets in
- * its regular face, and those it sets in bold. Each role follows the weight most of the style's labels
- * in that role are set in — by name only; font families are not matched. Every topic of a role that was
- * read is given, so a satellite overlay, whose fonts are all bold, gets them too; minimising drops the
- * topics that equal the target's own.
+ * `text.fonts`, per topic, from the fonts the style sets its labels in.
+ *
+ * `fontNames` are the glyph names the target's glyph server publishes, from its `font_families.json`
+ * (`guessOptions` fetches them). Without them only the target's own faces, Noto Sans regular and bold,
+ * are known, and every other font carries over its weight alone.
+ *
+ * A foreign font the glyph server also publishes is carried over as it is (`Open Sans Bold` →
+ * `open_sans_bold`); one of a family the server has, in a face it has not (`Noto Sans Medium`), becomes
+ * that family's regular or bold. Each topic then takes, in order:
+ *
+ *  1. the face most of its own probes are set in;
+ *  2. for a topic no probe reads (`water.lakes`, `streets.refs`, `streets.exits`), the face of a topic in
+ *     the same group that the target sets in the same weight — lake names follow river names;
+ *  3. the style's most used family, in the weight the style gives the topic's role — regular or bold,
+ *     as the target sets the topic;
+ *  4. Noto Sans in that weight, when no font of the style is on the server — the weights still carry over.
+ *
+ * A label layer that sets no `text-font` is not read: MapLibre would draw it in its default font, which
+ * says nothing about the style's choice. Fonts neither the server nor its families have are named in a
+ * warning. Every topic is spelled out; minimising drops what equals the target's own.
  */
-function deriveFonts(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
+function deriveFonts(
+	readings: ReadonlyMap<string, ProbeReading>,
+	fontNames: readonly string[] | undefined,
+	report: GuessReport
+): TextOptions {
+	const known: ReadonlySet<string> = new Set([...(fontNames ?? []), DEFAULT_FONT_REGULAR, DEFAULT_FONT_BOLD]);
 	const base = modelFor(osmTarget(), 'light').base;
-	const votes = { regular: [0, 0], bold: [0, 0] };
+	const topicOf = new Map<string, FontTopic>();
+	const groups = getFontGroupMap();
+	for (const topic of FONT_TOPICS) {
+		const [group, leaf] = topic.split('.');
+		const ids = (leaf === undefined ? groups[group] : (groups[group] as LayerGroupMap)?.[leaf]) as string[] | undefined;
+		for (const id of ids ?? []) topicOf.set(id, topic);
+	}
+	const knownFamilies = new Set([...known].map(fontFamily));
+	const roleOf = (topic: FontTopic) => (fontOf(DEFAULT_FONTS, topic) === DEFAULT_FONT_BOLD ? 'bold' : 'regular');
+
+	const weights = { regular: [0, 0], bold: [0, 0] };
+	const topicFaces = new Map<FontTopic, Map<string, number>>();
+	const families = new Map<string, number>();
+	const lost = new Set<string>();
 	for (const reading of readings.values()) {
+		// A layer that sets no `text-font` gets MapLibre's default, Open Sans: the style chose no font.
+		if (
+			(reading.label?.layer as { layout?: Record<string, unknown> } | undefined)?.layout?.['text-font'] === undefined
+		) {
+			continue;
+		}
 		const foreign = reading.textFont?.[0];
 		const own = base.get(reading.probe.id)?.textFont?.[0];
 		if (!foreign || !own) continue;
-		const role = own === DEFAULT_FONT_BOLD ? votes.bold : votes.regular;
-		role[BOLD_FONT.test(foreign) ? 1 : 0]++;
-	}
-	const weight = ([regular, bold]: number[]) => (bold > regular ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR);
-	const read = { regular: votes.regular[0] + votes.regular[1] > 0, bold: votes.bold[0] + votes.bold[1] > 0 };
-	if (!read.regular && !read.bold) return {};
+		const bold = BOLD_FONT.test(foreign);
+		weights[own === DEFAULT_FONT_BOLD ? 'bold' : 'regular'][bold ? 1 : 0]++;
 
-	// Every topic of the role that was read, spelled out; minimising drops what equals the target's own.
+		const family = fontFamily(foreign);
+		const inFamily = `${family}_${bold ? 'bold' : 'regular'}`;
+		const face = known.has(glyphId(foreign))
+			? glyphId(foreign)
+			: knownFamilies.has(family) && known.has(inFamily)
+				? inFamily
+				: undefined;
+		if (face === undefined) {
+			lost.add(foreign);
+			continue;
+		}
+		vote(families, fontFamily(face));
+		const topic = topicOf.get(reading.probe.id);
+		if (topic) vote((topicFaces.get(topic) ?? topicFaces.set(topic, new Map()).get(topic))!, face);
+	}
+	if (lost.size > 0) {
+		const why = fontNames ? 'the glyph server does not publish' : 'unknown without the glyph server font list';
+		report.warnings.push(`fonts ${why} are not carried over (${[...lost].join(', ')}); only regular or bold is`);
+	}
+	const read = { regular: weights.regular[0] + weights.regular[1] > 0, bold: weights.bold[0] + weights.bold[1] > 0 };
+	if (!read.regular && !read.bold) return {};
+	const weightOf = (role: 'regular' | 'bold') => {
+		if (!read[role]) return role;
+		const [regular, bold] = weights[role];
+		return bold > regular ? 'bold' : 'regular';
+	};
+	const family = mostVoted(families);
+
 	const fonts: Record<string, Record<string, string> | string> = {};
 	for (const topic of FONT_TOPICS) {
-		const role = fontOf(DEFAULT_FONTS, topic) === DEFAULT_FONT_BOLD ? 'bold' : 'regular';
-		if (!read[role]) continue;
-		const face = weight(votes[role]);
+		const role = roleOf(topic);
 		const [group, leaf] = topic.split('.');
+		const sibling = () => {
+			if (leaf === undefined || topicFaces.has(topic)) return undefined;
+			const votes = new Map<string, number>();
+			for (const other of FONT_TOPICS) {
+				if (other === topic || !other.startsWith(`${group}.`) || roleOf(other) !== role) continue;
+				for (const [face, count] of topicFaces.get(other) ?? []) votes.set(face, (votes.get(face) ?? 0) + count);
+			}
+			return mostVoted(votes);
+		};
+		const inFamily = family === undefined ? undefined : `${family}_${weightOf(role)}`;
+		const face =
+			mostVoted(topicFaces.get(topic) ?? new Map<string, number>()) ??
+			sibling() ??
+			(inFamily !== undefined && known.has(inFamily) ? inFamily : undefined) ??
+			(read[role] ? (weightOf(role) === 'bold' ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR) : undefined);
+		if (face === undefined) continue;
 		if (leaf === undefined) fonts[group] = face;
 		else ((fonts[group] ??= {}) as Record<string, string>)[leaf] = face;
 	}

@@ -67,7 +67,6 @@
 		"test-coverage": "vitest run --coverage",
 		"typecheck": "tsc --noEmit",
 		"upgrade": "vrt deps-upgrade",
-		"vendor-fonts": "tsx scripts/vendor-fonts.ts",
 		"vendor-schema": "tsx scripts/vendor-schema.ts",
 		"prepare": "husky"
 	},

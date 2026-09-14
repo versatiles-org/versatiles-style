@@ -205,8 +205,7 @@ topic nobody sets keeps the style's own font. The defaults are Noto Sans, bold f
 POI names: `{ default: 'noto_sans_regular', streets: { refs: 'noto_sans_bold' }, pois: { general:
 'noto_sans_bold' } }`. The satellite overlay sets every topic in `noto_sans_bold`, and setting one
 overlay topic keeps the others bold. Names are not checked, since `osm()` cannot know which faces a
-glyph server has; in TypeScript the faces of the VersaTiles glyph server autocomplete (`KnownFontName`,
-a snapshot refreshed with `npm run vendor-fonts`), and any other string is still accepted.
+glyph server has; `fetchFontFaces()` lists the faces a server publishes.
 
 ```ts
 osm({ text: { fonts: 'fira_sans_regular' } }); // every label
@@ -629,14 +628,15 @@ import { guessOptions, deriveOptions } from '@versatiles/style/migrate';
 guessOptions(
   style: string | StyleSpecification,   // the URL of a style document, or the style itself
   options?: {
-    fetch?: typeof globalThis.fetch     // for the style and every TileJSON
+    fetch?: typeof globalThis.fetch     // for the style, every TileJSON and the font list
     base?:  string                      // resolves a relative style URL
   }
 ): Promise<OptionsGuess>
 
 deriveOptions(
   style: StyleSpecification,
-  tileJSONs?: Record<string, TileJSONSpecification>   // per source id, when already at hand
+  tileJSONs?: Record<string, TileJSONSpecification>,  // per source id, when already at hand
+  fontNames?: string[]                                 // glyph names the target glyph server publishes
 ): OptionsGuess
 
 type OptionsGuess =
@@ -658,8 +658,9 @@ that its vector fills do not cover — whose style looks most like it. The optio
 can go straight into `osm.toCode()`. Mapbox styles are not supported.
 
 It lives in its own subpath because it carries the style spec's expression engine, which a caller who
-only builds styles should not download. `guessOptions` downloads the style when given a URL, and the
-TileJSON of every vector source; `deriveOptions` is the synchronous core and does no I/O. Neither
+only builds styles should not download. `guessOptions` downloads the style when given a URL, the
+TileJSON of every vector source, and the font list of `osm()`'s default glyph server (`fetchFontFaces()`);
+`deriveOptions` is the synchronous core and does no I/O. Neither
 throws: what cannot be read yields `kind: 'unknown'` with the reason in `report.warnings`.
 
 **How it reads a style.** Nothing is rendered. For each of about sixty _probes_ — a motorway, a forest,
@@ -680,13 +681,15 @@ about half a second the first time, once per target and light or dark mode.
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
 language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), whether
 street and river names stand up in a tilted map (`layout.pitchAlignment`), whether
-labels are set regular or bold (`text.fonts`, per topic — by the font's name), extruded
+labels are set in (`text.fonts`, per topic: a font the glyph server's font list also has as it is —
+`Open Sans Bold` → `open_sans_bold` — otherwise its weight on Noto Sans; topics no probe reads follow
+their group, then the style's family; without a font list, weights only), extruded
 buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 
-**What it does not carry over**, and says so in the warnings: font families and icons (VersaTiles
-glyphs and sprites are used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
+**What it does not carry over**, and says so in the warnings: fonts the VersaTiles glyph server does
+not publish, beyond their weight, and icons (the VersaTiles sprite is used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
 listed in `report.unmatched`. Tile URLs are not copied: the options build a style on VersaTiles tiles.
 
 To judge a migration by eye, `npm run migrate-compare -- <style URL> …` renders each style next to its
@@ -788,9 +791,7 @@ and returns the faces sorted by family, width, weight and italic.
 
 It resolves to `undefined` when there is no list to read — a pattern without a `{fontstack}` path
 segment, a server that does not publish the file, or a document that is not a face list — so a UI can
-fall back to a free text field. It rejects only when the request itself fails. Unlike the
-`KnownFontName` type, which is a snapshot of the VersaTiles server, this asks the server a style
-actually uses.
+fall back to a free text field. It rejects only when the request itself fails.
 
 ### `fontCovers(face, language): boolean | undefined`
 

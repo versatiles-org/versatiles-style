@@ -36,7 +36,8 @@ describe('guessOptions', () => {
 			return json({}, 404);
 		});
 		const guess = await guessOptions('styles/a/style.json', { base: 'https://example.org/', fetch });
-		expect(fetch).toHaveBeenCalledTimes(2);
+		// the style, its TileJSON, and the font list of osm()'s default glyph server
+		expect(fetch).toHaveBeenCalledTimes(3);
 		expect(guess.kind).toBe('osm');
 		expect(guess.report.sources[0].guess).toMatchObject({ schema: 'shortbread' });
 	});
@@ -48,16 +49,37 @@ describe('guessOptions', () => {
 	});
 
 	it('reads the schema from the style when a TileJSON cannot be loaded', async () => {
-		const fetch = vi.fn(() => json({}, 500));
+		const fetch = vi.fn((_input: RequestInfo | URL) => json({}, 500));
 		const style = { ...osm(), sources: { 'versatiles-shortbread': { type: 'vector', url: 'mapbox://x' } } };
 		const guess = await guessOptions(style as StyleSpecification, { fetch });
-		expect(fetch).not.toHaveBeenCalled();
+		expect(fetch.mock.calls.map(([url]) => String(url))).toEqual([
+			'https://tiles.versatiles.org/assets/glyphs/font_families.json',
+		]);
 		expect(guess.kind).toBe('osm');
 		expect(guess.report.warnings[0]).toMatch(/source "versatiles-shortbread": TileJSON not loaded .*not an http/);
 
 		const failing = await guessOptions(anonymousStyle('https://example.org/tiles.json'), { fetch });
 		expect(failing.report.warnings[0]).toMatch(/HTTP 500/);
 		expect(failing.kind).toBe('unknown');
+	});
+
+	it("carries over fonts the default glyph server's font list has", async () => {
+		const families = [
+			{
+				name: 'Open Sans',
+				faces: [{ id: 'open_sans_bold', style: 'normal', weight: 700, width: 'normal', codeblocks: '2-7' }],
+			},
+		];
+		const style = osm({ text: { fonts: 'open_sans_bold' }, urls: { osm: 'https://example.org/osm.json' } });
+		const withList = await guessOptions(style, {
+			fetch: (input) => (String(input).endsWith('/font_families.json') ? json(families) : json(SHORTBREAD_TILEJSON)),
+		});
+		expect(withList).toMatchObject({ kind: 'osm', options: { text: { fonts: 'open_sans_bold' } } });
+
+		const withoutList = await guessOptions(style, {
+			fetch: (input) => (String(input).endsWith('/font_families.json') ? json({}, 404) : json(SHORTBREAD_TILEJSON)),
+		});
+		expect(withoutList).toMatchObject({ kind: 'osm', options: { text: { fonts: 'noto_sans_bold' } } });
 	});
 
 	it('never throws', async () => {

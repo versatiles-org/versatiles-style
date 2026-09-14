@@ -106,7 +106,6 @@ export type {
 	FontName,
 	FontOptions,
 	FontTopic,
-	KnownFontName,
 	HillshadeOptions,
 	LayerGroupOptions,
 	LayoutOptions,

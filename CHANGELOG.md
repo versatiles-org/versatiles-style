@@ -127,7 +127,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `addresses`, each with sub-topics — as one string, a tree, or with `default` for whatever a level
   does not name. `osm.fontGroups` lists the layers each topic sets, and `fetchFontFaces()` the faces a
   glyph server publishes, with titles, for a font picker; `fontCovers()` tells whether a face has the
-  glyphs for a label language.
+  glyphs for a label language. `guessOptions()` carries over the fonts of a migrated style per topic when
+  the glyph server's font list has them (`Open Sans Bold` → `open_sans_bold`), and their weight otherwise.
 - `layout.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.
 - `layout.spacing` thins point labels too — places, POIs and house numbers — by widening their collision
