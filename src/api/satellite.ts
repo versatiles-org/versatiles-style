@@ -164,6 +164,14 @@ export const satellite = Object.assign(satelliteFn, {
 		return resolveSatellite();
 	},
 
+	/**
+	 * Maps each font topic of `osmOverlay.text.fonts` to the text layer IDs it sets. The overlay is an
+	 * `osm()` style and keeps every text layer, so these are `osm`'s.
+	 */
+	get fontGroups() {
+		return osm.fontGroups;
+	},
+
 	/** Return language codes available in a given TileJSON. The overlay is an `osm()` style, so its labels read the same fields. */
 	languages: osm.languages,
 

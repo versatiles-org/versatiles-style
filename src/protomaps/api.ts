@@ -30,7 +30,7 @@ import {
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
 } from './layers/index.js';
-import { getLayerGroupMap } from './layer-groups-map.js';
+import { getFontGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 
 /**
  * `protomaps()` — the Protomaps counterpart of `osm()`, exported from `@versatiles/style/protomaps`.
@@ -125,6 +125,14 @@ export const protomaps = Object.assign(protomapsFn, {
 	/** Maps each `LayerGroupOptions` key to the layer IDs it controls, for *this* schema's layers. */
 	get layerGroups() {
 		return getLayerGroupMap();
+	},
+
+	/**
+	 * Maps each font topic of `text.fonts` (`water.rivers`, `pois.transit`, …) to the text layer IDs it
+	 * sets. Built from the same group tags as `layerGroups`.
+	 */
+	get fontGroups() {
+		return getFontGroupMap();
 	},
 
 	/** Fully resolved defaults (theme: 'colorful'). */

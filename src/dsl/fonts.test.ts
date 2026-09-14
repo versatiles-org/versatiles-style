@@ -96,3 +96,73 @@ describe('text-font in built styles', () => {
 		}
 	);
 });
+
+describe('fontGroups', () => {
+	type Tree = { [key: string]: string[] | Tree };
+	const leaves = (node: Tree, path: string[] = []): [string, string[]][] =>
+		Object.entries(node).flatMap(([key, child]) =>
+			Array.isArray(child) ? [[[...path, key].join('.'), child] as [string, string[]]] : leaves(child, [...path, key])
+		);
+	const at = (tree: Tree, path: string): string[] | undefined =>
+		path.split('.').reduce<unknown>((node, key) => (node as Tree | undefined)?.[key], tree) as string[] | undefined;
+
+	const pm = { urls: { protomaps: 'pmtiles://https://example.org/planet.pmtiles' } };
+	const schemas: [string, Tree, Tree, () => StyleSpecification][] = [
+		['osm', osm.fontGroups, osm.layerGroups, () => osm({ features: { buildings: 'extruded' } })],
+		['omt', omt.fontGroups, omt.layerGroups, () => omt()],
+		['protomaps', protomaps.fontGroups, protomaps.layerGroups, () => protomaps(pm)],
+	];
+
+	it('is memoized', () => {
+		expect(osm.fontGroups).toBe(osm.fontGroups);
+		expect(omt.fontGroups).toBe(omt.fontGroups);
+		expect(protomaps.fontGroups).toBe(protomaps.fontGroups);
+	});
+
+	it('has a non-empty leaf for every topic in Shortbread', () => {
+		expect(
+			leaves(osm.fontGroups)
+				.map(([path]) => path)
+				.sort()
+		).toEqual([...FONT_TOPICS].sort());
+		for (const [path, ids] of leaves(osm.fontGroups)) expect(ids.length, path).toBeGreaterThan(0);
+	});
+
+	it('has the same topics in every schema, except exits, which Protomaps does not label', () => {
+		const paths = (tree: Tree) =>
+			leaves(tree)
+				.map(([path]) => path)
+				.sort();
+		expect(paths(omt.fontGroups)).toEqual(paths(osm.fontGroups));
+		expect(paths(protomaps.fontGroups)).toEqual(paths(osm.fontGroups).filter((p) => p !== 'streets.exits'));
+	});
+
+	it.each(schemas)('%s: each topic lists the layers of the group it is named after', (_name, fonts, groups) => {
+		for (const [topic, ids] of leaves(fonts)) {
+			const group = topic === 'pois.general' ? 'pois' : topic === 'pois.transit' ? 'transit.stops' : `labels.${topic}`;
+			const text = new Set(ids);
+			expect(
+				at(groups, group)?.filter((id) => text.has(id)),
+				topic
+			).toEqual(ids);
+		}
+	});
+
+	it.each(schemas)('%s: lists every text layer of the style exactly once', (_name, fonts, _groups, build) => {
+		const listed = leaves(fonts).flatMap(([, ids]) => ids);
+		expect(new Set(listed).size).toBe(listed.length);
+		const text = build()
+			.layers.filter((l) => ((l as { layout?: Record<string, unknown> }).layout ?? {})['text-field'] != null)
+			.map((l) => l.id);
+		expect([...listed].sort()).toEqual([...text].sort());
+	});
+
+	it("satellite's are osm's, and name only layers the overlay draws", () => {
+		expect(satellite.fontGroups).toBe(osm.fontGroups);
+		const drawn = new Set(satellite().layers.map((l) => l.id));
+		const missing = leaves(satellite.fontGroups)
+			.flatMap(([, ids]) => ids)
+			.filter((id) => !drawn.has(id));
+		expect(missing).toEqual([]);
+	});
+});

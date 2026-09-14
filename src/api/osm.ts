@@ -16,7 +16,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/languages.js';
-import { getLayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { getFontGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
 import { minimizeOsmOptions } from '../options/minimize.js';
@@ -114,6 +114,14 @@ export const osm = Object.assign(osmFn, {
 	/** Maps each `LayerGroupOptions` key to the layer IDs it controls. */
 	get layerGroups() {
 		return getLayerGroupMap();
+	},
+
+	/**
+	 * Maps each font topic of `text.fonts` (`water.rivers`, `pois.transit`, …) to the text layer IDs it
+	 * sets. Built from the same group tags as `layerGroups`.
+	 */
+	get fontGroups() {
+		return getFontGroupMap();
 	},
 
 	/** Fully resolved defaults (theme: 'colorful'). */

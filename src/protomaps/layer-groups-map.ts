@@ -1,49 +1,31 @@
 import { buildContext } from './context.js';
 import { protomapsLayers } from './layers/index.js';
 import { resolveProtomaps } from './options.js';
-import type { LayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { buildGroupMaps, type FontGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
 
-// This schema's own layer-group map, with its own module-level cache.
+// This schema's own group maps, with their own module-level cache.
 //
-// SCHEMA-SUPPORT-PLAN.md §6: under option A this needs no new mechanism — `omt.layerGroups` is correct
-// by construction because it is built from `protomaps`'s own layers, and the cache stays valid because each
-// schema module has one of its own. The `LayerGroupMap` *type* is shared; the map is not.
+// SCHEMA-SUPPORT-PLAN.md §6: under option A this needs no new mechanism — `protomaps.layerGroups` is
+// correct by construction because it is built from `protomaps`'s own layers, and the cache stays valid
+// because each schema module has one of its own. The map *types* and the builder are shared; the maps
+// are not.
 
-function insert(root: LayerGroupMap, path: string, id: string): void {
-	const parts = path.split('.');
-	let node = root;
-	for (const key of parts.slice(0, -1)) {
-		const next = (node[key] ??= {});
-		if (Array.isArray(next)) throw new Error(`layerGroups: "${path}" conflicts with a leaf group`);
-		node = next;
-	}
-	const leaf = (node[parts.at(-1)!] ??= []) as string[];
-	if (!leaf.includes(id)) leaf.push(id);
+let cached: { layers: LayerGroupMap; fonts: FontGroupMap } | undefined;
+
+function maps(): { layers: LayerGroupMap; fonts: FontGroupMap } {
+	// `buildings: 'flat'` and `'extruded'` are mutually exclusive, so both are walked and unioned.
+	// `landcover` only adds layers, so it is on in both.
+	return (cached ??= buildGroupMaps(
+		(['flat', 'extruded'] as const).map((buildings) =>
+			protomapsLayers(buildContext(resolveProtomaps({ features: { buildings, landcover: true } })))
+		)
+	));
 }
 
-let cached: LayerGroupMap | undefined;
-
 export function getLayerGroupMap(): LayerGroupMap {
-	if (cached) return cached;
+	return maps().layers;
+}
 
-	const map: LayerGroupMap = {};
-	// `buildings: 'flat'` and `'extruded'` are mutually exclusive, so neither build alone lists every
-	// layer the group can control; both are walked and their IDs unioned, as in the Shortbread map.
-	// `landcover` only adds layers, so it is on in both.
-	for (const buildings of ['flat', 'extruded'] as const) {
-		const ctx = buildContext(resolveProtomaps({ features: { buildings, landcover: true } }));
-		for (const { layer, group } of protomapsLayers(ctx)) {
-			if (group) insert(map, group, layer.id);
-		}
-	}
-
-	const transit = map.transit as LayerGroupMap | undefined;
-	map.icons = [
-		...((map.pois as string[]) ?? []),
-		...((map.markings as string[]) ?? []),
-		...((transit?.stops as string[]) ?? []),
-	];
-
-	cached = map;
-	return map;
+export function getFontGroupMap(): FontGroupMap {
+	return maps().fonts;
 }

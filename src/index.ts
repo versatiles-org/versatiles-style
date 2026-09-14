@@ -159,7 +159,7 @@ export {
 	isRasterTileJSONSpecification,
 } from './types/index.js';
 
-export type { LayerGroupMap } from './shortbread/layer-groups-map.js';
+export type { FontGroupMap, LayerGroupMap } from './shortbread/layer-groups-map.js';
 /**
  * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
  * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.

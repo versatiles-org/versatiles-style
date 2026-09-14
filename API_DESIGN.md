@@ -393,6 +393,7 @@ Static properties for introspection:
 osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural', …, 'toner-dark']
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
+osm.fontGroups:   FontGroupMap        // maps each font topic to the text layer IDs it sets
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (theme: 'colorful')
 osm.colors(palette: Palette): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
@@ -459,6 +460,16 @@ Object.keys(osm.layerGroups.roads.streets); // ['pedestrian', 'track', 'service'
 `icons` is a cross-cutting alias, so it is listed as the union of `pois`, `markings` and
 `transit.stops`.
 
+`osm.fontGroups` does the same for fonts: a tree of font topics with the text layers each one sets.
+The topics are the label groups of `layers.labels`, plus `pois.general` and `pois.transit` for the
+names drawn with POI and transit-stop icons. It is built from the same group tags, so the two maps
+always agree.
+
+```ts
+osm.fontGroups.water.rivers; // ['label-water-river', 'label-water-stream']
+osm.fontGroups.pois.transit; // ['symbol-transit-bus', 'symbol-transit-tram', …]
+```
+
 The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with a `theme` instead — see [Migration from v5](#migration-from-v5) below.
 
 ---
@@ -475,6 +486,7 @@ Static properties for introspection:
 satellite.colorKeys: string[] // color keys available in osmOverlay.colors
 satellite.defaults:  ResolvedSatelliteOptions
 satellite.languages(tileJSON: TileJSONSpecification): string[]
+satellite.fontGroups: FontGroupMap // osm.fontGroups: the overlay keeps every text layer
 satellite.slots: {
   belowLabels:  string // below text labels, above icons/symbols
   belowSymbols: string // below all symbols, above the raster layer
