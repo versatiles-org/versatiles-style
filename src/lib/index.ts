@@ -16,4 +16,5 @@ export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTile
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
 export { fetchTileJSON } from './fetchTileJSON.js';
 export { fetchFontFaces, type FontFaceInfo } from './fetchFontFaces.js';
+export { fontCovers } from './fontCovers.js';
 export { inlineSources } from './inlineSources.js';

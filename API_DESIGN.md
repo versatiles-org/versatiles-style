@@ -792,6 +792,23 @@ fall back to a free text field. It rejects only when the request itself fails. U
 `KnownFontName` type, which is a snapshot of the VersaTiles server, this asks the server a style
 actually uses.
 
+### `fontCovers(face, language): boolean | undefined`
+
+Whether a face from `fetchFontFaces()` has the glyphs to write labels in `language` — for a warning in
+a font picker, not a guarantee. The language's script comes from `Intl.Locale` (`ja` → Japanese, `sr` →
+Cyrillic, `sr-Latn` → Latin), and a few sample letters of it are checked against the face's `codeblocks`.
+It is `undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a
+script it has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local
+browser font by default, so a `false` for Chinese, Japanese or Korean matters to MapLibre Native only.
+
+```ts
+const faces = await fetchFontFaces({ base: 'https://tiles.versatiles.org' });
+fontCovers(
+  faces!.find((f) => f.id === 'libre_baskerville_regular')!,
+  'ru'
+); // false
+```
+
 ---
 
 ## `inlineSources(style, options?): Promise<StyleSpecification>`
