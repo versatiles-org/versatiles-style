@@ -27,6 +27,21 @@ describe('osm.minimizeOptions', () => {
 		});
 	});
 
+	it('writes fonts as the smallest tree, from any spelling', () => {
+		expect(osm.minimizeOptions({ text: { fonts: { water: { lakes: 'x', rivers: 'x' } } } })).toEqual({
+			text: { fonts: { water: 'x' } },
+		});
+		const edited = osm.resolveOptions({ text: { fonts: 'fira_sans_regular' } });
+		expect(osm.minimizeOptions(edited)).toEqual({ text: { fonts: 'fira_sans_regular' } });
+		const defaults = osm.resolveOptions();
+		expect(osm.minimizeOptions({ ...defaults, text: { ...defaults.text, fonts: { ...defaults.text.fonts } } })).toEqual(
+			{}
+		);
+		expect(osm.minimizeOptions({ text: { language: 'de', fonts: { streets: { refs: 'noto_sans_bold' } } } })).toEqual({
+			text: { language: 'de' },
+		});
+	});
+
 	it('keeps disabled and enabled toggles that differ from the default', () => {
 		expect(osm.minimizeOptions({ sky: false, features: { terrain: true } })).toEqual({
 			sky: false,
@@ -52,6 +67,7 @@ describe('osm.minimizeOptions', () => {
 			'features + layers',
 			{ features: { hillshade: true, landcover: true }, layers: { labels: false, roads: { paths: 0.5 } } },
 		],
+		['fonts', { text: { fonts: { default: 'a', water: 'b', pois: { transit: 'c' } } } }],
 		['sky', { sky: { skyColor: '#010203' }, projection: 'mercator' }],
 		['urls', { urls: { base: 'https://tiles.example.org' } }],
 	];
@@ -90,6 +106,25 @@ describe('satellite.minimizeOptions', () => {
 		});
 	});
 
+	it("minimises overlay fonts against the overlay's all-bold fonts", () => {
+		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: 'noto_sans_bold' } } })).toEqual({});
+		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: { water: 'x' } } } })).toEqual({
+			osmOverlay: { text: { fonts: { water: 'x' } } },
+		});
+		// osm()'s own fonts, set in the overlay: regular, with refs and POI names bold
+		expect(satellite.minimizeOptions({ osmOverlay: { text: osm.resolveOptions().text } })).toEqual({
+			osmOverlay: {
+				text: {
+					fonts: {
+						default: 'noto_sans_regular',
+						streets: { refs: 'noto_sans_bold' },
+						pois: { general: 'noto_sans_bold' },
+					},
+				},
+			},
+		});
+	});
+
 	const CASES: [string, SatelliteOptions][] = [
 		['defaults', {}],
 		['raster', { raster: { opacity: 0.7, hueRotate: 20 } }],
@@ -98,6 +133,7 @@ describe('satellite.minimizeOptions', () => {
 			'overlay configured',
 			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
 		],
+		['overlay fonts', { osmOverlay: { text: { fonts: { default: 'a', places: { cities: 'b' } } } } }],
 	];
 
 	it.each(CASES)('%s: rebuilds the identical style', (_label, options) => {

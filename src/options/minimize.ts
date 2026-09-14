@@ -2,6 +2,7 @@ import { resolveOsm, type OsmOptions } from './osm.js';
 import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
+import { minimizeFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
 
 type Plain = Record<string, unknown>;
 
@@ -39,6 +40,9 @@ function withoutDefaults(value: unknown, defaults: unknown): unknown {
  * Colours depend on the theme, so everything else is compared against the defaults of *this* theme.
  * The theme itself is compared against `defaultPalette` — otherwise a non-default palette would
  * equal its own defaults and vanish.
+ *
+ * `text.fonts` is minimised on its own (`minimizeFonts`): a string or `default` in the input stands for
+ * many resolved topics, so comparing it key by key against the resolved tree would keep all of it.
  */
 export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	options: T,
@@ -47,7 +51,16 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 ): T {
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
-	const out = (withoutDefaults(rest, defaultsFor(theme)) ?? {}) as T;
+	const defaults = defaultsFor(theme) as { text?: { fonts?: ResolvedFonts } };
+
+	const text = (rest as { text?: { fonts?: FontOptions } }).text;
+	const fontDefaults = defaults.text?.fonts;
+	const minimizeTheFonts = text?.fonts !== undefined && fontDefaults !== undefined;
+	const fonts = minimizeTheFonts ? minimizeFonts(text.fonts, fontDefaults) : undefined;
+	const withoutFonts = minimizeTheFonts ? { ...rest, text: { ...text, fonts: undefined } } : rest;
+
+	const out = (withoutDefaults(withoutFonts, defaults) ?? {}) as T & { text?: Plain };
+	if (fonts !== undefined) out.text = { ...out.text, fonts };
 	return (theme === defaultPalette ? out : { theme, ...out }) as T;
 }
 

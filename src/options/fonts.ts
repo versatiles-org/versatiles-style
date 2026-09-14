@@ -105,3 +105,74 @@ export function fontOf(fonts: ResolvedFonts, topic: FontTopic): FontName {
 	const [group, leaf] = topic.split('.') as [GroupName, string];
 	return (fonts[group] as Record<string, FontName>)[leaf];
 }
+
+// ── Minimising ─────────────────────────────────────────────────────────────────
+
+type Candidate = { value: unknown; cost: number };
+
+/** The cheaper candidate; on a tie the earlier one, so simpler shapes win. */
+const cheaper = (a: Candidate | undefined, b: Candidate): Candidate => (a === undefined || b.cost < a.cost ? b : a);
+
+/** The distinct faces in a list, in first-seen order: the only values a `default` could usefully take. */
+const faces = (values: FontName[]): FontName[] => [...new Set(values)];
+
+/**
+ * The smallest group node that resolves to `resolved` under `inherited` (the root's `default`, if any)
+ * and `fallback`. `undefined` value with cost 0 means the group is left out.
+ */
+function minimizeGroup(
+	leaves: readonly string[],
+	resolved: Record<string, FontName>,
+	fallback: Record<string, FontName>,
+	inherited: FontName | undefined
+): Candidate {
+	const values = leaves.map((leaf) => resolved[leaf]);
+	if (leaves.every((leaf) => resolved[leaf] === (inherited ?? fallback[leaf]))) return { value: undefined, cost: 0 };
+
+	let best: Candidate | undefined;
+	if (faces(values).length === 1) best = { value: values[0], cost: 1 };
+	for (const groupDefault of [undefined, ...faces(values)]) {
+		const node: Record<string, FontName> = groupDefault === undefined ? {} : { default: groupDefault };
+		for (const leaf of leaves) {
+			if (resolved[leaf] !== (groupDefault ?? inherited ?? fallback[leaf])) node[leaf] = resolved[leaf];
+		}
+		best = cheaper(best, { value: node, cost: Object.keys(node).length });
+	}
+	return best!;
+}
+
+/**
+ * The smallest `text.fonts` that resolves to the same fonts as `fonts` against `fallback`, or
+ * `undefined` when those are `fallback`'s own. Size is the number of glyph names it spells out; every
+ * shape `resolveFonts` accepts is a candidate, so the result is never larger than the input.
+ */
+export function minimizeFonts(fonts: FontOptions | undefined, fallback: ResolvedFonts): FontOptions | undefined {
+	const resolved = resolveFonts(fonts, fallback);
+	const all = [
+		resolved.addresses,
+		...Object.keys(FONT_GROUPS).flatMap((g) => Object.values(resolved[g as GroupName] as Record<string, FontName>)),
+	];
+
+	// A single string first, so it wins a tie with `{ default: … }`.
+	let best: Candidate | undefined = faces(all).length === 1 ? { value: all[0], cost: 1 } : undefined;
+	for (const rootDefault of [undefined, ...faces(all)]) {
+		const node: Record<string, unknown> = rootDefault === undefined ? {} : { default: rootDefault };
+		let cost = rootDefault === undefined ? 0 : 1;
+		for (const [group, leaves] of Object.entries(FONT_GROUPS) as [GroupName, readonly string[]][]) {
+			const g = minimizeGroup(
+				leaves,
+				resolved[group] as Record<string, FontName>,
+				fallback[group] as Record<string, FontName>,
+				rootDefault
+			);
+			if (g.value !== undefined) node[group] = g.value;
+			cost += g.cost;
+		}
+		if (resolved.addresses !== (rootDefault ?? fallback.addresses)) {
+			node.addresses = resolved.addresses;
+			cost += 1;
+		}
+		best = cheaper(best, { value: cost === 0 ? undefined : node, cost });
+	}
+	return best!.value as FontOptions | undefined;
+}

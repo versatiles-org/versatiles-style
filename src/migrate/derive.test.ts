@@ -70,11 +70,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 			streets: { refs: 'noto_sans_regular' },
 			pois: { general: 'noto_sans_regular' },
 		};
-		const derived = osmOptions(deriveOptions(osm({ text: { fonts: swapped } })));
-		expect(Object.keys(derived)).toEqual(['text']);
-		expect(osm.resolveOptions(derived).text.fonts).toStrictEqual(
-			osm.resolveOptions({ text: { fonts: swapped } }).text.fonts
-		);
+		expect(osmOptions(deriveOptions(osm({ text: { fonts: swapped } })))).toEqual({ text: { fonts: swapped } });
 
 		// the overlay sets every label in bold by default; here only the refs and POI names stay bold
 		const regular = {
@@ -83,10 +79,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 			pois: { general: 'noto_sans_bold' },
 		};
 		const overlay = satelliteOptions(deriveOptions(satellite({ osmOverlay: { text: { fonts: regular } } })));
-		expect(Object.keys(overlay)).toEqual(['osmOverlay']);
-		const fontsOf = (options: SatelliteOptions) =>
-			(satellite.resolveOptions(options).osmOverlay as { text: { fonts: unknown } }).text.fonts;
-		expect(fontsOf(overlay)).toStrictEqual(fontsOf({ osmOverlay: { text: { fonts: regular } } }));
+		expect(overlay).toEqual({ osmOverlay: { text: { fonts: regular } } });
 	});
 
 	it('hides a whole branch when all of its groups are hidden', () => {
@@ -225,8 +218,7 @@ describe('deriveOptions — foreign styles', () => {
 
 		const semibold = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']));
 		// the style's labels are all regular-role probes, so every topic osm() sets in regular turns bold
-		const bold = osm.resolveOptions({ text: { fonts: 'noto_sans_bold' } }).text.fonts;
-		expect(osm.resolveOptions(osmOptions(semibold)).text.fonts).toStrictEqual(bold);
+		expect(osmOptions(semibold).text).toEqual({ fonts: 'noto_sans_bold' });
 		expect(semibold.report.warnings).toContainEqual(expect.stringContaining('Open Sans Semibold'));
 
 		const noto = deriveOptions(withFont(['Noto Sans Medium']));
