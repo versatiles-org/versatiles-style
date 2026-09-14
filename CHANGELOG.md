@@ -125,7 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   overlay: `osm.layerGroups` without land, water, sites, airport and buildings, which the overlay does not
   draw, and without tunnels. `satellite.minimizeOptions()` drops those groups from `osmOverlay.layers`.
 - `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
-  wrapped in `inlineSources`.
+  wrapped in `inlineSources`, that always sets `urls.base`.
 - `text.fonts` sets the glyph face per label topic — `boundaries`, `places`, `streets`, `water`, `pois`
   and `addresses`, each with sub-topics — as one string, a tree, or with `default` for whatever a level
   does not name. `osm.fontGroups` lists the layers each topic sets, and `fetchFontFaces()` the faces a

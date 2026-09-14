@@ -297,9 +297,21 @@ describe('toCode', () => {
 
 	it('always goes through inlineSources', () => {
 		expect(osm.toCode()).toBe(
-			"import { osm, inlineSources } from '@versatiles/style';\n\nconst style = await inlineSources(osm());\n"
+			"import { osm, inlineSources } from '@versatiles/style';\n\n" +
+				'const style = await inlineSources(osm({\n  urls: {\n    base: "https://tiles.versatiles.org"\n  }\n}));\n'
 		);
 		expect(satellite.toCode({ osmOverlay: false })).toContain('await inlineSources(satellite({');
+	});
+
+	it('always names urls.base, even where minimizeOptions leaves it out', () => {
+		const base = 'https://tiles.versatiles.org'; // the default base outside a browser
+		expect(osm.minimizeOptions({ urls: { base } })).toEqual({});
+		expect(osm.toCode({ urls: { base } })).toContain(`base: "${base}"`);
+		expect(satellite.toCode({ raster: { opacity: 0.5 } })).toContain(`base: "${base}"`);
+		const custom = osm.toCode(osm.resolveOptions({ urls: { base: 'https://tiles.example.org', osm: '/x.json' } }));
+		expect(custom).toContain('base: "https://tiles.example.org"');
+		expect(custom).toContain('osm: "https://tiles.example.org/x.json"');
+		expect(custom).not.toContain(base);
 	});
 
 	it('writes identifier keys unquoted', () => {

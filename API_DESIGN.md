@@ -480,12 +480,17 @@ osm.toCode({ theme: 'gray', layout: { scale: { labels: 1.5 } } });
 //     scale: {
 //       labels: 1.5
 //     }
+//   },
+//   urls: {
+//     base: "https://tiles.versatiles.org"
 //   }
 // }));
 ```
 
 It always goes through `inlineSources`, because the VersaTiles tile server publishes relative tile
-URLs that MapLibre cannot resolve on its own.
+URLs that MapLibre cannot resolve on its own. It always sets `urls.base` too, even where
+`minimizeOptions` leaves it out as the default: the default base is the page origin, and a snippet
+runs on another page or a server, where it would load tiles, glyphs and sprites from somewhere else.
 
 `osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
 at the leaves — useful for building a UI over the options, or for finding a layer to target with
