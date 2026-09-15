@@ -19,6 +19,7 @@
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
     - [`fontCovers()`](#fontcoversface-language-boolean--undefined)
+    - [`fontScripts()`, `languageScript()` and `FONT_SCRIPTS`](#fontscriptsface-string-languagescriptlanguage-string--undefined-and-font_scripts)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
   - [Other exports](#other-exports)
@@ -855,11 +856,13 @@ fall back to a free text field. It rejects only when the request itself fails.
 ### `fontCovers(face, language): boolean | undefined`
 
 Whether a face from `fetchFontFaces()` has the glyphs to write labels in `language` — for a warning in
-a font picker, not a guarantee. The language's script comes from `Intl.Locale` (`ja` → Japanese, `sr` →
-Cyrillic, `sr-Latn` → Latin), and a few sample letters of it are checked against the face's `codeblocks`.
-It is `undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a
-script it has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local
-browser font by default, so a `false` for Chinese, Japanese or Korean matters to MapLibre Native only.
+a font picker, not a guarantee. `language` is any `text.language`: `'user'` is the browser's language
+first. Its script comes from `languageScript()`, and a few sample letters of it are checked against the
+`codeblocks` the glyph server lists for the face in its `font_families.json`. Those blocks are coarse, and
+a face merged from several font files may list only the first file's blocks, so coverage is a hint. It is
+`undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a script it
+has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font
+by default, so a `false` for Chinese, Japanese or Korean matters to MapLibre Native only.
 
 ```ts
 const faces = await fetchFontFaces({ base: 'https://tiles.versatiles.org' });
@@ -867,6 +870,27 @@ fontCovers(
   faces!.find((f) => f.id === 'libre_baskerville_regular')!,
   'ru'
 ); // false
+```
+
+### `fontScripts(face): string[]`, `languageScript(language): string | undefined` and `FONT_SCRIPTS`
+
+For filtering a font picker by writing system. `FONT_SCRIPTS` lists the scripts that can be checked, as
+ISO 15924 codes in a fixed order, Latin first: `'Latn'`, `'Cyrl'`, `'Grek'`, `'Armn'`, `'Hebr'`, `'Arab'`,
+…, `'Hang'`, `'Hani'`, `'Jpan'`. `fontScripts(face)` returns the ones a face covers, in that order, with the
+same sample-letter check against `codeblocks` as `fontCovers()` — `[]` for a face with no blocks.
+`languageScript(language)` returns the script labels in a language are written in, as `fontCovers()`
+determines it: from `Intl.Locale`, with simplified and traditional Chinese as `'Hani'` and Korean as
+`'Hang'`, and `'user'` as the browser's language. It is `undefined` for `'local'`, for a language `Intl`
+cannot place, and for a script outside `FONT_SCRIPTS`. So `fontCovers(face, language)` is
+`fontScripts(face).includes(languageScript(language))` whenever the script is known.
+
+```ts
+const faces = (await fetchFontFaces())!;
+const latinGreekCyrillic = faces.filter((face) =>
+  ['Latn', 'Grek', 'Cyrl'].every((script) => fontScripts(face).includes(script))
+);
+languageScript('uk'); // 'Cyrl'
+languageScript('zh-TW'); // 'Hani'
 ```
 
 ---

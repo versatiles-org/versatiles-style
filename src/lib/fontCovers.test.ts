@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { fontCovers } from './fontCovers.js';
+import { describe, expect, it, vi } from 'vitest';
+import { FONT_SCRIPTS, fontCovers, fontScripts, languageScript } from './fontCovers.js';
+import * as lib from '../index.js';
 
 // `codeblocks` as tiles.versatiles.org published them on 2026-09-14. Merged faces publish only their first
 // source file's blocks, so Noto Sans lists no Arabic although it is served with it — Arabic is tested
@@ -50,5 +51,94 @@ describe('fontCovers', () => {
 
 	it('is false for a face with no blocks', () => {
 		expect(fontCovers({ codeblocks: '' }, 'de')).toBe(false);
+	});
+
+	it("reads 'user' as the browser language, as text.language does", () => {
+		vi.stubGlobal('navigator', { language: 'ru-RU' });
+		try {
+			expect(fontCovers(NOTO_SANS, 'user')).toBe(true);
+			expect(fontCovers(LIBRE_BASKERVILLE, 'user')).toBe(false);
+		} finally {
+			vi.unstubAllGlobals();
+		}
+		vi.stubGlobal('navigator', undefined);
+		try {
+			expect(fontCovers(NOTO_SANS, 'user')).toBeUndefined(); // no browser: local names
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+});
+
+describe('FONT_SCRIPTS', () => {
+	it('lists the checkable scripts as ISO 15924 codes, in a fixed order, Latin first', () => {
+		expect(FONT_SCRIPTS[0]).toBe('Latn');
+		expect(FONT_SCRIPTS).toContain('Cyrl');
+		expect(FONT_SCRIPTS).toContain('Jpan');
+		expect(new Set(FONT_SCRIPTS).size).toBe(FONT_SCRIPTS.length);
+		for (const code of FONT_SCRIPTS) expect(code, code).toMatch(/^[A-Z][a-z]{3}$/);
+		expect(Object.isFrozen(FONT_SCRIPTS)).toBe(true);
+	});
+
+	it('is exported from the package, with fontScripts and languageScript', () => {
+		expect(lib.FONT_SCRIPTS).toBe(FONT_SCRIPTS);
+		expect(lib.fontScripts).toBe(fontScripts);
+		expect(lib.languageScript).toBe(languageScript);
+	});
+});
+
+describe('fontScripts', () => {
+	it('lists the scripts a face covers, in the order of FONT_SCRIPTS', () => {
+		expect(fontScripts(LIBRE_BASKERVILLE)).toStrictEqual(['Latn']);
+		const noto = fontScripts(NOTO_SANS);
+		expect(noto.slice(0, 3)).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
+		expect(noto).not.toContain('Arab'); // see the note on NOTO_SANS
+		expect(noto).toStrictEqual(FONT_SCRIPTS.filter((script) => noto.includes(script)));
+	});
+
+	it('agrees with fontCovers for every script a language maps to', () => {
+		const cjk = { codeblocks: '2-7,304-30F,4E0-9FF' };
+		for (const face of [NOTO_SANS, LIBRE_BASKERVILLE, cjk]) {
+			for (const language of ['de', 'ru', 'el', 'he', 'ar', 'hi', 'th', 'ka', 'zh', 'ja', 'ko']) {
+				const script = languageScript(language)!;
+				expect(fontScripts(face).includes(script), `${language} ${face.codeblocks}`).toBe(fontCovers(face, language));
+			}
+		}
+	});
+
+	it('is empty for a face with no blocks', () => {
+		expect(fontScripts({ codeblocks: '' })).toStrictEqual([]);
+	});
+});
+
+describe('languageScript', () => {
+	it('places a language in its script, reading the whole locale', () => {
+		expect(languageScript('de')).toBe('Latn');
+		expect(languageScript('uk')).toBe('Cyrl');
+		expect(languageScript('el')).toBe('Grek');
+		expect(languageScript('sr')).toBe('Cyrl');
+		expect(languageScript('sr-Latn')).toBe('Latn');
+		expect(languageScript('ja')).toBe('Jpan');
+	});
+
+	it('writes Chinese as Hani and Korean as Hangul', () => {
+		expect(languageScript('zh')).toBe('Hani');
+		expect(languageScript('zh-TW')).toBe('Hani');
+		expect(languageScript('ko')).toBe('Hang');
+	});
+
+	it("resolves 'user' to the browser language", () => {
+		vi.stubGlobal('navigator', { language: 'el-GR' });
+		try {
+			expect(languageScript('user')).toBe('Grek');
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+
+	it('is undefined for local, for what Intl cannot place, and for scripts outside FONT_SCRIPTS', () => {
+		expect(languageScript('local')).toBeUndefined();
+		expect(languageScript('not a locale!')).toBeUndefined();
+		expect(languageScript('chr')).toBeUndefined(); // Cherokee
 	});
 });

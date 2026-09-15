@@ -132,7 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and each topic takes each one from the nearest node that sets it. `text.language`, `text.languageStrict`
   and `text.pitchAlignment` apply to every label. `osm.textGroups` lists the layers each topic sets, and
   `fetchFontFaces()` the faces a glyph server publishes, with titles, for a font picker; `fontCovers()`
-  tells whether a face has the glyphs for a label language. `guessOptions()` carries over the fonts of a
+  tells whether a face has the glyphs for a label language, `'user'` included, and `fontScripts()` which
+  of the scripts in `FONT_SCRIPTS` a face covers; `languageScript()` gives the script of a language. `guessOptions()` carries over the fonts of a
   migrated style per topic when the glyph server's font list has them (`Open Sans Bold` →
   `open_sans_bold`), and their weight otherwise. Hamlet names are a topic of their own, `places.hamlets`,
   and so is their visibility, `layers.labels.places.hamlets`: `layers.labels.places.villages: false` no

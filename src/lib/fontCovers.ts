@@ -1,4 +1,5 @@
 import type { FontFaceInfo } from './fetchFontFaces.js';
+import { labelLanguage } from '../options/text.js';
 
 /**
  * Sample letters per script (ISO 15924 code): a face covers a script when it has the blocks of all of
@@ -56,32 +57,70 @@ function parseCodeblocks(codeblocks: string): [number, number][] {
 }
 
 /**
- * Whether a face has the glyphs to write labels in `language`, from the `codeblocks` a glyph server
- * publishes — for a warning in a font picker, not a guarantee.
+ * The scripts `fontCovers` and `fontScripts` can check, as ISO 15924 codes (`'Latn'`, `'Cyrl'`, `'Grek'`,
+ * …), in a fixed order: roughly by Unicode block, Latin first.
+ */
+export const FONT_SCRIPTS: readonly string[] = Object.freeze(Object.keys(SCRIPT_SAMPLES));
+
+/** Whether every sample letter falls into one of the covered blocks. */
+function hasSamples(blocks: [number, number][], samples: readonly number[]): boolean {
+	return samples.every((codepoint) => {
+		const block = codepoint >> 4;
+		return blocks.some(([from, to]) => block >= from && block <= to);
+	});
+}
+
+/**
+ * The scripts of `FONT_SCRIPTS` a face has the glyphs for, in that order — for filtering a font picker by
+ * writing system. `[]` for a face that publishes no blocks.
  *
- * The language's script comes from `Intl.Locale` (`ja` → Japanese, `uk` → Cyrillic, `sr-Latn` → Latin).
- * `undefined` when there is nothing to check against: `local`, which shows every name in its own script;
- * a language `Intl` cannot place in a script; or a script this table has no sample letters for.
+ * Coverage is read from the `codeblocks` the glyph server lists for the face in its `font_families.json`
+ * (see `fetchFontFaces`), by checking a few sample letters of each script. It is a hint for a font picker,
+ * not a guarantee: the blocks are coarse, and a merged face may list only its first source file's blocks.
+ */
+export function fontScripts(face: Pick<FontFaceInfo, 'codeblocks'>): string[] {
+	const blocks = parseCodeblocks(face.codeblocks);
+	return FONT_SCRIPTS.filter((script) => hasSamples(blocks, SCRIPT_SAMPLES[script]));
+}
+
+/**
+ * The script of `FONT_SCRIPTS` labels in `language` are written in, from `Intl.Locale` (`ja` → `'Jpan'`,
+ * `uk` → `'Cyrl'`, `sr-Latn` → `'Latn'`). Simplified and traditional Chinese both count as `'Hani'`, and
+ * Korean as `'Hang'`, since map labels in Korean are written in Hangul.
+ *
+ * `'user'` is the browser's language first, as for `text.language`. `undefined` for `'local'`, which shows
+ * every name in its own script; for a language `Intl` cannot place in a script; and for a script outside
+ * `FONT_SCRIPTS`.
+ */
+export function languageScript(language: string): string | undefined {
+	const resolved = labelLanguage(language);
+	if (resolved === 'local') return undefined;
+	let script: string | undefined;
+	try {
+		script = new Intl.Locale(resolved).maximize().script;
+	} catch {
+		return undefined;
+	}
+	if (script === undefined) return undefined;
+	const code = SCRIPT_ALIASES[script] ?? script;
+	return Object.hasOwn(SCRIPT_SAMPLES, code) ? code : undefined;
+}
+
+/**
+ * Whether a face has the glyphs to write labels in `language` — for a warning in a font picker, not a
+ * guarantee.
+ *
+ * The language's script comes from `languageScript`, so `language` can be any `text.language`, `'user'`
+ * included. Coverage is read, as in `fontScripts`, from the `codeblocks` the glyph server lists for the face
+ * in its `font_families.json`. `undefined` when there is nothing to check against: `local`, a language
+ * `Intl` cannot place in a script, or a script this table has no sample letters for.
  *
  * MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font by default
  * (`localIdeographFontFamily`), so a `false` for Chinese, Japanese or Korean matters to MapLibre Native,
  * not to GL JS in its default setting.
  */
 export function fontCovers(face: Pick<FontFaceInfo, 'codeblocks'>, language: string): boolean | undefined {
-	if (language === 'local') return undefined;
-	let script: string | undefined;
-	try {
-		script = new Intl.Locale(language).maximize().script;
-	} catch {
-		return undefined;
-	}
+	const script = languageScript(language);
 	if (script === undefined) return undefined;
-	const samples = SCRIPT_SAMPLES[SCRIPT_ALIASES[script] ?? script];
-	if (samples === undefined) return undefined;
-
-	const blocks = parseCodeblocks(face.codeblocks);
-	return samples.every((codepoint) => {
-		const block = codepoint >> 4;
-		return blocks.some(([from, to]) => block >= from && block <= to);
-	});
+	return hasSamples(parseCodeblocks(face.codeblocks), SCRIPT_SAMPLES[script]);
 }

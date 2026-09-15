@@ -171,7 +171,15 @@ export type { TextGroupMap, LayerGroupMap } from './shortbread/layer-groups-map.
  * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.
  */
 export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/schema-builder.js';
-export { inlineSources, fetchTileJSON, fetchFontFaces, fontCovers } from './lib/index.js';
+export {
+	inlineSources,
+	fetchTileJSON,
+	fetchFontFaces,
+	fontCovers,
+	fontScripts,
+	languageScript,
+	FONT_SCRIPTS,
+} from './lib/index.js';
 export type { FontFaceInfo } from './lib/index.js';
 export { Color } from './color/index.js';
 export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
