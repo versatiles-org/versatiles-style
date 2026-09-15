@@ -166,7 +166,7 @@ const guess = await guessOptions('https://example.org/my-style/style.json');
 if (guess.kind === 'osm') map.setStyle(osm(guess.options)); // guess.report says what was not carried over
 ```
 
-- `fetchFontFaces(urls?)`, `fontCovers(face, language)`, `fontScripts(face)`, `languageScript(language)` and `FONT_SCRIPTS` - for a font picker over the `font` of each `text` topic: the faces a glyph server publishes (from its `font_families.json`), with titles; whether a face has the glyphs for a label language; and which writing systems a face covers, read from the `codeblocks` in that file — a hint, not a guarantee. `osm.textGroups` lists the layers each topic sets.
+- `fetchFontFaces(urls?)`, `fontCovers(face, language)`, `fontScripts(face)`, `languageScript(language)`, `textScripts(text)` and `FONT_SCRIPTS` - for a font picker over the `font` of each `text` topic: the faces a glyph server publishes (from its `font_families.json`), with titles; whether a face has the glyphs for a label language; which writing systems a face covers, read from the `codeblocks` in that file — a hint, not a guarantee — and which a text uses. `osm.textGroups` lists the layers each topic sets.
 
 ```javascript
 import { fetchFontFaces, fontCovers, fontScripts } from '@versatiles/style';

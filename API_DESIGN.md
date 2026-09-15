@@ -19,7 +19,7 @@
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
     - [`fontCovers()`](#fontcoversface-language-boolean--undefined)
-    - [`fontScripts()`, `languageScript()` and `FONT_SCRIPTS`](#fontscriptsface-string-languagescriptlanguage-string--undefined-and-font_scripts)
+    - [`fontScripts()`, `languageScript()`, `textScripts()` and `FONT_SCRIPTS`](#fontscriptsface-string-languagescriptlanguage-string--undefined-textscriptstext-string-and-font_scripts)
   - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
   - [`Color`](#color)
   - [Other exports](#other-exports)
@@ -872,7 +872,7 @@ fontCovers(
 ); // false
 ```
 
-### `fontScripts(face): string[]`, `languageScript(language): string | undefined` and `FONT_SCRIPTS`
+### `fontScripts(face): string[]`, `languageScript(language): string | undefined`, `textScripts(text): string[]` and `FONT_SCRIPTS`
 
 For filtering a font picker by writing system. `FONT_SCRIPTS` lists the scripts that can be checked, as
 ISO 15924 codes in a fixed order, Latin first: `'Latn'`, `'Cyrl'`, `'Grek'`, `'Armn'`, `'Hebr'`, `'Arab'`,
@@ -884,6 +884,12 @@ determines it: from `Intl.Locale`, with simplified and traditional Chinese as `'
 cannot place, and for a script outside `FONT_SCRIPTS`. So `fontCovers(face, language)` is
 `fontScripts(face).includes(languageScript(language))` whenever the script is known.
 
+`textScripts(text)` returns the scripts of `FONT_SCRIPTS` that occur in a string — the labels a map shows,
+say — in the same order. It reads each character's Unicode script, so digits, punctuation and spaces count
+as none. Japanese is not a Unicode script: kana count as `'Jpan'` and kanji as `'Hani'`, so `'東京タワー'`
+is `['Hani', 'Jpan']`, which is what a face needs to cover, since `'Jpan'` in `fontScripts()` checks kana
+and an ideograph.
+
 ```ts
 const faces = (await fetchFontFaces())!;
 const latinGreekCyrillic = faces.filter((face) =>
@@ -891,6 +897,7 @@ const latinGreekCyrillic = faces.filter((face) =>
 );
 languageScript('uk'); // 'Cyrl'
 languageScript('zh-TW'); // 'Hani'
+textScripts('Αθήνα / Athens'); // ['Latn', 'Grek']
 ```
 
 ---

@@ -107,6 +107,28 @@ export function languageScript(language: string): string | undefined {
 }
 
 /**
+ * The characters of each script in `FONT_SCRIPTS`, by Unicode `Script` property. Japanese is not a
+ * Unicode script, so `Jpan` is its kana; kanji are Han and count as `Hani`. `Script` rather than
+ * `Script_Extensions`, so digits and punctuation, which belong to no one script, count as none.
+ */
+const SCRIPT_PATTERNS: Readonly<Record<string, RegExp>> = Object.fromEntries(
+	FONT_SCRIPTS.map((script) => [
+		script,
+		new RegExp(script === 'Jpan' ? '[\\p{Script=Hira}\\p{Script=Kana}]' : `\\p{Script=${script}}`, 'u'),
+	])
+);
+
+/**
+ * The scripts of `FONT_SCRIPTS` that occur in `text`, in that order — e.g. for the labels a map shows,
+ * to pick the fonts that can write them. Japanese text with kanji and kana is `['Hani', 'Jpan']`, matching
+ * `fontScripts`, whose `Jpan` needs both. `[]` for text of digits, punctuation or scripts outside
+ * `FONT_SCRIPTS` only.
+ */
+export function textScripts(text: string): string[] {
+	return FONT_SCRIPTS.filter((script) => SCRIPT_PATTERNS[script].test(text));
+}
+
+/**
  * Whether a face has the glyphs to write labels in `language` — for a warning in a font picker, not a
  * guarantee.
  *

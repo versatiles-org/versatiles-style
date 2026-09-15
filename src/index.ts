@@ -178,6 +178,7 @@ export {
 	fontCovers,
 	fontScripts,
 	languageScript,
+	textScripts,
 	FONT_SCRIPTS,
 } from './lib/index.js';
 export type { FontFaceInfo } from './lib/index.js';

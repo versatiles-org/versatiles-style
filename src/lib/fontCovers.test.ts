@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { FONT_SCRIPTS, fontCovers, fontScripts, languageScript } from './fontCovers.js';
+import { FONT_SCRIPTS, fontCovers, fontScripts, languageScript, textScripts } from './fontCovers.js';
 import * as lib from '../index.js';
 
 // `codeblocks` as tiles.versatiles.org published them on 2026-09-14. Merged faces publish only their first
@@ -84,6 +84,7 @@ describe('FONT_SCRIPTS', () => {
 		expect(lib.FONT_SCRIPTS).toBe(FONT_SCRIPTS);
 		expect(lib.fontScripts).toBe(fontScripts);
 		expect(lib.languageScript).toBe(languageScript);
+		expect(lib.textScripts).toBe(textScripts);
 	});
 });
 
@@ -140,5 +141,55 @@ describe('languageScript', () => {
 		expect(languageScript('local')).toBeUndefined();
 		expect(languageScript('not a locale!')).toBeUndefined();
 		expect(languageScript('chr')).toBeUndefined(); // Cherokee
+	});
+});
+
+describe('textScripts', () => {
+	it('lists the scripts that occur in a text, in the order of FONT_SCRIPTS', () => {
+		expect(textScripts('Berlin')).toStrictEqual(['Latn']);
+		expect(textScripts('Москва')).toStrictEqual(['Cyrl']);
+		expect(textScripts('Αθήνα / Athens / Атина')).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
+		expect(textScripts('القاهرة')).toStrictEqual(['Arab']);
+		expect(textScripts('서울')).toStrictEqual(['Hang']);
+		expect(textScripts('北京')).toStrictEqual(['Hani']);
+	});
+
+	it('writes Japanese kana as Jpan and kanji as Hani', () => {
+		expect(textScripts('東京タワー')).toStrictEqual(['Hani', 'Jpan']);
+		expect(textScripts('ひらがな')).toStrictEqual(['Jpan']);
+		expect(textScripts('東京')).toStrictEqual(['Hani']);
+	});
+
+	it('counts no script for digits, punctuation and spaces, or for scripts outside FONT_SCRIPTS', () => {
+		expect(textScripts('')).toStrictEqual([]);
+		expect(textScripts('A7 – 12, (3)')).toStrictEqual(['Latn']);
+		expect(textScripts('112 – 3.5 · ½')).toStrictEqual([]);
+		expect(textScripts('ᏣᎳᎩ')).toStrictEqual([]); // Cherokee
+	});
+
+	it('names a script for text in every language languageScript places', () => {
+		const samples: Record<string, string> = {
+			de: 'Straße',
+			ru: 'улица',
+			el: 'οδός',
+			he: 'רחוב',
+			ar: 'شارع',
+			hi: 'सड़क',
+			th: 'ถนน',
+			ka: 'ქუჩა',
+			zh: '街道',
+			ko: '거리',
+		};
+		for (const [language, text] of Object.entries(samples)) {
+			expect(textScripts(text), language).toContain(languageScript(language));
+		}
+		// Japanese needs both, as fontScripts does
+		expect(textScripts('通り')).toStrictEqual(['Hani', 'Jpan']);
+		expect(languageScript('ja')).toBe('Jpan');
+	});
+
+	it('gives the same answer when called again, since the patterns keep no state', () => {
+		expect(textScripts('Wien')).toStrictEqual(['Latn']);
+		expect(textScripts('Wien')).toStrictEqual(['Latn']);
 	});
 });
