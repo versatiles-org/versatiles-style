@@ -156,6 +156,10 @@ type LayerGroupOptions = {
 };
 ```
 
+`labels.places.hamlets` is a group of its own: `labels.places.villages: false` leaves hamlet names
+visible, so hiding both takes `villages: false, hamlets: false`, or `places: false` for every settlement
+name. The same split applies to their label style in `text.places`.
+
 ### Text & icons
 
 `TextOptions` sets the label language and the typography of every label, globally, for a group or for

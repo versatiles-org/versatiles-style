@@ -135,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tells whether a face has the glyphs for a label language. `guessOptions()` carries over the fonts of a
   migrated style per topic when the glyph server's font list has them (`Open Sans Bold` →
   `open_sans_bold`), and their weight otherwise. Hamlet names are a topic of their own, `places.hamlets`,
-  and so is their visibility, `layers.labels.places.hamlets`.
+  and so is their visibility, `layers.labels.places.hamlets`: `layers.labels.places.villages: false` no
+  longer hides them.
 - `icon` sets the size (`icon.scale`) and spacing (`icon.spacing`) of icons, apart from their labels.
 - `text.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.

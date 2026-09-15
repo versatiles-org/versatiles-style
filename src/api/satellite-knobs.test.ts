@@ -171,6 +171,22 @@ describe('satellite() knob: osmOverlay', () => {
 		expect(font(s, 'label-place-village')).toBe('noto_sans_bold');
 	});
 
+	it('lets a topic change the overlay halo, keeping the imagery halo elsewhere', () => {
+		const s = build({ osmOverlay: { text: { places: { haloWidth: 3, haloBlur: 2 } } } });
+		expect(paint(s, 'label-place-village')).toMatchObject({ 'text-halo-width': 3, 'text-halo-blur': 2 });
+		expect(paint(s, 'label-street-residential')['text-halo-width']).toBe(1);
+		expect(paint(s, 'label-street-residential')['text-halo-blur'] ?? 0).toBe(0);
+		// the halo colour is still forced to the overlay's own
+		expect(Color.parse(paint(s, 'label-place-village')['text-halo-color'] as string).asHex()).toBe('#000000');
+	});
+
+	it('keeps house numbers without a halo, as on the basemap', () => {
+		const s = build();
+		expect(layer(s, 'label-address-housenumber')).toBeDefined();
+		expect(paint(s, 'label-address-housenumber')['text-halo-width']).toBeUndefined();
+		expect(paint(s, 'label-address-housenumber')['text-halo-blur']).toBeUndefined();
+	});
+
 	it('forwards the layers knob to the overlay (hidden groups are dropped)', () => {
 		const s = build({ osmOverlay: { layers: { labels: false } } });
 		expect(layer(s, 'label-place-village')).toBeUndefined();
