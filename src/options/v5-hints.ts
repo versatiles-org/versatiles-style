@@ -41,11 +41,11 @@ function buildTables(): { osm: Hints; satellite: Hints } {
 		'recolor.rotate': 'recolor.rotateHue',
 		'recolor.tintColor': 'recolor.tint.color',
 		'recolor.blendColor': 'recolor.blend.color',
-		fonts: 'text.fonts',
+		fonts: 'text.font',
 		language: 'text.language',
 		languageStrict: 'text.languageStrict',
-		textScale: 'layout.scale.labels',
-		iconScale: 'layout.scale.icons',
+		textScale: 'text.scale',
+		iconScale: 'icon.scale',
 		hideLabels: 'layers.labels',
 	};
 	const shared = {
@@ -73,8 +73,8 @@ function buildTables(): { osm: Hints; satellite: Hints } {
 			overlayTiles: 'urls.osm',
 			overlay: 'osmOverlay',
 			language: 'osmOverlay.text.language',
-			textScale: 'osmOverlay.layout.scale.labels',
-			iconScale: 'osmOverlay.layout.scale.icons',
+			textScale: 'osmOverlay.text.scale',
+			iconScale: 'osmOverlay.icon.scale',
 		},
 	};
 }
@@ -87,4 +87,25 @@ export function v5Hint(label: string, path: string): string | null | undefined {
 	tables ??= buildTables();
 	const table = label === 'osm' ? tables.osm : label === 'satellite' ? tables.satellite : undefined;
 	return table && Object.hasOwn(table, path) ? table[path] : undefined;
+}
+
+/**
+ * The replacement for an option name that only existed before 6.0.0 was released, at `path` in the
+ * options of `label` — or `undefined`. Shaped like `v5Hint`, but not a v5 name, so the error does not
+ * point at the v5 migration guide.
+ *
+ * `layout` was split into `text` (label scale, spacing, pitch alignment) and `icon`; `text.fonts` became
+ * a `font` on each node of the text tree, whose `default` is simply the node's own `font`.
+ */
+export function preReleaseHint(label: string, path: string): string | undefined {
+	const prefix = label === 'satellite' ? 'osmOverlay.' : '';
+	if (label !== 'osm' && label !== 'satellite' && label !== 'omt' && label !== 'protomaps') return undefined;
+	if (!path.startsWith(prefix)) return undefined;
+	const at = path.slice(prefix.length);
+	if (at === 'layout') {
+		return `${prefix}text.scale, ${prefix}text.spacing, ${prefix}text.pitchAlignment, ${prefix}icon.scale and ${prefix}icon.spacing`;
+	}
+	if (at === 'text.fonts') return `${prefix}text.font, on the root or on any group or topic of ${prefix}text`;
+	if (at.startsWith('text.') && at.endsWith('.default')) return `${prefix}${at.slice(0, -'default'.length)}font`;
+	return undefined;
 }

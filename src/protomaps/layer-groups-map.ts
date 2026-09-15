@@ -1,7 +1,7 @@
 import { buildContext } from './context.js';
 import { protomapsLayers } from './layers/index.js';
 import { resolveProtomaps } from './options.js';
-import { buildGroupMaps, type FontGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
+import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
 
 // This schema's own group maps, with their own module-level cache.
 //
@@ -10,9 +10,9 @@ import { buildGroupMaps, type FontGroupMap, type LayerGroupMap } from '../dsl/gr
 // because each schema module has one of its own. The map *types* and the builder are shared; the maps
 // are not.
 
-let cached: { layers: LayerGroupMap; fonts: FontGroupMap } | undefined;
+let cached: { layers: LayerGroupMap; text: TextGroupMap } | undefined;
 
-function maps(): { layers: LayerGroupMap; fonts: FontGroupMap } {
+function maps(): { layers: LayerGroupMap; text: TextGroupMap } {
 	// `buildings: 'flat'` and `'extruded'` are mutually exclusive, so both are walked and unioned.
 	// `landcover` only adds layers, so it is on in both.
 	return (cached ??= buildGroupMaps(
@@ -26,6 +26,6 @@ export function getLayerGroupMap(): LayerGroupMap {
 	return maps().layers;
 }
 
-export function getFontGroupMap(): FontGroupMap {
-	return maps().fonts;
+export function getTextGroupMap(): TextGroupMap {
+	return maps().text;
 }

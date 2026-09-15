@@ -2,9 +2,17 @@ import { resolveOsm, type OsmOptions } from './osm.js';
 import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
-import { minimizeFonts, type FontOptions, type ResolvedFonts } from './fonts.js';
 import { resolveRecolor, type RecolorOptions } from './recolor.js';
-import { resolveLayout, type LayoutOptions } from './layout.js';
+import {
+	LABEL_STYLE_KEYS,
+	TEXT_GROUPS,
+	TEXT_TOPICS,
+	resolveText,
+	topicOf,
+	type ResolvedText,
+	type TextOptions,
+	type TextTopic,
+} from './text.js';
 import { resolveLayerGroups, type LayerGroupOptions } from './layer-groups.js';
 import { resolveTerrain } from './features-terrain.js';
 import { resolveHillshade } from './features-hillshade.js';
@@ -93,10 +101,9 @@ export type MinimizeParts = {
  * The theme itself is compared against `defaultPalette` — otherwise a non-default palette would
  * equal its own defaults and vanish.
  *
- * `text.fonts` is minimised on its own (`minimizeFonts`): a string or `default` in the input stands for
- * many resolved topics, so comparing it key by key against the resolved tree would keep all of it.
- * `recolor.tint` and `recolor.blend` (`minimizeMix`), `layout.scale` and `layout.spacing` (`minimizePair`), `layers` (`minimizeLayers`) and `urls`
- * (`minimizeUrls`) are too.
+ * `text` is minimised on its own (`minimizeText`): a value on a group or the root stands for many resolved
+ * topics, so comparing it key by key against the resolved tree would keep all of it. `recolor.tint` and
+ * `recolor.blend` (`minimizeMix`), `layers` (`minimizeLayers`) and `urls` (`minimizeUrls`) are too.
  */
 export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	options: T,
@@ -106,48 +113,27 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 ): T {
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
-	const defaults = defaultsFor(theme) as { text?: { fonts?: ResolvedFonts } };
-	const input = rest as {
-		text?: { fonts?: FontOptions };
-		recolor?: RecolorOptions;
-		layout?: LayoutOptions;
-		layers?: unknown;
-		urls?: unknown;
-	};
+	const defaults = defaultsFor(theme) as { text?: ResolvedText };
+	const input = rest as { text?: TextOptions; recolor?: RecolorOptions; layers?: unknown; urls?: unknown };
 
-	const text = input.text;
-	const fontDefaults = defaults.text?.fonts;
-	const minimizeTheFonts = text?.fonts !== undefined && fontDefaults !== undefined;
-	const fonts = minimizeTheFonts ? minimizeFonts(text.fonts, fontDefaults) : undefined;
-
+	const text = defaults.text && minimizeText(input.text, defaults.text);
 	const recolor = input.recolor;
 	const tint = minimizeMix(recolor, 'tint');
 	const blend = minimizeMix(recolor, 'blend');
-	const layout = input.layout;
-	const scale = minimizePair(layout, 'scale');
-	const spacing = minimizePair(layout, 'spacing');
 	const layers = minimizeLayers(input.layers, parts.layerGroups);
 	const urls = parts.resolveUrls ? minimizeUrls(input.urls, parts.resolveUrls) : undefined;
 
 	const remaining = {
 		...rest,
-		...(minimizeTheFonts && { text: { ...text, fonts: undefined } }),
+		...(defaults.text && { text: undefined }),
 		...(recolor !== undefined && { recolor: { ...recolor, tint: undefined, blend: undefined } }),
-		...(layout !== undefined && { layout: { ...layout, scale: undefined, spacing: undefined } }),
 		layers: undefined,
 		...(parts.resolveUrls && { urls: undefined }),
 	};
-	const out = (withoutDefaults(remaining, defaults, ENABLED) ?? {}) as Plain & {
-		text?: Plain;
-		recolor?: Plain;
-		layout?: Plain;
-	};
-	if (fonts !== undefined) out.text = { ...out.text, fonts };
+	const out = (withoutDefaults(remaining, defaults, ENABLED) ?? {}) as Plain & { recolor?: Plain };
+	if (text !== undefined) out.text = text;
 	if (tint !== undefined) out.recolor = { ...out.recolor, tint };
 	if (blend !== undefined) out.recolor = { ...out.recolor, blend };
-	if (scale !== undefined) out.layout = { ...out.layout, scale };
-	if (spacing !== undefined) out.layout = { ...out.layout, spacing };
-	if (out.layout !== undefined && layout !== undefined) out.layout = inOrderOf(layout, out.layout);
 	if (layers !== undefined) out.layers = layers;
 	if (urls !== undefined) out.urls = urls;
 	return inOrderOf<T>(options, theme === defaultPalette ? out : { theme, ...out });
@@ -169,19 +155,75 @@ function minimizeMix(recolor: RecolorOptions | undefined, key: 'tint' | 'blend')
 	return sameValue(color, resolveRecolor()[key].color) ? { amount } : { color, amount };
 }
 
+type StyleValue = string | number;
+
 /**
- * `layout.scale` or `layout.spacing`, minimised: one number when labels and icons resolve to the same
- * value — as a resolved object always spells `{ labels: 2, icons: 2 }` — and `undefined` at the default.
+ * `text` in its smallest spelling, or `undefined` when it resolves to `defaults`.
+ *
+ * Each `LabelStyle` property is minimised on its own. The defaults differ between topics — bold refs,
+ * uppercase boundaries — so this is a search rather than a collapse: for each value the root could take,
+ * each group takes the value that leaves the fewest of its topics to spell out, and every topic that
+ * still differs is written. The cheapest spelling wins; on a tie, the one that sets less higher up.
+ * `language`, `languageStrict` and `pitchAlignment` are plain root values.
  */
-function minimizePair(layout: LayoutOptions | undefined, key: 'scale' | 'spacing'): LayoutOptions[typeof key] {
-	if (layout?.[key] === undefined) return undefined;
-	const { labels, icons } = resolveLayout({ [key]: layout[key] })[key];
-	const defaults = resolveLayout()[key];
-	if (labels === icons) return labels === defaults.labels && icons === defaults.icons ? undefined : labels;
-	return {
-		...(labels === defaults.labels ? {} : { labels }),
-		...(icons === defaults.icons ? {} : { icons }),
-	};
+function minimizeText(text: TextOptions | undefined, defaults: ResolvedText): TextOptions | undefined {
+	if (text === undefined) return undefined;
+	const resolved = resolveText(text, 'text', defaults);
+	const root: Plain = {};
+	for (const key of ['language', 'languageStrict', 'pitchAlignment'] as const) {
+		if (resolved[key] !== defaults[key]) root[key] = resolved[key];
+	}
+	const groupNodes: Record<string, Plain> = {};
+	const topicNodes: Partial<Record<TextTopic, Plain>> = {};
+
+	for (const key of LABEL_STYLE_KEYS) {
+		const valueOf = (topic: TextTopic): StyleValue => topicOf(resolved, topic)[key];
+		const defaultOf = (topic: TextTopic): StyleValue => topicOf(defaults, topic)[key];
+		const topicsOf = (group: string, leaves: readonly string[]) =>
+			leaves.map((leaf) => `${group}.${leaf}` as TextTopic);
+		const candidates = (topics: readonly TextTopic[]) => [undefined, ...new Set(topics.map(valueOf))];
+		const differs = (topic: TextTopic, above: StyleValue | undefined) => valueOf(topic) !== (above ?? defaultOf(topic));
+
+		let best: { rootValue?: StyleValue; groupValues: Map<string, StyleValue | undefined>; cost: number } | undefined;
+		for (const rootValue of candidates(TEXT_TOPICS)) {
+			const groupValues = new Map<string, StyleValue | undefined>();
+			let cost = (rootValue === undefined ? 0 : 1) + (differs('addresses', rootValue) ? 1 : 0);
+			for (const [group, leaves] of Object.entries(TEXT_GROUPS)) {
+				const topics = topicsOf(group, leaves);
+				let groupBest = { value: undefined as StyleValue | undefined, cost: Infinity };
+				for (const groupValue of candidates(topics)) {
+					const groupCost =
+						(groupValue === undefined ? 0 : 1) + topics.filter((t) => differs(t, groupValue ?? rootValue)).length;
+					if (groupCost < groupBest.cost) groupBest = { value: groupValue, cost: groupCost };
+				}
+				groupValues.set(group, groupBest.value);
+				cost += groupBest.cost;
+			}
+			if (best === undefined || cost < best.cost) best = { rootValue, groupValues, cost };
+		}
+
+		const { rootValue, groupValues } = best!;
+		if (rootValue !== undefined) root[key] = rootValue;
+		if (differs('addresses', rootValue)) (topicNodes.addresses ??= {})[key] = valueOf('addresses');
+		for (const [group, leaves] of Object.entries(TEXT_GROUPS)) {
+			const groupValue = groupValues.get(group);
+			if (groupValue !== undefined) (groupNodes[group] ??= {})[key] = groupValue;
+			for (const topic of topicsOf(group, leaves)) {
+				if (differs(topic, groupValue ?? rootValue)) (topicNodes[topic] ??= {})[key] = valueOf(topic);
+			}
+		}
+	}
+
+	for (const [group, leaves] of Object.entries(TEXT_GROUPS)) {
+		const node: Plain = { ...groupNodes[group] };
+		for (const leaf of leaves) {
+			const topicNode = topicNodes[`${group}.${leaf}` as TextTopic];
+			if (topicNode !== undefined) node[leaf] = topicNode;
+		}
+		if (Object.keys(node).length > 0) root[group] = node;
+	}
+	if (topicNodes.addresses !== undefined) root.addresses = topicNodes.addresses;
+	return Object.keys(root).length > 0 ? (root as TextOptions) : undefined;
 }
 
 type GroupScalar = boolean | number;

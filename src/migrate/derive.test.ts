@@ -57,8 +57,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 					theme: 'natural',
 					colors: { water: '#3366CC', roadMotorway: '#CC0000', label: '#112233' },
 					layers: { buildings: false, pois: false, land: { rock: false } },
-					text: { language: 'de' },
-					layout: { scale: { labels: 1.5 }, pitchAlignment: 'viewport' },
+					text: { language: 'de', scale: 1.5, pitchAlignment: 'viewport' },
 					features: { terrain: { exaggeration: 2 } },
 					projection: 'mercator',
 				})
@@ -69,8 +68,7 @@ describe('deriveOptions — round trips through the package builders', () => {
 		expect(rest).toEqual({
 			theme: 'natural',
 			layers: { buildings: false, pois: false, land: { rock: false } },
-			text: { language: 'de' },
-			layout: { scale: { labels: 1.5 }, pitchAlignment: 'viewport' },
+			text: { language: 'de', scale: 1.5, pitchAlignment: 'viewport' },
 			features: { terrain: { exaggeration: 2 } },
 			projection: 'mercator',
 		});
@@ -78,30 +76,30 @@ describe('deriveOptions — round trips through the package builders', () => {
 
 	it('recovers regular and bold fonts swapped, for osm() and for a satellite overlay', () => {
 		const swapped = {
-			default: 'noto_sans_bold',
-			streets: { refs: 'noto_sans_regular' },
-			pois: { general: 'noto_sans_regular' },
+			font: 'noto_sans_bold',
+			streets: { refs: { font: 'noto_sans_regular' } },
+			pois: { general: { font: 'noto_sans_regular' } },
 		};
-		expect(osmOptions(deriveOptions(osm({ text: { fonts: swapped } })))).toEqual({ text: { fonts: swapped } });
+		expect(osmOptions(deriveOptions(osm({ text: swapped })))).toEqual({ text: swapped });
 
 		// the overlay sets every label in bold by default; here only the refs and POI names stay bold
 		const regular = {
-			default: 'noto_sans_regular',
-			streets: { refs: 'noto_sans_bold' },
-			pois: { general: 'noto_sans_bold' },
+			font: 'noto_sans_regular',
+			streets: { refs: { font: 'noto_sans_bold' } },
+			pois: { general: { font: 'noto_sans_bold' } },
 		};
-		const overlay = satelliteOptions(deriveOptions(satellite({ osmOverlay: { text: { fonts: regular } } })));
-		expect(overlay).toEqual({ osmOverlay: { text: { fonts: regular } } });
+		const overlay = satelliteOptions(deriveOptions(satellite({ osmOverlay: { text: regular } })));
+		expect(overlay).toEqual({ osmOverlay: { text: regular } });
 	});
 
 	it('recovers the fonts of every topic, including topics no probe reads', () => {
-		const fonts = {
-			default: 'fira_sans_regular',
-			streets: { refs: 'fira_sans_bold' },
-			water: 'fira_sans_regular_italic',
-			pois: { general: 'fira_sans_bold' },
+		const text = {
+			font: 'fira_sans_regular',
+			streets: { refs: { font: 'fira_sans_bold' } },
+			water: { font: 'fira_sans_regular_italic' },
+			pois: { general: { font: 'fira_sans_bold' } },
 		};
-		expect(osmOptions(deriveOptions(osm({ text: { fonts } }), {}, FONT_NAMES))).toEqual({ text: { fonts } });
+		expect(osmOptions(deriveOptions(osm({ text }), {}, FONT_NAMES))).toEqual({ text });
 	});
 
 	it('hides a whole branch when all of its groups are hidden', () => {
@@ -241,27 +239,35 @@ describe('deriveOptions — foreign styles', () => {
 		// Open Sans is on the server: the place and boundary labels keep their face, and every other topic
 		// takes the family, in the weight the style gives its labels
 		const openSans = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']), {}, FONT_NAMES);
-		expect(osmOptions(openSans).text).toEqual({
-			fonts: { default: 'open_sans_bold', boundaries: 'open_sans_semibold', places: 'open_sans_semibold' },
+		// the stub's labels keep MapLibre's default size, so a label scale is derived too — not what this is about
+		const textWithoutScale = (guess: OptionsGuess) => {
+			const { scale, ...text } = osmOptions(guess).text ?? {};
+			void scale;
+			return text;
+		};
+		expect(textWithoutScale(openSans)).toEqual({
+			font: 'open_sans_bold',
+			boundaries: { font: 'open_sans_semibold' },
+			places: { font: 'open_sans_semibold' },
 		});
 		expect(openSans.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
 
 		// Metropolis is not: only the weight carries over, on Noto Sans
 		const metropolis = deriveOptions(withFont(['Metropolis Semibold']), {}, FONT_NAMES);
-		expect(osmOptions(metropolis).text).toEqual({ fonts: 'noto_sans_bold' });
+		expect(textWithoutScale(metropolis)).toEqual({ font: 'noto_sans_bold' });
 		expect(metropolis.report.warnings).toContainEqual(
 			expect.stringContaining('the glyph server does not publish are not carried over (Metropolis Semibold)')
 		);
 
 		// without a font list only the target's own Noto Sans is known, so Open Sans is only a weight too
 		const unlisted = deriveOptions(withFont(['Open Sans Semibold']));
-		expect(osmOptions(unlisted).text).toEqual({ fonts: 'noto_sans_bold' });
+		expect(textWithoutScale(unlisted)).toEqual({ font: 'noto_sans_bold' });
 		expect(unlisted.report.warnings).toContainEqual(
 			expect.stringContaining('unknown without the glyph server font list are not carried over (Open Sans Semibold)')
 		);
 
 		const noto = deriveOptions(withFont(['Noto Sans Medium']));
-		expect(osmOptions(noto).text).toBeUndefined();
+		expect(textWithoutScale(noto)).toEqual({});
 		expect(noto.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
 	});
 
@@ -301,14 +307,20 @@ describe('deriveOptions — foreign styles', () => {
 					layout: { 'text-field': textField },
 				},
 			]);
-		expect(osmOptions(deriveOptions(labels('{name_fr}'))).text).toEqual({ language: 'fr', languageStrict: true });
-		expect(osmOptions(deriveOptions(labels(['coalesce', ['get', 'name:it'], ['get', 'name']]))).text).toEqual({
+		// the stub's labels keep MapLibre's default size, so a label scale is derived too — not what this is about
+		const language = (style: StyleSpecification) => {
+			const { scale, ...text } = osmOptions(deriveOptions(style)).text ?? {};
+			void scale;
+			return Object.keys(text).length > 0 ? text : undefined;
+		};
+		expect(language(labels('{name_fr}'))).toEqual({ language: 'fr', languageStrict: true });
+		expect(language(labels(['coalesce', ['get', 'name:it'], ['get', 'name']]))).toEqual({
 			language: 'it',
 		});
-		expect(osmOptions(deriveOptions(labels('{name}'))).text).toBeUndefined();
+		expect(language(labels('{name}'))).toBeUndefined();
 
 		const unsupported = deriveOptions(labels('{name:ja}'));
-		expect(osmOptions(unsupported).text).toBeUndefined();
+		expect(language(labels('{name:ja}'))).toBeUndefined();
 		expect(unsupported.report.warnings).toContainEqual(expect.stringContaining('"ja"'));
 	});
 

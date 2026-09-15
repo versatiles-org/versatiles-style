@@ -31,7 +31,7 @@ const DEFAULTS = {
 	markings: true,
 	labels: {
 		boundaries: { countries: true, states: true },
-		places: { cities: true, villages: true, districts: true },
+		places: { cities: true, villages: true, hamlets: true, districts: true },
 		streets: { names: true, refs: true, exits: true },
 		water: { lakes: true, rivers: true },
 		addresses: true,
@@ -179,7 +179,7 @@ describe('resolveLayerGroups', () => {
 		expect(r.boundaries).toStrictEqual({ country: true, state: false });
 		expect(r.labels).toStrictEqual({
 			boundaries: { countries: false, states: false },
-			places: { cities: false, villages: false, districts: false },
+			places: { cities: false, villages: false, hamlets: false, districts: false },
 			streets: { names: false, refs: false, exits: false },
 			water: { lakes: false, rivers: false },
 			addresses: false,
@@ -191,7 +191,7 @@ describe('resolveLayerGroups', () => {
 		expect(r.labels.water).toStrictEqual({ lakes: 0.5, rivers: 0.5 });
 		expect(r.labels.streets).toStrictEqual({ names: true, refs: false, exits: true });
 		expect(r.labels.boundaries).toStrictEqual({ countries: false, states: false });
-		expect(r.labels.places).toStrictEqual({ cities: true, villages: true, districts: true });
+		expect(r.labels.places).toStrictEqual({ cities: true, villages: true, hamlets: true, districts: true });
 	});
 
 	it('rejects the old flat label keys and `default`, which only the font tree has', () => {

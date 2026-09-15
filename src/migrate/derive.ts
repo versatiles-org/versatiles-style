@@ -2,7 +2,7 @@ import { osm } from '../api/osm.js';
 import { satellite } from '../api/satellite.js';
 import { guessSchema, type SchemaGuess } from '../api/guessSchema.js';
 import type { SchemaName } from '../lib/schema-signatures.js';
-import { getFontGroupMap, getLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { getLayerGroupMap, getTextGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
 import {
@@ -10,11 +10,11 @@ import {
 	resolveSatellite,
 	DEFAULT_FONT_BOLD,
 	DEFAULT_FONT_REGULAR,
-	DEFAULT_FONTS,
-	fontOf,
+	DEFAULT_LABEL_STYLES,
+	TEXT_TOPICS,
+	topicOf as labelStyleOf,
 	type ColorsOptions,
-	type FontOptions,
-	type FontTopic,
+	type TextTopic,
 	type LayerGroupOptions,
 	type OsmOptions,
 	type Palette,
@@ -46,7 +46,6 @@ import {
 } from './evaluate.js';
 import { colorDistance, luminance, toHex } from './math.js';
 import { PROBES, type Probe } from './probes.js';
-import { FONT_TOPICS } from '../dsl/fonts.js';
 
 /**
  * `deriveOptions` — the options for `osm()` or `satellite()` that rebuild a foreign style as closely as
@@ -487,7 +486,7 @@ function setPath(target: Record<string, unknown>, path: string[], value: unknown
 // ── text, layout, features and globals ─────────────────────────────────────────
 
 type Common = {
-	content: { text?: TextOptions; layout?: OsmOptions['layout'] };
+	content: { text?: TextOptions };
 	features: NonNullable<OsmOptions['features']>;
 	globals: Pick<OsmOptions, 'sun' | 'projection'>;
 };
@@ -500,16 +499,15 @@ function deriveCommon(
 	report: GuessReport
 ): Common {
 	const content: Common['content'] = {};
-	const text = { ...deriveText(readings, report), ...deriveFonts(readings, fontNames, report) };
-	if (Object.keys(text).length > 0) content.text = text;
 	const scale = deriveLabelScale(readings);
 	const pitchAlignment = derivePitchAlignment(readings);
-	if (scale !== undefined || pitchAlignment !== undefined) {
-		content.layout = {
-			...(scale !== undefined && { scale: { labels: scale } }),
-			...(pitchAlignment !== undefined && { pitchAlignment }),
-		};
-	}
+	const text: TextOptions = {
+		...deriveText(readings, report),
+		...(scale !== undefined && { scale }),
+		...(pitchAlignment !== undefined && { pitchAlignment }),
+		...deriveFonts(readings, fontNames, report),
+	};
+	if (Object.keys(text).length > 0) content.text = text;
 
 	const features: Common['features'] = {};
 	if (readings.get('building')?.extruded) features.buildings = 'extruded';
@@ -603,7 +601,7 @@ function mostVoted<T>(votes: ReadonlyMap<T, number>): T | undefined {
 const vote = <T>(votes: Map<T, number>, key: T) => votes.set(key, (votes.get(key) ?? 0) + 1);
 
 /**
- * `text.fonts`, per topic, from the fonts the style sets its labels in.
+ * The `font` of each `text` topic, from the fonts the style sets its labels in.
  *
  * `fontNames` are the glyph names the target's glyph server publishes, from its `font_families.json`
  * (`guessOptions` fetches them). Without them only the target's own faces, Noto Sans regular and bold,
@@ -631,18 +629,19 @@ function deriveFonts(
 ): TextOptions {
 	const known: ReadonlySet<string> = new Set([...(fontNames ?? []), DEFAULT_FONT_REGULAR, DEFAULT_FONT_BOLD]);
 	const base = modelFor(osmTarget(), 'light').base;
-	const topicOf = new Map<string, FontTopic>();
-	const groups = getFontGroupMap();
-	for (const topic of FONT_TOPICS) {
+	const topicOf = new Map<string, TextTopic>();
+	const groups = getTextGroupMap();
+	for (const topic of TEXT_TOPICS) {
 		const [group, leaf] = topic.split('.');
 		const ids = (leaf === undefined ? groups[group] : (groups[group] as LayerGroupMap)?.[leaf]) as string[] | undefined;
 		for (const id of ids ?? []) topicOf.set(id, topic);
 	}
 	const knownFamilies = new Set([...known].map(fontFamily));
-	const roleOf = (topic: FontTopic) => (fontOf(DEFAULT_FONTS, topic) === DEFAULT_FONT_BOLD ? 'bold' : 'regular');
+	const roleOf = (topic: TextTopic) =>
+		labelStyleOf(DEFAULT_LABEL_STYLES, topic).font === DEFAULT_FONT_BOLD ? 'bold' : 'regular';
 
 	const weights = { regular: [0, 0], bold: [0, 0] };
-	const topicFaces = new Map<FontTopic, Map<string, number>>();
+	const topicFaces = new Map<TextTopic, Map<string, number>>();
 	const families = new Map<string, number>();
 	const lost = new Set<string>();
 	for (const reading of readings.values()) {
@@ -686,14 +685,14 @@ function deriveFonts(
 	};
 	const family = mostVoted(families);
 
-	const fonts: Record<string, Record<string, string> | string> = {};
-	for (const topic of FONT_TOPICS) {
+	const tree: Record<string, Record<string, unknown>> = {};
+	for (const topic of TEXT_TOPICS) {
 		const role = roleOf(topic);
 		const [group, leaf] = topic.split('.');
 		const sibling = () => {
 			if (leaf === undefined || topicFaces.has(topic)) return undefined;
 			const votes = new Map<string, number>();
-			for (const other of FONT_TOPICS) {
+			for (const other of TEXT_TOPICS) {
 				if (other === topic || !other.startsWith(`${group}.`) || roleOf(other) !== role) continue;
 				for (const [face, count] of topicFaces.get(other) ?? []) votes.set(face, (votes.get(face) ?? 0) + count);
 			}
@@ -706,10 +705,10 @@ function deriveFonts(
 			(inFamily !== undefined && known.has(inFamily) ? inFamily : undefined) ??
 			(read[role] ? (weightOf(role) === 'bold' ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR) : undefined);
 		if (face === undefined) continue;
-		if (leaf === undefined) fonts[group] = face;
-		else ((fonts[group] ??= {}) as Record<string, string>)[leaf] = face;
+		if (leaf === undefined) tree[group] = { font: face };
+		else (tree[group] ??= {})[leaf] = { font: face };
 	}
-	return { fonts: fonts as FontOptions };
+	return tree as TextOptions;
 }
 
 /** The label size relative to the target's: the median ratio over every label read, in steps of 0.05. */
@@ -727,7 +726,7 @@ function deriveLabelScale(readings: ReadonlyMap<string, ProbeReading>): number |
 	return Math.abs(scale - 1) >= 0.1 ? scale : undefined;
 }
 
-/** The probes whose labels follow a line — the only labels `layout.pitchAlignment` changes. */
+/** The probes whose labels follow a line — the only labels `text.pitchAlignment` changes. */
 const LINE_LABEL_PROBES = ['label-street-primary', 'label-street-residential', 'label-water-river'];
 
 /**

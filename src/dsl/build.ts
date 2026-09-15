@@ -38,9 +38,6 @@ export type StyleProps = {
 	lineJoin?: string;
 	lineDasharray?: number[];
 	textHaloColor?: ColorValue;
-	textHaloWidth?: number;
-	textHaloBlur?: number;
-	textTransform?: string;
 	textAnchor?: string;
 	textOffset?: [number, number];
 	textPadding?: number;
@@ -79,8 +76,9 @@ export type BuildOpts = StyleProps & StructuralProps;
 //
 // Maps each StyleProps key (and the type-dependent shorthands color/size/opacity/image/text)
 // to its MapLibre property: which `parent` (paint/layout/layer) it lives under and how its value
-// is processed (`color` → parse, `plain` → passthrough / zoom-stops). `text-font` is not among them:
-// fonts follow a layer's group, and `buildLayers` sets them (see `fonts.ts`).
+// is processed (`color` → parse, `plain` → passthrough / zoom-stops). The label typography — `text-font`,
+// halo width and blur, capitalization, … — is not among them: it follows a layer's group, and
+// `buildLayers` sets it from the text options (see `text.ts`).
 // Scoped to exactly the keys the builders support.
 
 type PropParent = 'layer' | 'layout' | 'paint';
@@ -107,7 +105,6 @@ const PROPERTY_DEFS: PropDef[] = [
 	{ parent: 'layout', types: 'symbol', key: 'text-optional', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-padding', valueType: 'plain' },
 	{ parent: 'layout', types: 'symbol', key: 'text-size', short: 'size', valueType: 'plain' },
-	{ parent: 'layout', types: 'symbol', key: 'text-transform', valueType: 'plain' },
 	// paint — background
 	{ parent: 'paint', types: 'background', key: 'background-color', short: 'color', valueType: 'color' },
 	{ parent: 'paint', types: 'background', key: 'background-opacity', short: 'opacity', valueType: 'plain' },
@@ -135,9 +132,7 @@ const PROPERTY_DEFS: PropDef[] = [
 	{ parent: 'paint', types: 'symbol', key: 'icon-color', short: 'color', valueType: 'color' },
 	{ parent: 'paint', types: 'symbol', key: 'icon-opacity', short: 'opacity', valueType: 'plain' },
 	{ parent: 'paint', types: 'symbol', key: 'text-color', short: 'color', valueType: 'color' },
-	{ parent: 'paint', types: 'symbol', key: 'text-halo-blur', valueType: 'plain' },
 	{ parent: 'paint', types: 'symbol', key: 'text-halo-color', valueType: 'color' },
-	{ parent: 'paint', types: 'symbol', key: 'text-halo-width', valueType: 'plain' },
 	{ parent: 'paint', types: 'symbol', key: 'text-opacity', short: 'opacity', valueType: 'plain' },
 ];
 

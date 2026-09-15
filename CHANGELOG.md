@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Unknown option keys now throw** instead of being silently ignored. `osm()`, `satellite()`, their
   `resolveOptions`/`minimizeOptions`/`toCode`, `inlineSources()` and `fetchTileJSON()` reject any
   key they do not know, with an error naming the unknown keys and, for a v5 name, its v6
-  replacement (`osm: unknown option "textScale" — in v6 this is "layout.scale.labels"`).
+  replacement (`osm: unknown option "textScale" — in v6 this is "text.scale"`).
   `guessStyle()` returns its blank style instead, keeping its never-throws contract.
 - The `colors` keys were renamed to group-prefixed names (`wood` → `natureWood`, `streetbg` →
   `roadStreetBg`, `poi` → `labelPoi`, …): 34 of the 41 v5 keys changed. See the table under
@@ -126,16 +126,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   draw, and without tunnels. `satellite.minimizeOptions()` drops those groups from `osmOverlay.layers`.
 - `osm.toCode(options)` / `satellite.toCode(options)` return a runnable snippet for those options,
   wrapped in `inlineSources`, that always sets `urls.base`.
-- `text.fonts` sets the glyph face per label topic — `boundaries`, `places`, `streets`, `water`, `pois`
-  and `addresses`, each with sub-topics — as one string, a tree, or with `default` for whatever a level
-  does not name. `osm.fontGroups` lists the layers each topic sets, and `fetchFontFaces()` the faces a
-  glyph server publishes, with titles, for a font picker; `fontCovers()` tells whether a face has the
-  glyphs for a label language. `guessOptions()` carries over the fonts of a migrated style per topic when
-  the glyph server's font list has them (`Open Sans Bold` → `open_sans_bold`), and their weight otherwise.
-- `layout.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
+- `text` sets label typography globally, per group or per topic — `boundaries`, `places`, `streets`,
+  `water`, `pois` and `addresses`, each with sub-topics. Every node takes the same properties: `font`,
+  `scale`, `spacing`, `maxWidth`, `lineHeight`, `letterSpacing`, `transform`, `haloWidth` and `haloBlur`,
+  and each topic takes each one from the nearest node that sets it. `text.language`, `text.languageStrict`
+  and `text.pitchAlignment` apply to every label. `osm.textGroups` lists the layers each topic sets, and
+  `fetchFontFaces()` the faces a glyph server publishes, with titles, for a font picker; `fontCovers()`
+  tells whether a face has the glyphs for a label language. `guessOptions()` carries over the fonts of a
+  migrated style per topic when the glyph server's font list has them (`Open Sans Bold` →
+  `open_sans_bold`), and their weight otherwise. Hamlet names are a topic of their own, `places.hamlets`,
+  and so is their visibility, `layers.labels.places.hamlets`.
+- `icon` sets the size (`icon.scale`) and spacing (`icon.spacing`) of icons, apart from their labels.
+- `text.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.
-- `layout.spacing` thins point labels too — places, POIs and house numbers — by widening their collision
-  padding (14 px per step above 1). It used to change only labels and markings along lines.
+- `text.spacing` and `icon.spacing` thin point labels and icons too — places, POIs and house numbers — by
+  widening their collision padding (14 px per step above 1), as well as labels and markings along lines.
 
 
 ## [5.13.1] - 2026-08-15

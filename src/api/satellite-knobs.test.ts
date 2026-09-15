@@ -111,7 +111,7 @@ describe('satellite() knob: osmOverlay', () => {
 			expect(hex(paint['text-color']), `${theme} label colour`).toBe('#ffffff');
 			expect(hex(paint['text-halo-color']), `${theme} halo colour`).toBe('#000000');
 			expect(paint['text-halo-width']).toBe(1);
-			expect(paint['text-halo-blur']).toBe(0);
+			expect(paint['text-halo-blur'] ?? 0).toBe(0); // 0 is MapLibre's default, so it is not written
 		}
 	});
 
@@ -162,11 +162,11 @@ describe('satellite() knob: osmOverlay', () => {
 		expect(field).toStrictEqual(['coalesce', ['get', 'name_de'], ['get', 'name']]);
 	});
 
-	it('sets every overlay label in bold, and keeps the others bold when one font topic is set', () => {
+	it('sets every overlay label in bold, and keeps the others bold when one topic sets a font', () => {
 		const font = (s: StyleSpecification, id: string) =>
 			((layer(s, id)?.layout as Record<string, unknown>)['text-font'] as string[])[0];
 		expect(font(build(), 'label-place-village')).toBe('noto_sans_bold');
-		const s = build({ osmOverlay: { text: { fonts: { water: 'my_italic' } } } });
+		const s = build({ osmOverlay: { text: { water: { font: 'my_italic' } } } });
 		expect(font(s, 'label-water-river')).toBe('my_italic');
 		expect(font(s, 'label-place-village')).toBe('noto_sans_bold');
 	});

@@ -53,12 +53,12 @@ const PLACE_SOURCE = { sourceLayer: 'place', sortKey: RANK_SORT_KEY };
 const byClass = (...classes: string[]): ExpressionSpecification =>
 	classes.length === 1 ? ['==', ['get', 'class'], classes[0]] : ['in', ['get', 'class'], ['literal', [...classes]]];
 
-// Districts and quarters are uppercased and lighter, as in the Shortbread module. Sizes carried over.
+// Districts and quarters are lighter, as in the Shortbread module. Sizes carried over.
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byClass('neighbourhood', 'borough'), minzoom: 14, size: 12, uppercase: true },
-	{ id: 'quarter', filter: byClass('quarter'), minzoom: 13, size: 13, uppercase: true },
-	{ id: 'suburb', filter: byClass('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
-	{ id: 'hamlet', filter: byClass('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ id: 'neighbourhood', filter: byClass('neighbourhood', 'borough'), minzoom: 14, size: 12 },
+	{ id: 'quarter', filter: byClass('quarter'), minzoom: 13, size: 13 },
+	{ id: 'suburb', filter: byClass('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byClass('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
 	{ id: 'village', filter: byClass('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
 	{ id: 'town', filter: ['all', byClass('town'), ['!', ['has', 'capital']]], minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
@@ -133,8 +133,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ['get', 'ref'] },
 		color: c.label,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 1,
-		textHaloBlur: 1,
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 14,
@@ -147,8 +145,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ['get', 'ref'] },
 		color: c.labelShield,
 		textHaloColor: c.roadMotorway,
-		textHaloWidth: 0.1,
-		textHaloBlur: 1,
 		symbolPlacement: 'line',
 		textAnchor: 'center',
 		minzoom: 14,

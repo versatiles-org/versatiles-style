@@ -4,7 +4,7 @@ import { resolveUrl } from './utils.js';
 
 /** One glyph face a server publishes, described for a font picker. */
 export type FontFaceInfo = {
-	/** The glyph name — a value for `text.fonts`, e.g. `'fira_sans_condensed_light_italic'`. */
+	/** The glyph name — a value for a `font` in `text`, e.g. `'fira_sans_condensed_light_italic'`. */
 	id: string;
 	/** The family, e.g. `'Fira Sans'`. */
 	family: string;

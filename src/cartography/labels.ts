@@ -24,7 +24,7 @@ export type LabelStyles = {
 	readonly water: b.StyleProps;
 	/** Settlement names. */
 	readonly place: b.StyleProps;
-	/** State and country names — uppercased, offset, and droppable in a collision. */
+	/** State and country names — offset, and droppable in a collision. */
 	readonly boundary: b.StyleProps;
 };
 
@@ -34,8 +34,6 @@ export function labelStyles(ctx: LayerContext): LabelStyles {
 		street: {
 			color: c.label,
 			textHaloColor: c.labelHalo,
-			textHaloWidth: 2,
-			textHaloBlur: 1,
 			symbolPlacement: 'line',
 			textAnchor: 'center',
 			minzoom: 12,
@@ -44,22 +42,15 @@ export function labelStyles(ctx: LayerContext): LabelStyles {
 		water: {
 			color: c.labelWater,
 			textHaloColor: c.labelHalo,
-			textHaloWidth: 2,
-			textHaloBlur: 1,
 			textAnchor: 'center',
 		},
 		place: {
 			color: c.label,
 			textHaloColor: c.labelHalo,
-			textHaloWidth: 2,
-			textHaloBlur: 1,
 		},
 		boundary: {
 			color: c.label,
-			textTransform: 'uppercase',
 			textHaloColor: c.labelHalo,
-			textHaloWidth: 2,
-			textHaloBlur: 1,
 			textAnchor: 'top',
 			textOffset: [0, 0.2],
 			textPadding: 0,
@@ -83,7 +74,7 @@ const PLACE_GROUPS = {
 	city: 'cities',
 	town: 'cities',
 	village: 'villages',
-	hamlet: 'villages',
+	hamlet: 'hamlets',
 	suburb: 'districts',
 	quarter: 'districts',
 	neighbourhood: 'districts',
@@ -97,7 +88,6 @@ export type PlaceLabelDef = {
 	readonly minzoom: number;
 	readonly maxzoom?: number;
 	readonly size: b.SizeValue;
-	readonly uppercase?: boolean;
 };
 
 /**
@@ -121,7 +111,6 @@ export function placeLabel(
 		minzoom: def.minzoom,
 		maxzoom: def.maxzoom ?? 15,
 		size: def.size,
-		...(def.uppercase ? { textTransform: 'uppercase' } : {}),
 		group: 'labels.places.' + PLACE_GROUPS[def.id],
 	});
 }

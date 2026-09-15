@@ -34,7 +34,7 @@
 
 **Unknown option keys are rejected.** Every options object is checked against the option types, and
 a key they do not have throws an error naming its full path — and, for a v5 name, its v6 replacement:
-`osm: unknown option "textScale" — in v6 this is "layout.scale.labels"`. The unknown keys of one
+`osm: unknown option "textScale" — in v6 this is "text.scale"`. The unknown keys of one
 options object are reported together. Keys set to `undefined` are ignored, and the contents of a pre-fetched TileJSON
 passed in `urls` are not options, so they are not checked. `guessStyle()` keeps its never-throws
 contract: unknown keys in its options count as an invalid argument and yield the blank style.
@@ -131,7 +131,8 @@ type LayerGroupOptions = {
           | number
           | {
               cities?: boolean | number; // label-place-capital, -statecapital, -city, -town
-              villages?: boolean | number; // label-place-village, -hamlet
+              villages?: boolean | number; // label-place-village
+              hamlets?: boolean | number; // label-place-hamlet
               districts?: boolean | number; // label-place-suburb, -quarter, -neighbourhood
             };
         streets?:
@@ -157,62 +158,89 @@ type LayerGroupOptions = {
 
 ### Text & icons
 
-`TextOptions` sets the language and fonts for all text labels. `LayoutOptions` controls the size and density of both labels and icons.
+`TextOptions` sets the label language and the typography of every label, globally, for a group or for
+a single topic. `IconOptions` sets the size and spacing of icons.
 
 ```ts
-type TextOptions = {
-  language?: string; // 'local', 'user', 'de', 'en', …; default: 'local'
-  languageStrict?: boolean; // omit labels with no translation; default: false
-  fonts?: FontOptions; // glyph names per label topic; default: Noto Sans, see below
+// Every node of the text tree — the root, a group, a topic — takes the same properties.
+type LabelStyle = {
+  font?: string; // glyph name, e.g. 'noto_sans_regular'
+  scale?: number; // multiplies the layer's own text size; default: 1
+  spacing?: number; // distance between labels, see below; default: 1
+  maxWidth?: number; // wrap width in ems; default: 10
+  lineHeight?: number; // line height in ems; default: 1.2
+  letterSpacing?: number; // letter spacing in ems; default: 0
+  transform?: 'none' | 'uppercase' | 'lowercase'; // default: 'none', see below
+  haloWidth?: number; // px; default: 2, see below
+  haloBlur?: number; // px; default: 1, see below
 };
 
-// A glyph name ('noto_sans_regular', 'fira_sans_semibold_italic', …) or a tree of them.
-type FontOptions =
-  | string
-  | {
-      default?: string;
-      boundaries?: string | { default?: string; countries?: string; states?: string };
-      places?: string | { default?: string; cities?: string; villages?: string; districts?: string };
-      streets?: string | { default?: string; names?: string; refs?: string; exits?: string };
-      water?: string | { default?: string; lakes?: string; rivers?: string };
-      pois?: string | { default?: string; general?: string; transit?: string };
-      addresses?: string;
-    };
+type TextOptions = LabelStyle & {
+  language?: string; // 'local', 'user', 'de', 'en', …; default: 'local'           — root only
+  languageStrict?: boolean; // omit labels with no translation; default: false   — root only
+  pitchAlignment?: 'map' | 'viewport'; // line labels in a tilted map; default: 'map' — root only
+  boundaries?: LabelStyle & { countries?: LabelStyle; states?: LabelStyle };
+  places?: LabelStyle & { cities?: LabelStyle; villages?: LabelStyle; hamlets?: LabelStyle; districts?: LabelStyle };
+  streets?: LabelStyle & { names?: LabelStyle; refs?: LabelStyle; exits?: LabelStyle };
+  water?: LabelStyle & { lakes?: LabelStyle; rivers?: LabelStyle };
+  pois?: LabelStyle & { general?: LabelStyle; transit?: LabelStyle }; // POI names, transit stop names
+  addresses?: LabelStyle;
+};
 
-type LayoutOptions = {
-  scale?: number | { labels?: number; icons?: number }; // size multiplier
-  spacing?: number | { labels?: number; icons?: number }; // exclusion-radius multiplier (>1 = fewer)
-  pitchAlignment?: 'map' | 'viewport'; // line labels in a tilted map; default: 'map'
+type IconOptions = {
+  scale?: number; // multiplies each icon's own size; default: 1
+  spacing?: number; // distance between icons, see below; default: 1
 };
 ```
+
+Each topic takes each property from the nearest node that sets it — the topic, its group, the root —
+and otherwise keeps the style's default for that topic. Values never add up: `scale: 2` on `streets`
+below `scale: 1.5` on the root gives street names 2. The topics are the groups of `layers.labels`, plus
+`pois.general` (POI names) and `pois.transit` (transit stop names); `osm.textGroups` lists the layers
+each one sets. `language`, `languageStrict` and `pitchAlignment` apply to every label and are set on the
+root only.
+
+```ts
+osm({ text: { font: 'fira_sans_regular' } }); // every label
+osm({ text: { water: { font: 'fira_sans_regular_italic' } } }); // lake and river names only
+osm({
+  text: {
+    scale: 1.1,
+    streets: { letterSpacing: 0.05, refs: { font: 'fira_sans_bold' } },
+    addresses: { scale: 0.8, haloWidth: 1 },
+  },
+  icon: { scale: 1.2 },
+});
+```
+
+The defaults differ between topics. Every label is set in `noto_sans_regular` with a 2 px halo and a
+1 px blur, except:
+
+| Topic                                                                             | Default                                                     |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `streets.refs`                                                                    | `font: 'noto_sans_bold'`, `haloWidth: 0.1`                  |
+| `pois.general`                                                                    | `font: 'noto_sans_bold'`, `haloWidth: 0.5`, `haloBlur: 0.5` |
+| `streets.exits`                                                                   | `haloWidth: 1`                                              |
+| `addresses`                                                                       | `haloWidth: 0`, `haloBlur: 0`                               |
+| `boundaries.countries`, `boundaries.states`, `places.hamlets`, `places.districts` | `transform: 'uppercase'`                                    |
+
+The satellite overlay sets every topic in `noto_sans_bold` with a 1 px halo and no blur (house numbers
+keep no halo), and setting one overlay topic keeps the others. Font names are not checked, since `osm()`
+cannot know which faces a glyph server has; `fetchFontFaces()` lists the faces a server publishes.
+`osm.resolveOptions()` spells out every property of every topic, so a UI can show each topic's value.
 
 `spacing` works in two ways, because MapLibre separates symbols by placement. Labels and markings
 along a line (street and river names, oneway arrows) repeat at `symbol-spacing`, which is multiplied.
 Symbols at a point (places, POIs, house numbers) keep their distance through collision padding, and
 MapLibre's 2 px default is too small to multiply, so each step above 1 adds 14 px: `spacing: 2` pads
 point labels by 16 px, `spacing: 3` by 30 px. Below 1 the padding shrinks to at most 0 px, which cannot
-place labels closer than their own boxes — MapLibre never overlaps them.
+place labels closer than their own boxes — MapLibre never overlaps them. A POI carries both a name and
+an icon: its name takes the text spacing, its icon `icon.spacing`.
 
 `pitchAlignment` decides how labels that follow a line — street, river and motorway names — sit
 when the map is tilted: lying on the ground (`'map'`, MapLibre's own behaviour) or standing up facing
 the viewer (`'viewport'`), which keeps them readable at high pitch and with terrain. Point labels face
 the viewer either way.
-
-`text.fonts` sets the glyph face of each label topic. The topics are the groups of `layers.labels`,
-plus `pois.general` (POI names) and `pois.transit` (transit stop names); `osm.fontGroups` lists the
-layers each one sets. A string sets everything below it, an object only the children it names, and
-`default` the children the same object does not name — per topic, the nearest setting wins, and a
-topic nobody sets keeps the style's own font. The defaults are Noto Sans, bold for motorway refs and
-POI names: `{ default: 'noto_sans_regular', streets: { refs: 'noto_sans_bold' }, pois: { general:
-'noto_sans_bold' } }`. The satellite overlay sets every topic in `noto_sans_bold`, and setting one
-overlay topic keeps the others bold. Names are not checked, since `osm()` cannot know which faces a
-glyph server has; `fetchFontFaces()` lists the faces a server publishes.
-
-```ts
-osm({ text: { fonts: 'fira_sans_regular' } }); // every label
-osm({ text: { fonts: { water: 'fira_sans_regular_italic' } } }); // lake and river names only
-osm({ text: { fonts: { default: 'fira_sans_regular', pois: { general: 'fira_sans_semibold' } } } });
-```
 
 `'local'` uses the feature's native name (`name` field); `'user'` reads `navigator.language` when the style is built, falling back to `'local'` where there is no `navigator`. `resolveOptions`, `minimizeOptions` and `toCode` keep `'user'` as it is, so stored options follow each viewer's browser. Use `osm.languages(tileJSON)` / `satellite.languages(tileJSON)` to discover which language codes are available in a given tileset.
 
@@ -359,7 +387,7 @@ type OsmContentOptions = {
   theme?: Palette; // default: 'colorful'
   layers?: LayerGroupOptions;
   text?: TextOptions;
-  layout?: LayoutOptions;
+  icon?: IconOptions;
   colors?: ColorsOptions;
   recolor?: RecolorOptions;
 };
@@ -426,7 +454,7 @@ Static properties for introspection:
 osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural', …, 'toner-dark']
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
-osm.fontGroups:   FontGroupMap        // maps each font topic to the text layer IDs it sets
+osm.textGroups:   TextGroupMap        // maps each text topic to the text layer IDs its label style sets
 osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (theme: 'colorful')
 osm.colors(palette: Palette): Record<string, string>
 osm.languages(tileJSON: TileJSONSpecification): string[]
@@ -457,13 +485,13 @@ defaults. `osm(osm.minimizeOptions(x))` builds the same style as `osm(x)` — in
 `osm.resolveOptions()` object that a UI has edited — so it is the thing to store in a URL or a config
 file. A resolved object comes back as small as the options that made it:
 
-- `text.fonts` is written as the smallest tree that resolves to the same fonts: every topic in
-  `fira_sans_regular` becomes `fonts: 'fira_sans_regular'`.
+- `text` is written as the smallest tree that resolves to the same label styles, one property at a
+  time: every topic in `fira_sans_regular` becomes `text: { font: 'fira_sans_regular' }`, and a value
+  equal to a topic's own default is left out.
 - `layers` collapses every group whose sub-groups all hold the same value: thirteen `false` labels
   become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
   `transit.stops` itself, so the alias has no effect there.
 - `features.terrain`, `features.hillshade` and `sun` become `true` when they equal what `true` resolves to.
-- `layout.scale` and `layout.spacing` become one number when labels and icons agree: `{ labels: 2, icons: 2 }` is `2`.
 - `urls` goes back to `urls.base` when the URLs are its default paths, and is left out on the default base.
 - Colours compare by value, so `#bfd9f2` from an `<input type="color">` equals the palette's `#BFD9F2`.
 - `recolor.tint` and `recolor.blend` are removed at an amount of 0, and otherwise always carry their amount.
@@ -471,16 +499,14 @@ file. A resolved object comes back as small as the options that made it:
 `osm.toCode(options)` returns a runnable snippet for those options, minimised first:
 
 ```ts
-osm.toCode({ theme: 'gray', layout: { scale: { labels: 1.5 } } });
+osm.toCode({ theme: 'gray', text: { scale: 1.5 } });
 // returns:
 // import { osm, inlineSources } from '@versatiles/style';
 //
 // const style = await inlineSources(osm({
 //   theme: "gray",
-//   layout: {
-//     scale: {
-//       labels: 1.5
-//     }
+//   text: {
+//     scale: 1.5
 //   },
 //   urls: {
 //     base: "https://tiles.versatiles.org"
@@ -509,14 +535,15 @@ Object.keys(osm.layerGroups.roads.streets); // ['pedestrian', 'track', 'service'
 `icons` is a cross-cutting alias, so it is listed as the union of `pois`, `markings` and
 `transit.stops`.
 
-`osm.fontGroups` does the same for fonts: a tree of font topics with the text layers each one sets.
-The topics are the label groups of `layers.labels`, plus `pois.general` and `pois.transit` for the
-names drawn with POI and transit-stop icons. It is built from the same group tags, so the two maps
-always agree.
+`osm.textGroups` does the same for the text tree: each topic of `text` with the text layers its label
+style sets. The topics are the label groups of `layers.labels`, plus `pois.general` and `pois.transit`
+for the names drawn with POI and transit-stop icons. It is built from the same group tags, so the two
+maps always agree. For a single layer that needs a value no topic gives, these are the IDs for
+`map.setLayoutProperty`.
 
 ```ts
-osm.fontGroups.water.rivers; // ['label-water-river', 'label-water-stream']
-osm.fontGroups.pois.transit; // ['symbol-transit-bus', 'symbol-transit-tram', …]
+osm.textGroups.water.rivers; // ['label-water-river', 'label-water-stream']
+osm.textGroups.pois.transit; // ['symbol-transit-bus', 'symbol-transit-tram', …]
 ```
 
 The v5 palette builders (`colorful`, `shadow`, `graybeard`, `eclipse`, `neutrino`) have been removed in v6. Use `osm()` with a `theme` instead — see [Migration from v5](#migration-from-v5) below.
@@ -536,7 +563,7 @@ satellite.colorKeys: string[] // color keys available in osmOverlay.colors
 satellite.defaults:  ResolvedSatelliteOptions
 satellite.languages(tileJSON: TileJSONSpecification): string[]
 satellite.layerGroups: LayerGroupMap // osm.layerGroups, limited to the layers the overlay draws
-satellite.fontGroups: FontGroupMap // osm.fontGroups: the overlay keeps every text layer
+satellite.textGroups: TextGroupMap // osm.textGroups: the overlay keeps every text layer
 satellite.slots: {
   belowLabels:  string // below text labels, above icons/symbols
   belowSymbols: string // below all symbols, above the raster layer
@@ -707,9 +734,9 @@ becomes a `colors` override only where it clearly differs from the palette. The 
 about half a second the first time, once per target and light or dark mode.
 
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
-language (`text.language`, `text.languageStrict`), the label size (`layout.scale.labels`), whether
-street and river names stand up in a tilted map (`layout.pitchAlignment`), whether
-labels are set in (`text.fonts`, per topic: a font the glyph server's font list also has as it is —
+language (`text.language`, `text.languageStrict`), the label size (`text.scale`), whether
+street and river names stand up in a tilted map (`text.pitchAlignment`), the fonts
+labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
 `Open Sans Bold` → `open_sans_bold` — otherwise its weight on Noto Sans; topics no probe reads follow
 their group, then the style's family; without a font list, weights only), extruded
 buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
@@ -802,7 +829,7 @@ fetchFontFaces(
 )
 
 type FontFaceInfo = {
-  id: string          // 'fira_sans_condensed_light_italic' — a value for text.fonts
+  id: string          // 'fira_sans_condensed_light_italic' — a value for a `font` in `text`
   family: string      // 'Fira Sans'
   title: string       // 'Fira Sans Condensed Light Italic'
   weight: number      // 300
@@ -812,7 +839,7 @@ type FontFaceInfo = {
 }
 ```
 
-The faces a glyph server publishes, for a font picker over `text.fonts`. It reads
+The faces a glyph server publishes, for a font picker over the `font` of each `text` topic. It reads
 `font_families.json` from the directory that holds the `{fontstack}` folders of `glyphsPattern`
 (default `/assets/glyphs/{fontstack}/{range}.pbf` on `base`), which VersaTiles glyph servers publish,
 and returns the faces sorted by family, width, weight and italic.
@@ -935,38 +962,38 @@ delivering the second.
 
 ## Migration from v5
 
-| v5                                                                                                        | v6                                                                |
-| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `colorful(options)`                                                                                       | `osm(options)`                                                    |
-| `colorful({ baseUrl: 'https://…' })`                                                                      | `osm({ urls: { base: 'https://…' } })`                            |
-| `colorful({ tiles: ['https://…'] })`                                                                      | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                |
-| `colorful({ hideLabels: true })`                                                                          | `osm({ layers: { labels: false } })`                              |
-| `colorful({ textScale: 1.2 })`                                                                            | `osm({ layout: { scale: { labels: 1.2 } } })`                     |
-| `colorful({ iconScale: 1.2 })`                                                                            | `osm({ layout: { scale: { icons: 1.2 } } })`                      |
-| `colorful({ fonts: {…} })`                                                                                | `osm({ text: { fonts: {…} } })`                                   |
-| `colorful({ language: null })`                                                                            | `osm({ text: { language: 'local' } })`                            |
-| `colorful({ language: 'de', languageStrict: true })`                                                      | `osm({ text: { language: 'de', languageStrict: true } })`         |
-| `await colorful({ terrain: true })`                                                                       | `osm({ features: { terrain: true } })`                            |
-| `colorful({ hillshade: true })`                                                                           | `osm({ features: { hillshade: true } })`                          |
-| `colorful({ experimental: { buildingHeights: true } })`                                                   | `osm({ features: { buildings: 'extruded' } })`                    |
-| `colorful({ elevationTilejson: '…' })`                                                                    | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`  |
-| `colorful({ recolor: { rotate } })`                                                                       | `osm({ recolor: { rotateHue } })`                                 |
-| `colorful({ recolor: { tintColor } })`                                                                    | `osm({ recolor: { tint: { color } } })`                           |
-| `colorful({ recolor: { blendColor } })`                                                                   | `osm({ recolor: { blend: { color } } })`                          |
-| `colorful({ bounds: […] })`                                                                               | — removed, no replacement                                         |
-| `shadow(options)`                                                                                         | `osm({ ...options, theme: 'gray-dark' })`                         |
-| `graybeard(options)`                                                                                      | `osm({ ...options, theme: 'gray' })`                              |
-| `eclipse(options)`                                                                                        | `osm({ ...options, theme: 'colorful-dark' })`                     |
-| `neutrino(options)`                                                                                       | `osm({ ...options, theme: 'muted' })` _(closest match)_           |
-| `satellite({ rasterTilejson: '…' })`                                                                      | `satellite({ urls: { satellite: '…' } })`                         |
-| `satellite({ overlayTiles: ['https://…'] })`                                                              | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`          |
-| `satellite({ rasterSaturation: -0.3 })`                                                                   | `satellite({ raster: { saturation: -0.3 } })`                     |
-| `satellite({ rasterOpacity, rasterHueRotate, rasterBrightnessMin, rasterBrightnessMax, rasterContrast })` | the same names, uncapitalized, under `satellite({ raster: {…} })` |
-| `satellite({ overlay: false })`                                                                           | `satellite({ osmOverlay: false })`                                |
-| `satellite({ language, textScale, iconScale })`                                                           | the overlay's own options, under `satellite({ osmOverlay: {…} })` |
-| `await guessStyle(tileJSON, options)`                                                                     | `await guessStyle(tileJSON, { urls: { base } })` — see note below |
-| `'basics:icon-cafe'` (sprite id)                                                                          | `'base:icon-cafe'` — but see below                                |
-| `'markers:icon-bicycle'` (sprite id)                                                                      | `'icons:bicycle'` — but see below                                 |
+| v5                                                                                                        | v6                                                                                                       |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `colorful(options)`                                                                                       | `osm(options)`                                                                                           |
+| `colorful({ baseUrl: 'https://…' })`                                                                      | `osm({ urls: { base: 'https://…' } })`                                                                   |
+| `colorful({ tiles: ['https://…'] })`                                                                      | `osm({ urls: { osm: { tiles: ['https://…'] } } })`                                                       |
+| `colorful({ hideLabels: true })`                                                                          | `osm({ layers: { labels: false } })`                                                                     |
+| `colorful({ textScale: 1.2 })`                                                                            | `osm({ text: { scale: 1.2 } })`                                                                          |
+| `colorful({ iconScale: 1.2 })`                                                                            | `osm({ icon: { scale: 1.2 } })`                                                                          |
+| `colorful({ fonts: { regular, bold } })`                                                                  | `osm({ text: { font: regular, streets: { refs: { font: bold } }, pois: { general: { font: bold } } } })` |
+| `colorful({ language: null })`                                                                            | `osm({ text: { language: 'local' } })`                                                                   |
+| `colorful({ language: 'de', languageStrict: true })`                                                      | `osm({ text: { language: 'de', languageStrict: true } })`                                                |
+| `await colorful({ terrain: true })`                                                                       | `osm({ features: { terrain: true } })`                                                                   |
+| `colorful({ hillshade: true })`                                                                           | `osm({ features: { hillshade: true } })`                                                                 |
+| `colorful({ experimental: { buildingHeights: true } })`                                                   | `osm({ features: { buildings: 'extruded' } })`                                                           |
+| `colorful({ elevationTilejson: '…' })`                                                                    | `osm({ urls: { elevation: '…' }, features: { terrain: true } })`                                         |
+| `colorful({ recolor: { rotate } })`                                                                       | `osm({ recolor: { rotateHue } })`                                                                        |
+| `colorful({ recolor: { tintColor } })`                                                                    | `osm({ recolor: { tint: { color } } })`                                                                  |
+| `colorful({ recolor: { blendColor } })`                                                                   | `osm({ recolor: { blend: { color } } })`                                                                 |
+| `colorful({ bounds: […] })`                                                                               | — removed, no replacement                                                                                |
+| `shadow(options)`                                                                                         | `osm({ ...options, theme: 'gray-dark' })`                                                                |
+| `graybeard(options)`                                                                                      | `osm({ ...options, theme: 'gray' })`                                                                     |
+| `eclipse(options)`                                                                                        | `osm({ ...options, theme: 'colorful-dark' })`                                                            |
+| `neutrino(options)`                                                                                       | `osm({ ...options, theme: 'muted' })` _(closest match)_                                                  |
+| `satellite({ rasterTilejson: '…' })`                                                                      | `satellite({ urls: { satellite: '…' } })`                                                                |
+| `satellite({ overlayTiles: ['https://…'] })`                                                              | `satellite({ urls: { osm: { tiles: ['https://…'] } } })`                                                 |
+| `satellite({ rasterSaturation: -0.3 })`                                                                   | `satellite({ raster: { saturation: -0.3 } })`                                                            |
+| `satellite({ rasterOpacity, rasterHueRotate, rasterBrightnessMin, rasterBrightnessMax, rasterContrast })` | the same names, uncapitalized, under `satellite({ raster: {…} })`                                        |
+| `satellite({ overlay: false })`                                                                           | `satellite({ osmOverlay: false })`                                                                       |
+| `satellite({ language, textScale, iconScale })`                                                           | the overlay's own options, under `satellite({ osmOverlay: {…} })`                                        |
+| `await guessStyle(tileJSON, options)`                                                                     | `await guessStyle(tileJSON, { urls: { base } })` — see note below                                        |
+| `'basics:icon-cafe'` (sprite id)                                                                          | `'base:icon-cafe'` — but see below                                                                       |
+| `'markers:icon-bicycle'` (sprite id)                                                                      | `'icons:bicycle'` — but see below                                                                        |
 
 `bounds` is the only v5 option with no v6 equivalent: it is rejected with `"bounds" was removed in v6`.
 Set the bounds on the map instead of in the style.
@@ -1040,7 +1067,7 @@ Every other v5 export still resolves — `Color`, `RGB`/`HSL`/`HSV`, `RandomColo
 | `StyleBuilderOptions`   | `OsmOptions`                                                                           |
 | `StyleBuilderColors`    | `ColorsOptions`                                                                        |
 | `StyleBuilderColorKey`  | `keyof ColorsOptions` (or the `osm.colorKeys` array)                                   |
-| `StyleBuilderFonts`     | `FontOptions` (`text.fonts`)                                                           |
+| `StyleBuilderFonts`     | `LabelStyle` (`font` on each node of `text`)                                           |
 | `StyleBuilderFunction`  | — the palette builders are gone; use `osm()`                                           |
 | `SatelliteStyleOptions` | `SatelliteOptions`                                                                     |
 | `Language`              | — it was just `string \| null`; use `text.language`, with `'local'` in place of `null` |

@@ -1,5 +1,5 @@
 import type { TaggedLayer } from './build.js';
-import { fontTopic } from './fonts.js';
+import { textTopic } from './text.js';
 
 /**
  * A tree mirroring `LayerGroupOptions`, with the layer IDs each group controls at the leaves.
@@ -7,8 +7,8 @@ import { fontTopic } from './fonts.js';
  */
 export type LayerGroupMap = { [key: string]: string[] | LayerGroupMap };
 
-/** The font tree — `boundaries.countries`, `pois.transit`, … — with the text layer IDs each topic sets. */
-export type FontGroupMap = LayerGroupMap;
+/** The text tree — `boundaries.countries`, `pois.transit`, … — with the text layer IDs each topic sets. */
+export type TextGroupMap = LayerGroupMap;
 
 function insert(root: LayerGroupMap, path: string, id: string): void {
 	const parts = path.split('.');
@@ -26,10 +26,10 @@ function insert(root: LayerGroupMap, path: string, id: string): void {
 }
 
 /**
- * The layer-group map and the font-group map of a schema, from its tagged layers.
+ * The layer-group map and the text-group map of a schema, from its tagged layers.
  *
- * Both are derived from the same `group` tag that `gate()` hides layers by and `applyFont()` sets fonts
- * by, so neither map can drift from what the options actually control.
+ * Both are derived from the same `group` tag that `gate()` hides layers by and `applyText()` styles
+ * labels by, so neither map can drift from what the options actually control.
  *
  * `builds` holds one tagged-layer stream per build a schema has to walk to see every layer:
  * `buildings: 'flat'` and `'extruded'` are mutually exclusive (flat footprints are replaced by
@@ -40,17 +40,17 @@ function insert(root: LayerGroupMap, path: string, id: string): void {
  */
 export function buildGroupMaps(builds: Iterable<Iterable<TaggedLayer>>): {
 	layers: LayerGroupMap;
-	fonts: FontGroupMap;
+	text: TextGroupMap;
 } {
 	const layers: LayerGroupMap = {};
-	const fonts: FontGroupMap = {};
+	const text: TextGroupMap = {};
 	for (const tagged of builds) {
 		for (const { layer, group } of tagged) {
 			if (!group) continue;
 			insert(layers, group, layer.id);
 			const textField = (layer as { layout?: Record<string, unknown> }).layout?.['text-field'];
-			const topic = fontTopic(group);
-			if (layer.type === 'symbol' && textField != null && topic) insert(fonts, topic, layer.id);
+			const topic = textTopic(group);
+			if (layer.type === 'symbol' && textField != null && topic) insert(text, topic, layer.id);
 		}
 	}
 
@@ -61,5 +61,5 @@ export function buildGroupMaps(builds: Iterable<Iterable<TaggedLayer>>): {
 		...((transit?.stops as string[]) ?? []),
 	];
 
-	return { layers, fonts };
+	return { layers, text };
 }

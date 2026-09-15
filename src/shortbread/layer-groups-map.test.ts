@@ -86,7 +86,8 @@ describe('layerGroups', () => {
 			},
 			places: {
 				cities: ['label-place-capital', 'label-place-city', 'label-place-statecapital', 'label-place-town'],
-				villages: ['label-place-hamlet', 'label-place-village'],
+				villages: ['label-place-village'],
+				hamlets: ['label-place-hamlet'],
 				districts: ['label-place-neighbourhood', 'label-place-quarter', 'label-place-suburb'],
 			},
 			streets: {

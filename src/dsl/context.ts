@@ -1,7 +1,7 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
 import { colorOptionsKeys, labelLanguage } from '../options/index.js';
-import type { ColorsOptions, ResolvedColors, ResolvedFonts, ResolvedLayerGroups } from '../options/index.js';
+import type { ColorsOptions, ResolvedColors, ResolvedLayerGroups, ResolvedText } from '../options/index.js';
 import type { Palette } from '../options/index.js';
 import { isDarkPalette } from '../themes/index.js';
 
@@ -18,8 +18,8 @@ export type LayerContext = {
 	bg: Color;
 	/** Inverse of `bg`: ≈ black in light mode, white in dark mode. */
 	fg: Color;
-	/** The resolved glyph name of every font topic. */
-	fonts: ResolvedFonts;
+	/** The resolved text options: the label style of every topic, which `buildLayers` applies (`applyText`). */
+	text: ResolvedText;
 	/** The resolved feature flags a layer module may read. Deliberately narrower than any schema's
 	 *  `features` option: only these change which layers are emitted. `landcover` is read by Protomaps,
 	 *  whose coarse low-zoom band is its own layers; Shortbread applies it to the finished style instead
@@ -59,7 +59,7 @@ export type ContextOptions = {
 	colors: ResolvedColors;
 	features: { buildings: 'flat' | 'extruded'; landcover?: boolean };
 	layers: ResolvedLayerGroups;
-	text: { fonts: ResolvedFonts; language: string; languageStrict: boolean };
+	text: ResolvedText;
 };
 
 /** Build the schema-neutral part of a layer context, given the parts only the schema can supply. */
@@ -79,7 +79,7 @@ export function buildLayerContext(resolved: ContextOptions, seam: ContextSeam): 
 		fg,
 		features: { buildings: resolved.features.buildings, landcover: resolved.features.landcover ?? false },
 		layers: resolved.layers,
-		fonts: resolved.text.fonts,
+		text: resolved.text,
 		nameField: seam.nameField(labelLanguage(resolved.text.language), resolved.text.languageStrict),
 	};
 }

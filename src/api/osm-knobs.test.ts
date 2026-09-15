@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { osm } from './osm.js';
-import type { OsmOptions } from '../options/index.js';
+import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
 import { Color } from '../color/index.js';
@@ -125,16 +125,16 @@ describe('osm() knob: text', () => {
 		expect(font(s, 'poi-amenity')).toBe('noto_sans_bold');
 	});
 
-	it('a string in text.fonts sets every text layer', () => {
-		const s = build({ text: { fonts: 'my_face' } });
+	it('text.font sets every text layer', () => {
+		const s = build({ text: { font: 'my_face' } });
 		const faces = new Set(s.layers.map((l) => (layout(s, l.id)['text-font'] as string[] | undefined)?.[0]));
 		faces.delete(undefined);
 		expect([...faces]).toEqual(['my_face']);
 	});
 
-	it('a group sets its layers, a topic only its own, `default` the rest', () => {
+	it('a group sets its layers, a topic only its own, the nearest node wins', () => {
 		const s = build({
-			text: { fonts: { water: 'water_face', places: { default: 'place_face', cities: 'city_face' } } },
+			text: { water: { font: 'water_face' }, places: { font: 'place_face', cities: { font: 'city_face' } } },
 		});
 		expect(font(s, 'label-water-area-large')).toBe('water_face');
 		expect(font(s, 'label-water-river')).toBe('water_face');
@@ -146,67 +146,87 @@ describe('osm() knob: text', () => {
 	});
 
 	it('pois.transit sets the transit stop names', () => {
-		const s = build({ text: { fonts: { pois: { transit: 'stop_face' } } } });
+		const s = build({ text: { pois: { transit: { font: 'stop_face' } } } });
 		expect(font(s, 'symbol-transit-bus')).toBe('stop_face');
 		expect(font(s, 'poi-amenity')).toBe('noto_sans_bold');
 	});
 
+	it('hamlets are a topic of their own', () => {
+		const s = build({ text: { places: { villages: { transform: 'lowercase' } } } });
+		expect(layout(s, 'label-place-village')['text-transform']).toBe('lowercase');
+		expect(layout(s, 'label-place-hamlet')['text-transform']).toBe('uppercase');
+	});
+
 	it('rejects a misspelled topic', () => {
-		expect(() => build({ text: { fonts: { water: { river: 'x' } } as never } })).toThrow('unknown option');
+		expect(() => build({ text: { water: { river: {} } } as never })).toThrow('unknown option');
+	});
+
+	// Every property of every topic changes exactly the layers `textGroups` lists for that topic.
+	const CHANGED: { [K in keyof LabelStyle]-?: LabelStyle[K] } = {
+		font: 'other_face',
+		scale: 2,
+		spacing: 2,
+		maxWidth: 5,
+		lineHeight: 2,
+		letterSpacing: 0.2,
+		transform: 'lowercase',
+		haloWidth: 3,
+		haloBlur: 3,
+	};
+	const base = build();
+	const topicLayers = (topic: string): string[] =>
+		topic.split('.').reduce<unknown>((node, key) => (node as Record<string, unknown>)[key], osm.textGroups) as string[];
+	const changedLayers = (s: StyleSpecification) =>
+		s.layers.filter((l, i) => JSON.stringify(l) !== JSON.stringify(base.layers[i])).map((l) => l.id);
+	const topics = TEXT_TOPICS.flatMap((topic) =>
+		Object.entries(CHANGED).map(([key, value]) => [topic, key, value] as [string, string, unknown])
+	);
+
+	it.each(topics)('text.%s.%s changes exactly the layers of its topic', (topic, key, value) => {
+		const node = topic
+			.split('.')
+			.reduceRight<Record<string, unknown>>((inner, part) => ({ [part]: inner }), { [key]: value });
+		const s = build({ text: node as OsmOptions['text'] });
+		expect(changedLayers(s).sort()).toStrictEqual([...topicLayers(topic)].sort());
 	});
 });
 
-// ── layout.scale ─────────────────────────────────────────────────────────────────
+// ── text.scale, text.spacing, icon ─────────────────────────────────────────────
 
-describe('osm() knob: layout.scale', () => {
-	it('scale.labels multiplies symbol text-size', () => {
+describe('osm() knob: text.scale and icon.scale', () => {
+	it('text.scale multiplies symbol text-size', () => {
 		const base = layout(build(), 'label-place-village')['text-size'];
-		const scaled = layout(build({ layout: { scale: { labels: 2 } } }), 'label-place-village')['text-size'];
+		const scaled = layout(build({ text: { scale: 2 } }), 'label-place-village')['text-size'];
 		if (typeof base === 'number') expect(scaled).toBeCloseTo(base * 2);
 		else expect(scaled).not.toStrictEqual(base);
 	});
 
-	it('scale.icons multiplies icon-size on icon layers', () => {
-		const base = layout(build(), 'poi-amenity')['icon-size'] as unknown[];
-		const scaled = layout(build({ layout: { scale: { icons: 2 } } }), 'poi-amenity')['icon-size'] as unknown[];
+	it('icon.scale multiplies icon-size on icon layers, and leaves text-size alone', () => {
+		const base = layout(build(), 'poi-amenity');
+		const scaled = layout(build({ icon: { scale: 2 } }), 'poi-amenity');
 		// icon-size is an ['interpolate', …, z, v, z, v] ramp; every value doubles.
-		const values = (arr: unknown[]) => arr.filter((_, i) => i >= 4 && i % 2 === 0) as number[];
-		expect(values(scaled)).toStrictEqual(values(base).map((v) => v * 2));
-	});
-
-	it('a scalar scale applies to both labels and icons', () => {
-		const s = build({ layout: { scale: 1.5 } });
-		const baseText = layout(build(), 'label-place-village')['text-size'];
-		const scaledText = layout(s, 'label-place-village')['text-size'];
-		if (typeof baseText === 'number') expect(scaledText).toBeCloseTo(baseText * 1.5);
-		else expect(scaledText).not.toStrictEqual(baseText);
+		const values = (arr: unknown) => (arr as unknown[]).filter((_, i) => i >= 4 && i % 2 === 0) as number[];
+		expect(values(scaled['icon-size'])).toStrictEqual(values(base['icon-size']).map((v) => v * 2));
+		expect(scaled['text-size']).toStrictEqual(base['text-size']);
 	});
 });
 
-// ── layout.spacing ─────────────────────────────────────────────────────────────
-
-describe('osm() knob: layout.spacing', () => {
-	it('spacing.icons multiplies symbol-spacing on icon (marking) layers', () => {
+describe('osm() knob: text.spacing and icon.spacing', () => {
+	it('icon.spacing multiplies symbol-spacing on icon (marking) layers', () => {
 		const base = layout(build(), 'marking-oneway')['symbol-spacing'] as number;
-		const spaced = layout(build({ layout: { spacing: { icons: 2 } } }), 'marking-oneway')['symbol-spacing'];
+		const spaced = layout(build({ icon: { spacing: 2 } }), 'marking-oneway')['symbol-spacing'];
 		expect(spaced).toBe(base * 2);
 	});
 
-	it('spacing.labels sets symbol-spacing on line-placed label layers (from the 250px default)', () => {
+	it('text.spacing sets symbol-spacing on line-placed label layers (from the 250px default)', () => {
 		// street name labels are line-placed and carry no explicit symbol-spacing → default 250.
-		const spaced = layout(build({ layout: { spacing: { labels: 3 } } }), 'label-street-residential');
+		const spaced = layout(build({ text: { spacing: 3 } }), 'label-street-residential');
 		expect(spaced['symbol-spacing']).toBe(250 * 3);
 	});
 
-	it('spacing.labels does not touch icon (marking) spacing', () => {
-		const s = build({ layout: { spacing: { labels: 3 } } });
+	it('text.spacing does not touch icon (marking) spacing', () => {
+		const s = build({ text: { spacing: 3 } });
 		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175); // unchanged default
-	});
-
-	it('a scalar spacing applies to both labels and icons', () => {
-		const s = build({ layout: { spacing: 1.5 } });
-		expect(layout(s, 'marking-oneway')['symbol-spacing']).toBe(175 * 1.5);
-		expect(layout(s, 'label-street-residential')['symbol-spacing']).toBe(250 * 1.5);
 	});
 
 	it('default spacing leaves collision padding unset', () => {
@@ -214,45 +234,48 @@ describe('osm() knob: layout.spacing', () => {
 		expect(layout(build(), 'poi-amenity')).not.toHaveProperty('icon-padding');
 	});
 
-	it('spacing.labels widens the collision padding of point labels (from the 2px default)', () => {
-		const s = build({ layout: { spacing: { labels: 2 } } });
+	it('text.spacing widens the collision padding of point labels (from the 2px default)', () => {
+		const s = build({ text: { spacing: 2 } });
 		expect(layout(s, 'label-place-city')['text-padding']).toBe(16);
 		expect(layout(s, 'label-place-city')).not.toHaveProperty('symbol-spacing');
 	});
 
-	it('a point layer with text and icon takes the label factor for its text, the icon factor for its icon', () => {
-		const s = build({ layout: { spacing: { labels: 2, icons: 3 } } });
+	it('a point layer with text and icon takes the text spacing for its text, the icon spacing for its icon', () => {
+		const s = build({ text: { spacing: 2 }, icon: { spacing: 3 } });
 		expect(layout(s, 'poi-amenity')['text-padding']).toBe(16);
 		expect(layout(s, 'poi-amenity')['icon-padding']).toBe(30);
 	});
 
 	it('spacing below 1 shrinks point padding, clamped at 0', () => {
-		expect(layout(build({ layout: { spacing: 0.5 } }), 'label-place-city')['text-padding']).toBe(0);
+		expect(layout(build({ text: { spacing: 0.5 } }), 'label-place-city')['text-padding']).toBe(0);
 		// label-boundary-country-large sets text-padding: 0 itself
-		expect(layout(build({ layout: { spacing: 2 } }), 'label-boundary-country-large')['text-padding']).toBe(14);
+		expect(layout(build({ text: { spacing: 2 } }), 'label-boundary-country-large')['text-padding']).toBe(14);
 	});
 });
 
-// ── layout.pitchAlignment ────────────────────────────────────────────────────────
+// ── text.pitchAlignment ────────────────────────────────────────────────────────
 
-describe('osm() knob: layout.pitchAlignment', () => {
+describe('osm() knob: text.pitchAlignment', () => {
 	it("'map' (the default) leaves line labels to MapLibre, which lays them on the map", () => {
-		const s = build({ layout: { pitchAlignment: 'map' } });
+		const s = build({ text: { pitchAlignment: 'map' } });
 		expect(s).toStrictEqual(build());
 		expect(layout(s, 'label-street-residential')).not.toHaveProperty('text-pitch-alignment');
 	});
 
 	it("'viewport' stands line labels up, and leaves point labels and line icons alone", () => {
-		const s = build({ layout: { pitchAlignment: 'viewport' } });
+		const s = build({ text: { pitchAlignment: 'viewport' } });
 		expect(layout(s, 'label-street-residential')['text-pitch-alignment']).toBe('viewport');
 		expect(layout(s, 'label-water-river')['text-pitch-alignment']).toBe('viewport');
 		expect(layout(s, 'label-place-city')).not.toHaveProperty('text-pitch-alignment');
 		expect(layout(s, 'marking-oneway')).not.toHaveProperty('text-pitch-alignment');
 	});
 
-	it('rejects an unknown value', () => {
-		expect(() => build({ layout: { pitchAlignment: 'auto' as never } })).toThrow(
-			'osm.layout.pitchAlignment: unknown value "auto". Valid values: map, viewport.'
+	it('rejects an unknown value, and a pitch alignment below the root', () => {
+		expect(() => build({ text: { pitchAlignment: 'auto' as never } })).toThrow(
+			'osm.text.pitchAlignment: unknown value "auto". Valid values: map, viewport.'
+		);
+		expect(() => build({ text: { streets: { pitchAlignment: 'viewport' } } as never })).toThrow(
+			'unknown option "text.streets.pitchAlignment"'
 		);
 	});
 });
@@ -493,7 +516,8 @@ describe('osm() knob: layers (group gating)', () => {
 		[{ labels: false }, 'label-place-village', 'water-ocean'],
 		[{ labels: { places: false } }, 'label-place-village', 'label-street-residential'],
 		[{ labels: { places: { cities: false } } }, 'label-place-town', 'label-place-village'],
-		[{ labels: { places: { villages: false } } }, 'label-place-hamlet', 'label-place-suburb'],
+		[{ labels: { places: { villages: false } } }, 'label-place-village', 'label-place-hamlet'],
+		[{ labels: { places: { hamlets: false } } }, 'label-place-hamlet', 'label-place-village'],
 		[{ labels: { places: { districts: false } } }, 'label-place-suburb', 'label-place-city'],
 		[{ labels: { streets: false } }, 'label-street-residential', 'label-place-village'],
 		[{ labels: { streets: { names: false } } }, 'label-street-residential', 'label-motorway-shield'],

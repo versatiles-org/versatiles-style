@@ -104,11 +104,10 @@ export type {
 	// ── Input option types ──
 	ColorsOptions,
 	FontName,
-	FontOptions,
-	FontTopic,
 	HillshadeOptions,
+	IconOptions,
+	LabelStyle,
 	LayerGroupOptions,
-	LayoutOptions,
 	OsmFeaturesOptions,
 	OsmOptions,
 	OsmOverlayOptions,
@@ -124,14 +123,16 @@ export type {
 	SunOptions,
 	TerrainOptions,
 	TextOptions,
+	TextTopic,
+	TextTransform,
 	ThemeOptions,
 
 	// ── Resolved option types ──
 	ResolvedColors,
-	ResolvedFonts,
 	ResolvedHillshade,
+	ResolvedIcon,
+	ResolvedLabelStyle,
 	ResolvedLayerGroups,
-	ResolvedLayout,
 	ResolvedOsm,
 	ResolvedOsmFeatures,
 	ResolvedOsmOverlay,
@@ -164,7 +165,7 @@ export {
 	isRasterTileJSONSpecification,
 } from './types/index.js';
 
-export type { FontGroupMap, LayerGroupMap } from './shortbread/layer-groups-map.js';
+export type { TextGroupMap, LayerGroupMap } from './shortbread/layer-groups-map.js';
 /**
  * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
  * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.

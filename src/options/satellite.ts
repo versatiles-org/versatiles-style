@@ -20,7 +20,7 @@ import {
 	type SunOptions,
 } from './parts.js';
 import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
-import { OVERLAY_DEFAULTS, OVERLAY_FONTS } from '../features/satellite-overlay.js';
+import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/satellite-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -49,8 +49,8 @@ export type ResolvedSatellite = {
 
 /**
  * The overlay's imagery colours, with the caller's own values layered on top so an explicit
- * `colors.label` still wins. Its fonts are not merged here but passed as the fallback of
- * `text.fonts` (`OVERLAY_FONTS`), so a caller who sets one font topic keeps the overlay's others.
+ * `colors.label` still wins. Its label styles are not merged here but passed as the defaults of
+ * `text` (`OVERLAY_LABEL_STYLES`), so a caller who sets one topic keeps the overlay's others.
  * See `features/satellite-overlay.ts`.
  */
 function overlayDefaults(overlay: boolean | OsmOverlayOptions | undefined): OsmOverlayOptions {
@@ -77,7 +77,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	const osmOverlay =
 		overlay === false
 			? false
-			: resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay', OVERLAY_FONTS);
+			: resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay', OVERLAY_LABEL_STYLES);
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),

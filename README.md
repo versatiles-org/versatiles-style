@@ -9,7 +9,7 @@
 **VersaTiles Style** generates styles and sprites for MapLibre.
 
 > **Upgrading from v5?** v6 is a breaking release: the palette builders (`colorful`, `shadow`, …) are
-> replaced by `osm({ theme })`, options are grouped (`textScale` → `layout.scale.labels`), all 34 of
+> replaced by `osm({ theme })`, options are grouped (`textScale` → `text.scale`), all 34 of
 > the renamed colour keys moved under a group prefix, and both sprite sheets were renamed.
 > Unknown option keys now throw, and the error names the v6 replacement.
 >
@@ -166,7 +166,7 @@ const guess = await guessOptions('https://example.org/my-style/style.json');
 if (guess.kind === 'osm') map.setStyle(osm(guess.options)); // guess.report says what was not carried over
 ```
 
-- `fetchFontFaces(urls?)` and `fontCovers(face, language)` - for a font picker over `text.fonts`: the faces a glyph server publishes (from its `font_families.json`), with titles, and whether a face has the glyphs for a label language. `osm.fontGroups` lists the layers each font topic sets.
+- `fetchFontFaces(urls?)` and `fontCovers(face, language)` - for a font picker over the `font` of each `text` topic: the faces a glyph server publishes (from its `font_families.json`), with titles, and whether a face has the glyphs for a label language. `osm.textGroups` lists the layers each topic sets.
 
 ```javascript
 import { fetchFontFaces, fontCovers } from '@versatiles/style';
@@ -224,7 +224,7 @@ subgraph 1["api"]
 2["code.ts"]
 Q["guessSchema.ts"]
 S["guessStyle.ts"]
-1I["osm.ts"]
+1H["osm.ts"]
 2P["satellite.ts"]
 2Q["index.ts"]
 2R["schema-builder.ts"]
@@ -241,18 +241,17 @@ V["parts.ts"]
 W["features-hillshade.ts"]
 X["features-terrain.ts"]
 Y["features.ts"]
-Z["fonts.ts"]
+Z["icon.ts"]
 10["layer-groups.ts"]
-11["layout.ts"]
-12["projection.ts"]
-13["recolor.ts"]
-14["satellite-raster.ts"]
-15["sky.ts"]
-16["sun.ts"]
-17["text.ts"]
-18["theme.ts"]
-19["osm.ts"]
-1A["satellite.ts"]
+11["projection.ts"]
+12["recolor.ts"]
+13["satellite-raster.ts"]
+14["sky.ts"]
+15["sun.ts"]
+16["text.ts"]
+17["theme.ts"]
+18["osm.ts"]
+19["satellite.ts"]
 23["minimize.ts"]
 end
 subgraph 5["lib"]
@@ -266,7 +265,8 @@ M["inlineSources.ts"]
 N["tileSource.ts"]
 O["styleMeta.ts"]
 R["schema-signatures.ts"]
-1D["opacity.ts"]
+1C["opacity.ts"]
+1W["symbol-layout.ts"]
 22["languages.ts"]
 2U["schema-audit.ts"]
 end
@@ -279,34 +279,34 @@ G["natural.ts"]
 H["toner.ts"]
 49["types.ts"]
 end
-subgraph 1B["features"]
-1C["satellite-overlay.ts"]
-1T["index.ts"]
-1U["elevation-source.ts"]
-1V["hillshade.ts"]
-1W["landcover.ts"]
-1X["layout.ts"]
+subgraph 1A["features"]
+1B["satellite-overlay.ts"]
+1S["index.ts"]
+1T["elevation-source.ts"]
+1U["hillshade.ts"]
+1V["icon.ts"]
+1X["landcover.ts"]
 1Y["projection.ts"]
 1Z["sky.ts"]
 20["sun.ts"]
 21["terrain.ts"]
 end
-subgraph 1E["types"]
-1F["index.ts"]
-1G["tilejson.ts"]
-1H["vector_layer.ts"]
+subgraph 1D["types"]
+1E["index.ts"]
+1F["tilejson.ts"]
+1G["vector_layer.ts"]
 4A["maplibre.ts"]
 end
-subgraph 1J["color"]
-1K["index.ts"]
-1L["parse.ts"]
-1M["abstract.ts"]
-1N["hsl.ts"]
-1O["hsv.ts"]
-1P["random.ts"]
-1Q["utils.ts"]
-1R["rgb.ts"]
-1S["recolor.ts"]
+subgraph 1I["color"]
+1J["index.ts"]
+1K["parse.ts"]
+1L["abstract.ts"]
+1M["hsl.ts"]
+1N["hsv.ts"]
+1O["random.ts"]
+1P["utils.ts"]
+1Q["rgb.ts"]
+1R["recolor.ts"]
 end
 subgraph 24["shortbread"]
 25["layer-groups-map.ts"]
@@ -320,7 +320,7 @@ end
 end
 subgraph 26["dsl"]
 27["group-maps.ts"]
-28["fonts.ts"]
+28["text.ts"]
 2A["context.ts"]
 2D["assemble.ts"]
 2E["build.ts"]
@@ -428,14 +428,14 @@ S-->6
 S-->R
 S-->T
 S-->8
-S-->1F
+S-->1E
 S-->Q
-S-->1I
+S-->1H
 S-->2P
 T-->U
-T-->19
+T-->18
 T-->V
-T-->1A
+T-->19
 U-->8
 U-->V
 V-->A
@@ -448,11 +448,10 @@ V-->11
 V-->12
 V-->13
 V-->14
-V-->15
 V-->P
+V-->15
 V-->16
 V-->17
-V-->18
 V-->4
 W-->8
 X-->8
@@ -461,93 +460,91 @@ Y-->X
 Y-->8
 Z-->8
 10-->8
-11-->8
+12-->8
 13-->8
 14-->8
 15-->8
 16-->8
-17-->Z
-17-->8
-18-->C
+17-->C
+18-->8
+18-->V
+19-->1B
 19-->8
+19-->U
 19-->V
-1A-->1C
-1A-->8
-1A-->U
-1A-->V
-1C-->1D
-1C-->Z
-1C-->17
-1F-->1G
-1F-->1H
-1I-->1K
-1I-->1T
-1I-->6
-1I-->22
-1I-->T
-1I-->23
-1I-->2N
-1I-->25
-1I-->2C
-1I-->2G
-1I-->C
-1I-->2
+1B-->1C
+1B-->16
+1E-->1F
+1E-->1G
+1H-->1J
+1H-->1S
+1H-->6
+1H-->22
+1H-->T
+1H-->23
+1H-->2N
+1H-->25
+1H-->2C
+1H-->2G
+1H-->C
+1H-->2
+1J-->1K
+1J-->1R
 1K-->1L
-1K-->1S
-1L-->1M
-1L-->1N
-1L-->1O
-1L-->1R
+1K-->1M
+1K-->1N
+1K-->1Q
+1M-->1L
+1M-->1N
+1M-->1Q
+1M-->1P
+1N-->1L
 1N-->1M
 1N-->1O
-1N-->1R
 1N-->1Q
-1O-->1M
+1N-->1P
 1O-->1N
 1O-->1P
-1O-->1R
-1O-->1Q
-1P-->1O
-1P-->1Q
-1R-->1M
-1R-->1N
-1R-->1O
-1R-->1Q
-1S-->1L
-1T-->1U
-1T-->1V
-1T-->1W
-1T-->1X
-1T-->1Y
-1T-->1C
-1T-->1Z
-1T-->20
-1T-->21
-1U-->6
-1V-->1U
-21-->1U
-23-->1K
+1Q-->1L
+1Q-->1M
+1Q-->1N
+1Q-->1P
+1R-->1K
+1S-->1T
+1S-->1U
+1S-->1V
+1S-->1X
+1S-->1Y
+1S-->1B
+1S-->1Z
+1S-->20
+1S-->21
+1T-->6
+1U-->1T
+1V-->1W
+21-->1T
+23-->1J
 23-->25
 23-->W
 23-->X
-23-->Z
 23-->10
-23-->11
-23-->19
-23-->13
-23-->1A
-23-->16
 23-->18
+23-->12
+23-->19
+23-->15
+23-->16
+23-->17
 23-->4
 25-->27
-25-->1C
+25-->1B
 25-->T
 25-->29
 25-->2C
 27-->28
-28-->Z
+28-->1W
+28-->T
 29-->2A
-2A-->1K
+2A-->1J
 2A-->T
 2A-->C
 2C-->2D
@@ -560,8 +557,8 @@ Z-->8
 2C-->2M
 2D-->2E
 2D-->28
-2E-->1K
-2E-->1D
+2E-->1J
+2E-->1C
 2F-->2D
 2F-->2E
 2F-->2A
@@ -575,35 +572,34 @@ Z-->8
 2N-->2O
 2N-->2C
 2O-->2C
-2P-->1T
+2P-->1S
 2P-->6
 2P-->T
 2P-->23
 2P-->2N
 2P-->25
 2P-->2
-2P-->1I
+2P-->1H
 2Q-->Q
 2Q-->S
-2Q-->1I
+2Q-->1H
 2Q-->2P
 2S-->2Q
-2S-->1K
+2S-->1J
 2S-->6
 2S-->T
-2S-->1F
+2S-->1E
 2S-->2T
 2T-->2Q
 2T-->T
-2W-->1K
+2W-->1J
 2W-->T
 2W-->2X
 2W-->2Y
 2W-->2Z
 30-->Q
-30-->1I
+30-->1H
 30-->2P
-30-->28
 30-->T
 30-->25
 30-->2G
@@ -618,8 +614,8 @@ Z-->8
 32-->30
 32-->31
 34-->2
-34-->1K
-34-->1T
+34-->1J
+34-->1S
 34-->6
 34-->22
 34-->T
@@ -670,8 +666,8 @@ Z-->8
 3N-->34
 3N-->36
 3P-->2
-3P-->1K
-3P-->1T
+3P-->1J
+3P-->1S
 3P-->6
 3P-->22
 3P-->T
@@ -722,7 +718,7 @@ Z-->8
 48-->3P
 48-->3R
 
-class 0,1,3,5,B,1B,1E,1J,24,2B,26,2H,2V,33,38,3O,3T subgraphs;
+class 0,1,3,5,B,1A,1D,1I,24,2B,26,2H,2V,33,38,3O,3T subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

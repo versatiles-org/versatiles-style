@@ -234,8 +234,6 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 		iconOptional: true,
 		color: iconColor,
 		textHaloColor: ctx.bg, // OSM Bright POI halos are opaque (≈ white in light mode)
-		textHaloWidth: 0.5,
-		textHaloBlur: 0.5,
 		image: buildIconMatch(),
 		group: 'pois',
 	});

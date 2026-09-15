@@ -36,8 +36,6 @@ export function* transitStops(ctx: LayerContext, stops: readonly StopDef[]): Gen
 		iconAnchor: 'bottom',
 		textAnchor: 'top',
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
 	};
 
 	for (const stop of stops) {

@@ -6,7 +6,7 @@ import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
 import {
-	applyLayout,
+	applyIcon,
 	addTerrain,
 	addHillshade,
 	addLandcover,
@@ -16,7 +16,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/languages.js';
-import { getFontGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
+import { getTextGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
 import { minimizeOsmOptions } from '../options/minimize.js';
@@ -72,7 +72,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
 	// 5. Text/icon size scaling + symbol spacing
-	applyLayout(style, resolved.layout);
+	applyIcon(style, resolved.icon);
 
 	// 6. Optional features
 	if (resolved.features.terrain !== false) {
@@ -117,11 +117,11 @@ export const osm = Object.assign(osmFn, {
 	},
 
 	/**
-	 * Maps each font topic of `text.fonts` (`water.rivers`, `pois.transit`, …) to the text layer IDs it
+	 * Maps each topic of `text` (`water.rivers`, `pois.transit`, …) to the text layer IDs its label style
 	 * sets. Built from the same group tags as `layerGroups`.
 	 */
-	get fontGroups() {
-		return getFontGroupMap();
+	get textGroups() {
+		return getTextGroupMap();
 	},
 
 	/** Fully resolved defaults (theme: 'colorful'). */

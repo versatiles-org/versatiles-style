@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { OsmOptions, SatelliteOptions } from '../options/index.js';
+import { TEXT_GROUPS, type OsmOptions, type SatelliteOptions } from '../options/index.js';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 
@@ -27,18 +27,90 @@ describe('osm.minimizeOptions', () => {
 		});
 	});
 
-	it('writes fonts as the smallest tree, from any spelling', () => {
-		expect(osm.minimizeOptions({ text: { fonts: { water: { lakes: 'x', rivers: 'x' } } } })).toEqual({
-			text: { fonts: { water: 'x' } },
+	it('writes text as the smallest tree, from any spelling', () => {
+		expect(osm.minimizeOptions({ text: { water: { lakes: { font: 'x' }, rivers: { font: 'x' } } } })).toEqual({
+			text: { water: { font: 'x' } },
 		});
-		const edited = osm.resolveOptions({ text: { fonts: 'fira_sans_regular' } });
-		expect(osm.minimizeOptions(edited)).toEqual({ text: { fonts: 'fira_sans_regular' } });
+		const edited = osm.resolveOptions({ text: { font: 'fira_sans_regular' } });
+		expect(osm.minimizeOptions(edited)).toEqual({ text: { font: 'fira_sans_regular' } });
 		const defaults = osm.resolveOptions();
-		expect(osm.minimizeOptions({ ...defaults, text: { ...defaults.text, fonts: { ...defaults.text.fonts } } })).toEqual(
-			{}
-		);
-		expect(osm.minimizeOptions({ text: { language: 'de', fonts: { streets: { refs: 'noto_sans_bold' } } } })).toEqual({
+		expect(osm.minimizeOptions({ ...defaults, text: structuredClone(defaults.text) })).toEqual({});
+		expect(osm.minimizeOptions({ text: { language: 'de', streets: { refs: { font: 'noto_sans_bold' } } } })).toEqual({
 			text: { language: 'de' },
+		});
+		// swapped weights: three fonts instead of fourteen
+		const swapped = osm.resolveOptions({
+			text: {
+				font: 'noto_sans_bold',
+				streets: { refs: { font: 'noto_sans_regular' } },
+				pois: { general: { font: 'noto_sans_regular' } },
+			},
+		});
+		expect(osm.minimizeOptions(swapped)).toEqual({
+			text: {
+				font: 'noto_sans_bold',
+				streets: { refs: { font: 'noto_sans_regular' } },
+				pois: { general: { font: 'noto_sans_regular' } },
+			},
+		});
+		// each property on its own level
+		expect(
+			osm.minimizeOptions(
+				osm.resolveOptions({ text: { scale: 1.2, streets: { letterSpacing: 0.1 }, addresses: { haloWidth: 1 } } })
+			)
+		).toEqual({ text: { scale: 1.2, streets: { letterSpacing: 0.1 }, addresses: { haloWidth: 1 } } });
+		// a value equal to a topic's default is not written, and the cheapest level wins
+		expect(osm.minimizeOptions({ text: { transform: 'none', boundaries: { transform: 'uppercase' } } })).toEqual({
+			text: { places: { transform: 'none' } },
+		});
+		expect(
+			osm.minimizeOptions({ text: { places: { transform: 'uppercase', hamlets: { transform: 'uppercase' } } } })
+		).toEqual({ text: { places: { transform: 'uppercase' } } });
+	});
+
+	describe('text on random trees', () => {
+		// A small deterministic generator, so a failure names a reproducible case.
+		let seed = 42;
+		const random = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+		const pick = <T>(list: readonly T[]): T => list[Math.floor(random() * list.length)];
+		const VALUES = {
+			font: ['noto_sans_regular', 'noto_sans_bold', 'a'],
+			haloWidth: [0, 1, 2],
+			transform: ['none', 'uppercase'],
+		} as const;
+		const style = (): Record<string, unknown> =>
+			Object.fromEntries(
+				Object.entries(VALUES)
+					.filter(() => random() < 0.3)
+					.map(([key, values]) => [key, pick<string | number>(values)])
+			);
+		const size = (node: unknown): number =>
+			node !== null && typeof node === 'object'
+				? Object.values(node).reduce<number>((sum, child) => sum + size(child), 0)
+				: 1;
+
+		function randomText(): OsmOptions['text'] {
+			const text: Record<string, unknown> = style();
+			if (random() < 0.3) text.addresses = style();
+			for (const [group, leaves] of Object.entries(TEXT_GROUPS)) {
+				if (random() < 0.4) continue;
+				const node = style();
+				for (const leaf of leaves) if (random() < 0.4) node[leaf] = style();
+				text[group] = node;
+			}
+			return text as OsmOptions['text'];
+		}
+
+		const cases = Array.from({ length: 300 }, (_, i) => [i, randomText()] as const);
+
+		it('resolves to the same text, is no larger, and is already minimal', () => {
+			for (const [i, text] of cases) {
+				const min = osm.minimizeOptions({ text });
+				const label = `case ${i}: ${JSON.stringify(text)}`;
+				expect(osm.resolveOptions(min).text, label).toStrictEqual(osm.resolveOptions({ text }).text);
+				expect(size(min.text ?? {}), label).toBeLessThanOrEqual(size(text));
+				expect(osm.minimizeOptions(min), label).toStrictEqual(min);
+			}
 		});
 	});
 
@@ -103,16 +175,17 @@ describe('osm.minimizeOptions', () => {
 			expect(roundTrip({})).toEqual({});
 		});
 
-		it('writes layout.scale and layout.spacing as one number when labels and icons agree', () => {
-			expect(roundTrip({ layout: { scale: 2, spacing: 1.5 } })).toEqual({ layout: { scale: 2, spacing: 1.5 } });
-			expect(roundTrip({ layout: { scale: { labels: 2 }, spacing: { icons: 0.5 } } })).toEqual({
-				layout: { scale: { labels: 2 }, spacing: { icons: 0.5 } },
+		it('writes text scale and spacing on the highest node they are equal on', () => {
+			expect(roundTrip({ text: { scale: 2, spacing: 1.5 }, icon: { scale: 2 } })).toEqual({
+				text: { scale: 2, spacing: 1.5 },
+				icon: { scale: 2 },
 			});
-			expect(
-				osm.minimizeOptions({ layout: { scale: { labels: 2, icons: 2 }, spacing: { labels: 1, icons: 1 } } })
-			).toEqual({ layout: { scale: 2 } });
-			expect(roundTrip({ layout: { scale: 1, pitchAlignment: 'viewport' } })).toEqual({
-				layout: { pitchAlignment: 'viewport' },
+			expect(roundTrip({ text: { streets: { scale: 2 } }, icon: { spacing: 0.5 } })).toEqual({
+				text: { streets: { scale: 2 } },
+				icon: { spacing: 0.5 },
+			});
+			expect(roundTrip({ text: { scale: 1, pitchAlignment: 'viewport' }, icon: { scale: 1 } })).toEqual({
+				text: { pitchAlignment: 'viewport' },
 			});
 		});
 
@@ -151,7 +224,17 @@ describe('osm.minimizeOptions', () => {
 		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
 		['sky off', { sky: false }],
 		['sun intensity', { sun: { intensity: 0.8 }, features: { buildings: 'extruded' } }],
-		['layout pairs', { layout: { scale: 2, spacing: { labels: 1.5 }, pitchAlignment: 'viewport' } }],
+		['text and icon scale', { text: { scale: 2, spacing: 1.5, pitchAlignment: 'viewport' }, icon: { spacing: 2 } }],
+		[
+			'label typography',
+			{
+				text: {
+					maxWidth: 6,
+					streets: { letterSpacing: 0.1, refs: { haloWidth: 1 } },
+					places: { hamlets: { transform: 'none' } },
+				},
+			},
+		],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
 		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, sun: true }],
 		['base and one url', { urls: { base: 'https://tiles.example.org', elevation: '/dem/tiles.json' } }],
@@ -163,15 +246,19 @@ describe('osm.minimizeOptions', () => {
 		[
 			'text + layout',
 			{
-				text: { language: 'de', fonts: { water: 'fira_sans_italic', pois: { general: 'noto_sans_regular' } } },
-				layout: { scale: { labels: 1.5 } },
+				text: {
+					language: 'de',
+					scale: 1.5,
+					water: { font: 'fira_sans_italic' },
+					pois: { general: { font: 'noto_sans_regular' } },
+				},
 			},
 		],
 		[
 			'features + layers',
 			{ features: { hillshade: true, landcover: true }, layers: { labels: false, roads: { paths: 0.5 } } },
 		],
-		['fonts', { text: { fonts: { default: 'a', water: 'b', pois: { transit: 'c' } } } }],
+		['fonts', { text: { font: 'a', water: { font: 'b' }, pois: { transit: { font: 'c' } } } }],
 		['sky', { sky: { skyColor: '#010203' }, projection: 'mercator' }],
 		['urls', { urls: { base: 'https://tiles.example.org' } }],
 	];
@@ -239,20 +326,21 @@ describe('satellite.minimizeOptions', () => {
 		});
 	});
 
-	it("minimises overlay fonts against the overlay's all-bold fonts", () => {
-		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: 'noto_sans_bold' } } })).toEqual({});
-		expect(satellite.minimizeOptions({ osmOverlay: { text: { fonts: { water: 'x' } } } })).toEqual({
-			osmOverlay: { text: { fonts: { water: 'x' } } },
+	it("minimises overlay text against the overlay's own label styles", () => {
+		expect(satellite.minimizeOptions({ osmOverlay: { text: { font: 'noto_sans_bold', haloBlur: 0 } } })).toEqual({});
+		expect(satellite.minimizeOptions({ osmOverlay: { text: { water: { font: 'x' } } } })).toEqual({
+			osmOverlay: { text: { water: { font: 'x' } } },
 		});
-		// osm()'s own fonts, set in the overlay: regular, with refs and POI names bold
+		// osm()'s own label styles, set in the overlay: regular with bold refs and POI names, and osm()'s halos
 		expect(satellite.minimizeOptions({ osmOverlay: { text: osm.resolveOptions().text } })).toEqual({
 			osmOverlay: {
 				text: {
-					fonts: {
-						default: 'noto_sans_regular',
-						streets: { refs: 'noto_sans_bold' },
-						pois: { general: 'noto_sans_bold' },
-					},
+					font: 'noto_sans_regular',
+					haloWidth: 2,
+					haloBlur: 1,
+					streets: { refs: { font: 'noto_sans_bold', haloWidth: 0.1 }, exits: { haloWidth: 1 } },
+					pois: { general: { font: 'noto_sans_bold', haloWidth: 0.5, haloBlur: 0.5 } },
+					addresses: { haloWidth: 0, haloBlur: 0 },
 				},
 			},
 		});
@@ -262,17 +350,14 @@ describe('satellite.minimizeOptions', () => {
 		['defaults', {}],
 		['raster', { raster: { opacity: 0.7, hueRotate: 20 } }],
 		['overlay off', { osmOverlay: false, features: { terrain: true } }],
-		[
-			'overlay configured',
-			{ osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, layout: { scale: { icons: 2 } } } },
-		],
+		['overlay configured', { osmOverlay: { theme: 'gray-dark', colors: { water: '#123456' }, icon: { scale: 2 } } }],
 		['sky off', { sky: false, osmOverlay: false }],
-		['overlay layout', { osmOverlay: { layout: { scale: 1.5, spacing: { icons: 2 } } } }],
+		['overlay text and icon', { osmOverlay: { text: { scale: 1.5, haloBlur: 1 }, icon: { spacing: 2 } } }],
 		['overlay layers off', { osmOverlay: { layers: { roads: false, labels: { places: 0.5 } } } }],
 		['urls and toggles', { urls: { base: 'https://tiles.example.org' }, features: { hillshade: true }, sun: true }],
 		['overlay tint amount 0', { osmOverlay: { recolor: { tint: { color: '#00ff00', amount: 0 } } } }],
 		['overlay blend without amount', { osmOverlay: { recolor: { blend: { color: '#00ff00' } } } }],
-		['overlay fonts', { osmOverlay: { text: { fonts: { default: 'a', places: { cities: 'b' } } } } }],
+		['overlay fonts', { osmOverlay: { text: { font: 'a', places: { cities: { font: 'b' } } } } }],
 		['overlay layers', { osmOverlay: { layers: { land: false, water: 0.3, sites: false, roads: { streets: 0.5 } } } }],
 	];
 

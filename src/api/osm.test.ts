@@ -182,7 +182,7 @@ describe('osm()', () => {
 
 	it('applies text scale to symbol layers', () => {
 		const normal = osm();
-		const scaled = osm({ layout: { scale: { labels: 1.5 } } });
+		const scaled = osm({ text: { scale: 1.5 } });
 		const getTextSize = (s: StyleSpecification) => {
 			const l = s.layers.find((l) => l.id === 'label-place-village');
 			return (l?.layout as Record<string, unknown>)?.['text-size'];

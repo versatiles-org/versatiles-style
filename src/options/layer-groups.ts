@@ -69,7 +69,14 @@ export type LayerGroupOptions = {
 		| {
 				boundaries?: boolean | number | { countries?: boolean | number; states?: boolean | number };
 				places?:
-					boolean | number | { cities?: boolean | number; villages?: boolean | number; districts?: boolean | number };
+					| boolean
+					| number
+					| {
+							cities?: boolean | number;
+							villages?: boolean | number;
+							hamlets?: boolean | number;
+							districts?: boolean | number;
+					  };
 				streets?: boolean | number | { names?: boolean | number; refs?: boolean | number; exits?: boolean | number };
 				water?: boolean | number | { lakes?: boolean | number; rivers?: boolean | number };
 				addresses?: boolean | number;
@@ -125,7 +132,12 @@ export type ResolvedLayerGroups = {
 	markings: boolean | number;
 	labels: {
 		boundaries: { countries: boolean | number; states: boolean | number };
-		places: { cities: boolean | number; villages: boolean | number; districts: boolean | number };
+		places: {
+			cities: boolean | number;
+			villages: boolean | number;
+			hamlets: boolean | number;
+			districts: boolean | number;
+		};
 		streets: { names: boolean | number; refs: boolean | number; exits: boolean | number };
 		water: { lakes: boolean | number; rivers: boolean | number };
 		addresses: boolean | number;
@@ -306,7 +318,7 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 			),
 			places: resolveFlat(
 				labels?.places,
-				{ cities: true, villages: true, districts: true },
+				{ cities: true, villages: true, hamlets: true, districts: true },
 				`${path}.labels.places`,
 				labelsInherited
 			),

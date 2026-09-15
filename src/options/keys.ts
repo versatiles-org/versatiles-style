@@ -1,4 +1,4 @@
-import { v5Hint } from './v5-hints.js';
+import { preReleaseHint, v5Hint } from './v5-hints.js';
 
 /** Exactly the keys of the object part of `T`, each mapped to `true`. */
 export type KnownKeys<T> = { readonly [K in keyof Required<Extract<NonNullable<T>, object>>]-?: true };
@@ -33,6 +33,8 @@ export function checkKeys<T>(value: T, known: NoInfer<KnownKeys<T>>, path: strin
 		if (hint !== undefined) sawV5 = true;
 		if (hint === null) return `"${at}" was removed in v6`;
 		if (hint !== undefined) return `"${at}" — in v6 this is "${hint}"`;
+		const renamed = preReleaseHint(label, at);
+		if (renamed !== undefined) return `"${at}" — this is now "${renamed}"`;
 		return `"${at}" — known keys here: ${Object.keys(known).join(', ')}`;
 	});
 	const guide = sawV5 ? '\nSee "Migration from v5" in API_DESIGN.md.' : '';

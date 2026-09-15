@@ -15,14 +15,14 @@ const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
 const PLACE_SOURCE = { sourceLayer: 'place_labels', sortKey: POP_SORT_KEY };
 
 // Old VersaTiles place labels: settlement text is a dark blue-grey; districts/quarters are a lighter
-// variant, uppercased. Text sizes restored from the old style.
+// variant. Text sizes restored from the old style; capitalization comes from the text options.
 const byKind = (kind: string): FilterSpecification => ['==', ['get', 'kind'], kind];
 
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, size: 12, uppercase: true },
-	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, size: 13, uppercase: true },
-	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
-	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, size: 12 },
+	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, size: 13 },
+	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
 	{ id: 'village', filter: byKind('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
 	{ id: 'town', filter: byKind('town'), minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
@@ -91,8 +91,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': '{ref}' },
 		color: c.label,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 1,
-		textHaloBlur: 1,
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 14,
@@ -105,8 +103,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': '{ref}' },
 		color: c.labelShield,
 		textHaloColor: c.roadMotorway,
-		textHaloWidth: 0.1,
-		textHaloBlur: 1,
 		symbolPlacement: 'line',
 		textAnchor: 'center',
 		minzoom: 14,
@@ -137,8 +133,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ctx.nameField },
 		color: c.label,
 		textHaloColor: c.labelHalo,
-		textHaloWidth: 2,
-		textHaloBlur: 1,
 		symbolPlacement: 'point',
 		textAnchor: 'center',
 		minzoom: 14,

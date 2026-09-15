@@ -28,7 +28,22 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 	['lang:en', { text: { language: 'en' } }],
 	['lang:de', { text: { language: 'de' } }],
 	['lang:de strict', { text: { language: 'de', languageStrict: true } }],
-	['custom fonts', { text: { fonts: { default: 'my_regular', water: 'my_italic', pois: { general: 'my_bold' } } } }],
+	[
+		'custom fonts',
+		{ text: { font: 'my_regular', water: { font: 'my_italic' }, pois: { general: { font: 'my_bold' } } } },
+	],
+	[
+		'label typography',
+		{
+			text: {
+				maxWidth: 6,
+				lineHeight: 1.5,
+				letterSpacing: 0.1,
+				streets: { transform: 'uppercase', haloWidth: 3, haloBlur: 0 },
+				addresses: { transform: 'lowercase', haloWidth: 1 },
+			},
+		},
+	],
 	// features
 	['terrain', { features: { terrain: true } }],
 	['hillshade', { features: { hillshade: true } }],
@@ -57,8 +72,8 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 		{ recolor: { tint: { color: '#00ff00', amount: 0.5 }, blend: { color: '#0000ff', amount: 0.3 } } },
 	],
 	// layout + sun + sky
-	['scale + spacing', { layout: { scale: 1.5, spacing: 2 } }],
-	['spacing below 1 + viewport pitch', { layout: { spacing: 0.5, pitchAlignment: 'viewport' } }],
+	['scale + spacing', { text: { scale: 1.5, spacing: 2 }, icon: { scale: 1.5, spacing: 2 } }],
+	['spacing below 1 + viewport pitch', { text: { spacing: 0.5, pitchAlignment: 'viewport' }, icon: { spacing: 0.5 } }],
 	['custom sun + sky', { sun: { direction: 120, altitude: 20 }, sky: { skyColor: '#010203', atmosphereBlend: 0.7 } }],
 ];
 

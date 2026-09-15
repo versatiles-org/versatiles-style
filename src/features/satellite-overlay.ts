@@ -1,7 +1,13 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
 import { scaleLayerOpacity } from '../lib/opacity.js';
-import { uniformFonts, type ResolvedFonts } from '../options/fonts.js';
-import { DEFAULT_FONT_BOLD } from '../options/text.js';
+import {
+	DEFAULT_FONT_BOLD,
+	DEFAULT_LABEL_STYLES,
+	mapTopics,
+	topicOf,
+	type ResolvedLabelStyle,
+	type TopicTree,
+} from '../options/text.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -11,8 +17,9 @@ import { DEFAULT_FONT_BOLD } from '../options/text.js';
  * reads as a basemap accidentally drawn on top of a picture.
  *
  * Two of those adjustments are expressed as option defaults instead of transforms, so callers can
- * still override them: white label text on a black halo (`colors.label` / `colors.labelHalo`) and a
- * bold font (`text.fonts`). What is left here is what the option surface cannot express.
+ * still override them: white label text on a black halo (`colors.label` / `colors.labelHalo`), and bold
+ * labels with a tight halo (`text`, `OVERLAY_LABEL_STYLES`). What is left here is what the option
+ * surface cannot express.
  */
 
 /**
@@ -28,7 +35,7 @@ const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 /** Multiplier applied to every line's opacity, so roads read as an overlay rather than a basemap. */
 const LINE_OPACITY = 0.2;
 
-/** Halo tuned for imagery: tight and hard, rather than the wide soft halo used on a flat basemap. */
+/** Halo tuned for imagery: tight and hard, rather than the wide soft halo used on a flat basemap (`OVERLAY_LABEL_STYLES`). */
 const HALO_WIDTH = 1;
 const HALO_BLUR = 0;
 
@@ -59,8 +66,6 @@ export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): 
 		// Only touch a halo that exists — layers with no halo should not gain one.
 		if (paint['text-halo-color'] !== undefined) {
 			paint['text-halo-color'] = haloColor;
-			paint['text-halo-width'] = HALO_WIDTH;
-			paint['text-halo-blur'] = HALO_BLUR;
 		}
 	}
 }
@@ -93,8 +98,19 @@ export const OVERLAY_DEFAULTS = {
 	},
 } as const;
 
-/** v5 set every symbol layer bold, so labels hold up against a busy photo. */
-export const OVERLAY_FONTS: ResolvedFonts = uniformFonts(DEFAULT_FONT_BOLD);
+/**
+ * The overlay's label styles: every topic bold, as v5 set every symbol layer, so labels hold up against
+ * a busy photo; and a tight, hard halo — 1 px, no blur — rather than the wide soft halo used on a flat
+ * basemap. A topic drawn without a halo (house numbers) stays without one.
+ */
+export const OVERLAY_LABEL_STYLES: TopicTree<ResolvedLabelStyle> = mapTopics((topic) => {
+	const style = topicOf(DEFAULT_LABEL_STYLES, topic);
+	return {
+		...style,
+		font: DEFAULT_FONT_BOLD,
+		...(style.haloWidth > 0 && { haloWidth: HALO_WIDTH, haloBlur: HALO_BLUR }),
+	};
+});
 
 /** Filter and adjust a built OSM style's layers for use over imagery. */
 export function toOverlayLayers(layers: StyleSpecification['layers'], haloColor: string): StyleSpecification['layers'] {

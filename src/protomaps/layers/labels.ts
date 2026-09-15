@@ -52,10 +52,10 @@ const IS_STATE_CAPITAL: ExpressionSpecification = ['==', CAPITAL, '4'];
 const NOT_A_CAPITAL: ExpressionSpecification = ['!', ['in', CAPITAL, ['literal', ['yes', '2', '4']]]];
 
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byType('neighbourhood'), minzoom: 14, size: 12, uppercase: true },
-	{ id: 'quarter', filter: byType('quarter'), minzoom: 13, size: 13, uppercase: true },
-	{ id: 'suburb', filter: byType('suburb'), minzoom: 10, size: { 11: 11, 13: 14 }, uppercase: true },
-	{ id: 'hamlet', filter: byType('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 }, uppercase: true },
+	{ id: 'neighbourhood', filter: byType('neighbourhood'), minzoom: 14, size: 12 },
+	{ id: 'quarter', filter: byType('quarter'), minzoom: 13, size: 13 },
+	{ id: 'suburb', filter: byType('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byType('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
 	{ id: 'village', filter: byType('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
 	{ id: 'town', filter: ['all', byType('town'), NOT_A_CAPITAL], minzoom: 7, size: { 8: 11, 12: 14 } },
 ];
@@ -124,8 +124,6 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 		layout: { 'text-field': ['get', 'shield_text'] },
 		color: c.labelShield,
 		textHaloColor: c.roadMotorway,
-		textHaloWidth: 0.1,
-		textHaloBlur: 1,
 		symbolPlacement: 'line',
 		textAnchor: 'center',
 		minzoom: 14,

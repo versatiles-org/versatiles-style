@@ -2,7 +2,7 @@ import { checkKeys } from './keys.js';
 import {
 	resolveColors,
 	resolveLayerGroups,
-	resolveLayout,
+	resolveIcon,
 	resolveOsmFeatures,
 	resolveProjection,
 	resolveRecolor,
@@ -47,7 +47,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 			theme: true,
 			layers: true,
 			text: true,
-			layout: true,
+			icon: true,
 			colors: true,
 			recolor: true,
 			urls: true,
@@ -70,7 +70,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 		theme,
 		layers: resolveLayerGroups(options?.layers, 'osm.layers'),
 		text: resolveText(options?.text, 'osm.text'),
-		layout: resolveLayout(options?.layout, 'osm.layout'),
+		icon: resolveIcon(options?.icon, 'osm.icon'),
 		colors,
 		recolor: resolveRecolor(options?.recolor, 'osm.recolor'),
 	};

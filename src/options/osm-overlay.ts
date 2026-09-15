@@ -2,23 +2,24 @@ import { checkKeys } from './keys.js';
 import {
 	resolveColors,
 	resolveLayerGroups,
-	resolveLayout,
+	resolveIcon,
 	resolveRecolor,
 	resolveText,
 	resolveTheme,
 	type ColorsOptions,
 	type LayerGroupOptions,
-	type LayoutOptions,
+	type IconOptions,
 	type Palette,
 	type RecolorOptions,
 	type ResolvedColors,
 	type ResolvedLayerGroups,
-	type ResolvedLayout,
+	type ResolvedIcon,
 	type ResolvedRecolor,
 	type ResolvedText,
 	type ResolvedTheme,
-	type ResolvedFonts,
+	type ResolvedLabelStyle,
 	type TextOptions,
+	type TopicTree,
 	type ThemeOptions,
 } from './parts.js';
 
@@ -26,7 +27,7 @@ export type OsmOverlayOptions = {
 	theme?: ThemeOptions;
 	layers?: boolean | number | LayerGroupOptions;
 	text?: TextOptions;
-	layout?: LayoutOptions;
+	icon?: IconOptions;
 	colors?: ColorsOptions;
 	recolor?: RecolorOptions;
 };
@@ -35,7 +36,7 @@ export type ResolvedOsmOverlay = {
 	theme: ResolvedTheme;
 	layers: ResolvedLayerGroups;
 	text: ResolvedText;
-	layout: ResolvedLayout;
+	icon: ResolvedIcon;
 	colors: ResolvedColors;
 	recolor: ResolvedRecolor;
 };
@@ -44,15 +45,15 @@ export function resolveOsmOverlay(
 	content: OsmOverlayOptions,
 	defaultPalette?: Palette,
 	path = 'osmOverlay',
-	fontDefaults?: ResolvedFonts
+	labelDefaults?: TopicTree<ResolvedLabelStyle>
 ): ResolvedOsmOverlay {
-	checkKeys(content, { theme: true, layers: true, text: true, layout: true, colors: true, recolor: true }, path);
+	checkKeys(content, { theme: true, layers: true, text: true, icon: true, colors: true, recolor: true }, path);
 	const theme = resolveTheme(content.theme, defaultPalette, `${path}.theme`);
 	return {
 		theme,
 		layers: resolveLayerGroups(content.layers, `${path}.layers`),
-		text: resolveText(content.text, `${path}.text`, fontDefaults),
-		layout: resolveLayout(content.layout, `${path}.layout`),
+		text: resolveText(content.text, `${path}.text`, labelDefaults),
+		icon: resolveIcon(content.icon, `${path}.icon`),
 		colors: resolveColors(theme, content.colors, `${path}.colors`),
 		recolor: resolveRecolor(content.recolor, `${path}.recolor`),
 	};

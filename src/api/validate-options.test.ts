@@ -48,7 +48,7 @@ describe('unknown option keys are rejected', () => {
 
 	it('names the v6 replacement for a v5 option', () => {
 		expect(() => osm({ textScale: 2 } as never)).toThrow(
-			'osm: unknown option "textScale" — in v6 this is "layout.scale.labels"'
+			'osm: unknown option "textScale" — in v6 this is "text.scale"'
 		);
 		expect(() => osm({ recolor: { rotate: 90 } } as never)).toThrow(
 			'"recolor.rotate" — in v6 this is "recolor.rotateHue"'
@@ -89,12 +89,35 @@ describe('unknown option keys are rejected', () => {
 		expect(() => osm({ textScale: 2, nope: 1 } as never)).toThrow(guide);
 	});
 
+	it('names the replacement for an option renamed before 6.0.0, without pointing at the v5 guide', () => {
+		const message = (run: () => unknown) => {
+			try {
+				run();
+			} catch (error) {
+				return (error as Error).message;
+			}
+			return '';
+		};
+		expect(message(() => osm({ layout: { scale: 2 } } as never))).toBe(
+			'osm: unknown option "layout" — this is now "text.scale, text.spacing, text.pitchAlignment, icon.scale and icon.spacing"'
+		);
+		expect(message(() => osm({ text: { fonts: 'x' } } as never))).toBe(
+			'osm: unknown option "text.fonts" — this is now "text.font, on the root or on any group or topic of text"'
+		);
+		expect(message(() => osm({ text: { streets: { default: 'x' } } } as never))).toBe(
+			'osm: unknown option "text.streets.default" — this is now "text.streets.font"'
+		);
+		expect(message(() => satellite({ osmOverlay: { layout: {} } } as never))).toContain(
+			'"osmOverlay.layout" — this is now "osmOverlay.text.scale'
+		);
+	});
+
 	// Each resolver checks its own object, so the keys of one object are reported together; a nested
 	// object is only reached once its parent is clean.
 	it('reports every unknown key of an options object in one error', () => {
 		expect(() => osm({ textScale: 2, baseUrl: 'x', bounds: [0, 0, 1, 1], colors: { wood: '#f00' } } as never)).toThrow(
 			'osm: 3 unknown options\n' +
-				'  "textScale" — in v6 this is "layout.scale.labels"\n' +
+				'  "textScale" — in v6 this is "text.scale"\n' +
 				'  "baseUrl" — in v6 this is "urls.base"\n' +
 				'  "bounds" was removed in v6'
 		);

@@ -1,13 +1,13 @@
 import { buildContext } from './context.js';
 import { shortbreadLayers } from './layers/index.js';
 import { resolveOsm } from '../options/index.js';
-import { buildGroupMaps, type FontGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
+import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
 import type { TaggedLayer } from '../dsl/build.js';
 import { keepInOverlay } from '../features/satellite-overlay.js';
 
-export type { FontGroupMap, LayerGroupMap } from '../dsl/group-maps.js';
+export type { TextGroupMap, LayerGroupMap } from '../dsl/group-maps.js';
 
-let cached: { layers: LayerGroupMap; fonts: FontGroupMap } | undefined;
+let cached: { layers: LayerGroupMap; text: TextGroupMap } | undefined;
 let cachedOverlay: LayerGroupMap | undefined;
 
 /**
@@ -22,7 +22,7 @@ function builds(): Iterable<TaggedLayer>[] {
 }
 
 /** Both group maps of the Shortbread layers, built once. */
-function maps(): { layers: LayerGroupMap; fonts: FontGroupMap } {
+function maps(): { layers: LayerGroupMap; text: TextGroupMap } {
 	return (cached ??= buildGroupMaps(builds()));
 }
 
@@ -41,7 +41,7 @@ export function getOverlayLayerGroupMap(): LayerGroupMap {
 	).layers);
 }
 
-/** The map of font topics to the text layer IDs they set. */
-export function getFontGroupMap(): FontGroupMap {
-	return maps().fonts;
+/** The map of text topics to the text layer IDs they set. */
+export function getTextGroupMap(): TextGroupMap {
+	return maps().text;
 }

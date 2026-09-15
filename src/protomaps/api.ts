@@ -15,7 +15,7 @@ import {
 	configure3DLighting,
 	applySky,
 	applyProjection,
-	applyLayout,
+	applyIcon,
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/languages.js';
@@ -30,7 +30,7 @@ import {
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
 } from './layers/index.js';
-import { getFontGroupMap, getLayerGroupMap } from './layer-groups-map.js';
+import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 
 /**
  * `protomaps()` — the Protomaps counterpart of `osm()`, exported from `@versatiles/style/protomaps`.
@@ -90,7 +90,7 @@ function protomapsFn(options?: ProtomapsOptions): StyleSpecification {
 	const ctx = buildContext(resolved);
 	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
-	applyLayout(style, resolved.layout);
+	applyIcon(style, resolved.icon);
 
 	if (resolved.features.terrain !== false) {
 		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
@@ -128,11 +128,11 @@ export const protomaps = Object.assign(protomapsFn, {
 	},
 
 	/**
-	 * Maps each font topic of `text.fonts` (`water.rivers`, `pois.transit`, …) to the text layer IDs it
+	 * Maps each topic of `text` (`water.rivers`, `pois.transit`, …) to the text layer IDs its label style
 	 * sets. Built from the same group tags as `layerGroups`.
 	 */
-	get fontGroups() {
-		return getFontGroupMap();
+	get textGroups() {
+		return getTextGroupMap();
 	},
 
 	/** Fully resolved defaults (theme: 'colorful'). */

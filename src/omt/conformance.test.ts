@@ -177,6 +177,7 @@ describe('group tagging', () => {
 			'labels.boundaries.states',
 			'labels.places.cities',
 			'labels.places.districts',
+			'labels.places.hamlets',
 			'labels.places.villages',
 			'labels.streets.exits',
 			'labels.streets.names',

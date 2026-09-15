@@ -1,7 +1,7 @@
 import type { MaplibreLayer } from '../types/index.js';
 import { gate, type TaggedLayer } from './build.js';
 import type { LayerContext } from './context.js';
-import { applyFont } from './fonts.js';
+import { applyText } from './text.js';
 
 /**
  * Assembling a schema's tagged layer stream into a finished layer list — schema-neutral.
@@ -30,12 +30,12 @@ export type MergeTable = Readonly<Record<string, readonly string[]>>;
 // Materialize the assembled layers, adding the source to every non-background layer (background +
 // slot anchors carry no source), ready to drop into a style. Per-group visibility/opacity from the
 // `layers:` option is applied here in a single pass by `gate`: hidden groups are dropped, fractional
-// opacity is merged into each affected layer. Text layers get their font here too, from the same group
-// tag (`applyFont`), so no layer module picks a font of its own.
+// opacity is merged into each affected layer. Text layers get their typography here too, from the same
+// group tag (`applyText`), so no layer module sets a font, halo or capitalization of its own.
 export function buildLayers(ctx: LayerContext, floors: DataFloors, tagged: Iterable<TaggedLayer>): MaplibreLayer[] {
 	const layers: MaplibreLayer[] = [];
 	for (const { layer, group } of gate(ctx.layers, tagged)) {
-		applyFont(layer, group, ctx.fonts);
+		applyText(layer, group, ctx.text);
 		if (layer.type !== 'background') applyDataFloor(layer, floors);
 		layers.push(layer.type === 'background' ? layer : ({ ...layer, source: ctx.source } as MaplibreLayer));
 	}

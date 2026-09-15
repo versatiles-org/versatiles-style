@@ -70,16 +70,16 @@ describe('guessOptions', () => {
 				faces: [{ id: 'open_sans_bold', style: 'normal', weight: 700, width: 'normal', codeblocks: '2-7' }],
 			},
 		];
-		const style = osm({ text: { fonts: 'open_sans_bold' }, urls: { osm: 'https://example.org/osm.json' } });
+		const style = osm({ text: { font: 'open_sans_bold' }, urls: { osm: 'https://example.org/osm.json' } });
 		const withList = await guessOptions(style, {
 			fetch: (input) => (String(input).endsWith('/font_families.json') ? json(families) : json(SHORTBREAD_TILEJSON)),
 		});
-		expect(withList).toMatchObject({ kind: 'osm', options: { text: { fonts: 'open_sans_bold' } } });
+		expect(withList).toMatchObject({ kind: 'osm', options: { text: { font: 'open_sans_bold' } } });
 
 		const withoutList = await guessOptions(style, {
 			fetch: (input) => (String(input).endsWith('/font_families.json') ? json({}, 404) : json(SHORTBREAD_TILEJSON)),
 		});
-		expect(withoutList).toMatchObject({ kind: 'osm', options: { text: { fonts: 'noto_sans_bold' } } });
+		expect(withoutList).toMatchObject({ kind: 'osm', options: { text: { font: 'noto_sans_bold' } } });
 	});
 
 	it('never throws', async () => {
