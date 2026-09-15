@@ -84,6 +84,7 @@ describe('osm.minimizeOptions', () => {
 				features: { hillshade: { exaggeration: 0.3 } },
 				sun: { altitude: 30 },
 			});
+			expect(roundTrip({ sun: { color: '#FFFFFF', intensity: 0.8 } })).toEqual({ sun: { intensity: 0.8 } });
 		});
 
 		it('collapses resolved URLs back to `urls.base`', () => {
@@ -149,6 +150,7 @@ describe('osm.minimizeOptions', () => {
 		['dark theme', { theme: 'natural-dark' }],
 		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
 		['sky off', { sky: false }],
+		['sun intensity', { sun: { intensity: 0.8 }, features: { buildings: 'extruded' } }],
 		['layout pairs', { layout: { scale: 2, spacing: { labels: 1.5 }, pitchAlignment: 'viewport' } }],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
 		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, sun: true }],

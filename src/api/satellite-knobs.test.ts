@@ -214,6 +214,8 @@ describe('satellite() knob: features', () => {
 		expect(build({ sun: { direction: 120 } }).light).toStrictEqual({
 			anchor: 'viewport',
 			position: [1.15, 120, 30],
+			color: '#ffffff',
+			intensity: 0.5,
 		});
 	});
 });

@@ -9,9 +9,9 @@ export type SunOptions =
 			altitude?: number;
 			/** The reference frame for the sun's position: 'map' anchors it to the map, 'viewport' to the screen. */
 			anchor?: 'map' | 'viewport';
-			/** The sun's color. */
+			/** The light's color. Default `#ffffff`. */
 			color?: string;
-			/** The sun's intensity. */
+			/** The light's intensity, 0–1. Default `0.5`. */
 			intensity?: number;
 	  };
 
@@ -21,10 +21,11 @@ export type ResolvedSun =
 			direction: number;
 			altitude: number;
 			anchor: 'map' | 'viewport';
-			color?: string;
-			intensity?: number;
+			color: string;
+			intensity: number;
 	  };
 
+/** `color` and `intensity` are MapLibre's own light defaults, so writing them changes nothing. */
 export function resolveSun(sun?: SunOptions, path = 'sun'): ResolvedSun {
 	if (sun === true) sun = {};
 	if (sun === undefined) return undefined;
@@ -33,7 +34,7 @@ export function resolveSun(sun?: SunOptions, path = 'sun'): ResolvedSun {
 		direction: sun?.direction ?? 210,
 		altitude: sun?.altitude ?? 60,
 		anchor: sun?.anchor ?? 'viewport',
-		...(sun?.color === undefined ? {} : { color: sun?.color }),
-		...(sun?.intensity === undefined ? {} : { intensity: sun?.intensity }),
+		color: sun?.color ?? '#ffffff',
+		intensity: sun?.intensity ?? 0.5,
 	};
 }

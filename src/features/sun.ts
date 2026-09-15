@@ -6,8 +6,8 @@ export function configure3DLighting(style: StyleSpecification, sun: ResolvedSun)
 		style.light = {
 			anchor: sun.anchor,
 			position: [1.15, sun.direction, 90 - sun.altitude],
-			...(sun.color && { color: sun.color }),
-			...(sun.intensity !== undefined && { intensity: sun.intensity }),
+			color: sun.color,
+			intensity: sun.intensity,
 		};
 	} else {
 		delete style.light;

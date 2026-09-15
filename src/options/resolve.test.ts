@@ -201,6 +201,16 @@ describe('resolveSun', () => {
 	it('merges partial overrides', () => {
 		expect(resolveSun({ direction: 90 })).toMatchObject({ direction: 90, altitude: 60 });
 	});
+
+	it("fills every value, colour and intensity with MapLibre's light defaults", () => {
+		expect(resolveSun(true)).toStrictEqual({
+			direction: 210,
+			altitude: 60,
+			anchor: 'viewport',
+			color: '#ffffff',
+			intensity: 0.5,
+		});
+	});
 });
 
 describe('resolveSky', () => {

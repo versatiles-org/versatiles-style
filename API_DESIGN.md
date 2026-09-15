@@ -306,8 +306,9 @@ Used by both `osm()` and `satellite()`. Require `features.terrain: true` to have
 
 ```ts
 type SunOptions = {
-  direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 315
-  altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
+  direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 210
+  altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 60
+  anchor?: 'map' | 'viewport'; // whether the light turns with the map; default: 'viewport'
   color?: string; // light color; default: '#ffffff'
   intensity?: number; // 0–1; default: 0.5
 };
