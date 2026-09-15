@@ -16,6 +16,7 @@
   - [`guessSchema()`](#guessschematilejson-schemaguess)
   - [`guessOptions()` and `deriveOptions()`](#guessoptionsstyle-options-promiseoptionsguess)
   - [`isDarkMode()`](#isdarkmode-boolean)
+  - [`labelLanguage()`](#labellanguagelanguage-string)
   - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
   - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
     - [`fontCovers()`](#fontcoversface-language-boolean--undefined)
@@ -810,6 +811,20 @@ and rebuild the style.
 
 ---
 
+## `labelLanguage(language): string`
+
+The language labels are drawn in for a `text.language`: `'user'` becomes the browser's language (`'de'`
+for `de-AT`), or `'local'` where there is no browser. Every other value is returned as it is. `osm()`,
+`fontCovers()` and `languageScript()` read `'user'` the same way, so a UI can name the language a font
+warning is about:
+
+```ts
+labelLanguage('user'); // 'de' in a German browser, 'local' in Node.js
+labelLanguage('fr'); // 'fr'
+```
+
+---
+
 ## `fetchTileJSON(url, options?): Promise<TileJSONSpecification>`
 
 ```ts
@@ -864,8 +879,9 @@ Vietnamese `ơ ư ạ ệ`, Yoruba `ẹ ọ ṣ`, Serbian `ђ џ` or `ć đ`, an
 tiles.versatiles.org, Open Sans covers `'de'` but not `'az'`, `'ha'` or `'yo'`, Roboto not `'yo'`, and PT
 Sans not `'vi'`. Those blocks are coarse, and a server's list can be incomplete, so coverage is a hint. It
 is `undefined` when nothing can be checked: for `local` (names in every script), for a language `Intl`
-cannot place, for a script it has no sample letters for, and for a face that lists no blocks at all. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font
-by default, so a `false` for Chinese, Japanese or Korean matters to MapLibre Native only.
+cannot place, for a script it has no sample letters for, and for a face that lists no blocks at all.
+MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font by default, so a `false`
+for Chinese, Japanese or Korean matters to MapLibre Native only.
 
 ```ts
 const faces = await fetchFontFaces({ base: 'https://tiles.versatiles.org' });

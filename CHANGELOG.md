@@ -139,7 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `fontCovers()` tells whether a face has the glyphs for a label language, `'user'` included; beyond the
   script's letters it checks the extra letters of 27 languages, such as Polish, Vietnamese and Serbian.
   `fontScripts()` lists the scripts of `FONT_SCRIPTS` a face covers, `languageScript()` gives the script of
-  a language, and `textScripts()` the scripts that occur in a text.
+  a language, and `textScripts()` the scripts that occur in a text. `labelLanguage()` gives the language
+  labels are drawn in, with `'user'` read as the browser's language.
 - `icon` sets the size (`icon.scale`) and spacing (`icon.spacing`) of icons, apart from their labels.
 - `text.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.

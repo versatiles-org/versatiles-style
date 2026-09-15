@@ -1,9 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
 	DEFAULT_LABEL_STYLES,
 	LABEL_STYLE_KEYS,
 	TEXT_GROUPS,
 	TEXT_TOPICS,
+	labelLanguage,
 	mapTopics,
 	resolveText,
 	topicOf,
@@ -36,6 +37,30 @@ describe('TEXT_TOPICS', () => {
 			'addresses',
 		]);
 		expect(Object.keys(mapTopics(() => 0))).toStrictEqual([...Object.keys(TEXT_GROUPS), 'addresses']);
+	});
+});
+
+describe('labelLanguage', () => {
+	it("reads 'user' as the browser language and returns every other value as it is", () => {
+		vi.stubGlobal('navigator', { language: 'de-AT' });
+		try {
+			expect(labelLanguage('user')).toBe('de');
+			expect(labelLanguage('fr')).toBe('fr');
+			expect(labelLanguage('local')).toBe('local');
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+
+	it("reads 'user' as 'local' where there is no browser language", () => {
+		for (const navigator of [undefined, {}, { language: '' }]) {
+			vi.stubGlobal('navigator', navigator);
+			try {
+				expect(labelLanguage('user')).toBe('local');
+			} finally {
+				vi.unstubAllGlobals();
+			}
+		}
 	});
 });
 

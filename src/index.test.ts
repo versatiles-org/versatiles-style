@@ -12,6 +12,7 @@ describe('exports', () => {
 
 	it('should export every function API_DESIGN.md documents', () => {
 		expect(typeof lib.isDarkMode).toBe('function');
+		expect(typeof lib.labelLanguage).toBe('function');
 		expect(typeof lib.fetchTileJSON).toBe('function');
 		expect(typeof lib.inlineSources).toBe('function');
 	});

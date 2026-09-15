@@ -149,7 +149,7 @@ export type {
 	ResolvedText,
 	ResolvedTheme,
 } from './options/index.js';
-export { isDarkMode } from './options/index.js';
+export { isDarkMode, labelLanguage } from './options/index.js';
 
 export type {
 	StyleSpecification,
