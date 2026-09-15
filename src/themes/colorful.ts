@@ -60,7 +60,7 @@ const dark: ResolvedColors = {
 	natureGrass: '#2C3923',
 	naturePark: '#383F1F',
 	natureAgriculture: '#292D17',
-	natureSand: '#2A2A22',
+	natureSand: '#2C2B14',
 	natureRock: '#2A2922',
 	natureWetland: '#2A362F',
 	natureLeisure: '#2B2F25',
