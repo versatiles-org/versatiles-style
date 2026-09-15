@@ -858,9 +858,11 @@ fall back to a free text field. It rejects only when the request itself fails.
 Whether a face from `fetchFontFaces()` has the glyphs to write labels in `language` — for a warning in
 a font picker, not a guarantee. `language` is any `text.language`: `'user'` is the browser's language
 first. Its script comes from `languageScript()`, and a few sample letters of it are checked against the
-`codeblocks` the glyph server lists for the face in its `font_families.json`. A language whose letters a
-Latin face can lack is checked for those letters too: Vietnamese (`ơ ư ạ ệ`), which PT Sans does not draw,
-so PT Sans covers `'de'` but not `'vi'`. Those blocks are coarse, and
+`codeblocks` the glyph server lists for the face in its `font_families.json`. A language written with
+letters beyond its script's basic alphabet is checked for those letters too — Polish `ł`, Turkish `ğ`,
+Vietnamese `ơ ư ạ ệ`, Yoruba `ẹ ọ ṣ`, Serbian `ђ џ` or `ć đ`, and 22 more languages. On
+tiles.versatiles.org, Open Sans covers `'de'` but not `'az'`, `'ha'` or `'yo'`, Roboto not `'yo'`, and PT
+Sans not `'vi'`. Those blocks are coarse, and
 a face merged from several font files may list only the first file's blocks, so coverage is a hint. It is
 `undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a script it
 has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font

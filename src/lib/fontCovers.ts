@@ -39,16 +39,48 @@ const SCRIPT_SAMPLES: Readonly<Record<string, readonly number[]>> = {
 };
 
 /**
- * Letters a language needs beyond its script's samples, by language subtag. A script's few samples tell
- * a Latin face from a Cyrillic one, but not whether a Latin face has every letter of every language
- * written in Latin, so a language gets its own letters where a face can lack them.
+ * Letters a language needs beyond its script's samples, by language and script (`sr-Latn` and `sr-Cyrl`
+ * need different ones). A script's few samples tell a Latin face from a Cyrillic one, but not whether a
+ * Latin face has every letter of every language written in Latin, so a language written with letters
+ * outside its script's basic alphabet lists them here, capitals included — they can sit in another block.
  *
- * Listed only where a face on the VersaTiles glyph server does lack them (checked 2026-09-15 against its
- * `font_families.json`): Polish, Czech, Turkish, Romanian and Hungarian letters were in all 187 faces,
- * while PT Sans lacks the Vietnamese letters, which sit in Latin Extended-B and Latin Extended Additional.
+ * Checked on 2026-09-15 against the 187 faces on tiles.versatiles.org: Open Sans and PT Sans lack Ə, Ɓ, Ɗ
+ * and Ƙ, so they cover neither Azerbaijani nor Hausa; Open Sans, PT Sans and Roboto lack ẹ, ọ and ṣ
+ * (Yoruba); PT Sans lacks the Vietnamese letters. Every face had the letters of the other languages.
+ * Persian and Urdu could not be checked: no face lists Arabic yet.
  */
-const LANGUAGE_SAMPLES: Readonly<Record<string, readonly number[]>> = {
-	vi: [0x1a1, 0x1b0, 0x1ea1, 0x1ec7], // ơ ư ạ ệ
+export const LANGUAGE_SAMPLES: Readonly<Record<string, string>> = {
+	// Latin
+	'az-Latn': 'ƏəĞğİıŞş',
+	'bs-Latn': 'ČčĆćĐđŠšŽž',
+	'cs-Latn': 'ČčĎďĚěŇňŘřŠšŤťŮůŽž',
+	'cy-Latn': 'ŴŵŶŷ',
+	'eo-Latn': 'ĈĉĜĝĤĥĴĵŜŝŬŭ',
+	'et-Latn': 'ŠšŽž',
+	'ha-Latn': 'ƁɓƊɗƘƙ',
+	'hr-Latn': 'ČčĆćĐđŠšŽž',
+	'hu-Latn': 'ŐőŰű',
+	'lt-Latn': 'ĄąČčĘęĖėĮįŠšŲųŪūŽž',
+	'lv-Latn': 'ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž',
+	'mt-Latn': 'ĊċĠġĦħŻż',
+	'pl-Latn': 'ĄąĆćĘęŁłŃńŚśŹźŻż',
+	'ro-Latn': 'ĂăȘșȚț',
+	'sk-Latn': 'ČčĎďĹĺĽľŇňŔŕŠšŤťŽž',
+	'sl-Latn': 'ČčŠšŽž',
+	'sr-Latn': 'ČčĆćĐđŠšŽž',
+	'tr-Latn': 'ĞğİıŞş',
+	'vi-Latn': 'ƠơƯưẠạỆệ',
+	'yo-Latn': 'ẸẹỌọṢṣ',
+	// Cyrillic
+	'be-Cyrl': 'ЎўІі',
+	'kk-Cyrl': 'ӘәҒғҚқҢңӨөҰұҮүҺһ',
+	'mk-Cyrl': 'ЃѓЅѕЈјЉљЊњЌќЏџ',
+	'mn-Cyrl': 'ӨөҮү',
+	'sr-Cyrl': 'ЂђЈјЉљЊњЋћЏџ',
+	'uk-Cyrl': 'ЄєІіЇїҐґ',
+	// Arabic
+	'fa-Arab': 'پچژگ',
+	'ur-Arab': 'ٹڈڑںے',
 };
 
 /** Scripts a locale maximises to that are written with the samples of another. */
@@ -151,8 +183,9 @@ export function textScripts(text: string): string[] {
  * guarantee.
  *
  * The language's script comes from `languageScript`, so `language` can be any `text.language`, `'user'`
- * included. The face needs the script's sample letters, and for a language whose letters a face can lack
- * — Vietnamese — that language's own letters too, so a Latin face may cover `'de'` but not `'vi'`.
+ * included. The face needs the script's sample letters, and for a language written with letters beyond its
+ * script's basic alphabet (`LANGUAGE_SAMPLES`) those letters too, so a Latin face may cover `'de'` but not
+ * `'vi'` or `'az'`.
  * Coverage is read, as in `fontScripts`, from the `codeblocks` the glyph server lists for the face in its
  * `font_families.json`. `undefined` when there is nothing to check against: `local`, a language
  * `Intl` cannot place in a script, or a script this table has no sample letters for.
@@ -165,6 +198,7 @@ export function fontCovers(face: Pick<FontFaceInfo, 'codeblocks'>, language: str
 	const placed = placeLanguage(language);
 	if (placed === undefined) return undefined;
 	const blocks = parseCodeblocks(face.codeblocks);
-	const own = Object.hasOwn(LANGUAGE_SAMPLES, placed.language) ? LANGUAGE_SAMPLES[placed.language] : [];
+	const key = `${placed.language}-${placed.script}`;
+	const own = Object.hasOwn(LANGUAGE_SAMPLES, key) ? [...LANGUAGE_SAMPLES[key]].map((ch) => ch.codePointAt(0)!) : [];
 	return hasSamples(blocks, SCRIPT_SAMPLES[placed.script]) && hasSamples(blocks, own);
 }
