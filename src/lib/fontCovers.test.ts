@@ -64,8 +64,10 @@ describe('fontCovers', () => {
 		expect(fontCovers(NOTO_SANS, 'chr')).toBeUndefined(); // Cherokee: no sample letters
 	});
 
-	it('is false for a face with no blocks', () => {
-		expect(fontCovers({ codeblocks: '' }, 'de')).toBe(false);
+	it('is undefined for a face that lists no blocks, whose coverage is unknown', () => {
+		expect(fontCovers({ codeblocks: '' }, 'de')).toBeUndefined();
+		expect(fontCovers({ codeblocks: '' }, 'ja')).toBeUndefined();
+		expect(fontCovers({ codeblocks: ',' }, 'de')).toBeUndefined();
 	});
 
 	it('checks the letters of Vietnamese beyond the Latin samples', () => {

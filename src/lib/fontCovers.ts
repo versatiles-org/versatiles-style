@@ -121,7 +121,7 @@ function hasSamples(blocks: [number, number][], samples: readonly number[]): boo
  *
  * Coverage is read from the `codeblocks` the glyph server lists for the face in its `font_families.json`
  * (see `fetchFontFaces`), by checking a few sample letters of each script. It is a hint for a font picker,
- * not a guarantee: the blocks are coarse, and a merged face may list only its first source file's blocks.
+ * not a guarantee: the blocks are coarse, and a server's list can be incomplete.
  */
 export function fontScripts(face: Pick<FontFaceInfo, 'codeblocks'>): string[] {
 	const blocks = parseCodeblocks(face.codeblocks);
@@ -186,9 +186,11 @@ export function textScripts(text: string): string[] {
  * included. The face needs the script's sample letters, and for a language written with letters beyond its
  * script's basic alphabet (`LANGUAGE_SAMPLES`) those letters too, so a Latin face may cover `'de'` but not
  * `'vi'` or `'az'`.
+ *
  * Coverage is read, as in `fontScripts`, from the `codeblocks` the glyph server lists for the face in its
- * `font_families.json`. `undefined` when there is nothing to check against: `local`, a language
- * `Intl` cannot place in a script, or a script this table has no sample letters for.
+ * `font_families.json`. `undefined` when there is nothing to check against: `local`, a language `Intl`
+ * cannot place in a script, a script this table has no sample letters for, or a face that lists no blocks
+ * — whose coverage is unknown, not empty.
  *
  * MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font by default
  * (`localIdeographFontFamily`), so a `false` for Chinese, Japanese or Korean matters to MapLibre Native,
@@ -198,6 +200,7 @@ export function fontCovers(face: Pick<FontFaceInfo, 'codeblocks'>, language: str
 	const placed = placeLanguage(language);
 	if (placed === undefined) return undefined;
 	const blocks = parseCodeblocks(face.codeblocks);
+	if (blocks.length === 0) return undefined;
 	const key = `${placed.language}-${placed.script}`;
 	const own = Object.hasOwn(LANGUAGE_SAMPLES, key) ? [...LANGUAGE_SAMPLES[key]].map((ch) => ch.codePointAt(0)!) : [];
 	return hasSamples(blocks, SCRIPT_SAMPLES[placed.script]) && hasSamples(blocks, own);

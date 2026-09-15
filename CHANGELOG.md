@@ -130,15 +130,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `water`, `pois` and `addresses`, each with sub-topics. Every node takes the same properties: `font`,
   `scale`, `spacing`, `maxWidth`, `lineHeight`, `letterSpacing`, `transform`, `haloWidth` and `haloBlur`,
   and each topic takes each one from the nearest node that sets it. `text.language`, `text.languageStrict`
-  and `text.pitchAlignment` apply to every label. `osm.textGroups` lists the layers each topic sets, and
-  `fetchFontFaces()` the faces a glyph server publishes, with titles, for a font picker; `fontCovers()`
-  tells whether a face has the glyphs for a label language, `'user'` included, checking the extra letters of
-  26 languages such as Polish, Vietnamese and Serbian, and `fontScripts()` which
-  of the scripts in `FONT_SCRIPTS` a face covers; `languageScript()` gives the script of a language, and `textScripts()` the scripts in a text. `guessOptions()` carries over the fonts of a
-  migrated style per topic when the glyph server's font list has them (`Open Sans Bold` →
-  `open_sans_bold`), and their weight otherwise. Hamlet names are a topic of their own, `places.hamlets`,
-  and so is their visibility, `layers.labels.places.hamlets`: `layers.labels.places.villages: false` no
-  longer hides them.
+  and `text.pitchAlignment` apply to every label. `osm.textGroups` lists the layers each topic sets.
+  `guessOptions()` carries over the fonts of a migrated style per topic when the glyph server's font list
+  has them (`Open Sans Bold` → `open_sans_bold`), and their weight otherwise. Hamlet names are a topic of
+  their own, `places.hamlets`, and so is their visibility, `layers.labels.places.hamlets`:
+  `layers.labels.places.villages: false` no longer hides them.
+- For a font picker: `fetchFontFaces()` lists the faces a glyph server publishes, with titles.
+  `fontCovers()` tells whether a face has the glyphs for a label language, `'user'` included; beyond the
+  script's letters it checks the extra letters of 27 languages, such as Polish, Vietnamese and Serbian.
+  `fontScripts()` lists the scripts of `FONT_SCRIPTS` a face covers, `languageScript()` gives the script of
+  a language, and `textScripts()` the scripts that occur in a text.
 - `icon` sets the size (`icon.scale`) and spacing (`icon.spacing`) of icons, apart from their labels.
 - `text.pitchAlignment: 'viewport'` stands street, river and motorway names up in a tilted map
   instead of laying them on the ground. `guessOptions()` carries it over from a style that does the same.

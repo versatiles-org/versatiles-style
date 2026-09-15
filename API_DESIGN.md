@@ -862,10 +862,9 @@ first. Its script comes from `languageScript()`, and a few sample letters of it 
 letters beyond its script's basic alphabet is checked for those letters too — Polish `ł`, Turkish `ğ`,
 Vietnamese `ơ ư ạ ệ`, Yoruba `ẹ ọ ṣ`, Serbian `ђ џ` or `ć đ`, and 22 more languages. On
 tiles.versatiles.org, Open Sans covers `'de'` but not `'az'`, `'ha'` or `'yo'`, Roboto not `'yo'`, and PT
-Sans not `'vi'`. Those blocks are coarse, and
-a face merged from several font files may list only the first file's blocks, so coverage is a hint. It is
-`undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a script it
-has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font
+Sans not `'vi'`. Those blocks are coarse, and a server's list can be incomplete, so coverage is a hint. It
+is `undefined` when nothing can be checked: for `local` (names in every script), for a language `Intl`
+cannot place, for a script it has no sample letters for, and for a face that lists no blocks at all. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font
 by default, so a `false` for Chinese, Japanese or Korean matters to MapLibre Native only.
 
 ```ts
