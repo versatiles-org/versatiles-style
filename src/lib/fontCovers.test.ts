@@ -9,6 +9,12 @@ const NOTO_SANS = {
 	codeblocks:
 		'0,2-7,A-52,90-97,10F,1AB-1AC,1C8,1D0-20C,20F-215,218,221,25C,2C6-2C7,2DE-2E5,A64-A69,A70-A7D,A7F,A8F,A92,AB3-AB6,FB0,FE0,FE2,FEF,FFF,1078-107B,1DF0-1DF1',
 };
+// PT Sans draws Latin, Cyrillic and Greek, but not the Vietnamese letters of Latin Extended-B and Latin
+// Extended Additional — the one gap among the Latin languages on tiles.versatiles.org (2026-09-15).
+const PT_SANS = {
+	codeblocks:
+		'2-7,A-17,19,1F,21,23,2B-2D,30,39-3C,40-4F,51-52,1E3,1E5,1E9,201-204,208,20A-20C,211-212,220-222,224,226,25C,2C6,F40,F48-F49,F4C-F4D,F50-F54,F62-F63,F66,F6C-F6D,FB0',
+};
 const LIBRE_BASKERVILLE = {
 	codeblocks:
 		'2-7,A-29,2B-2D,30-33,3B,1D7,1E0-1EF,201-204,207-208,20A-20B,211-212,215,221,226,2C6-2C7,A74,A78-A7A,F6C,FB0',
@@ -53,6 +59,18 @@ describe('fontCovers', () => {
 		expect(fontCovers({ codeblocks: '' }, 'de')).toBe(false);
 	});
 
+	it('checks the letters of Vietnamese beyond the Latin samples', () => {
+		expect(fontCovers(PT_SANS, 'de')).toBe(true);
+		expect(fontCovers(PT_SANS, 'pl')).toBe(true);
+		expect(fontCovers(PT_SANS, 'vi')).toBe(false);
+		expect(fontCovers(PT_SANS, 'vi-VN')).toBe(false);
+		expect(fontCovers(NOTO_SANS, 'vi')).toBe(true);
+		expect(fontCovers(LIBRE_BASKERVILLE, 'vi')).toBe(true);
+		// the script is still Latin, and PT Sans still covers it
+		expect(languageScript('vi')).toBe('Latn');
+		expect(fontScripts(PT_SANS)).toContain('Latn');
+	});
+
 	it("reads 'user' as the browser language, as text.language does", () => {
 		vi.stubGlobal('navigator', { language: 'ru-RU' });
 		try {
@@ -91,15 +109,16 @@ describe('FONT_SCRIPTS', () => {
 describe('fontScripts', () => {
 	it('lists the scripts a face covers, in the order of FONT_SCRIPTS', () => {
 		expect(fontScripts(LIBRE_BASKERVILLE)).toStrictEqual(['Latn']);
+		expect(fontScripts(PT_SANS)).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
 		const noto = fontScripts(NOTO_SANS);
 		expect(noto.slice(0, 3)).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
 		expect(noto).not.toContain('Arab'); // see the note on NOTO_SANS
 		expect(noto).toStrictEqual(FONT_SCRIPTS.filter((script) => noto.includes(script)));
 	});
 
-	it('agrees with fontCovers for every script a language maps to', () => {
+	it('agrees with fontCovers for the languages that need no letters beyond their script', () => {
 		const cjk = { codeblocks: '2-7,304-30F,4E0-9FF' };
-		for (const face of [NOTO_SANS, LIBRE_BASKERVILLE, cjk]) {
+		for (const face of [NOTO_SANS, LIBRE_BASKERVILLE, PT_SANS, cjk]) {
 			for (const language of ['de', 'ru', 'el', 'he', 'ar', 'hi', 'th', 'ka', 'zh', 'ja', 'ko']) {
 				const script = languageScript(language)!;
 				expect(fontScripts(face).includes(script), `${language} ${face.codeblocks}`).toBe(fontCovers(face, language));

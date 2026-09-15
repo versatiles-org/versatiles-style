@@ -38,6 +38,19 @@ const SCRIPT_SAMPLES: Readonly<Record<string, readonly number[]>> = {
 	Jpan: [0x3042, 0x30a2, 0x4e00], // あ ア 一
 };
 
+/**
+ * Letters a language needs beyond its script's samples, by language subtag. A script's few samples tell
+ * a Latin face from a Cyrillic one, but not whether a Latin face has every letter of every language
+ * written in Latin, so a language gets its own letters where a face can lack them.
+ *
+ * Listed only where a face on the VersaTiles glyph server does lack them (checked 2026-09-15 against its
+ * `font_families.json`): Polish, Czech, Turkish, Romanian and Hungarian letters were in all 187 faces,
+ * while PT Sans lacks the Vietnamese letters, which sit in Latin Extended-B and Latin Extended Additional.
+ */
+const LANGUAGE_SAMPLES: Readonly<Record<string, readonly number[]>> = {
+	vi: [0x1a1, 0x1b0, 0x1ea1, 0x1ec7], // ơ ư ạ ệ
+};
+
 /** Scripts a locale maximises to that are written with the samples of another. */
 const SCRIPT_ALIASES: Readonly<Record<string, string>> = {
 	Hans: 'Hani',
@@ -93,17 +106,22 @@ export function fontScripts(face: Pick<FontFaceInfo, 'codeblocks'>): string[] {
  * `FONT_SCRIPTS`.
  */
 export function languageScript(language: string): string | undefined {
+	return placeLanguage(language)?.script;
+}
+
+/** The language subtag and the `FONT_SCRIPTS` script of `language`, or `undefined` as in `languageScript`. */
+function placeLanguage(language: string): { language: string; script: string } | undefined {
 	const resolved = labelLanguage(language);
 	if (resolved === 'local') return undefined;
-	let script: string | undefined;
+	let locale: Intl.Locale;
 	try {
-		script = new Intl.Locale(resolved).maximize().script;
+		locale = new Intl.Locale(resolved).maximize();
 	} catch {
 		return undefined;
 	}
-	if (script === undefined) return undefined;
-	const code = SCRIPT_ALIASES[script] ?? script;
-	return Object.hasOwn(SCRIPT_SAMPLES, code) ? code : undefined;
+	if (locale.script === undefined) return undefined;
+	const script = SCRIPT_ALIASES[locale.script] ?? locale.script;
+	return Object.hasOwn(SCRIPT_SAMPLES, script) ? { language: locale.language, script } : undefined;
 }
 
 /**
@@ -133,8 +151,10 @@ export function textScripts(text: string): string[] {
  * guarantee.
  *
  * The language's script comes from `languageScript`, so `language` can be any `text.language`, `'user'`
- * included. Coverage is read, as in `fontScripts`, from the `codeblocks` the glyph server lists for the face
- * in its `font_families.json`. `undefined` when there is nothing to check against: `local`, a language
+ * included. The face needs the script's sample letters, and for a language whose letters a face can lack
+ * — Vietnamese — that language's own letters too, so a Latin face may cover `'de'` but not `'vi'`.
+ * Coverage is read, as in `fontScripts`, from the `codeblocks` the glyph server lists for the face in its
+ * `font_families.json`. `undefined` when there is nothing to check against: `local`, a language
  * `Intl` cannot place in a script, or a script this table has no sample letters for.
  *
  * MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font by default
@@ -142,7 +162,9 @@ export function textScripts(text: string): string[] {
  * not to GL JS in its default setting.
  */
 export function fontCovers(face: Pick<FontFaceInfo, 'codeblocks'>, language: string): boolean | undefined {
-	const script = languageScript(language);
-	if (script === undefined) return undefined;
-	return hasSamples(parseCodeblocks(face.codeblocks), SCRIPT_SAMPLES[script]);
+	const placed = placeLanguage(language);
+	if (placed === undefined) return undefined;
+	const blocks = parseCodeblocks(face.codeblocks);
+	const own = Object.hasOwn(LANGUAGE_SAMPLES, placed.language) ? LANGUAGE_SAMPLES[placed.language] : [];
+	return hasSamples(blocks, SCRIPT_SAMPLES[placed.script]) && hasSamples(blocks, own);
 }

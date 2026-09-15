@@ -858,7 +858,9 @@ fall back to a free text field. It rejects only when the request itself fails.
 Whether a face from `fetchFontFaces()` has the glyphs to write labels in `language` — for a warning in
 a font picker, not a guarantee. `language` is any `text.language`: `'user'` is the browser's language
 first. Its script comes from `languageScript()`, and a few sample letters of it are checked against the
-`codeblocks` the glyph server lists for the face in its `font_families.json`. Those blocks are coarse, and
+`codeblocks` the glyph server lists for the face in its `font_families.json`. A language whose letters a
+Latin face can lack is checked for those letters too: Vietnamese (`ơ ư ạ ệ`), which PT Sans does not draw,
+so PT Sans covers `'de'` but not `'vi'`. Those blocks are coarse, and
 a face merged from several font files may list only the first file's blocks, so coverage is a hint. It is
 `undefined` for `local` (names in every script), for a language `Intl` cannot place, and for a script it
 has no sample letters for. MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font
@@ -882,7 +884,8 @@ same sample-letter check against `codeblocks` as `fontCovers()` — `[]` for a f
 determines it: from `Intl.Locale`, with simplified and traditional Chinese as `'Hani'` and Korean as
 `'Hang'`, and `'user'` as the browser's language. It is `undefined` for `'local'`, for a language `Intl`
 cannot place, and for a script outside `FONT_SCRIPTS`. So `fontCovers(face, language)` is
-`fontScripts(face).includes(languageScript(language))` whenever the script is known.
+`fontScripts(face).includes(languageScript(language))` whenever the script is known — except for a
+language with letters of its own, such as Vietnamese, which a face can lack while covering its script.
 
 `textScripts(text)` returns the scripts of `FONT_SCRIPTS` that occur in a string — the labels a map shows,
 say — in the same order. It reads each character's Unicode script, so digits, punctuation and spaces count
