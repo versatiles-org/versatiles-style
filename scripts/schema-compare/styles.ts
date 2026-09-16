@@ -1,7 +1,7 @@
 import { osm } from '../../src/api/osm.js';
 import { omt } from '../../src/omt/api.js';
 import { protomaps } from '../../src/protomaps/api.js';
-import type { OsmOptions } from '../../src/options/index.js';
+import type { OsmOptions } from '../../src/options/';
 import type { StyleSpecification, TileJSONSpecification } from '../../src/types/index.js';
 import { tileTemplate } from '../lib/native-render.js';
 import type { SourceMetadata } from '../lib/tile-cache.js';

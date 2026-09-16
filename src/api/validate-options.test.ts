@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { fetchTileJSON, inlineSources } from '../lib/index.js';
-import { v5ColorKeys } from '../options/v5-hints.js';
+import { v5ColorKeys } from '../options/';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 

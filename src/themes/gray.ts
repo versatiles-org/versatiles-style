@@ -1,4 +1,4 @@
-import type { ResolvedColors } from '../options/colors.js';
+import type { ResolvedColors } from '../options/';
 import type { PaletteDefinition } from './types.js';
 
 // Fully desaturated palette — every colour is a gray.

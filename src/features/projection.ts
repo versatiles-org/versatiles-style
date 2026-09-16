@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedProjection } from '../options/index.js';
+import type { ResolvedProjection } from '../options/';
 
 /** Write the resolved projection into the style's top-level `projection` property. */
 export function applyProjection(style: StyleSpecification, projection: ResolvedProjection) {

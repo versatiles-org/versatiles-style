@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getStyleVariants, type StyleVariant } from './variants.js';
 import type { StyleSpecification } from './types/index.js';
-import type { OsmFeaturesOptions } from './options/index.js';
+import type { OsmFeaturesOptions } from './options/';
 
 function byName(variants: StyleVariant[], name: string): StyleVariant {
 	const v = variants.find((x) => x.name === name);

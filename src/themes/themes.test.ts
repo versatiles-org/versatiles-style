@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PALETTES, getPaletteColors, isDarkPalette } from './index.js';
-import { colorOptionsKeys } from '../options/index.js';
-import type { Palette } from '../options/index.js';
+import { colorOptionsKeys } from '../options/';
+import type { Palette } from '../options/';
 
 const ALL_KEYS = colorOptionsKeys as ReadonlyArray<string>;
 const LIGHT = PALETTES.filter((palette) => !isDarkPalette(palette));

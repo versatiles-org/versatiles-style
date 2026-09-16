@@ -1,5 +1,5 @@
 import type { TileJSONSpecification } from '../types/index.js';
-import type { FetchLike } from '../options/index.js';
+import type { FetchLike } from '../options/';
 import { resolveUrl } from './utils.js';
 
 // In-memory cache of successful response bodies, keyed by request URL.

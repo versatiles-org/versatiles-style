@@ -1,5 +1,5 @@
 import { Color } from '../color/index.js';
-import { colorOptionsKeys, type ColorsOptions, type ResolvedColors } from '../options/index.js';
+import { colorOptionsKeys, type ColorsOptions, type ResolvedColors } from '../options/';
 import type { SchemaName } from '../lib/schema-signatures.js';
 import type { StyleSpecification } from '../types/index.js';
 import { readProbe, type Channel, type ProbeReading, type RGBA } from './evaluate.js';

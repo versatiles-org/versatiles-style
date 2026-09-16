@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import { colorOptionsKeys } from '../options/index.js';
+import { colorOptionsKeys } from '../options/';
 import {
 	minimizeProtomapsOptions,
 	resolveProtomaps,

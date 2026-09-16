@@ -1,6 +1,6 @@
 import { Color } from '../color/index.js';
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../options/index.js';
+import type { ResolvedSun } from '../options/';
 
 export function configure3DLighting(style: StyleSpecification, sun: ResolvedSun) {
 	if (sun) {

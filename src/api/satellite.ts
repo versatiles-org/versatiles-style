@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/index.js';
-import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
+import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/';
+import { colorOptionsKeys, resolveSatellite } from '../options/';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
 import {
 	addTerrain,
@@ -12,7 +12,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
-import { minimizeSatelliteOptions } from '../options/minimize.js';
+import { minimizeSatelliteOptions } from '../options/';
 import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { styleCode } from './code.js';
 

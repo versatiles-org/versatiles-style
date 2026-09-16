@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite as satelliteFn } from './api/index.js';
-import { V5_STYLE_THEMES, type OsmFeaturesOptions } from './options/index.js';
+import { V5_STYLE_THEMES, type OsmFeaturesOptions } from './options/';
 
 export interface StyleVariant {
 	name: string;

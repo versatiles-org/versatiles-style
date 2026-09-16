@@ -1,5 +1,5 @@
-import { checkKeys } from './keys.js';
 import {
+	checkKeys,
 	resolveColors,
 	resolveLayerGroups,
 	resolveIcon,
@@ -21,7 +21,7 @@ import {
 	type ResolvedSun,
 	type SkyOptions,
 	type SunOptions,
-} from './parts.js';
+} from './parts/';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
 
 export type OsmOptions = OsmOverlayOptions & {

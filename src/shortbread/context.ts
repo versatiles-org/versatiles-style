@@ -1,5 +1,5 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { ResolvedOsm } from '../options/index.js';
+import type { ResolvedOsm } from '../options/';
 import { buildLayerContext, type LayerContext } from '../dsl/';
 
 // Shortbread's half of the layer context. The derivation itself is schema-neutral and lives in

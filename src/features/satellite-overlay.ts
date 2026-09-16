@@ -7,7 +7,7 @@ import {
 	topicOf,
 	type ResolvedLabelStyle,
 	type TopicTree,
-} from '../options/text.js';
+} from '../options/';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.

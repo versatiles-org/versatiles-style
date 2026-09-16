@@ -1,8 +1,7 @@
 import { checkKeys } from './keys.js';
-import { resolveUrl } from '../lib/index.js';
-import type { TileJSONSpecification } from '../types/index.js';
-import type { SpriteEntries } from './sprite.js';
-import { resolveSprite } from './sprite.js';
+import { resolveUrl } from '../../lib/index.js';
+import type { TileJSONSpecification } from '../../types/';
+import { type SpriteEntries, resolveSprite } from './sprite.js';
 
 /**
  * A tile source: a URL string, or a TileJSON document the caller already holds.

@@ -1,4 +1,4 @@
-import type { ResolvedColors } from '../options/colors.js';
+import type { ResolvedColors } from '../options/';
 import type { PaletteDefinition } from './types.js';
 
 const light: ResolvedColors = {

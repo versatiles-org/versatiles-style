@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { resolveOsm } from './osm.js';
-import { resolveSatellite } from './satellite.js';
+import { resolveOsm } from '../osm.js';
+import { resolveSatellite } from '../satellite.js';
 import { resolveTheme } from './theme.js';
-import { PALETTES } from '../themes/index.js';
+import { PALETTES } from '../../themes/index.js';
 import { resolveColors } from './colors.js';
 import { resolveSun } from './sun.js';
 import { resolveSky, SKY_DEFAULTS } from './sky.js';

@@ -1,6 +1,5 @@
-import { checkKeys } from '../options/keys.js';
-import type { TileJSONSpecification } from '../types/index.js';
-import type { FetchLike } from '../options/urls.js';
+import { checkKeys, type FetchLike } from '../options/';
+import type { TileJSONSpecification } from '../types/';
 import { loadTileSource } from './loadTileSource.js';
 
 /**

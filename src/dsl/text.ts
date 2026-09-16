@@ -1,5 +1,5 @@
 import type { MaplibreLayer } from '../types/index.js';
-import { MAPLIBRE_TEXT_DEFAULTS, TEXT_TOPICS, topicOf, type ResolvedText, type TextTopic } from '../options/index.js';
+import { MAPLIBRE_TEXT_DEFAULTS, TEXT_TOPICS, topicOf, type ResolvedText, type TextTopic } from '../options/';
 import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/symbol-layout.js';
 
 /**

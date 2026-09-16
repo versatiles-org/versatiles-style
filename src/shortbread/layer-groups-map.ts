@@ -1,6 +1,6 @@
 import { buildContext } from './context.js';
 import { shortbreadLayers } from './layers/index.js';
-import { resolveOsm } from '../options/index.js';
+import { resolveOsm } from '../options/';
 import { buildGroupMaps, type TextGroupMap, type LayerGroupMap, type TaggedLayer } from '../dsl/';
 import { keepInOverlay } from '../features/index.js';
 

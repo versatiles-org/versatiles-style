@@ -13,6 +13,8 @@ import {
 	resolveTheme,
 	resolveTileSource,
 	DEFAULT_BASE,
+	checkKeys,
+	minimizeThemed,
 	type HillshadeOptions,
 	type OsmOverlayOptions,
 	type ProjectionOptions,
@@ -27,9 +29,7 @@ import {
 	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
-} from '../options/index.js';
-import { checkKeys } from '../options/keys.js';
-import { minimizeThemed } from '../options/minimize.js';
+} from '../options/';
 import { resolveUrl } from '../lib/utils.js';
 
 /**

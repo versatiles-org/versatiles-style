@@ -13,18 +13,20 @@
  * `no-restricted-imports` rule in `eslint.config.js` enforces the rule mechanically.
  */
 
-export * from './theme.js';
 export * from './colors.js';
-export * from './recolor.js';
-export * from './text.js';
-export * from './icon.js';
 export * from './features-hillshade.js';
 export * from './features-terrain.js';
 export * from './features.js';
-export * from './sun.js';
-export * from './sky.js';
-export * from './projection.js';
-export * from './sprite.js';
+export * from './icon.js';
+export * from './keys.js';
 export * from './layer-groups.js';
-export * from './urls.js';
+export * from './projection.js';
+export * from './recolor.js';
 export * from './satellite-raster.js';
+export * from './sky.js';
+export * from './sprite.js';
+export * from './sun.js';
+export * from './text.js';
+export * from './theme.js';
+export * from './urls.js';
+export * from './v5-hints.js';

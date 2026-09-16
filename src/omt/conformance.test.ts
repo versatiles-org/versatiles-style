@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveLayerGroups } from '../options/index.js';
+import { resolveLayerGroups } from '../options/';
 import { resolveOmt } from './options.js';
 import { auditSchema } from '../lib/schema-audit.js';
 import { OMT_SCHEMA } from './schema.js';

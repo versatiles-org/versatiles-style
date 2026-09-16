@@ -148,8 +148,8 @@ export type {
 	ResolvedTerrain,
 	ResolvedText,
 	ResolvedTheme,
-} from './options/index.js';
-export { isDarkMode, labelLanguage } from './options/index.js';
+} from './options/';
+export { isDarkMode, labelLanguage } from './options/';
 
 export type {
 	StyleSpecification,

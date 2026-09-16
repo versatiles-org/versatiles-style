@@ -1,5 +1,5 @@
-import type { TileJSONSpecification } from '../types/index.js';
-import type { TileSource } from '../options/urls.js';
+import type { TileJSONSpecification } from '../types/';
+import type { TileSource } from '../options/';
 import { normalizeAttribution } from './utils.js';
 
 /**

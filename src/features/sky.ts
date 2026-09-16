@@ -1,6 +1,6 @@
 import { Color } from '../color/index.js';
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedSky } from '../options/index.js';
+import type { ResolvedSky } from '../options/';
 
 // Writes the resolved sky configuration into the style's top-level `sky` property, one style-spec key
 // per resolved value. MapLibre renders the sky when the map is pitched / in globe projection.

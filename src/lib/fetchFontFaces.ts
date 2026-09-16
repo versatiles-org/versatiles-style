@@ -1,5 +1,4 @@
-import { checkKeys } from '../options/keys.js';
-import { DEFAULT_BASE, type FetchLike } from '../options/urls.js';
+import { checkKeys, DEFAULT_BASE, type FetchLike } from '../options/';
 import { resolveUrl } from './utils.js';
 
 /** One glyph face a server publishes, described for a font picker. */

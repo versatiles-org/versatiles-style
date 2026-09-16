@@ -24,7 +24,7 @@ import {
 	type SkyOptions,
 	type SunOptions,
 	type TextOptions,
-} from '../options/index.js';
+} from '../options/';
 import type { HillshadeLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import {

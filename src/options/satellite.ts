@@ -1,5 +1,5 @@
-import { checkKeys } from './keys.js';
 import {
+	checkKeys,
 	resolveProjection,
 	resolveSatelliteFeatures,
 	resolveSatelliteRaster,
@@ -18,9 +18,9 @@ import {
 	type SatelliteUrlsOptions,
 	type SkyOptions,
 	type SunOptions,
-} from './parts.js';
+} from './parts/';
 import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
-import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/index.js';
+import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;

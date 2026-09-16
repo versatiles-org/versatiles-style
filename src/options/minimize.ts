@@ -1,24 +1,31 @@
 import { resolveOsm, type OsmOptions } from './osm.js';
 import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
-import { resolveTheme, type Palette, type ResolvedTheme, type ThemeOptions } from './theme.js';
-import { resolveRecolor, type RecolorOptions } from './recolor.js';
 import {
+	DEFAULT_BASE,
 	LABEL_STYLE_KEYS,
+	resolveHillshade,
+	resolveLayerGroups,
+	resolveOsmUrls,
+	resolveRecolor,
+	resolveSatelliteUrls,
+	resolveSun,
+	resolveTerrain,
+	resolveText,
+	resolveTheme,
 	TEXT_GROUPS,
 	TEXT_TOPICS,
-	resolveText,
 	topicOf,
+	type LayerGroupOptions,
+	type Palette,
+	type RecolorOptions,
 	type ResolvedText,
+	type ResolvedTheme,
 	type TextOptions,
 	type TextTopic,
-} from './text.js';
-import { resolveLayerGroups, type LayerGroupOptions } from './layer-groups.js';
-import { resolveTerrain } from './features-terrain.js';
-import { resolveHillshade } from './features-hillshade.js';
-import { resolveSun } from './sun.js';
-import { DEFAULT_BASE, resolveOsmUrls, resolveSatelliteUrls } from './urls.js';
-import { Color } from '../color/index.js';
+	type ThemeOptions,
+} from './parts/';
+import { Color } from '../color/';
 import { getOverlayLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 type Plain = Record<string, unknown>;

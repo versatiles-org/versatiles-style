@@ -4,8 +4,8 @@ import { osm } from '../api/osm.js';
 import { satellite } from '../api/satellite.js';
 import { omt } from '../omt/api.js';
 import { protomaps } from '../protomaps/api.js';
-import type { MaplibreLayer, StyleSpecification } from '../types/index.js';
-import { resolveText, TEXT_TOPICS } from '../options/text.js';
+import type { MaplibreLayer, StyleSpecification } from '../types/';
+import { resolveText, TEXT_TOPICS } from '../options/';
 
 const STYLES = resolveText({
 	font: 'normal_face',

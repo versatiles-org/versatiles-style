@@ -1,4 +1,4 @@
-import { colorOptionsKeys } from './colors.js';
+import { colorOptionsKeys } from '.';
 
 /*
  * The v6 names of options that existed in v5, so an unknown-key error can say what to use instead.

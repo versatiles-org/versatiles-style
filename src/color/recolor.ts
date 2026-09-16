@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from './color.js';
-import type { ResolvedRecolor, ResolvedColors } from '../options/index.js';
+import type { ResolvedRecolor, ResolvedColors } from '../options/';
 
 /**
  * Whether a string found under a `*-color` key is a colour rather than part of an expression.

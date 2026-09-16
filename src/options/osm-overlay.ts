@@ -1,5 +1,5 @@
-import { checkKeys } from './keys.js';
 import {
+	checkKeys,
 	resolveColors,
 	resolveLayerGroups,
 	resolveIcon,
@@ -21,7 +21,7 @@ import {
 	type TextOptions,
 	type TopicTree,
 	type ThemeOptions,
-} from './parts.js';
+} from './parts/';
 
 export type OsmOverlayOptions = {
 	theme?: ThemeOptions;

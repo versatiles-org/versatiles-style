@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedIcon } from '../options/index.js';
+import type { ResolvedIcon } from '../options/';
 import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/symbol-layout.js';
 
 // Icon scale and spacing, applied to a finished style. The text half of a symbol layer — its size,

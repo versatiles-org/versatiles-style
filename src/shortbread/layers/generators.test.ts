@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext } from '../context.js';
-import { resolveOsm } from '../../options/index.js';
+import { resolveOsm } from '../../options/';
 import type { LayerContext } from '../context.js';
 import type { TaggedLayer } from '../../dsl/';
 import { background } from './background.js';
