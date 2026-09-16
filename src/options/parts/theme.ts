@@ -1,4 +1,4 @@
-import { PALETTES } from '../../themes/';
+import { PALETTES } from '../../themes/index.js';
 
 /**
  * A theme name. Each of the five palettes is a light theme and has a dark theme of its own, named

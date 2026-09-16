@@ -2,17 +2,11 @@ import type { StyleSpecification } from '../types/index.js';
 import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/';
 import { colorOptionsKeys, resolveSatellite } from '../options/';
 import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/index.js';
-import {
-	addTerrain,
-	addHillshade,
-	configure3DLighting,
-	applySky,
-	applyProjection,
-	toOverlayLayers,
-} from '../features/index.js';
+import { addTerrain, addHillshade, configure3DLighting, applySky, applyProjection } from '../features/index.js';
+import { toOverlayLayers } from '../features/satellite-overlay.js';
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
-import { minimizeSatelliteOptions } from '../options/';
+import { minimizeSatelliteOptions } from '../options/minimize.js';
 import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { styleCode } from './code.js';
 

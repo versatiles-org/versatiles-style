@@ -1,6 +1,6 @@
 import { checkKeys, type KnownKeys } from './keys.js';
 import type { ResolvedTheme } from './theme.js';
-import { getPaletteColors } from '../../themes/';
+import { getPaletteColors } from '../../themes/index.js';
 
 export type ColorsOptions = {
 	// base

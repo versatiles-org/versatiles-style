@@ -19,8 +19,13 @@ import {
 	type SkyOptions,
 	type SunOptions,
 } from './parts/';
-import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
-import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/';
+import {
+	resolveOsmOverlay,
+	OVERLAY_DEFAULTS,
+	OVERLAY_LABEL_STYLES,
+	type OsmOverlayOptions,
+	type ResolvedOsmOverlay,
+} from './osm-overlay.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;

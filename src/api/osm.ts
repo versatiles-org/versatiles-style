@@ -19,7 +19,7 @@ import { getLanguages } from '../lib/languages.js';
 import { getTextGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
-import { minimizeOsmOptions } from '../options/';
+import { minimizeOsmOptions } from '../options/minimize.js';
 import { styleCode } from './code.js';
 import type { SchemaDescriptor } from './schema-builder.js';
 

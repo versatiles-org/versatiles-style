@@ -1,6 +1,6 @@
 import { checkKeys } from './keys.js';
-import { resolveUrl } from '../../lib/index.js';
-import type { TileJSONSpecification } from '../../types/';
+import { resolveUrl } from '../../lib/utils.js';
+import type { TileJSONSpecification } from '../../types/tilejson.js';
 import { type SpriteEntries, resolveSprite } from './sprite.js';
 
 /**

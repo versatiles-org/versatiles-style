@@ -1,13 +1,5 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
 import { scaleLayerOpacity } from '../lib/opacity.js';
-import {
-	DEFAULT_FONT_BOLD,
-	DEFAULT_LABEL_STYLES,
-	mapTopics,
-	topicOf,
-	type ResolvedLabelStyle,
-	type TopicTree,
-} from '../options/';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -18,8 +10,9 @@ import {
  *
  * Two of those adjustments are expressed as option defaults instead of transforms, so callers can
  * still override them: white label text on a black halo (`colors.label` / `colors.labelHalo`), and bold
- * labels with a tight halo (`text`, `OVERLAY_LABEL_STYLES`). What is left here is what the option
- * surface cannot express.
+ * labels with a tight halo (`text`). Those defaults live in `src/options/osm-overlay.ts`, because
+ * options may not import features — see the note there. What is left here is what the option surface
+ * cannot express.
  */
 
 /**
@@ -34,10 +27,6 @@ const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 
 /** Multiplier applied to every line's opacity, so roads read as an overlay rather than a basemap. */
 const LINE_OPACITY = 0.2;
-
-/** Halo tuned for imagery: tight and hard, rather than the wide soft halo used on a flat basemap (`OVERLAY_LABEL_STYLES`). */
-const HALO_WIDTH = 1;
-const HALO_BLUR = 0;
 
 /** Whether a layer belongs in the overlay at all. */
 export function keepInOverlay(layer: { id: string; type: string }): boolean {
@@ -69,48 +58,6 @@ export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): 
 		}
 	}
 }
-
-/**
- * The option defaults that give the overlay its imagery treatment, overridable by the caller.
- *
- * Every label-text token is lightened, not just `label`: place names, POIs, transit symbols, house
- * numbers and water names each draw from their own colour, so setting only `label` leaves most of
- * the labels in basemap grey. `labelShield` is left alone — it is the motorway shield's background,
- * not text — and so are the oneway arrows, which are tinted from `fg` and carry no text.
- *
- * Note this also whitens POI and transit *icons*, which share their label's colour token. v5 left
- * those dark; white reads better over imagery, so it is a deliberate departure.
- */
-export const OVERLAY_DEFAULTS = {
-	/** White on black reads over both bright and dark ground; the basemap's dark-on-white does not. */
-	colors: {
-		label: '#ffffff',
-		labelHalo: '#000000',
-		labelPoi: '#ffffff',
-		labelSymbol: '#ffffff',
-		labelHousenumber: '#ffffff',
-		/**
-		 * Lake and river names are the one label that is not plain white: a water blue keeps the cue
-		 * that says "this is water, not a town", and still clears the halo comfortably (11.9:1 against
-		 * the black halo, where the basemap's dark slate managed 2.9:1 and vanished).
-		 */
-		labelWater: '#8FC1ED',
-	},
-} as const;
-
-/**
- * The overlay's label styles: every topic bold, as v5 set every symbol layer, so labels hold up against
- * a busy photo; and a tight, hard halo — 1 px, no blur — rather than the wide soft halo used on a flat
- * basemap. A topic drawn without a halo (house numbers) stays without one.
- */
-export const OVERLAY_LABEL_STYLES: TopicTree<ResolvedLabelStyle> = mapTopics((topic) => {
-	const style = topicOf(DEFAULT_LABEL_STYLES, topic);
-	return {
-		...style,
-		font: DEFAULT_FONT_BOLD,
-		...(style.haloWidth > 0 && { haloWidth: HALO_WIDTH, haloBlur: HALO_BLUR }),
-	};
-});
 
 /** Filter and adjust a built OSM style's layers for use over imagery. */
 export function toOverlayLayers(layers: StyleSpecification['layers'], haloColor: string): StyleSpecification['layers'] {

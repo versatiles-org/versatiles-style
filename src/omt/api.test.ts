@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { omt } from './api.js';
 import { osm } from '../api/index.js';
@@ -127,7 +127,10 @@ describe('bundle isolation (§5.3)', () => {
 			const source = readFileSync(file, 'utf8');
 			for (const match of source.matchAll(/from\s+'(\.[^']+)'/g)) {
 				const target = resolve(dirname(file), match[1].replace(/\.js$/, '.ts'));
-				if (existsSync(target)) queue.push(target);
+				// A specifier may name a directory (`'../options/'`), which resolves to its barrel —
+				// so follow that, exactly as the bundler does, instead of trying to read the directory.
+				const file2 = existsSync(target) && statSync(target).isDirectory() ? resolve(target, 'index.ts') : target;
+				if (existsSync(file2) && statSync(file2).isFile()) queue.push(file2);
 			}
 		}
 		return seen;

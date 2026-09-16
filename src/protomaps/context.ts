@@ -1,6 +1,7 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { ResolvedProtomaps } from './options.js';
-import { buildLayerContext, type LayerContext } from '../dsl/';
+import { type LayerContext } from '../dsl/';
+import { buildLayerContext } from '../dsl/context.js';
 import { PROTOMAPS_SCHEMA } from './schema.js';
 
 // Protomaps' half of the layer context — the third mirror of `src/shortbread/context.ts`.
