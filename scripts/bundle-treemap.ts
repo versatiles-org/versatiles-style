@@ -114,7 +114,7 @@ const gzip = (await import('node:zlib')).gzipSync(code, { level: 9 }).length;
 lines.push(
 	'',
 	`Sized by the bundle's own sourcemap: **${kb(Buffer.byteLength(code))} KB** raw, **${kb(gzip)} KB** gzipped, ` +
-		`across ${bytes.size} modules and nothing from \`node_modules\`. Regenerate with \`npm run doc-bundle\`.`
+		`across ${bytes.size} modules.`
 );
 
 console.log(lines.join('\n'));
