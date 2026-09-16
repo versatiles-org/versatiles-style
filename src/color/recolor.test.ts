@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { osm } from '../index.js';
 import { applyRecolor, Color } from './index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { RecolorOptions } from '../options/index.js';
@@ -221,5 +222,30 @@ describe('recolor does not depend on load order', () => {
 			)
 		).not.toThrow();
 		expect((style.layers[0].paint as Record<string, string>)['background-color']).toBe('rgb(26,51,77)');
+	});
+});
+
+describe('applyRecolor beyond the layers', () => {
+	it('recolours the sky, which sits outside style.layers', () => {
+		// v6 walked layer paint only, so an inverted map kept a bright blue sky over dark ground
+		const style = osm({ theme: 'colorful', recolor: { invertBrightness: true } });
+		const sky = style.sky as Record<string, string>;
+		const background = (style.layers[0] as unknown as { paint: Record<string, string> }).paint['background-color'];
+		expect(Color.parse(sky['sky-color']).luminance()).toBeLessThan(0.2);
+		expect(Color.parse(background).luminance()).toBeLessThan(0.2);
+	});
+
+	it('leaves the 3D light alone', () => {
+		// the light is an illuminant, not a surface: inverting white gives black, which is not
+		// "dark lighting" but "no light at all", and extruded buildings lose their shading
+		const style = osm({ sun: { direction: 100 }, recolor: { invertBrightness: true } });
+		expect((style.light as { color: string }).color).toBe('rgb(255,255,255)');
+	});
+
+	it('validates the colours it writes up there', () => {
+		expect(() => osm({ sky: { fogColor: 'not-a-colour' } })).toThrow(/Cannot parse colour/);
+		expect(() => osm({ features: { hillshade: { shadowColor: 'lab(50% 40 59)' } } })).toThrow(
+			/lab\(\) is not supported/
+		);
 	});
 });

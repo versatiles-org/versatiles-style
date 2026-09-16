@@ -75,6 +75,15 @@ export function luminance([r, g, b]: RGBA): number {
 /**
  * How different two colours look: ΔE76 in CIELAB, plus alpha, scaled so a full alpha step weighs like
  * the distance from black to white. About 2 is the threshold of a visible difference.
+ *
+ * This is the one piece of colour maths that did not move to `src/color` when the colour library was
+ * rewritten, and it stays deliberately. The obvious replacement is `Color.deltaEOK`, but the two
+ * metrics are not a rescale of each other: across the palette colours, 81% of the pairs that sit near
+ * the threshold are classified differently, all in the same direction — ΔE-OK at 0.02 calls "the same"
+ * a great many pairs that ΔE76 at 2 calls different. Since `OVERRIDE_DISTANCE` in `derive.ts` decides
+ * from this number whether an option needs a colour override at all, swapping metrics would quietly
+ * change what `deriveOptions()` returns. If that is ever wanted, retune the thresholds against real
+ * styles rather than by dividing by 100.
  */
 export function colorDistance(a: RGBA, b: RGBA): number {
 	const [l1, a1, b1] = toLab(a);

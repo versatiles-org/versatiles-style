@@ -1,3 +1,4 @@
+import { Color } from '../color/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { ResolvedSun } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
@@ -38,9 +39,9 @@ export function addHillshade(
 		source: 'elevation',
 		paint: {
 			'hillshade-exaggeration': options.exaggeration,
-			'hillshade-shadow-color': options.shadowColor,
-			'hillshade-highlight-color': options.highlightColor,
-			'hillshade-accent-color': options.accentColor,
+			'hillshade-shadow-color': Color.parse(options.shadowColor).asString(),
+			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
+			'hillshade-accent-color': Color.parse(options.accentColor).asString(),
 			'hillshade-illumination-anchor': options.anchor,
 			'hillshade-method': 'standard',
 			...(sun

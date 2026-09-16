@@ -342,7 +342,7 @@ describe('osm() knob: sun', () => {
 			features: { hillshade: true },
 			sun: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
-		expect(s.light).toEqual({ anchor: 'viewport', position: [1.15, 100, 60], color: '#ff0000', intensity: 0.9 });
+		expect(s.light).toEqual({ anchor: 'viewport', position: [1.15, 100, 60], color: 'rgb(255,0,0)', intensity: 0.9 });
 	});
 
 	it('extruded buildings sync style.light even without hillshade', () => {
@@ -626,9 +626,9 @@ describe('osm() knob: sky', () => {
 		// The sky colour comes from the palette; every other value is palette-independent.
 		const colors = osm.colors('colorful');
 		expect(build().sky).toStrictEqual({
-			'sky-color': colors.water,
-			'horizon-color': '#ffffff',
-			'fog-color': '#ffffff',
+			'sky-color': Color.parse(colors.water).asString(),
+			'horizon-color': 'rgb(255,255,255)',
+			'fog-color': 'rgb(255,255,255)',
 			'sky-horizon-blend': 0.8,
 			'horizon-fog-blend': 0.8,
 			'fog-ground-blend': 0.5,
@@ -663,9 +663,9 @@ describe('osm() knob: sky', () => {
 			},
 		});
 		expect(s.sky).toStrictEqual({
-			'sky-color': '#010203',
-			'horizon-color': '#0a0b0c',
-			'fog-color': '#0d0e0f',
+			'sky-color': 'rgb(1,2,3)',
+			'horizon-color': 'rgb(10,11,12)',
+			'fog-color': 'rgb(13,14,15)',
 			'sky-horizon-blend': 0.1,
 			'horizon-fog-blend': 0.2,
 			'fog-ground-blend': 0.3,
@@ -719,7 +719,7 @@ describe('osm() knob: sky accepts a boolean', () => {
 	});
 
 	it('an object still overrides individual values', () => {
-		expect(build({ sky: { skyColor: '#123456' } }).sky).toMatchObject({ 'sky-color': '#123456' });
+		expect(build({ sky: { skyColor: '#123456' } }).sky).toMatchObject({ 'sky-color': 'rgb(18,52,86)' });
 	});
 
 	it('resolves to false, which stays off when resolved options are fed back in', () => {
@@ -741,7 +741,9 @@ describe('osm() sky defaults follow the palette', () => {
 		for (const palette of osm.palettes) {
 			const colors = osm.colors(palette);
 			const s = sky(palette);
-			expect(s['sky-color'], palette).toBe(colors.water);
+			// compared as colours, not as strings: every colour in a style is written as sRGB now,
+			// while the palette keeps its hex
+			expect(Color.parse(s['sky-color']).asHex(), palette).toBe(Color.parse(colors.water).asHex());
 		}
 	});
 
@@ -757,7 +759,7 @@ describe('osm() sky defaults follow the palette', () => {
 	});
 
 	it('an explicit sky colour still wins', () => {
-		expect((build({ sky: { skyColor: '#123456' } }).sky as Record<string, string>)['sky-color']).toBe('#123456');
+		expect((build({ sky: { skyColor: '#123456' } }).sky as Record<string, string>)['sky-color']).toBe('rgb(18,52,86)');
 	});
 });
 
@@ -793,7 +795,7 @@ describe('osm() resolved options round-trip without pinning the sky', () => {
 	it('lets the sky follow a colour edit made on top of resolved defaults', () => {
 		const resolved = osm.resolveOptions({ theme: 'muted' });
 		const style = osm({ ...resolved, colors: { ...resolved.colors, water: '#123456' } });
-		expect(style.sky).toMatchObject({ 'sky-color': '#123456' });
+		expect(style.sky).toMatchObject({ 'sky-color': 'rgb(18,52,86)' });
 	});
 
 	it('rebuilds the identical style from resolved defaults', () => {

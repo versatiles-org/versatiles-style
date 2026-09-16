@@ -230,7 +230,7 @@ describe('satellite() knob: features', () => {
 		expect(build({ sun: { direction: 120 } }).light).toStrictEqual({
 			anchor: 'viewport',
 			position: [1.15, 120, 30],
-			color: '#ffffff',
+			color: 'rgb(255,255,255)',
 			intensity: 0.5,
 		});
 	});
@@ -318,8 +318,8 @@ describe('satellite() static properties', () => {
 
 /** The sky values every style writes, whatever the palette. */
 const SKY_STYLE_DEFAULTS = {
-	'horizon-color': '#ffffff',
-	'fog-color': '#ffffff',
+	'horizon-color': 'rgb(255,255,255)',
+	'fog-color': 'rgb(255,255,255)',
 	'sky-horizon-blend': 0.8,
 	'horizon-fog-blend': 0.8,
 	'fog-ground-blend': 0.5,
@@ -331,13 +331,13 @@ describe('satellite() knob: sky', () => {
 		// The default overlay palette is `gray`; before this the satellite sky was hardcoded sky-blue
 		// whatever the overlay looked like, which is the defect #126 fixed for osm() but not here.
 		const gray = osm.colors('gray');
-		expect(build().sky).toStrictEqual({ 'sky-color': gray.water, ...SKY_STYLE_DEFAULTS });
+		expect(build().sky).toStrictEqual({ 'sky-color': Color.parse(gray.water).asString(), ...SKY_STYLE_DEFAULTS });
 	});
 
 	it('follows an explicit overlay theme', () => {
 		const dark = osm.colors('colorful-dark');
 		const s = build({ osmOverlay: { theme: 'colorful-dark' } });
-		expect(s.sky).toMatchObject({ 'sky-color': dark.water });
+		expect(s.sky).toMatchObject({ 'sky-color': Color.parse(dark.water).asString() });
 	});
 
 	it('keeps the generic sky blue for bare imagery, which has no palette', () => {
@@ -348,7 +348,7 @@ describe('satellite() knob: sky', () => {
 
 	it('maps sky options onto style-spec properties', () => {
 		const s = build({ sky: { skyColor: '#010203', atmosphereBlend: 0.7 } });
-		expect(s.sky).toMatchObject({ 'sky-color': '#010203', 'atmosphere-blend': 0.7 });
+		expect(s.sky).toMatchObject({ 'sky-color': 'rgb(1,2,3)', 'atmosphere-blend': 0.7 });
 	});
 });
 

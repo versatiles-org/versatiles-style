@@ -18,10 +18,9 @@
  * test fails when they and the generator disagree.
  */
 
+import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
 import type { Palette, ResolvedColors } from '../../src/options/index.js';
-
-export type RGBA = [number, number, number, number];
 interface Scale {
 	fill?: number;
 	line?: number;
@@ -108,107 +107,76 @@ const CASINGS: Record<string, string> = {
 };
 
 // ── colour math ───────────────────────────────────────────────────────────────
+//
+// The conversions, the transfer function and the OKLab matrices all live in `src/color` now; this
+// generator used to carry its own copy of each. What remains here is the part that is generator policy
+// rather than colour science: a *signed* contrast, and a gamut reduction that refuses to move a hue.
 
-export function parse(color: string): RGBA {
-	const hex = color.replace('#', '');
-	const channel = (i: number) => parseInt(hex.slice(i, i + 2), 16) / 255;
-	return [channel(0), channel(2), channel(4), hex.length >= 8 ? channel(6) : 1];
+export function parse(color: string): Color {
+	return Color.parse(color);
 }
-
-function toHex(color: RGBA): string {
-	const byte = (v: number) =>
-		Math.round(Math.min(1, Math.max(0, v)) * 255)
-			.toString(16)
-			.padStart(2, '0')
-			.toUpperCase();
-	return `#${byte(color[0])}${byte(color[1])}${byte(color[2])}${color[3] < 0.999 ? byte(color[3]) : ''}`;
-}
-
-const toLinear = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-const toGamma = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
-
-/** WCAG relative luminance. */
-const luminance = (c: RGBA) => 0.2126 * toLinear(c[0]) + 0.7152 * toLinear(c[1]) + 0.0722 * toLinear(c[2]);
 
 /** `top` composited over an opaque `bottom`. */
-export function over(top: RGBA, bottom: RGBA): RGBA {
-	const mix = (i: number) => top[3] * top[i] + (1 - top[3]) * bottom[i];
-	return [mix(0), mix(1), mix(2), 1];
+export function over(top: Color, bottom: Color): Color {
+	return bottom.over(top);
 }
 
-/** Signed WCAG contrast of `fg` over `bg`: above 1 when it is lighter than `bg`, below 1 when darker. */
-export function contrast(fg: RGBA, bg: RGBA): number {
-	return (luminance(over(fg, bg)) + 0.05) / (luminance(bg) + 0.05);
+/**
+ * Signed WCAG contrast of `fg` over `bg`: above 1 when it is lighter than `bg`, below 1 when darker.
+ *
+ * `Color.contrastRatio` gives the unsigned ratio that WCAG defines. The sign is what this generator is
+ * built on — every rule here reads "lighter than the land" or "darker than the land" — so it is kept.
+ */
+export function contrast(fg: Color, bg: Color): number {
+	return (over(fg, bg).luminance() + 0.05) / (bg.luminance() + 0.05);
 }
 
 const magnitude = (t: number) => Math.max(t, 1 / t);
 
-function toOklab(c: RGBA): [number, number, number] {
-	const [r, g, b] = [toLinear(c[0]), toLinear(c[1]), toLinear(c[2])];
-	const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-	const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-	const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-	return [
-		0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
-		1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
-		0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
-	];
-}
+/**
+ * An OKLCh colour as sRGB, reducing chroma until it fits the gamut.
+ *
+ * Deliberately not `Color.toGamut()`. That is CSS Color 4's mapping, which stops reducing once clipping
+ * would cost less than a JND and then clips — trading a little hue for a little chroma. Here the hue is
+ * the one thing that must not move: it is colorful's, and holding it is what makes a derived theme a
+ * recognisable relative of the reference rather than a different palette.
+ */
+function fromOklch(lightness: number, chroma: number, hue: number, alpha: number): Color {
+	const at = (c: number) => Color.oklch(lightness, c, hue, alpha);
+	if (at(chroma).inGamut()) return at(chroma).to('srgb');
 
-function toOklch(c: RGBA): { C: number; h: number } {
-	const [, a, b] = toOklab(c);
-	return { C: Math.hypot(a, b), h: Math.atan2(b, a) };
-}
-
-/** Linear sRGB of an OKLCH colour, possibly outside the gamut. */
-function oklchToLinear(L: number, C: number, h: number): [number, number, number] {
-	const a = C * Math.cos(h);
-	const b = C * Math.sin(h);
-	const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
-	const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
-	const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-	return [
-		4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-		-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-		-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-	];
-}
-
-/** OKLCH → sRGB, reducing chroma until the colour fits the gamut. */
-function fromOklch(L: number, C: number, h: number, alpha: number): RGBA {
-	const inGamut = (C2: number) => oklchToLinear(L, C2, h).every((v) => v >= -1e-4 && v <= 1 + 1e-4);
-	let chroma = C;
-	if (!inGamut(chroma)) {
-		let lo = 0;
-		let hi = C;
-		for (let i = 0; i < 30; i++) {
-			const mid = (lo + hi) / 2;
-			if (inGamut(mid)) lo = mid;
-			else hi = mid;
-		}
-		chroma = lo;
+	let low = 0;
+	let high = chroma;
+	for (let i = 0; i < 30; i++) {
+		const mid = (low + high) / 2;
+		if (at(mid).inGamut()) low = mid;
+		else high = mid;
 	}
-	const [r, g, b] = oklchToLinear(L, chroma, h).map((v) => toGamma(Math.min(1, Math.max(0, v))));
-	return [r, g, b, alpha];
+	return at(low).to('srgb');
 }
 
-/** Bisects OKLCH lightness until `measure` of the colour reaches `target` (it grows with lightness). */
-function solveLightness(h: number, C: number, alpha: number, target: number, measure: (c: RGBA) => number): RGBA {
-	let lo = 0;
-	let hi = 1;
+/** Bisects OKLCh lightness until `measure` of the colour reaches `target` (it grows with lightness). */
+function solveLightness(
+	hue: number,
+	chroma: number,
+	alpha: number,
+	target: number,
+	measure: (c: Color) => number
+): Color {
+	let low = 0;
+	let high = 1;
 	for (let i = 0; i < 40; i++) {
-		const mid = (lo + hi) / 2;
-		if (measure(fromOklch(mid, C, h, alpha)) < target) lo = mid;
-		else hi = mid;
+		const mid = (low + high) / 2;
+		if (measure(fromOklch(mid, chroma, hue, alpha)) < target) low = mid;
+		else high = mid;
 	}
-	return fromOklch((lo + hi) / 2, C, h, alpha);
+	return fromOklch((low + high) / 2, chroma, hue, alpha);
 }
 
 /** Distance between two colours in OKLab, plus their alpha difference — for reporting changes. */
 export function oklabDistance(a: string, b: string): number {
-	const [p, q] = [parse(a), parse(b)];
-	const [x, y] = [toOklab(p), toOklab(q)];
-	return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]) + Math.abs(p[3] - q[3]);
+	const [first, second] = [Color.parse(a), Color.parse(b)];
+	return first.deltaEOK(second) + Math.abs(first.alpha - second.alpha);
 }
 
 // ── derivation ────────────────────────────────────────────────────────────────
@@ -227,17 +195,18 @@ function groupOf(key: string): Group {
 function decolorized(ref: Record<string, string>, amount: number): Record<string, string> {
 	if (!amount) return ref;
 	const land = parse(ref.land);
-	const [landL, landA, landB] = toOklab(land);
+	const { l: landL, a: landA, b: landB } = land.oklab;
+	const lightnessOver = (color: Color) => over(color, land).oklab.l;
 	const out: Record<string, string> = {};
 	for (const [key, value] of Object.entries(ref)) {
 		const color = parse(value);
 		// measured as the colour is seen, composited over the land, so alpha counts for what it hides
-		const [L, a, b] = toOklab(over(color, land));
+		const { l, a, b } = over(color, land).oklab;
 		const chroma = Math.hypot(a - landA, b - landB);
 		// away from the land, the way the colour already leans; a colour at the land's lightness darkens
-		const target = L + Math.sign(L - landL || -1) * amount * chroma;
+		const target = l + Math.sign(l - landL || -1) * amount * chroma;
 		// solved rather than assigned, so a translucent colour still composites onto `target`
-		out[key] = toHex(solveLightness(0, 0, color[3], target, (c) => toOklab(over(c, land))[0]));
+		out[key] = solveLightness(0, 0, color.alpha, target, lightnessOver).asHex();
 	}
 	return out;
 }
@@ -247,18 +216,18 @@ function build(theme: LightTheme, dark: boolean): Record<string, string> {
 	const ref = decolorized(osm.colors('colorful') as Record<string, string>, settings.decolorize ?? 0);
 	const refLand = parse(ref.land);
 	const tint = (key: string, group: Group) => {
-		const { C, h } = toOklch(parse(ref[key]));
+		const { c, h } = parse(ref[key]).oklch;
 		const v = settings.chroma?.[group] ?? 1;
-		return { h, C: C * v * (dark ? DARK_CHROMA : 1) };
+		return { h, C: c * v * (dark ? DARK_CHROMA : 1) };
 	};
 
 	let land = parse(settings.land ?? ref.land);
 	if (dark) {
-		const own = toOklch(land);
+		const own = land.oklch;
 		const { h, C } = tint('land', 'fill');
-		land = solveLightness(own.C > 0.02 ? own.h : h, C * 0.5, 1, settings.darkLand, luminance);
+		land = solveLightness(own.c > 0.02 ? own.h : h, C * 0.5, 1, settings.darkLand, (c) => c.luminance());
 	}
-	const out: Record<string, string> = { background: toHex(land), land: toHex(land) };
+	const out: Record<string, string> = { background: land.asHex(), land: land.asHex() };
 
 	// water before `labelWater`, casings before the roads drawn on them
 	const first = ['water', ...Object.values(CASINGS)];
@@ -266,9 +235,9 @@ function build(theme: LightTheme, dark: boolean): Record<string, string> {
 
 	for (const key of keys) {
 		const group = groupOf(key);
-		const alpha = parse(ref[key])[3];
+		const alpha = parse(ref[key]).alpha;
 		if (key === 'labelHalo') {
-			out[key] = toHex(dark ? [0, 0, 0, alpha] : [1, 1, 1, alpha]);
+			out[key] = (dark ? Color.srgb(0, 0, 0, alpha) : Color.srgb(255, 255, 255, alpha)).asHex();
 			continue;
 		}
 		const { h, C } = tint(key, group);
@@ -299,13 +268,13 @@ function build(theme: LightTheme, dark: boolean): Record<string, string> {
 			target = magnitude(target) ** exponent;
 		}
 
-		const measure = (c: RGBA) => contrast(c, bg);
+		const measure = (c: Color) => contrast(c, bg);
 		let color = solveLightness(h, C, alpha, target, measure);
 		// a fill that cannot go the intended way — lighter than a white land — goes the other way
 		if (group === 'fill' && magnitude(measure(color)) < Math.sqrt(magnitude(target))) {
 			color = solveLightness(h, C, alpha, 1 / target, measure);
 		}
-		out[key] = toHex(color);
+		out[key] = color.asHex();
 	}
 	return Object.fromEntries(osm.colorKeys.map((k) => [k, out[k]]));
 }

@@ -56,4 +56,17 @@ export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolor) {
 			if (key.endsWith('-color')) paint[key] = walkValue(paint[key], recolorString);
 		}
 	}
+
+	// The sky sits outside `layers` and used to be missed: an inverted-brightness map darkened the
+	// ground and kept a bright blue sky above it.
+	//
+	// `style.light` is deliberately left alone. Its colour is an illuminant, not a surface: inverting
+	// the brightness of a white light gives a black one, which does not mean "dark lighting" but "no
+	// light", and every extruded building loses its shading.
+	const sky = style.sky as Record<string, unknown> | undefined;
+	if (sky) {
+		for (const key of Object.keys(sky)) {
+			if (key.endsWith('-color')) sky[key] = walkValue(sky[key], recolorString);
+		}
+	}
 }
