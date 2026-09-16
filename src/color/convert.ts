@@ -108,23 +108,42 @@ function pureHue(h: number): [number, number, number] {
 	return [1, 0, x];
 }
 
+/**
+ * HSL is written with v6's exact arithmetic, not the equivalent chroma formulation used for HSV and HWB
+ * below.
+ *
+ * `delta/(max+min)` and `delta/(1-|2l-1|)` are the same number in algebra and different numbers in
+ * floating point, and the difference lands on a rounding boundary often enough to move 35 of the 388
+ * palette colours by one 8-bit step. Nobody could see that, but it would show up as change in every
+ * style diff and hide the changes that matter. Keeping v6's spelling keeps those diffs empty.
+ */
 function srgbToHsl([r, g, b]: Coords): Coords {
 	const [R, G, B] = [r / 255, g / 255, b / 255];
-	const max = Math.max(R, G, B);
 	const min = Math.min(R, G, B);
+	const max = Math.max(R, G, B);
 	const delta = max - min;
-	const l = (max + min) / 2;
-	const s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+	const l = (min + max) / 2;
+	const s = max === min ? 0 : l <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
 	return [hueOf(R, G, B, max, delta), s * 100, l * 100];
 }
 
 function hslToSrgb([h, s, l]: Coords): Coords {
+	const H = h / 360;
 	const S = s / 100;
 	const L = l / 100;
-	const c = (1 - Math.abs(2 * L - 1)) * S;
-	const m = L - c / 2;
-	const [r, g, b] = pureHue(h);
-	return [(r * c + m) * 255, (g * c + m) * 255, (b * c + m) * 255];
+	if (S === 0) return [L * 255, L * 255, L * 255];
+
+	const q = L < 0.5 ? L * (1 + S) : L + S - L * S;
+	const p = 2 * L - q;
+	const channel = (t: number): number => {
+		if (t < 0) t += 1;
+		if (t > 1) t -= 1;
+		if (t < 1 / 6) return p + (q - p) * 6 * t;
+		if (t < 1 / 2) return q;
+		if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+		return p;
+	};
+	return [255 * channel(H + 1 / 3), 255 * channel(H), 255 * channel(H - 1 / 3)];
 }
 
 function srgbToHsv([r, g, b]: Coords): Coords {

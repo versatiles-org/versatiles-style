@@ -1,11 +1,10 @@
 /**
- * Colour operations that are about more than one colour, or about the edge of what a screen can show.
- *
- * This file currently holds the part serialisation depends on — gamut mapping — plus the distance
- * measure it is defined in terms of. Mixing, contrast and the rest land here too.
+ * Colour operations that are about more than one colour, or about the edge of what a screen can show:
+ * perceptual distance, mixing, WCAG contrast, and gamut mapping.
  */
 
-import { convert } from './convert.js';
+import { convert, srgbToLinear } from './convert.js';
+import { SPACES, normalize } from './space.js';
 import type { Coords, Space } from './space.js';
 
 /**
@@ -84,4 +83,98 @@ export function toGamut(coords: Coords, space: Space): Coords {
 		high = mid;
 	}
 	return clip(convert([lightness, low, hue], 'oklch', 'srgb'));
+}
+
+// ── mixing ────────────────────────────────────────────────────────────────────
+
+/**
+ * How to get from one hue to another (CSS Color 4 §13.5).
+ *
+ * Two hues sit on a circle, so there are always two ways round; which one is wanted is a design
+ * decision, not a mathematical one. `shorter` takes the short arc — red to blue through magenta —
+ * while `longer` takes the other, through yellow and green.
+ */
+export type HueMethod = 'shorter' | 'longer' | 'increasing' | 'decreasing';
+
+export interface MixOptions {
+	/** Where to interpolate. Default `oklab`, as CSS uses — it is the space that mixes without grey middles. */
+	space?: Space;
+	/** How to travel between the two hues, in a polar space. Default `shorter`. */
+	hue?: HueMethod;
+}
+
+/** A colour as the operations here pass it around. */
+export interface ColorValue {
+	readonly space: Space;
+	readonly coords: Coords;
+	readonly alpha: number;
+}
+
+/** The pair of hues to interpolate between, adjusted per CSS Color 4 §13.5. */
+function fixHues(from: number, to: number, method: HueMethod): [number, number] {
+	const difference = to - from;
+	switch (method) {
+		case 'shorter':
+			if (difference > 180) return [from + 360, to];
+			if (difference < -180) return [from, to + 360];
+			return [from, to];
+		case 'longer':
+			if (difference > 0 && difference < 180) return [from + 360, to];
+			if (difference > -180 && difference <= 0) return [from, to + 360];
+			return [from, to];
+		case 'increasing':
+			return to < from ? [from, to + 360] : [from, to];
+		case 'decreasing':
+			return from < to ? [from + 360, to] : [from, to];
+	}
+}
+
+/**
+ * `from` and `to` mixed, `t` of the way across (CSS Color 4 §13).
+ *
+ * Alpha is premultiplied before interpolating and divided out afterwards, so fading through a
+ * translucent colour does not drag the result toward black — except on a hue channel, which is an angle
+ * and has nothing to premultiply.
+ */
+export function mix(from: ColorValue, to: ColorValue, t = 0.5, options: MixOptions = {}): ColorValue {
+	const space = options.space ?? 'oklab';
+	const a = convert(from.coords, from.space, space);
+	const b = convert(to.coords, to.space, space);
+	const { channels } = SPACES[space];
+
+	const alpha = from.alpha + (to.alpha - from.alpha) * t;
+	const coords = [0, 1, 2].map((index) => {
+		if (channels[index].hue) {
+			const [start, end] = fixHues(a[index], b[index], options.hue ?? 'shorter');
+			return start + (end - start) * t;
+		}
+		const start = a[index] * from.alpha;
+		const end = b[index] * to.alpha;
+		const mixed = start + (end - start) * t;
+		return alpha === 0 ? 0 : mixed / alpha;
+	}) as unknown as Coords;
+
+	return { space, coords: normalize(space, coords), alpha };
+}
+
+// ── contrast ──────────────────────────────────────────────────────────────────
+
+/** WCAG 2.1 relative luminance, 0 for black and 1 for white. */
+export function luminance(coords: Coords, space: Space): number {
+	const [r, g, b] = convert(coords, space, 'srgb');
+	return 0.2126 * srgbToLinear(r / 255) + 0.7152 * srgbToLinear(g / 255) + 0.0722 * srgbToLinear(b / 255);
+}
+
+/**
+ * WCAG 2.1 contrast ratio, from 1 (identical) to 21 (black against white).
+ *
+ * Alpha is ignored: a ratio is only meaningful between two things actually drawn, so composite a
+ * translucent colour onto its background first.
+ */
+export function contrastRatio(a: ColorValue, b: ColorValue): number {
+	const first = luminance(a.coords, a.space);
+	const second = luminance(b.coords, b.space);
+	const lighter = Math.max(first, second);
+	const darker = Math.min(first, second);
+	return (lighter + 0.05) / (darker + 0.05);
 }

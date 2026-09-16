@@ -112,4 +112,17 @@ describe('normalize()', () => {
 		expect(normalize('srgb', [10, 20, 30])).toStrictEqual([10, 20, 30]);
 		expect(normalize('oklch', [0.5, 0.1, 200])).toStrictEqual([0.5, 0.1, 200]);
 	});
+
+	it('leaves an in-range hue bit-identical', () => {
+		// Not cosmetic. `((v % 360) + 360) % 360` returns 48.38709677419354 for this hue, and that one
+		// last bit is enough to take an sRGB channel from 104.5 to 104.49999999999999 — a different byte
+		// once rounded. Saturating #6B5F2D is a real case: it decides between #7B691D and #7B681D.
+		const hue = 48.387096774193544;
+		expect(normalize('hsl', [hue, 40, 30])[0]).toBe(hue);
+		expect(normalize('oklch', [0.5, 0.1, hue])[2]).toBe(hue);
+	});
+
+	it('collapses negative zero', () => {
+		expect(Object.is(normalize('hsl', [-0, 0, 0])[0], 0)).toBe(true);
+	});
 });

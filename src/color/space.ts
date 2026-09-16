@@ -81,7 +81,15 @@ function normalizeChannel(value: number, channel: ChannelSpec): number {
 	// NaN becomes 0 before anything else: every channel's range contains 0, and mapping to the floor
 	// instead would send an unbounded channel (OKLab's a/b) to -Infinity.
 	if (Number.isNaN(value)) return 0;
-	if (channel.hue) return ((value % 360) + 360) % 360;
+	if (channel.hue) {
+		// Only touch a hue that is actually outside the circle. The obvious `((v % 360) + 360) % 360`
+		// disturbs the last bit of a value already in range — 48.387096774193544 comes back as
+		// 48.38709677419354 — and that is enough to move a channel from 104.5 to 104.49999999999999,
+		// which rounds to a different byte.
+		const wrapped = value % 360;
+		if (wrapped < 0) return wrapped + 360;
+		return wrapped === 0 ? 0 : wrapped; // collapse -0
+	}
 	return value < channel.min ? channel.min : value > channel.max ? channel.max : value;
 }
 
