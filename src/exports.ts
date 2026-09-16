@@ -101,9 +101,4 @@ export type { FontFaceInfo } from './lib/';
 export { Color, ColorParseError } from './color/';
 export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/';
 
-// ── Style variants (used by the build pipeline and the dev playground) ────────
-
-export { getStyleVariants } from './variants.js';
-export type { StyleVariant } from './variants.js';
-
 export type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';

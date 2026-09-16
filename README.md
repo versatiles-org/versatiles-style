@@ -127,10 +127,10 @@ writeFileSync('style.json', JSON.stringify(await inlineSources(style)));
 ```
 
 The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, `inlineSources()`,
-`fetchTileJSON()`, `Color` and the rest of the documented API — everything except `minimizeOptions()`
-and `toCode()` on `osm`/`satellite`. Those two are for storing options or emitting a snippet, which is
-a job for a style editor; they ship in the npm package only, so a page that just builds a style does
-not carry them.
+`fetchTileJSON()`, `Color` and the rest of the documented API. Three things ship in the npm package
+only, because they serve tooling rather than pages: `minimizeOptions()` and `toCode()` on
+`osm`/`satellite` (storing options, emitting a snippet — a style editor's job) and `getStyleVariants()`
+(enumerating every published variant — the release pipeline's job).
 
 A `style.json` written without `inlineSources` still carries a `url` reference, so whoever loads it
 hits the same relative-tile problem. This is exactly what the published styles do — `build-styles.ts`
@@ -256,7 +256,7 @@ B["space.ts"]
 C["parser.ts"]
 D["serialize.ts"]
 E["recolor.ts"]
-1W["random.ts"]
+1V["random.ts"]
 end
 subgraph I["themes"]
 J["* (7 files)"]
@@ -309,8 +309,8 @@ subgraph 1N["cartography"]
 end
 1T["browser.ts"]
 1U["exports.ts"]
-1V["variants.ts"]
-1X["index.ts"]
+1W["index.ts"]
+1X["variants.ts"]
 subgraph 1Z["migrate"]
 20["calibrate.ts"]
 21["evaluate.ts"]
@@ -444,15 +444,15 @@ V-->L
 1U-->P
 1U-->4
 1U-->13
-1U-->1V
-1V-->1R
-1V-->4
-1W-->8
+1V-->8
+1W-->1R
+1W-->2
+1W-->1U
+1W-->5
+1W-->1P
+1W-->1X
 1X-->1R
-1X-->2
-1X-->1U
-1X-->5
-1X-->1P
+1X-->4
 20-->7
 1Z-->4
 20-->21
