@@ -3,7 +3,7 @@ import { shortbreadLayers } from './layers/index.js';
 import { resolveOsm } from '../options/index.js';
 import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
 import type { TaggedLayer } from '../dsl/build.js';
-import { keepInOverlay } from '../features/satellite-overlay.js';
+import { keepInOverlay } from '../features/index.js';
 
 export type { TextGroupMap, LayerGroupMap } from '../dsl/group-maps.js';
 

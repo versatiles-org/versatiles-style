@@ -20,7 +20,7 @@ import {
 	type SunOptions,
 } from './parts.js';
 import { resolveOsmOverlay, type OsmOverlayOptions, type ResolvedOsmOverlay } from './osm-overlay.js';
-import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/satellite-overlay.js';
+import { OVERLAY_DEFAULTS, OVERLAY_LABEL_STYLES } from '../features/index.js';
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
