@@ -217,6 +217,61 @@ npm run dev
 
 A local server will be available at <http://localhost:8080>. Use it to select a style, edit definitions in `src/themes/...` and `src/shortbread/...`, and reload the page to view the changes.
 
+### Bundle Composition
+
+<!--- This chapter is generated automatically --->
+
+```mermaid
+treemap-beta
+"shortbread — 28.1 KB"
+    "layers/pois.ts": 5.2
+    "layers/labels.ts": 4.4
+    "layers/index.ts": 4.3
+    "schema.ts": 3.2
+    "layers/roads.ts": 2.9
+    "layers/landcover.ts": 2.2
+    "layers/water.ts": 1.5
+    "other (10 files)": 4.3
+"options — 14.6 KB"
+    "parts/text.ts": 2.6
+    "parts/layer-groups.ts": 2.4
+    "parts/v5-hints.ts": 2
+    "other (17 files)": 7.7
+"color — 14.4 KB"
+    "color.ts": 4.1
+    "parser.ts": 3.7
+    "convert.ts": 2.7
+    "ops.ts": 1.4
+    "other (3 files)": 2.5
+"themes — 10.2 KB"
+    "colorful.ts": 2
+    "gray.ts": 2
+    "muted.ts": 2
+    "natural.ts": 2
+    "toner.ts": 2
+    "other (1 files)": 0.3
+"cartography — 10 KB"
+    "roads.ts": 6.7
+    "boundaries.ts": 1.5
+    "other (3 files)": 1.8
+"dsl — 9.3 KB"
+    "build.ts": 5.6
+    "text.ts": 1.5
+    "other (3 files)": 2.2
+"api — 6.4 KB"
+    "guessStyle.ts": 2.8
+    "satellite.ts": 1.6
+    "other (2 files)": 2
+"lib — 4.5 KB"
+    "other (10 files)": 4.5
+"types — 4.3 KB"
+    "tilejson.ts": 4.3
+"features — 2.9 KB"
+    "other (9 files)": 2.9
+```
+
+Sized by the bundle's own sourcemap: **104.9 KB** raw, **30.7 KB** gzipped, across 84 modules and nothing from `node_modules`. Regenerate with `npm run doc-bundle`.
+
 ### Dependency Graph
 
 <!--- This chapter is generated automatically --->
