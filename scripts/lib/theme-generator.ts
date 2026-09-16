@@ -22,8 +22,12 @@ import { osm } from '../../src/index.js';
 import type { Palette, ResolvedColors } from '../../src/options/index.js';
 
 export type RGBA = [number, number, number, number];
-type Group = 'fill' | 'line' | 'label';
-type Scale = Record<Group, number>;
+interface Scale {
+	fill?: number;
+	line?: number;
+	label?: number;
+};
+type Group = keyof Scale;
 
 /** The five palettes; each is a light theme of that name and has a `-dark` theme. */
 export type LightTheme = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
@@ -32,15 +36,31 @@ export interface ThemeSettings {
 	/** Land (and background) of the light theme. The reference keeps its own. */
 	land?: string;
 	/** Exponent on colorful's contrast against the land, per group: above 1 stronger, below 1 softer. */
-	contrast: Scale;
+	contrast?: Scale;
 	/** Chroma as a multiple of colorful's, per group. */
-	chroma: Scale;
+	chroma?: Scale;
+	/**
+	 * How much of the separation that chroma carried is moved into lightness, 0–1.
+	 *
+	 * Taking the chroma out of a palette also takes out every distinction hue was making. Colorful's
+	 * water sits at 0.75 contrast against the land, but what tells the two apart on screen is blue
+	 * against cream, not the brightness step — desaturate both and the coast nearly disappears.
+	 *
+	 * Above 0, the reference each colour is derived from is first moved away from the land, by this
+	 * fraction of its OKLab chroma distance to it, in the direction it already leans. So what colorful
+	 * separates by colour, the theme separates by brightness. Only meaningful where `chroma` is 0.
+	 */
+	decolorize?: number;
 	/** Relative luminance of the dark theme's land — distinct per theme, so no two share a background. */
 	darkLand: number;
 }
 
 export const THEMES: Record<LightTheme, ThemeSettings> = {
-	colorful: { contrast: { fill: 1, line: 1, label: 1 }, chroma: { fill: 1, line: 1, label: 1 }, darkLand: 0.02 },
+	colorful: {
+		contrast: { fill: 1, line: 1, label: 1 },
+		chroma: { fill: 1, line: 1, label: 1 },
+		darkLand: 0.02
+	},
 	// stronger nature fills on a warm land
 	natural: {
 		land: '#F2EDDE',
@@ -55,11 +75,11 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
 		chroma: { fill: 0.5, line: 0.6, label: 0.6 },
 		darkLand: 0.019,
 	},
-	// fully desaturated: every colour is a gray
+	// fully desaturated: every colour is a gray, carrying colorful's hue separation as brightness
 	gray: {
-		land: '#F0F0F0',
-		contrast: { fill: 0.8, line: 0.9, label: 1 },
+		contrast: { fill: 1, line: 1, label: 1 },
 		chroma: { fill: 0, line: 0, label: 0 },
+		decolorize: 0.5,
 		darkLand: 0.018,
 	},
 	// quiet fills, heavy lines, black labels
@@ -199,13 +219,37 @@ function groupOf(key: string): Group {
 	return 'fill';
 }
 
+/**
+ * `colorful`, with each colour's chroma distance to the land folded into its lightness — see
+ * `decolorize`. Returns the reference untouched at 0, so every other theme derives from colorful
+ * itself.
+ */
+function decolorized(ref: Record<string, string>, amount: number): Record<string, string> {
+	if (!amount) return ref;
+	const land = parse(ref.land);
+	const [landL, landA, landB] = toOklab(land);
+	const out: Record<string, string> = {};
+	for (const [key, value] of Object.entries(ref)) {
+		const color = parse(value);
+		// measured as the colour is seen, composited over the land, so alpha counts for what it hides
+		const [L, a, b] = toOklab(over(color, land));
+		const chroma = Math.hypot(a - landA, b - landB);
+		// away from the land, the way the colour already leans; a colour at the land's lightness darkens
+		const target = L + Math.sign(L - landL || -1) * amount * chroma;
+		// solved rather than assigned, so a translucent colour still composites onto `target`
+		out[key] = toHex(solveLightness(0, 0, color[3], target, (c) => toOklab(over(c, land))[0]));
+	}
+	return out;
+}
+
 function build(theme: LightTheme, dark: boolean): Record<string, string> {
-	const ref = osm.colors('colorful') as Record<string, string>;
 	const settings = THEMES[theme];
+	const ref = decolorized(osm.colors('colorful') as Record<string, string>, settings.decolorize ?? 0);
 	const refLand = parse(ref.land);
 	const tint = (key: string, group: Group) => {
 		const { C, h } = toOklch(parse(ref[key]));
-		return { h, C: C * settings.chroma[group] * (dark ? DARK_CHROMA : 1) };
+		const v = settings.chroma?.[group] ?? 1;
+		return { h, C: C * v * (dark ? DARK_CHROMA : 1) };
 	};
 
 	let land = parse(settings.land ?? ref.land);
@@ -228,7 +272,7 @@ function build(theme: LightTheme, dark: boolean): Record<string, string> {
 			continue;
 		}
 		const { h, C } = tint(key, group);
-		const exponent = settings.contrast[group];
+		const exponent = settings.contrast?.[group] ?? 1;
 		let bg = land;
 		let target = contrast(parse(ref[key]), refLand);
 		if (key === 'labelWater') {
