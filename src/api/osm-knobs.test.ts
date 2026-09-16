@@ -751,8 +751,8 @@ describe('osm() sky defaults follow the palette', () => {
 	});
 
 	it('darkens the sky in a dark theme', () => {
-		const light = Color.parse(sky('colorful')['sky-color']).asHSL();
-		const dark = Color.parse(sky('colorful-dark')['sky-color']).asHSL();
+		const light = Color.parse(sky('colorful')['sky-color']).hsl;
+		const dark = Color.parse(sky('colorful-dark')['sky-color']).hsl;
 		expect(dark.l).toBeLessThan(light.l);
 	});
 

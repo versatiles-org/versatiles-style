@@ -183,6 +183,17 @@ export class Color implements ColorValue {
 		);
 	}
 
+	/**
+	 * Returns this colour.
+	 *
+	 * A `Color` is frozen and every method returns a new instance, so there is nothing a copy could
+	 * protect against. It stays because v6 had it, and because `deepClone` recognises anything with a
+	 * `clone()` method.
+	 */
+	clone(): Color {
+		return this;
+	}
+
 	/** Whether a screen can show this colour without help. */
 	inGamut(): boolean {
 		return inGamut(convert(this.coords, this.space, 'srgb'));

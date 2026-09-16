@@ -56,8 +56,8 @@ const RANDOM_SAMPLES = 24;
 const MAX_KEYS = 3;
 
 export function parseRGBA(color: string): RGBA {
-	const rgb = Color.parse(color).asRGB();
-	return [rgb.r / 255, rgb.g / 255, rgb.b / 255, rgb.a];
+	const { r, g, b, alpha } = Color.parse(color).srgb;
+	return [r / 255, g / 255, b / 255, alpha];
 }
 
 type Sample = { colors: RGBA[]; channels: Map<ChannelId, RGBA> };

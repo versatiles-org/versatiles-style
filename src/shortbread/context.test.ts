@@ -5,7 +5,7 @@ import { PALETTES } from '../themes/index.js';
 import type { Color } from '../color/index.js';
 
 function channels(color: Color): [number, number, number] {
-	const [r, g, b] = color.asRGB().asArray();
+	const { r, g, b } = color.srgb;
 	return [r, g, b];
 }
 function isBlack(color: Color): boolean {

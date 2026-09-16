@@ -196,6 +196,17 @@ function processExpression(value: RuleValue, cb?: (v: RuleValue) => RuleValue): 
 	return cb ? cb(value) : value;
 }
 
+/**
+ * Opacities are written to three decimals.
+ *
+ * Several layers take an opacity straight from a palette colour's alpha (`opacity: c.siteDanger.alpha`),
+ * and an alpha read from hex is a 255th: `0x4D` is 0.30196078431372547. Rounding belongs here, at the
+ * edge where a number becomes JSON, rather than in the colour model, which should keep what it was given.
+ */
+function roundOpacity(value: RuleValue): RuleValue {
+	return typeof value === 'number' ? Math.round(value * 1000) / 1000 : value;
+}
+
 function camelToKebab(s: string): string {
 	return s.replace(/[A-Z]/g, (ch) => '-' + ch.toLowerCase());
 }
@@ -225,7 +236,7 @@ function applyProps(layer: MaplibreLayer, props: StyleProps): void {
 					value = processExpression(raw as RuleValue, processColor);
 					break;
 				default:
-					value = processExpression(raw as RuleValue);
+					value = processExpression(raw as RuleValue, def.key.endsWith('-opacity') ? roundOpacity : undefined);
 					break;
 			}
 			assign(layer, def.parent, def.key, value);

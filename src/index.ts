@@ -182,8 +182,8 @@ export {
 	FONT_SCRIPTS,
 } from './lib/index.js';
 export type { FontFaceInfo } from './lib/index.js';
-export { Color } from './color/index.js';
-export type { RGB, HSL, HSV, RandomColorOptions } from './color/index.js';
+export { Color, ColorParseError } from './color/index.js';
+export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/index.js';
 
 // ── Style variants (used by the build pipeline and the dev playground) ────────
 

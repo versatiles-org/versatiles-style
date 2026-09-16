@@ -245,9 +245,9 @@ function pickBuilding(candidates: StyleLayer[]): { building?: Color; buildingBg?
 
 /** Composite a possibly-translucent colour over the map background — both palettes use alpha. */
 function overBackground(color: Color, background: Color): [number, number, number] {
-	const c = color.asRGB();
-	const b = background.asRGB();
-	const a = c.a ?? 1;
+	const c = color.srgb;
+	const b = background.srgb;
+	const a = c.alpha;
 	return [c.r * a + b.r * (1 - a), c.g * a + b.g * (1 - a), c.b * a + b.b * (1 - a)];
 }
 

@@ -1,5 +1,12 @@
-import { HSV } from './hsv.js';
-import { mod } from './utils.js';
+import { Color } from './color.js';
+
+const clamp = (value: number, min: number, max: number): number =>
+	Number.isNaN(value) ? min : value < min ? min : value > max ? max : value;
+
+const mod = (value: number, max: number): number => {
+	const wrapped = value % max;
+	return wrapped < 0 ? wrapped + max : wrapped;
+};
 
 type Range = [number, number];
 interface ColorInfo {
@@ -10,16 +17,19 @@ interface ColorInfo {
 }
 
 export interface RandomColorOptions {
-	seed?: string;
+	/** Same seed, same colour. Omit for a colour that differs on every call. */
+	seed?: number | string;
+	/** A hue in degrees, or a colour name from the dictionary (`'red'`, `'blue'`, `'monochrome'`, …). */
 	hue?: number | string;
 	opacity?: number;
 	luminosity?: number | string;
+	/** `'strong'`, `'weak'`, or a saturation in 0–100. */
 	saturation?: number | string;
 }
 
 let colorDictionary = new Map<string, ColorInfo>();
 
-export default function randomColor(options?: RandomColorOptions): HSV {
+export default function randomColor(options?: RandomColorOptions): Color {
 	if (colorDictionary.size === 0) colorDictionary = initColorDictionary();
 
 	options ??= {};
@@ -30,7 +40,7 @@ export default function randomColor(options?: RandomColorOptions): HSV {
 	const S = pickSaturation(H, options);
 	const V = pickBrightness(H, S, options);
 
-	return new HSV(H, S, V, options.opacity ?? 1);
+	return Color.hsv(H, S, V, options.opacity ?? 1);
 
 	function pickHue(options: RandomColorOptions): number {
 		return mod(randomWithin(getHueRange(options.hue)), 360);
@@ -56,7 +66,11 @@ export default function randomColor(options?: RandomColorOptions): HSV {
 
 		let [sMin, sMax] = getColorInfo(hue).saturationRange;
 
+		// v6 understood only 'strong' here: a number or 'weak' fell through to the default range, so
+		// `{ saturation: 20 }` and `{ saturation: 'weak' }` both silently returned the default colour.
+		if (typeof options.saturation === 'number') return clamp(options.saturation, 0, 100);
 		if (options.saturation === 'strong') return sMax;
+		if (options.saturation === 'weak') return sMin;
 
 		switch (options.luminosity) {
 			case 'bright':
@@ -124,7 +138,9 @@ export default function randomColor(options?: RandomColorOptions): HSV {
 }
 
 function inputToSeed(input: number | string | null | undefined): number {
-	if (input == null) return 0;
+	// No seed asked for means no repeatability wanted. v6 returned 0 here, so every unseeded call
+	// returned the same colour — `randomColor()` three times gave #A9D62D three times.
+	if (input == null) return Math.floor(Math.random() * 0x100000000);
 	if (typeof input === 'number') return input;
 
 	let i = 0;

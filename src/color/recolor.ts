@@ -1,12 +1,16 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-// From ./parse.js rather than ./abstract.js: this module calls `Color.parse`, which is assigned
-// there. Importing the bare class would compile fine and then throw at runtime.
-import { Color } from './parse.js';
+import { Color } from './color.js';
 import type { ResolvedRecolor, ResolvedColors } from '../options/index.js';
 
+/**
+ * Whether a string found under a `*-color` key is a colour rather than part of an expression.
+ *
+ * Deliberately a prefix test and not a parse: the values walked here include expression operators
+ * (`interpolate`, `linear`) and property names, and trying to parse each one would turn every one of
+ * them into an exception.
+ */
 function isColorString(s: string): boolean {
-	const t = s.trim().toLowerCase();
-	return t.startsWith('#') || t.startsWith('rgb') || t.startsWith('hsl');
+	return /^(#|rgba?\(|hsla?\(|hwb\(|hsv\(|oklab\(|oklch\(|transparent$)/i.test(s.trim());
 }
 
 function transformColor(color: Color, opt: ResolvedRecolor): Color {

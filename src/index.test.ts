@@ -44,10 +44,11 @@ describe('exports', () => {
 
 	it('should export Color', () => {
 		expect(typeof lib.Color).toBe('function');
-		expect(typeof lib.Color.HSL).toBe('function');
-		expect(typeof lib.Color.HSV).toBe('function');
-		expect(typeof lib.Color.HSV.randomColor).toBe('function');
-		expect(typeof lib.Color.RGB).toBe('function');
+		expect(typeof lib.Color.parse).toBe('function');
+		expect(typeof lib.Color.srgb).toBe('function');
+		expect(typeof lib.Color.oklch).toBe('function');
+		expect(typeof lib.Color.mix).toBe('function');
+		expect(typeof lib.ColorParseError).toBe('function');
 	});
 
 	it('should export the TileJSON type guards', () => {

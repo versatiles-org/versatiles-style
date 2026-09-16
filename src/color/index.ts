@@ -1,9 +1,7 @@
-// `Color` comes from ./parse.js, not ./abstract.js: importing it from there is what installs
-// `Color.parse` and the `Color.HSL/HSV/RGB` statics. See the note in parse.ts.
-export { Color } from './parse.js';
-
+export { Color } from './color.js';
+export type { Channels } from './color.js';
+export { ColorParseError } from './parser.js';
+export type { Coords, Space } from './space.js';
+export type { HueMethod, MixOptions } from './ops.js';
 export type { RandomColorOptions } from './random.js';
-export type { HSL } from './hsl.js';
-export type { HSV } from './hsv.js';
-export type { RGB } from './rgb.js';
 export { applyRecolor, calculateDarkModeColors } from './recolor.js';

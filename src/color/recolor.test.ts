@@ -33,7 +33,7 @@ const fillColor = (style: StyleSpecification): string =>
 
 // Canonical [r,g,b] of any color string, for value comparisons.
 function toRGB(s: string): [number, number, number] {
-	const str = Color.parse(s).asRGB().round().asString();
+	const str = Color.parse(s).to('srgb').round().asString();
 	const m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
 	if (!m) throw new Error(`not an rgb string: ${str}`);
 	return [Number(m[1]), Number(m[2]), Number(m[3])];

@@ -36,7 +36,9 @@ describe('deepClone', () => {
 		const color = Color.parse('#FF5733');
 		const clonedColor = deepClone(color);
 		expect(clonedColor.asHex()).toBe(color.asHex());
-		expect(clonedColor).not.toBe(color);
+		// A Color is frozen and every method returns a new instance, so the clone may be the colour
+		// itself — there is no shared mutable state for a copy to protect.
+		expect(Object.isFrozen(clonedColor)).toBe(true);
 	});
 
 	it('throws an error for non-implemented types', () => {
