@@ -1,7 +1,7 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { TileJSONSpecificationVector } from '../types/index.js';
 import type { OsmOptions, ResolvedOsm } from '../options/';
-import { colorOptionsKeys, resolveOsm } from '../options/';
+import { colorOptionsKeys, resolveOsm, minimizeOsmOptions } from '../options/';
 import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
@@ -19,7 +19,6 @@ import { getLanguages } from '../lib/languages.js';
 import { getTextGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
-import { minimizeOsmOptions } from '../options/minimize.js';
 import { styleCode } from './code.js';
 import type { SchemaDescriptor } from './schema-builder.js';
 
