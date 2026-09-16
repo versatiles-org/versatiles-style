@@ -30,9 +30,8 @@
  */
 import process from 'node:process';
 import { osm } from '../src/index.js';
-import { getLayerGroupMap } from '../src/shortbread/layer-groups-map.js';
+import { getLayerGroupMap, SHORTBREAD_SCHEMA } from '../src/shortbread/';
 import { auditSchema, auditGroupBinding, schemaUsage, type SchemaRecord } from '../src/lib/schema-audit.js';
-import { SHORTBREAD_SCHEMA } from '../src/shortbread/schema.js';
 import { OMT_SCHEMA } from '../src/omt/schema.js';
 import { PROTOMAPS_SCHEMA } from '../src/protomaps/schema.js';
 import { MAPPINGS, type Confidence, type LayerMapping } from './config/schema-mapping.js';

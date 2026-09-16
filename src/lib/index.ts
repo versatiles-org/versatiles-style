@@ -18,3 +18,7 @@ export { fetchTileJSON } from './fetchTileJSON.js';
 export { fetchFontFaces, type FontFaceInfo } from './fetchFontFaces.js';
 export { fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './fontCovers.js';
 export { inlineSources } from './inlineSources.js';
+export { scaleLayerOpacity } from './opacity.js';
+export { padForSpacing, scaleSymbolSpacing, scaleValue } from './symbol-layout.js';
+export { getLanguages } from './languages.js';
+export { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from './schema-signatures.js';

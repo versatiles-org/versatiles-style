@@ -30,7 +30,7 @@ import {
 	type TerrainOptions,
 	type TileSource,
 } from '../options/';
-import { resolveUrl } from '../lib/utils.js';
+import { resolveUrl } from '../lib/';
 
 /**
  * OpenMapTiles' options — in this directory, not in `src/options/`.

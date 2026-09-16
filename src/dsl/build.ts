@@ -1,8 +1,8 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { Color } from '../color/index.js';
-import type { MaplibreLayer } from '../types/index.js';
+import { Color } from '../color/';
+import type { MaplibreLayer } from '../types/';
 import type { ResolvedLayerGroups } from '../options/';
-import { scaleLayerOpacity } from '../lib/opacity.js';
+import { scaleLayerOpacity } from '../lib/';
 
 // ── Public value types ────────────────────────────────────────────────────────
 

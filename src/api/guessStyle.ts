@@ -8,7 +8,7 @@ import { checkKeys } from '../options/';
 import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
 import { guessSchema, qualifies } from './guessSchema.js';
-import { SCHEMA_NAMES } from '../lib/schema-signatures.js';
+import { SCHEMA_NAMES } from '../lib/';
 
 /**
  * Options for {@link guessStyle}.

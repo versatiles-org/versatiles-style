@@ -26,7 +26,11 @@ import {
 	type ThemeOptions,
 } from './parts/';
 import { Color } from '../color/';
-import { getOverlayLayerGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
+// Type-only, and deliberately so: a *value* imported from a schema would make the option layer
+// depend on `shortbread`, which depends on `dsl`, which depends back on these options — one edge
+// that fuses half the package into a single cycle. The overlay's group map is therefore passed in
+// by the caller (`src/api/satellite.ts`), which already knows about schemas.
+import type { LayerGroupMap } from '../shortbread/layer-groups-map.js';
 
 type Plain = Record<string, unknown>;
 
@@ -331,7 +335,11 @@ export function minimizeOsmOptions(options: OsmOptions = {}): OsmOptions {
 }
 
 /** The smallest `SatelliteOptions` that builds the same style as `options`. */
-export function minimizeSatelliteOptions(options: SatelliteOptions = {}): SatelliteOptions {
+export function minimizeSatelliteOptions(
+	options: SatelliteOptions = {},
+	/** Supplies the overlay's layer-group map. A function, so it is only built if an overlay is given. */
+	overlayGroups: () => LayerGroupMap
+): SatelliteOptions {
 	resolveSatellite(options); // rejects unknown keys; the resolved result is not needed
 	const { osmOverlay, urls: rawUrls, ...rest } = options;
 	const out = (withoutDefaults(rest, resolveSatellite(), ENABLED) ?? {}) as Plain;
@@ -346,7 +354,7 @@ export function minimizeSatelliteOptions(options: SatelliteOptions = {}): Satell
 			osmOverlay,
 			(theme) => resolveSatellite({ osmOverlay: { theme } }).osmOverlay,
 			'gray',
-			{ layerGroups: getOverlayLayerGroupMap() }
+			{ layerGroups: overlayGroups() }
 		);
 		if (Object.keys(overlay).length > 0) out.osmOverlay = overlay;
 	}

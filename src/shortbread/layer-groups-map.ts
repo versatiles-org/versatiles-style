@@ -1,6 +1,8 @@
 import { buildContext } from './context.js';
 import { shortbreadLayers } from './layers/index.js';
-import { resolveOsm } from '../options/';
+// The concrete resolver, not the `../options/` barrel: `options/minimize.ts` imports this file,
+// so importing the barrel here closes a cycle between the two directories.
+import { resolveOsm } from '../options/osm.js';
 import { buildGroupMaps, type TextGroupMap, type LayerGroupMap, type TaggedLayer } from '../dsl/';
 import { keepInOverlay } from '../features/index.js';
 

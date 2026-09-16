@@ -1,12 +1,17 @@
 import type { StyleSpecification } from '../types/';
 import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/';
 import { colorOptionsKeys, resolveSatellite, minimizeSatelliteOptions } from '../options/';
-import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS } from '../shortbread/';
-import { addTerrain, addHillshade, configure3DLighting, applySky, applyProjection } from '../features/';
-import { toOverlayLayers } from '../features/satellite-overlay.js';
+import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS, getOverlayLayerGroupMap } from '../shortbread/';
+import {
+	toOverlayLayers,
+	addTerrain,
+	addHillshade,
+	configure3DLighting,
+	applySky,
+	applyProjection,
+} from '../features/';
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/';
 import { osm } from './osm.js';
-import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { styleCode } from './code.js';
 
 // Stable slot IDs for satellite styles
@@ -188,10 +193,10 @@ export const satellite = Object.assign(satelliteFn, {
 	 * The smallest options object that builds the same style. Overlay colours are compared against
 	 * the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise.
 	 */
-	minimizeOptions: minimizeSatelliteOptions,
+	minimizeOptions: (options?: SatelliteOptions) => minimizeSatelliteOptions(options, getOverlayLayerGroupMap),
 
 	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
 	toCode(options?: SatelliteOptions): string {
-		return styleCode('satellite', minimizeSatelliteOptions(options));
+		return styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap));
 	},
 } as const);

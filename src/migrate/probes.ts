@@ -1,4 +1,4 @@
-import type { SchemaName } from '../lib/schema-signatures.js';
+import type { SchemaName } from '../lib/';
 
 /**
  * Probes: the schema-neutral vocabulary `deriveOptions` reads a foreign style in.

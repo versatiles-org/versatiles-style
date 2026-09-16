@@ -6,7 +6,7 @@ import {
 	type StylePropertyExpression,
 	type StylePropertySpecification,
 } from '@maplibre/maplibre-gl-style-spec';
-import type { SchemaName } from '../lib/schema-signatures.js';
+import type { SchemaName } from '../lib/';
 import type { StyleSpecification } from '../types/index.js';
 import type { Probe, ProbeFeature, ProbeGeometry } from './probes.js';
 

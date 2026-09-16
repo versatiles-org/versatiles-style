@@ -44,7 +44,7 @@
 		"build-sprites": "tsx scripts/build-sprites.ts",
 		"dev": "vite",
 		"doc": "npm run doc-graph",
-		"doc-graph": "vrt deps-graph --collapse-dir \"src/options/parts/*\" --collapse-dir \"src/omt/layers/*\" --collapse-dir \"src/protomaps/layers/*\" --collapse-dir \"src/shortbread/layers/*\" | vrt doc-insert README.md '### Dependency Graph'",
+		"doc-graph": "vrt deps-graph --merge-outgoing \"src/*\"  --collapse-dir \"src/options/parts/*\" --collapse-dir \"src/cartography/*\" --collapse-dir \"src/themes/*\" --collapse-dir \"src/features/*\" --collapse-dir \"src/omt/layers/*\" --collapse-dir \"src/protomaps/layers/*\" --collapse-dir \"src/shortbread/layers/*\" | vrt doc-insert README.md '### Dependency Graph'",
 		"doc-screenshots": "tsx scripts/screenshots.ts",
 		"doc-sprites": "tsx scripts/icons-report.ts --public --out docs/sprites.html",
 		"doc-typescript": "vrt doc-typescript -f html",

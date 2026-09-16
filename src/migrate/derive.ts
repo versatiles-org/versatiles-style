@@ -1,10 +1,7 @@
-import { osm } from '../api/osm.js';
-import { satellite } from '../api/satellite.js';
-import { guessSchema, type SchemaGuess } from '../api/guessSchema.js';
-import type { SchemaName } from '../lib/schema-signatures.js';
-import { getLayerGroupMap, getTextGroupMap, type LayerGroupMap } from '../shortbread/layer-groups-map.js';
-import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
-import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
+import { osm, satellite, guessSchema, type SchemaGuess } from '../api/';
+import type { SchemaName } from '../lib/';
+import { getLayerGroupMap, getTextGroupMap, type LayerGroupMap, SHORTBREAD_SCHEMA } from '../shortbread/';
+import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/';
 import {
 	colorOptionsKeys,
 	resolveSatellite,

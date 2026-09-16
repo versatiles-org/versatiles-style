@@ -1,4 +1,5 @@
-import { checkKeys, type FetchLike } from '../options/';
+import { checkKeys } from '../options/';
+import type { FetchLike } from '../options/';
 import type { StyleSpecification } from '../types/';
 import { loadTileSource } from './loadTileSource.js';
 import { inlinedFields } from './tileSource.js';

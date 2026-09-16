@@ -1,7 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
-import { slot, type TaggedLayer, type MergeTable } from '../../dsl/';
-import { buildLayers, mergeIdenticalLayers } from '../../dsl/assemble.js';
+import { slot, buildLayers, mergeIdenticalLayers, type TaggedLayer, type MergeTable } from '../../dsl/';
 import { airport } from './airport.js';
 import { background } from './background.js';
 import { boundaries } from './boundaries.js';

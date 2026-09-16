@@ -1,6 +1,6 @@
 import type { StyleSpecification } from '../types/index.js';
 import type { ResolvedIcon } from '../options/';
-import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/symbol-layout.js';
+import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/';
 
 // Icon scale and spacing, applied to a finished style. The text half of a symbol layer — its size,
 // spacing and pitch alignment — belongs to the text options and is set per topic (`applyText`).

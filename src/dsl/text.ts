@@ -1,6 +1,6 @@
 import type { MaplibreLayer } from '../types/index.js';
 import { MAPLIBRE_TEXT_DEFAULTS, TEXT_TOPICS, topicOf, type ResolvedText, type TextTopic } from '../options/';
-import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/symbol-layout.js';
+import { padForSpacing, scaleSymbolSpacing, scaleValue } from '../lib/';
 
 /**
  * Groups outside `labels` whose layers carry text. POI names and stop names are drawn with their icons,

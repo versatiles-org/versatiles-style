@@ -1,4 +1,4 @@
-import type { StyleSpecification } from '../types/index.js';
+import type { StyleSpecification } from '../types/';
 import { colorOptionsKeys } from '../options/';
 import {
 	minimizeProtomapsOptions,
@@ -7,20 +7,12 @@ import {
 	type ProtomapsOptions,
 	type ResolvedProtomaps,
 } from './options.js';
-import { PALETTES, getPaletteColors } from '../themes/index.js';
-import { applyRecolor } from '../color/index.js';
-import {
-	addTerrain,
-	addHillshade,
-	configure3DLighting,
-	applySky,
-	applyProjection,
-	applyIcon,
-} from '../features/index.js';
-import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
-import { getLanguages } from '../lib/languages.js';
-import { styleCode } from '../api/code.js';
-import type { SchemaDescriptor } from '../api/schema-builder.js';
+import { PALETTES, getPaletteColors } from '../themes/';
+import { applyRecolor } from '../color/';
+import { addTerrain, addHillshade, configure3DLighting, applySky, applyProjection, applyIcon } from '../features/';
+import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/';
+import { getLanguages } from '../lib/';
+import { styleCode, type SchemaDescriptor } from '../api/';
 import { PROTOMAPS_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import {
@@ -29,7 +21,7 @@ import {
 	SLOT_BELOW_STREETS,
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
-} from './layers/index.js';
+} from './layers/';
 import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 
 /**

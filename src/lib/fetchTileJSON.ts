@@ -1,4 +1,5 @@
-import { checkKeys, type FetchLike } from '../options/';
+import { checkKeys } from '../options/';
+import type { FetchLike } from '../options/';
 import type { TileJSONSpecification } from '../types/';
 import { loadTileSource } from './loadTileSource.js';
 

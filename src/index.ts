@@ -88,9 +88,8 @@
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────
 
-export { osm, satellite, guessStyle, guessSchema } from './api/index.js';
-export type { GuessStyleOptions } from './api/guessStyle.js';
-export type { SchemaGuess, SchemaName, SchemaScore } from './api/guessSchema.js';
+export { osm, satellite, guessStyle, guessSchema } from './api/';
+export type { GuessStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/';
 
 // ── v6 types ──────────────────────────────────────────────────────────────────
 
@@ -157,20 +156,20 @@ export type {
 	TileJSONSpecificationRaster,
 	TileJSONSpecificationVector,
 	VectorLayer,
-} from './types/index.js';
+} from './types/';
 export {
 	assertTileJSONSpecification,
 	assertRasterTileJSONSpecification,
 	isTileJSONSpecification,
 	isRasterTileJSONSpecification,
-} from './types/index.js';
+} from './types/';
 
-export type { TextGroupMap, LayerGroupMap } from './shortbread/layer-groups-map.js';
+export type { TextGroupMap, LayerGroupMap } from './shortbread/';
 /**
  * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
  * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.
  */
-export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/schema-builder.js';
+export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/';
 export {
 	inlineSources,
 	fetchTileJSON,
@@ -180,10 +179,10 @@ export {
 	languageScript,
 	textScripts,
 	FONT_SCRIPTS,
-} from './lib/index.js';
-export type { FontFaceInfo } from './lib/index.js';
-export { Color, ColorParseError } from './color/index.js';
-export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/index.js';
+} from './lib/';
+export type { FontFaceInfo } from './lib/';
+export { Color, ColorParseError } from './color/';
+export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/';
 
 // ── Style variants (used by the build pipeline and the dev playground) ────────
 

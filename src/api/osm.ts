@@ -1,10 +1,18 @@
-import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { TileJSONSpecificationVector } from '../types/index.js';
+import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/';
 import type { OsmOptions, ResolvedOsm } from '../options/';
 import { colorOptionsKeys, resolveOsm, minimizeOsmOptions } from '../options/';
-import { buildContext, buildStyleLayers, SLOT_IDS } from '../shortbread/index.js';
-import { PALETTES, getPaletteColors } from '../themes/index.js';
-import { applyRecolor } from '../color/index.js';
+import {
+	buildContext,
+	buildStyleLayers,
+	SLOT_IDS,
+	getTextGroupMap,
+	getLayerGroupMap,
+	SHORTBREAD_SCHEMA,
+	LANDCOVER_LAYERS,
+	LAND_APPEAR_MIN,
+} from '../shortbread/';
+import { PALETTES, getPaletteColors } from '../themes/';
+import { applyRecolor } from '../color/';
 import {
 	applyIcon,
 	addTerrain,
@@ -13,12 +21,9 @@ import {
 	configure3DLighting,
 	applySky,
 	applyProjection,
-} from '../features/index.js';
-import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
-import { getLanguages } from '../lib/languages.js';
-import { getTextGroupMap, getLayerGroupMap } from '../shortbread/layer-groups-map.js';
-import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
-import { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from '../shortbread/layers/landcover.js';
+} from '../features/';
+import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/';
+import { getLanguages } from '../lib/';
 import { styleCode } from './code.js';
 import type { SchemaDescriptor } from './schema-builder.js';
 
