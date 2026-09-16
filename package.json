@@ -85,7 +85,7 @@
 		"SPRITES.md"
 	],
 	"dependencies": {
-		"@maplibre/maplibre-gl-style-spec": "^26.4.2"
+		"@maplibre/maplibre-gl-style-spec": "^26.4.4"
 	},
 	"peerDependencies": {
 		"maplibre-gl": ">=5.0.0"
@@ -107,14 +107,14 @@
 		"@types/tar-stream": "^3.1.4",
 		"@typescript-eslint/eslint-plugin": "^8.70.0",
 		"@typescript-eslint/parser": "^8.70.0",
-		"@versatiles/release-tool": "^2.10.0",
-		"@vitest/coverage-v8": "^5.0.0",
+		"@versatiles/release-tool": "^2.11.0",
+		"@vitest/coverage-v8": "^5.0.1",
 		"bin-pack": "^1.0.2",
 		"eslint": "^10.10.0",
 		"husky": "^9.1.7",
-		"maplibre-gl": "^6.9.0",
-		"prettier": "^3.9.6",
-		"rollup": "^4.63.2",
+		"maplibre-gl": "^6.10.0",
+		"prettier": "^3.9.7",
+		"rollup": "^4.63.3",
 		"rollup-plugin-dts": "^6.5.1",
 		"rollup-plugin-sourcemaps2": "^0.5.8",
 		"sharp": "^0.35.4",
@@ -124,7 +124,7 @@
 		"typescript": "~6.0.3",
 		"typescript-eslint": "^8.70.0",
 		"vite": "^8.3.0",
-		"vitest": "^5.0.0"
+		"vitest": "^5.0.1"
 	},
 	"allowScripts": {
 		"@maplibre/maplibre-gl-native": true,
