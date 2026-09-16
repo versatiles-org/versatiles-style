@@ -42,6 +42,10 @@ import {
 	type RGBA,
 } from './evaluate.js';
 import { colorDistance, luminance, toHex } from './math.js';
+// Directly, not via `osm.minimizeOptions`: those helpers are attached only by the package entry, so
+// that the browser bundle can leave them out (see `src/browser.ts`).
+import { minimizeOsmOptions, minimizeSatelliteOptions } from '../options/minimize.js';
+import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { PROBES, type Probe } from './probes.js';
 
 /**
@@ -181,7 +185,7 @@ function derive(
 		}
 		const sky = deriveSky(style.sky, satellite(options).sky);
 		if (sky) options.sky = sky;
-		guess = { kind: 'satellite', options: satellite.minimizeOptions(options), report };
+		guess = { kind: 'satellite', options: minimizeSatelliteOptions(options, getOverlayLayerGroupMap), report };
 	} else {
 		const target = osmTarget();
 		const mode = modeOf(readings);
@@ -196,7 +200,7 @@ function derive(
 		};
 		const sky = deriveSky(style.sky, osm(options).sky);
 		if (sky) options.sky = sky;
-		guess = { kind: 'osm', options: osm.minimizeOptions(options), report };
+		guess = { kind: 'osm', options: minimizeOsmOptions(options), report };
 	}
 
 	// ── report ──

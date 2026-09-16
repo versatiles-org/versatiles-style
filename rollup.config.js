@@ -32,7 +32,9 @@ const declarationOf = (input, dir) => `${dir}/${input.replace(/^src\//, '').repl
 
 const browserConfig = [
 	{
-		input: 'src/index.ts',
+		// `browser.ts`, not `index.ts`: the CDN bundle leaves out the authoring helpers
+		// (`minimizeOptions`, `toCode`) that only a style editor needs — see that file.
+		input: 'src/browser.ts',
 		output: {
 			file: 'release/versatiles-style/versatiles-style.js',
 			format: 'umd',
@@ -60,7 +62,9 @@ const browserConfig = [
 		},
 	},
 	{
-		input: 'release/versatiles-style/declaration/index.d.ts',
+		// From the browser entry's declarations, so the shipped types describe what the bundle actually
+		// has. Built from `index.d.ts` it would promise `minimizeOptions`/`toCode` that are not there.
+		input: 'release/versatiles-style/declaration/browser.d.ts',
 		output: { file: 'release/versatiles-style/versatiles-style.d.ts', format: 'es' },
 		plugins: [dts()],
 	},

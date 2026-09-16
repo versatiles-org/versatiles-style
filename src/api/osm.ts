@@ -1,6 +1,6 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/';
 import type { OsmOptions, ResolvedOsm } from '../options/';
-import { colorOptionsKeys, resolveOsm, minimizeOsmOptions } from '../options/';
+import { colorOptionsKeys, resolveOsm } from '../options/';
 import {
 	buildContext,
 	buildStyleLayers,
@@ -24,7 +24,6 @@ import {
 } from '../features/';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/';
 import { getLanguages } from '../lib/';
-import { styleCode } from './code.js';
 import type { SchemaDescriptor } from './schema-builder.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';
@@ -159,15 +158,4 @@ export const osm = Object.assign(osmFn, {
 
 	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */
 	resolveOptions: resolveOsm,
-
-	/**
-	 * The smallest options object that builds the same style: every value equal to its default is
-	 * dropped, colours compared against the chosen palette. For storing a style in a URL or config.
-	 */
-	minimizeOptions: minimizeOsmOptions,
-
-	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
-	toCode(options?: OsmOptions): string {
-		return styleCode('osm', minimizeOsmOptions(options));
-	},
 } as const);

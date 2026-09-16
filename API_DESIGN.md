@@ -491,6 +491,12 @@ still follows. A UI shows `colors.water` for the sky colour while it is unset.
 when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
 means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
 
+> **npm only.** `minimizeOptions` and `toCode` are not in the browser bundle served from the CDN.
+> They exist to store options compactly or print a snippet — work for a style _editor_, which is an npm
+> consumer with its own bundler. A page that loads `versatiles-style.js` builds a style and hands it to
+> MapLibre, and attaching these to the exported function object would make them unremovable for every
+> such page. Everything else documented here is in both. See `src/browser.ts`.
+
 `osm.minimizeOptions(options)` returns the smallest options object that builds the same style: every
 value equal to its default is dropped, with colours compared against the chosen palette's own
 defaults. `osm(osm.minimizeOptions(x))` builds the same style as `osm(x)` — including for a full

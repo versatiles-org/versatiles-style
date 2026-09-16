@@ -88,105 +88,42 @@
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────
 
-export { osm, satellite, guessStyle, guessSchema } from './api/';
-export type { GuessStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/';
+export * from './exports.js';
 
-// ── v6 types ──────────────────────────────────────────────────────────────────
+import { osm as osmCore, satellite as satelliteCore } from './api/';
+import { styleCode } from './api/code.js';
+import { minimizeOsmOptions, minimizeSatelliteOptions } from './options/minimize.js';
+import { getOverlayLayerGroupMap } from './shortbread/layer-groups-map.js';
+import type { OsmOptions, SatelliteOptions } from './options/';
 
-export type {
-	// ── Core types ──
-	FetchLike,
-	Palette,
-	SpriteEntries,
-	TileSource,
-
-	// ── Input option types ──
-	ColorsOptions,
-	FontName,
-	HillshadeOptions,
-	IconOptions,
-	LabelStyle,
-	LayerGroupOptions,
-	OsmFeaturesOptions,
-	OsmOptions,
-	OsmOverlayOptions,
-	OsmUrlsOptions,
-	PitchAlignment,
-	ProjectionOptions,
-	RecolorOptions,
-	SatelliteFeaturesOptions,
-	SatelliteOptions,
-	SatelliteRasterOptions,
-	SatelliteUrlsOptions,
-	SkyOptions,
-	SunOptions,
-	TerrainOptions,
-	TextOptions,
-	TextTopic,
-	TextTransform,
-	ThemeOptions,
-
-	// ── Resolved option types ──
-	ResolvedColors,
-	ResolvedHillshade,
-	ResolvedIcon,
-	ResolvedLabelStyle,
-	ResolvedLayerGroups,
-	ResolvedOsm,
-	ResolvedOsmFeatures,
-	ResolvedOsmOverlay,
-	ResolvedOsmUrls,
-	ResolvedProjection,
-	ResolvedRecolor,
-	ResolvedSatellite,
-	ResolvedSatelliteFeatures,
-	ResolvedSatelliteRaster,
-	ResolvedSatelliteUrls,
-	ResolvedSky,
-	ResolvedSun,
-	ResolvedTerrain,
-	ResolvedText,
-	ResolvedTheme,
-} from './options/';
-export { isDarkMode, labelLanguage } from './options/';
-
-export type {
-	StyleSpecification,
-	TileJSONSpecification,
-	TileJSONSpecificationRaster,
-	TileJSONSpecificationVector,
-	VectorLayer,
-} from './types/';
-export {
-	assertTileJSONSpecification,
-	assertRasterTileJSONSpecification,
-	isTileJSONSpecification,
-	isRasterTileJSONSpecification,
-} from './types/';
-
-export type { TextGroupMap, LayerGroupMap } from './shortbread/';
 /**
- * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
- * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.
+ * `osm()` with the authoring helpers attached.
+ *
+ * They live here rather than on the function object itself so that the browser bundle, whose entry is
+ * `browser.ts`, can leave them out: attached, they are a property of an exported object and nothing can
+ * tree-shake them away. Only a tool that stores or emits options needs them; a page that just builds a
+ * style does not, and every consumer of the CDN bundle is the latter.
  */
-export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/';
-export {
-	inlineSources,
-	fetchTileJSON,
-	fetchFontFaces,
-	fontCovers,
-	fontScripts,
-	languageScript,
-	textScripts,
-	FONT_SCRIPTS,
-} from './lib/';
-export type { FontFaceInfo } from './lib/';
-export { Color, ColorParseError } from './color/';
-export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/';
+export const osm = Object.assign(osmCore, {
+	/**
+	 * The smallest options object that builds the same style: every value equal to its default is
+	 * dropped, colours compared against the chosen palette. For storing a style in a URL or config.
+	 */
+	minimizeOptions: minimizeOsmOptions,
 
-// ── Style variants (used by the build pipeline and the dev playground) ────────
+	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
+	toCode: (options?: OsmOptions): string => styleCode('osm', minimizeOsmOptions(options)),
+});
 
-export { getStyleVariants } from './variants.js';
-export type { StyleVariant } from './variants.js';
+/** `satellite()` with the same authoring helpers. */
+export const satellite = Object.assign(satelliteCore, {
+	/**
+	 * The smallest options object that builds the same style. Overlay colours are compared against
+	 * the overlay's palette — `gray` unless `osmOverlay.theme` says otherwise.
+	 */
+	minimizeOptions: (options?: SatelliteOptions) => minimizeSatelliteOptions(options, getOverlayLayerGroupMap),
 
-export type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';
+	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
+	toCode: (options?: SatelliteOptions): string =>
+		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap)),
+});

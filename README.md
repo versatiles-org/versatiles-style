@@ -126,6 +126,12 @@ const style = osm({
 writeFileSync('style.json', JSON.stringify(await inlineSources(style)));
 ```
 
+The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, `inlineSources()`,
+`fetchTileJSON()`, `Color` and the rest of the documented API — everything except `minimizeOptions()`
+and `toCode()` on `osm`/`satellite`. Those two are for storing options or emitting a snippet, which is
+a job for a style editor; they ship in the npm package only, so a page that just builds a style does
+not carry them.
+
 A `style.json` written without `inlineSources` still carries a `url` reference, so whoever loads it
 hits the same relative-tile problem. This is exactly what the published styles do — `build-styles.ts`
 calls `inlineSources` before writing each one.
@@ -250,7 +256,7 @@ B["space.ts"]
 C["parser.ts"]
 D["serialize.ts"]
 E["recolor.ts"]
-1T["random.ts"]
+1W["random.ts"]
 end
 subgraph I["themes"]
 J["* (7 files)"]
@@ -269,13 +275,13 @@ X["opacity.ts"]
 Y["schema-signatures.ts"]
 Z["styleMeta.ts"]
 10["symbol-layout.ts"]
-1W["schema-audit.ts"]
+1Y["schema-audit.ts"]
 end
 subgraph 12["types"]
 13["index.ts"]
 14["tilejson.ts"]
 15["vector_layer.ts"]
-2N["maplibre.ts"]
+2P["maplibre.ts"]
 end
 subgraph 17["features"]
 18["* (10 files)"]
@@ -301,38 +307,40 @@ end
 subgraph 1N["cartography"]
 1O["* (6 files)"]
 end
-1U["index.ts"]
+1T["browser.ts"]
+1U["exports.ts"]
 1V["variants.ts"]
-subgraph 1X["migrate"]
-1Y["calibrate.ts"]
-1Z["evaluate.ts"]
-20["math.ts"]
-21["probes.ts"]
-22["derive.ts"]
-23["guess.ts"]
-24["index.ts"]
+1X["index.ts"]
+subgraph 1Z["migrate"]
+20["calibrate.ts"]
+21["evaluate.ts"]
+22["math.ts"]
+23["probes.ts"]
+24["derive.ts"]
+25["guess.ts"]
+26["index.ts"]
 end
-subgraph 25["omt"]
-26["api.ts"]
-27["context.ts"]
-28["schema.ts"]
-29["layer-groups-map.ts"]
-subgraph 2A["layers"]
-2B["* (13 files)"]
+subgraph 27["omt"]
+28["api.ts"]
+29["context.ts"]
+2A["schema.ts"]
+2B["layer-groups-map.ts"]
+subgraph 2C["layers"]
+2D["* (13 files)"]
 end
-2C["options.ts"]
-2D["index.ts"]
+2E["options.ts"]
+2F["index.ts"]
 end
-subgraph 2E["protomaps"]
-2F["api.ts"]
-2G["context.ts"]
-2H["schema.ts"]
-2I["layer-groups-map.ts"]
-subgraph 2J["layers"]
-2K["* (13 files)"]
+subgraph 2G["protomaps"]
+2H["api.ts"]
+2I["context.ts"]
+2J["schema.ts"]
+2K["layer-groups-map.ts"]
+subgraph 2L["layers"]
+2M["* (13 files)"]
 end
-2L["options.ts"]
-2M["index.ts"]
+2N["options.ts"]
+2O["index.ts"]
 end
 end
 1-->4
@@ -395,7 +403,6 @@ V-->L
 1-->18
 1-->1A
 16-->J
-16-->2
 18-->P
 18-->7
 1A-->1B
@@ -424,14 +431,14 @@ V-->L
 1P-->F
 1P-->1B
 1P-->1L
-1Q-->2
 1Q-->16
 1R-->2
 1R-->O
 1R-->11
 1R-->16
 1R-->1Q
-1T-->8
+1T-->1R
+1T-->1U
 1U-->1R
 1U-->7
 1U-->P
@@ -440,64 +447,72 @@ V-->L
 1U-->1V
 1V-->1R
 1V-->4
-1Y-->7
-1X-->4
-1Y-->1Z
-1Y-->20
-1Y-->21
-22-->1R
-22-->1A
-22-->J
-22-->1Y
-22-->1Z
-22-->20
-22-->21
-23-->P
-23-->22
+1W-->8
+1X-->1R
+1X-->2
+1X-->1U
+1X-->5
+1X-->1P
+20-->7
+1Z-->4
+20-->21
+20-->22
+20-->23
+24-->1R
+24-->5
+24-->1A
+24-->1P
+24-->J
+24-->20
+24-->21
 24-->22
 24-->23
-26-->1R
-26-->7
-26-->18
 25-->P
-25-->4
-26-->J
-26-->27
-26-->29
-26-->2B
-26-->2C
-26-->28
-25-->1D
-27-->28
-29-->27
-29-->2B
-29-->2C
-2B-->28
-2B-->1O
-2D-->26
-2D-->28
-2F-->1R
-2F-->7
-2F-->18
-2E-->P
-2E-->4
-2F-->J
-2F-->2G
-2F-->2I
-2F-->2K
-2F-->2L
-2F-->2H
-2E-->1D
-2G-->2H
-2I-->2G
-2I-->2K
-2I-->2L
-2K-->2H
-2K-->1O
-2M-->2F
-2M-->2H
+25-->24
+26-->24
+26-->25
+28-->1R
+28-->7
+28-->18
+27-->P
+27-->4
+28-->J
+28-->29
+28-->2B
+28-->2D
+28-->2E
+28-->2A
+27-->1D
+29-->2A
+2B-->29
+2B-->2D
+2B-->2E
+2D-->2A
+2D-->1O
+2F-->28
+2F-->2A
+2H-->1R
+2H-->7
+2H-->18
+2G-->P
+2G-->4
+2H-->J
+2H-->2I
+2H-->2K
+2H-->2M
+2H-->2N
+2H-->2J
+2G-->1D
+2I-->2J
+2K-->2I
+2K-->2M
+2K-->2N
+2M-->2J
+2M-->1O
+2O-->2H
+2O-->2J
 
-class 0,1,3,G,6,I,K,12,17,19,1K,1C,1N,1X,25,2A,2E,2J subgraphs;
+class 0,1,3,G,6,I,K,12,17,19,1K,1C,1N,1Z,27,2C,2G,2L subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

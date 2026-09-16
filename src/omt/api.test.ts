@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { omt } from './api.js';
-import { osm } from '../api/index.js';
+import { osm } from '../index.js';
 
 // The four properties SCHEMA-SUPPORT-PLAN.md §5.3 claims for one-function-per-subpath, each asserted
 // rather than argued: bundle isolation, purity, per-schema validation, runnable codegen.

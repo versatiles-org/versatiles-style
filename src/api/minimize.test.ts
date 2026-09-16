@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TEXT_GROUPS, type OsmOptions, type SatelliteOptions } from '../options/';
-import { osm } from './osm.js';
-import { satellite } from './satellite.js';
+import { osm } from '../index.js';
+import { satellite } from '../index.js';
 
 // `minimizeOptions` exists to be stored and rebuilt, so the property that matters is the round trip:
 // whatever it drops must not change the style. Each case is checked against the full build.

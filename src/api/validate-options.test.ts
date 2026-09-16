@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { fetchTileJSON, inlineSources } from '../lib/index.js';
 import { v5ColorKeys } from '../options/';
-import { osm } from './osm.js';
-import { satellite } from './satellite.js';
+import { osm } from '../index.js';
+import { satellite } from '../index.js';
 
 // Unknown option keys are rejected rather than silently ignored: a v5 option, a typo or a renamed v5
 // colour key used to build the default style without a word. See src/options/validate.ts.
