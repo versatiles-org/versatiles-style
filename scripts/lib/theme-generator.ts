@@ -26,7 +26,7 @@ interface Scale {
 	fill?: number;
 	line?: number;
 	label?: number;
-};
+}
 type Group = keyof Scale;
 
 /** The five palettes; each is a light theme of that name and has a `-dark` theme. */
@@ -59,7 +59,7 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
 	colorful: {
 		contrast: { fill: 1, line: 1, label: 1 },
 		chroma: { fill: 1, line: 1, label: 1 },
-		darkLand: 0.02
+		darkLand: 0.02,
 	},
 	// stronger nature fills on a warm land
 	natural: {
