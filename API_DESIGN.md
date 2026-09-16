@@ -491,8 +491,9 @@ still follows. A UI shows `colors.water` for the sky colour while it is unset.
 when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
 means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
 
-> **npm only.** `minimizeOptions`, `toCode` and `getStyleVariants` are not in the browser bundle served
-> from the CDN.
+> **npm only.** `minimizeOptions`, `toCode`, `getStyleVariants` and the font-discovery helpers
+> (`fetchFontFaces`, `fontCovers`, `fontScripts`, `languageScript`, `textScripts`, `FONT_SCRIPTS`) are
+> not in the browser bundle served from the CDN.
 > They exist to store options compactly or print a snippet — work for a style _editor_, which is an npm
 > consumer with its own bundler. A page that loads `versatiles-style.js` builds a style and hands it to
 > MapLibre, and attaching these to the exported function object would make them unremovable for every
@@ -854,6 +855,11 @@ To resolve an already-built style rather than a single document, use [`inlineSou
 ---
 
 ## `fetchFontFaces(urls?, options?): Promise<FontFaceInfo[] | undefined>`
+
+> **npm only**, with `fontCovers`, `fontScripts`, `languageScript`, `textScripts` and `FONT_SCRIPTS`
+> below it: these answer which faces a glyph server has and which of them can write a given language —
+> the question a font picker asks. Nothing in the style-building path uses them, so the CDN bundle
+> leaves them out rather than have every page carry 4 KB it never calls.
 
 ```ts
 fetchFontFaces(

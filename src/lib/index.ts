@@ -15,10 +15,13 @@ export { STYLE_LICENSE, STYLE_METADATA, styleName } from './styleMeta.js';
 export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
 export { fetchTileJSON } from './fetchTileJSON.js';
-export { fetchFontFaces, type FontFaceInfo } from './fetchFontFaces.js';
-export { fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './fontCovers.js';
 export { inlineSources } from './inlineSources.js';
 export { scaleLayerOpacity } from './opacity.js';
 export { padForSpacing, scaleSymbolSpacing, scaleValue } from './symbol-layout.js';
 export { getLanguages } from './languages.js';
 export { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from './schema-signatures.js';
+
+// Font discovery is deliberately absent from this barrel. `fontCovers.ts` builds a frozen table at
+// module level — `Object.freeze` mutates, so no bundler may drop it — and naming it here would pull
+// that into every bundle that imports anything from `lib`, including the CDN one, which has no font
+// picker to serve. The npm entry imports those modules directly instead.

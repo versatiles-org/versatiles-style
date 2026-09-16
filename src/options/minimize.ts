@@ -62,10 +62,12 @@ function sameValue(a: unknown, b: unknown): boolean {
  * What each `boolean | object` option that is off by default resolves to when set to `true`. A value
  * equal to it is written as `true`, and only what differs from it is kept otherwise.
  */
-const ENABLED = {
+// `/*#__PURE__*/`, so a bundle that never uses the minimizer does not keep these three calls: they are
+// module-level work, and a bundler must otherwise assume they have side effects worth running.
+const ENABLED = /*#__PURE__*/ (() => ({
 	features: { terrain: resolveTerrain(true), hillshade: resolveHillshade(true) },
 	sun: resolveSun(true),
-};
+}))();
 
 /**
  * `value` minus everything equal to `defaults`, recursively; `undefined` when nothing is left.

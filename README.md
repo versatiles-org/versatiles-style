@@ -130,7 +130,9 @@ The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, 
 `fetchTileJSON()`, `Color` and the rest of the documented API. Three things ship in the npm package
 only, because they serve tooling rather than pages: `minimizeOptions()` and `toCode()` on
 `osm`/`satellite` (storing options, emitting a snippet — a style editor's job) and `getStyleVariants()`
-(enumerating every published variant — the release pipeline's job).
+(enumerating every published variant — the release pipeline's job). The font-discovery helpers
+(`fetchFontFaces()`, `fontCovers()`, `fontScripts()`, `languageScript()`, `textScripts()`,
+`FONT_SCRIPTS`) are npm-only for the same reason: they serve a font picker, not a map.
 
 A `style.json` written without `inlineSources` still carries a `url` reference, so whoever loads it
 hits the same relative-tile problem. This is exactly what the published styles do — `build-styles.ts`
@@ -231,11 +233,11 @@ subgraph 0["src"]
 subgraph 1["api"]
 2["code.ts"]
 O["guessSchema.ts"]
-11["guessStyle.ts"]
-16["osm.ts"]
-1Q["satellite.ts"]
-1R["index.ts"]
-1S["schema-builder.ts"]
+Z["guessStyle.ts"]
+14["osm.ts"]
+1O["satellite.ts"]
+1P["index.ts"]
+1Q["schema-builder.ts"]
 end
 subgraph 3["options"]
 4["index.ts"]
@@ -256,7 +258,7 @@ B["space.ts"]
 C["parser.ts"]
 D["serialize.ts"]
 E["recolor.ts"]
-1V["random.ts"]
+1T["random.ts"]
 end
 subgraph I["themes"]
 J["* (7 files)"]
@@ -264,52 +266,52 @@ end
 subgraph K["lib"]
 L["utils.ts"]
 P["index.ts"]
-Q["fetchFontFaces.ts"]
-R["fetchTileJSON.ts"]
-S["loadTileSource.ts"]
-T["fontCovers.ts"]
-U["inlineSources.ts"]
-V["tileSource.ts"]
-W["languages.ts"]
-X["opacity.ts"]
-Y["schema-signatures.ts"]
-Z["styleMeta.ts"]
-10["symbol-layout.ts"]
+Q["fetchTileJSON.ts"]
+R["loadTileSource.ts"]
+S["inlineSources.ts"]
+T["tileSource.ts"]
+U["languages.ts"]
+V["opacity.ts"]
+W["schema-signatures.ts"]
+X["styleMeta.ts"]
+Y["symbol-layout.ts"]
+1V["fetchFontFaces.ts"]
+1W["fontCovers.ts"]
 1Y["schema-audit.ts"]
 end
-subgraph 12["types"]
-13["index.ts"]
-14["tilejson.ts"]
-15["vector_layer.ts"]
+subgraph 10["types"]
+11["index.ts"]
+12["tilejson.ts"]
+13["vector_layer.ts"]
 2P["maplibre.ts"]
 end
-subgraph 17["features"]
-18["* (10 files)"]
+subgraph 15["features"]
+16["* (10 files)"]
 end
-subgraph 19["shortbread"]
-1A["index.ts"]
-1B["context.ts"]
-1J["groups.ts"]
-subgraph 1K["layers"]
-1L["* (13 files)"]
+subgraph 17["shortbread"]
+18["index.ts"]
+19["context.ts"]
+1H["groups.ts"]
+subgraph 1I["layers"]
+1J["* (13 files)"]
 end
-1M["schema.ts"]
-1P["layer-groups-map.ts"]
+1K["schema.ts"]
+1N["layer-groups-map.ts"]
 end
-subgraph 1C["dsl"]
-1D["index.ts"]
-1E["assemble.ts"]
-1F["build.ts"]
-1G["text.ts"]
-1H["context.ts"]
-1I["group-maps.ts"]
+subgraph 1A["dsl"]
+1B["index.ts"]
+1C["assemble.ts"]
+1D["build.ts"]
+1E["text.ts"]
+1F["context.ts"]
+1G["group-maps.ts"]
 end
-subgraph 1N["cartography"]
-1O["* (6 files)"]
+subgraph 1L["cartography"]
+1M["* (6 files)"]
 end
-1T["browser.ts"]
-1U["exports.ts"]
-1W["index.ts"]
+1R["browser.ts"]
+1S["exports.ts"]
+1U["index.ts"]
 1X["variants.ts"]
 subgraph 1Z["migrate"]
 20["calibrate.ts"]
@@ -375,105 +377,106 @@ M-->H
 N-->H
 1-->P
 P-->Q
-P-->R
-P-->T
-P-->U
-P-->W
 P-->S
+P-->U
+P-->R
+P-->V
+P-->W
 P-->X
 P-->Y
-P-->Z
-P-->10
-P-->V
+P-->T
 P-->L
 K-->4
-Q-->L
-R-->S
-S-->L
-U-->S
-U-->V
-V-->L
+Q-->R
+R-->L
+S-->R
+S-->T
+T-->L
+Z-->11
+Z-->O
+Z-->14
+Z-->1O
+11-->12
 11-->13
-11-->O
-11-->16
-11-->1Q
-13-->14
-13-->15
-16-->7
+14-->7
+1-->16
 1-->18
-1-->1A
-16-->J
-18-->P
-18-->7
-1A-->1B
-1A-->1J
-1A-->1P
-1A-->1L
-1A-->1M
-19-->1D
-1D-->1E
-1D-->1F
-1D-->1H
-1D-->1I
-1D-->1G
-1E-->1F
-1E-->1G
-1C-->7
-1C-->P
-1C-->4
-1H-->J
-1I-->1G
-1J-->1L
-1L-->1M
-1L-->1O
-1O-->1D
-1P-->18
-1P-->F
-1P-->1B
-1P-->1L
-1Q-->16
-1R-->2
-1R-->O
-1R-->11
-1R-->16
-1R-->1Q
-1T-->1R
-1T-->1U
-1U-->1R
-1U-->7
-1U-->P
-1U-->4
-1U-->13
-1V-->8
-1W-->1R
-1W-->2
-1W-->1U
-1W-->5
-1W-->1P
-1W-->1X
-1X-->1R
+14-->J
+16-->P
+16-->7
+18-->19
+18-->1H
+18-->1N
+18-->1J
+18-->1K
+17-->1B
+1B-->1C
+1B-->1D
+1B-->1F
+1B-->1G
+1B-->1E
+1C-->1D
+1C-->1E
+1A-->7
+1A-->P
+1A-->4
+1F-->J
+1G-->1E
+1H-->1J
+1J-->1K
+1J-->1M
+1M-->1B
+1N-->16
+1N-->F
+1N-->19
+1N-->1J
+1O-->14
+1P-->2
+1P-->O
+1P-->Z
+1P-->14
+1P-->1O
+1R-->1P
+1R-->1S
+1S-->1P
+1S-->7
+1S-->P
+1S-->4
+1S-->11
+1T-->8
+1U-->1P
+1U-->2
+1U-->1S
+1U-->1V
+1U-->1W
+1U-->5
+1U-->1N
+1U-->1X
+1V-->L
+1X-->1P
 1X-->4
 20-->7
 1Z-->4
 20-->21
 20-->22
 20-->23
-24-->1R
-24-->5
-24-->1A
 24-->1P
+24-->5
+24-->18
+24-->1N
 24-->J
 24-->20
 24-->21
 24-->22
 24-->23
 25-->P
+25-->1V
 25-->24
 26-->24
 26-->25
-28-->1R
+28-->1P
 28-->7
-28-->18
+28-->16
 27-->P
 27-->4
 28-->J
@@ -482,18 +485,18 @@ V-->L
 28-->2D
 28-->2E
 28-->2A
-27-->1D
+27-->1B
 29-->2A
 2B-->29
 2B-->2D
 2B-->2E
 2D-->2A
-2D-->1O
+2D-->1M
 2F-->28
 2F-->2A
-2H-->1R
+2H-->1P
 2H-->7
-2H-->18
+2H-->16
 2G-->P
 2G-->4
 2H-->J
@@ -502,17 +505,17 @@ V-->L
 2H-->2M
 2H-->2N
 2H-->2J
-2G-->1D
+2G-->1B
 2I-->2J
 2K-->2I
 2K-->2M
 2K-->2N
 2M-->2J
-2M-->1O
+2M-->1M
 2O-->2H
 2O-->2J
 
-class 0,1,3,G,6,I,K,12,17,19,1K,1C,1N,1Z,27,2C,2G,2L subgraphs;
+class 0,1,3,G,6,I,K,10,15,17,1I,1A,1L,1Z,27,2C,2G,2L subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

@@ -136,3 +136,13 @@ export const satellite = Object.assign(satelliteCore, {
 
 export { getStyleVariants } from './variants.js';
 export type { StyleVariant } from './variants.js';
+
+// ── Font discovery ────────────────────────────────────────────────────────────
+//
+// npm only. These answer "which faces does this glyph server have, and which of them can write this
+// language" — the question a font *picker* asks, which is editor work. Nothing in the style-building
+// path uses them, so a page that loads the CDN bundle would carry 4 KB it never calls.
+
+export { fetchFontFaces } from './lib/fetchFontFaces.js';
+export type { FontFaceInfo } from './lib/fetchFontFaces.js';
+export { fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './lib/fontCovers.js';
