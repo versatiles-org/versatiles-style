@@ -176,7 +176,7 @@ describe('isPowerlessHue()', () => {
 	});
 
 	it('collapses a powerless OKLCh hue to 0 rather than reading rounding noise', () => {
-		// the bug this guards: v6 read grey's hue as a real 0°, so tinting toward white went red
+		// the bug this guards: v5 read grey's hue as a real 0°, so tinting toward white went red
 		const [, chroma, hue] = convert([128, 128, 128], 'srgb', 'oklch');
 		expect(chroma).toBeLessThanOrEqual(POWERLESS_CHROMA);
 		expect(hue).toBe(0);

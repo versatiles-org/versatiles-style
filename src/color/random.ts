@@ -66,7 +66,7 @@ export default function randomColor(options?: RandomColorOptions): Color {
 
 		let [sMin, sMax] = getColorInfo(hue).saturationRange;
 
-		// v6 understood only 'strong' here: a number or 'weak' fell through to the default range, so
+		// v5 understood only 'strong' here: a number or 'weak' fell through to the default range, so
 		// `{ saturation: 20 }` and `{ saturation: 'weak' }` both silently returned the default colour.
 		if (typeof options.saturation === 'number') return clamp(options.saturation, 0, 100);
 		if (options.saturation === 'strong') return sMax;
@@ -138,7 +138,7 @@ export default function randomColor(options?: RandomColorOptions): Color {
 }
 
 function inputToSeed(input: number | string | null | undefined): number {
-	// No seed asked for means no repeatability wanted. v6 returned 0 here, so every unseeded call
+	// No seed asked for means no repeatability wanted. v5 returned 0 here, so every unseeded call
 	// returned the same colour — `randomColor()` three times gave #A9D62D three times.
 	if (input == null) return Math.floor(Math.random() * 0x100000000);
 	if (typeof input === 'number') return input;

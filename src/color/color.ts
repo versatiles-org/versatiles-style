@@ -3,7 +3,7 @@
  *
  * Immutable — every method returns a new instance, and every field is `readonly`.
  *
- * One class rather than v6's three. There, `RGB`, `HSL` and `HSV` each carried their own storage, and
+ * One class rather than v5's three. There, `RGB`, `HSL` and `HSV` each carried their own storage, and
  * the thirteen transforms lived on `RGB` with the other two inheriting and converting, which had two
  * consequences worth naming because they are the reason this exists:
  *
@@ -14,7 +14,7 @@
  *     `hsl()` while the other 370-odd colours were `rgb()` — not a decision anyone made. Here every
  *     transform returns a `Color`, and how a colour is written is decided only when it is written.
  *
- * The transforms keep v6's maths exactly, so adopting this moves no generated colour. Perceptual
+ * The transforms keep v5's maths exactly, so adopting this moves no generated colour. Perceptual
  * behaviour is opt-in, per call, through `mix(other, t, { space: 'oklab' })`.
  */
 
@@ -187,7 +187,7 @@ export class Color implements ColorValue {
 	 * Returns this colour.
 	 *
 	 * A `Color` is frozen and every method returns a new instance, so there is nothing a copy could
-	 * protect against. It stays because v6 had it, and because `deepClone` recognises anything with a
+	 * protect against. It stays because v5 had it, and because `deepClone` recognises anything with a
 	 * `clone()` method.
 	 */
 	clone(): Color {
@@ -259,8 +259,8 @@ export class Color implements ColorValue {
 
 	// ── the cartographic vocabulary ───────────────────────────────────────────
 	//
-	// v6's transforms, with v6's maths, so no generated colour moves. Each returns a `Color` rather than
-	// whichever class v6 happened to compute in.
+	// v5's transforms, with v5's maths, so no generated colour moves. Each returns a `Color` rather than
+	// whichever class v5 happened to compute in.
 
 	/** Mixes toward `other`, `t` of the way, in OKLab unless told otherwise. */
 	mix(other: Color, t = 0.5, options?: MixOptions): Color {
@@ -296,7 +296,7 @@ export class Color implements ColorValue {
 		const tint = top.hsl;
 		// The recoloured colour takes this one's alpha, so that blending toward it changes the colour and
 		// nothing else. Give it the default alpha of 1 instead and `blend` — which now interpolates alpha
-		// rather than ignoring it, as v6 did — would quietly make a translucent base more opaque.
+		// rather than ignoring it, as v5 did — would quietly make a translucent base more opaque.
 		const recoloured = Color.hsl(tint.h, tint.s, this.hsl.l, this.alpha);
 		return this.blend(top.alpha, recoloured);
 	}
@@ -304,7 +304,7 @@ export class Color implements ColorValue {
 	/**
 	 * Linear interpolation toward `other` in sRGB.
 	 *
-	 * Unlike v6, alpha is interpolated too: `blend(1, x)` now returns `x`, alpha included, rather than
+	 * Unlike v5, alpha is interpolated too: `blend(1, x)` now returns `x`, alpha included, rather than
 	 * `x`'s channels wearing this colour's alpha.
 	 */
 	blend(value: number, other: Color): Color {
@@ -323,7 +323,7 @@ export class Color implements ColorValue {
 	/**
 	 * Shifts this colour's hue toward `other`'s, keeping its own lightness and saturation.
 	 *
-	 * A colour with no hue to give — white, black or any grey — leaves this one alone. v6 read such a
+	 * A colour with no hue to give — white, black or any grey — leaves this one alone. v5 read such a
 	 * colour's hue as a real 0°, so tinting toward white turned everything red.
 	 */
 	tint(value: number, other: Color): Color {

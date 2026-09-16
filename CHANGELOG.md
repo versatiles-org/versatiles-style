@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.0.0] - 2026-06-28
 
 ### ⚠ BREAKING CHANGES
-
 - Rewrote the public API around three functions: `osm()`, `satellite()` and `guessStyle()`.
   `osm()` and `satellite()` are **synchronous** and perform no I/O — a `*.json` source URL becomes a
   source `url` that MapLibre resolves at map load. `guessStyle()` is asynchronous, because it has to
@@ -111,9 +110,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of `TypeError: Cannot read properties of undefined (reading 'light')`. The v5 style names are not
   accepted as themes; the error names the v6 theme to use (`"eclipse" is a v5 style name — in v6 use
   "colorful-dark"`).
+- Rewrote `Color` as a single immutable class over six colour spaces — sRGB, HSL, HWB, HSV, OKLab and
+  OKLCh — replacing the `RGB`/`HSL`/`HSV` class hierarchy. Those three were type-only exports, so no
+  runtime value disappeared; see "Migration from v5: colours" in `API_DESIGN.md` for the mapping.
+- Colour parsing is strict. Input that v5 silently misread now throws a `ColorParseError` naming the
+  problem: `rgb(100%,0%,0%)` was read as `rgb(100,0,0)`, `rgba(255,0,0,50%)` came out opaque,
+  `rgb(-5,0,0)` became `rgb(5,0,0)`, and a trailing `;` was accepted. Percentages, signs, decimals,
+  angle units and `/` alpha now mean what CSS says they mean.
+- Named colours are not supported: write the hex. Nor are `calc()`, `color-mix()`, relative colour
+  syntax, `color()`, `light-dark()`, `currentColor` or `none` components — each rejected by name.
+- `tint()` toward a colour with no hue now leaves the colour unchanged. v5 read white, black and grey
+  as hue 0°, so tinting toward any of them turned every colour red.
+- `blend()` interpolates alpha instead of keeping the base's, and `lighten()`/`darken()` clamp their
+  ratio to 0–1, as `blend()` and `tint()` already did.
+- `randomColor()` without a seed now returns a different colour each call (v5 seeded with 0 and so
+  always returned the same one), and a numeric or `'weak'` `saturation` is honoured rather than ignored.
+
+### Added
+- `hwb()`, `hsv()`, `oklab()` and `oklch()` as input syntax, and `Color.to(space)` with typed per-space
+  accessors (`color.oklch.l`), `Color.mix()` with the four CSS hue-interpolation methods, `deltaEOK()`,
+  `contrastRatio()`, `luminance()`, `inGamut()`, `toGamut()` (CSS Color 4 gamut mapping) and
+  `with({ … })` for channel edits.
+- `toCSS(space?)` writes a colour in any supported space; `asString()` continues to write the sRGB
+  legacy syntax that MapLibre reads.
+
+### Fixed
+- The sky is now recoloured with the rest of the style. `recolor` walked layer paint only, so an
+  inverted-brightness map darkened the ground and kept a bright blue sky above it. The 3D light is
+  deliberately left alone: its colour is an illuminant, and inverting white gives black, which is not
+  dark lighting but no light at all.
+- `sky.{skyColor,horizonColor,fogColor}`, `hillshade.{shadowColor,highlightColor,accentColor}` and
+  `sun.color` are validated instead of being copied into the style unexamined. An unreadable colour
+  there used to reach MapLibre and render as nothing in the native renderer.
+- The four `marking-*` layers no longer emit `hsl()` while every other colour is `rgb()` — an accident
+  of which class a transform happened to return. Same colours, one notation.
+- `NativeMap` (screenshot tooling) now reports the engine's `ParseStyle` warnings. A colour the native
+  parser cannot read renders as a fully transparent layer and used to pass CI silently.
 
 ### Features
-
 - Every palette has a dark theme of its own: `colorful-dark`, `natural-dark`, `muted-dark`, `gray-dark`
   and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting. They are published
   like the light themes (`assets/styles/colorful-dark/style.json`, `…/en.json`, `…-terrain/…`).

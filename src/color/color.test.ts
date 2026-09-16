@@ -110,7 +110,7 @@ describe('with()', () => {
 
 describe('output', () => {
 	it('always writes styles in sRGB, whatever space it is held in', () => {
-		// the v6 leak: invertLuminosity() returned an HSL, whose asString() wrote hsl(), so four
+		// the v5 leak: invertLuminosity() returned an HSL, whose asString() wrote hsl(), so four
 		// marking-* layers in every style were hsl() while everything else was rgb()
 		expect(white.invertLuminosity().asString()).toMatch(/^rgb\(/);
 		expect(Color.oklch(0.7, 0.15, 45).asString()).toMatch(/^rgb\(/);
@@ -215,7 +215,7 @@ describe('the cartographic vocabulary', () => {
 		expect(colorized.hsl.l).toBeCloseTo(grey.hsl.l, 3);
 	});
 
-	it('inverts, gammas, contrasts and brightens as v6 did', () => {
+	it('inverts, gammas, contrasts and brightens as v5 did', () => {
 		expect(red.invert().asHex()).toBe('#00FFFF');
 		expect(grey.gamma(2).asString()).toBe('rgb(64,64,64)');
 		expect(grey.contrast(0).asString()).toBe('rgb(128,128,128)');
@@ -239,9 +239,9 @@ describe('the cartographic vocabulary', () => {
 	});
 });
 
-describe('v6 bugs, fixed', () => {
+describe('v5 bugs, fixed', () => {
 	it('tinting toward a colour with no hue leaves the colour alone', () => {
-		// v6 read white, black and grey as hue 0°, so tinting toward any of them went red:
+		// v5 read white, black and grey as hue 0°, so tinting toward any of them went red:
 		// new RGB(50,100,200).tint(1, black) gave #C83232
 		const blue = Color.srgb(50, 100, 200);
 		for (const target of [white, black, grey]) {
@@ -252,13 +252,13 @@ describe('v6 bugs, fixed', () => {
 	});
 
 	it('blending interpolates alpha too', () => {
-		// v6 kept the base alpha, so blend(1, transparent) returned an opaque colour
+		// v5 kept the base alpha, so blend(1, transparent) returned an opaque colour
 		expect(Color.srgb(0, 0, 0, 1).blend(1, Color.srgb(255, 255, 255, 0)).alpha).toBe(0);
 		expect(Color.srgb(0, 0, 0, 1).blend(0.5, Color.srgb(255, 255, 255, 0)).alpha).toBe(0.5);
 	});
 
 	it('clamps the lighten and darken ratio', () => {
-		// v6 clamped neither: RGB(200,100,50).lighten(-1) gave [145,0,0] and darken(-1) brightened
+		// v5 clamped neither: RGB(200,100,50).lighten(-1) gave [145,0,0] and darken(-1) brightened
 		expect(Color.srgb(200, 100, 50).lighten(-1).asHex()).toBe('#C86432');
 		expect(Color.srgb(100, 100, 50).darken(-1).asHex()).toBe('#646432');
 		expect(Color.srgb(100, 100, 50).lighten(2).asHex()).toBe('#FFFFFF');
@@ -270,7 +270,7 @@ describe('v6 bugs, fixed', () => {
 	});
 
 	it('does not lose precision through an integer HSL round trip', () => {
-		// v6's recolor wrote HSL-returning transforms as hsl(h,s%,l%) with whole numbers, costing up to
+		// v5's recolor wrote HSL-returning transforms as hsl(h,s%,l%) with whole numbers, costing up to
 		// 4/255 per channel; here the colour is written from sRGB whatever space it was computed in
 		const start = Color.parse('#17F715');
 		expect(start.rotateHue(0.0001).round().asHex()).toBe('#17F715');

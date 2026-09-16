@@ -30,9 +30,9 @@ const accepted: Accepted[] = [
 	['rgb(255,0,0,0.5)', 'srgb', [255, 0, 0], 0.5],
 	['rgb(255 0 0 / 50%)', 'srgb', [255, 0, 0], 0.5],
 	['rgb(255 0 0/.5)', 'srgb', [255, 0, 0], 0.5],
-	['rgb(10.5, 0, 0)', 'srgb', [10.5, 0, 0], 1], // v6 rejected decimals outright
+	['rgb(10.5, 0, 0)', 'srgb', [10.5, 0, 0], 1], // v5 rejected decimals outright
 	['rgb(1e2, 0, 0)', 'srgb', [100, 0, 0], 1],
-	// the v6 silent-mangling cases: percentages and signs were stripped before matching
+	// the v5 silent-mangling cases: percentages and signs were stripped before matching
 	['rgb(100%,0%,0%)', 'srgb', [255, 0, 0], 1],
 	['rgb(50%, 0%, 0%)', 'srgb', [127.5, 0, 0], 1],
 	['rgba(255,0,0,50%)', 'srgb', [255, 0, 0], 0.5],
@@ -144,7 +144,7 @@ describe('parseColor() rejects', () => {
 	});
 
 	it('quotes the caller original string, not a sanitised one', () => {
-		// v6 reported rgb(255 0 0) as "rgb(25500)" — it stripped the input before matching, then
+		// v5 reported rgb(255 0 0) as "rgb(25500)" — it stripped the input before matching, then
 		// complained about the result
 		try {
 			parseColor('  rgb(1 2 3 / 0.5 / 0.2)  ');

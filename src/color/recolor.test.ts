@@ -227,7 +227,7 @@ describe('recolor does not depend on load order', () => {
 
 describe('applyRecolor beyond the layers', () => {
 	it('recolours the sky, which sits outside style.layers', () => {
-		// v6 walked layer paint only, so an inverted map kept a bright blue sky over dark ground
+		// v5 walked layer paint only, so an inverted map kept a bright blue sky over dark ground
 		const style = osm({ theme: 'colorful', recolor: { invertBrightness: true } });
 		const sky = style.sky as Record<string, string>;
 		const background = (style.layers[0] as unknown as { paint: Record<string, string> }).paint['background-color'];

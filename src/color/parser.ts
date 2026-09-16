@@ -1,7 +1,7 @@
 /**
  * Reading a colour written by hand.
  *
- * One parser for all six spaces, replacing v6's three (`Color.parse`, `RGB.parse`, `HSL.parse`), which
+ * One parser for all six spaces, replacing v5's three (`Color.parse`, `RGB.parse`, `HSL.parse`), which
  * disagreed with each other: `hsl(-120,50%,50%)` was a colour to one and an error to another, and
  * `rgb(100%,0%,0%)` was silently read as `rgb(100,0,0)` because the input was stripped of every
  * character outside `[0-9a-z.#,()]` before matching — taking `%` and `-` with it.

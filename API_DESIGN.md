@@ -6,25 +6,31 @@
   - [Core Principles](#core-principles)
   - [Shared Types](#shared-types)
     - [Layer visibility](#layer-visibility)
-    - [Text & icons](#text-icons)
+    - [Text & icons](#text--icons)
     - [Colors](#colors)
-    - [Atmosphere & lighting](#atmosphere-lighting)
+    - [Atmosphere & lighting](#atmosphere--lighting)
     - [Function options](#function-options)
-  - [`osm()`](#osmoptions-stylespecification)
-  - [`satellite()`](#satelliteoptions-stylespecification)
-  - [`guessStyle()`](#guessstylesource-options-promise-stylespecification)
-  - [`guessSchema()`](#guessschematilejson-schemaguess)
-  - [`guessOptions()` and `deriveOptions()`](#guessoptionsstyle-options-promiseoptionsguess)
-  - [`isDarkMode()`](#isdarkmode-boolean)
-  - [`labelLanguage()`](#labellanguagelanguage-string)
-  - [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
-  - [`fetchFontFaces()`](#fetchfontfacesurls-options-promise-fontfaceinfo--undefined)
-    - [`fontCovers()`](#fontcoversface-language-boolean--undefined)
-    - [`fontScripts()`, `languageScript()`, `textScripts()` and `FONT_SCRIPTS`](#fontscriptsface-string-languagescriptlanguage-string--undefined-textscriptstext-string-and-font_scripts)
-  - [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification)
+  - [`osm(options?): StyleSpecification`](#osmoptions-stylespecification)
+  - [`satellite(options?): StyleSpecification`](#satelliteoptions-stylespecification)
+  - [`guessStyle(source, options?): Promise<StyleSpecification>`](#guessstylesource-options-promisestylespecification)
+  - [`guessSchema(tileJSON): SchemaGuess`](#guessschematilejson-schemaguess)
+  - [`guessOptions(style, options?): Promise<OptionsGuess>`](#guessoptionsstyle-options-promiseoptionsguess)
+  - [Swapping a style at runtime](#swapping-a-style-at-runtime)
+  - [Projection](#projection)
+  - [`isDarkMode(): boolean`](#isdarkmode-boolean)
+  - [`labelLanguage(language): string`](#labellanguagelanguage-string)
+  - [`fetchTileJSON(url, options?): Promise<TileJSONSpecification>`](#fetchtilejsonurl-options-promisetilejsonspecification)
+  - [`fetchFontFaces(urls?, options?): Promise<FontFaceInfo[] | undefined>`](#fetchfontfacesurls-options-promisefontfaceinfo--undefined)
+    - [`fontCovers(face, language): boolean | undefined`](#fontcoversface-language-boolean--undefined)
+    - [`fontScripts(face): string[]`, `languageScript(language): string | undefined`, `textScripts(text): string[]` and `FONT_SCRIPTS`](#fontscriptsface-string-languagescriptlanguage-string--undefined-textscriptstext-string-and-font_scripts)
+  - [`inlineSources(style, options?): Promise<StyleSpecification>`](#inlinesourcesstyle-options-promisestylespecification)
   - [`Color`](#color)
+    - [What it reads](#what-it-reads)
+    - [What it writes](#what-it-writes)
   - [Other exports](#other-exports)
   - [Migration from v5](#migration-from-v5)
+    - [Removed types](#removed-types)
+  - [Migration from v5: colours](#migration-from-v5-colours)
 
 ## Core Principles
 
@@ -636,7 +642,7 @@ each yield a blank but valid style. It returns a Promise in both forms, so calle
 apart.
 
 From a URL, a Shortbread or satellite style still _references_ the document; pass it through
-[`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification) to make it self-contained.
+[`inlineSources()`](#inlinesourcesstyle-options-promisestylespecification) to make it self-contained.
 From an object, the source is inlined already. `urls.glyphsPattern` and `urls.sprite` apply to the
 Shortbread, satellite and inspector styles alike.
 
@@ -664,7 +670,7 @@ type SchemaScore = {
 ```
 
 Recognises the vector schema of a tileset. Synchronous and free of I/O, and takes only a TileJSON
-object — download one with [`fetchTileJSON()`](#fetchtilejsonurl-options-promise-tilejsonspecification)
+object — download one with [`fetchTileJSON()`](#fetchtilejsonurl-options-promisetilejsonspecification)
 first. It never throws.
 
 It reads `vector_layers` and nothing else; `name` and `attribution` describe who built a tileset, not
@@ -836,7 +842,7 @@ fetchTileJSON(
 
 Only needed when TileJSON metadata must be available at style-build time: to inline a source via `urls`, or to inspect a tileset with `osm.languages(tileJSON)`. For `osm` and `satellite`, passing a URL string in `urls` is simpler — the call stays synchronous and MapLibre resolves the document at map load.
 
-To resolve an already-built style rather than a single document, use [`inlineSources()`](#inlinesourcesstyle-options-promise-stylespecification).
+To resolve an already-built style rather than a single document, use [`inlineSources()`](#inlinesourcesstyle-options-promisestylespecification).
 
 ---
 
@@ -960,29 +966,85 @@ const standalone = await inlineSources(style); // { type: 'vector', tiles: [...]
 
 ## `Color`
 
-Utility class for color manipulation, re-exported from the library for convenience.
+An immutable colour, in any of six spaces. Every method returns a new instance; nothing mutates.
 
 ```ts
-// Parsing
-Color.parse(input: string | Color): Color   // hex, rgb(), rgba(), hsl(), hsla()
+type Space = 'srgb' | 'hsl' | 'hwb' | 'hsv' | 'oklab' | 'oklch';
 
-// Conversion
-color.asHex(): string
-color.asRGB(): Color.RGB  // { r, g, b, a }
-color.asHSL(): Color.HSL  // { h, s, l, a }
-color.asHSV(): Color.HSV  // { h, s, v, a }
+// Reading
+Color.parse(input: string | Color): Color    // a Color is returned unchanged
+Color.srgb(r, g, b, alpha?): Color           // 0–255
+Color.hsl(h, s, l, alpha?): Color            // degrees, 0–100, 0–100
+Color.hwb(h, w, b, alpha?): Color
+Color.hsv(h, s, v, alpha?): Color
+Color.oklab(l, a, b, alpha?): Color          // 0–1, ±0.4
+Color.oklch(l, c, h, alpha?): Color          // 0–1, 0+, degrees
+Color.from(space, coords, alpha?): Color
+Color.mix(a, b, t?, options?): Color
 
-// Transformations (all return a new Color instance)
-color.invertLuminosity(): Color
-color.rotateHue(degrees: number): Color
-color.saturate(ratio: number): Color             // -1 = grayscale, 0 = identity, +1 = double
-color.gamma(value: number): Color                // < 1 = brighten midtones, > 1 = darken
-color.contrast(value: number): Color             // > 1 = more contrast
-color.brightness(value: number): Color           // -1 to +1
-color.tint(amount: number, color: Color): Color  // 0–1; shift hue toward color
-color.blend(amount: number, color: Color): Color // 0–1; linear mix toward color
-color.fade(amount: number): Color                // 0–1; reduce alpha
+// Where it is
+color.space: Space
+color.coords: readonly [number, number, number]
+color.alpha: number
+color.to(space): Color
+color.srgb  // { r, g, b, alpha } — and .hsl, .hwb, .hsv, .oklab, .oklch, each named as CSS names it
+color.with({ l: 0.8 }): Color                // replace channels of the current space, or alpha
+color.round(digits?): Color
+
+// Writing
+color.asHex(): string                        // '#RRGGBB' / '#RRGGBBAA'
+color.asString(): string                     // 'rgb(r,g,b)' / 'rgba(r,g,b,a)' — what styles contain
+color.toCSS(space?, precision?): string      // 'oklch(0.7 0.15 45)' — for people, not for MapLibre
+color.asArray(): [number, number, number, number]
+
+// Measuring
+color.luminance(): number                    // WCAG 2.1 relative luminance, 0–1
+color.contrastRatio(other): number           // WCAG 2.1, 1–21
+color.deltaEOK(other): number                // perceptual distance; 0.02 is one JND
+color.inGamut(): boolean
+color.toGamut(): Color                       // CSS Color 4 §14.2.1 — holds lightness and hue
+color.hasPowerlessHue(): boolean             // true for grey, white and black in a polar space
+
+// Transforming (all return a new Color)
+color.mix(other, t?, { space, hue }): Color  // default space 'oklab', default hue 'shorter'
+color.fade(amount): Color                    // 0–1; reduce alpha
+color.opaque(): Color
+color.over(top): Color                       // source-over composite
+color.colorize(top): Color                   // top's hue and saturation, this lightness
+color.blend(amount, other): Color            // 0–1; linear mix in sRGB, alpha included
+color.tint(amount, other): Color             // 0–1; shift hue toward other
+color.lighten(amount) / darken(amount): Color
+color.brightness(value) / contrast(value) / gamma(value): Color
+color.invert() / invertLuminosity(): Color
+color.saturate(ratio) / rotateHue(degrees) / setHue(degrees): Color
 ```
+
+### What it reads
+
+Hex (3, 4, 6 or 8 digits), `transparent`, and `rgb()` `rgba()` `hsl()` `hsla()` `hwb()` `hsv()`
+`oklab()` `oklch()` — in both CSS grammars, with `%` resolved against each channel's own reference,
+all four angle units, and `/` alpha. Two relaxations accept more than CSS and never less: every
+function takes commas _or_ spaces, and a bare number is allowed where CSS's legacy form demands a
+percentage, so `hsl(120, 50, 50)` is a colour rather than an error.
+
+`hsv()` is this library's own, not CSS.
+
+Not supported, each rejected with an error that names it rather than a generic parse failure: named
+colours (write the hex), `calc()`, `color-mix()`, relative colour syntax, `color()`, `light-dark()`,
+`currentColor` and `none` components. Errors are `ColorParseError` and carry the original input.
+
+### What it writes
+
+**Any space in, sRGB out.** A colour may be authored in OKLCh, but `asString()` — the form every colour
+in an emitted style takes — always produces `rgb()`/`rgba()`, converting and, if necessary, gamut-mapping
+on the way.
+
+That is not tidiness. MapLibre has two colour parsers and they disagree: the JS one in
+`@maplibre/maplibre-gl-style-spec` reads CSS Color 4's space-separated syntax and all 148 named colours,
+while the C++ one in `@maplibre/maplibre-gl-native` reads neither. A colour only the first understands
+renders correctly in a browser, passes `validateStyleMin`, and draws as a **fully transparent layer** in
+the native renderer, announced by nothing but a log line. `toCSS()` is where the other spaces can be
+written, for reading and debugging.
 
 ---
 
@@ -1113,7 +1175,7 @@ an error naming its v6 theme.
 
 ### Removed types
 
-Every other v5 export still resolves — `Color`, `RGB`/`HSL`/`HSV`, `RandomColorOptions`,
+Every other v5 export still resolves — `Color`, `RandomColorOptions`,
 `TileJSONSpecification*`, `VectorLayer`, `RecolorOptions`, `GuessStyleOptions`,
 `SpriteSpecification`, `StyleVariant`, `getStyleVariants`, `guessStyle` and `satellite`.
 
@@ -1127,3 +1189,35 @@ Every other v5 export still resolves — `Color`, `RGB`/`HSL`/`HSV`, `RandomColo
 | `SatelliteStyleOptions` | `SatelliteOptions`                                                                     |
 | `Language`              | — it was just `string \| null`; use `text.language`, with `'local'` in place of `null` |
 | `styles` (object)       | — use `osm({ theme })`, or `getStyleVariants()` for the published set                  |
+
+---
+
+## Migration from v5: colours
+
+`Color` was rebuilt as a single immutable class over six colour spaces. `RGB`, `HSL` and `HSV` are gone
+— they were type-only exports, so no runtime value disappeared with them.
+
+| v5                                      | v6                                                  |
+| --------------------------------------- | --------------------------------------------------- |
+| `new RGB(255, 0, 0)`                    | `Color.srgb(255, 0, 0)`                             |
+| `new HSL(120, 50, 50)`                  | `Color.hsl(120, 50, 50)`                            |
+| `color.asRGB().r`                       | `color.srgb.r`                                      |
+| `color.asHSL()` / `asHSV()`             | `color.hsl` / `color.hsv` (or `color.to('hsl')`)    |
+| `color.toHSV()`                         | `color.hsv`                                         |
+| `Color.RGB` / `Color.HSL` / `Color.HSV` | the static constructors above                       |
+| `HSV.randomColor(options)`              | `randomColor(options)`, which now returns a `Color` |
+| a transform returning `RGB`/`HSL`/`HSV` | every transform returns `Color`                     |
+
+`asHex()`, `asString()`, `alpha`, `clone()` and the whole transform vocabulary keep their names and
+meaning. Four behaviours changed on purpose:
+
+- **Parsing is strict.** What v5 silently mangled now throws, naming the problem: `rgb(100%,0%,0%)` was
+  read as `rgb(100,0,0)`, `rgba(255,0,0,50%)` came out opaque, `rgb(-5,0,0)` became `rgb(5,0,0)`, and a
+  trailing `;` was accepted. Percentages, signs and decimals now mean what CSS says they mean.
+- **`tint()` toward a colour with no hue leaves the colour alone.** v5 read white, black and grey as
+  hue 0°, so tinting toward any of them turned everything red.
+- **`blend()` interpolates alpha** instead of keeping the base's.
+- **`lighten()` and `darken()` clamp their ratio** to 0–1, as `blend()` and `tint()` already did.
+
+Colours written into a style are unchanged except that the four `marking-*` layers that used to be
+`hsl(0,0%,0%)` — an accident of which class a transform returned — are now `rgb(0,0,0)`.

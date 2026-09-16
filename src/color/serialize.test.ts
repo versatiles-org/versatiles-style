@@ -16,7 +16,7 @@ function seeded(seed: number): () => number {
 }
 
 describe('formatHex()', () => {
-	it('writes uppercase six-digit hex, as v6 did', () => {
+	it('writes uppercase six-digit hex, as v5 did', () => {
 		expect(formatHex('srgb', [11, 20, 31])).toBe('#0B141F');
 		expect(formatHex('srgb', [255, 0, 0])).toBe('#FF0000');
 	});
@@ -35,7 +35,7 @@ describe('formatHex()', () => {
 });
 
 describe('formatStyleColor()', () => {
-	it('writes exactly what v6 wrote — integers, no spaces', () => {
+	it('writes exactly what v5 wrote — integers, no spaces', () => {
 		expect(formatStyleColor('srgb', [11, 20, 31])).toBe('rgb(11,20,31)');
 		expect(formatStyleColor('srgb', [11, 20, 31], 0.123)).toBe('rgba(11,20,31,0.123)');
 	});
@@ -59,7 +59,7 @@ describe('formatStyleColor()', () => {
 	});
 
 	it('keeps the alpha spelling consistent with the alpha it prints', () => {
-		// v6 tested the raw value, so 0.9999 chose rgba() and then printed its alpha as 1
+		// v5 tested the raw value, so 0.9999 chose rgba() and then printed its alpha as 1
 		expect(formatStyleColor('srgb', [1, 2, 3], 0.9999)).toBe('rgb(1,2,3)');
 		expect(formatStyleColor('srgb', [1, 2, 3], 0.9994)).toBe('rgba(1,2,3,0.999)');
 		// the other end keeps its rgba() spelling: a colour that rounds to alpha 0 is invisible, and

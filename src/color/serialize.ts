@@ -32,7 +32,7 @@ const CSS_PRECISION: Readonly<Record<Space, number>> = {
 	oklch: 5,
 };
 
-/** Alpha is written to three decimals — the precision v6 used, and finer than 8-bit output can carry. */
+/** Alpha is written to three decimals — the precision v5 used, and finer than 8-bit output can carry. */
 const ALPHA_PRECISION = 3;
 
 /** Rounds to `digits`, then drops trailing zeros and any bare decimal point: 0.500 → "0.5", 2.000 → "2". */
@@ -44,7 +44,7 @@ function number(value: number, digits: number): string {
 /**
  * Alpha rounded the way it will be written.
  *
- * Rounding before the comparison against 1 is what keeps the output self-consistent: v6 tested the raw
+ * Rounding before the comparison against 1 is what keeps the output self-consistent: v5 tested the raw
  * value, so an alpha of 0.9999 chose the `rgba()` spelling and then printed its alpha as `1`.
  */
 function roundAlpha(alpha: number): number {
@@ -57,7 +57,7 @@ function showable(space: Space, coords: Coords): Coords {
 }
 
 /**
- * `#RRGGBB`, or `#RRGGBBAA` when the colour is not opaque. Uppercase, as v6 wrote it — `minimize`
+ * `#RRGGBB`, or `#RRGGBBAA` when the colour is not opaque. Uppercase, as v5 wrote it — `minimize`
  * compares these strings, and `scripts/extract-palette.ts` writes them into palette files.
  */
 export function formatHex(space: Space, coords: Coords, alpha = 1): string {
@@ -75,7 +75,7 @@ export function formatHex(space: Space, coords: Coords, alpha = 1): string {
 /**
  * The one format a MapLibre style may contain: `rgb(r,g,b)`, or `rgba(r,g,b,a)` when not opaque.
  *
- * Integers, no spaces, three-decimal alpha — byte for byte what v6 emitted, so adopting this changes no
+ * Integers, no spaces, three-decimal alpha — byte for byte what v5 emitted, so adopting this changes no
  * shipped style.
  */
 export function formatStyleColor(space: Space, coords: Coords, alpha = 1): string {

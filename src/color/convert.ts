@@ -61,7 +61,7 @@ function oklabToSrgb([L, a, b]: Coords): Coords {
  *
  * Below it `atan2` is reading rounding noise, so the hue is reported as 0 and `isPowerlessHue` says so.
  * Callers that rotate or adopt a hue must ask first: treating grey's hue as a real 0° is what made
- * tinting toward white or black push every colour red in v6.
+ * tinting toward white or black push every colour red in v5.
  */
 export const POWERLESS_CHROMA = 0.000004;
 
@@ -109,13 +109,13 @@ function pureHue(h: number): [number, number, number] {
 }
 
 /**
- * HSL is written with v6's exact arithmetic, not the equivalent chroma formulation used for HSV and HWB
+ * HSL is written with v5's exact arithmetic, not the equivalent chroma formulation used for HSV and HWB
  * below.
  *
  * `delta/(max+min)` and `delta/(1-|2l-1|)` are the same number in algebra and different numbers in
  * floating point, and the difference lands on a rounding boundary often enough to move 35 of the 388
  * palette colours by one 8-bit step. Nobody could see that, but it would show up as change in every
- * style diff and hide the changes that matter. Keeping v6's spelling keeps those diffs empty.
+ * style diff and hide the changes that matter. Keeping v5's spelling keeps those diffs empty.
  */
 function srgbToHsl([r, g, b]: Coords): Coords {
 	const [R, G, B] = [r / 255, g / 255, b / 255];

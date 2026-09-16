@@ -81,14 +81,14 @@ describe('RandomColor', () => {
 		});
 
 		it('honours a numeric saturation', () => {
-			// v6 understood only 'strong': a number and 'weak' both fell through to the default range
+			// v5 understood only 'strong': a number and 'weak' both fell through to the default range
 			for (const saturation of [20, 60, 90]) {
 				expect(randomColor({ seed: 'testSeed', saturation }).hsv.s).toBeCloseTo(saturation, 6);
 			}
 		});
 
 		it('gives a different colour each time when no seed is given', () => {
-			// v6 seeded with 0 when no seed was passed, so every unseeded call returned the same colour
+			// v5 seeded with 0 when no seed was passed, so every unseeded call returned the same colour
 			const colors = new Set(Array.from({ length: 10 }, () => randomColor().asHex()));
 			expect(colors.size).toBeGreaterThan(1);
 		});
