@@ -1,7 +1,6 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { ResolvedOsm } from '../options/index.js';
-import { buildLayerContext } from '../dsl/context.js';
-import type { LayerContext } from '../dsl/context.js';
+import { buildLayerContext, type LayerContext } from '../dsl/';
 
 // Shortbread's half of the layer context. The derivation itself is schema-neutral and lives in
 // `src/dsl/context.ts`; what is restated here is only what a tileset decides for itself — its source
@@ -10,7 +9,7 @@ import type { LayerContext } from '../dsl/context.js';
 // Re-exported so this schema's layer modules keep importing their context types from their own schema
 // directory: a second schema does the same from its own `context.ts`, and neither has to reach into
 // the DSL for a type it uses on every generator signature.
-export type { LayerContext, ColorSet } from '../dsl/context.js';
+export type { LayerContext, ColorSet } from '../dsl/';
 
 const SOURCE_NAME = 'versatiles-shortbread';
 

@@ -18,3 +18,5 @@ export { textTopic } from './text.js';
 export type { DataFloors, MergeTable } from './assemble.js';
 export { buildLayerContext } from './context.js';
 export type { LayerContext, ColorSet, ContextSeam } from './context.js';
+export { buildGroupMaps } from './group-maps.js';
+export type { TextGroupMap, LayerGroupMap } from './group-maps.js';

@@ -1,6 +1,6 @@
 import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/index.js';
+import * as b from '../../dsl/';
 
 // Water for Protomaps: one `water` source-layer carrying every kind, at every geometry type.
 //

@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/index.js';
+import * as b from '../../dsl/';
 
 // Point-of-interest icons for OpenMapTiles.
 //

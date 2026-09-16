@@ -312,21 +312,21 @@ subgraph 1W["types"]
 end
 subgraph 23["shortbread"]
 24["layer-groups-map.ts"]
-28["context.ts"]
-subgraph 2A["layers"]
-2B["* (13 files)"]
+2C["context.ts"]
+subgraph 2D["layers"]
+2E["* (13 files)"]
 end
 2F["schema.ts"]
 2N["index.ts"]
 2O["groups.ts"]
 end
 subgraph 25["dsl"]
-26["group-maps.ts"]
-27["text.ts"]
-29["context.ts"]
-2C["assemble.ts"]
-2D["build.ts"]
-2E["index.ts"]
+26["index.ts"]
+27["assemble.ts"]
+28["build.ts"]
+29["text.ts"]
+2A["context.ts"]
+2B["group-maps.ts"]
 end
 subgraph 2G["cartography"]
 2H["index.ts"]
@@ -494,7 +494,7 @@ Z-->8
 20-->22
 20-->2N
 20-->24
-20-->2B
+20-->2E
 20-->2F
 20-->C
 20-->2
@@ -513,41 +513,41 @@ Z-->8
 24-->26
 24-->1B
 24-->U
-24-->28
-24-->2B
+24-->2C
+24-->2E
 26-->27
-27-->1O
-27-->U
-28-->29
-29-->1F
+26-->28
+26-->2A
+26-->2B
+26-->29
+27-->28
+27-->29
+28-->1F
+28-->1S
+29-->1O
 29-->U
-29-->C
-2B-->2C
-2B-->2E
-2B-->2F
-2B-->2H
-2C-->2D
-2C-->27
-2D-->1F
-2D-->1S
-2E-->2C
-2E-->2D
-2E-->29
-2E-->27
+2A-->1F
+2A-->U
+2A-->C
+2B-->29
+2C-->26
+2E-->26
+2E-->2F
+2E-->2H
 2H-->2I
 2H-->2J
 2H-->2K
 2H-->2L
 2H-->2M
-2I-->2E
-2J-->2E
-2K-->2E
-2L-->2E
-2M-->2E
-2N-->28
+2I-->26
+2J-->26
+2K-->26
+2L-->26
+2M-->26
+2N-->2C
 2N-->2O
-2N-->2B
-2O-->2B
+2N-->2E
+2O-->2E
 2P-->1B
 2P-->6
 2P-->U
@@ -602,14 +602,13 @@ Z-->8
 35-->3A
 35-->3B
 35-->37
-36-->29
+36-->26
 36-->37
 38-->26
 38-->36
 38-->3A
 38-->3B
-3A-->2C
-3A-->2E
+3A-->26
 3A-->37
 3A-->2H
 3B-->I
@@ -630,14 +629,13 @@ Z-->8
 3E-->3J
 3E-->3K
 3E-->3G
-3F-->29
+3F-->26
 3F-->3G
 3H-->26
 3H-->3F
 3H-->3J
 3H-->3K
-3J-->2E
-3J-->2C
+3J-->26
 3J-->3G
 3J-->2H
 3K-->I
@@ -647,7 +645,7 @@ Z-->8
 3L-->3E
 3L-->3G
 
-class 0,1,3,5,B,1A,1E,1W,23,2A,25,2G,2W,34,39,3D,3I subgraphs;
+class 0,1,3,5,B,1A,1E,1W,23,2D,25,2G,2W,34,39,3D,3I subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

@@ -1,5 +1,5 @@
 import type { LayerContext, ColorSet } from '../context.js';
-import * as b from '../../dsl/index.js';
+import * as b from '../../dsl/';
 
 // Site polygons for OpenMapTiles — the port of `src/shortbread/layers/sites.ts`, and the module that
 // loses the most to the schema.

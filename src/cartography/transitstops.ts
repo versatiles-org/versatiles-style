@@ -1,6 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LayerContext } from '../dsl/context.js';
-import * as b from '../dsl/index.js';
+import type { LayerContext } from '../dsl/';
+import * as b from '../dsl/';
 
 /**
  * Public-transport stop cartography, shared by every schema.

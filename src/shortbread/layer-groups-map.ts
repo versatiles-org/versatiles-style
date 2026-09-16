@@ -1,11 +1,10 @@
 import { buildContext } from './context.js';
 import { shortbreadLayers } from './layers/index.js';
 import { resolveOsm } from '../options/index.js';
-import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
-import type { TaggedLayer } from '../dsl/build.js';
+import { buildGroupMaps, type TextGroupMap, type LayerGroupMap, type TaggedLayer } from '../dsl/';
 import { keepInOverlay } from '../features/index.js';
 
-export type { TextGroupMap, LayerGroupMap } from '../dsl/group-maps.js';
+export type { TextGroupMap, LayerGroupMap } from '../dsl/';
 
 let cached: { layers: LayerGroupMap; text: TextGroupMap } | undefined;
 let cachedOverlay: LayerGroupMap | undefined;

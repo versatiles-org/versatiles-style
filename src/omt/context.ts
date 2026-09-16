@@ -1,12 +1,12 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { ResolvedOmt } from './options.js';
-import { buildLayerContext } from '../dsl/context.js';
-import type { LayerContext } from '../dsl/context.js';
+import { buildLayerContext } from '../dsl/';
+import type { LayerContext } from '../dsl/';
 import { OMT_SCHEMA } from './schema.js';
 
 // OpenMapTiles' half of the layer context — the mirror of `src/shortbread/context.ts`. The derivation
 // is shared (`src/dsl/context.ts`); only the source name and the name-field convention are ours.
-export type { LayerContext, ColorSet } from '../dsl/context.js';
+export type { LayerContext, ColorSet } from '../dsl/';
 
 const SOURCE_NAME = 'openmaptiles';
 

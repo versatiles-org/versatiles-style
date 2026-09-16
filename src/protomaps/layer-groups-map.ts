@@ -1,7 +1,7 @@
 import { buildContext } from './context.js';
 import { protomapsLayers } from './layers/index.js';
 import { resolveProtomaps } from './options.js';
-import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/group-maps.js';
+import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/';
 
 // This schema's own group maps, with their own module-level cache.
 //
