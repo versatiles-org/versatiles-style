@@ -15,6 +15,12 @@ import { explain, readAsset, readTile, type CacheOptions, type TileSchema } from
  *
  * A resource that cannot be had does not fail the render — MapLibre would draw the rest of the map
  * anyway — but it is recorded, so a caller can tell a hole in the picture from a difference in the data.
+ *
+ * The engine's own complaints are recorded the same way. mbgl does not throw on a style it half
+ * understands: give it a colour its C++ parser cannot read — `oklch(…)`, or the space-separated
+ * `rgb(128 0 0)` that the JS parser accepts — and it logs `ParseStyle: value must be a valid color`,
+ * draws that layer fully transparent, and reports success. Every screenshot then silently loses a layer.
+ * Routing those warnings into `failures` is what turns that into a visible failure.
  */
 
 export const TILE_HOST = 'tilecache.invalid';
@@ -35,9 +41,34 @@ export type RenderView = { center: [number, number]; zoom: number; width: number
 export type RenderResult = {
 	/** Raw RGBA, `width × height × 4` bytes. */
 	pixels: Uint8Array;
-	/** Resources that could not be loaded while rendering. */
+	/** Resources that could not be loaded, and warnings the engine logged, while rendering. */
 	failures: string[];
 };
+
+type NativeMessage = { class: string; severity: string; text: string };
+
+/**
+ * Collectors for the renders currently in flight.
+ *
+ * mbgl logs through one process-wide emitter rather than per map, so a warning cannot be attributed to
+ * a particular map when several render at once (`scripts/schema-compare/compare.ts` renders three).
+ * It is therefore recorded against every render in flight: over-reporting makes a caller look at a
+ * render that was fine, while under-reporting would let a transparent layer through unnoticed.
+ */
+const collectors = new Set<string[]>();
+let listening = false;
+
+function listen(): void {
+	if (listening) return;
+	listening = true;
+	(mbgl as unknown as { on(event: string, handler: (message: NativeMessage) => void): void }).on(
+		'message',
+		(message) => {
+			if (message.severity === 'DEBUG' || message.severity === 'INFO') return;
+			for (const collector of collectors) collector.push(`${message.severity} ${message.class}: ${message.text}`);
+		}
+	);
+}
 
 async function resolveResource(url: string, options: CacheOptions): Promise<Uint8Array | undefined> {
 	const parsed = new URL(url);
@@ -58,6 +89,7 @@ async function resolveResource(url: string, options: CacheOptions): Promise<Uint
 export class NativeMap {
 	private readonly map: InstanceType<typeof mbgl.Map>;
 	private failures: string[] = [];
+	private readonly loadWarnings: string[] = [];
 	private queue: Promise<unknown> = Promise.resolve();
 
 	constructor(style: StyleSpecification, options: CacheOptions = {}) {
@@ -70,20 +102,28 @@ export class NativeMap {
 				}
 			);
 		};
+		listen();
 		this.map = new mbgl.Map({ request, ratio: 1 } as unknown as NativeMapOptions);
+		// A style the engine dislikes is usually reported when it is first drawn rather than here, but
+		// collect anything it says at load time too, and repeat it on every render: the style stays broken.
+		collectors.add(this.loadWarnings);
 		this.map.load(style);
+		collectors.delete(this.loadWarnings);
 	}
 
 	/** Render one view. Calls are serialised: the engine renders one frame per map at a time. */
 	render(view: RenderView): Promise<RenderResult> {
 		const run = () =>
 			new Promise<RenderResult>((resolve, reject) => {
-				this.failures = [];
+				const failures = [...this.loadWarnings];
+				this.failures = failures;
+				collectors.add(failures);
 				this.map.render(
 					{ center: view.center, zoom: view.zoom, width: view.width, height: view.height },
 					(error, pixels) => {
+						collectors.delete(failures);
 						if (error) return reject(error);
-						resolve({ pixels: pixels!, failures: this.failures });
+						resolve({ pixels: pixels!, failures });
 					}
 				);
 			});
