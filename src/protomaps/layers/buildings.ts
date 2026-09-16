@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl/index.js';
-import { buildings as build, buildings3d as build3d, type BuildingVocabulary } from '../../cartography/buildings.js';
+import type { TaggedLayer } from '../../dsl';
+import { buildings as build, buildings3d as build3d, type BuildingVocabulary } from '../../cartography';
 
 // Protomaps names its building fields exactly as Shortbread does — `height`, `min_height` — which makes
 // this the one module where two schemas share a vocabulary outright. Verified from the archive metadata;

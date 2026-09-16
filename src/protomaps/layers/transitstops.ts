@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl/index.js';
-import { transitStops as draw, type StopDef } from '../../cartography/transitstops.js';
+import type { TaggedLayer } from '../../dsl';
+import { transitStops as draw, type StopDef } from '../../cartography';
 
 // Public-transport stops for Protomaps: all `pois` kinds, verified in the sample (`station` 29,
 // `platform` 34, plus bus and tram stops). The symbol style is shared.
