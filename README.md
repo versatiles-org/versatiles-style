@@ -270,7 +270,7 @@ treemap-beta
     "other (9 files)": 2.9
 ```
 
-Sized by the bundle's own sourcemap: **104.9 KB** raw, **30.7 KB** gzipped, across 84 modules and nothing from `node_modules`. Regenerate with `npm run doc-bundle`.
+Sized by the bundle's own sourcemap: **104.9 KB** raw, **30.7 KB** gzipped, across 84 modules.
 
 ### Dependency Graph
 
