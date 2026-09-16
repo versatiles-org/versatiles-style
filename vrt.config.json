@@ -1,0 +1,25 @@
+{
+	"deps-graph": {
+		"merge-outgoing": [
+			"src/options/",
+			"src/dsl/",
+			"src/migrate/",
+			"src/lib/",
+			"src/api/",
+			"src/protomaps/",
+			"src/omt/",
+			"src/features/",
+			"src/shortbread/",
+			"src/cartography/"
+		],
+		"collapse-dir": [
+			"src/options/parts/*",
+			"src/cartography/*",
+			"src/themes/*",
+			"src/features/*",
+			"src/omt/layers/*",
+			"src/protomaps/layers/*",
+			"src/shortbread/layers/*"
+		]
+	}
+}
