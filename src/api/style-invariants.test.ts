@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { LayerSpecification, StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { getStyleVariants } from '../variants.js';
+import { getStyleVariants } from '../../scripts/lib/variants.js';
 
 // Structural sanity checks that must hold for EVERY layer of EVERY generated style variant
 // (all palettes, languages, terrain, satellite, …). These catch layers that would render

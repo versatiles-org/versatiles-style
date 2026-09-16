@@ -128,15 +128,6 @@ export const satellite = Object.assign(satelliteCore, {
 		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap)),
 });
 
-// ── Style variants ────────────────────────────────────────────────────────────
-//
-// npm only, like the authoring helpers above: this enumerates and builds all 107 published variants,
-// which is what the release pipeline and the comparison tooling need. A page that loads the CDN bundle
-// builds the one style it wants.
-
-export { getStyleVariants } from './variants.js';
-export type { StyleVariant } from './variants.js';
-
 // ── Font discovery ────────────────────────────────────────────────────────────
 //
 // npm only. These answer "which faces does this glyph server have, and which of them can write this

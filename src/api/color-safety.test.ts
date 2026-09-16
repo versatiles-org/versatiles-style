@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Color as SpecColor } from '@maplibre/maplibre-gl-style-spec';
-import { getStyleVariants } from '../variants.js';
+import { getStyleVariants } from '../../scripts/lib/variants.js';
 import type { StyleSpecification } from '../types/index.js';
 
 /**

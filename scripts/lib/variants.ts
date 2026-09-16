@@ -1,6 +1,13 @@
+/**
+ * The styles this project publishes to `/assets/styles/`.
+ *
+ * Build tooling, not library API: it says what *this repo releases*, which is `build-styles.ts`'s
+ * business and no consumer's — the same reason `theme-generator.ts` sits here rather than in `src`,
+ * though it too is built out of library pieces. It was exported from the package until v6.
+ */
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { osm, satellite as satelliteFn } from './api/';
-import { V5_STYLE_THEMES, type OsmFeaturesOptions } from './options/';
+import { osm, satellite as satelliteFn } from '../../src/api/';
+import { V5_STYLE_THEMES, type OsmFeaturesOptions } from '../../src/options/';
 
 export interface StyleVariant {
 	name: string;

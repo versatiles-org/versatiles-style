@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
-import { getStyleVariants } from '../variants.js';
+import { getStyleVariants } from '../../scripts/lib/variants.js';
 import type { OsmOptions, SatelliteOptions } from '../options/';
 import type { StyleSpecification } from '../types/index.js';
 

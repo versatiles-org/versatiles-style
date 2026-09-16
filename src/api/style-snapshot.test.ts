@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
-import { getStyleVariants } from '../variants.js';
+import { getStyleVariants } from '../../scripts/lib/variants.js';
 import type { StyleSpecification } from '../types/index.js';
 
 // Regression guard against silent structural drift. We snapshot the *shape* of generated

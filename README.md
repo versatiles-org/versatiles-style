@@ -127,10 +127,9 @@ writeFileSync('style.json', JSON.stringify(await inlineSources(style)));
 ```
 
 The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, `inlineSources()`,
-`fetchTileJSON()`, `Color` and the rest of the documented API. Three things ship in the npm package
+`fetchTileJSON()`, `Color` and the rest of the documented API. Two things ship in the npm package
 only, because they serve tooling rather than pages: `minimizeOptions()` and `toCode()` on
-`osm`/`satellite` (storing options, emitting a snippet — a style editor's job) and `getStyleVariants()`
-(enumerating every published variant — the release pipeline's job). The font-discovery helpers
+`osm`/`satellite` (storing options, emitting a snippet — a style editor's job). The font-discovery helpers
 (`fetchFontFaces()`, `fontCovers()`, `fontScripts()`, `languageScript()`, `textScripts()`,
 `FONT_SCRIPTS`) are npm-only for the same reason: they serve a font picker, not a map.
 
@@ -277,13 +276,13 @@ X["styleMeta.ts"]
 Y["symbol-layout.ts"]
 1V["fetchFontFaces.ts"]
 1W["fontCovers.ts"]
-1Y["schema-audit.ts"]
+1X["schema-audit.ts"]
 end
 subgraph 10["types"]
 11["index.ts"]
 12["tilejson.ts"]
 13["vector_layer.ts"]
-2P["maplibre.ts"]
+2O["maplibre.ts"]
 end
 subgraph 15["features"]
 16["* (10 files)"]
@@ -312,37 +311,36 @@ end
 1R["browser.ts"]
 1S["exports.ts"]
 1U["index.ts"]
-1X["variants.ts"]
-subgraph 1Z["migrate"]
-20["calibrate.ts"]
-21["evaluate.ts"]
-22["math.ts"]
-23["probes.ts"]
-24["derive.ts"]
-25["guess.ts"]
-26["index.ts"]
+subgraph 1Y["migrate"]
+1Z["calibrate.ts"]
+20["evaluate.ts"]
+21["math.ts"]
+22["probes.ts"]
+23["derive.ts"]
+24["guess.ts"]
+25["index.ts"]
 end
-subgraph 27["omt"]
-28["api.ts"]
-29["context.ts"]
-2A["schema.ts"]
-2B["layer-groups-map.ts"]
-subgraph 2C["layers"]
-2D["* (13 files)"]
+subgraph 26["omt"]
+27["api.ts"]
+28["context.ts"]
+29["schema.ts"]
+2A["layer-groups-map.ts"]
+subgraph 2B["layers"]
+2C["* (13 files)"]
 end
-2E["options.ts"]
-2F["index.ts"]
+2D["options.ts"]
+2E["index.ts"]
 end
-subgraph 2G["protomaps"]
-2H["api.ts"]
-2I["context.ts"]
-2J["schema.ts"]
-2K["layer-groups-map.ts"]
-subgraph 2L["layers"]
-2M["* (13 files)"]
+subgraph 2F["protomaps"]
+2G["api.ts"]
+2H["context.ts"]
+2I["schema.ts"]
+2J["layer-groups-map.ts"]
+subgraph 2K["layers"]
+2L["* (13 files)"]
 end
-2N["options.ts"]
-2O["index.ts"]
+2M["options.ts"]
+2N["index.ts"]
 end
 end
 1-->4
@@ -451,71 +449,68 @@ Z-->1O
 1U-->1W
 1U-->5
 1U-->1N
-1U-->1X
 1V-->L
-1X-->1P
-1X-->4
-20-->7
-1Z-->4
-20-->21
-20-->22
-20-->23
-24-->1P
-24-->5
-24-->18
-24-->1N
-24-->J
-24-->20
-24-->21
-24-->22
+1Z-->7
+1Y-->4
+1Z-->20
+1Z-->21
+1Z-->22
+23-->1P
+23-->5
+23-->18
+23-->1N
+23-->J
+23-->1Z
+23-->20
+23-->21
+23-->22
+24-->P
+24-->1V
 24-->23
-25-->P
-25-->1V
+25-->23
 25-->24
-26-->24
-26-->25
-28-->1P
-28-->7
-28-->16
-27-->P
-27-->4
-28-->J
+27-->1P
+27-->7
+27-->16
+26-->P
+26-->4
+27-->J
+27-->28
+27-->2A
+27-->2C
+27-->2D
+27-->29
+26-->1B
 28-->29
-28-->2B
-28-->2D
-28-->2E
-28-->2A
-27-->1B
-29-->2A
-2B-->29
-2B-->2D
-2B-->2E
-2D-->2A
-2D-->1M
-2F-->28
-2F-->2A
-2H-->1P
-2H-->7
-2H-->16
-2G-->P
-2G-->4
-2H-->J
+2A-->28
+2A-->2C
+2A-->2D
+2C-->29
+2C-->1M
+2E-->27
+2E-->29
+2G-->1P
+2G-->7
+2G-->16
+2F-->P
+2F-->4
+2G-->J
+2G-->2H
+2G-->2J
+2G-->2L
+2G-->2M
+2G-->2I
+2F-->1B
 2H-->2I
-2H-->2K
-2H-->2M
-2H-->2N
-2H-->2J
-2G-->1B
-2I-->2J
-2K-->2I
-2K-->2M
-2K-->2N
-2M-->2J
-2M-->1M
-2O-->2H
-2O-->2J
+2J-->2H
+2J-->2L
+2J-->2M
+2L-->2I
+2L-->1M
+2N-->2G
+2N-->2I
 
-class 0,1,3,G,6,I,K,10,15,17,1I,1A,1L,1Z,27,2C,2G,2L subgraphs;
+class 0,1,3,G,6,I,K,10,15,17,1I,1A,1L,1Y,26,2B,2F,2K subgraphs;
 classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
 ```
 

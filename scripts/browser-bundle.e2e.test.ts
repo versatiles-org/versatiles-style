@@ -20,7 +20,6 @@ const BUNDLE = new URL('../release/versatiles-style/versatiles-style.js', import
 
 /** Source files that must contribute nothing, with the export that used to bring each one in. */
 const MUST_BE_ABSENT = [
-	['src/variants.ts', 'getStyleVariants'],
 	['src/options/minimize.ts', 'minimizeOptions'],
 	['src/api/code.ts', 'toCode'],
 	['src/lib/fontCovers.ts', 'fontCovers and the script helpers'],

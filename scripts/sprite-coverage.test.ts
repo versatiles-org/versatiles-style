@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import config from './config/sprites.js';
 import { spriteName } from './lib/icons.js';
-import { getStyleVariants } from '../src/variants.js';
+import { getStyleVariants } from './lib/variants.js';
 
 // Sprite ids are `<sheet>:<group>-<name>` (e.g. `base:icon-cafe`), or `icons:<name>` for the ungrouped
 // `icons` sheet; see SPRITES.md.

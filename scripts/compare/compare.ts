@@ -23,7 +23,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite } from '../../src/index.js';
-import { getStyleVariants } from '../../src/variants.js';
+import { getStyleVariants } from '../lib/variants.js';
 import { diffStyles, type StyleDiff, type ValueChange } from './diff.js';
 
 const V5_BASE = 'https://tiles.versatiles.org/assets/styles';

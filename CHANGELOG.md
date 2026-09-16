@@ -110,6 +110,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of `TypeError: Cannot read properties of undefined (reading 'light')`. The v5 style names are not
   accepted as themes; the error names the v6 theme to use (`"eclipse" is a v5 style name — in v6 use
   "colorful-dark"`).
+- Removed `getStyleVariants()` and the `StyleVariant` type from the public API. They enumerated the
+  styles *this project* publishes to its CDN, which is release tooling rather than library API, and
+  they now live in `scripts/lib/variants.ts`. Nothing outside this repository used them.
 - Rewrote `Color` as a single immutable class over six colour spaces — sRGB, HSL, HWB, HSV, OKLab and
   OKLCh — replacing the `RGB`/`HSL`/`HSV` class hierarchy. Those three were type-only exports, so no
   runtime value disappeared; see "Migration from v5: colours" in `API_DESIGN.md` for the mapping.

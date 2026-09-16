@@ -491,7 +491,7 @@ still follows. A UI shows `colors.water` for the sky colour while it is unset.
 when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
 means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
 
-> **npm only.** `minimizeOptions`, `toCode`, `getStyleVariants` and the font-discovery helpers
+> **npm only.** `minimizeOptions`, `toCode` and the font-discovery helpers
 > (`fetchFontFaces`, `fontCovers`, `fontScripts`, `languageScript`, `textScripts`, `FONT_SCRIPTS`) are
 > not in the browser bundle served from the CDN.
 > They exist to store options compactly or print a snippet — work for a style _editor_, which is an npm
@@ -1066,7 +1066,6 @@ written, for reading and debugging.
 These are exported from the package but are not part of the main API surface above.
 
 ```ts
-getStyleVariants(features?): StyleVariant[]  // the styles published under /assets/styles/
 
 // Validation — a predicate and an assertion for each shape.
 isTileJSONSpecification(spec): spec is TileJSONSpecification
@@ -1190,7 +1189,7 @@ an error naming its v6 theme.
 
 Every other v5 export still resolves — `Color`, `RandomColorOptions`,
 `TileJSONSpecification*`, `VectorLayer`, `RecolorOptions`, `GuessStyleOptions`,
-`SpriteSpecification`, `StyleVariant`, `getStyleVariants`, `guessStyle` and `satellite`.
+`SpriteSpecification`, `guessStyle` and `satellite`.
 
 | v5 type                 | v6                                                                                     |
 | ----------------------- | -------------------------------------------------------------------------------------- |
@@ -1201,7 +1200,7 @@ Every other v5 export still resolves — `Color`, `RandomColorOptions`,
 | `StyleBuilderFunction`  | — the palette builders are gone; use `osm()`                                           |
 | `SatelliteStyleOptions` | `SatelliteOptions`                                                                     |
 | `Language`              | — it was just `string \| null`; use `text.language`, with `'local'` in place of `null` |
-| `styles` (object)       | — use `osm({ theme })`, or `getStyleVariants()` for the published set                  |
+| `styles` (object)       | — use `osm({ theme })`; the published set is built by this repo, not exported          |
 
 ---
 

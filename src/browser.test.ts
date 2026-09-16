@@ -6,9 +6,11 @@ import * as browser from './browser.js';
 /**
  * The CDN bundle's surface, and what it is allowed to pull in.
  *
- * Four groups of exports are deliberately npm-only, because they serve tooling rather than pages: the
- * authoring helpers (`minimizeOptions`, `toCode`), `getStyleVariants`, and font discovery. Together they
- * are ~11 KB raw / 4 KB gzipped of a 105 KB bundle, and nothing in the style-building path uses them.
+ * Two groups of exports are deliberately npm-only, because they serve tooling rather than pages: the
+ * authoring helpers (`minimizeOptions`, `toCode`) and font discovery. Nothing in the style-building
+ * path uses either. (`getStyleVariants` was a third until it moved out of `src` altogether, to
+ * `scripts/lib/variants.ts` — the strongest form of this guarantee, and the reason it is not listed
+ * here: a module outside `src` cannot be reached by anything in it.)
  *
  * Deleting an export is not enough to keep them out, which is why this test walks the import graph as
  * well as checking the exports. Both `minimize.ts` and `fontCovers.ts` kept contributing bytes after
@@ -33,14 +35,12 @@ const SRC = dirname(new URL(import.meta.url).pathname);
  * the built bundle in `scripts/browser-bundle.e2e.test.ts`, which is the only place it can be seen.
  */
 const FORBIDDEN = [
-	['variants.ts', 'getStyleVariants'],
 	['lib/fontCovers.ts', 'fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS'],
 	['lib/fetchFontFaces.ts', 'fetchFontFaces'],
 ] as const;
 
 /** Exports that exist on the npm entry and must not exist here. */
 const NPM_ONLY = [
-	'getStyleVariants',
 	'fetchFontFaces',
 	'fontCovers',
 	'fontScripts',

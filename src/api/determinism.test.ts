@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
-import { getStyleVariants } from '../variants.js';
+import { getStyleVariants } from '../../scripts/lib/variants.js';
 
 // Style generation must be deterministic: identical options → byte-identical output. This
 // protects reproducible distributions (the published styles.tar.gz) and caching. Uses the
