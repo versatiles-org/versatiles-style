@@ -29,8 +29,16 @@ import { createLimiter, type Limiter } from './limit.js';
  * cache started from is recorded in its `metadata.json`. Delete `dev/.tiles/` to refetch.
  */
 
-/** Where tiles land. Gitignored; delete it to invalidate everything. */
-export const CACHE_DIR = resolve(import.meta.dirname, '../../dev/.tiles');
+/**
+ * Where tiles land. Gitignored; delete it to invalidate everything.
+ *
+ * `VERSATILES_TILE_CACHE` moves it. That exists for the tests, which must not write into a developer's
+ * real cache — and read back what a previous run of the dev server happened to leave there — but it is
+ * equally the knob for pointing a CI run or a second checkout at its own directory.
+ */
+export const CACHE_DIR = process.env.VERSATILES_TILE_CACHE
+	? resolve(process.env.VERSATILES_TILE_CACHE)
+	: resolve(import.meta.dirname, '../../dev/.tiles');
 
 /** The schemas the cache serves. */
 export const TILE_SCHEMAS = ['shortbread', 'omt', 'protomaps'] as const;
