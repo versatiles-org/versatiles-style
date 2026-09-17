@@ -12,11 +12,30 @@ export function clearTileSourceCache(): void {
 	blobCache.clear();
 }
 
+/** Whether a request carries any headers of its own. */
+function hasHeaders(input: RequestInfo | URL, init?: RequestInit): boolean {
+	if (init?.headers) {
+		const headers = init.headers;
+		if (Array.isArray(headers)) return headers.length > 0;
+		if (typeof Headers !== 'undefined' && headers instanceof Headers) return [...headers.keys()].length > 0;
+		return Object.keys(headers).length > 0;
+	}
+	if (input instanceof Request) return [...input.headers.keys()].length > 0;
+	return false;
+}
+
 // The cache key for a request, or undefined for requests that must not be
 // cached (anything other than a simple GET by URL).
 function cacheKey(input: RequestInfo | URL, init?: RequestInit): string | undefined {
 	const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
 	if (method !== 'GET') return undefined;
+	// A request with headers is not cached at all. The key is the URL alone, so two requests to the
+	// same TileJSON with different `Authorization` or `x-api-key` headers would otherwise share one
+	// cached body for the life of the process — in a multi-tenant server, one tenant's response served
+	// to another. Hashing the headers into the key would fix the collision but keep credentialed
+	// bodies in a process-wide map, so the safe answer is to let them through to the network. Nothing
+	// in this package sends headers; a caller who does is exactly the caller who must not be cached.
+	if (hasHeaders(input, init)) return undefined;
 	if (typeof input === 'string') return input;
 	if (input instanceof URL) return input.href;
 	if (input instanceof Request) return input.url;

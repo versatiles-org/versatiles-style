@@ -164,4 +164,41 @@ describe('cachingFetch() — cache key by request type', () => {
 		await cachingFetch(new Request('https://cdn.example/p.json', { method: 'DELETE' }));
 		expect(fetchSpy).toHaveBeenCalledTimes(2);
 	});
+
+	// The key is the URL alone, so a credentialed request must not enter the cache at all: two tenants
+	// asking for the same TileJSON with different `Authorization` headers would otherwise share one
+	// body for the life of the process — the first tenant's response served to the second.
+	describe('requests carrying headers are never cached', () => {
+		it('skips the cache for an init-object header, in every accepted shape', async () => {
+			await cachingFetch('https://cdn.example/h.json', { headers: { Authorization: 'Bearer a' } });
+			await cachingFetch('https://cdn.example/h.json', { headers: { Authorization: 'Bearer b' } });
+			await cachingFetch('https://cdn.example/h.json', { headers: [['x-api-key', 'k']] });
+			await cachingFetch('https://cdn.example/h.json', { headers: new Headers({ 'x-api-key': 'k' }) });
+			expect(fetchSpy).toHaveBeenCalledTimes(4);
+		});
+
+		it('skips the cache for a Request object carrying headers', async () => {
+			const req = () => new Request('https://cdn.example/r2.json', { headers: { Authorization: 'Bearer a' } });
+			await cachingFetch(req());
+			await cachingFetch(req());
+			expect(fetchSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('never serves a credentialed response to a later plain request', async () => {
+			let n = 0;
+			fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: [`secret-${++n}`] })));
+
+			await cachingFetch('https://cdn.example/s.json', { headers: { Authorization: 'Bearer a' } });
+			const plain = await (await cachingFetch('https://cdn.example/s.json')).json();
+
+			expect(fetchSpy).toHaveBeenCalledTimes(2);
+			expect(plain).toStrictEqual({ tiles: ['secret-2'] });
+		});
+
+		it('still caches a GET with an empty header set', async () => {
+			await cachingFetch('https://cdn.example/e.json', { headers: {} });
+			await cachingFetch('https://cdn.example/e.json', { headers: {} });
+			expect(fetchSpy).toHaveBeenCalledTimes(1);
+		});
+	});
 });

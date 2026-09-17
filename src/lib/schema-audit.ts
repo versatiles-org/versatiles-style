@@ -36,10 +36,34 @@ export type SchemaRecord = Readonly<Record<string, SchemaLayer>>;
  */
 const LANGUAGE_FIELD = /^name[_:][a-z-]+$/i;
 
-/** Every `['get', 'field']` reachable from a value. */
+/**
+ * Legacy filter operators that name a field directly in position 1, rather than taking an expression.
+ *
+ * `['has', 'housenumber']` and `['==', 'kind', 'x']` read a field just as `['get', …]` does, but
+ * nothing in the expression grammar marks it as such — the field is a bare string. Missing them meant
+ * the audit could not see 11 field reads across the three schemas (`service`, `housenumber`, `iata`,
+ * `ref`, `capital`, `shield_text`, …), which is precisely the class of mistake it exists to catch:
+ * `symbol-transit-subway` once filtered on a `station` field the tiles do not carry.
+ *
+ * `all` / `any` / `none` are deliberately absent: they take sub-filters, not a field name.
+ */
+const LEGACY_FIELD_OPS = new Set(['==', '!=', '<', '<=', '>', '>=', 'in', '!in', 'has', '!has']);
+
+/**
+ * Every field a value reads — `['get', 'field']`, plus the legacy filter forms that name one directly.
+ *
+ * Applied to paint and layout as well as filters, where a legacy operator cannot occur; the shape it
+ * matches (operator, then a bare string) is not something the modern grammar produces there, since
+ * expression operands are themselves expressions or literals wrapped in `['literal', …]`. A false
+ * positive would only add a field name to the "reads" set, which the audit then checks against the
+ * schema record — so the failure mode is a reported mismatch, not a silent one.
+ */
 export function fieldsIn(value: unknown, out: Set<string> = new Set()): Set<string> {
 	if (Array.isArray(value)) {
 		if (value[0] === 'get' && typeof value[1] === 'string') out.add(value[1]);
+		if (typeof value[0] === 'string' && LEGACY_FIELD_OPS.has(value[0]) && typeof value[1] === 'string') {
+			out.add(value[1]);
+		}
 		for (const item of value) fieldsIn(item, out);
 	}
 	return out;

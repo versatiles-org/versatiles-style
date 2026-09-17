@@ -13,6 +13,9 @@ mkdirSync('docs', { recursive: true });
  * and `sharp` for image processing. It generates map images for a set
  * of predefined styles and saves them in the `docs` directory.
  */
+// Awaited, with an explicit failure exit. Left floating, a rejected render surfaced as an unhandled
+// rejection with no indication of which style failed — and this runs in the release workflow's docs
+// job, where a silent-looking crash mid-way would publish a page missing a preview image.
 Promise.all([
 	draw('colorful', osm({ theme: 'colorful' })),
 	draw('natural', osm({ theme: 'natural' })),
@@ -20,7 +23,10 @@ Promise.all([
 	draw('gray', osm({ theme: 'gray' })),
 	draw('toner', osm({ theme: 'toner' })),
 	draw('satellite', satellite()),
-]);
+]).catch((error: unknown) => {
+	console.error('screenshots failed:', error);
+	process.exit(1);
+});
 
 /**
  * Renders a map image using the given style and saves it as a PNG file.

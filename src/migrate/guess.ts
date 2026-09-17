@@ -29,7 +29,9 @@ export async function guessOptions(
 	const warnings: string[] = [];
 	try {
 		checkKeys(options, { fetch: true, base: true }, 'guessOptions');
-		const fetchFn = options?.fetch ?? globalThis.fetch;
+		// Bound, not a bare reference: a detached `fetch` throws `Illegal invocation` in a browser, and
+		// `guessOptions` is plausibly browser-side — it is what a style editor calls to import a map.
+		const fetchFn = options?.fetch ?? globalThis.fetch.bind(globalThis);
 
 		let document: StyleSpecification;
 		let styleUrl = options?.base;

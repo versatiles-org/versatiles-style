@@ -129,4 +129,20 @@ describe('exports map', () => {
 			.map(({ subpath, file }) => `${subpath} → ${file}`);
 		expect(unshipped, 'exports entries that `files` would leave out of the tarball').toEqual([]);
 	});
+
+	// `files` is `dist/*`, which takes the whole directory — including anything the build meant to
+	// clean up and did not. `build-node` removes `dist/declaration`, the per-module intermediate the
+	// TypeScript plugin writes before `rollup-plugin-dts` flattens it; left behind it would add ~200
+	// files of duplicate types to every install.
+	//
+	// That removal is `rm -r`, deliberately not `rm -rf`: `-f` exits 0 even when it could not delete
+	// everything (verified — a permission error prints but does not fail), which would ship the tree
+	// silently. This asserts the outcome rather than trusting the command, since the build step and
+	// the `files` glob are edited in different places.
+	it('leaves no intermediate declaration tree in dist', async () => {
+		const { existsSync, readdirSync } = await import('node:fs');
+		const dist = new URL('../dist/', import.meta.url);
+		if (!existsSync(dist)) return; // nothing built yet; the exports test above already covers that
+		expect(readdirSync(dist).filter((name) => name === 'declaration')).toEqual([]);
+	});
 });

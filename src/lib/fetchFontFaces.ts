@@ -130,7 +130,11 @@ export async function fetchFontFaces(
 	const url = fontFamiliesUrl(pattern);
 	if (url === undefined) return undefined;
 
-	const doFetch = options?.fetch ?? globalThis.fetch;
+	// `.bind(globalThis)`, not a bare reference: in a browser, `fetch` called with no `this` of `Window`
+	// throws `TypeError: Failed to execute 'fetch' on 'Window': Illegal invocation`. Node does not care,
+	// which is why the tests never saw it. `cachingFetch` avoids this by calling `globalThis.fetch(…)`
+	// as a method.
+	const doFetch = options?.fetch ?? globalThis.fetch?.bind(globalThis);
 	if (!doFetch) throw new Error(`Cannot load "${url}": no fetch implementation available. Pass a \`fetch\` option.`);
 	const response = await doFetch(url);
 	if (!response.ok) return undefined;

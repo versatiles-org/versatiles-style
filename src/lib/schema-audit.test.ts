@@ -27,6 +27,29 @@ describe('fieldsIn', () => {
 		expect([...fieldsIn('get')]).toEqual([]);
 		expect([...fieldsIn(undefined)]).toEqual([]);
 	});
+
+	// Legacy filter syntax names a field as a bare string rather than through `get`. Missing these hid
+	// 11 field reads across the three schemas — `service`, `housenumber`, `iata`, `ref`, `capital`,
+	// `shield_text` — from the very check that exists to catch a filter reading a field the tiles do
+	// not carry.
+	it('finds the field a legacy filter names directly', () => {
+		expect([...fieldsIn(['has', 'housenumber'])]).toEqual(['housenumber']);
+		expect([...fieldsIn(['!has', 'service'])]).toEqual(['service']);
+		expect([...fieldsIn(['==', 'kind', 'rail'])]).toEqual(['kind']);
+		expect([...fieldsIn(['in', 'class', 'a', 'b'])]).toEqual(['class']);
+		expect([...fieldsIn(['>=', 'capital', 4])]).toEqual(['capital']);
+	});
+
+	it('finds them nested inside all/any/none, which name no field themselves', () => {
+		const filter = ['all', ['has', 'service'], ['any', ['==', 'kind', 'rail'], ['!in', 'ref', 'x']]];
+		expect([...fieldsIn(filter)].sort()).toEqual(['kind', 'ref', 'service']);
+	});
+
+	it('still reads a modern filter that wraps its operand in get', () => {
+		// `['==', ['get', 'kind'], 'x']` has an array in position 1, so only the `get` matches — the
+		// legacy branch must not add anything here.
+		expect([...fieldsIn(['==', ['get', 'kind'], 'x'])]).toEqual(['kind']);
+	});
 });
 
 describe('schemaUsage', () => {
