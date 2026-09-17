@@ -6,7 +6,11 @@ import { protomaps } from '../protomaps/api.js';
 import type { ColorsOptions, OsmOptions, SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { parseRGBA } from './calibrate.js';
-import { deriveOptions, type OptionsGuess } from './derive.js';
+import { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
+import { byCode } from './diagnostics.js';
+
+/** The codes a report carries, which is what a test should assert on rather than the prose. */
+const codes = (report: GuessReport) => report.diagnostics.map((d) => d.code);
 import { colorDistance } from './math.js';
 
 function osmOptions(guess: OptionsGuess): OsmOptions {
@@ -321,8 +325,9 @@ describe('deriveOptions — round trips through the package builders', () => {
 			zoom: 14,
 			layers: ['street-motorway', 'street-motorway:outline'],
 		});
-		expect(report.unmatched).toContain('tunnel-street-motorway');
-		expect(report.unmatched).not.toContain('street-motorway');
+		const unread = byCode(report.diagnostics, 'layer.unread')[0]?.origin?.layers ?? [];
+		expect(unread).toContain('tunnel-street-motorway');
+		expect(unread).not.toContain('street-motorway');
 	});
 });
 
@@ -392,10 +397,14 @@ describe('deriveOptions — foreign styles', () => {
 		expect(guess.report.sources[0].guess).toMatchObject({ schema: 'shortbread' });
 	});
 
-	it('warns about what it cannot carry over', () => {
+	it('reports what it cannot carry over, by code', () => {
 		const { report } = deriveOptions(omtStyle({ sprite: 'https://example.org/sprite' }));
-		expect(report.warnings).toContainEqual(expect.stringContaining('Metropolis Regular'));
-		expect(report.warnings).toContainEqual(expect.stringContaining('icons are not carried over'));
+		expect(codes(report)).toContain('font.unavailable');
+		expect(byCode(report.diagnostics, 'font.unavailable')[0].data?.requested).toContain('Metropolis Regular');
+		// every style with a sprite reports this, which is why it is info and not a warning
+		const icons = byCode(report.diagnostics, 'icons.replaced')[0];
+		expect(icons.severity).toBe('info');
+		expect(icons.data?.sprite).toBe('https://example.org/sprite');
 	});
 
 	it('carries over fonts the glyph server has, and only the weight of those it has not', () => {
@@ -425,25 +434,28 @@ describe('deriveOptions — foreign styles', () => {
 			boundaries: { font: 'open_sans_semibold' },
 			places: { font: 'open_sans_semibold' },
 		});
-		expect(openSans.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
+		expect(byCode(openSans.report.diagnostics, 'font.unavailable')).toEqual([]);
 
 		// Metropolis is not: only the weight carries over, on Noto Sans
 		const metropolis = deriveOptions(withFont(['Metropolis Semibold']), {}, FONT_NAMES);
 		expect(textWithoutScale(metropolis)).toEqual({ font: 'noto_sans_bold' });
-		expect(metropolis.report.warnings).toContainEqual(
-			expect.stringContaining('the glyph server does not publish are not carried over (Metropolis Semibold)')
-		);
+		expect(byCode(metropolis.report.diagnostics, 'font.unavailable')[0]).toMatchObject({
+			severity: 'warning',
+			optionPath: 'text.font',
+			data: { requested: ['Metropolis Semibold'], reason: 'not-published' },
+		});
 
 		// without a font list only the target's own Noto Sans is known, so Open Sans is only a weight too
 		const unlisted = deriveOptions(withFont(['Open Sans Semibold']));
 		expect(textWithoutScale(unlisted)).toEqual({ font: 'noto_sans_bold' });
-		expect(unlisted.report.warnings).toContainEqual(
-			expect.stringContaining('unknown without the glyph server font list are not carried over (Open Sans Semibold)')
-		);
+		// a different cause from the one above, which one prose string used to conflate
+		expect(byCode(unlisted.report.diagnostics, 'font.unavailable')[0]).toMatchObject({
+			data: { requested: ['Open Sans Semibold'], reason: 'no-font-list' },
+		});
 
 		const noto = deriveOptions(withFont(['Noto Sans Medium']));
 		expect(textWithoutScale(noto)).toEqual({});
-		expect(noto.report.warnings.filter((w) => w.includes('font'))).toEqual([]);
+		expect(byCode(noto.report.diagnostics, 'font.unavailable')).toEqual([]);
 	});
 
 	it('defaults to mercator, and keeps a projection MapLibre implements', () => {
@@ -451,7 +463,10 @@ describe('deriveOptions — foreign styles', () => {
 		expect(osmOptions(deriveOptions(omtStyle({ projection: { type: 'globe' } }))).projection).toBeUndefined();
 		const guess = deriveOptions(omtStyle({ projection: { type: 'equal-earth' } } as never));
 		expect(osmOptions(guess).projection).toBeUndefined();
-		expect(guess.report.warnings).toContainEqual(expect.stringContaining('equal-earth'));
+		expect(byCode(guess.report.diagnostics, 'projection.unsupported')[0]).toMatchObject({
+			optionPath: 'projection',
+			data: { requested: 'equal-earth' },
+		});
 	});
 
 	it('reads light, sky, terrain and hillshade', () => {
@@ -516,7 +531,10 @@ describe('deriveOptions — foreign styles', () => {
 
 		const unsupported = deriveOptions(labels('{name:ja}'));
 		expect(language(labels('{name:ja}'))).toBeUndefined();
-		expect(unsupported.report.warnings).toContainEqual(expect.stringContaining('"ja"'));
+		expect(byCode(unsupported.report.diagnostics, 'language.unavailable')[0]).toMatchObject({
+			optionPath: 'text.language',
+			data: { requested: 'ja' },
+		});
 	});
 
 	it('is a satellite style only when the imagery is not covered by fills', () => {
@@ -557,10 +575,82 @@ describe('deriveOptions — foreign styles', () => {
 			layers: [{ id: 'l', type: 'fill', source: 'x', 'source-layer': 'mystery' }],
 		} as StyleSpecification);
 		expect(unknown.kind).toBe('unknown');
-		expect(unknown.report.warnings).toContainEqual(expect.stringContaining('no known schema'));
+		expect(codes(unknown.report)).toContain('source.schemaUnknown');
 
 		const invalid = deriveOptions({ layers: 'nope' } as never);
 		expect(invalid.kind).toBe('unknown');
-		expect(invalid.report.warnings).toContainEqual(expect.stringContaining('not a MapLibre style'));
+		expect(codes(invalid.report)).toEqual(['input.notAStyle']);
+	});
+
+	// Numbers the solver already computed and then discarded. Neither needs the readers to change, which
+	// is why they land before the conflict codes despite being listed with them.
+	describe('uncertainty the solver knew about', () => {
+		it('names the runner-up palette when it fits almost as well', () => {
+			// two palettes that differ only slightly are what makes this fire; the target's own style
+			// matches one palette exactly, so it must not
+			const own = deriveOptions(osm({ theme: 'gray' }));
+			expect(byCode(own.report.diagnostics, 'theme.ambiguous')).toEqual([]);
+		});
+
+		it('lists the colours nothing spoke for, as one diagnostic and not forty', () => {
+			// a style with almost nothing in it: most of the palette cannot be observed
+			const bare = deriveOptions(omtStyle());
+			const unobserved = byCode(bare.report.diagnostics, 'color.unobserved');
+			expect(unobserved).toHaveLength(1);
+			expect(unobserved[0].severity).toBe('info');
+			expect(unobserved[0].data.count).toBeGreaterThan(0);
+			expect(unobserved[0].data.count).toBe(unobserved[0].data.keys.length);
+			expect(unobserved[0].data.total).toBeGreaterThanOrEqual(unobserved[0].data.count);
+		});
+
+		it('says nothing about colours it observed and took', () => {
+			const guess = deriveOptions(osm({ colors: { water: '#3366CC' } }));
+			const unobserved = byCode(guess.report.diagnostics, 'color.unobserved')[0];
+			expect(unobserved?.data.keys ?? []).not.toContain('water');
+		});
+	});
+
+	// Three bugs the report's shape was hiding, each fixed by filling the report as the pipeline learns
+	// rather than assembling it at the end.
+	describe('what the report used to leave out', () => {
+		it('reports the probes it read even when it gives up', () => {
+			// a vector source of no known schema, but a readable background: the probes that did read
+			// something used to be dropped, because `evidence` was written after the early return
+			const unknown = deriveOptions({
+				version: 8,
+				sources: { x: { type: 'vector', url: 'https://example.org/x.json' } },
+				layers: [
+					{ id: 'bg', type: 'background', paint: { 'background-color': '#fff' } },
+					{ id: 'l', type: 'fill', source: 'x', 'source-layer': 'mystery' },
+				],
+			} as StyleSpecification);
+			expect(unknown.kind).toBe('unknown');
+			expect(unknown.report.evidence.map((e) => e.probe)).toContain('background');
+			expect(byCode(unknown.report.diagnostics, 'layer.unread')[0]?.origin?.layers).toContain('l');
+		});
+
+		it('says so when only part of the style could be read', () => {
+			// the vector half is unreadable but there is imagery, so this comes back as an ordinary
+			// `satellite` guess — which on its own looks like a complete success
+			const partial = deriveOptions({
+				version: 8,
+				sources: {
+					weird: { type: 'vector', url: 'https://example.org/x.json' },
+					sat: { type: 'raster', tiles: ['https://example.org/{z}/{x}/{y}'] },
+				},
+				layers: [{ id: 'img', type: 'raster', source: 'sat' }],
+			} as StyleSpecification);
+			expect(partial.kind).toBe('satellite');
+			expect(byCode(partial.report.diagnostics, 'schema.partial')[0]).toMatchObject({
+				severity: 'warning',
+				data: { vectorSources: 1 },
+			});
+		});
+
+		it('does not call a hillshade layer unread when it read it', () => {
+			const guess = deriveOptions(osm({ features: { hillshade: true } }));
+			expect(osmOptions(guess).features?.hillshade).toBeDefined();
+			expect(byCode(guess.report.diagnostics, 'layer.unread')[0]?.origin?.layers ?? []).not.toContain('hillshade');
+		});
 	});
 });

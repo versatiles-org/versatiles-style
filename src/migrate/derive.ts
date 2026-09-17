@@ -54,6 +54,7 @@ import {
 import { PADDING_PER_SPACING } from '../lib/index.js';
 import { colorDistance, luminance, toHex } from './math.js';
 import { PROBES, type Probe } from './probes.js';
+import { diagnostic, sortDiagnostics, type Diagnostic } from './diagnostics.js';
 
 /**
  * `deriveOptions` — the options for `osm()` or `satellite()` that rebuild a foreign style as closely as
@@ -79,15 +80,64 @@ export type OptionsGuess =
 	| { kind: 'unknown'; report: GuessReport };
 
 export type GuessReport = {
+	/**
+	 * What could not be carried over, could only be guessed at, or had to be chosen between.
+	 *
+	 * Replaces the `warnings: string[]` and `unmatched: string[]` this used to carry: a string can only
+	 * be printed, where a consumer wants to group, count, suppress, translate, and put a marker beside
+	 * the setting a diagnostic concerns. Sorted (see `sortDiagnostics`), so a test diff is stable.
+	 */
+	diagnostics: Diagnostic[];
 	/** Every vector and raster source, with the schema recognised for it. */
 	sources: { id: string; type: string; guess: SchemaGuess }[];
 	/** Per probe the style draws: the zoom it was read at and the layers it was read from, topmost first. */
 	evidence: { probe: string; zoom: number; layers: string[] }[];
-	/** Layers no probe read. Not necessarily lost — only nothing here speaks for them. */
-	unmatched: string[];
-	/** What could not be carried over, or was carried over with a caveat. */
-	warnings: string[];
 };
+
+/**
+ * A report under construction.
+ *
+ * Filled as the pipeline learns things, never assembled at the end — which is not a style preference
+ * but the fix for a class of bug: `evidence` and `unmatched` used to be written in a final block that
+ * the `kind: 'unknown'` path returned before reaching, so a style that failed late reported nothing
+ * about the probes it had already read. Anything that is true at the moment it is learned is recorded
+ * then, and `finish` only orders what has accumulated.
+ */
+type ReportBuilder = GuessReport & {
+	/** Input layer ids something has already read, so the rest can be reported as unread. */
+	used: Set<string>;
+	say: (diagnostic: Diagnostic) => void;
+};
+
+function newReport(): ReportBuilder {
+	const report: ReportBuilder = {
+		diagnostics: [],
+		sources: [],
+		evidence: [],
+		used: new Set(),
+		say: (diagnostic) => void report.diagnostics.push(diagnostic),
+	};
+	return report;
+}
+
+/** Close a report: note the layers nothing read, drop the scratch fields, and order the diagnostics. */
+function finish(builder: ReportBuilder, style?: StyleSpecification): GuessReport {
+	const unread = (style?.layers ?? []).map((l) => l.id).filter((id) => !builder.used.has(id));
+	if (unread.length > 0) {
+		builder.say(
+			diagnostic(
+				'layer.unread',
+				`${unread.length} layers of the style were not read`,
+				{ count: unread.length },
+				{ origin: { layers: unread } }
+			)
+		);
+	}
+	const { used: _used, say: _say, ...report } = builder;
+	void _used;
+	void _say;
+	return { ...report, diagnostics: sortDiagnostics(report.diagnostics) };
+}
 
 /** Keys whose colour covers most of the map count more when choosing a palette. */
 const PALETTE_WEIGHTS: Partial<Record<keyof ColorsOptions, number>> = {
@@ -109,6 +159,19 @@ const PALETTE_WEIGHTS: Partial<Record<keyof ColorsOptions, number>> = {
 const OVERRIDE_DISTANCE = 3;
 const overrideDistance = (residual: number) => OVERRIDE_DISTANCE + 250 * Math.sqrt(residual);
 
+/**
+ * How close the runner-up palette has to sit, as a fraction of the winner's cost, before the choice
+ * between them is worth reporting as a near-tie.
+ *
+ * 5%: OpenFreeMap's Liberty picks `colorful` at 1153.6 over `natural` at 1185.3 — 2.7% apart, which
+ * is well inside what the palette-fitting can tell apart, and a choice a person might reasonably make
+ * differently. A style built by these very builders scores its own palette far below the rest.
+ */
+const THEME_MARGIN = 0.05;
+
+/** Numbers that only exist to be read in a report, at a length a person can read. */
+const round2 = (value: number) => Math.round(value * 100) / 100;
+
 /** Shortbread's languages, as the VersaTiles tileset carries them. */
 const LANGUAGES = new Set(
 	SHORTBREAD_SCHEMA.place_labels.fields.filter((f) => f.startsWith('name_')).map((f) => f.slice(5))
@@ -129,15 +192,23 @@ export function deriveOptions(
 	tileJSONs: Readonly<Record<string, TileJSONSpecification>> = {},
 	fontNames?: readonly string[]
 ): OptionsGuess {
-	const report: GuessReport = { sources: [], evidence: [], unmatched: [], warnings: [] };
+	const report = newReport();
+	if (!style || typeof style !== 'object' || !Array.isArray(style.layers) || typeof style.sources !== 'object') {
+		report.say(
+			diagnostic('input.notAStyle', 'not a MapLibre style: expected `sources` and `layers`', {
+				received: style === null ? 'null' : Array.isArray(style) ? 'array' : typeof style,
+			})
+		);
+		return { kind: 'unknown', report: finish(report) };
+	}
 	try {
-		if (!style || typeof style !== 'object' || !Array.isArray(style.layers) || typeof style.sources !== 'object') {
-			throw new TypeError('not a MapLibre style: expected `sources` and `layers`');
-		}
 		return derive(style, tileJSONs, fontNames, report);
 	} catch (error) {
-		report.warnings.push(`deriveOptions: ${error instanceof Error ? error.message : String(error)}`);
-		return { kind: 'unknown', report };
+		const cause = error instanceof Error ? error.message : String(error);
+		report.say(diagnostic('input.unreadable', `the style could not be read: ${cause}`, { cause }));
+		// Whatever was learned before the throw is still worth reporting, so the report is closed the
+		// same way the successful paths close it.
+		return { kind: 'unknown', report: finish(report, style) };
 	}
 }
 
@@ -145,18 +216,29 @@ function derive(
 	style: StyleSpecification,
 	tileJSONs: Readonly<Record<string, TileJSONSpecification>>,
 	fontNames: readonly string[] | undefined,
-	report: GuessReport
+	report: ReportBuilder
 ): OptionsGuess {
 	// ── 1. sources ──
 	const schemas = new Map<string, SchemaName>();
+	let vectorSources = 0;
 	for (const [id, source] of Object.entries(style.sources)) {
 		if (source.type !== 'vector' && source.type !== 'raster') continue;
 		const guess =
 			source.type === 'vector' ? guessSchema(sourceTileJSON(style, id, tileJSONs[id])) : { type: 'raster' as const };
 		report.sources.push({ id, type: source.type, guess });
 		if (guess.type === 'vector') {
+			vectorSources++;
 			if (guess.schema) schemas.set(id, guess.schema);
-			else report.warnings.push(`source "${id}": vector tiles of no known schema; its layers are not read`);
+			else {
+				report.say(
+					diagnostic(
+						'source.schemaUnknown',
+						`source "${id}" carries vector tiles of no known schema; its layers are not read`,
+						{ sourceId: id },
+						{ origin: { sourceId: id } }
+					)
+				);
+			}
 		}
 	}
 
@@ -164,14 +246,34 @@ function derive(
 	const readings = new Map<string, ProbeReading>();
 	for (const probe of PROBES) {
 		const reading = readInput(style, schemas, probe);
-		if (reading) readings.set(probe.id, reading);
+		if (!reading) continue;
+		readings.set(probe.id, reading);
+		// Recorded here rather than in a final block, so a later failure still reports what was read.
+		report.evidence.push({ probe: probe.id, zoom: reading.zoom, layers: reading.layers });
+		reading.layers.forEach((id) => report.used.add(id));
 	}
 
 	// ── 3. kind ──
 	const raster = findImagery(style, readings);
+	if (raster) report.used.add(raster.layer);
 	if (schemas.size === 0 && !raster) {
-		report.warnings.push('no source of a known schema and no imagery: nothing to derive options from');
-		return { kind: 'unknown', report };
+		report.say(
+			diagnostic('schema.none', 'no source of a known schema and no imagery: nothing to derive options from', {
+				vectorSources,
+			})
+		);
+		return { kind: 'unknown', report: finish(report, style) };
+	}
+	// Some of the style was read and some was not, which the result alone cannot say: a style whose only
+	// vector source is unreadable still comes back as a perfectly ordinary `satellite` guess.
+	if (schemas.size === 0 && vectorSources > 0) {
+		report.say(
+			diagnostic(
+				'schema.partial',
+				`no vector source could be read (${vectorSources} of unknown schema); only the imagery was carried over`,
+				{ vectorSources }
+			)
+		);
 	}
 
 	const common = deriveCommon(style, readings, schemas, fontNames, report);
@@ -212,14 +314,7 @@ function derive(
 		guess = { kind: 'osm', options: minimizeOsmOptions(options), report };
 	}
 
-	// ── report ──
-	const used = new Set<string>(raster ? [raster.layer] : []);
-	for (const reading of readings.values()) {
-		report.evidence.push({ probe: reading.probe.id, zoom: reading.zoom, layers: reading.layers });
-		reading.layers.forEach((id) => used.add(id));
-	}
-	report.unmatched = style.layers.filter((l) => !used.has(l.id)).map((l) => l.id);
-	return guess;
+	return { ...guess, report: finish(report, style) } as OptionsGuess;
 }
 
 // ── sources ───────────────────────────────────────────────────────────────────
@@ -376,7 +471,7 @@ function fitContent(
 	target: Target,
 	readings: ReadonlyMap<string, ProbeReading>,
 	schemas: ReadonlyMap<string, SchemaName>,
-	report: GuessReport,
+	report: ReportBuilder,
 	mode: Mode
 ): { theme: Palette; colors: ColorsOptions; layers: LayerGroupOptions } {
 	const model = modelFor(target, mode);
@@ -393,8 +488,12 @@ function fitContent(
 	const first = solveColors(model, observed, target.colorsFor(target.baseTheme(mode)));
 	const share = (key: keyof ColorsOptions) => Math.min(1, (first.evidence.get(key) ?? 0) / FULL_EVIDENCE);
 
+	// The runner-up is kept, not just the winner: the margin between the two is the whole of what can
+	// be said about how sure the palette is, and it was being computed and dropped every time.
 	let theme = target.baseTheme(mode);
 	let best = Infinity;
+	let runnerUp: Palette | undefined;
+	let runnerUpCost = Infinity;
 	for (const candidate of target.themes(mode)) {
 		const palette = target.colorsFor(candidate);
 		let cost = 0;
@@ -402,20 +501,84 @@ function fitContent(
 			const weight = share(key) * (PALETTE_WEIGHTS[key] ?? 1);
 			if (weight > 0) cost += weight * colorDistance(first.colors.get(key)!, parseRGBA(palette[key]));
 		}
-		if (cost < best) [best, theme] = [cost, candidate];
+		if (cost < best) {
+			[runnerUp, runnerUpCost] = [theme, best];
+			[best, theme] = [cost, candidate];
+		} else if (cost < runnerUpCost) {
+			[runnerUp, runnerUpCost] = [candidate, cost];
+		}
+	}
+	const margin = Number.isFinite(runnerUpCost) && best > 0 ? (runnerUpCost - best) / best : Infinity;
+	if (runnerUp !== undefined && margin < THEME_MARGIN) {
+		report.say(
+			diagnostic(
+				'theme.ambiguous',
+				`"${theme}" and "${runnerUp}" fit almost equally well (within ${(margin * 100).toFixed(1)}%); "${theme}" was taken`,
+				{
+					chosen: theme,
+					cost: round2(best),
+					runnerUp,
+					runnerUpCost: round2(runnerUpCost),
+					margin: round2(margin),
+				},
+				{ optionPath: 'theme' }
+			)
+		);
 	}
 
 	const palette = target.colorsFor(theme);
 	const solved = solveColors(model, observed, palette);
 	const colors: ColorsOptions = {};
+	const unobserved: string[] = [];
 	for (const key of colorOptionsKeys) {
-		if ((solved.evidence.get(key) ?? 0) < FULL_EVIDENCE / 4) continue;
+		const evidence = solved.evidence.get(key) ?? 0;
+		if (evidence < FULL_EVIDENCE / 4) {
+			// Nothing in the style spoke for this key, so the palette's own value stands. Collected rather
+			// than reported one by one: on a real style this is a third of the palette, and forty-odd
+			// diagnostics saying the same thing would bury the ones that differ.
+			unobserved.push(key);
+			continue;
+		}
 		const estimate = solved.colors.get(key)!;
 		const distance = colorDistance(estimate, parseRGBA(palette[key]));
-		if (distance > overrideDistance(solved.residual.get(key)!)) colors[key] = toHex(estimate);
+		const threshold = overrideDistance(solved.residual.get(key)!);
+		if (distance > threshold) {
+			colors[key] = toHex(estimate);
+			continue;
+		}
+		// Observed, estimated, and then discarded for sitting inside the threshold. Worth reporting only
+		// when the estimate actually differed: an estimate that lands on the palette exactly is the
+		// solver agreeing with it, which is the opposite of low confidence.
+		if (distance > threshold / 2) {
+			report.say(
+				diagnostic(
+					'color.lowConfidence',
+					`the ${key} colour was estimated at ${toHex(estimate)} but kept at the palette's ${palette[key]}`,
+					{
+						key,
+						estimate: toHex(estimate),
+						paletteColor: palette[key],
+						distance: round2(distance),
+						threshold: round2(threshold),
+						evidenceShare: round2(Math.min(1, evidence / FULL_EVIDENCE)),
+						residual: round2(solved.residual.get(key)!),
+					},
+					{ optionPath: `colors.${key}` }
+				)
+			);
+		}
+	}
+	if (unobserved.length > 0) {
+		report.say(
+			diagnostic(
+				'color.unobserved',
+				`${unobserved.length} of ${colorOptionsKeys.length} colours were not observed; the "${theme}" palette's values were kept`,
+				{ keys: unobserved, count: unobserved.length, total: colorOptionsKeys.length }
+			)
+		);
 	}
 
-	return { theme, colors, layers: hiddenGroups(model, readings, schemas, report) };
+	return { theme, colors, layers: hiddenGroups(model, readings, schemas) };
 }
 
 /**
@@ -447,12 +610,16 @@ function withExtrusionOpacity(
  * Layer groups the style does not draw: every probe of the group that the tiles can carry and the
  * target draws by default goes unread. A group with no such probe is left alone — silence about a
  * group is not evidence that the style hides it.
+ *
+ * Reports nothing, and takes no report. It used to warn when a group looked hidden with no vector
+ * schema to judge by, which could not happen: a group is only marked hidden once a probe of it passes
+ * a schema test, and with no schemas that test is vacuously false, so the list it guarded was always
+ * empty. With no vector source the satellite path simply derives no layer-group options.
  */
 function hiddenGroups(
 	model: CalibrationModel,
 	readings: ReadonlyMap<string, ProbeReading>,
-	schemas: ReadonlyMap<string, SchemaName>,
-	report: GuessReport
+	schemas: ReadonlyMap<string, SchemaName>
 ): LayerGroupOptions {
 	const tileSchemas = new Set(schemas.values());
 	const layers: Record<string, unknown> = {};
@@ -502,7 +669,6 @@ function hiddenGroups(
 	};
 	collapse(getLayerGroupMap(), []);
 
-	if (hidden.length > 0 && tileSchemas.size === 0) report.warnings.push('layer groups could not be read');
 	return layers as LayerGroupOptions;
 }
 
@@ -531,7 +697,7 @@ function deriveCommon(
 	readings: ReadonlyMap<string, ProbeReading>,
 	schemas: ReadonlyMap<string, SchemaName>,
 	fontNames: readonly string[] | undefined,
-	report: GuessReport
+	report: ReportBuilder
 ): Common {
 	const content: Common['content'] = {};
 	const scale = deriveLabelScale(readings);
@@ -562,6 +728,9 @@ function deriveCommon(
 	if (hillshade) {
 		const exaggeration = hillshade.paint?.['hillshade-exaggeration'];
 		features.hillshade = typeof exaggeration === 'number' ? { exaggeration } : true;
+		// It was read, so it is not unread — this layer used to be reported as untouched on every style
+		// that has one, because only probe readings were counted as having used a layer.
+		report.used.add(hillshade.id);
 	}
 
 	const globals: Common['globals'] = {};
@@ -569,17 +738,38 @@ function deriveCommon(
 	if (projection === undefined) globals.projection = 'mercator';
 	else if (projection === 'globe' || projection === 'mercator' || projection === 'vertical-perspective') {
 		globals.projection = projection;
-	} else report.warnings.push(`projection ${JSON.stringify(projection)} is not supported; using the default`);
+	} else {
+		report.say(
+			diagnostic(
+				'projection.unsupported',
+				`projection ${JSON.stringify(projection)} is not supported; the default is used`,
+				{ requested: String(projection) },
+				{ optionPath: 'projection' }
+			)
+		);
+	}
 
 	if (style.light) globals.sun = deriveSun(style.light);
 
-	if (style.sprite) report.warnings.push('icons are not carried over; the VersaTiles sprite is used');
-	if (schemas.size > 1) report.warnings.push('more than one vector source: all were read as one map');
+	if (style.sprite) {
+		report.say(
+			diagnostic('icons.replaced', 'icons are not carried over; the VersaTiles sprite is used', {
+				sprite: style.sprite,
+			})
+		);
+	}
+	if (schemas.size > 1) {
+		report.say(
+			diagnostic('source.multiple', `${schemas.size} vector sources: all of them were read as one map`, {
+				sources: Object.fromEntries(schemas),
+			})
+		);
+	}
 	return { content, features, globals };
 }
 
 /** The language labels are shown in: the first `name…` field a place label reads. */
-function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: GuessReport): TextOptions | undefined {
+function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: ReportBuilder): TextOptions | undefined {
 	for (const id of LANGUAGE_PROBES) {
 		const reading = readings.get(id);
 		if (!reading?.label) continue;
@@ -591,7 +781,14 @@ function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: GuessRe
 		const language = /^name[_:]([a-z]{2,3})$/.exec(field)?.[1];
 		if (!language) return undefined; // `name`, or a transliteration such as `name:latin`
 		if (!LANGUAGES.has(language)) {
-			report.warnings.push(`labels in "${language}" are not available in VersaTiles tiles; local names are used`);
+			report.say(
+				diagnostic(
+					'language.unavailable',
+					`labels in "${language}" are not available in VersaTiles tiles; local names are used`,
+					{ requested: language },
+					{ optionPath: 'text.language' }
+				)
+			);
 			return undefined;
 		}
 		// Strict when hiding the language — in either spelling, which OpenMapTiles both carries — leaves no name.
@@ -695,7 +892,7 @@ const vote = <T>(votes: Map<T, number>, key: T) => votes.set(key, (votes.get(key
 function deriveFonts(
 	readings: ReadonlyMap<string, ProbeReading>,
 	fontNames: readonly string[] | undefined,
-	report: GuessReport
+	report: ReportBuilder
 ): TextOptions {
 	const known: ReadonlySet<string> = new Set([...(fontNames ?? []), DEFAULT_FONT_REGULAR, DEFAULT_FONT_BOLD]);
 	const base = modelFor(osmTarget(), 'light').base;
@@ -738,7 +935,14 @@ function deriveFonts(
 	}
 	if (lost.size > 0) {
 		const why = fontNames ? 'the glyph server does not publish' : 'unknown without the glyph server font list';
-		report.warnings.push(`fonts ${why} are not carried over (${[...lost].join(', ')}); only regular or bold is`);
+		report.say(
+			diagnostic(
+				'font.unavailable',
+				`fonts ${why} are not carried over (${[...lost].join(', ')}); only regular or bold is`,
+				{ requested: [...lost], reason: fontNames ? 'not-published' : 'no-font-list' },
+				{ optionPath: 'text.font' }
+			)
+		);
 	}
 	const read = { regular: weights.regular[0] + weights.regular[1] > 0, bold: weights.bold[0] + weights.bold[1] > 0 };
 	if (!read.regular && !read.bold) return {};

@@ -12,3 +12,15 @@
  */
 export { guessOptions, type GuessOptionsOptions } from './guess.js';
 export { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
+export {
+	byCode,
+	byOption,
+	is,
+	sortDiagnostics,
+	worst,
+	type Diagnostic,
+	type DiagnosticCode,
+	type DiagnosticData,
+	type DiagnosticOrigin,
+	type Severity,
+} from './diagnostics.js';

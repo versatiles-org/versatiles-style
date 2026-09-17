@@ -3,7 +3,8 @@ import { resolveUrl } from '../options/index.js';
 import { fetchFontFaces } from '../lib/fetchFontFaces.js';
 import { checkKeys, type FetchLike } from '../options/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
+import { deriveOptions, type OptionsGuess } from './derive.js';
+import { diagnostic, sortDiagnostics, type Diagnostic } from './diagnostics.js';
 
 export type GuessOptionsOptions = {
 	/** Used for the style document and every source's TileJSON; defaults to `globalThis.fetch`. */
@@ -26,9 +27,15 @@ export async function guessOptions(
 	style: string | StyleSpecification,
 	options?: GuessOptionsOptions
 ): Promise<OptionsGuess> {
-	const warnings: string[] = [];
+	// Collected before `deriveOptions` runs, then merged into the report it returns — this half knows
+	// about the network, that half about the style.
+	const diagnostics: Diagnostic[] = [];
 	try {
-		checkKeys(options, { fetch: true, base: true }, 'guessOptions');
+		try {
+			checkKeys(options, { fetch: true, base: true }, 'guessOptions');
+		} catch (error) {
+			throw new BadOption(message(error));
+		}
 		// Bound, not a bare reference: a detached `fetch` throws `Illegal invocation` in a browser, and
 		// `guessOptions` is plausibly browser-side — it is what a style editor calls to import a map.
 		const fetchFn = options?.fetch ?? globalThis.fetch.bind(globalThis);
@@ -38,7 +45,7 @@ export async function guessOptions(
 		if (typeof style === 'string') {
 			styleUrl = options?.base ? resolveUrl(options.base, style) : style;
 			const response = await fetchFn(styleUrl);
-			if (!response.ok) throw new Error(`failed to fetch style "${styleUrl}": HTTP ${response.status}`);
+			if (!response.ok) throw new FetchFailed(styleUrl, response.status);
 			document = (await response.json()) as StyleSpecification;
 		} else if (style !== null && typeof style === 'object') {
 			document = style;
@@ -57,7 +64,15 @@ export async function guessOptions(
 					if (!/^https?:/.test(url)) throw new Error(`"${source.url}" is not an http(s) URL`);
 					tileJSONs[id] = await loadTileSource(url, fetchFn);
 				} catch (error) {
-					warnings.push(`source "${id}": TileJSON not loaded (${message(error)}); schema read from the style`);
+					const cause = message(error);
+					diagnostics.push(
+						diagnostic(
+							'source.tilejsonUnavailable',
+							`source "${id}": TileJSON not loaded (${cause}); its schema was read from the style instead`,
+							{ sourceId: id, url: source.url, cause },
+							{ origin: { sourceId: id } }
+						)
+					);
 				}
 			})
 		);
@@ -71,16 +86,35 @@ export async function guessOptions(
 		);
 
 		const guess = deriveOptions(document, tileJSONs, fontNames);
-		guess.report.warnings.unshift(...warnings);
-		return guess;
+		return {
+			...guess,
+			report: { ...guess.report, diagnostics: sortDiagnostics([...diagnostics, ...guess.report.diagnostics]) },
+		} as OptionsGuess;
 	} catch (error) {
-		const report: GuessReport = {
-			sources: [],
-			evidence: [],
-			unmatched: [],
-			warnings: [...warnings, `guessOptions: ${message(error)}`],
+		const cause = message(error);
+		const fatal =
+			error instanceof BadOption
+				? diagnostic('input.badOption', cause, { cause })
+				: error instanceof FetchFailed
+					? diagnostic('input.fetchFailed', cause, { url: error.url, status: error.status })
+					: diagnostic('input.unreadable', `the style could not be read: ${cause}`, { cause });
+		return {
+			kind: 'unknown',
+			report: { diagnostics: sortDiagnostics([...diagnostics, fatal]), sources: [], evidence: [] },
 		};
-		return { kind: 'unknown', report };
+	}
+}
+
+/** An option `guessOptions` does not have — distinguished so the diagnostic can say which it was. */
+class BadOption extends Error {}
+
+/** The style document itself could not be fetched; the status is worth reporting. */
+class FetchFailed extends Error {
+	constructor(
+		readonly url: string,
+		readonly status: number
+	) {
+		super(`failed to fetch style "${url}": HTTP ${status}`);
 	}
 }
 

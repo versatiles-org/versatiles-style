@@ -3,6 +3,7 @@ import { osm } from '../api/osm.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import type { StyleSpecification } from '../types/index.js';
 import { guessOptions } from './guess.js';
+import { byCode } from './diagnostics.js';
 
 const json = (body: unknown, status = 200) =>
 	Promise.resolve(new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } }));
@@ -56,10 +57,16 @@ describe('guessOptions', () => {
 			'https://tiles.versatiles.org/assets/glyphs/font_families.json',
 		]);
 		expect(guess.kind).toBe('osm');
-		expect(guess.report.warnings[0]).toMatch(/source "versatiles-shortbread": TileJSON not loaded .*not an http/);
+		// by code and payload, not by prose or position: the three causes this used to collapse into one
+		// string are now told apart by `data.cause`
+		expect(byCode(guess.report.diagnostics, 'source.tilejsonUnavailable')[0]).toMatchObject({
+			severity: 'warning',
+			origin: { sourceId: 'versatiles-shortbread' },
+			data: { sourceId: 'versatiles-shortbread', url: 'mapbox://x' },
+		});
 
 		const failing = await guessOptions(anonymousStyle('https://example.org/tiles.json'), { fetch });
-		expect(failing.report.warnings[0]).toMatch(/HTTP 500/);
+		expect(byCode(failing.report.diagnostics, 'source.tilejsonUnavailable')[0].data?.cause).toMatch(/HTTP 500/);
 		expect(failing.kind).toBe('unknown');
 	});
 
@@ -85,9 +92,14 @@ describe('guessOptions', () => {
 	it('never throws', async () => {
 		const unreachable = await guessOptions('https://example.org/style.json', { fetch: () => json({}, 404) });
 		expect(unreachable.kind).toBe('unknown');
-		expect(unreachable.report.warnings).toContainEqual(expect.stringContaining('HTTP 404'));
+		expect(byCode(unreachable.report.diagnostics, 'input.fetchFailed')[0]).toMatchObject({
+			severity: 'error',
+			data: { url: 'https://example.org/style.json', status: 404 },
+		});
 
 		expect((await guessOptions(42 as never)).kind).toBe('unknown');
-		expect((await guessOptions(osm(), { nope: true } as never)).report.warnings[0]).toContain('nope');
+		// a bad option is its own code, where it used to be an `input.unreadable` catch-all
+		const badOption = await guessOptions(osm(), { nope: true } as never);
+		expect(byCode(badOption.report.diagnostics, 'input.badOption')[0].message).toContain('nope');
 	});
 });

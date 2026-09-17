@@ -101,10 +101,15 @@ async function main() {
 		const original = (await response.json()) as StyleSpecification;
 		const guess = await guessOptions(original);
 		console.log(guess.kind, JSON.stringify('options' in guess ? guess.options : undefined));
-		guess.report.warnings.forEach((warning) => console.log('  ⚠', warning));
+		const MARK = { error: '✖', warning: '⚠', info: 'ℹ' } as const;
+		guess.report.diagnostics.forEach((d) =>
+			console.log(` ${MARK[d.severity]} ${d.code}${d.optionPath ? ` (${d.optionPath})` : ''}: ${d.message}`)
+		);
 
 		html += `<h2>${escape(url)}</h2><pre>${escape(JSON.stringify({ kind: guess.kind, ...('options' in guess && { options: guess.options }) }, null, 2))}</pre>`;
-		html += `<ul>${guess.report.warnings.map((w) => `<li>${escape(w)}</li>`).join('')}</ul>`;
+		html += `<ul>${guess.report.diagnostics
+			.map((d) => `<li><code>${escape(d.severity)}</code> <code>${escape(d.code)}</code> ${escape(d.message)}</li>`)
+			.join('')}</ul>`;
 		if (guess.kind === 'unknown') continue;
 
 		const derived =
