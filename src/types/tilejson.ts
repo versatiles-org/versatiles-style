@@ -50,9 +50,13 @@ export function assertTileJSONSpecification(spec: unknown): asserts spec is Tile
 
 	const obj = spec as Record<string, unknown>;
 
-	// Common property validation
-	if (obj.data != null && obj.tilejson !== '3.0.0') {
-		throw new Error(`TileJSON validation: spec.tilejson must be "3.0.0", but got "${obj.tilejson}"`);
+	// The version, when the document declares one. This used to be gated on `obj.data != null` — a
+	// copy of the `data` check below — which got it wrong in both directions: `{ tiles, tilejson:
+	// 'banana' }` was accepted and then narrowed to a type whose `tilejson?: '3.0.0'` was a lie, while
+	// `{ tiles, data }` was rejected over a field it had not set. Left optional, as the interface says:
+	// requiring it would reject documents this library builds and reads happily.
+	if (obj.tilejson != null && obj.tilejson !== '3.0.0') {
+		throw new Error(`TileJSON validation: spec.tilejson must be "3.0.0", but got ${JSON.stringify(obj.tilejson)}`);
 	}
 
 	if (obj.attribution != null && typeof obj.attribution !== 'string') {
@@ -115,9 +119,11 @@ export function assertTileJSONSpecification(spec: unknown): asserts spec is Tile
 		);
 	}
 
-	if (obj.fillzoom != null && (typeof obj.fillzoom !== 'number' || obj.fillzoom < 0)) {
+	// Zoom levels are integers. Only `< 0` used to be checked, so `fillzoom: 1.5` and `minzoom: 9.7`
+	// passed a check whose own message called them integers, and reached MapLibre as fractional zooms.
+	if (obj.fillzoom != null && !isZoom(obj.fillzoom)) {
 		throw new Error(
-			`TileJSON validation: spec.fillzoom must be a positive integer if present, but got ${obj.fillzoom}`
+			`TileJSON validation: spec.fillzoom must be a non-negative integer if present, but got ${JSON.stringify(obj.fillzoom)}`
 		);
 	}
 
@@ -129,12 +135,24 @@ export function assertTileJSONSpecification(spec: unknown): asserts spec is Tile
 		throw new Error(`TileJSON validation: spec.legend must be a string if present, but got ${typeof obj.legend}`);
 	}
 
-	if (obj.minzoom != null && (typeof obj.minzoom !== 'number' || obj.minzoom < 0)) {
-		throw new Error(`TileJSON validation: spec.minzoom must be a positive integer if present, but got ${obj.minzoom}`);
+	if (obj.minzoom != null && !isZoom(obj.minzoom)) {
+		throw new Error(
+			`TileJSON validation: spec.minzoom must be a non-negative integer if present, but got ${JSON.stringify(obj.minzoom)}`
+		);
 	}
 
-	if (obj.maxzoom != null && (typeof obj.maxzoom !== 'number' || obj.maxzoom < 0)) {
-		throw new Error(`TileJSON validation: spec.maxzoom must be a positive integer if present, but got ${obj.maxzoom}`);
+	if (obj.maxzoom != null && !isZoom(obj.maxzoom)) {
+		throw new Error(
+			`TileJSON validation: spec.maxzoom must be a non-negative integer if present, but got ${JSON.stringify(obj.maxzoom)}`
+		);
+	}
+
+	// An inverted range describes a tileset with no zoom levels at all. `bounds` and `center` already
+	// get this kind of ordering check; the zooms did not, so `{ minzoom: 14, maxzoom: 2 }` passed.
+	if (obj.minzoom != null && obj.maxzoom != null && (obj.minzoom as number) > (obj.maxzoom as number)) {
+		throw new Error(
+			`TileJSON validation: spec.minzoom must not be greater than spec.maxzoom, but got [${obj.minzoom}, ${obj.maxzoom}]`
+		);
 	}
 
 	if (obj.name != null && typeof obj.name !== 'string') {
@@ -152,6 +170,32 @@ export function assertTileJSONSpecification(spec: unknown): asserts spec is Tile
 	if (!Array.isArray(obj.tiles) || obj.tiles.length === 0 || obj.tiles.some((url) => typeof url !== 'string')) {
 		throw new Error('TileJSON validation: spec.tiles must be a non-empty array of strings');
 	}
+
+	// `vector_layers` is half of the exported union and was not checked at all, so
+	// `{ tiles: ['x'], vector_layers: 'nope' }` narrowed to `TileJSONSpecificationVector` and the first
+	// `.vector_layers.filter(...)` downstream threw a TypeError instead.
+	//
+	// Checked shallowly, on purpose. `fields` is required by TileJSON 3.0.0 but real tilesets omit it,
+	// and `guessStyle` runs this over every document it downloads — full conformance here would turn a
+	// working style into a blank one for a tileset whose only sin is a missing `fields`. What the
+	// library actually reads is the `id` of each layer, so that is what is required. A caller who wants
+	// the whole structure checked has `assertVectorLayers`.
+	if (obj.vector_layers != null) {
+		const layers = obj.vector_layers;
+		const shaped =
+			Array.isArray(layers) &&
+			layers.every((layer) => typeof layer === 'object' && layer !== null && typeof layer.id === 'string');
+		if (!shaped) {
+			throw new Error(
+				'TileJSON validation: spec.vector_layers must be an array of objects each with a string id if present'
+			);
+		}
+	}
+}
+
+/** A zoom level: a non-negative integer. */
+function isZoom(value: unknown): boolean {
+	return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
 /**

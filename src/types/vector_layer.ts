@@ -8,10 +8,15 @@ export interface VectorLayer {
 }
 
 /**
- * Verifies if an object conforms to the VectorLayer structure.
- * Throws errors for any deviations from the expected structure or types.
+ * Validate an object against the VectorLayer structure, throwing a descriptive error naming the
+ * offending field if it does not conform.
+ *
+ * Use {@link isVectorLayer} when you want a boolean instead. These were one function whose
+ * `layer is VectorLayer` signature promised a predicate but which threw for every invalid input, so
+ * `if (isVectorLayer(x))` blew up rather than taking the else branch — the same defect
+ * `assertTileJSONSpecification` was split out of.
  */
-export function isVectorLayer(layer: unknown): layer is VectorLayer {
+export function assertVectorLayer(layer: unknown): asserts layer is VectorLayer {
 	if (typeof layer !== 'object' || layer === null) {
 		throw new Error('Layer must be a non-null object');
 	}
@@ -40,11 +45,23 @@ export function isVectorLayer(layer: unknown): layer is VectorLayer {
 	if ('maxzoom' in obj && (typeof obj.maxzoom !== 'number' || obj.maxzoom < 0)) {
 		throw new Error('Layer.maxzoom must be a non-negative number if present');
 	}
-
-	return true;
 }
 
-export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
+/** Whether an object conforms to the VectorLayer structure. Never throws. */
+export function isVectorLayer(layer: unknown): layer is VectorLayer {
+	try {
+		assertVectorLayer(layer);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Validate a non-empty array of VectorLayers, throwing a descriptive error naming the offending
+ * layer. Use {@link isVectorLayers} for a boolean.
+ */
+export function assertVectorLayers(layers: unknown): asserts layers is VectorLayer[] {
 	if (!Array.isArray(layers)) {
 		throw new Error('Expected an array of layers');
 	}
@@ -55,13 +72,19 @@ export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
 
 	layers.forEach((layer, index) => {
 		try {
-			if (!isVectorLayer(layer)) {
-				throw new Error(`Layer[${index}] is invalid`);
-			}
+			assertVectorLayer(layer);
 		} catch (cause) {
 			throw new Error(`Layer[${index}] is invalid`, { cause });
 		}
 	});
+}
 
-	return true;
+/** Whether an object is a non-empty array of VectorLayers. Never throws. */
+export function isVectorLayers(layers: unknown): layers is VectorLayer[] {
+	try {
+		assertVectorLayers(layers);
+		return true;
+	} catch {
+		return false;
+	}
 }

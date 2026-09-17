@@ -8,4 +8,4 @@ export {
 	isRasterTileJSONSpecification,
 } from './tilejson.js';
 export type { VectorLayer } from './vector_layer.js';
-export { isVectorLayer, isVectorLayers } from './vector_layer.js';
+export { assertVectorLayer, isVectorLayer, assertVectorLayers, isVectorLayers } from './vector_layer.js';

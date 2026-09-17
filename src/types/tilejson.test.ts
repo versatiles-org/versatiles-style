@@ -73,12 +73,62 @@ describe('assertTileJSONSpecification / isTileJSONSpecification', () => {
 		expect(isTileJSONSpecification({ ...validVectorSpec, center: [0, 0, 7] })).toBe(true);
 	});
 
-	it('requires tilejson "3.0.0" when a data property is present', () => {
-		expect(() => assertTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '2.0.0' })).toThrow(
-			'spec.tilejson must be "3.0.0"'
-		);
-		// data present + correct version → passes the version gate
-		expect(isTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '3.0.0' })).toBe(true);
+	// The version check used to be gated on `data != null` — a copy of the `data` check below it —
+	// which was wrong both ways round: any version string passed as long as `data` was absent, and a
+	// document with `data` was rejected over a `tilejson` it had never set.
+	describe('the tilejson version', () => {
+		it('rejects a version that is not 3.0.0, whether or not `data` is present', () => {
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], tilejson: '2.0.0' })).toThrow(
+				'spec.tilejson must be "3.0.0"'
+			);
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], tilejson: 'banana' })).toThrow(
+				'spec.tilejson must be "3.0.0"'
+			);
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '2.0.0' })).toThrow(
+				'spec.tilejson must be "3.0.0"'
+			);
+		});
+
+		it('stays optional, as the interface says — `data` does not make it required', () => {
+			expect(isTileJSONSpecification({ tiles: ['x'] })).toBe(true);
+			expect(isTileJSONSpecification({ tiles: ['x'], data: ['d'] })).toBe(true);
+			expect(isTileJSONSpecification({ tiles: ['x'], data: ['d'], tilejson: '3.0.0' })).toBe(true);
+		});
+	});
+
+	describe('zoom levels', () => {
+		it('rejects a non-integer zoom, which the error messages already claimed to require', () => {
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], minzoom: 9.7 })).toThrow('spec.minzoom');
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], maxzoom: 9.7 })).toThrow('spec.maxzoom');
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], fillzoom: 1.5 })).toThrow('spec.fillzoom');
+		});
+
+		it('rejects an inverted range, as `bounds` and `center` already did', () => {
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], minzoom: 14, maxzoom: 2 })).toThrow(
+				'spec.minzoom must not be greater than spec.maxzoom'
+			);
+		});
+
+		it('accepts zoom 0 and an equal min/max', () => {
+			expect(isTileJSONSpecification({ tiles: ['x'], minzoom: 0, maxzoom: 14 })).toBe(true);
+			expect(isTileJSONSpecification({ tiles: ['x'], minzoom: 7, maxzoom: 7 })).toBe(true);
+		});
+	});
+
+	describe('vector_layers', () => {
+		it('rejects a value that is not an array of identified layers', () => {
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], vector_layers: 'nope' })).toThrow('spec.vector_layers');
+			expect(() => assertTileJSONSpecification({ tiles: ['x'], vector_layers: [{ noId: true }] })).toThrow(
+				'spec.vector_layers'
+			);
+		});
+
+		// Checked shallowly on purpose: `guessStyle` runs this over every document it downloads, and
+		// requiring the full VectorLayer structure would reject real tilesets that omit `fields` —
+		// turning a working style into a blank one. `assertVectorLayers` is there for the full check.
+		it('accepts a layer with only an id, which is all the library reads', () => {
+			expect(isTileJSONSpecification({ tiles: ['x'], vector_layers: [{ id: 'water' }] })).toBe(true);
+		});
 	});
 
 	describe('real-world TileJSONs from tiles.versatiles.org', () => {
@@ -99,11 +149,11 @@ describe('assertTileJSONSpecification / isTileJSONSpecification', () => {
 			['center', 'an array of two or three numbers if present', [1, 2], ['1', '2'], [1, 2, 3, 4], [], 'invalid'],
 			['data', 'an array of strings if present', ['url'], 'url', [1], 1],
 			['description', 'a string if present', 'valid', 1],
-			['fillzoom', 'a positive integer if present', 5, 'invalid', -1],
+			['fillzoom', 'a non-negative integer if present', 5, 'invalid', -1, 1.5],
 			['grids', 'an array of strings if present', ['1', '2', '3', '4'], [1, 2, 3, 4], 'invalid'],
 			['legend', 'a string if present', 'valid', 1],
-			['maxzoom', 'a positive integer if present', 5, 'invalid', -1],
-			['minzoom', 'a positive integer if present', 5, 'invalid', -1],
+			['maxzoom', 'a non-negative integer if present', 5, 'invalid', -1, 1.5],
+			['minzoom', 'a non-negative integer if present', 5, 'invalid', -1, 1.5],
 			['name', 'a string if present', 'valid', 1],
 			['scheme', '"tms" or "xyz" if present', 'xyz', 'invalid', 1],
 			['template', 'a string if present', 'valid', 1],

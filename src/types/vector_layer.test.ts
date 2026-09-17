@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { VectorLayer } from './vector_layer.js';
-import { isVectorLayer, isVectorLayers } from './vector_layer.js';
+import { assertVectorLayer, assertVectorLayers, isVectorLayer, isVectorLayers } from './vector_layer.js';
 
-describe('isVectorLayer', () => {
+describe('assertVectorLayer', () => {
 	it('should validate a correct VectorLayer object', () => {
 		const validLayer: VectorLayer = { id: 'test-layer', fields: { field1: 'Number', field2: 'String' } };
 
-		expect(() => isVectorLayer(validLayer)).not.toThrow();
+		expect(() => assertVectorLayer(validLayer)).not.toThrow();
 	});
 
 	it('should throw an error for non-object inputs', () => {
@@ -34,27 +34,27 @@ describe('isVectorLayer', () => {
 	});
 
 	function verifyError(layer: unknown, message: string): void {
-		expect(() => isVectorLayer(layer)).toThrow(message);
+		expect(() => assertVectorLayer(layer)).toThrow(message);
 	}
 });
 
-describe('isVectorLayers', () => {
+describe('assertVectorLayers', () => {
 	it('should validate an array of correct VectorLayer objects', () => {
 		const validLayers = [
 			{ id: 'layer1', fields: { field1: 'Number' } },
 			{ id: 'layer2', fields: { field2: 'String' }, description: 'A test layer' },
 		];
 
-		expect(() => isVectorLayers(validLayers)).not.toThrow();
+		expect(() => assertVectorLayers(validLayers)).not.toThrow();
 	});
 
 	it('should throw an error for non-array inputs', () => {
-		expect(() => isVectorLayers(null)).toThrow('Expected an array of layers');
-		expect(() => isVectorLayers({})).toThrow('Expected an array of layers');
+		expect(() => assertVectorLayers(null)).toThrow('Expected an array of layers');
+		expect(() => assertVectorLayers({})).toThrow('Expected an array of layers');
 	});
 
 	it('should throw an error for empty arrays', () => {
-		expect(() => isVectorLayers([])).toThrow('Array of layers cannot be empty');
+		expect(() => assertVectorLayers([])).toThrow('Array of layers cannot be empty');
 	});
 
 	it('should throw an error for arrays containing invalid layers', () => {
@@ -63,6 +63,48 @@ describe('isVectorLayers', () => {
 			{ id: 'layer2', fields: { field2: 'InvalidType' } },
 		];
 
-		expect(() => isVectorLayers(invalidLayers)).toThrow('Layer[1] is invalid');
+		expect(() => assertVectorLayers(invalidLayers)).toThrow('Layer[1] is invalid');
+	});
+
+	it('names the offending layer but keeps the underlying reason as the cause', () => {
+		const error = (() => {
+			try {
+				assertVectorLayers([{ id: 'ok', fields: {} }, { id: 7 }]);
+			} catch (e) {
+				return e as Error;
+			}
+		})();
+		expect(error?.message).toBe('Layer[1] is invalid');
+		expect((error?.cause as Error | undefined)?.message).toBe('Layer.id must be a string');
+	});
+});
+
+// These two carried a `layer is VectorLayer` signature while throwing for every invalid input, so
+// `if (isVectorLayer(x)) {…} else {…}` blew up instead of taking the else branch — the same defect
+// `assertTileJSONSpecification` was split out of. They now answer the question their signature asks.
+describe('the boolean guards never throw', () => {
+	it('isVectorLayer returns false rather than throwing', () => {
+		expect(isVectorLayer({ id: 'test', fields: { field1: 'Number' } })).toBe(true);
+		for (const bad of [null, 42, {}, { id: 123, fields: {} }, { id: 'x', fields: { a: 'Nope' } }]) {
+			expect(() => isVectorLayer(bad)).not.toThrow();
+			expect(isVectorLayer(bad)).toBe(false);
+		}
+	});
+
+	it('isVectorLayers returns false rather than throwing', () => {
+		expect(isVectorLayers([{ id: 'layer1', fields: { field1: 'Number' } }])).toBe(true);
+		for (const bad of [null, {}, [], [{ id: 'a', fields: { f: 'InvalidType' } }]]) {
+			expect(() => isVectorLayers(bad)).not.toThrow();
+			expect(isVectorLayers(bad)).toBe(false);
+		}
+	});
+
+	it('branches, which is the whole point', () => {
+		const seen: string[] = [];
+		for (const input of [{ id: 'good', fields: {} }, 'rubbish']) {
+			if (isVectorLayer(input)) seen.push('then');
+			else seen.push('else');
+		}
+		expect(seen).toEqual(['then', 'else']);
 	});
 });
