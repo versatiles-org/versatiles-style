@@ -2,7 +2,8 @@
  * The entry for the browser bundle served from the CDN (`versatiles-style.js`, the `VersaTilesStyle`
  * global).
  *
- * It is the npm surface minus `osm.minimizeOptions`, `osm.toCode` and their `satellite` counterparts.
+ * It is the npm surface minus `osm.minimizeOptions`, `osm.toCode` and their `satellite` counterparts,
+ * the font-discovery helpers, and the four TileJSON validators.
  * Those exist to store options compactly or print a code snippet — jobs for a style *editor*, which is
  * an npm consumer with its own bundler. A page that loads this file wants to build a style and hand it
  * to MapLibre, and would otherwise pay ~2 KB gzipped for methods it never calls; attached to the

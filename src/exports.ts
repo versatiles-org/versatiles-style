@@ -74,12 +74,6 @@ export type {
 	TileJSONSpecificationVector,
 	VectorLayer,
 } from './types/index.js';
-export {
-	assertTileJSONSpecification,
-	assertRasterTileJSONSpecification,
-	isTileJSONSpecification,
-	isRasterTileJSONSpecification,
-} from './types/index.js';
 
 export type { TextGroupMap, LayerGroupMap } from './shortbread/index.js';
 /**

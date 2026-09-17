@@ -41,6 +41,10 @@ const FORBIDDEN = [
 
 /** Exports that exist on the npm entry and must not exist here. */
 const NPM_ONLY = [
+	'assertTileJSONSpecification',
+	'assertRasterTileJSONSpecification',
+	'isTileJSONSpecification',
+	'isRasterTileJSONSpecification',
 	'fetchFontFaces',
 	'fontCovers',
 	'fontScripts',

@@ -131,6 +131,20 @@ export const satellite = Object.assign(satelliteCore, {
 		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap)),
 });
 
+// ── TileJSON validation ───────────────────────────────────────────────────────
+//
+// npm only. These check a TileJSON document a caller holds — the question a tool that ingests tilesets
+// asks, not a page that builds a style: `guessStyle` already validates what it fetches, and throws the
+// same errors. `assertTileJSONSpecification` is in the CDN bundle either way because `guessStyle` calls
+// it; being free to re-export is not a reason to widen the surface a page has to read.
+
+export {
+	assertTileJSONSpecification,
+	assertRasterTileJSONSpecification,
+	isTileJSONSpecification,
+	isRasterTileJSONSpecification,
+} from './types/index.js';
+
 // ── Font discovery ────────────────────────────────────────────────────────────
 //
 // npm only. These answer "which faces does this glyph server have, and which of them can write this
