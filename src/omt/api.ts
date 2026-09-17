@@ -13,7 +13,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/index.js';
-import { styleCode, type SchemaDescriptor } from '../api/index.js';
+import { styleCode, type CodeOptions, type SchemaDescriptor } from '../api/index.js';
 import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import {
@@ -149,8 +149,12 @@ export const omt = Object.assign(omtFn, {
 	 */
 	minimizeOptions: minimizeOmtOptions,
 
-	/** A runnable snippet for these options. Emits the subpath import, so it runs as pasted. */
-	toCode(options?: OmtOptions): string {
-		return styleCode('omt', minimizeOmtOptions(options));
+	/**
+	 * A runnable snippet for these options. Emits the subpath import, so it runs as pasted.
+	 *
+	 * There is no `target: 'browser'` form: the CDN bundle carries only `osm()` and `satellite()`.
+	 */
+	toCode(options?: OmtOptions, codeOptions?: CodeOptions): string {
+		return styleCode('omt', minimizeOmtOptions(options), codeOptions);
 	},
 } as const);

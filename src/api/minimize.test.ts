@@ -423,4 +423,50 @@ describe('toCode', () => {
 	] as const)('%s: the snippet runs and builds the same style', async (_label, code, expected) => {
 		same(await run(code()), expected());
 	});
+
+	describe("target: 'browser'", () => {
+		/**
+		 * Runs the snippet's `<script>` body against a stand-in `VersaTilesStyle` global, the way a page
+		 * loading the CDN bundle would. The surgery lifts `style` out of the IIFE, which is scoped.
+		 */
+		function runBrowser(code: string): unknown {
+			const script = code.split('<script>')[1].split('</script>')[0];
+			const body = script.replace('(async () => {', 'return (async () => {').replace('})();', 'return style; })();');
+			const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+			const VersaTilesStyle = { osm, satellite, inlineSources: (style: unknown) => style };
+			return new AsyncFunction('VersaTilesStyle', body)(VersaTilesStyle);
+		}
+
+		it('writes the script-tag form, with no import and no top-level await', () => {
+			const code = osm.toCode({ theme: 'gray' }, { target: 'browser' });
+			expect(code).toContain(
+				'<script src="https://tiles.versatiles.org/assets/lib/versatiles-style/versatiles-style.js">'
+			);
+			expect(code).toContain('VersaTilesStyle.inlineSources(VersaTilesStyle.osm({');
+			expect(code).toContain('theme: "gray"');
+			// a classic script is not a module: no import, and the await needs an async IIFE around it
+			expect(code).not.toContain('import ');
+			expect(code).toContain('(async () => {');
+		});
+
+		it.each([
+			['osm', () => osm.toCode({ theme: 'muted' }, { target: 'browser' }), () => osm({ theme: 'muted' })],
+			[
+				'satellite',
+				() => satellite.toCode({ raster: { opacity: 0.7 } }, { target: 'browser' }),
+				() => satellite({ raster: { opacity: 0.7 } }),
+			],
+		] as const)('%s: the snippet runs and builds the same style', async (_label, code, expected) => {
+			same(await runBrowser(code()), expected());
+		});
+
+		it('refuses the schemas the CDN bundle does not carry', async () => {
+			const { omt } = await import('../omt/index.js');
+			expect(() => omt.toCode({ theme: 'gray' }, { target: 'browser' })).toThrow(/only osm\(\) and satellite\(\)/);
+		});
+
+		it("target 'npm' is the default and unchanged", () => {
+			expect(osm.toCode({ theme: 'gray' }, { target: 'npm' })).toBe(osm.toCode({ theme: 'gray' }));
+		});
+	});
 });

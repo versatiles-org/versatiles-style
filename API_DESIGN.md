@@ -17,6 +17,7 @@
   - [`guessSchema(tileJSON): SchemaGuess`](#guessschematilejson-schemaguess)
   - [`inspectorStyle(tileJSON, options?): StyleSpecification`](#inspectorstyletilejson-options-stylespecification)
   - [`guessOptions(style, options?): Promise<OptionsGuess>`](#guessoptionsstyle-options-promiseoptionsguess)
+  - [`styleMetadata(builder, options)` / `readStyleOptions(style)`](#stylemetadatabuilder-options--readstyleoptionsstyle)
   - [Swapping a style at runtime](#swapping-a-style-at-runtime)
   - [Projection](#projection)
   - [`isDarkMode(): boolean`](#isdarkmode-boolean)
@@ -549,6 +550,31 @@ URLs that MapLibre cannot resolve on its own. It always sets `urls.base` too, ev
 `minimizeOptions` leaves it out as the default: the default base is the page origin, and a snippet
 runs on another page or a server, where it would load tiles, glyphs and sprites from somewhere else.
 
+`toCode(options, { target })` chooses the form. The default, `'npm'`, is the ES module above — for a
+project with a bundler. `'browser'` writes what a plain HTML page needs instead: the CDN bundle in a
+`<script>` tag and the `VersaTilesStyle` global, with the `await` wrapped in an async IIFE, because a
+classic script is not a module and has no top-level await.
+
+```ts
+osm.toCode({ theme: 'gray' }, { target: 'browser' });
+// returns:
+// <script src="https://tiles.versatiles.org/assets/lib/versatiles-style/versatiles-style.js"></script>
+// <script>
+//   (async () => {
+//     const style = await VersaTilesStyle.inlineSources(VersaTilesStyle.osm({
+//       theme: "gray",
+//       urls: {
+//         base: "https://tiles.versatiles.org"
+//       }
+//     }));
+//   })();
+// </script>
+```
+
+Only `osm()` and `satellite()` have a `'browser'` form. The CDN bundle's entry is `src/browser.ts`, which
+carries those two and nothing else, so `omt.toCode(…, { target: 'browser' })` would print a snippet calling
+a global that does not exist; it throws instead, naming the default target.
+
 `osm.layerGroups` mirrors the shape of `LayerGroupOptions`, with the layer IDs each group controls
 at the leaves — useful for building a UI over the options, or for finding a layer to target with
 `beforeId`. It is derived from the layers themselves, so it cannot drift from what the options
@@ -902,6 +928,46 @@ listed in `report.unmatched`. Tile URLs are not copied: the options build a styl
 
 To judge a migration by eye, `npm run migrate-compare -- <style URL> …` renders each style next to its
 migration at a few places, with live tiles on both sides, into `scripts/migrate-compare/out/index.html`.
+
+---
+
+## `styleMetadata(builder, options)` / `readStyleOptions(style)`
+
+```ts
+styleMetadata(builder: StyleBuilder, options: object, base?: StyleSpecification['metadata']): StyleSpecification['metadata']
+readStyleOptions(style: StyleSpecification): StyleOptionsRecord | undefined
+
+type StyleBuilder = 'osm' | 'satellite' | 'omt' | 'protomaps'
+type StyleOptionsRecord = { builder: StyleBuilder; options: Record<string, unknown>; version: number }
+```
+
+Record the options a style was built from in its `metadata`, and read them back. This is the exact
+round-trip a style **editor** wants: reopen a style.json it wrote earlier and get its options back, instead
+of reconstructing them with [`guessOptions`](#guessoptionsstyle-options-promiseoptionsguess), which
+evaluates probes and fits colours and is necessarily approximate. Foreign styles still need that; a style
+this library wrote should not have to be guessed at.
+
+```ts
+const options = osm.minimizeOptions(edited);
+const style = { ...osm(edited), metadata: styleMetadata('osm', options) };
+
+// later, wherever that style.json turns up again
+const record = readStyleOptions(style); // { builder: 'osm', options, version: 1 }
+```
+
+**Opt-in — the builders never write it themselves.** Two reasons. `osm(osm.minimizeOptions(x))` is
+guaranteed to build the _identical_ style to `osm(x)`, and minimising drops representations that resolve
+differently but render the same (a tint at amount 0, the `icons` alias); writing the resolved options into
+the style would make those two styles differ in their metadata and break that guarantee. And every
+consumer would carry a copy of every option in every style, for a field almost none of them read back. So
+the caller that wants a round-trip asks for one, passing the minimised options it already holds.
+
+`readStyleOptions` never throws: anything missing or malformed reads as `undefined`. `version` is the shape
+of the record, not the package version — a reader branches on it; a record written before versions were
+stamped reads as `0`.
+
+`urls` is never recorded. It may hold a whole pre-fetched TileJSON, and it pins the style to the host that
+built it. URLs are environment, not style, so the reader supplies its own.
 
 ---
 

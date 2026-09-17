@@ -7,4 +7,5 @@ export type { GuessStyleOptions } from './guessStyle.js';
 export type { SchemaGuess, SchemaName, SchemaScore } from './guessSchema.js';
 export type { InspectorStyleOptions } from './inspectorStyle.js';
 export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './schema-builder.js';
-export { styleCode } from './code.js';
+export { styleCode, BROWSER_BUNDLE_URL } from './code.js';
+export type { CodeOptions, CodeTarget } from './code.js';

@@ -134,6 +134,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   always returned the same one), and a numeric or `'weak'` `saturation` is honoured rather than ignored.
 
 ### Added
+- `toCode(options, { target })` writes the snippet for where it will run. The default `'npm'` is the ES
+  module as before; `'browser'` writes the `<script>` form for a plain HTML page loading the CDN bundle —
+  no import, and the `await` inside an async IIFE, since a classic script is not a module. Only `osm()`
+  and `satellite()` have a `'browser'` form; `omt()` and `protomaps()` are not in the CDN bundle and say so.
+- `styleMetadata(builder, options)` and `readStyleOptions(style)` record the options a style was built
+  from in its `metadata`, and read them back — an exact round-trip for a style editor, where
+  `@versatiles/style/migrate` can only reconstruct. Opt-in: the builders do not write it themselves,
+  because baking options into the style would break the `osm(minimizeOptions(x)) === osm(x)` guarantee
+  (minimising drops representations that resolve differently but render identically) and would add a copy
+  of every option to every style, for the benefit of the few callers that read it back. `urls` is never
+  recorded — it may hold a whole pre-fetched TileJSON, and it pins a style to the host that built it.
 - `hwb()`, `hsv()`, `oklab()` and `oklch()` as input syntax, and `Color.to(space)` with typed per-space
   accessors (`color.oklch.l`), `Color.mix()` with the four CSS hue-interpolation methods, `deltaEOK()`,
   `contrastRatio()`, `luminance()`, `inGamut()`, `toGamut()` (CSS Color 4 gamut mapping) and

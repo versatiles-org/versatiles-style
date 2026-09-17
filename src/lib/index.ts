@@ -10,7 +10,18 @@
  */
 
 export { normalizeAttribution } from './utils.js';
-export { STYLE_LICENSE, STYLE_METADATA, styleName } from './styleMeta.js';
+export {
+	STYLE_LICENSE,
+	STYLE_METADATA,
+	styleName,
+	styleMetadata,
+	readStyleOptions,
+	METADATA_BUILDER_KEY,
+	METADATA_OPTIONS_KEY,
+	METADATA_VERSION_KEY,
+	METADATA_VERSION,
+} from './styleMeta.js';
+export type { StyleBuilder, StyleOptionsRecord } from './styleMeta.js';
 export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
 export { fetchTileJSON } from './fetchTileJSON.js';

@@ -82,6 +82,20 @@ export type { TextGroupMap, LayerGroupMap } from './shortbread/index.js';
  */
 export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/index.js';
 export { inlineSources, fetchTileJSON } from './lib/index.js';
+/**
+ * Recording the options a style was built from, and reading them back. Opt-in: the builders do not write
+ * this themselves — see the note on `styleMetadata`. Free functions, so a bundle that never calls them
+ * drops them.
+ */
+export {
+	styleMetadata,
+	readStyleOptions,
+	METADATA_BUILDER_KEY,
+	METADATA_OPTIONS_KEY,
+	METADATA_VERSION_KEY,
+	METADATA_VERSION,
+} from './lib/index.js';
+export type { StyleBuilder, StyleOptionsRecord } from './lib/index.js';
 export { Color, ColorParseError } from './color/index.js';
 export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/index.js';
 

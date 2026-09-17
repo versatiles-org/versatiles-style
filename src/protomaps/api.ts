@@ -19,7 +19,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
 import { getLanguages } from '../lib/index.js';
-import { styleCode, type SchemaDescriptor } from '../api/index.js';
+import { styleCode, type CodeOptions, type SchemaDescriptor } from '../api/index.js';
 import { PROTOMAPS_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import {
@@ -167,8 +167,12 @@ export const protomaps = Object.assign(protomapsFn, {
 	 */
 	minimizeOptions: minimizeProtomapsOptions,
 
-	/** A runnable snippet for these options. Emits the subpath import, so it runs as pasted. */
-	toCode(options?: ProtomapsOptions): string {
-		return styleCode('protomaps', minimizeProtomapsOptions(options));
+	/**
+	 * A runnable snippet for these options. Emits the subpath import, so it runs as pasted.
+	 *
+	 * There is no `target: 'browser'` form: the CDN bundle carries only `osm()` and `satellite()`.
+	 */
+	toCode(options?: ProtomapsOptions, codeOptions?: CodeOptions): string {
+		return styleCode('protomaps', minimizeProtomapsOptions(options), codeOptions);
 	},
 } as const);

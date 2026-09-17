@@ -93,7 +93,7 @@
 
 export * from './exports.js';
 
-import { osm as osmCore, satellite as satelliteCore, styleCode } from './api/index.js';
+import { osm as osmCore, satellite as satelliteCore, styleCode, type CodeOptions } from './api/index.js';
 import { getOverlayLayerGroupMap } from './shortbread/layer-groups-map.js';
 import {
 	minimizeOsmOptions,
@@ -101,6 +101,8 @@ import {
 	type OsmOptions,
 	type SatelliteOptions,
 } from './options/index.js';
+
+export type { CodeOptions, CodeTarget } from './api/index.js';
 
 /**
  * `osm()` with the authoring helpers attached.
@@ -117,8 +119,14 @@ export const osm = Object.assign(osmCore, {
 	 */
 	minimizeOptions: minimizeOsmOptions,
 
-	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
-	toCode: (options?: OsmOptions): string => styleCode('osm', minimizeOsmOptions(options)),
+	/**
+	 * A runnable `@versatiles/style` snippet for these options, minimised first.
+	 *
+	 * `target: 'browser'` writes the `<script>` form for a plain HTML page that loads the CDN bundle,
+	 * instead of the ES module a bundler would take.
+	 */
+	toCode: (options?: OsmOptions, codeOptions?: CodeOptions): string =>
+		styleCode('osm', minimizeOsmOptions(options), codeOptions),
 });
 
 /** `satellite()` with the same authoring helpers. */
@@ -130,8 +138,8 @@ export const satellite = Object.assign(satelliteCore, {
 	minimizeOptions: (options?: SatelliteOptions) => minimizeSatelliteOptions(options, getOverlayLayerGroupMap),
 
 	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
-	toCode: (options?: SatelliteOptions): string =>
-		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap)),
+	toCode: (options?: SatelliteOptions, codeOptions?: CodeOptions): string =>
+		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap), codeOptions),
 });
 
 // ── TileJSON validation ───────────────────────────────────────────────────────
