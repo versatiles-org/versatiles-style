@@ -232,11 +232,11 @@ treemap-beta
     "layers/landcover.ts": 2.2
     "layers/water.ts": 1.5
     "other (10 files)": 4.3
-"options — 14.6 KB"
+"options — 14.8 KB"
     "parts/text.ts": 2.6
     "parts/layer-groups.ts": 2.4
     "parts/v5-hints.ts": 2
-    "other (17 files)": 7.7
+    "other (19 files)": 7.9
 "color — 14.4 KB"
     "color.ts": 4.1
     "parser.ts": 3.7
@@ -262,312 +262,21 @@ treemap-beta
     "guessStyle.ts": 2.8
     "satellite.ts": 1.6
     "other (2 files)": 2
-"lib — 4.5 KB"
-    "other (10 files)": 4.5
 "types — 4.3 KB"
     "tilejson.ts": 4.3
+"lib — 4.3 KB"
+    "other (10 files)": 4.3
 "features — 2.9 KB"
     "other (9 files)": 2.9
 ```
 
-Sized by the bundle's own sourcemap: **104.9 KB** raw, **30.7 KB** gzipped, across 84 modules.
+Sized by the bundle's own sourcemap: **105 KB** raw, **30.7 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 
 <!--- This chapter is generated automatically --->
 
-```mermaid
----
-config:
-  layout: elk
----
-flowchart TB
-
-subgraph 0["src"]
-subgraph 1["api"]
-2["code.ts"]
-O["guessSchema.ts"]
-Z["guessStyle.ts"]
-14["osm.ts"]
-1O["satellite.ts"]
-1P["index.ts"]
-1Q["schema-builder.ts"]
-end
-subgraph 3["options"]
-4["index.ts"]
-5["minimize.ts"]
-F["osm.ts"]
-subgraph G["parts"]
-H["* (18 files)"]
-end
-M["satellite.ts"]
-N["osm-overlay.ts"]
-end
-subgraph 6["color"]
-7["index.ts"]
-8["color.ts"]
-9["convert.ts"]
-A["ops.ts"]
-B["space.ts"]
-C["parser.ts"]
-D["serialize.ts"]
-E["recolor.ts"]
-1T["random.ts"]
-end
-subgraph I["themes"]
-J["* (7 files)"]
-end
-subgraph K["lib"]
-L["utils.ts"]
-P["index.ts"]
-Q["fetchTileJSON.ts"]
-R["loadTileSource.ts"]
-S["inlineSources.ts"]
-T["tileSource.ts"]
-U["languages.ts"]
-V["opacity.ts"]
-W["schema-signatures.ts"]
-X["styleMeta.ts"]
-Y["symbol-layout.ts"]
-1V["fetchFontFaces.ts"]
-1W["fontCovers.ts"]
-1X["schema-audit.ts"]
-end
-subgraph 10["types"]
-11["index.ts"]
-12["tilejson.ts"]
-13["vector_layer.ts"]
-2O["maplibre.ts"]
-end
-subgraph 15["features"]
-16["* (10 files)"]
-end
-subgraph 17["shortbread"]
-18["index.ts"]
-19["context.ts"]
-1H["groups.ts"]
-subgraph 1I["layers"]
-1J["* (13 files)"]
-end
-1K["schema.ts"]
-1N["layer-groups-map.ts"]
-end
-subgraph 1A["dsl"]
-1B["index.ts"]
-1C["assemble.ts"]
-1D["build.ts"]
-1E["text.ts"]
-1F["context.ts"]
-1G["group-maps.ts"]
-end
-subgraph 1L["cartography"]
-1M["* (6 files)"]
-end
-1R["browser.ts"]
-1S["exports.ts"]
-1U["index.ts"]
-subgraph 1Y["migrate"]
-1Z["calibrate.ts"]
-20["evaluate.ts"]
-21["math.ts"]
-22["probes.ts"]
-23["derive.ts"]
-24["guess.ts"]
-25["index.ts"]
-end
-subgraph 26["omt"]
-27["api.ts"]
-28["context.ts"]
-29["schema.ts"]
-2A["layer-groups-map.ts"]
-subgraph 2B["layers"]
-2C["* (13 files)"]
-end
-2D["options.ts"]
-2E["index.ts"]
-end
-subgraph 2F["protomaps"]
-2G["api.ts"]
-2H["context.ts"]
-2I["schema.ts"]
-2J["layer-groups-map.ts"]
-subgraph 2K["layers"]
-2L["* (13 files)"]
-end
-2M["options.ts"]
-2N["index.ts"]
-end
-end
-1-->4
-4-->5
-4-->N
-4-->F
-4-->H
-4-->M
-5-->7
-5-->F
-5-->H
-5-->M
-7-->8
-7-->C
-7-->E
-8-->9
-8-->A
-8-->C
-8-->D
-8-->B
-A-->9
-A-->B
-C-->B
-D-->A
-D-->B
-E-->8
-F-->H
-H-->J
-H-->L
-M-->N
-M-->H
-N-->H
-1-->P
-P-->Q
-P-->S
-P-->U
-P-->R
-P-->V
-P-->W
-P-->X
-P-->Y
-P-->T
-P-->L
-K-->4
-Q-->R
-R-->L
-S-->R
-S-->T
-T-->L
-Z-->11
-Z-->O
-Z-->14
-Z-->1O
-11-->12
-11-->13
-14-->7
-1-->16
-1-->18
-14-->J
-16-->P
-16-->7
-18-->19
-18-->1H
-18-->1N
-18-->1J
-18-->1K
-17-->1B
-1B-->1C
-1B-->1D
-1B-->1F
-1B-->1G
-1B-->1E
-1C-->1D
-1C-->1E
-1A-->7
-1A-->P
-1A-->4
-1F-->J
-1G-->1E
-1H-->1J
-1J-->1K
-1J-->1M
-1M-->1B
-1N-->16
-1N-->F
-1N-->19
-1N-->1J
-1O-->14
-1P-->2
-1P-->O
-1P-->Z
-1P-->14
-1P-->1O
-1R-->1P
-1R-->1S
-1S-->1P
-1S-->7
-1S-->P
-1S-->4
-1S-->11
-1T-->8
-1U-->1P
-1U-->2
-1U-->1S
-1U-->1V
-1U-->1W
-1U-->5
-1U-->1N
-1V-->L
-1Z-->7
-1Y-->4
-1Z-->20
-1Z-->21
-1Z-->22
-23-->1P
-23-->5
-23-->18
-23-->1N
-23-->J
-23-->1Z
-23-->20
-23-->21
-23-->22
-24-->P
-24-->1V
-24-->23
-25-->23
-25-->24
-27-->1P
-27-->7
-27-->16
-26-->P
-26-->4
-27-->J
-27-->28
-27-->2A
-27-->2C
-27-->2D
-27-->29
-26-->1B
-28-->29
-2A-->28
-2A-->2C
-2A-->2D
-2C-->29
-2C-->1M
-2E-->27
-2E-->29
-2G-->1P
-2G-->7
-2G-->16
-2F-->P
-2F-->4
-2G-->J
-2G-->2H
-2G-->2J
-2G-->2L
-2G-->2M
-2G-->2I
-2F-->1B
-2H-->2I
-2J-->2H
-2J-->2L
-2J-->2M
-2L-->2I
-2L-->1M
-2N-->2G
-2N-->2I
-
-class 0,1,3,G,6,I,K,10,15,17,1I,1A,1L,1Y,26,2B,2F,2K subgraphs;
-classDef subgraphs fill-opacity:0.1, fill:#888, color:#888, stroke:#888;
-```
+[![Dependency graph](assets/dependency-graph.svg)](assets/dependency-graph.svg?raw=true)
 
 ## Licenses
 

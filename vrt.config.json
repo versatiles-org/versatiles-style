@@ -20,6 +20,7 @@
 			"src/omt/layers/*",
 			"src/protomaps/layers/*",
 			"src/shortbread/layers/*"
-		]
+		],
+		"svg": "assets/dependency-graph.svg"
 	}
 }
