@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl';
-import { transitStops as draw, type StopDef } from '../../cartography';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { transitStops as draw, type StopDef } from '../../cartography/index.js';
 
 // Which Shortbread features are a stop. The symbol style is shared — see
 // `src/cartography/transitstops.ts`.

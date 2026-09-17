@@ -38,7 +38,7 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync, existsSync } from 'node:fs';
 import { Color } from '../src/color/index.js';
 import { osm } from '../src/index.js';
-import { colorOptionsKeys, type ColorsOptions, type Palette } from '../src/options/';
+import { colorOptionsKeys, type ColorsOptions, type Palette } from '../src/options/index.js';
 
 type ColorKey = keyof ColorsOptions;
 

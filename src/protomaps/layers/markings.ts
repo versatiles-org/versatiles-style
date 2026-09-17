@@ -1,6 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/';
+import * as b from '../../dsl/index.js';
 
 // Directional road markings for Protomaps. `oneway` is a field on `roads`; the reverse direction has no
 // separate representation in the sampled data, so only the forward arrows are drawn — one layer where

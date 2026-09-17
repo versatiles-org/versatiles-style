@@ -1,15 +1,15 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
-import type { FetchLike, OsmUrlsOptions } from '../options/';
-import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls } from '../options/';
+import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
+import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
-import { resolveUrl } from '../options/';
+import { resolveUrl } from '../options/index.js';
 import { osm } from './osm.js';
-import { checkKeys } from '../options/';
+import { checkKeys } from '../options/index.js';
 import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
 import { guessSchema, qualifies } from './guessSchema.js';
-import { SCHEMA_NAMES } from '../lib/';
+import { SCHEMA_NAMES } from '../lib/index.js';
 
 /**
  * Options for {@link guessStyle}.

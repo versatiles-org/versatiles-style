@@ -3,7 +3,7 @@ import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 import { getStyleVariants } from '../../scripts/lib/variants.js';
-import type { OsmOptions, SatelliteOptions } from '../options/';
+import type { OsmOptions, SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 
 // The build pipeline (scripts/build-styles.ts) validates every style against the MapLibre

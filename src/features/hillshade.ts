@@ -1,6 +1,6 @@
 import { Color } from '../color/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../options/';
+import type { ResolvedSun } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 
 // Inserts a hillshade layer after the last fill/raster/background layer so it renders

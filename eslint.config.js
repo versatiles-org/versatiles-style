@@ -1,7 +1,59 @@
+import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import parser from '@typescript-eslint/parser';
 import eslint_plugin from '@typescript-eslint/eslint-plugin';
+
+/**
+ * Rules that exist only for this repository. Defining the plugin inline is what flat config is for:
+ * one small rule, no dependency, no package to publish and version.
+ */
+const localPlugin = {
+	rules: {
+		/**
+		 * A relative specifier names a file, with its extension: `'../types/index.js'` — never the
+		 * directory it sits in, as `'../types/'` or `'../types'`.
+		 *
+		 * The short forms are not valid ESM. Node rejects them with `ERR_UNSUPPORTED_DIR_IMPORT`, and they
+		 * work here only because `moduleResolution` is `bundler` and everything reaching the outside world
+		 * goes through Rollup, Vite or esbuild first. They are also the one place the tree drops the
+		 * explicit `.js` that every other specifier carries, and they have no unambiguous spelling for a
+		 * module's own barrel: that is `'.'` or `'./'`, and those are what let a cycle into
+		 * `src/options/parts/` once and then matched every sibling import when a lint rule forbade them.
+		 *
+		 * The fix is read off disk rather than guessed, because both endings occur: a directory takes
+		 * `/index.js`, a module that merely lost its extension takes `.js`.
+		 */
+		'no-directory-import': {
+			meta: {
+				type: 'problem',
+				fixable: 'code',
+				schema: [],
+				docs: { description: 'Require relative imports to name a file, with its `.js` extension.' },
+			},
+			create(context) {
+				const check = (node) => {
+					const value = node.source?.value;
+					if (typeof value !== 'string' || !value.startsWith('.')) return;
+					if (value.endsWith('.js') || value.endsWith('.json')) return;
+					const target = resolve(dirname(context.filename), value);
+					let fixed;
+					if (existsSync(join(target, 'index.ts'))) fixed = `${value.replace(/\/?$/, '/')}index.js`;
+					else if (existsSync(`${target}.ts`)) fixed = `${value}.js`;
+					context.report({
+						node: node.source,
+						message: fixed
+							? `Import the file itself, with its extension: '${fixed}'.`
+							: `A relative import must name a file with its '.js' extension; '${value}' does not resolve to one.`,
+						fix: fixed ? (fixer) => fixer.replaceText(node.source, `'${fixed}'`) : undefined,
+					});
+				};
+				return { ImportDeclaration: check, ExportNamedDeclaration: check, ExportAllDeclaration: check };
+			},
+		},
+	},
+};
 
 export default [
 	js.configs.recommended,
@@ -97,6 +149,11 @@ export default [
 				},
 			],
 		},
+	},
+	{
+		files: ['**/src/**/*.ts', '**/scripts/**/*.ts'],
+		plugins: { local: localPlugin },
+		rules: { 'local/no-directory-import': 'error' },
 	},
 	{
 		// Tests: `osm()` and `satellite()` are synchronous in v6, so an `await` on their result (or on any

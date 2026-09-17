@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import * as b from './build.js';
-import { Color } from '../color/';
-import { resolveLayerGroups } from '../options/';
-import type { MaplibreLayer } from '../types/';
+import { Color } from '../color/index.js';
+import { resolveLayerGroups } from '../options/index.js';
+import type { MaplibreLayer } from '../types/index.js';
 
 // Unit tests for the layer-generation engine (build.ts). The value-processing internals
 // (processColor / processFont / processZoomStops / processExpression / applyProps) are private,

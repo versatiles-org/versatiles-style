@@ -1,5 +1,5 @@
 import type { FontFaceInfo } from './fetchFontFaces.js';
-import { labelLanguage } from '../options/';
+import { labelLanguage } from '../options/index.js';
 
 /**
  * Sample letters per script (ISO 15924 code): a face covers a script when it has the blocks of all of

@@ -24,8 +24,8 @@ import {
 	type TextOptions,
 	type TextTopic,
 	type ThemeOptions,
-} from './parts/';
-import { Color } from '../color/';
+} from './parts/index.js';
+import { Color } from '../color/index.js';
 // Type-only, and deliberately so: a *value* imported from a schema would make the option layer
 // depend on `shortbread`, which depends on `dsl`, which depends back on these options — one edge
 // that fuses half the package into a single cycle. The overlay's group map is therefore passed in

@@ -20,7 +20,7 @@
 
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
-import type { Palette, ResolvedColors } from '../../src/options/';
+import type { Palette, ResolvedColors } from '../../src/options/index.js';
 interface Scale {
 	fill?: number;
 	line?: number;

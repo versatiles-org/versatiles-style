@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl';
-import { buildings as build, buildings3d as build3d, type BuildingVocabulary } from '../../cartography';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { buildings as build, buildings3d as build3d, type BuildingVocabulary } from '../../cartography/index.js';
 
 // OpenMapTiles' building names. `render_height`/`render_min_height` carry the prefix because
 // OpenMapTiles pre-computes them from the building's tags; `hide_3d` survives under its own name, and

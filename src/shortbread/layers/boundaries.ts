@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl';
-import { boundaries as draw, type BoundaryVocabulary } from '../../cartography';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { boundaries as draw, type BoundaryVocabulary } from '../../cartography/index.js';
 
 // Shortbread carries `disputed` and `maritime` as booleans. The cartography is shared — see
 // `src/cartography/boundaries.ts`, and the note there on why the flag's type is vocabulary.

@@ -1,4 +1,4 @@
-import type { ResolvedColors } from '../options/';
+import type { ResolvedColors } from '../options/index.js';
 import type { PaletteDefinition } from './types.js';
 
 // Earthy, organic palette — richer greens for nature and a warm land.

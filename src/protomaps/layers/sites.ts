@@ -1,5 +1,5 @@
 import type { LayerContext, ColorSet } from '../context.js';
-import * as b from '../../dsl/';
+import * as b from '../../dsl/index.js';
 
 // Site polygons for Protomaps — `landuse` kinds, as in the OpenMapTiles port, but a richer set.
 //

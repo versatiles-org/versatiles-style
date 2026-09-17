@@ -30,7 +30,7 @@
  */
 import process from 'node:process';
 import { osm } from '../src/index.js';
-import { getLayerGroupMap, SHORTBREAD_SCHEMA } from '../src/shortbread/';
+import { getLayerGroupMap, SHORTBREAD_SCHEMA } from '../src/shortbread/index.js';
 import { auditSchema, auditGroupBinding, schemaUsage, type SchemaRecord } from '../src/lib/schema-audit.js';
 import { OMT_SCHEMA } from '../src/omt/schema.js';
 import { PROTOMAPS_SCHEMA } from '../src/protomaps/schema.js';

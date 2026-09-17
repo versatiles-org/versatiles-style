@@ -29,8 +29,8 @@ import {
 	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
-} from '../options/';
-import { resolveUrl } from '../options/';
+} from '../options/index.js';
+import { resolveUrl } from '../options/index.js';
 
 /**
  * Protomaps' options — in this directory, not in `src/options/`.

@@ -1,5 +1,5 @@
-import type { LayerContext } from '../dsl/';
-import * as b from '../dsl/';
+import type { LayerContext } from '../dsl/index.js';
+import * as b from '../dsl/index.js';
 
 /**
  * Building cartography, shared by every schema.

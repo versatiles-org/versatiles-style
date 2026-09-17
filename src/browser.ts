@@ -12,4 +12,4 @@
  */
 
 export * from './exports.js';
-export { osm, satellite } from './api/';
+export { osm, satellite } from './api/index.js';

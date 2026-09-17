@@ -1,7 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext, ColorSet } from '../context.js';
 import type { Color } from '../../color/index.js';
-import * as b from '../../dsl/';
+import * as b from '../../dsl/index.js';
 
 // Landcover band for OpenMapTiles: the bottom-most fills. The port of
 // `src/shortbread/layers/landcover.ts`, and the module where the two schemas disagree most.

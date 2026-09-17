@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Palette } from '../../src/options/';
+import type { Palette } from '../../src/options/index.js';
 import { PALETTES, getPaletteColors } from '../../src/themes/index.js';
 import { generateThemes } from './theme-generator.js';
 

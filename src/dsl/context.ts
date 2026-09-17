@@ -1,7 +1,7 @@
 import type { DataDrivenPropertyValueSpecification, FormattedSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { Color } from '../color/index.js';
-import { colorOptionsKeys, labelLanguage } from '../options/';
-import type { ColorsOptions, ResolvedColors, ResolvedLayerGroups, ResolvedText, Palette } from '../options/';
+import { colorOptionsKeys, labelLanguage } from '../options/index.js';
+import type { ColorsOptions, ResolvedColors, ResolvedLayerGroups, ResolvedText, Palette } from '../options/index.js';
 import { isDarkPalette } from '../themes/index.js';
 
 export type ColorSet = Record<keyof ColorsOptions, Color>;

@@ -25,7 +25,7 @@ import {
 	type TextOptions,
 	type TopicTree,
 	type ThemeOptions,
-} from './parts/';
+} from './parts/index.js';
 
 export type OsmOverlayOptions = {
 	theme?: ThemeOptions;

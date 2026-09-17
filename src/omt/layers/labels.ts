@@ -1,7 +1,7 @@
 import type { ExpressionSpecification, FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl';
-import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../../cartography';
+import * as b from '../../dsl/index.js';
+import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../../cartography/index.js';
 
 // Text labels for OpenMapTiles, in the same two bands as the Shortbread module: `featureLabels`
 // (motorway refs/shields, street names, water names), then transit stops, then `placeLabels`

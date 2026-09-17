@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext, shortbreadLayers } from './index.js';
-import { resolveOsm, resolveLayerGroups } from '../options/';
-import { Color } from '../color/';
-import type { MaplibreLayer } from '../types/';
+import { resolveOsm, resolveLayerGroups } from '../options/index.js';
+import { Color } from '../color/index.js';
+import type { MaplibreLayer } from '../types/index.js';
 import { SHORTBREAD_SCHEMA } from './schema.js';
 
 // Structural contracts on the *tagged* layer stream (before gate() drops the group tags), i.e.

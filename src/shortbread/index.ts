@@ -10,7 +10,7 @@ export {
 	SLOT_BELOW_LABELS,
 	LANDCOVER_LAYERS,
 	LAND_APPEAR_MIN,
-} from './layers/';
+} from './layers/index.js';
 export { SLOT_IDS } from './groups.js';
 export { getTextGroupMap, getLayerGroupMap, getOverlayLayerGroupMap } from './layer-groups-map.js';
 export type { TextGroupMap, LayerGroupMap } from './layer-groups-map.js';

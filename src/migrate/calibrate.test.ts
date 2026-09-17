@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { osm } from '../api/osm.js';
 import { getPaletteColors } from '../themes/index.js';
-import { colorOptionsKeys } from '../options/';
+import { colorOptionsKeys } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { calibrate, FULL_EVIDENCE, parseRGBA, solveColors, type ChannelId } from './calibrate.js';
 import { readProbe, type Channel, type RGBA } from './evaluate.js';

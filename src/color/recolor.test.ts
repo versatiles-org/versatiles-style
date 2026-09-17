@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { osm } from '../index.js';
 import { applyRecolor, Color } from './index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { RecolorOptions } from '../options/';
-import { resolveRecolor } from '../options/';
+import type { RecolorOptions } from '../options/index.js';
+import { resolveRecolor } from '../options/index.js';
 
 // applyRecolor() mutates the style in place (returns void), rewriting every paint `*-color`
 // value through the resolved recolor transform. Colors are re-emitted via Color.asString()

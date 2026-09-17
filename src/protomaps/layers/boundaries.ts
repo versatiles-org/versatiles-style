@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl';
-import { boundaries as draw, type BoundaryVocabulary } from '../../cartography';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { boundaries as draw, type BoundaryVocabulary } from '../../cartography/index.js';
 
 // Protomaps carries `disputed` as a **boolean**, like Shortbread and unlike OpenMapTiles' integer —
 // verified by `npm run schema-values -- protomaps boundaries`. The three schemas encode the same flag

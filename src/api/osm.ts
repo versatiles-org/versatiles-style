@@ -1,6 +1,6 @@
-import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/';
-import type { OsmOptions, ResolvedOsm } from '../options/';
-import { colorOptionsKeys, resolveOsm } from '../options/';
+import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
+import type { OsmOptions, ResolvedOsm } from '../options/index.js';
+import { colorOptionsKeys, resolveOsm } from '../options/index.js';
 import {
 	buildContext,
 	buildStyleLayers,
@@ -10,9 +10,9 @@ import {
 	SHORTBREAD_SCHEMA,
 	LANDCOVER_LAYERS,
 	LAND_APPEAR_MIN,
-} from '../shortbread/';
-import { PALETTES, getPaletteColors } from '../themes/';
-import { applyRecolor } from '../color/';
+} from '../shortbread/index.js';
+import { PALETTES, getPaletteColors } from '../themes/index.js';
+import { applyRecolor } from '../color/index.js';
 import {
 	applyIcon,
 	addTerrain,
@@ -21,9 +21,9 @@ import {
 	configure3DLighting,
 	applySky,
 	applyProjection,
-} from '../features/';
-import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/';
-import { getLanguages } from '../lib/';
+} from '../features/index.js';
+import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
+import { getLanguages } from '../lib/index.js';
 import type { SchemaDescriptor } from './schema-builder.js';
 
 const SOURCE_NAME = 'versatiles-shortbread';

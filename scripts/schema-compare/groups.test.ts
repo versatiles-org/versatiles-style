@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { osm } from '../../src/api/';
-import { getLayerGroupMap } from '../../src/shortbread/';
+import { osm } from '../../src/api/index.js';
+import { getLayerGroupMap } from '../../src/shortbread/index.js';
 import {
 	OVERLAY_COLORS,
 	coverage,

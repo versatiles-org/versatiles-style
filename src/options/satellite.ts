@@ -18,7 +18,7 @@ import {
 	type SatelliteUrlsOptions,
 	type SkyOptions,
 	type SunOptions,
-} from './parts/';
+} from './parts/index.js';
 import {
 	resolveOsmOverlay,
 	OVERLAY_DEFAULTS,

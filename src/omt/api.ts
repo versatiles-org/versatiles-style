@@ -1,12 +1,19 @@
-import type { StyleSpecification } from '../types/';
-import { colorOptionsKeys } from '../options/';
+import type { StyleSpecification } from '../types/index.js';
+import { colorOptionsKeys } from '../options/index.js';
 import { minimizeOmtOptions, resolveOmt, type OmtOptions, type ResolvedOmt } from './options.js';
-import { PALETTES, getPaletteColors } from '../themes/';
-import { applyRecolor } from '../color/';
-import { addTerrain, addHillshade, configure3DLighting, applySky, applyProjection, applyIcon } from '../features/';
-import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/';
-import { getLanguages } from '../lib/';
-import { styleCode, type SchemaDescriptor } from '../api/';
+import { PALETTES, getPaletteColors } from '../themes/index.js';
+import { applyRecolor } from '../color/index.js';
+import {
+	addTerrain,
+	addHillshade,
+	configure3DLighting,
+	applySky,
+	applyProjection,
+	applyIcon,
+} from '../features/index.js';
+import { buildSourceDescriptor, STYLE_METADATA, styleName } from '../lib/index.js';
+import { getLanguages } from '../lib/index.js';
+import { styleCode, type SchemaDescriptor } from '../api/index.js';
 import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import {
@@ -15,7 +22,7 @@ import {
 	SLOT_BELOW_STREETS,
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
-} from './layers/';
+} from './layers/index.js';
 import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 
 /**

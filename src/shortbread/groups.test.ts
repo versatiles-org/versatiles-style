@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../api/index.js';
-import type { LayerGroupOptions } from '../options/';
+import type { LayerGroupOptions } from '../options/index.js';
 import { SLOT_IDS } from './groups.js';
 
 // Per-group visibility/opacity is applied by each layer generator via `gate` (build.ts), driven by

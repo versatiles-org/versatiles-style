@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext } from './context.js';
-import { resolveOsm } from '../options/';
+import { resolveOsm } from '../options/index.js';
 import { PALETTES } from '../themes/index.js';
 import type { Color } from '../color/index.js';
 

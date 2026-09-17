@@ -25,10 +25,10 @@
 import sharp from 'sharp';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { getLayerGroupMap as shortbreadGroups, type LayerGroupMap } from '../../src/shortbread/';
+import { getLayerGroupMap as shortbreadGroups, type LayerGroupMap } from '../../src/shortbread/index.js';
 import { getLayerGroupMap as omtGroups } from '../../src/omt/layer-groups-map.js';
 import { getLayerGroupMap as protomapsGroups } from '../../src/protomaps/layer-groups-map.js';
-import type { OsmOptions, ResolvedColors } from '../../src/options/';
+import type { OsmOptions, ResolvedColors } from '../../src/options/index.js';
 import type { StyleSpecification } from '../../src/types/index.js';
 import { NativeMap } from '../lib/native-render.js';
 import { CACHE_DIR, explain, readTile, sourceMetadata, type SourceMetadata } from '../lib/tile-cache.js';

@@ -1,5 +1,5 @@
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { OsmUrlsOptions } from '../options/';
+import type { OsmUrlsOptions } from '../options/index.js';
 
 /**
  * What `guessStyle` needs from a schema in order to recognise its tileset and build a style for it.

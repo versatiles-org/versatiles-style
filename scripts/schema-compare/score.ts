@@ -1,4 +1,4 @@
-import { colorOptionsKeys, type ResolvedColors } from '../../src/options/';
+import { colorOptionsKeys, type ResolvedColors } from '../../src/options/index.js';
 import { evaluateProperty } from '../../src/migrate/evaluate.js';
 import { toLab } from '../../src/migrate/math.js';
 import type { StyleSpecification } from '../../src/types/index.js';

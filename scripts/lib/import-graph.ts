@@ -17,10 +17,13 @@ export const SRC = resolve(import.meta.dirname, '../../src');
 /** The package's entry points — `package.json` `exports`, plus the CDN bundle's own entry. */
 export const ENTRIES = ['index.ts', 'browser.ts', 'omt/index.ts', 'protomaps/index.ts', 'migrate/index.ts'];
 
-/** Resolves a relative specifier the way the build does, following a directory to its barrel. */
+/**
+ * Resolves a relative specifier the way the build does. Every specifier names a file — a barrel is
+ * `'./x/index.js'`, never `'./x/'` — which the `local/no-directory-import` lint rule enforces, so there
+ * is no directory case to follow here.
+ */
 function resolveSpecifier(from: string, specifier: string): string | undefined {
-	let target = resolve(dirname(from), specifier.replace(/\.js$/, '.ts'));
-	if (existsSync(target) && statSync(target).isDirectory()) target = resolve(target, 'index.ts');
+	const target = resolve(dirname(from), specifier.replace(/\.js$/, '.ts'));
 	return existsSync(target) && statSync(target).isFile() ? target : undefined;
 }
 
@@ -111,7 +114,7 @@ function allImports(file: string): { specifier: string; target: string }[] {
 	return found;
 }
 
-/** Whether `barrel` re-exports `target`, following `export * from './other/'` chains. */
+/** Whether `barrel` re-exports `target`, following `export * from './other/index.js'` chains. */
 function reExports(barrel: string, target: string, seen = new Set<string>()): boolean {
 	if (seen.has(barrel)) return false;
 	seen.add(barrel);
@@ -137,7 +140,7 @@ function sourceFiles(directory: string = SRC): string[] {
 
 /**
  * Deep imports that the barrel beside them already covers — `'../options/minimize.js'` in a file whose
- * next line reads `from '../options/'`.
+ * next line reads `from '../options/index.js'`.
  *
  * Only that exact shape is reported, and both halves of it matter. A barrel that does not re-export the
  * module cannot replace the deep import; and where the importing file does *not* already pull the barrel

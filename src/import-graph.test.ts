@@ -48,7 +48,7 @@ describe('the import graph', () => {
 	});
 
 	it('has no deep import that the barrel beside it already covers', () => {
-		// `import { minimizeOsmOptions } from '../options/minimize.js'` two lines above a `from '../options/'`
+		// `import { minimizeOsmOptions } from '../options/minimize.js'` two lines above a `from '../options/index.js'`
 		// that re-exports it. The module is loaded either way, so the deep specifier adds an edge and saves
 		// nothing — and the edges it adds are what make the directory graph hard to read.
 		//

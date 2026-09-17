@@ -1,4 +1,4 @@
-import type { ResolvedColors } from '../options/';
+import type { ResolvedColors } from '../options/index.js';
 import type { PaletteDefinition } from './types.js';
 
 // High-contrast black-and-white palette — ideal for print and strong data overlays.

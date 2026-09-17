@@ -1,8 +1,8 @@
-import type { LayerContext } from '../dsl/';
+import type { LayerContext } from '../dsl/index.js';
 import type { Color } from '../color/index.js';
 import type { MaplibreLayerDefinition } from '../types/index.js';
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import * as b from '../dsl/';
+import * as b from '../dsl/index.js';
 
 /**
  * Road cartography, shared by every schema.

@@ -3,7 +3,7 @@ import { osm } from '../api/osm.js';
 import { satellite } from '../api/satellite.js';
 import { omt } from '../omt/api.js';
 import { protomaps } from '../protomaps/api.js';
-import type { ColorsOptions, OsmOptions, SatelliteOptions } from '../options/';
+import type { ColorsOptions, OsmOptions, SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { parseRGBA } from './calibrate.js';
 import { deriveOptions, type OptionsGuess } from './derive.js';

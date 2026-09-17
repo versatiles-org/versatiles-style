@@ -21,7 +21,7 @@ import {
 	type ResolvedSun,
 	type SkyOptions,
 	type SunOptions,
-} from './parts/';
+} from './parts/index.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
 
 export type OsmOptions = OsmOverlayOptions & {

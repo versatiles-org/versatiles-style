@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fetchFontFaces, fontFamiliesUrl } from './fetchFontFaces.js';
-import type { FetchLike } from '../options/';
+import type { FetchLike } from '../options/index.js';
 
 const FAMILIES = [
 	{

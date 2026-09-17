@@ -1,4 +1,4 @@
-import type { Palette, ResolvedColors } from '../options/';
+import type { Palette, ResolvedColors } from '../options/index.js';
 import { colorful } from './colorful.js';
 import { gray } from './gray.js';
 import { muted } from './muted.js';

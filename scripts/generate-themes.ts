@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Palette } from '../src/options/';
+import type { Palette } from '../src/options/index.js';
 import { getPaletteColors } from '../src/themes/index.js';
 import { contrast, generateThemes, oklabDistance, over, parse, THEMES } from './lib/theme-generator.js';
 

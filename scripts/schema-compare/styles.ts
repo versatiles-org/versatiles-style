@@ -1,8 +1,8 @@
-import { osm } from '../../src/api/';
-import { omt } from '../../src/omt/';
-import { protomaps } from '../../src/protomaps/';
-import type { OsmOptions } from '../../src/options/';
-import type { StyleSpecification, TileJSONSpecification } from '../../src/types/';
+import { osm } from '../../src/api/index.js';
+import { omt } from '../../src/omt/index.js';
+import { protomaps } from '../../src/protomaps/index.js';
+import type { OsmOptions } from '../../src/options/index.js';
+import type { StyleSpecification, TileJSONSpecification } from '../../src/types/index.js';
 import { tileTemplate } from '../lib/native-render.js';
 import type { SourceMetadata } from '../lib/tile-cache.js';
 import type { Schema } from './baseline.js';

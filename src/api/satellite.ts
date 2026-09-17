@@ -1,7 +1,12 @@
-import type { StyleSpecification } from '../types/';
-import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/';
-import { colorOptionsKeys, resolveSatellite } from '../options/';
-import { SLOT_BELOW_FILLS, SLOT_BELOW_SYMBOLS, SLOT_BELOW_LABELS, getOverlayLayerGroupMap } from '../shortbread/';
+import type { StyleSpecification } from '../types/index.js';
+import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/index.js';
+import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
+import {
+	SLOT_BELOW_FILLS,
+	SLOT_BELOW_SYMBOLS,
+	SLOT_BELOW_LABELS,
+	getOverlayLayerGroupMap,
+} from '../shortbread/index.js';
 import {
 	toOverlayLayers,
 	addTerrain,
@@ -9,8 +14,8 @@ import {
 	configure3DLighting,
 	applySky,
 	applyProjection,
-} from '../features/';
-import { buildSourceDescriptor, STYLE_METADATA } from '../lib/';
+} from '../features/index.js';
+import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
 
 // Stable slot IDs for satellite styles

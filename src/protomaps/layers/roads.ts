@@ -1,8 +1,8 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import type { MaplibreLayerDefinition } from '../../types';
-import * as b from '../../dsl';
-import { emitRoads, type RoadVocabulary } from '../../cartography';
+import type { MaplibreLayerDefinition } from '../../types/index.js';
+import * as b from '../../dsl/index.js';
+import { emitRoads, type RoadVocabulary } from '../../cartography/index.js';
 
 // Roads, paths, rail, aerialways and ferries — the Protomaps half.
 //

@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
-import type { TaggedLayer } from '../../dsl';
-import { boundaries as draw, type BoundaryVocabulary } from '../../cartography';
+import type { TaggedLayer } from '../../dsl/index.js';
+import { boundaries as draw, type BoundaryVocabulary } from '../../cartography/index.js';
 
 // OpenMapTiles carries `disputed` and `maritime` as integers 0/1, verified by
 // `npm run schema-values -- omt boundary`. Getting this wrong draws no disputed borders at all, with no

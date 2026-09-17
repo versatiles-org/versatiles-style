@@ -1,7 +1,7 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
-import type { LayerContext } from '../dsl/';
+import type { LayerContext } from '../dsl/index.js';
 import type { Color } from '../color/index.js';
-import * as b from '../dsl/';
+import * as b from '../dsl/index.js';
 
 /**
  * Label cartography shared by every schema — the style blocks and the place-label emitter.

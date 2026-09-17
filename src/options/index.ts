@@ -8,7 +8,7 @@
 // bundle, and a caller who never touches OpenMapTiles should not download its option resolver. The
 // building blocks those modules compose (`resolveTheme`, `resolveTileSource`, `minimizeThemed`, …) are
 // exported from here; the per-schema assembly of them is not.
-export * from './parts/';
+export * from './parts/index.js';
 export * from './minimize.js';
 export * from './osm-overlay.js';
 export * from './osm.js';

@@ -1,5 +1,5 @@
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/';
+import * as b from '../../dsl/index.js';
 
 // Point-of-interest icons for Protomaps — one layer, as in the OpenMapTiles port, keyed on `kind`.
 //

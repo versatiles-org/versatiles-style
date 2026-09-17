@@ -6,8 +6,8 @@
  * though it too is built out of library pieces. It was exported from the package until v6.
  */
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { osm, satellite as satelliteFn } from '../../src/api/';
-import { V5_STYLE_THEMES, type OsmFeaturesOptions } from '../../src/options/';
+import { osm, satellite as satelliteFn } from '../../src/api/index.js';
+import { V5_STYLE_THEMES, type OsmFeaturesOptions } from '../../src/options/index.js';
 
 export interface StyleVariant {
 	name: string;

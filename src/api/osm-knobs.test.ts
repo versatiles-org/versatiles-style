@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { osm } from '../index.js';
-import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/';
+import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
 import { Color } from '../color/index.js';

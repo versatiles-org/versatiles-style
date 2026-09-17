@@ -1,7 +1,7 @@
 import type { TileJSONSpecification } from '../types/index.js';
-import { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from '../lib/';
+import { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from '../lib/index.js';
 
-export type { SchemaName } from '../lib/';
+export type { SchemaName } from '../lib/index.js';
 
 /** How well a tileset's source-layers fit one schema. */
 export type SchemaScore = {

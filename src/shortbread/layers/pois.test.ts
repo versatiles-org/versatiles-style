@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext } from '../context.js';
 import { pois } from './pois.js';
-import { resolveOsm } from '../../options/';
+import { resolveOsm } from '../../options/index.js';
 import spriteConfig from '../../../scripts/config/sprites.js';
 
 // Regression guard for POI icon coverage. It cross-checks three things that drifted apart before

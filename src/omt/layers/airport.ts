@@ -1,6 +1,6 @@
 import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../context.js';
-import * as b from '../../dsl/';
+import * as b from '../../dsl/index.js';
 
 // Airport runways and taxiways for OpenMapTiles. All in the `airport` group.
 //

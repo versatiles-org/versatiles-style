@@ -1,4 +1,4 @@
-import { DEFAULT_BASE } from '../options/';
+import { DEFAULT_BASE } from '../options/index.js';
 
 /**
  * A runnable `@versatiles/style` snippet that builds a style from `options`.

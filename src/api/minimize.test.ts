@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TEXT_GROUPS, type OsmOptions, type SatelliteOptions } from '../options/';
+import { TEXT_GROUPS, type OsmOptions, type SatelliteOptions } from '../options/index.js';
 import { osm } from '../index.js';
 import { satellite } from '../index.js';
 

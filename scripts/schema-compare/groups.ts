@@ -1,5 +1,5 @@
-import type { LayerGroupOptions } from '../../src/options/';
-import type { LayerGroupMap } from '../../src/shortbread/';
+import type { LayerGroupOptions } from '../../src/options/index.js';
+import type { LayerGroupMap } from '../../src/shortbread/index.js';
 import { SCHEMAS, pairId, type PairId, type Schema } from './baseline.js';
 
 /**

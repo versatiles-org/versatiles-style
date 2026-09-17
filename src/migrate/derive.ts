@@ -1,13 +1,13 @@
-import { osm, satellite, guessSchema, type SchemaGuess } from '../api/';
-import type { SchemaName } from '../lib/';
+import { osm, satellite, guessSchema, type SchemaGuess } from '../api/index.js';
+import type { SchemaName } from '../lib/index.js';
 import {
 	getLayerGroupMap,
 	getOverlayLayerGroupMap,
 	getTextGroupMap,
 	type LayerGroupMap,
 	SHORTBREAD_SCHEMA,
-} from '../shortbread/';
-import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/';
+} from '../shortbread/index.js';
+import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/index.js';
 import {
 	colorOptionsKeys,
 	minimizeOsmOptions,
@@ -29,7 +29,7 @@ import {
 	type SkyOptions,
 	type SunOptions,
 	type TextOptions,
-} from '../options/';
+} from '../options/index.js';
 import type { HillshadeLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import {

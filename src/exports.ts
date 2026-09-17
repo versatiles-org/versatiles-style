@@ -5,8 +5,8 @@
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────
 
-export { guessStyle, guessSchema } from './api/';
-export type { GuessStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/';
+export { guessStyle, guessSchema } from './api/index.js';
+export type { GuessStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/index.js';
 
 // ── v6 types ──────────────────────────────────────────────────────────────────
 
@@ -64,8 +64,8 @@ export type {
 	ResolvedTerrain,
 	ResolvedText,
 	ResolvedTheme,
-} from './options/';
-export { isDarkMode, labelLanguage } from './options/';
+} from './options/index.js';
+export { isDarkMode, labelLanguage } from './options/index.js';
 
 export type {
 	StyleSpecification,
@@ -73,22 +73,22 @@ export type {
 	TileJSONSpecificationRaster,
 	TileJSONSpecificationVector,
 	VectorLayer,
-} from './types/';
+} from './types/index.js';
 export {
 	assertTileJSONSpecification,
 	assertRasterTileJSONSpecification,
 	isTileJSONSpecification,
 	isRasterTileJSONSpecification,
-} from './types/';
+} from './types/index.js';
 
-export type { TextGroupMap, LayerGroupMap } from './shortbread/';
+export type { TextGroupMap, LayerGroupMap } from './shortbread/index.js';
 /**
  * The shape a schema function carries so `guessStyle` can recognise its tileset — exported so a caller
  * can inject a schema of their own (`guessStyle(tj, { schemas: [mySchema] })`), not only `omt`.
  */
-export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/';
-export { inlineSources, fetchTileJSON } from './lib/';
-export { Color, ColorParseError } from './color/';
-export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/';
+export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './api/index.js';
+export { inlineSources, fetchTileJSON } from './lib/index.js';
+export { Color, ColorParseError } from './color/index.js';
+export type { Channels, Coords, HueMethod, MixOptions, RandomColorOptions, Space } from './color/index.js';
 
 export type { SpriteSpecification } from '@maplibre/maplibre-gl-style-spec';

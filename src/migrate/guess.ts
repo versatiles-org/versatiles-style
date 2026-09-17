@@ -1,8 +1,8 @@
-import { loadTileSource } from '../lib/';
-import { resolveUrl } from '../options/';
+import { loadTileSource } from '../lib/index.js';
+import { resolveUrl } from '../options/index.js';
 import { fetchFontFaces } from '../lib/fetchFontFaces.js';
-import { checkKeys, type FetchLike } from '../options/';
-import type { StyleSpecification, TileJSONSpecification } from '../types/';
+import { checkKeys, type FetchLike } from '../options/index.js';
+import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
 
 export type GuessOptionsOptions = {

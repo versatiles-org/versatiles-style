@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { osm } from '../../src/api/osm.js';
-import { colorOptionsKeys } from '../../src/options/';
+import { colorOptionsKeys } from '../../src/options/index.js';
 import { colorDistance } from '../../src/migrate/math.js';
 import { parseRGBA } from '../../src/migrate/calibrate.js';
 import {
