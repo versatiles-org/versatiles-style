@@ -1,18 +1,17 @@
 /**
- * A Mermaid treemap of the browser bundle, for the README.
+ * The composition of the browser bundle as treemap data, for the README.
  *
- *   npm run doc-bundle        # regenerate the section in README.md
- *   tsx scripts/bundle-treemap.ts   # print the block
+ *   npm run doc-bundle              # regenerate the SVG and the section in README.md
+ *   tsx scripts/bundle-treemap.ts   # print the JSON
  *
  * Every byte of `release/versatiles-style/versatiles-style.js` is attributed to the source file it came
  * from, by walking the sourcemap the build already emits — no bundler plugin, no extra dependency. The
  * same attribution backs `scripts/browser-bundle.e2e.test.ts`, which asserts that the modules serving
  * tooling rather than pages contribute nothing.
  *
- * `treemap-beta` needs Mermaid 11.6 or newer, and it is still beta, so its syntax may move. GitHub does
- * not publish which Mermaid version it renders with; to check, push a fenced `mermaid` block whose only
- * content is `info` and read the version it draws. If it is too old the block shows an error box, and
- * the fallback is a `pie` chart of the directory totals, which every Mermaid version has.
+ * The output is the JSON input of `vrt treemap`, which renders it as SVG and prints a linked image with
+ * the caption. An SVG shows on GitHub and on npmjs.com alike, unlike Mermaid's `treemap-beta`, which
+ * npm does not render at all and GitHub only with a recent enough Mermaid version.
  *
  * The chart is two levels deep on purpose. A README wants the shape of the bundle — which directory
  * costs what, and which few files dominate it — not 85 leaves, which at this size would be unreadable
@@ -90,31 +89,42 @@ const areaOf = (file: string): string => {
 	return parts.length > 1 ? parts[0] : 'src';
 };
 
-const areas = new Map<string, { total: number; leaves: [string, number][] }>();
+const areas = new Map<string, [string, number][]>();
 for (const [file, size] of bytes) {
 	const area = areaOf(file);
-	const entry = areas.get(area) ?? { total: 0, leaves: [] };
-	entry.total += size;
-	entry.leaves.push([file.replace(/^src\//, '').replace(`${area}/`, ''), size]);
-	areas.set(area, entry);
+	const leaves = areas.get(area) ?? [];
+	leaves.push([file.replace(/^src\//, '').replace(`${area}/`, ''), size]);
+	areas.set(area, leaves);
 }
+
+/** A treemap node as `vrt treemap` expects it: a leaf with `size` or a group with `children`. */
+interface TreemapNode {
+	name: string;
+	size?: number;
+	children?: TreemapNode[];
+}
+
+const children: TreemapNode[] = [...areas].map(([area, leaves]) => {
+	const nodes: TreemapNode[] = leaves
+		.filter(([, size]) => size >= LEAF_MIN_BYTES)
+		.map(([name, size]) => ({ name, size }));
+	const small = leaves.filter(([, size]) => size < LEAF_MIN_BYTES);
+	if (small.length > 0) {
+		nodes.push({ name: `other (${small.length} files)`, size: small.reduce((sum, [, size]) => sum + size, 0) });
+	}
+	return { name: area, children: nodes };
+});
 
 const kb = (n: number) => Math.round((n / 1024) * 10) / 10;
-const lines = ['```mermaid', 'treemap-beta'];
-for (const [area, { total, leaves }] of [...areas].sort((a, b) => b[1].total - a[1].total)) {
-	lines.push(`"${area} — ${kb(total)} KB"`);
-	const big = leaves.filter(([, size]) => size >= LEAF_MIN_BYTES).sort((a, b) => b[1] - a[1]);
-	const rest = leaves.filter(([, size]) => size < LEAF_MIN_BYTES).reduce((sum, [, size]) => sum + size, 0);
-	for (const [name, size] of big) lines.push(`    "${name}": ${kb(size)}`);
-	if (rest > 0) lines.push(`    "other (${leaves.length - big.length} files)": ${kb(rest)}`);
-}
-lines.push('```');
-
 const gzip = (await import('node:zlib')).gzipSync(code, { level: 9 }).length;
-lines.push(
-	'',
-	`Sized by the bundle's own sourcemap: **${kb(Buffer.byteLength(code))} KB** raw, **${kb(gzip)} KB** gzipped, ` +
-		`across ${bytes.size} modules.`
-);
 
-console.log(lines.join('\n'));
+console.log(
+	JSON.stringify({
+		title: 'Bundle composition',
+		caption:
+			`Sized by the bundle's own sourcemap: **${kb(Buffer.byteLength(code))} KB** raw, **${kb(gzip)} KB** gzipped, ` +
+			`across ${bytes.size} modules.`,
+		unit: 'bytes',
+		children,
+	})
+);

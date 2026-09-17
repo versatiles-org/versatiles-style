@@ -44,7 +44,7 @@
 		"build-sprites": "tsx scripts/build-sprites.ts",
 		"dev": "vite",
 		"doc": "npm run doc-graph && npm run doc-bundle && npm run doc-typescript",
-		"doc-bundle": "tsx scripts/bundle-treemap.ts | vrt doc-insert README.md '### Bundle Composition'",
+		"doc-bundle": "tsx scripts/bundle-treemap.ts | vrt treemap --svg assets/bundle-treemap.svg | vrt doc-insert README.md '### Bundle Composition'",
 		"doc-graph": "vrt deps-graph | vrt doc-insert README.md '### Dependency Graph'",
 		"doc-screenshots": "tsx scripts/screenshots.ts",
 		"doc-sprites": "tsx scripts/icons-report.ts --public --out docs/sprites.html",
