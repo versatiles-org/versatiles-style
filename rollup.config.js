@@ -30,6 +30,32 @@ const ENTRIES = [
 // Where the TypeScript plugin writes an entry's declaration, mirroring `rootDir: src`.
 const declarationOf = (input, dir) => `${dir}/${input.replace(/^src\//, '').replace(/\.ts$/, '.d.ts')}`;
 
+/**
+ * Replace the v5→v6 option-rename hints with empty ones, for the browser bundle only.
+ *
+ * The tables exist so an unknown-key error can say "in v6 this is ..." to someone mid-upgrade. A page
+ * loading the CDN bundle is not migrating a v5 build, and `checkKeys` degrades cleanly without them:
+ * it still rejects the key and still lists the known ones, it just cannot name the v6 replacement.
+ * The npm package keeps the real tables — this stub applies to `browserConfig` alone.
+ *
+ * Same rule as `minimize.ts` and `code.ts`, which the CDN bundle also leaves out. Those drop out on
+ * their own by not being imported from `browser.ts`; this one is reached through `checkKeys`, which
+ * every resolver calls, so nothing tree-shakes it and it takes a build-time stub instead.
+ * `scripts/browser-bundle.e2e.test.ts` asserts the result contributes no bytes.
+ */
+const stubV5Hints = {
+	name: 'stub-v5-hints',
+	load(id) {
+		if (!id.endsWith('options/parts/v5-hints.ts')) return null;
+		return [
+			'export function v5ColorKeys() { return {}; }',
+			'export function v5Hint() { return undefined; }',
+			'export function preReleaseHint() { return undefined; }',
+			'',
+		].join('\n');
+	},
+};
+
 const browserConfig = [
 	{
 		// `browser.ts`, not `index.ts`: the CDN bundle leaves out the authoring helpers
@@ -43,6 +69,7 @@ const browserConfig = [
 			name: 'VersaTilesStyle',
 		},
 		plugins: [
+			stubV5Hints,
 			terser({ compress: { pure_getters: true, passes: 3 }, sourceMap: true }),
 			nodeResolve({ browser: true }),
 			typescript({

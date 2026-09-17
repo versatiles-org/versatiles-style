@@ -18,12 +18,20 @@ import { gzipSync } from 'node:zlib';
 
 const BUNDLE = new URL('../release/versatiles-style/versatiles-style.js', import.meta.url);
 
-/** Source files that must contribute nothing, with the export that used to bring each one in. */
+/**
+ * Source files that must contribute nothing, with the export that used to bring each one in.
+ *
+ * The first four drop out on their own: `browser.ts` does not export them, so nothing reaches them.
+ * `v5-hints.ts` is different — `checkKeys` calls it on the unknown-key path, so tree-shaking cannot
+ * touch it and the browser half of `rollup.config.js` stubs it out (`stubV5Hints`). It is listed here
+ * because that stub is the only thing keeping it out: remove the plugin and this test is what says so.
+ */
 const MUST_BE_ABSENT = [
 	['src/options/minimize.ts', 'minimizeOptions'],
 	['src/api/code.ts', 'toCode'],
 	['src/lib/fontCovers.ts', 'fontCovers and the script helpers'],
 	['src/lib/fetchFontFaces.ts', 'fetchFontFaces'],
+	['src/options/parts/v5-hints.ts', 'checkKeys, until the build stubbed it'],
 ] as const;
 
 /**
