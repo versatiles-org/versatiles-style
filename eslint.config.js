@@ -99,29 +99,6 @@ export default [
 		},
 	},
 	{
-		// From outside `src/options/`, the option surface is reached through its barrel and nothing else.
-		// Deep imports are not wrong so much as pointless here: every one of them sits in a file that
-		// already imports the barrel, so it adds a second edge to the graph and buys no tree-shaking —
-		// the barrel is loaded either way. `src/browser.ts` keeps the minimizer out of the CDN bundle by
-		// not reaching this directory at all, which is a property of that entry, not of the specifier.
-		files: ['**/src/**/*.ts'],
-		ignores: ['**/src/options/**/*.ts'],
-		rules: {
-			'no-restricted-imports': [
-				'error',
-				{
-					patterns: [
-						{
-							group: ['**/options/*.js', '**/options/parts/**'],
-							message:
-								'Import from the barrel (`../options/`) instead — it re-exports this module, and the file importing it almost certainly imports the barrel already.',
-						},
-					],
-				},
-			],
-		},
-	},
-	{
 		// Tests: `osm()` and `satellite()` are synchronous in v6, so an `await` on their result (or on any
 		// other non-Promise) is noise that also hides which calls really are async. `require-await` catches
 		// the `async` keywords left behind once those awaits are gone.
