@@ -34,6 +34,11 @@ export type ProbeReading = {
 	readonly textSize?: number;
 	/** Symbol probes: the font stack. */
 	readonly textFont?: readonly string[];
+	/** Symbol probes: the halo width in px — 0 when the label draws no halo, which is a choice of its
+	 *  own and not the absence of one (the target haloes every label by default). */
+	readonly textHaloWidth?: number;
+	/** Symbol probes: the halo blur in px. Only read where a halo is actually drawn. */
+	readonly textHaloBlur?: number;
 	/** Symbol probes: the `text-field` layer and feature, for reading which name field it shows. */
 	readonly label?: { layer: StyleLayer; feature: ProbeFeature };
 	/** Fill probes: drawn as `fill-extrusion`. */
@@ -318,17 +323,30 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 		const colors: ProbeReading['colors'] = {};
 		let textSize: number | undefined;
 		let textFont: readonly string[] | undefined;
+		let textHaloWidth: number | undefined;
+		let textHaloBlur: number | undefined;
 		if (text) {
 			const opacity = evaluateProperty(layer, 'paint', 'text-opacity', zoom, feature);
 			if (typeof opacity === 'number' && opacity <= 0.01) continue;
 			const color = toRGBA(evaluateProperty(layer, 'paint', 'text-color', zoom, feature), opacity);
 			// a fully transparent colour says nothing about hue: no text colour, or no halo, was set
 			if (color && color[3] > 0.01) colors.text = color;
+
+			// A halo needs both a width and a colour to be visible, so the two are read together.
+			// `propertyExpression` substitutes the spec default for an unset property — width 0, colour
+			// transparent black — so a style that sets neither reads as a label with no halo, which is
+			// what it looks like. That zero is recorded rather than dropped: the target draws a 2px halo
+			// on every label, so "no halo" only survives the migration if it is stated.
 			const haloWidth = evaluateProperty(layer, 'paint', 'text-halo-width', zoom, feature);
-			if (typeof haloWidth === 'number' && haloWidth > 0) {
-				const halo = toRGBA(evaluateProperty(layer, 'paint', 'text-halo-color', zoom, feature), opacity);
-				if (halo && halo[3] > 0.01) colors.halo = halo;
+			const haloColor = toRGBA(evaluateProperty(layer, 'paint', 'text-halo-color', zoom, feature), opacity);
+			const haloDrawn = typeof haloWidth === 'number' && haloWidth > 0 && !!haloColor && haloColor[3] > 0.01;
+			if (haloDrawn) {
+				colors.halo = haloColor;
+				const blur = evaluateProperty(layer, 'paint', 'text-halo-blur', zoom, feature);
+				if (typeof blur === 'number') textHaloBlur = blur;
 			}
+			textHaloWidth = haloDrawn ? (haloWidth as number) : 0;
+
 			const size = evaluateProperty(layer, 'layout', 'text-size', zoom, feature);
 			if (typeof size === 'number') textSize = size;
 			const font = evaluateProperty(layer, 'layout', 'text-font', zoom, feature);
@@ -341,6 +359,8 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			colors,
 			textSize,
 			textFont,
+			textHaloWidth,
+			textHaloBlur,
 			...(text && { label: { layer, feature: source } }),
 		};
 	}

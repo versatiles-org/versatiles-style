@@ -140,7 +140,7 @@ describe('readProbe', () => {
 			},
 		]);
 		const reading = readProbe(s, OMT, probe('label-place-city'));
-		expect(reading).toMatchObject({ layers: ['city'], textSize: 16, textFont: ['Open Sans Bold'] });
+		expect(reading).toMatchObject({ layers: ['city'], textSize: 16, textFont: ['Open Sans Bold'], textHaloWidth: 1 });
 		expect(round(reading?.colors.halo)).toEqual([1, 1, 1, 1]);
 		expect(labelText(reading!.label!.layer, 10, probe('label-place-city'), reading!.label!.feature)).toBe(
 			NAME_MARKER + 'name:latin'
@@ -158,7 +158,51 @@ describe('readProbe', () => {
 				paint: { 'text-color': '#666', 'text-halo-color': 'rgba(0,0,0,0)', 'text-halo-width': 1 },
 			},
 		]);
-		expect(Object.keys(readProbe(s, OMT, probe('label-street-primary'))!.colors)).toEqual(['text']);
+		const reading = readProbe(s, OMT, probe('label-street-primary'))!;
+		expect(Object.keys(reading.colors)).toEqual(['text']);
+		// The width is stated but paints nothing, so the label carries no halo — which is what a style
+		// rebuilt from this should draw. OpenFreeMap's Liberty does exactly this on its street names.
+		expect(reading.textHaloWidth).toBe(0);
+	});
+
+	it('reads a width of 0 from a label with no halo properties at all', () => {
+		// MapLibre's own defaults are width 0 and a transparent colour, so an unset halo is no halo —
+		// and that has to be recorded, since most topics of the target are haloed by default.
+		const s = style([
+			{
+				id: 'city',
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'place',
+				filter: ['all', ['==', 'class', 'city'], ['has', 'name']],
+				layout: { 'text-field': '{name}' },
+				paint: { 'text-color': '#123456' },
+			},
+		]);
+		const reading = readProbe(s, OMT, probe('label-place-city'))!;
+		expect(reading.textHaloWidth).toBe(0);
+		expect(reading.textHaloBlur).toBeUndefined();
+		expect(reading.colors.halo).toBeUndefined();
+	});
+
+	it('reads the halo blur where a halo is actually drawn', () => {
+		const s = style([
+			{
+				id: 'city',
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'place',
+				filter: ['all', ['==', 'class', 'city'], ['has', 'name']],
+				layout: { 'text-field': '{name}' },
+				paint: {
+					'text-color': '#123456',
+					'text-halo-color': '#fff',
+					'text-halo-width': 1.5,
+					'text-halo-blur': 0.5,
+				},
+			},
+		]);
+		expect(readProbe(s, OMT, probe('label-place-city'))).toMatchObject({ textHaloWidth: 1.5, textHaloBlur: 0.5 });
 	});
 
 	it('skips labels that show nothing, and reads icons without text', () => {

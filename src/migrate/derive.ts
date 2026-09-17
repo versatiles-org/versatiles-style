@@ -508,12 +508,16 @@ function deriveCommon(
 	const content: Common['content'] = {};
 	const scale = deriveLabelScale(readings);
 	const pitchAlignment = derivePitchAlignment(readings);
-	const text: TextOptions = {
-		...deriveText(readings, report),
-		...(scale !== undefined && { scale }),
-		...(pitchAlignment !== undefined && { pitchAlignment }),
-		...deriveFonts(readings, fontNames, report),
-	};
+	// Merged, not spread: `deriveFonts` and `deriveHalo` both return a tree of the same topics, so a
+	// shallow spread would leave whichever came last as the only one heard — the fonts of every topic
+	// replaced by its halo, or the other way round.
+	const text: TextOptions = mergeTextTrees(
+		deriveText(readings, report) ?? {},
+		scale !== undefined ? { scale } : {},
+		pitchAlignment !== undefined ? { pitchAlignment } : {},
+		deriveFonts(readings, fontNames, report),
+		deriveHalo(readings)
+	);
 	if (Object.keys(text).length > 0) content.text = text;
 
 	const features: Common['features'] = {};
@@ -571,6 +575,35 @@ function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: GuessRe
 		return { language, ...(!fallback.includes(NAME_MARKER) && { languageStrict: true }) };
 	}
 	return undefined;
+}
+
+/** Recursively merge `text` option trees, later trees winning leaf by leaf rather than branch by branch. */
+function mergeTextTrees(...trees: TextOptions[]): TextOptions {
+	const isBranch = (v: unknown): v is Record<string, unknown> =>
+		typeof v === 'object' && v !== null && !Array.isArray(v);
+	const out: Record<string, unknown> = {};
+	for (const tree of trees) {
+		for (const [key, value] of Object.entries(tree)) {
+			const prev = out[key];
+			out[key] = isBranch(prev) && isBranch(value) ? mergeTextTrees(prev as TextOptions, value as TextOptions) : value;
+		}
+	}
+	return out as TextOptions;
+}
+
+/**
+ * Which `text` topic each of the target's label layers belongs to — the map a probe reading is turned
+ * into a topic through, since a probe is named after the layer it reads.
+ */
+function textTopicOfLayer(): Map<string, TextTopic> {
+	const topicOf = new Map<string, TextTopic>();
+	const groups = getTextGroupMap();
+	for (const topic of TEXT_TOPICS) {
+		const [group, leaf] = topic.split('.');
+		const ids = (leaf === undefined ? groups[group] : (groups[group] as LayerGroupMap)?.[leaf]) as string[] | undefined;
+		for (const id of ids ?? []) topicOf.set(id, topic);
+	}
+	return topicOf;
 }
 
 /** Words naming a face rather than a family. */
@@ -636,13 +669,7 @@ function deriveFonts(
 ): TextOptions {
 	const known: ReadonlySet<string> = new Set([...(fontNames ?? []), DEFAULT_FONT_REGULAR, DEFAULT_FONT_BOLD]);
 	const base = modelFor(osmTarget(), 'light').base;
-	const topicOf = new Map<string, TextTopic>();
-	const groups = getTextGroupMap();
-	for (const topic of TEXT_TOPICS) {
-		const [group, leaf] = topic.split('.');
-		const ids = (leaf === undefined ? groups[group] : (groups[group] as LayerGroupMap)?.[leaf]) as string[] | undefined;
-		for (const id of ids ?? []) topicOf.set(id, topic);
-	}
+	const topicOf = textTopicOfLayer();
 	const knownFamilies = new Set([...known].map(fontFamily));
 	const roleOf = (topic: TextTopic) =>
 		labelStyleOf(DEFAULT_LABEL_STYLES, topic).font === DEFAULT_FONT_BOLD ? 'bold' : 'regular';
@@ -714,6 +741,88 @@ function deriveFonts(
 		if (face === undefined) continue;
 		if (leaf === undefined) tree[group] = { font: face };
 		else (tree[group] ??= {})[leaf] = { font: face };
+	}
+	return tree as TextOptions;
+}
+
+/** The middle value of a non-empty list, rounded to steps of 0.05 — halo widths are px, not ratios. */
+function medianPx(values: readonly number[]): number {
+	const sorted = [...values].sort((a, b) => a - b);
+	return Math.round(sorted[Math.floor(sorted.length / 2)] * 20) / 20;
+}
+
+/**
+ * The `haloWidth` and `haloBlur` of each `text` topic, from the halos the style draws.
+ *
+ * Both are plain pixel values that `applyText` writes straight through — unlike `scale`, nothing
+ * rescales them — so they carry over as they are read. A topic takes, in order:
+ *
+ *  1. the median of its own probes;
+ *  2. the median over the topics the *target* haloes identically, nearest first: the rest of its own
+ *     group, then any topic at all. A topic no probe reads (`water.lakes`, `streets.refs`,
+ *     `streets.exits`) follows its neighbours, so lake names follow river names as they do for fonts;
+ *  3. nothing — the target's own default stands.
+ *
+ * The median, not the mean: a style that haloes most labels at 1 and one at 4 should carry the 1, and
+ * halo widths cluster on a handful of values rather than spreading.
+ *
+ * Step 2 pools only topics that share this one's target default, which is what keeps the target's
+ * deliberate exceptions intact. `streets.refs` is haloed 0.1 because it sits on a shield, `addresses`
+ * not at all — filling those from a street-name reading would erase the distinction and, worse, make a
+ * round trip of the target's own style derive options it did not need: no probe reads either topic, so
+ * both would take the 2 read off `streets.names` and be written out as differing from a default they
+ * in fact match.
+ *
+ * A width of 0 counts and propagates like any other — a style that draws no halo has to say so, since
+ * most topics of the target default to a 2px halo. Blur is only read where a halo is actually drawn,
+ * so it falls back to 0 rather than to the target's 1: blurring a halo that is not there would write a
+ * property with nothing to show for it. Every topic reached is spelled out; minimising drops what
+ * equals the target's own, so a style whose halos already match writes nothing.
+ */
+function deriveHalo(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
+	const topicOf = textTopicOfLayer();
+	const widths = new Map<TextTopic, number[]>();
+	const blurs = new Map<TextTopic, number[]>();
+	for (const reading of readings.values()) {
+		if (reading.textHaloWidth === undefined) continue;
+		const topic = topicOf.get(reading.probe.id);
+		if (!topic) continue;
+		(widths.get(topic) ?? widths.set(topic, []).get(topic)!).push(reading.textHaloWidth);
+		if (reading.textHaloBlur === undefined) continue;
+		(blurs.get(topic) ?? blurs.set(topic, []).get(topic)!).push(reading.textHaloBlur);
+	}
+	if (widths.size === 0) return {};
+
+	const targetHalo = (topic: TextTopic) => labelStyleOf(DEFAULT_LABEL_STYLES, topic).haloWidth;
+
+	// Readings from the topics the target haloes the same way as `topic`, its own group first. The two
+	// passes are separate so a neighbour always outweighs a distant topic, however many readings each has.
+	const pooled = (per: Map<TextTopic, number[]>, topic: TextTopic, group: string): number | undefined => {
+		const like = (other: TextTopic) => other !== topic && targetHalo(other) === targetHalo(topic);
+		for (const near of [true, false]) {
+			const values: number[] = [];
+			for (const other of TEXT_TOPICS) {
+				if (like(other) && other.startsWith(`${group}.`) === near) values.push(...(per.get(other) ?? []));
+			}
+			if (values.length > 0) return medianPx(values);
+		}
+		return undefined;
+	};
+
+	const tree: Record<string, Record<string, unknown>> = {};
+	for (const topic of TEXT_TOPICS) {
+		const [group, leaf] = topic.split('.');
+		const own = widths.get(topic);
+		const haloWidth = own?.length ? medianPx(own) : pooled(widths, topic, group);
+		if (haloWidth === undefined) continue; // nothing was read that speaks for this topic
+		const ownBlur = blurs.get(topic);
+		// A halo of zero width shows no blur, and is stated rather than left out: most topics of the
+		// target blur their halo by 1, which would otherwise survive as a `text-halo-blur` on a label
+		// with no halo to blur.
+		const haloBlur = haloWidth === 0 ? 0 : ownBlur?.length ? medianPx(ownBlur) : (pooled(blurs, topic, group) ?? 0);
+		const style = { haloWidth, haloBlur };
+		if (leaf === undefined) tree[group] = { ...tree[group], ...style };
+		else (tree[group] ??= {})[leaf] = { ...((tree[group]?.[leaf] as object | undefined) ?? {}), ...style };
 	}
 	return tree as TextOptions;
 }

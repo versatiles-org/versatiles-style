@@ -19,6 +19,25 @@ function satelliteOptions(guess: OptionsGuess): SatelliteOptions {
 	return (guess as Extract<OptionsGuess, { kind: 'satellite' }>).options;
 }
 
+/**
+ * `text` options with every `haloWidth`/`haloBlur` removed, and any branch left empty dropped with them.
+ *
+ * The stub styles below set no `text-halo-*` at all, which is a halo of its own — none — so the halos
+ * of every topic they cover are derived too. For the tests about fonts and about language that is
+ * noise, the same way the derived label scale is.
+ */
+function withoutHalo<T>(value: T): T {
+	if (value === null || typeof value !== 'object' || Array.isArray(value)) return value;
+	const out: Record<string, unknown> = {};
+	for (const [key, entry] of Object.entries(value)) {
+		if (key === 'haloWidth' || key === 'haloBlur') continue;
+		const stripped = withoutHalo(entry) as unknown;
+		const empty = stripped !== null && typeof stripped === 'object' && Object.keys(stripped).length === 0;
+		if (!empty) out[key] = stripped;
+	}
+	return out as T;
+}
+
 /** Colours are estimates: the same keys, each within a barely visible difference. */
 function expectColors(actual: ColorsOptions | undefined, expected: ColorsOptions) {
 	expect(Object.keys(actual ?? {}).sort()).toEqual(Object.keys(expected).sort());
@@ -48,6 +67,41 @@ describe('deriveOptions — round trips through the package builders', () => {
 
 	it.each(['gray', 'toner', 'natural-dark', 'colorful-dark'] as const)('recognises the %s theme', (theme) => {
 		expect(osmOptions(deriveOptions(osm({ theme })))).toEqual({ theme });
+	});
+
+	// Halo geometry used to be dropped: `text-halo-width` was read only to decide whether the halo
+	// colour meant anything, so every imported style came back with the target's own 2px halo. Spotted
+	// on OpenFreeMap's Liberty, whose place labels are haloed 1/1 and came back at 2/1.
+	describe('label halo width and blur', () => {
+		const haloOf = (options: OsmOptions) => {
+			const s = osm(options);
+			const paint = (id: string) => (s.layers.find((l) => l.id === id)?.paint ?? {}) as Record<string, unknown>;
+			return (id: string) => [paint(id)['text-halo-width'] ?? 0, paint(id)['text-halo-blur'] ?? 0];
+		};
+
+		it('carries a halo the target draws differently, per topic', () => {
+			const source = osm({ text: { haloWidth: 1, haloBlur: 1, water: { haloWidth: 1.5, haloBlur: 0 } } });
+			const rebuilt = haloOf(osmOptions(deriveOptions(source)));
+			expect(rebuilt('label-place-city')).toEqual([1, 1]);
+			expect(rebuilt('label-place-village')).toEqual([1, 1]);
+			expect(rebuilt('label-water-river')).toEqual([1.5, 0]);
+		});
+
+		it('carries "no halo at all", which the target would otherwise draw at 2px', () => {
+			const rebuilt = haloOf(osmOptions(deriveOptions(osm({ text: { haloWidth: 0 } }))));
+			expect(rebuilt('label-place-city')).toEqual([0, 0]);
+			expect(rebuilt('label-water-river')).toEqual([0, 0]);
+		});
+
+		// `streets.refs` is haloed 0.1 and `addresses` not at all, neither of which any probe reads. A
+		// fallback that pooled any neighbour would hand them a street-name halo and, on the target's own
+		// style, make the round trip above derive options where it should derive none.
+		it('leaves a topic alone when nothing comparable was read', () => {
+			const derived = osmOptions(deriveOptions(osm({ text: { places: { haloWidth: 1 } } })));
+			const streets = derived.text?.streets as Record<string, unknown> | undefined;
+			expect((streets?.refs as Record<string, unknown> | undefined)?.haloWidth).toBeUndefined();
+			expect((derived.text?.addresses as Record<string, unknown> | undefined)?.haloWidth).toBeUndefined();
+		});
 	});
 
 	it('recovers colours, hidden groups, language, label size, terrain and projection', () => {
@@ -239,11 +293,12 @@ describe('deriveOptions — foreign styles', () => {
 		// Open Sans is on the server: the place and boundary labels keep their face, and every other topic
 		// takes the family, in the weight the style gives its labels
 		const openSans = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']), {}, FONT_NAMES);
-		// the stub's labels keep MapLibre's default size, so a label scale is derived too — not what this is about
+		// the stub's labels keep MapLibre's default size and draw no halo, so a label scale and the halos
+		// are derived too — neither is what this is about
 		const textWithoutScale = (guess: OptionsGuess) => {
 			const { scale, ...text } = osmOptions(guess).text ?? {};
 			void scale;
-			return text;
+			return withoutHalo(text);
 		};
 		expect(textWithoutScale(openSans)).toEqual({
 			font: 'open_sans_bold',
@@ -325,10 +380,12 @@ describe('deriveOptions — foreign styles', () => {
 					layout: { 'text-field': textField },
 				},
 			]);
-		// the stub's labels keep MapLibre's default size, so a label scale is derived too — not what this is about
+		// the stub's labels keep MapLibre's default size and draw no halo, so a label scale and the halos
+		// are derived too — neither is what this is about
 		const language = (style: StyleSpecification) => {
-			const { scale, ...text } = osmOptions(deriveOptions(style)).text ?? {};
+			const { scale, ...rest } = osmOptions(deriveOptions(style)).text ?? {};
 			void scale;
+			const text = withoutHalo(rest);
 			return Object.keys(text).length > 0 ? text : undefined;
 		};
 		expect(language(labels('{name_fr}'))).toEqual({ language: 'fr', languageStrict: true });
