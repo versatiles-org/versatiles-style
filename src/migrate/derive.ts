@@ -48,6 +48,7 @@ import {
 	NAME_MARKER,
 	readProbe,
 	type Channel,
+	type DiscardedColor,
 	type ProbeReading,
 	type RGBA,
 } from './evaluate.js';
@@ -185,6 +186,12 @@ const overrideDistance = (residual: number) => OVERRIDE_DISTANCE + 250 * Math.sq
  * differently. A style built by these very builders scores its own palette far below the rest.
  */
 const THEME_MARGIN = 0.05;
+
+/**
+ * How far apart the icon ratios have to spread before one multiplier is worth reporting as a
+ * compromise. 15%: below that the probes broadly agree and the mean represents them.
+ */
+const ICON_SPREAD = 0.15;
 
 /** Numbers that only exist to be read in a report, at a length a person can read. */
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -500,6 +507,35 @@ function fitContent(
 		}
 	}
 
+	// Colours other layers drew for the same probe and channel. Reported against the colour key that
+	// channel feeds, which is the setting a consumer would offer the alternatives for.
+	for (const reading of readings.values()) {
+		for (const [channel, groups] of Object.entries(reading.discarded ?? {}) as [Channel, DiscardedColor[]][]) {
+			const kept = reading.colors[channel];
+			if (!kept) continue;
+			const differing = groups.filter((g) => colorDistance(g.color, kept) > OVERRIDE_DISTANCE);
+			if (differing.length === 0) continue;
+			const key = model.channels.get(`${reading.probe.id}/${channel}`)?.keys[0];
+			if (key === undefined) continue;
+			report.say(
+				diagnostic(
+					'color.conflict',
+					`${differing.length + 1} colours were drawn for ${reading.probe.id}; the topmost (${toHex(kept)}) was taken`,
+					{
+						key,
+						chosen: toHex(kept),
+						rule: 'topmost',
+						observed: [
+							{ color: toHex(kept), layers: reading.layers },
+							...differing.map((g) => ({ color: toHex(g.color), layers: g.layers })),
+						],
+					},
+					{ optionPath: `colors.${key}`, origin: { probe: reading.probe.id } }
+				)
+			);
+		}
+	}
+
 	// A first solve against the base palette decides the palette; a second, pulled toward that
 	// palette, gives the colours. Keys nothing was observed for then stay exactly the palette's.
 	const first = solveColors(model, observed, target.colorsFor(target.baseTheme(mode)));
@@ -810,6 +846,28 @@ function deriveCommon(
 
 /** The language labels are shown in: the first `name…` field a place label reads. */
 function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: ReportBuilder): TextOptions | undefined {
+	// Every place label is read before one is chosen, where this used to return on the first: a style
+	// whose city names are German and whose town names are French had no way of saying so, because the
+	// second was never looked at. The first still wins — `LANGUAGE_PROBES` is in order of how telling
+	// each is — but the disagreement is now reportable.
+	const languages = new Map<string, string[]>();
+	for (const id of LANGUAGE_PROBES) {
+		const field = nameFieldOf(readings.get(id));
+		const language = field === undefined ? undefined : /^name[_:]([a-z]{2,3})$/.exec(field)?.[1];
+		if (language) (languages.get(language) ?? languages.set(language, []).get(language)!).push(id);
+	}
+	if (languages.size > 1) {
+		const observed = [...languages].map(([language, probes]) => ({ language, probes }));
+		report.say(
+			diagnostic(
+				'language.conflict',
+				`labels are read in ${languages.size} languages (${observed.map((o) => o.language).join(', ')}); "${observed[0].language}" was taken`,
+				{ chosen: observed[0].language, observed },
+				{ optionPath: 'text.language' }
+			)
+		);
+	}
+
 	for (const id of LANGUAGE_PROBES) {
 		const reading = readings.get(id);
 		if (!reading?.label) continue;
@@ -871,6 +929,13 @@ function textTopicOfLayer(): Map<string, TextTopic> {
 		for (const id of ids ?? []) topicOf.set(id, topic);
 	}
 	return topicOf;
+}
+
+/** The `name…` field a label reading shows, or undefined where it shows none. */
+function nameFieldOf(reading: ProbeReading | undefined): string | undefined {
+	if (!reading?.label) return undefined;
+	const shown = labelText(reading.label.layer, reading.zoom, reading.probe, reading.label.feature);
+	return new RegExp(NAME_MARKER + '(name[\\w:-]*)').exec(shown)?.[1];
 }
 
 /** Words naming a face rather than a family. */
@@ -1027,6 +1092,19 @@ function deriveFonts(
 			fromFamily ??
 			(read[role] ? (weightOf(role) === 'bold' ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR) : undefined);
 		if (face === undefined) continue;
+		if (own !== undefined) {
+			const votes = [...(topicFaces.get(topic) ?? [])].sort((a, b) => b[1] - a[1]);
+			if (votes.length > 1) {
+				report.say(
+					diagnostic(
+						'font.conflict',
+						`"${topic}" labels are set in ${votes.length} fonts (${votes.map(([f]) => f).join(', ')}); "${own}" was taken`,
+						{ topic, chosen: own, observed: votes.map(([font, count]) => ({ font, count })) },
+						{ optionPath: `text.${topic}.font`, origin: { layers: probesOf.get(topic) } }
+					)
+				);
+			}
+		}
 		report.note(`text.${topic}.font`, {
 			origin: own !== undefined ? 'observed' : (fromSibling ?? fromFamily) ? 'pooled' : 'default',
 			...(own !== undefined && { from: probesOf.get(topic) }),
@@ -1154,6 +1232,26 @@ function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>, report: R
 			const own = seen.get(key)?.get(topic);
 			const value = own?.length ? summarise(key, own) : pooled(key, topic, group);
 			if (value !== undefined) style[key] = value;
+			// The readings that were summarised away. `spacing` is a ratio against the target and lands on
+			// a fresh float per probe, so it is compared at the precision it is reported at.
+			if (own && own.length > 1) {
+				const counts = new Map<number | string, number>();
+				for (const raw of own) {
+					const v = typeof raw === 'number' ? median05([raw]) : (raw as string);
+					counts.set(v, (counts.get(v) ?? 0) + 1);
+				}
+				if (counts.size > 1) {
+					const observed = [...counts].sort((a, b) => b[1] - a[1]).map(([value, count]) => ({ value, count }));
+					report.say(
+						diagnostic(
+							'labelStyle.conflict',
+							`"${topic}" labels disagree on ${key} (${observed.map((o) => o.value).join(', ')}); ${String(value)} was taken`,
+							{ topic, property: key, chosen: value as number | string, observed },
+							{ optionPath: `text.${topic}.${key}`, origin: { layers: probesFor.get(topic) } }
+						)
+					);
+				}
+			}
 			// `pooled` is why this annotation exists: a topic no probe read takes its value from a topic
 			// the target styles the same way, and the option it writes looks exactly like a first-hand
 			// reading. Recorded for every topic, including the ones left at the target's own value.
@@ -1184,9 +1282,9 @@ function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>, report: R
  * an even pair rather than anything between them: for OpenFreeMap's Liberty it chose the POI ratio of
  * 1.29 outright and drew transit icons 39% too large, where the mean of 1.1 splits the difference.
  */
-function deriveFactor(ratios: readonly number[]): number | undefined {
+function deriveFactor(ratios: readonly { ratio: number }[]): number | undefined {
 	if (ratios.length === 0) return undefined;
-	const logs = ratios.reduce((sum, ratio) => sum + Math.log(ratio), 0);
+	const logs = ratios.reduce((sum, { ratio }) => sum + Math.log(ratio), 0);
 	const factor = Math.round(Math.exp(logs / ratios.length) * 20) / 20;
 	return Math.abs(factor - 1) >= 0.1 ? factor : undefined;
 }
@@ -1211,19 +1309,49 @@ function deriveFactor(ratios: readonly number[]): number | undefined {
  */
 function deriveIcon(readings: ReadonlyMap<string, ProbeReading>, report: ReportBuilder): IconOptions | undefined {
 	const base = modelFor(osmTarget(), 'light').base;
-	const scales: number[] = [];
-	const spacings: number[] = [];
+	const scales: { probe: string; ratio: number }[] = [];
+	const spacings: { probe: string; ratio: number }[] = [];
 	for (const reading of readings.values()) {
 		const own = base.get(reading.probe.id);
 		// Sizes ramp with zoom, so a ratio only means something between readings taken at the same one.
 		if (!own || reading.zoom !== own.zoom) continue;
-		if (reading.iconSize !== undefined && own.iconSize) scales.push(reading.iconSize / own.iconSize);
+		if (reading.iconSize !== undefined && own.iconSize) {
+			scales.push({ probe: reading.probe.id, ratio: reading.iconSize / own.iconSize });
+		}
 		if (reading.iconPadding !== undefined && own.iconPadding !== undefined) {
-			spacings.push(1 + (reading.iconPadding - own.iconPadding) / PADDING_PER_SPACING);
+			spacings.push({
+				probe: reading.probe.id,
+				ratio: 1 + (reading.iconPadding - own.iconPadding) / PADDING_PER_SPACING,
+			});
 		}
 	}
 	const scale = deriveFactor(scales);
 	const spacing = deriveFactor(spacings);
+	// One multiplier serves every icon, so probes that scale differently from the target cannot all be
+	// satisfied: Liberty draws flat POI icons where the target ramps them, and its transit icons at a
+	// different ratio again, which the geometric mean can only split.
+	for (const [option, ratios, chosen] of [
+		['scale', scales, scale],
+		['spacing', spacings, spacing],
+	] as const) {
+		if (ratios.length < 2 || chosen === undefined) continue;
+		const spread = Math.max(...ratios.map((r) => r.ratio)) / Math.min(...ratios.map((r) => r.ratio));
+		if (spread < 1 + ICON_SPREAD) continue;
+		report.say(
+			diagnostic(
+				'icon.conflict',
+				`icons are ${option === 'scale' ? 'sized' : 'spaced'} inconsistently relative to the target (${ratios
+					.map((r) => r.ratio.toFixed(2))
+					.join(', ')}); ${chosen} was taken`,
+				{
+					option,
+					chosen,
+					observed: ratios.map((r) => ({ probe: r.probe, ratio: round2(r.ratio) })),
+				},
+				{ optionPath: `icon.${option}` }
+			)
+		);
+	}
 	// A factor inside the dead band is not "nothing was read" — the ratios were computed and found too
 	// close to 1 to be a choice, which provenance records as observed with the target's own value.
 	report.note('icon.scale', { origin: scales.length > 0 ? 'observed' : 'default' });

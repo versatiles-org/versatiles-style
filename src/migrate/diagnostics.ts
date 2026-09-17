@@ -37,8 +37,11 @@ export type DiagnosticOrigin = {
  * even while it is short.
  *
  * Adding a code is not breaking for a consumer that switches on the ones it knows and prints
- * `message` for the rest. Conflicts — several readings where the options have one knob — are not here
- * yet: the readers keep only the topmost reading, so there is nothing to compare.
+ * `message` for the rest.
+ *
+ * There is no `vote.tie` of its own: every conflict payload carries the count behind each value, so a
+ * tie is visible as two equal counts, and a second code saying the same thing would only be another
+ * line to read.
  */
 export type DiagnosticData = {
 	// ── the migration produced nothing usable ──
@@ -70,6 +73,31 @@ export type DiagnosticData = {
 	'projection.unsupported': { requested: string };
 	/** The style's sprite is not carried over; the target's own icons are used. */
 	'icons.replaced': { sprite: unknown };
+	// ── conflicts: the input said several things where the options have one knob ──
+	/**
+	 * Several layers drew a probe in different colours; the topmost was taken. `observed` groups the
+	 * layers by the colour they drew, which is the list a consumer offers as a choice.
+	 */
+	'color.conflict': {
+		key: string;
+		chosen: string;
+		/** How the winner was picked, as a rule rather than a sentence. */
+		rule: 'topmost';
+		observed: { color: string; layers: string[] }[];
+	};
+	/** A topic's labels were set in more than one font; the most used was taken. */
+	'font.conflict': { topic: string; chosen: string; observed: { font: string; count: number }[] };
+	/** A topic's labels disagreed on a style property; the median, or most voted, was taken. */
+	'labelStyle.conflict': {
+		topic: string;
+		property: string;
+		chosen: number | string;
+		observed: { value: number | string; count: number }[];
+	};
+	/** Icons were sized inconsistently relative to the target's; one multiplier had to serve. */
+	'icon.conflict': { option: 'scale' | 'spacing'; chosen: number; observed: { probe: string; ratio: number }[] };
+	/** Labels were read in more than one language; the first place label's was taken. */
+	'language.conflict': { chosen: string; observed: { language: string; probes: string[] }[] };
 	// ── uncertainty ──
 	/** Two palettes fit almost equally well; the cheaper one was taken. */
 	'theme.ambiguous': { chosen: string; cost: number; runnerUp: string; runnerUpCost: number; margin: number };
@@ -110,6 +138,11 @@ const SEVERITY: Record<DiagnosticCode, Severity> = {
 	'schema.partial': 'warning',
 	'source.tilejsonUnavailable': 'warning',
 	'source.multiple': 'warning',
+	'color.conflict': 'warning',
+	'font.conflict': 'warning',
+	'labelStyle.conflict': 'warning',
+	'icon.conflict': 'warning',
+	'language.conflict': 'warning',
 	'font.unavailable': 'warning',
 	'language.unavailable': 'warning',
 	'projection.unsupported': 'warning',

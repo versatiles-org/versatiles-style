@@ -583,6 +583,92 @@ describe('deriveOptions — foreign styles', () => {
 		expect(codes(invalid.report)).toEqual(['input.notAStyle']);
 	});
 
+	// The input said several things where the options have one knob. The readers keep what the map
+	// shows; these report what they passed over, so a consumer can offer it back as a choice.
+	describe('conflicts', () => {
+		/** Symbol layers that all match the same probe feature, so the topmost wins and the rest are alternatives. */
+		const stacked = (colors: string[]) =>
+			({
+				version: 8,
+				sources: { omt: { type: 'vector', url: 'https://example.org/t.json' } },
+				layers: [
+					{ id: 'bg', type: 'background', paint: { 'background-color': '#ffffff' } },
+					...colors.map((color, i) => ({
+						id: `poi-${i}`,
+						type: 'symbol',
+						source: 'omt',
+						'source-layer': 'poi',
+						layout: { 'text-field': '{name}', 'text-font': ['Noto Sans Regular'] },
+						paint: { 'text-color': color },
+					})),
+				],
+			}) as unknown as StyleSpecification;
+
+		it('groups the discarded colours by colour, with the layers that drew each', () => {
+			const guess = deriveOptions(stacked(['#16a085', '#8e44ad', '#c0392b', '#d35400']));
+			const conflict = byCode(guess.report.diagnostics, 'color.conflict').find(
+				(c) => c.optionPath === 'colors.labelPoi'
+			);
+			expect(conflict?.severity).toBe('warning');
+			expect(conflict?.data.rule).toBe('topmost');
+			expect(conflict?.data.chosen).toBe('#D35400'); // the topmost, which is what the map shows
+			// one entry per colour, not per layer: this is the list a radio group is built from
+			expect(conflict?.data.observed.map((o) => o.color)).toEqual(['#D35400', '#16A085', '#8E44AD', '#C0392B']);
+			expect(conflict?.data.observed.find((o) => o.color === '#16A085')?.layers).toEqual(['poi-0']);
+		});
+
+		it('says nothing when the layers only look alike', () => {
+			// four layers, one colour: nothing was passed over that a person could choose differently
+			expect(
+				byCode(deriveOptions(stacked(['#16a085', '#16a085', '#16a085'])).report.diagnostics, 'color.conflict')
+			).toEqual([]);
+		});
+
+		it('reports fonts and label styles a topic disagreed on', () => {
+			const guess = deriveOptions(
+				osm({ text: { places: { cities: { font: 'noto_sans_bold' }, villages: { font: 'noto_sans_regular' } } } })
+			);
+			// the city probes read one face and the village probes another, for one `places` topic tree
+			const fonts = byCode(guess.report.diagnostics, 'font.conflict');
+			expect(fonts.every((f) => f.data.observed.length > 1)).toBe(true);
+			expect(fonts.every((f) => f.data.observed.every((o) => o.count > 0))).toBe(true);
+		});
+
+		it('reports icons that cannot all be served by one multiplier', () => {
+			// POI icons scaled one way and transit icons another: the mean can only split the difference
+			const style = osm({ icon: { scale: 2 } });
+			for (const layer of style.layers) {
+				if (layer.id !== 'poi-amenity') continue;
+				const layout = (layer as { layout: Record<string, unknown> }).layout;
+				layout['icon-size'] = 0.2;
+			}
+			const conflict = byCode(deriveOptions(style).report.diagnostics, 'icon.conflict')[0];
+			expect(conflict?.data.option).toBe('scale');
+			expect(conflict?.data.observed.length).toBeGreaterThan(1);
+			expect(conflict?.data.observed.map((o) => o.probe)).toContain('poi-amenity');
+		});
+
+		it('reports labels read in more than one language', () => {
+			const style = osm({ text: { language: 'de' } });
+			for (const layer of style.layers) {
+				if (layer.id !== 'label-place-town') continue;
+				(layer as { layout: Record<string, unknown> }).layout['text-field'] = ['get', 'name_fr'];
+			}
+			const conflict = byCode(deriveOptions(style).report.diagnostics, 'language.conflict')[0];
+			expect(conflict?.data.observed.map((o) => o.language).sort()).toEqual(['de', 'fr']);
+			expect(conflict?.data.chosen).toBe('de'); // the city probe, which LANGUAGE_PROBES puts first
+		});
+
+		// A style these builders produced has one layer per probe and one value per topic, so a conflict
+		// on it would mean the detection is firing on agreement.
+		it("finds none in the target's own styles", () => {
+			for (const style of [osm(), osm({ theme: 'gray' }), satellite()]) {
+				const { diagnostics } = deriveOptions(style).report;
+				expect(diagnostics.filter((d) => d.code.endsWith('.conflict')).map((d) => d.code)).toEqual([]);
+			}
+		});
+	});
+
 	// Where each option came from, which the options object structurally cannot say: `minimizeOptions`
 	// deletes every derived value equal to a default, so "read, and it matched" and "never derived" both
 	// come out as an absent key.

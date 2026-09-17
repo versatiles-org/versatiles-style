@@ -46,6 +46,9 @@ export type LabelStyleReading = {
 	transform: string;
 };
 
+/** A colour a layer drew for a probe that the reading did not keep, and the layers that drew it. */
+export type DiscardedColor = { color: RGBA; layers: string[] };
+
 export type ProbeReading = {
 	readonly probe: Probe;
 	readonly zoom: number;
@@ -78,6 +81,16 @@ export type ProbeReading = {
 	readonly extrusionOpacity?: number;
 	/** Line probes: the line width in px. */
 	readonly lineWidth?: number;
+	/**
+	 * Per channel, the colours that other layers drew for this probe and that the reading passed over.
+	 *
+	 * The readers keep the topmost layer (and, for fills and lines, the one beneath it), because that is
+	 * what the map shows. Everything below used to be forgotten, which made an OpenMapTiles style with a
+	 * dozen POI layers in four colours indistinguishable from one with a single POI layer — the other
+	 * eleven surfaced as `unread`, as if nothing had looked at them. Kept so the choice can be reported
+	 * and offered back.
+	 */
+	readonly discarded?: Readonly<Partial<Record<Channel, DiscardedColor[]>>>;
 };
 
 type StyleLayer = StyleSpecification['layers'][number];
@@ -182,6 +195,27 @@ function firstSide(value: unknown): number | undefined {
 		if (Array.isArray(values) && typeof values[0] === 'number') return values[0];
 	}
 	return undefined;
+}
+
+/**
+ * Group colours by the colour they are, dropping any that match `kept`.
+ *
+ * Grouped rather than listed flat because a consumer offering these back wants one swatch per colour
+ * with the layers behind it, not one entry per layer. Compared on rounded components: two layers that
+ * differ in the last bit of a channel are the same colour to anyone looking at the map.
+ */
+function groupDiscarded(drawn: readonly { layer: Layer; color?: RGBA }[], kept: RGBA | undefined): DiscardedColor[] {
+	const key = (c: RGBA) => c.map((v) => Math.round(v * 255)).join(',');
+	const keptKey = kept && key(kept);
+	const groups = new Map<string, DiscardedColor>();
+	for (const { layer, color } of drawn) {
+		if (!color) continue;
+		const id = key(color);
+		if (id === keptKey) continue;
+		const group = groups.get(id) ?? groups.set(id, { color, layers: [] }).get(id)!;
+		group.layers.push(layer.id);
+	}
+	return [...groups.values()];
 }
 
 function toRGBA(value: unknown, opacity: unknown): RGBA | undefined {
@@ -318,6 +352,7 @@ function readFill(probe: Probe, zoom: number, matches: Match[]): ProbeReading | 
 	if (!top) return { probe, zoom, layers: [drawn.at(-1)!.layer.id], colors: {} };
 
 	const colors: ProbeReading['colors'] = { color: top.color };
+	const passedOver = groupDiscarded(colored.slice(0, -2), top.color);
 	const below = colored.at(-2);
 	if (below) {
 		colors.outline = below.color;
@@ -338,6 +373,7 @@ function readFill(probe: Probe, zoom: number, matches: Match[]): ProbeReading | 
 		colors,
 		extruded: top.layer.type === 'fill-extrusion',
 		extrusionOpacity,
+		...(passedOver.length > 0 && { discarded: { color: passedOver } }),
 	};
 }
 
@@ -372,7 +408,18 @@ function readLine(probe: Probe, zoom: number, matches: Match[]): ProbeReading | 
 		colors.casing = casing.color;
 		layerIds.push(casing.layer.id);
 	}
-	return { probe, zoom, layers: layerIds, colors, lineWidth: top.width };
+	const passedOver = groupDiscarded(
+		colored.filter((d) => d !== top && d !== casing),
+		top.color
+	);
+	return {
+		probe,
+		zoom,
+		layers: layerIds,
+		colors,
+		lineWidth: top.width,
+		...(passedOver.length > 0 && { discarded: { color: passedOver } }),
+	};
 }
 
 function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading | undefined {
@@ -450,6 +497,23 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			const font = evaluateProperty(layer, 'layout', 'text-font', zoom, feature);
 			if (Array.isArray(font)) textFont = font as string[];
 		}
+		// What the layers below would have drawn. The loop above stops at the first that draws anything,
+		// which is what the map shows; these are the ones an OpenMapTiles style stacks underneath, and
+		// without them a dozen POI layers in four colours read as a single uncontested colour.
+		const passedOver = groupDiscarded(
+			matches.slice(0, i).map(({ layer: below, feature: belowFeature }) => ({
+				layer: below,
+				color:
+					below.type === 'symbol' && labelText(below, zoom, probe, belowFeature as never)
+						? toRGBA(
+								evaluateProperty(below, 'paint', 'text-color', zoom, belowFeature),
+								evaluateProperty(below, 'paint', 'text-opacity', zoom, belowFeature)
+							)
+						: undefined,
+			})),
+			colors.text
+		).filter((group) => group.color[3] > 0.01);
+
 		return {
 			probe,
 			zoom,
@@ -462,6 +526,7 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			iconSize,
 			iconPadding,
 			...(text && { label: { layer, feature: source } }),
+			...(passedOver.length > 0 && { discarded: { text: passedOver } }),
 		};
 	}
 	return undefined;
