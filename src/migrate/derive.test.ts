@@ -624,6 +624,65 @@ describe('deriveOptions — foreign styles', () => {
 			).toEqual([]);
 		});
 
+		// Overpaint and collapse are different losses and are named differently. This is collapse: the
+		// source tells POI classes apart, the target draws them through one `colors.labelPoi`, and the
+		// layers never meet — none of them overpaints another, so `color.conflict` is silent by design.
+		it('reports features the target cannot tell apart, separately from overpaint', () => {
+			const poi = (id: string, cls: string, color: string) => ({
+				id,
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'poi',
+				filter: ['==', ['get', 'class'], cls],
+				layout: { 'text-field': '{name}', 'text-font': ['Noto Sans Regular'] },
+				paint: { 'text-color': color },
+			});
+			const guess = deriveOptions({
+				version: 8,
+				sources: { omt: { type: 'vector', url: 'https://example.org/t.json' } },
+				layers: [
+					{ id: 'bg', type: 'background', paint: { 'background-color': '#ffffff' } },
+					poi('poi-restaurant', 'restaurant', '#d35400'),
+					poi('poi-shop', 'shop', '#8e44ad'),
+					poi('poi-lodging', 'lodging', '#16a085'),
+				],
+			} as unknown as StyleSpecification);
+
+			const collapsed = byCode(guess.report.diagnostics, 'color.collapsed')[0];
+			expect(collapsed?.optionPath).toBe('colors.labelPoi');
+			expect(collapsed?.data.chosen).toBe('#D35400');
+			expect(collapsed?.data.observed.map((o) => o.color)).toEqual(['#D35400', '#8E44AD', '#16A085']);
+			// named by what tells them apart, without the props every POI carries
+			expect(collapsed?.data.observed[1].feature).toBe('class=shop subclass=supermarket');
+			expect(collapsed?.data.observed[1].layers).toEqual(['poi-shop']);
+
+			// the classes never draw the same feature, so nothing was overpainted
+			expect(byCode(guess.report.diagnostics, 'color.conflict')).toEqual([]);
+		});
+
+		it('says nothing about a collapse the style does not make', () => {
+			// one POI colour for every class: the target being coarser costs nothing here
+			const poi = (id: string, cls: string) => ({
+				id,
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'poi',
+				filter: ['==', ['get', 'class'], cls],
+				layout: { 'text-field': '{name}', 'text-font': ['Noto Sans Regular'] },
+				paint: { 'text-color': '#666666' },
+			});
+			const guess = deriveOptions({
+				version: 8,
+				sources: { omt: { type: 'vector', url: 'https://example.org/t.json' } },
+				layers: [
+					{ id: 'bg', type: 'background', paint: { 'background-color': '#ffffff' } },
+					poi('poi-restaurant', 'restaurant'),
+					poi('poi-shop', 'shop'),
+				],
+			} as unknown as StyleSpecification);
+			expect(byCode(guess.report.diagnostics, 'color.collapsed')).toEqual([]);
+		});
+
 		it('reports fonts and label styles a topic disagreed on', () => {
 			const guess = deriveOptions(
 				osm({ text: { places: { cities: { font: 'noto_sans_bold' }, villages: { font: 'noto_sans_regular' } } } })
@@ -664,7 +723,8 @@ describe('deriveOptions — foreign styles', () => {
 		it("finds none in the target's own styles", () => {
 			for (const style of [osm(), osm({ theme: 'gray' }), satellite()]) {
 				const { diagnostics } = deriveOptions(style).report;
-				expect(diagnostics.filter((d) => d.code.endsWith('.conflict')).map((d) => d.code)).toEqual([]);
+				const lossy = diagnostics.filter((d) => d.code.endsWith('.conflict') || d.code === 'color.collapsed');
+				expect(lossy.map((d) => d.code)).toEqual([]);
 			}
 		});
 	});

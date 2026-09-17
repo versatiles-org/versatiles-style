@@ -507,12 +507,48 @@ function fitContent(
 		}
 	}
 
+	// Colours the source gave features the target cannot tell apart. Reported separately from the
+	// z-order contest below: nothing here overpainted anything, the source would draw every one of
+	// these, and the target has a single setting for the lot.
+	for (const reading of readings.values()) {
+		if (!reading.collapsed?.length) continue;
+		const kept = reading.colors.text ?? reading.colors.color;
+		if (!kept) continue;
+		const differing = reading.collapsed.filter((c) => colorDistance(c.color, kept) > OVERRIDE_DISTANCE);
+		if (differing.length === 0) continue;
+		const channel: Channel = reading.colors.text ? 'text' : 'color';
+		const key = model.channels.get(`${reading.probe.id}/${channel}`)?.keys[0];
+		if (key === undefined) continue;
+		report.say(
+			diagnostic(
+				'color.collapsed',
+				`the style colours ${differing.length} feature kinds differently that the target draws as one (${differing
+					.map((c) => c.feature)
+					.join(', ')}); ${toHex(kept)} was taken`,
+				{
+					key,
+					chosen: toHex(kept),
+					observed: [
+						{ feature: reading.probe.id, color: toHex(kept), layers: reading.layers },
+						...differing.map((c) => ({ feature: c.feature, color: toHex(c.color), layers: c.layers })),
+					],
+				},
+				{ optionPath: `colors.${key}`, origin: { probe: reading.probe.id } }
+			)
+		);
+	}
+
 	// Colours other layers drew for the same probe and channel. Reported against the colour key that
 	// channel feeds, which is the setting a consumer would offer the alternatives for.
 	for (const reading of readings.values()) {
 		for (const [channel, groups] of Object.entries(reading.discarded ?? {}) as [Channel, DiscardedColor[]][]) {
 			const kept = reading.colors[channel];
 			if (!kept) continue;
+			// The same threshold that decides whether a colour is worth overriding the palette with: two
+			// colours that differ enough to be a conflict are exactly the two that would differ enough to
+			// be written out, and a second constant would let one happen without the other. The bare
+			// value, not `overrideDistance(residual)` — both colours here are direct readings, with no
+			// model inversion for a residual to describe.
 			const differing = groups.filter((g) => colorDistance(g.color, kept) > OVERRIDE_DISTANCE);
 			if (differing.length === 0) continue;
 			const key = model.channels.get(`${reading.probe.id}/${channel}`)?.keys[0];

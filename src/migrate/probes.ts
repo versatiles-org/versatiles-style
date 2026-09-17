@@ -45,6 +45,19 @@ export type Probe = {
 	 * this probe.
 	 */
 	readonly features: Readonly<Partial<Record<SchemaName, readonly ProbeFeature[]>>>;
+	/**
+	 * Features a *source* schema tells apart that the target draws as one, per schema.
+	 *
+	 * Read separately and compared, where `features` stops at the first that matches. The two mean
+	 * different things and must not share an array: `features` is alternative spellings of one thing
+	 * ("styles select this differently"), `variants` is several things the target has one setting for
+	 * ("the source is finer-grained than we are"). Only the second is a loss worth reporting.
+	 *
+	 * Shortbread's POI layer is coarser than OpenMapTiles' by design, so an OMT style that colours shops
+	 * and hotels differently from restaurants has three colours for one `colors.labelPoi`, and without
+	 * these two of them would never be read at all.
+	 */
+	readonly variants?: Readonly<Partial<Record<SchemaName, readonly ProbeFeature[]>>>;
 };
 
 type Features = Partial<Record<SchemaName, ProbeFeature | ProbeFeature[]>>;
@@ -80,20 +93,23 @@ const f = (sourceLayer: string, props: ProbeFeature['props'] = {}, extra?: Parti
 	...extra,
 });
 
-function probe(id: string, kind: ProbeKind, zoom: number, features: Features): Probe {
-	const normalized: Partial<Record<SchemaName, ProbeFeature[]>> = {};
-	for (const [schema, list] of Object.entries(features) as [SchemaName, ProbeFeature | ProbeFeature[]][]) {
-		normalized[schema] = (Array.isArray(list) ? list : [list]).map((feature) => ({
-			...feature,
-			props: {
-				...DEFAULT_PROPS[schema][feature.sourceLayer],
-				// labels are filtered on having a name
-				...(kind === 'symbol' && { name: 'name' }),
-				...feature.props,
-			},
-		}));
-	}
-	return { id, kind, zoom, features: normalized };
+function probe(id: string, kind: ProbeKind, zoom: number, features: Features, variants?: Features): Probe {
+	const fill = (list: Features): Partial<Record<SchemaName, ProbeFeature[]>> => {
+		const normalized: Partial<Record<SchemaName, ProbeFeature[]>> = {};
+		for (const [schema, entry] of Object.entries(list) as [SchemaName, ProbeFeature | ProbeFeature[]][]) {
+			normalized[schema] = (Array.isArray(entry) ? entry : [entry]).map((feature) => ({
+				...feature,
+				props: {
+					...DEFAULT_PROPS[schema][feature.sourceLayer],
+					// labels are filtered on having a name
+					...(kind === 'symbol' && { name: 'name' }),
+					...feature.props,
+				},
+			}));
+		}
+		return normalized;
+	};
+	return { id, kind, zoom, features: fill(features), ...(variants && { variants: fill(variants) }) };
 }
 
 /** A line of the road network: Shortbread `kind`, OpenMapTiles `class`/`subclass`, Protomaps `kind`/`kind_detail`. */
@@ -323,11 +339,26 @@ export const PROBES: readonly Probe[] = [
 		openmaptiles: f('housenumber', { housenumber: '12' }),
 		protomaps: f('buildings', { kind: 'address', addr_housenumber: '12' }),
 	}),
-	probe('poi-amenity', 'symbol', 19, {
-		shortbread: f('pois', { amenity: 'restaurant' }),
-		openmaptiles: f('poi', { class: 'restaurant', subclass: 'restaurant' }, { layer: 'poi' }),
-		protomaps: f('pois', { kind: 'restaurant' }, { layer: 'poi' }),
-	}),
+	probe(
+		'poi-amenity',
+		'symbol',
+		19,
+		{
+			shortbread: f('pois', { amenity: 'restaurant' }),
+			openmaptiles: f('poi', { class: 'restaurant', subclass: 'restaurant' }, { layer: 'poi' }),
+			protomaps: f('pois', { kind: 'restaurant' }, { layer: 'poi' }),
+		},
+		{
+			// A shop, a hotel and a park are three `class` values in OpenMapTiles and three layers in the
+			// target — all drawn in the one `labelPoi` colour. A style that tells them apart has to be
+			// asked about each, or the difference is never read.
+			openmaptiles: [
+				f('poi', { class: 'shop', subclass: 'supermarket' }, { layer: 'poi' }),
+				f('poi', { class: 'lodging', subclass: 'hotel' }, { layer: 'poi' }),
+				f('poi', { class: 'park', subclass: 'park' }, { layer: 'poi' }),
+			],
+		}
+	),
 	probe('symbol-transit-bus', 'symbol', 17, {
 		shortbread: f('public_transport', { kind: 'bus_stop' }),
 		openmaptiles: f('poi', { class: 'bus', subclass: 'bus_stop' }),

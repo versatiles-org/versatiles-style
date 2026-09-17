@@ -39,9 +39,11 @@ export type DiagnosticOrigin = {
  * Adding a code is not breaking for a consumer that switches on the ones it knows and prints
  * `message` for the rest.
  *
- * There is no `vote.tie` of its own: every conflict payload carries the count behind each value, so a
- * tie is visible as two equal counts, and a second code saying the same thing would only be another
- * line to read.
+ * There is no `vote.tie` of its own, and that rests on an invariant worth stating: **every payload
+ * whose value was chosen by a vote exposes its tally**, as a `count` or as an array whose length is
+ * the count. A tie is then two equal counts, which a consumer can see without a second code saying so.
+ * A vote-based payload added without a tally would break this quietly, and `vote.tie` would have to
+ * come back. `icon.conflict` carries no count and needs none — ratios reduce to a mean, not a vote.
  */
 export type DiagnosticData = {
 	// ── the migration produced nothing usable ──
@@ -84,6 +86,17 @@ export type DiagnosticData = {
 		/** How the winner was picked, as a rule rather than a sentence. */
 		rule: 'topmost';
 		observed: { color: string; layers: string[] }[];
+	};
+	/**
+	 * The source draws features in different colours that the target has one setting for — not a
+	 * z-order contest like `color.conflict`, but a schema the target is coarser than. Shortbread's POI
+	 * layer is coarser than OpenMapTiles' by design, so for an OMT style this is systematic rather than
+	 * incidental, and `observed` names each feature the source told apart.
+	 */
+	'color.collapsed': {
+		key: string;
+		chosen: string;
+		observed: { feature: string; color: string; layers: string[] }[];
 	};
 	/** A topic's labels were set in more than one font; the most used was taken. */
 	'font.conflict': { topic: string; chosen: string; observed: { font: string; count: number }[] };
@@ -139,6 +152,7 @@ const SEVERITY: Record<DiagnosticCode, Severity> = {
 	'source.tilejsonUnavailable': 'warning',
 	'source.multiple': 'warning',
 	'color.conflict': 'warning',
+	'color.collapsed': 'warning',
 	'font.conflict': 'warning',
 	'labelStyle.conflict': 'warning',
 	'icon.conflict': 'warning',

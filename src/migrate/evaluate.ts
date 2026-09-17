@@ -49,6 +49,9 @@ export type LabelStyleReading = {
 /** A colour a layer drew for a probe that the reading did not keep, and the layers that drew it. */
 export type DiscardedColor = { color: RGBA; layers: string[] };
 
+/** A feature the source schema tells apart, which the target draws through the same setting. */
+export type CollapsedFeature = { feature: string; color: RGBA; layers: string[] };
+
 export type ProbeReading = {
 	readonly probe: Probe;
 	readonly zoom: number;
@@ -91,6 +94,14 @@ export type ProbeReading = {
 	 * and offered back.
 	 */
 	readonly discarded?: Readonly<Partial<Record<Channel, DiscardedColor[]>>>;
+	/**
+	 * What the source drew for features it distinguishes and the target does not — see `Probe.variants`.
+	 *
+	 * Distinct from `discarded`, which is other layers drawing the *same* feature and losing on z-order.
+	 * These are different features entirely: nothing overpaints anything, and they would each be drawn,
+	 * in their own colours, on the source map. The target has one setting for all of them.
+	 */
+	readonly collapsed?: readonly CollapsedFeature[];
 };
 
 type StyleLayer = StyleSpecification['layers'][number];
@@ -289,20 +300,72 @@ function read(
 		return undefined;
 	}
 
-	// The matching layers, bottom to top, each with the feature it matched.
-	const matches: { layer: Layer; feature: EvalFeature; source: ProbeFeature }[] = [];
-	for (const layer of layers) {
-		if (!isVisibleAtZoom(layer, zoom) || layer.source === undefined) continue;
-		const schema = schemas.get(layer.source);
-		for (const source of (schema && probe.features[schema]) || []) {
-			if (layer['source-layer'] !== source.sourceLayer) continue;
-			const feature = toEvalFeature(probe, source);
-			if (!passesFilter(layer, zoom, feature)) continue;
-			matches.push({ layer, feature, source });
-			break;
+	/**
+	 * The layers that draw one of `features`, bottom to top, each with the feature it matched.
+	 *
+	 * `features` are alternative spellings of one thing, so the first that a layer accepts wins and the
+	 * rest are not tried — a layer is counted once however many ways it could have been selected.
+	 */
+	const matching = (features: readonly ProbeFeature[]): Match[] => {
+		const matches: Match[] = [];
+		for (const layer of layers) {
+			if (!isVisibleAtZoom(layer, zoom) || layer.source === undefined) continue;
+			if (!schemas.has(layer.source)) continue;
+			for (const source of features) {
+				if (layer['source-layer'] !== source.sourceLayer) continue;
+				const feature = toEvalFeature(probe, source);
+				if (!passesFilter(layer, zoom, feature)) continue;
+				matches.push({ layer, feature, source });
+				break;
+			}
+		}
+		return matches;
+	};
+
+	const schemasUsed = new Set([...schemas.values()]);
+	const featuresFor = (per: Readonly<Partial<Record<SchemaName, readonly ProbeFeature[]>>> | undefined) =>
+		[...schemasUsed].flatMap((schema) => [...(per?.[schema] ?? [])]);
+
+	const reading = byKind(probe, zoom, matching(featuresFor(probe.features)));
+	if (!reading) return undefined;
+
+	// Each variant read on its own and compared: these are things the source tells apart and the target
+	// does not, so they are never in the same `matches` and can never overpaint one another.
+	const variants = featuresFor(probe.variants);
+	const collapsed: CollapsedFeature[] = [];
+	if (variants.length > 0) {
+		const name = namer([...featuresFor(probe.features), ...variants]);
+		for (const variant of variants) {
+			const other = byKind(probe, zoom, matching([variant]));
+			const color = other && (other.colors.text ?? other.colors.color);
+			if (!color || color[3] <= 0.01) continue;
+			collapsed.push({ feature: name(variant), color, layers: other.layers });
 		}
 	}
+	return collapsed.length > 0 ? { ...reading, collapsed } : reading;
+}
 
+/**
+ * Names features by what tells them apart, and nothing else.
+ *
+ * Every probe feature carries the props real tiles put on everything of a source-layer — a POI's
+ * `rank` and `level` — which say nothing about which variant this is. So the naming is relative to the
+ * group: only keys whose value is not the same across all of them are worth printing, leaving
+ * `class=shop subclass=supermarket` rather than that plus two constants.
+ */
+function namer(group: readonly ProbeFeature[]): (feature: ProbeFeature) => string {
+	const varies = new Set<string>();
+	for (const key of new Set(group.flatMap((feature) => Object.keys(feature.props)))) {
+		if (new Set(group.map((feature) => JSON.stringify(feature.props[key]))).size > 1) varies.add(key);
+	}
+	return (feature) =>
+		[...varies]
+			.filter((key) => feature.props[key] !== undefined)
+			.map((key) => `${key}=${String(feature.props[key])}`)
+			.join(' ') || feature.sourceLayer;
+}
+
+function byKind(probe: Probe, zoom: number, matches: Match[]): ProbeReading | undefined {
 	switch (probe.kind) {
 		case 'fill':
 			return readFill(probe, zoom, matches);
@@ -310,6 +373,8 @@ function read(
 			return readLine(probe, zoom, matches);
 		case 'symbol':
 			return readSymbol(probe, zoom, matches);
+		case 'background':
+			return undefined;
 	}
 }
 
