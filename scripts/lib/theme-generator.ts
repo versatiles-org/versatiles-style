@@ -84,7 +84,7 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
 	// fully desaturated: every colour is a gray, carrying colorful's hue separation as brightness
 	gray: {
 		chroma: { fill: 0, line: 0, label: 0 },
-		decolorize: 0,
+		decolorize: 1,
 		darkLand: 0.02,
 	},
 	// quiet fills, heavy lines, black labels
@@ -107,11 +107,16 @@ export const OVERRIDES: Partial<Record<Palette, Partial<ResolvedColors>>> = {};
 // `THEMES`, because the dark branch below takes `magnitude(target)` and so drops the sign: stronger
 // separation in a light theme and in a dark one point in opposite directions.
 //
-// Fixes are multipliers folded into the derivation, not edits to its result. The two keys that are
-// solved against another generated colour — `labelWater` over the water, a road over its casing — are
+// A fix is folded into the derivation, never applied to its result. The two keys that are solved
+// against another generated colour — `labelWater` over the water, a road over its casing — are
 // therefore still correct afterwards: darkening the water moves the target `labelWater` is solved
 // against, and it re-solves. Adjusting the output colour instead would leave both sitting on a
 // background they were never solved for. That is the whole reason this hooks where it does.
+//
+// Three adjustments, entering at the three points the derivation offers. `blend` changes the reference
+// colour before anything reads it; `chroma` scales the chroma `tint` assigns; `lightness` scales the
+// contrast target that lightness is solved for. In that order, so a blended colour can still be
+// pushed lighter or more saturated than the wash left it.
 
 /** Multipliers on what the derivation would otherwise use; 1, or absent, changes nothing. */
 export interface Adjustment {
@@ -130,6 +135,23 @@ export interface Adjustment {
 	lightness?: number;
 	/** OKLCh chroma, as a multiple of the theme's own. */
 	chroma?: number;
+	/**
+	 * Mix the colour toward the land, 0–1: 0 leaves it alone, 1 makes it the land exactly.
+	 *
+	 * The one adjustment that is not a multiplier on the derivation but a change to the colour being
+	 * derived, so it is applied to the reference first, before anything reads it — see `blendReference`.
+	 * Hue, chroma and the contrast target then all follow from the blended colour, which is what
+	 * separates this from `lightness` and `chroma`: those bend one axis each and hold the rest, while a
+	 * blend moves all three together, the way washing a colour into its background actually looks.
+	 *
+	 * Reach for it to make something recede — a land use that should stop competing with what is drawn
+	 * on it — where dropping chroma alone would leave it the same brightness, and dropping contrast
+	 * alone would leave it the same hue.
+	 *
+	 * The reference's own alpha is kept: how translucent a colour is says what it hides, not how far it
+	 * stands out, and blending toward an opaque land would otherwise quietly make it solid.
+	 */
+	blend?: number;
 }
 
 /** A deliberate deviation from the relationships `colorful` sets, for some colours in some themes. */
@@ -149,8 +171,6 @@ export interface Fix {
 	dark?: Adjustment;
 	/** Limit to these palettes and their dark themes; by default all five. */
 	themes?: readonly LightTheme[];
-	/** Why this should deviate from the reference. A deviation without a reason is a mistake. */
-	why: string;
 }
 
 /**
@@ -159,7 +179,26 @@ export interface Fix {
  * Adding one changes `src/themes/tables.ts`, so run `npm run generate-themes` and look at the result
  * (`npm run schema-compare`, or `npm run compare -- --baseline` around the change).
  */
-export const FIXES: readonly Fix[] = [];
+export const FIXES: readonly Fix[] = [
+	{
+		themes: ['gray'],
+		keys: ['water'],
+		light: { lightness: 1.2 },
+		dark: { lightness: 0.9 },
+	},
+	{
+		themes: ['gray'],
+		keys: ['natureWood', 'natureGrass', 'naturePark', 'natureAgriculture', 'natureSand', 'natureRock', 'natureWetland', 'natureLeisure'],
+		light: { blend: 0.8 },
+		dark: { blend: 0.7 },
+	},
+	{
+		themes: ['gray'],
+		keys: ['roadStreet', 'roadStreetBg', 'roadMotorway', 'roadMotorwayBg', 'roadTrunk', 'roadTrunkBg', 'transitRail','transitSubway'],
+		light: { blend: 0.5 },
+		dark: { blend: 0.6 },
+	},
+];
 
 /**
  * Keys no fix can reach, because they are not derived through a contrast target.
@@ -169,7 +208,9 @@ export const FIXES: readonly Fix[] = [];
  */
 const UNFIXABLE: ReadonlySet<string> = new Set(['land', 'background', 'labelHalo']);
 
-const NEUTRAL: Required<Adjustment> = Object.freeze({ lightness: 1, chroma: 1 });
+const NEUTRAL: Required<Adjustment> = Object.freeze({ lightness: 1, chroma: 1, blend: 0 });
+
+const isNeutral = (a: Required<Adjustment>) => a.lightness === 1 && a.chroma === 1 && a.blend === 0;
 
 /** How far the achieved contrast may sit from what a fix asked for before it is worth reporting. */
 const FIX_TOLERANCE = Math.log(1.02);
@@ -195,26 +236,38 @@ export function resolveFixes(fixes: readonly Fix[] = FIXES): Map<string, Require
 	const allThemes = Object.keys(THEMES) as LightTheme[];
 
 	for (const fix of fixes) {
-		if (fix.keys.length === 0) throw new Error(`fix "${fix.why}": no keys`);
-		if (!fix.light && !fix.dark) throw new Error(`fix "${fix.why}": neither a light nor a dark adjustment`);
+		const name = [fix.themes?.[0] ?? allThemes[0], fix.keys?.[0] ?? ''].join('|');
+		if (fix.keys.length === 0) throw new Error(`fix "${name}": no keys`);
+		if (!fix.light && !fix.dark) throw new Error(`fix "${name}": neither a light nor a dark adjustment`);
 		for (const [mode, adjustment] of [
 			['light', fix.light],
 			['dark', fix.dark],
 		] as const) {
-			for (const [name, value] of Object.entries(adjustment ?? {})) {
-				if (!Number.isFinite(value) || value <= 0) {
-					throw new Error(`fix "${fix.why}": ${mode}.${name} must be a positive multiple, got ${value}`);
+			if (!adjustment) continue;
+			for (const [property, value] of Object.entries(adjustment)) {
+				if (!Number.isFinite(value)) throw new Error(`fix "${name}": ${mode}.${property} is not a number`);
+				// `blend` is a fraction of the way to the land, the other two are multiples of what the
+				// derivation would otherwise use — so 0 is meaningless for those and meaningful for this one
+				if (property === 'blend') {
+					if (value < 0 || value > 1) {
+						throw new Error(`fix "${name}": ${mode}.blend must be a fraction from 0 to 1, got ${value}`);
+					}
+				} else if (value <= 0) {
+					throw new Error(`fix "${name}": ${mode}.${property} must be a positive multiple, got ${value}`);
 				}
+			}
+			if (isNeutral({ ...NEUTRAL, ...adjustment })) {
+				throw new Error(`fix "${name}": ${mode} changes nothing — drop it, or it reads as a change that was made`);
 			}
 		}
 		for (const key of fix.keys) {
-			if (!keys.includes(key)) throw new Error(`fix "${fix.why}": ${key} is not a colour key`);
+			if (!keys.includes(key)) throw new Error(`fix "${name}": ${key} is not a colour key`);
 			if (UNFIXABLE.has(key)) {
-				throw new Error(`fix "${fix.why}": ${key} is not derived through a contrast target, so a fix cannot reach it`);
+				throw new Error(`fix "${name}": ${key} is not derived through a contrast target, so a fix cannot reach it`);
 			}
 		}
 		for (const theme of fix.themes ?? allThemes) {
-			if (!(theme in THEMES)) throw new Error(`fix "${fix.why}": ${theme} is not a theme`);
+			if (!(theme in THEMES)) throw new Error(`fix "${name}": ${theme} is not a theme`);
 		}
 
 		let applications = 0;
@@ -229,11 +282,11 @@ export function resolveFixes(fixes: readonly Fix[] = FIXES): Map<string, Require
 					const prior = owner.get(at);
 					if (prior !== undefined) {
 						throw new Error(
-							`two fixes both adjust ${key} in ${dark ? `${theme}-dark` : theme}: "${prior}" and "${fix.why}" — ` +
-								`merge them into one, since a list of multipliers does not show which of two wins`
+							`two fixes both adjust ${key} in ${dark ? `${theme}-dark` : theme}: "${prior}" and "${name}" — ` +
+							`merge them into one, since a list of multipliers does not show which of two wins`
 						);
 					}
-					owner.set(at, fix.why);
+					owner.set(at, name);
 					index.set(at, { ...NEUTRAL, ...adjustment });
 					applications++;
 				}
@@ -241,8 +294,8 @@ export function resolveFixes(fixes: readonly Fix[] = FIXES): Map<string, Require
 		}
 		if (applications === 0) {
 			throw new Error(
-				`fix "${fix.why}" applies to no generated theme. Note that colorful light is the hand-written ` +
-					`reference and is never generated — to move its own colours, edit src/themes/colorful.ts`
+				`fix "${name}" applies to no generated theme. Note that colorful light is the hand-written ` +
+				`reference and is never generated — to move its own colours, edit src/themes/colorful.ts`
 			);
 		}
 	}
@@ -367,6 +420,33 @@ function decolorized(ref: Record<string, string>, amount: number): Record<string
 	return out;
 }
 
+/**
+ * `ref`, with every colour a fix blends mixed that far toward the land.
+ *
+ * On the reference rather than on the result, so the whole derivation sees the blended colour: its hue
+ * and chroma feed `tint`, and the contrast target is measured from it, which is what makes a blend
+ * cost separation as well as saturation. The keys solved against another generated colour —
+ * `labelWater` over the water, a road over its casing — then re-solve against the blended one for
+ * free, exactly as with the other two adjustments.
+ *
+ * Mixed in OKLab, so a colour washes into the land without passing through a grey middle, and put back
+ * through `fromOklch` so a mix that leaves sRGB loses chroma rather than hue.
+ */
+function blendReference(ref: Record<string, string>, blendOf: (key: string) => number): Record<string, string> {
+	const land = parse(ref.land);
+	const out: Record<string, string> = { ...ref };
+	for (const key of Object.keys(ref)) {
+		const amount = blendOf(key);
+		if (!amount) continue;
+		const color = parse(ref[key]);
+		const { l, c, h } = Color.mix(color, land, amount).oklch;
+		// the reference's own alpha, not the mixed one: `Color.mix` interpolates alpha toward the land's,
+		// which would turn a wash into an opaque colour
+		out[key] = fromOklch(l, c, h, color.alpha).asHex();
+	}
+	return out;
+}
+
 function build(
 	theme: LightTheme,
 	dark: boolean,
@@ -374,11 +454,14 @@ function build(
 	diagnostics: Diagnostic[]
 ): Record<string, string> {
 	const settings = THEMES[theme];
-	const ref = decolorized(osm.colors('colorful') as Record<string, string>, settings.decolorize ?? 0);
-	const refLand = parse(ref.land);
-	// the reference itself is never fixed: targets are measured from colorful, so bending it here would
-	// move every theme at once rather than the ones the fix names
+	// keyed by this theme and mode, so what follows is colorful as *this* theme should derive it — the
+	// shared reference is never touched, or one theme's fix would move all of them
 	const fixOf = (key: string) => fixes.get(`${theme}|${dark}|${key}`) ?? NEUTRAL;
+	const ref = blendReference(
+		decolorized(osm.colors('colorful') as Record<string, string>, settings.decolorize ?? 0),
+		(key) => fixOf(key).blend
+	);
+	const refLand = parse(ref.land);
 	const tint = (key: string, group: Group) => {
 		const { c, h } = parse(ref[key]).oklch;
 		const v = settings.chroma?.[group] ?? 1;

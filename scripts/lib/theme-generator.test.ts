@@ -44,7 +44,6 @@ describe('theme fixes', () => {
 		keys: ['water'],
 		light: { lightness: 0.9 },
 		dark: { lightness: 1.1 },
-		why: 'test: water darker in light themes, lighter in dark ones',
 	};
 
 	it('moves a colour the way the multiplier points, oppositely per mode', () => {
@@ -79,7 +78,7 @@ describe('theme fixes', () => {
 	});
 
 	it('scales chroma without touching hue', () => {
-		const fix: Fix = { keys: ['natureWood'], light: { chroma: 1.5 }, why: 'test: greener wood' };
+		const fix: Fix = { keys: ['natureWood'], light: { chroma: 1.5 } };
 		const { tables } = generate([fix]);
 		expect(chromaOf(colors(tables, 'natural'), 'natureWood')).toBeGreaterThan(
 			chromaOf(colors(base, 'natural'), 'natureWood')
@@ -90,8 +89,63 @@ describe('theme fixes', () => {
 		);
 	});
 
+	// `blend` is the one adjustment that changes the colour being derived rather than scaling the
+	// derivation, so what it has to prove is that everything downstream follows the blended colour
+	describe('blend', () => {
+		const washed: Fix = { keys: ['natureWood'], light: { blend: 0.5 }, dark: { blend: 0.5 } };
+
+		it('moves a colour toward the land, in chroma and in separation', () => {
+			const { tables } = generate([washed]);
+			for (const theme of ['natural', 'natural-dark'] as Palette[]) {
+				const before = colors(base, theme);
+				const after = colors(tables, theme);
+				// closer to the land means less separation from it, whichever side it sits on
+				expect(Math.abs(Math.log(signedContrast(after, 'natureWood', 'land')))).toBeLessThan(
+					Math.abs(Math.log(signedContrast(before, 'natureWood', 'land')))
+				);
+				expect(chromaOf(after, 'natureWood')).toBeLessThan(chromaOf(before, 'natureWood'));
+			}
+		});
+
+		it('reaches the land at 1', () => {
+			const { tables } = generate([{ keys: ['natureWood'], light: { blend: 1 } }]);
+			expect(signedContrast(colors(tables, 'natural'), 'natureWood', 'land')).toBeCloseTo(1, 2);
+		});
+
+		it('keeps the reference alpha, so a wash does not turn translucent colours solid', () => {
+			// siteConstruction is '#A9A9A91A' in colorful: alpha says what it hides, not how it stands out
+			const fix: Fix = { keys: ['siteConstruction'], light: { blend: 0.6 } };
+			const { tables } = generate([fix]);
+			const alpha = (hex: string) => hex.slice(7);
+			expect(alpha(colors(tables, 'natural').siteConstruction)).toBe(alpha(colors(base, 'natural').siteConstruction));
+			expect(colors(tables, 'natural').siteConstruction).not.toBe(colors(base, 'natural').siteConstruction);
+		});
+
+		it('re-solves a colour derived against the one it blended', () => {
+			const { tables } = generate([{ keys: ['water'], light: { blend: 0.4 } }]);
+			expect(colors(tables, 'natural').labelWater).not.toBe(colors(base, 'natural').labelWater);
+		});
+
+		it('composes with lightness, which is applied after it', () => {
+			const blended = generate([{ keys: ['natureWood'], light: { blend: 0.5 } }]).tables;
+			const pushed = generate([{ keys: ['natureWood'], light: { blend: 0.5, lightness: 1.15 } }]).tables;
+			expect(signedContrast(colors(pushed, 'natural'), 'natureWood', 'land')).toBeGreaterThan(
+				signedContrast(colors(blended, 'natural'), 'natureWood', 'land')
+			);
+		});
+
+		it.each([
+			[{ keys: ['water'], light: { blend: 1.5 } }, /fraction from 0 to 1/],
+			[{ keys: ['water'], light: { blend: -0.2 } }, /fraction from 0 to 1/],
+			[{ keys: ['water'], light: { blend: 0 } }, /changes nothing/],
+			[{ keys: ['water'], light: { blend: 0, chroma: 1, lightness: 1 } }, /changes nothing/],
+		] as [Fix, RegExp][])('rejects a blend that cannot mean anything (%#)', (fix, message) => {
+			expect(() => generate([fix])).toThrow(message);
+		});
+	});
+
 	it('restricts to the named themes', () => {
-		const fix: Fix = { keys: ['water'], light: { lightness: 0.9 }, themes: ['muted'], why: 'test: one theme' };
+		const fix: Fix = { keys: ['water'], light: { lightness: 0.9 }, themes: ['muted'] };
 		const { tables } = generate([fix]);
 		expect(colors(tables, 'muted').water).not.toBe(colors(base, 'muted').water);
 		expect(colors(tables, 'natural').water).toBe(colors(base, 'natural').water);
@@ -105,7 +159,6 @@ describe('theme fixes', () => {
 			light: { lightness: 0.5 },
 			dark: { lightness: 0.5 },
 			themes: ['colorful'],
-			why: 'test: colorful only',
 		};
 		const { tables } = generate([fix]);
 		expect(getPaletteColors('colorful').water).toBe('#BFD9F2');
@@ -113,35 +166,35 @@ describe('theme fixes', () => {
 	});
 
 	it('rejects a fix that could only have applied to colorful light', () => {
-		const fix: Fix = { keys: ['water'], light: { lightness: 0.9 }, themes: ['colorful'], why: 'test: dead fix' };
+		const fix: Fix = { keys: ['water'], light: { lightness: 0.9 }, themes: ['colorful'] };
 		expect(() => generate([fix])).toThrow(/applies to no generated theme/);
 	});
 
 	it('rejects two fixes on the same colour in the same theme', () => {
-		const one: Fix = { keys: ['water'], light: { lightness: 0.9 }, why: 'test: first' };
-		const two: Fix = { keys: ['water', 'glacier'], light: { chroma: 1.2 }, why: 'test: second' };
+		const one: Fix = { keys: ['water'], light: { lightness: 0.9 } };
+		const two: Fix = { keys: ['water', 'glacier'], light: { chroma: 1.2 } };
 		expect(() => generate([one, two])).toThrow(/both adjust water in natural/);
 	});
 
 	it.each(['land', 'background', 'labelHalo'])('rejects %s, which no contrast target derives', (key) => {
-		const fix: Fix = { keys: [key], light: { lightness: 0.9 }, why: 'test: unreachable' };
+		const fix: Fix = { keys: [key], light: { lightness: 0.9 } };
 		expect(() => generate([fix])).toThrow(/cannot reach it/);
 	});
 
 	it.each([
-		[{ keys: ['nope'], light: { lightness: 0.9 }, why: 'test' }, /not a colour key/],
-		[{ keys: ['water'], light: { lightness: 0 }, why: 'test' }, /positive multiple/],
-		[{ keys: ['water'], dark: { chroma: -1 }, why: 'test' }, /positive multiple/],
-		[{ keys: [], light: { lightness: 0.9 }, why: 'test' }, /no keys/],
-		[{ keys: ['water'], why: 'test' }, /neither a light nor a dark adjustment/],
-		[{ keys: ['water'], light: { lightness: 0.9 }, themes: ['nope'], why: 'test' }, /not a theme/],
+		[{ keys: ['nope'], light: { lightness: 0.9 } }, /not a colour key/],
+		[{ keys: ['water'], light: { lightness: 0 } }, /positive multiple/],
+		[{ keys: ['water'], dark: { chroma: -1 } }, /positive multiple/],
+		[{ keys: [], light: { lightness: 0.9 } }, /no keys/],
+		[{ keys: ['water'] }, /neither a light nor a dark adjustment/],
+		[{ keys: ['water'], light: { lightness: 0.9 }, themes: ['nope'] }, /not a theme/],
 	] as [Fix, RegExp][])('rejects a malformed fix (%#)', (fix, message) => {
 		expect(() => generate([fix])).toThrow(message);
 	});
 
 	it('reports a fix the derivation cannot deliver instead of silently dropping it', () => {
 		// nothing can be 50× lighter than its background and still be a colour
-		const fix: Fix = { keys: ['natureWood'], light: { lightness: 50 }, why: 'test: out of range' };
+		const fix: Fix = { keys: ['natureWood'], light: { lightness: 50 } };
 		const { diagnostics } = generate([fix]);
 		expect(diagnostics.length).toBeGreaterThan(0);
 		expect(diagnostics.every((d) => d.key === 'natureWood')).toBe(true);
