@@ -5,8 +5,8 @@
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────
 
-export { guessStyle, guessSchema } from './api/index.js';
-export type { GuessStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/index.js';
+export { guessStyle, guessSchema, inspectorStyle } from './api/index.js';
+export type { GuessStyleOptions, InspectorStyleOptions, SchemaGuess, SchemaName, SchemaScore } from './api/index.js';
 
 // ── v6 types ──────────────────────────────────────────────────────────────────
 

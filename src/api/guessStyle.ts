@@ -1,7 +1,7 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
-import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls } from '../options/index.js';
+import { DEFAULT_BASE } from '../options/index.js';
 import { loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
 import { resolveUrl } from '../options/index.js';
 import { osm } from './osm.js';
@@ -9,6 +9,7 @@ import { checkKeys } from '../options/index.js';
 import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
 import { guessSchema, qualifies } from './guessSchema.js';
+import { inspectorStyle, isVectorTileJSON } from './inspectorStyle.js';
 import { SCHEMA_NAMES } from '../lib/index.js';
 
 /**
@@ -50,89 +51,10 @@ export type GuessStyleOptions = {
 
 const SATELLITE_HINTS = new Set(['satellite', 'aerial', 'ortho', 'imagery']);
 
-function isVectorTileJSON(tj: TileJSONSpecification): tj is TileJSONSpecificationVector {
-	return 'vector_layers' in tj && Array.isArray((tj as TileJSONSpecificationVector).vector_layers);
-}
-
 /** Whether a caller's own schema — one `guessSchema` does not know — looks like this tileset. */
 function looksLike(tj: TileJSONSpecificationVector, sourceLayers: readonly string[]): boolean {
 	const known = new Set(sourceLayers);
 	return qualifies(tj.vector_layers.filter((l) => known.has(l.id)).length, tj.vector_layers.length);
-}
-
-// Deterministic hue from a string (djb2 hash → 0–359).
-function stringToHue(s: string): number {
-	let h = 5381;
-	for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) & 0xffffffff;
-	return Math.abs(h) % 360;
-}
-
-// Build a simple inspector style: one fill + one line + one symbol layer per source-layer,
-// each with a unique hue derived from the layer name. Useful for visualising unknown vector tiles.
-function buildInspectorStyle(tj: TileJSONSpecificationVector, urls: GuessStyleOptions['urls']): StyleSpecification {
-	const base = urls?.base ?? DEFAULT_BASE;
-	const sourceName = 'tiles';
-	const sourceSpec: Record<string, unknown> = {
-		type: 'vector',
-		tiles: resolveTileJSONTiles(tj, base).tiles,
-		scheme: tj.scheme ?? 'xyz',
-	};
-	if (tj.minzoom !== undefined) sourceSpec['minzoom'] = tj.minzoom;
-	if (tj.maxzoom !== undefined) sourceSpec['maxzoom'] = tj.maxzoom;
-	if (tj.bounds) sourceSpec['bounds'] = tj.bounds;
-	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
-
-	const layers: StyleSpecification['layers'] = [
-		{
-			id: 'background',
-			type: 'background',
-			paint: { 'background-color': '#f8f4f0' },
-		} as StyleSpecification['layers'][number],
-	];
-
-	for (const vl of tj.vector_layers) {
-		const hue = stringToHue(vl.id);
-		const fillColor = `hsl(${hue}, 40%, 70%)`;
-		const lineColor = `hsl(${hue}, 60%, 40%)`;
-
-		layers.push({
-			id: `${vl.id}-fill`,
-			type: 'fill',
-			source: sourceName,
-			'source-layer': vl.id,
-			paint: { 'fill-color': fillColor, 'fill-opacity': 0.4 },
-		} as StyleSpecification['layers'][number]);
-
-		layers.push({
-			id: `${vl.id}-line`,
-			type: 'line',
-			source: sourceName,
-			'source-layer': vl.id,
-			paint: { 'line-color': lineColor, 'line-width': 1 },
-		} as StyleSpecification['layers'][number]);
-
-		layers.push({
-			id: `${vl.id}-label`,
-			type: 'symbol',
-			source: sourceName,
-			'source-layer': vl.id,
-			layout: {
-				'text-field': ['get', 'name'],
-				'text-font': [DEFAULT_FONT_REGULAR],
-				'text-size': 11,
-				'text-max-width': 6,
-			},
-			paint: { 'text-color': lineColor, 'text-halo-color': '#fff', 'text-halo-width': 1 },
-		} as StyleSpecification['layers'][number]);
-	}
-
-	return {
-		version: 8,
-		// the labels need glyphs: from `urls.glyphsPattern`, or the VersaTiles default, like osm()
-		glyphs: resolveOsmUrls({ base: urls?.base, glyphsPattern: urls?.glyphsPattern }).glyphsPattern,
-		sources: { [sourceName]: sourceSpec } as unknown as StyleSpecification['sources'],
-		layers,
-	};
 }
 
 // Build a minimal raster style for a raster TileJSON.
@@ -244,7 +166,11 @@ export async function guessStyle(
 				if ((SCHEMA_NAMES as readonly string[]).includes(builder.tileset.id)) continue;
 				if (looksLike(tileJSON, builder.tileset.sourceLayers)) return builder.tileset.build(osmSource, urls);
 			}
-			return buildInspectorStyle(tileJSON, urls);
+			// Only the two keys `inspectorStyle` accepts. `urls` may also carry `sprite`, which it rejects
+			// as unknown — and `guessStyle` never throws, so that rejection would surface as a *blank*
+			// style rather than an error. Nothing in the inspector places an icon, so there is nothing
+			// for a sprite to do here.
+			return inspectorStyle(tileJSON, { urls: { base: urls?.base, glyphsPattern: urls?.glyphsPattern } });
 		}
 		return await buildRasterStyle(osmSource, tileJSON, urls);
 	} catch {

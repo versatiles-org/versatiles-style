@@ -103,7 +103,15 @@ describe('the browser entry', () => {
 	});
 
 	it('exports the style builders and the runtime helpers a page needs', () => {
-		for (const name of ['osm', 'satellite', 'guessStyle', 'guessSchema', 'inlineSources', 'fetchTileJSON']) {
+		for (const name of [
+			'osm',
+			'satellite',
+			'guessStyle',
+			'guessSchema',
+			'inspectorStyle',
+			'inlineSources',
+			'fetchTileJSON',
+		]) {
 			expect(typeof (browser as Record<string, unknown>)[name], name).toBe('function');
 		}
 		expect(typeof browser.Color).toBe('function');

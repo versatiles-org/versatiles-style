@@ -195,6 +195,15 @@ import { guessSchema } from '@versatiles/style';
 const guess = guessSchema(tileJSON); // { type: 'vector', schema: 'openmaptiles', candidates: [...] }
 ```
 
+- `inspectorStyle(tileJSON)` - a colour-coded style drawing **every** source-layer of a vector tileset — a translucent fill, a line and a `name` label per layer, nothing filtered. For unfamiliar tiles, or for checking what a tileset actually carries rather than how it should look. Synchronous, no I/O. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.inspectorStyle.html)
+
+```javascript
+import { inspectorStyle } from '@versatiles/style';
+const style = inspectorStyle(tileJSON);
+```
+
+This is also what `guessStyle()` falls back to when it cannot build a tileset's schema — so if an OpenMapTiles map renders as flat translucent blobs, the `schemas` option is missing.
+
 - `guessOptions(style)` - from `@versatiles/style/migrate`: read a MapLibre style built for OpenMapTiles, Protomaps or Shortbread tiles, and return the `osm()` or `satellite()` options whose style looks most like it — for moving a map onto VersaTiles. `deriveOptions(style, tileJSONs?, fontNames?)` is its synchronous, I/O-free core.
 
 ```javascript
@@ -254,7 +263,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own sourcemap: **99.8 KB** raw, **30.2 KB** gzipped, across 83 modules.
+Sized by the bundle's own sourcemap: **100.2 KB** raw, **30.4 KB** gzipped, across 84 modules.
 
 ### Dependency Graph
 

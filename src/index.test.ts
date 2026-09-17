@@ -7,6 +7,7 @@ describe('exports', () => {
 		expect(typeof lib.satellite).toBe('function');
 		expect(typeof lib.guessStyle).toBe('function');
 		expect(typeof lib.guessSchema).toBe('function');
+		expect(typeof lib.inspectorStyle).toBe('function');
 	});
 
 	it('should export every function API_DESIGN.md documents', () => {

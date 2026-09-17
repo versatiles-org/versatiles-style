@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.0.0] - 2026-09-17
 
 ### ⚠ BREAKING CHANGES
-- Rewrote the public API around four functions: `osm()`, `satellite()`, `guessStyle()` and
-  `guessSchema()`.
+- Rewrote the public API around five functions: `osm()`, `satellite()`, `guessStyle()`,
+  `guessSchema()` and `inspectorStyle()`.
   `osm()` and `satellite()` are **synchronous** and perform no I/O — a `*.json` source URL becomes a
   source `url` that MapLibre resolves at map load. `guessStyle()` is asynchronous, because it has to
   read the TileJSON before it can decide what to build.
@@ -165,6 +165,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rather than silently doing nothing — `omt({ features: { landcover: true } })` is an error naming the
   key. They are subpaths rather than root exports so that a page drawing only Shortbread does not
   download them: the import graph decides what the CDN bundle contains, not a build flag.
+- `inspectorStyle(tileJSON)` returns a colour-coded style that draws every source-layer of a vector
+  tileset — a translucent fill, a line and a `name` label each, nothing filtered — for looking at
+  unfamiliar tiles, or at what a tileset carries rather than how it should look. It is the style
+  `guessStyle()` already fell back to for vector tiles whose schema it cannot build; exporting it
+  means it can also be asked for deliberately, including for a tileset `guessStyle` recognises and
+  would otherwise build real cartography for. Synchronous and I/O-free, and unlike `guessStyle` it
+  throws on bad input rather than returning a blank style.
 - `guessSchema(tileJSON)` names a vector tileset's schema — `'shortbread' | 'openmaptiles' |
   'protomaps'` — synchronously and without I/O, reading only `vector_layers`. It scores every schema,
   so `candidates` shows why. It knows all three without importing any of them, which is what keeps it

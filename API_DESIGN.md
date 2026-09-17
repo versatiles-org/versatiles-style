@@ -15,6 +15,7 @@
   - [Other tile schemas: `omt()` and `protomaps()`](#other-tile-schemas-omt-and-protomaps)
   - [`guessStyle(source, options?): Promise<StyleSpecification>`](#guessstylesource-options-promisestylespecification)
   - [`guessSchema(tileJSON): SchemaGuess`](#guessschematilejson-schemaguess)
+  - [`inspectorStyle(tileJSON, options?): StyleSpecification`](#inspectorstyletilejson-options-stylespecification)
   - [`guessOptions(style, options?): Promise<OptionsGuess>`](#guessoptionsstyle-options-promiseoptionsguess)
   - [Swapping a style at runtime](#swapping-a-style-at-runtime)
   - [Projection](#projection)
@@ -773,6 +774,57 @@ otherwise `schema` is `undefined`. `candidates` lists all three, best first.
 It knows all three schemas without importing their styles, so it adds a small table to the root entry
 rather than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that
 schema's function is passed in `schemas`.
+
+---
+
+## `inspectorStyle(tileJSON, options?): StyleSpecification`
+
+```ts
+inspectorStyle(
+  tileJSON: TileJSONSpecification,   // must carry `vector_layers`
+  options?: {
+    urls?: {
+      base?:          string         // resolves relative tile URLs
+      glyphsPattern?: string         // where the labels load fonts from
+    }
+  }
+)
+```
+
+A colour-coded style that draws **every source-layer** of a vector tileset, whatever it contains: a
+translucent fill, a line and a `name` label per layer, each in one hue derived from the layer's name,
+over a neutral background. Nothing is filtered and nothing is hidden, so geometry shows up whichever
+type it turns out to be.
+
+This is what you want when the tiles are unfamiliar, or when you are checking what a tileset actually
+carries rather than how it is meant to look.
+
+```ts
+import { inspectorStyle } from '@versatiles/style';
+const style = inspectorStyle(tileJSON);
+```
+
+It is the style [`guessStyle()`](#guessstylesource-options-promisestylespecification) falls back to
+for vector tiles whose schema it cannot build — so if an OpenMapTiles tileset renders as flat
+translucent blobs, you forgot `{ schemas: [omt] }`. Exporting it separately means you can also ask for
+it deliberately, including for a tileset `guessStyle` _does_ recognise and would otherwise give real
+cartography:
+
+```ts
+const real = await guessStyle(shortbreadTileJSON); // 200+ layers of cartography
+const raw = inspectorStyle(shortbreadTileJSON); // 4 source-layers × 3 + background
+```
+
+Synchronous and performs no I/O, like `osm()` and `guessSchema()`: it takes a TileJSON **object**, so
+pass a URL through [`fetchTileJSON()`](#fetchtilejsonurl-options-promisetilejsonspecification) first.
+
+Unlike `guessStyle`, it **throws** — on a raster tileset (there are no named layers to inspect), on a
+malformed TileJSON, or on an unknown option key. It is a builder, and you asked for this style
+specifically, so bad input is an error rather than something to paper over.
+
+The hue is keyed on the source-layer _name_, not on the tileset, so `water` is the same colour in
+every style this builds and two tilesets can be compared side by side. With 360 hues, unrelated layers
+start colliding at around 25 of them.
 
 ---
 
