@@ -2,12 +2,11 @@
  * Shared helpers used by the style builders: TileJSON loading, source descriptors, style metadata
  * and URL/attribution utilities.
  *
- * ⚠️ **`src/options/*` and `src/types/*` must not import this barrel.** `lib/tileSource.ts` and
- * `lib/loadTileSource.ts` import types from `options`, so an `options → lib/index` edge closes a
- * loop. It is harmless today only because those two imports are `import type` and therefore erased;
- * making either one a value import would turn it into a real runtime cycle. `options/urls.ts` and
- * `options/sprite.ts` therefore import `./utils.js` directly — it is a true leaf, importing nothing.
- * An `no-restricted-imports` rule in `eslint.config.js` enforces this.
+ * ⚠️ **`src/options/*` and `src/types/*` must not import from `lib`.** The dependency runs the other
+ * way: `lib` fetches things using URLs and option values that `options` resolved, so half of this
+ * directory imports `checkKeys`, `resolveUrl` and `labelLanguage` from there. An edge back would make
+ * the two directories mutually dependent. Nothing in `options` imports `lib` today, and
+ * `src/import-graph.test.ts` fails if that changes.
  */
 
 export { normalizeAttribution, basename } from './utils.js';

@@ -77,6 +77,16 @@ export default [
 			'no-restricted-imports': [
 				'error',
 				{
+					// An exact path, not a pattern: as a glob, `'.'` also matches `'./keys.js'` and would
+					// forbid every sibling import. Spelling the barrel `'.'` is how a cycle last got in,
+					// so it needs covering separately.
+					paths: [
+						{
+							name: '.',
+							message:
+								'This is the src/options/parts/ barrel, which re-exports this module; importing it creates a cycle. Import the specific module instead.',
+						},
+					],
 					patterns: [
 						{
 							group: ['**/parts.js', '**/parts.ts', './index.js'],
