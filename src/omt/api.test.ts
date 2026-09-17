@@ -205,6 +205,38 @@ describe('guessStyle injection', () => {
 	});
 });
 
+// The same gap `src/protomaps/api.test.ts` was written to close: both schemas add terrain and
+// hillshade through the shared feature helpers, and for neither was that path exercised through its
+// own entry point — so nothing checked that the elevation source reaches the style.
+describe('elevation features', () => {
+	it('adds a terrain block reading the elevation source', () => {
+		const style = omt({ features: { terrain: true } });
+		expect(style.terrain).toBeDefined();
+		expect(Object.keys(style.sources)).toContain('elevation');
+	});
+
+	it('adds a hillshade layer', () => {
+		expect(omt({ features: { hillshade: true } }).layers.some((l) => l.type === 'hillshade')).toBe(true);
+	});
+
+	it('draws neither by default', () => {
+		const style = omt();
+		expect(style.terrain).toBeUndefined();
+		expect(style.layers.some((l) => l.type === 'hillshade')).toBe(false);
+	});
+});
+
+describe('sky and recolor', () => {
+	it('emits a sky block by default and omits it when switched off', () => {
+		expect(omt().sky).toBeDefined();
+		expect(omt({ sky: false }).sky).toBeUndefined();
+	});
+
+	it('applies recolor to the built style', () => {
+		expect(JSON.stringify(omt({ recolor: { invertBrightness: true } }))).not.toBe(JSON.stringify(omt()));
+	});
+});
+
 describe('omt() subway stations', () => {
 	it('draws them like stations, from z13, as Shortbread files them as stations', () => {
 		const layers = omt().layers as { id: string; minzoom?: number; layout?: Record<string, unknown> }[];
