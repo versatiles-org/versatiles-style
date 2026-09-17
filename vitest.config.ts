@@ -9,7 +9,7 @@ export default defineConfig({
 			// Reported, not enforced. The thresholds that used to sit here were a ratchet a few points
 			// under the then-current numbers, which meant any refactor that deleted well-covered code —
 			// or added a module the suite reaches only indirectly — failed CI on a number nobody had
-			// chosen. The lcov report still goes to Coveralls, so the trend stays visible.
+			// chosen. The lcov report still goes to Codecov, so the trend stays visible.
 		},
 		projects: [
 			{

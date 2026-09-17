@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.0.0] - 2026-09-17
 
 ### ⚠ BREAKING CHANGES
-- Rewrote the public API around three functions: `osm()`, `satellite()` and `guessStyle()`.
+- Rewrote the public API around four functions: `osm()`, `satellite()`, `guessStyle()` and
+  `guessSchema()`.
   `osm()` and `satellite()` are **synchronous** and perform no I/O — a `*.json` source URL becomes a
   source `url` that MapLibre resolves at map load. `guessStyle()` is asynchronous, because it has to
   read the TileJSON before it can decide what to build.
+- The package now declares an `exports` map, where v5 had none. The four public entry points are
+  `@versatiles/style` and the subpaths `/omt`, `/protomaps` and `/migrate`; deep imports into
+  `@versatiles/style/dist/…`, which v5 happened to allow, no longer resolve.
 - Added `inlineSources(style)` to resolve a style's source references into a self-contained style,
   and `fetchTileJSON(url)` for when a TileJSON is needed at build time.
 - `urls` keys now accept a pre-fetched `TileJSONSpecification` object as well as a URL string.
@@ -151,6 +155,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parser cannot read renders as a fully transparent layer and used to pass CI silently.
 
 ### Features
+- **Two more tile schemas, each on its own subpath.** `omt()` from `@versatiles/style/omt` draws
+  [OpenMapTiles](https://openmaptiles.org/) tiles and `protomaps()` from `@versatiles/style/protomaps`
+  draws the [Protomaps Basemap](https://docs.protomaps.com/basemaps/layers) — the same cartography
+  `osm()` gives Shortbread, from the same option vocabulary (`theme`, `colors`, `recolor`, `layers`,
+  `text`, `icon`, `sun`, `sky`, `projection`) and with the same statics. Only the tile source option
+  differs: `urls.omt` defaults to OpenFreeMap, and `urls.protomaps` is **required**, because Protomaps
+  publishes a PMTiles archive rather than a hosted endpoint. An option a schema cannot express throws
+  rather than silently doing nothing — `omt({ features: { landcover: true } })` is an error naming the
+  key. They are subpaths rather than root exports so that a page drawing only Shortbread does not
+  download them: the import graph decides what the CDN bundle contains, not a build flag.
+- `guessSchema(tileJSON)` names a vector tileset's schema — `'shortbread' | 'openmaptiles' |
+  'protomaps'` — synchronously and without I/O, reading only `vector_layers`. It scores every schema,
+  so `candidates` shows why. It knows all three without importing any of them, which is what keeps it
+  in the root entry.
+- `guessStyle()` takes a `schemas` option: pass `omt` or `protomaps` (or a schema of your own) and a
+  tileset detected as that schema gets its real style instead of the inspector style. The list is
+  additive — Shortbread still wins for Shortbread tiles. Injection rather than a registry, so a caller
+  pays only for the schemas they import.
+- `guessOptions(style)` from `@versatiles/style/migrate` reads a MapLibre style built for
+  OpenMapTiles, Protomaps or Shortbread tiles and returns the `osm()` or `satellite()` options whose
+  style looks most like it, with a report of what it read and what it could not carry over — for
+  moving an existing map onto VersaTiles. `deriveOptions()` is its synchronous, I/O-free core. Its own
+  subpath because it carries the style spec's expression engine and a calibration of the builders.
 - Every palette has a dark theme of its own: `colorful-dark`, `natural-dark`, `muted-dark`, `gray-dark`
   and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting. They are published
   like the light themes (`assets/styles/colorful-dark/style.json`, `…/en.json`, `…-terrain/…`).

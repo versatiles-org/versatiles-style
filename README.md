@@ -165,11 +165,27 @@ because it has to read the TileJSON before it can decide what to build. All thre
   - `icon`, `sky`, `sun`, `projection`: icon sizing, the sky block, the 3D light, and the map projection.
   - `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/types/_versatiles_style.OsmOptions.html).
 - `satellite(options)` - raster/satellite style with an optional OSM overlay. [Documentation](https://versatiles.org/versatiles-style/variables/_versatiles_style.satellite.html) — see [SatelliteOptions](https://versatiles.org/versatiles-style/types/_versatiles_style.SatelliteOptions.html).
+- `omt(options)` and `protomaps(options)` - the same style for **OpenMapTiles** and **Protomaps Basemap** tiles, each on its own subpath. They take the same options and carry the same statics as `osm()`; only the tile source option differs (`urls.omt` / `urls.protomaps`). Kept off the root entry so a page that draws only Shortbread does not download them. [`omt`](https://versatiles.org/versatiles-style/variables/_versatiles_style_omt.omt.html) · [`protomaps`](https://versatiles.org/versatiles-style/variables/_versatiles_style_protomaps.protomaps.html) — see [Other tile schemas](API_DESIGN.md#other-tile-schemas-omt-and-protomaps).
+
+```javascript
+import { omt } from '@versatiles/style/omt';
+import { protomaps } from '@versatiles/style/protomaps';
+
+const a = omt({ theme: 'muted' });
+// Protomaps ships a PMTiles archive, not a hosted endpoint, so there is no default source
+const b = protomaps({ urls: { protomaps: 'pmtiles://https://example.org/planet.pmtiles' } });
+```
+
 - `guessStyle(source)` - inspect a tileset, given as a TileJSON URL or object, and return the most appropriate style. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.guessStyle.html)
 
 ```javascript
 import { guessStyle } from '@versatiles/style';
 const style = await guessStyle(tileJSON); // or the URL of a TileJSON document
+
+// OpenMapTiles and Protomaps tilesets need their builder passed in — otherwise they fall back to
+// the inspector style, because guessStyle itself imports no schema.
+import { omt } from '@versatiles/style/omt';
+const omtStyle = await guessStyle(tileJSON, { schemas: [omt] });
 ```
 
 - `guessSchema(tileJSON)` - recognise a vector tileset's schema (`'shortbread' | 'openmaptiles' | 'protomaps'`) from its TileJSON object, synchronously and without I/O. It reads only `vector_layers`, and scores every schema so a caller can see why. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.guessSchema.html)
@@ -185,7 +201,8 @@ const guess = guessSchema(tileJSON); // { type: 'vector', schema: 'openmaptiles'
 import { osm } from '@versatiles/style';
 import { guessOptions } from '@versatiles/style/migrate';
 const guess = await guessOptions('https://example.org/my-style/style.json');
-if (guess.kind === 'osm') map.setStyle(osm(guess.options)); // guess.report says what was not carried over
+// `diff: false` because this is a rebuilt style, not an edit of the running one
+if (guess.kind === 'osm') map.setStyle(osm(guess.options), { diff: false }); // guess.report says what it could not carry over
 ```
 
 - `fetchFontFaces(urls?)`, `fontCovers(face, language)`, `fontScripts(face)`, `languageScript(language)`, `textScripts(text)`, `FONT_SCRIPTS` and `labelLanguage(language)` - for a font picker over the `font` of each `text` topic: the faces a glyph server publishes (from its `font_families.json`), with titles; whether a face has the glyphs for a label language; which writing systems a face covers, read from the `codeblocks` in that file — a hint, not a guarantee — and which a text uses; and the language `'user'` stands for. `osm.textGroups` lists the layers each topic sets.

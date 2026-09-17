@@ -12,6 +12,7 @@
     - [Function options](#function-options)
   - [`osm(options?): StyleSpecification`](#osmoptions-stylespecification)
   - [`satellite(options?): StyleSpecification`](#satelliteoptions-stylespecification)
+  - [Other tile schemas: `omt()` and `protomaps()`](#other-tile-schemas-omt-and-protomaps)
   - [`guessStyle(source, options?): Promise<StyleSpecification>`](#guessstylesource-options-promisestylespecification)
   - [`guessSchema(tileJSON): SchemaGuess`](#guessschematilejson-schemaguess)
   - [`guessOptions(style, options?): Promise<OptionsGuess>`](#guessoptionsstyle-options-promiseoptionsguess)
@@ -342,16 +343,24 @@ type RecolorOptions = {
 
 ### Atmosphere & lighting
 
-Used by both `osm()` and `satellite()`. Require `features.terrain: true` to have any visible effect.
+Used by both `osm()` and `satellite()`.
+
+`sky` is **on by default** and needs no terrain — MapLibre draws it whenever the map is pitched or in
+globe projection, which is the default. `sun` is **off by default**: unset, no `light` is written and
+MapLibre uses its own. `hillshade` needs an elevation source, and its effect is only visible where
+there is terrain to shade.
 
 ```ts
-type SunOptions = {
-  direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 210
-  altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 60
-  anchor?: 'map' | 'viewport'; // whether the light turns with the map; default: 'viewport'
-  color?: string; // light color; default: '#ffffff'
-  intensity?: number; // 0–1; default: 0.5
-};
+// `sun` accepts `true` (all defaults below) or an object. Unset, the style writes no `light` at all.
+type SunOptions =
+  | true
+  | {
+      direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 210
+      altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 60
+      anchor?: 'map' | 'viewport'; // whether the light turns with the map; default: 'viewport'
+      color?: string; // light color; default: '#ffffff'
+      intensity?: number; // 0–1; default: 0.5
+    };
 
 // `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
 // MapLibre only draws the sky when pitched or in globe projection.
@@ -378,7 +387,7 @@ type HillshadeOptions =
 
 ### Function options
 
-`OsmContentOptions` is the shared base used by both `osm()` and `satellite({ osmOverlay })`. `OsmOptions` and `SatelliteOptions` extend it with their respective URL and feature configurations.
+`OsmOverlayOptions` is the shared base used by both `osm()` and `satellite({ osmOverlay })`. `OsmOptions` and `SatelliteOptions` extend it with their respective URL and feature configurations.
 
 Each palette is a light theme and has a dark theme of its own, named with a `-dark` suffix (`colorful-dark`, …). To follow the system setting, pick between them with [`isDarkMode()`](#isdarkmode-boolean).
 
@@ -395,16 +404,16 @@ type Palette =
   | 'toner'
   | 'toner-dark';
 
-type OsmContentOptions = {
-  theme?: Palette; // default: 'colorful'
-  layers?: LayerGroupOptions;
+type OsmOverlayOptions = {
+  theme?: ThemeOptions; // = Palette, the name this option is declared with; default: 'colorful'
+  layers?: boolean | number | LayerGroupOptions; // a scalar cascades to every group
   text?: TextOptions;
   icon?: IconOptions;
   colors?: ColorsOptions;
   recolor?: RecolorOptions;
 };
 
-type OsmOptions = OsmContentOptions & {
+type OsmOptions = OsmOverlayOptions & {
   urls?: {
     base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
@@ -418,7 +427,7 @@ type OsmOptions = OsmContentOptions & {
     landcover?: boolean; // ESA WorldCover at z0–z10; default: false
     buildings?: 'flat' | 'extruded'; // default: 'flat'
   };
-  sun?: SunOptions;
+  sun?: SunOptions; // default: unset — no `light` is written
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -432,7 +441,7 @@ type SatelliteOptions = {
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
-  osmOverlay?: boolean | OsmContentOptions; // default: true (palette 'gray'); false for bare imagery
+  osmOverlay?: boolean | OsmOverlayOptions; // default: true (palette 'gray'); false for bare imagery
   raster?: {
     // keys mirror MapLibre's raster-* paint properties
     opacity?: number;
@@ -446,7 +455,7 @@ type SatelliteOptions = {
     terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
   };
-  sun?: SunOptions;
+  sun?: SunOptions; // default: unset — no `light` is written
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -467,8 +476,8 @@ osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural'
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
 osm.textGroups:   TextGroupMap        // maps each text topic to the text layer IDs its label style sets
-osm.defaults:     ResolvedOsmOptions  // fully resolved defaults (theme: 'colorful')
-osm.colors(palette: Palette): Record<string, string>
+osm.defaults:     ResolvedOsm  // fully resolved defaults (theme: 'colorful')
+osm.colors(palette: Palette): ResolvedColors
 osm.languages(tileJSON: TileJSONSpecification): string[]
 osm.supportsLandcover(tileJSON: TileJSONSpecification): boolean
 osm.slots: {
@@ -477,7 +486,7 @@ osm.slots: {
   belowStreets: string  // below streets, above fill layers
   belowFills:   string  // below all fill layers
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
-osm.resolveOptions(options?: OsmOptions): ResolvedOsmOptions
+osm.resolveOptions(options?: OsmOptions): ResolvedOsm
 osm.minimizeOptions(options?: OsmOptions): OsmOptions
 osm.toCode(options?: OsmOptions): string
 ```
@@ -580,7 +589,7 @@ Static properties for introspection:
 
 ```ts
 satellite.colorKeys: string[] // color keys available in osmOverlay.colors
-satellite.defaults:  ResolvedSatelliteOptions
+satellite.defaults:  ResolvedSatellite
 satellite.languages(tileJSON: TileJSONSpecification): string[]
 satellite.layerGroups: LayerGroupMap // osm.layerGroups, limited to the layers the overlay draws
 satellite.textGroups: TextGroupMap // osm.textGroups: the overlay keeps every text layer
@@ -589,7 +598,7 @@ satellite.slots: {
   belowSymbols: string // below all symbols, above the raster layer
   belowRaster:  string // below the satellite raster layer
 } // stable layer IDs for use as MapLibre `beforeId`; omit beforeId to place above everything
-satellite.resolveOptions(options?: SatelliteOptions): ResolvedSatelliteOptions
+satellite.resolveOptions(options?: SatelliteOptions): ResolvedSatellite
 satellite.minimizeOptions(options?: SatelliteOptions): SatelliteOptions
 satellite.toCode(options?: SatelliteOptions): string
 ```
@@ -621,6 +630,60 @@ so `satellite.slots` references stay valid.
 
 ---
 
+## Other tile schemas: `omt()` and `protomaps()`
+
+`osm()` draws [Shortbread](https://shortbread-tiles.org/) tiles, which is what VersaTiles serves. Two
+other vector schemas have builders of their own, each on its own subpath:
+
+```ts
+import { omt } from '@versatiles/style/omt'; // OpenMapTiles
+import { protomaps } from '@versatiles/style/protomaps'; // Protomaps Basemap
+
+const a = omt({ theme: 'muted' });
+const b = protomaps({ urls: { protomaps: 'pmtiles://https://example.org/planet.pmtiles' } });
+```
+
+**One function per schema, one subpath each, no registry.** The reason is the bundle: anything
+reachable from the root entry is in the CDN build, so a page that only draws Shortbread would
+otherwise download three schemas' worth of cartography. Importing a subpath is what decides that, not
+a build flag — and nothing schema-neutral lives on these subpaths, so a caller using two schemas still
+imports `Color`, `inlineSources`, `guessStyle` and the palettes once, from the root.
+
+Each builder takes the **same option vocabulary** as `osm()` — `theme`, `colors`, `recolor`, `layers`,
+`text`, `icon`, `sun`, `sky`, `projection` — and carries the same statics (`palettes`, `colorKeys`,
+`layerGroups`, `textGroups`, `defaults`, `colors`, `languages`, `slots`, `resolveOptions`,
+`minimizeOptions`, `toCode`, `tileset`). The option names describe concepts rather than layers, so they
+survive the change of tileset. What differs is only what the tiles themselves can express:
+
+|                      | `osm()`                | `omt()`               | `protomaps()`                   |
+| -------------------- | ---------------------- | --------------------- | ------------------------------- |
+| tile source option   | `urls.osm`             | `urls.omt`            | `urls.protomaps` — **required** |
+| default tileset      | tiles.versatiles.org   | tiles.openfreemap.org | none                            |
+| `features.landcover` | ✅ (tileset extension) | ✗ rejected            | ✅ (its own `landcover` layer)  |
+| `supportsLandcover`  | ✅                     | ✗                     | ✗                               |
+| max zoom             | 14                     | 14                    | 15                              |
+
+A concept a schema cannot express is an **unknown option key that throws**, never an option that
+silently does nothing — `omt({ features: { landcover: true } })` is an error naming the key.
+
+**`protomaps()` requires `urls.protomaps`.** Protomaps publishes a PMTiles archive rather than a hosted
+tile endpoint, and its docs discourage hotlinking the daily planet builds, so there is no sensible
+default and a placeholder would 404 at the first tile request. The error names the fix. `defaults`,
+`resolveOptions()` and `minimizeOptions()` still work without one, so a style editor can show the
+defaults before an archive has been chosen.
+
+`toCode()` on these builders emits the **subpath** import, so its output runs where it is pasted:
+
+```ts
+import { protomaps } from '@versatiles/style/protomaps';
+import { inlineSources } from '@versatiles/style';
+```
+
+To have [`guessStyle()`](#guessstylesource-options-promisestylespecification) build one of these for a
+tileset it recognises, pass the builder in `schemas` — see that section.
+
+---
+
 ## `guessStyle(source, options?): Promise<StyleSpecification>`
 
 ```ts
@@ -633,6 +696,7 @@ guessStyle(
       sprite?:        string | Array<{ id: string; url: string }>
     }
     fetch?: typeof globalThis.fetch   // used when `source` is a URL, as for inlineSources()
+    schemas?: readonly SchemaBuilder[] // additional schemas to build for — see below
   }
 )
 ```
@@ -640,6 +704,23 @@ guessStyle(
 Picks an appropriate style for a tileset: Shortbread vector tiles get a full `osm()` style; unknown
 vector tiles get an auto-colored inspector style (one color per source-layer); raster tiles get a basic
 raster layer, or a `satellite()` style when the TileJSON's `name` suggests imagery.
+
+**OpenMapTiles and Protomaps tilesets need their schema passed in.** `guessSchema()` recognises all
+three schemas without importing any of them, but building a style means importing the builder — and
+`guessStyle` lives in the root entry, so importing every schema here would put all of them in the CDN
+bundle. Inject instead, and pay only for what you import:
+
+```ts
+import { guessStyle } from '@versatiles/style';
+import { omt } from '@versatiles/style/omt';
+
+const style = await guessStyle(tileJSON, { schemas: [omt] });
+```
+
+Without it, an OpenMapTiles tileset falls back to the inspector style. The list is **additive**:
+Shortbread still wins for Shortbread tiles, and injecting `omt` only decides whether a tileset already
+detected as OpenMapTiles gets its real style. A schema of your own — any other `tileset.id` — is tried
+after the built-in three, matched by its `sourceLayers`, in the order given.
 
 `source` is either the **URL** of a TileJSON document, which is downloaded (relative `tiles` resolve
 against the document), or a **TileJSON object** you already hold — a tile server has one from its
@@ -1187,9 +1268,11 @@ an error naming its v6 theme.
 
 ### Removed types
 
-Every other v5 export still resolves — `Color`, `RandomColorOptions`,
+Every other v5 export still resolves — `Color`, `randomColor`, `RandomColorOptions`,
 `TileJSONSpecification*`, `VectorLayer`, `RecolorOptions`, `GuessStyleOptions`,
-`SpriteSpecification`, `guessStyle` and `satellite`.
+`SpriteSpecification`, `guessStyle` and `satellite` — with one exception besides the table below:
+`getStyleVariants()` and the `StyleVariant` type were removed outright. They enumerated the styles
+this project publishes to its CDN, which is release tooling rather than library API.
 
 | v5 type                 | v6                                                                                     |
 | ----------------------- | -------------------------------------------------------------------------------------- |

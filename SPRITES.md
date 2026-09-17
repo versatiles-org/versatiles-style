@@ -67,7 +67,7 @@ the ones you need alongside `base`:
 ```js
 import { osm } from '@versatiles/style';
 
-const style = await osm({
+const style = osm({
   urls: {
     sprite: [
       { id: 'base', url: '/assets/sprites/base' },
@@ -90,7 +90,7 @@ const style = await osm({
   `extras:<group>-<name>` or `icons:<name>` will keep resolving in future releases.
 - **Public domain.** All icons are **CC0-1.0**, so they are safe to use without attribution.
 - **Documented.** The full set below is the contract; the
-  [`extras-api` test](./scripts/extras-api.test.ts) fails if this list and the built sprite ever
+  [`public-sprites` test](./scripts/public-sprites.test.ts) fails if this list and the built sprite ever
   disagree, so the two cannot drift apart.
 
 ### What belongs in `extras` and `icons`
@@ -100,7 +100,7 @@ icon belongs in a public sheet only if `base` does not already have it — the s
 same icon twice. Duplicating one would add bytes to an opt-in sheet and leave a reader guessing which of
 the two sheets the icon they want actually lives in.
 
-That rule is enforced, not just stated: the [`extras-api` test](./scripts/extras-api.test.ts) fails
+That rule is enforced, not just stated: the [`public-sprites` test](./scripts/public-sprites.test.ts) fails
 on any public name that also exists in `base` (or in both `extras` and `icons`), with **no exception list** — one would quietly
 become the place duplicates go. Two names collided before v6 shipped and both were resolved rather
 than waved through: the pictogram `information` was dropped (`base` already draws an "i"), and
