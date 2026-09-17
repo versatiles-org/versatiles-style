@@ -194,15 +194,34 @@ function showStatus(parts: { note: string; style: StyleSpecification; sources: R
 	const sourceIds = Object.keys(style.sources);
 	const layerCount = style.layers.length;
 	const sourceLayers = Object.values(sources)[0]?.length ?? 0;
-	status.innerHTML =
-		`<div>${note} — <b>${layerCount}</b> layers, ${sourceLayers} source-layers</div>` +
-		`<div><code>${sourceIds.join(', ')}</code></div>`;
+	status.replaceChildren(
+		row(`${note} — `, tag('b', String(layerCount)), ` layers, ${sourceLayers} source-layers`),
+		row(tag('code', sourceIds.join(', ')))
+	);
 }
 
 function showError(error: unknown): void {
 	// A style that throws leaves the previous map on screen, which is misleading without this.
-	status.innerHTML = `<div class="err">Style failed</div><div><code>${String(error)}</code></div>`;
+	status.replaceChildren(tag('div', 'Style failed', 'err'), row(tag('code', String(error))));
 	console.error(error);
+}
+
+/**
+ * A `<div>` of the given parts. Strings become text nodes, so a source id or an error message cannot
+ * carry markup into the page — this is a dev page, but it renders style JSON and error text from
+ * whatever tileset is being pointed at, which is exactly the input that should not reach `innerHTML`.
+ */
+function row(...parts: (string | Node)[]): HTMLDivElement {
+	const div = document.createElement('div');
+	div.append(...parts);
+	return div;
+}
+
+function tag(name: string, text: string, className?: string): HTMLElement {
+	const element = document.createElement(name);
+	element.textContent = text;
+	if (className != null) element.className = className;
+	return element;
 }
 
 async function render(): Promise<void> {
