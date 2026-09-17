@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ENTRIES, directoryGraph, findCycles, importGraph } from '../scripts/lib/import-graph.js';
+import { ENTRIES, directoryGraph, findCycles, importGraph, redundantDeepImports } from '../scripts/lib/import-graph.js';
 
 /**
  * The source tree has no import cycles — neither between modules nor between directories.
@@ -45,6 +45,18 @@ describe('the import graph', () => {
 	it('has no module cycles', () => {
 		// on failure the array below *is* the cycle: every module in it can reach every other
 		expect(findCycles(graph)).toStrictEqual([]);
+	});
+
+	it('has no deep import that the barrel beside it already covers', () => {
+		// `import { minimizeOsmOptions } from '../options/minimize.js'` two lines above a `from '../options/'`
+		// that re-exports it. The module is loaded either way, so the deep specifier adds an edge and saves
+		// nothing — and the edges it adds are what make the directory graph hard to read.
+		//
+		// Deep imports as such are fine: `src/index.ts` names `shortbread/layer-groups-map.js` so the npm
+		// entry does not pull in the whole schema, and `shortbread/layers/*.ts` must name `../context.js`
+		// because the barrel above them imports `layers/`. Neither also imports the barrel, so neither is
+		// reported. See `redundantDeepImports`.
+		expect(redundantDeepImports()).toStrictEqual([]);
 	});
 
 	it('has no directory cycles', () => {

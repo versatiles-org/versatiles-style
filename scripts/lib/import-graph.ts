@@ -9,7 +9,7 @@
  * initialisation cycle — counting it would report loops that cannot happen and hide the ones that can.
  */
 
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 
 export const SRC = resolve(import.meta.dirname, '../../src');
@@ -98,6 +98,67 @@ export function findCycles(graph: ReadonlyMap<string, ReadonlySet<string>>): str
 
 	for (const node of graph.keys()) if (!index.has(node)) visit(node);
 	return cycles;
+}
+
+/** Every relative specifier `file` imports or re-exports, resolved. Unlike `runtimeImports`, type-only ones count. */
+function allImports(file: string): { specifier: string; target: string }[] {
+	const source = readFileSync(file, 'utf8');
+	const found: { specifier: string; target: string }[] = [];
+	for (const match of source.matchAll(/(?:^|\n)\s*(?:import|export)\s+(?:type\s+)?[\s\S]*?from\s+'(\.[^']+)'/g)) {
+		const target = resolveSpecifier(file, match[1]);
+		if (target) found.push({ specifier: match[1], target });
+	}
+	return found;
+}
+
+/** Whether `barrel` re-exports `target`, following `export * from './other/'` chains. */
+function reExports(barrel: string, target: string, seen = new Set<string>()): boolean {
+	if (seen.has(barrel)) return false;
+	seen.add(barrel);
+	for (const match of readFileSync(barrel, 'utf8').matchAll(
+		/(?:^|\n)\s*export\s+(?:type\s+)?(?:\*|\{[\s\S]*?\})\s*(?:as\s+\w+\s+)?from\s+'(\.[^']+)'/g
+	)) {
+		const next = resolveSpecifier(barrel, match[1]);
+		if (!next) continue;
+		if (next === target) return true;
+		if (next.endsWith('/index.ts') && reExports(next, target, seen)) return true;
+	}
+	return false;
+}
+
+/** Every `.ts` file under `src`, tests included. */
+function sourceFiles(directory: string = SRC): string[] {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+		const path = resolve(directory, entry.name);
+		if (entry.isDirectory()) return sourceFiles(path);
+		return entry.isFile() && entry.name.endsWith('.ts') ? [path] : [];
+	});
+}
+
+/**
+ * Deep imports that the barrel beside them already covers — `'../options/minimize.js'` in a file whose
+ * next line reads `from '../options/'`.
+ *
+ * Only that exact shape is reported, and both halves of it matter. A barrel that does not re-export the
+ * module cannot replace the deep import; and where the importing file does *not* already pull the barrel
+ * in, the deep import is a real choice — `src/index.ts` names `shortbread/layer-groups-map.js` precisely
+ * so that the npm entry does not drag the whole schema in behind it. What is left over is the case that
+ * costs a second edge in the dependency graph and buys nothing: the module is loaded either way.
+ */
+export function redundantDeepImports(): string[] {
+	const findings: string[] = [];
+	for (const file of sourceFiles()) {
+		const imports = allImports(file);
+		const targets = new Set(imports.map((i) => i.target));
+		for (const { specifier, target } of imports) {
+			if (target.endsWith('/index.ts') || dirname(target) === dirname(file)) continue;
+			const barrel = resolve(dirname(target), 'index.ts');
+			if (!targets.has(barrel) || !existsSync(barrel)) continue;
+			if (!reExports(barrel, target)) continue;
+			findings.push(`${relative(SRC, file)} imports '${specifier}', but already imports ${relative(SRC, barrel)}`);
+		}
+	}
+	return findings.sort();
 }
 
 /** The same graph one level up: `options/parts/urls.ts` counts as `options`. Self-edges are dropped. */
