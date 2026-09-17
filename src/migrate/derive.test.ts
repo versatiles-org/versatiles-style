@@ -20,18 +20,20 @@ function satelliteOptions(guess: OptionsGuess): SatelliteOptions {
 }
 
 /**
- * `text` options with every `haloWidth`/`haloBlur` removed, and any branch left empty dropped with them.
+ * `text` options with every derived `LabelStyle` property removed, and any branch left empty dropped
+ * with them.
  *
- * The stub styles below set no `text-halo-*` at all, which is a halo of its own — none — so the halos
- * of every topic they cover are derived too. For the tests about fonts and about language that is
- * noise, the same way the derived label scale is.
+ * The stub styles below set none of these, which is itself a style — no halo, MapLibre's own wrapping
+ * and no capitalization — so every topic they cover derives them. For the tests about fonts and about
+ * language that is noise, the same way the derived label scale is.
  */
-function withoutHalo<T>(value: T): T {
+const DERIVED_LABEL_KEYS = ['haloWidth', 'haloBlur', 'maxWidth', 'lineHeight', 'letterSpacing', 'transform', 'spacing'];
+function withoutLabelStyle<T>(value: T): T {
 	if (value === null || typeof value !== 'object' || Array.isArray(value)) return value;
 	const out: Record<string, unknown> = {};
 	for (const [key, entry] of Object.entries(value)) {
-		if (key === 'haloWidth' || key === 'haloBlur') continue;
-		const stripped = withoutHalo(entry) as unknown;
+		if (DERIVED_LABEL_KEYS.includes(key)) continue;
+		const stripped = withoutLabelStyle(entry) as unknown;
 		const empty = stripped !== null && typeof stripped === 'object' && Object.keys(stripped).length === 0;
 		if (!empty) out[key] = stripped;
 	}
@@ -101,6 +103,52 @@ describe('deriveOptions — round trips through the package builders', () => {
 			const streets = derived.text?.streets as Record<string, unknown> | undefined;
 			expect((streets?.refs as Record<string, unknown> | undefined)?.haloWidth).toBeUndefined();
 			expect((derived.text?.addresses as Record<string, unknown> | undefined)?.haloWidth).toBeUndefined();
+		});
+	});
+
+	// The rest of `LabelStyle`. `text-transform` was the loudest of these: the target uppercases country,
+	// state, hamlet and district names, so an imported style that does not came back shouting FRANCE.
+	describe('the rest of the label style', () => {
+		const layoutOf =
+			(style: StyleSpecification) =>
+			(id: string, key: string): unknown =>
+				(style.layers.find((l) => l.id === id)?.layout as Record<string, unknown> | undefined)?.[key];
+
+		it('carries capitalization, including "none" where the target uppercases', () => {
+			// boundaries.countries defaults to uppercase; a style that does not uppercase has to say so
+			const derived = osmOptions(deriveOptions(osm({ text: { boundaries: { transform: 'none' } } })));
+			const out = layoutOf(osm(derived));
+			expect(out('label-boundary-country-large', 'text-transform')).toBeUndefined(); // 'none' writes nothing
+			expect(out('label-boundary-state', 'text-transform')).toBeUndefined();
+		});
+
+		it('carries an uppercase the target does not apply', () => {
+			const out = layoutOf(osm(osmOptions(deriveOptions(osm({ text: { places: { transform: 'uppercase' } } })))));
+			expect(out('label-place-city', 'text-transform')).toBe('uppercase');
+			expect(out('label-place-village', 'text-transform')).toBe('uppercase');
+		});
+
+		it.each([
+			['maxWidth', 'text-max-width', 8],
+			['lineHeight', 'text-line-height', 1.5],
+			['letterSpacing', 'text-letter-spacing', 0.2],
+		])('carries %s through as %s', (option, property, value) => {
+			const derived = osmOptions(deriveOptions(osm({ text: { places: { [option]: value } } })));
+			expect(layoutOf(osm(derived))('label-place-city', property)).toBe(value);
+		});
+
+		// `spacing` multiplies the layer's own `symbol-spacing`, so unlike the rest it is read as a ratio
+		// against the target's — and only for line-placed labels, the only ones MapLibre spaces this way.
+		// The target states no `symbol-spacing` of its own here, so the ratio is taken against MapLibre's
+		// default of 250, which is what it draws with.
+		it('carries spacing as a ratio, for line labels', () => {
+			const source = osm({ text: { water: { spacing: 1.4 } } });
+			expect(layoutOf(osm())('label-water-river', 'symbol-spacing')).toBeUndefined();
+			expect(layoutOf(source)('label-water-river', 'symbol-spacing')).toBe(350);
+
+			const derived = osmOptions(deriveOptions(source));
+			expect((derived.text?.water as Record<string, unknown> | undefined)?.spacing).toBeCloseTo(1.4, 5);
+			expect(layoutOf(osm(derived))('label-water-river', 'symbol-spacing')).toBe(350);
 		});
 	});
 
@@ -293,12 +341,12 @@ describe('deriveOptions — foreign styles', () => {
 		// Open Sans is on the server: the place and boundary labels keep their face, and every other topic
 		// takes the family, in the weight the style gives its labels
 		const openSans = deriveOptions(withFont(['Open Sans Semibold', 'Arial Unicode MS Bold']), {}, FONT_NAMES);
-		// the stub's labels keep MapLibre's default size and draw no halo, so a label scale and the halos
-		// are derived too — neither is what this is about
+		// the stub's labels keep MapLibre's default size and set no halo, wrapping or transform, so a label
+		// scale and the whole label style are derived too — neither is what this is about
 		const textWithoutScale = (guess: OptionsGuess) => {
 			const { scale, ...text } = osmOptions(guess).text ?? {};
 			void scale;
-			return withoutHalo(text);
+			return withoutLabelStyle(text);
 		};
 		expect(textWithoutScale(openSans)).toEqual({
 			font: 'open_sans_bold',
@@ -380,12 +428,12 @@ describe('deriveOptions — foreign styles', () => {
 					layout: { 'text-field': textField },
 				},
 			]);
-		// the stub's labels keep MapLibre's default size and draw no halo, so a label scale and the halos
-		// are derived too — neither is what this is about
+		// the stub's labels keep MapLibre's default size and set no halo, wrapping or transform, so a label
+		// scale and the whole label style are derived too — neither is what this is about
 		const language = (style: StyleSpecification) => {
 			const { scale, ...rest } = osmOptions(deriveOptions(style)).text ?? {};
 			void scale;
-			const text = withoutHalo(rest);
+			const text = withoutLabelStyle(rest);
 			return Object.keys(text).length > 0 ? text : undefined;
 		};
 		expect(language(labels('{name_fr}'))).toEqual({ language: 'fr', languageStrict: true });

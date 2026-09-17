@@ -516,7 +516,7 @@ function deriveCommon(
 		scale !== undefined ? { scale } : {},
 		pitchAlignment !== undefined ? { pitchAlignment } : {},
 		deriveFonts(readings, fontNames, report),
-		deriveHalo(readings)
+		deriveLabelStyle(readings)
 	);
 	if (Object.keys(text).length > 0) content.text = text;
 
@@ -745,66 +745,108 @@ function deriveFonts(
 	return tree as TextOptions;
 }
 
-/** The middle value of a non-empty list, rounded to steps of 0.05 — halo widths are px, not ratios. */
-function medianPx(values: readonly number[]): number {
+/** The middle value of a non-empty list, rounded to steps of 0.05. */
+function median05(values: readonly number[]): number {
 	const sorted = [...values].sort((a, b) => a - b);
 	return Math.round(sorted[Math.floor(sorted.length / 2)] * 20) / 20;
 }
 
 /**
- * The `haloWidth` and `haloBlur` of each `text` topic, from the halos the style draws.
+ * The `LabelStyle` properties derived from what the style draws, as opposed to how it draws it.
  *
- * Both are plain pixel values that `applyText` writes straight through — unlike `scale`, nothing
- * rescales them — so they carry over as they are read. A topic takes, in order:
+ * `font` and `scale` are not here — they are derived against the glyph server's font list and against
+ * the target's own label sizes, neither of which is a property of the layer. Everything else in
+ * `LABEL_STYLE_KEYS` is.
+ */
+const DERIVED_LABEL_KEYS = [
+	'haloWidth',
+	'haloBlur',
+	'maxWidth',
+	'lineHeight',
+	'letterSpacing',
+	'transform',
+	'spacing',
+] as const;
+
+type DerivedLabelKey = (typeof DERIVED_LABEL_KEYS)[number];
+
+/**
+ * The label style of each `text` topic, from what the style draws: halo, wrapping, line height, letter
+ * spacing, capitalization and label spacing.
  *
- *  1. the median of its own probes;
- *  2. the median over the topics the *target* haloes identically, nearest first: the rest of its own
+ * All but `spacing` are values `applyText` writes straight through — unlike `scale`, nothing rescales
+ * them — so they carry over as they are read. `spacing` is a multiplier over the layer's own
+ * `symbol-spacing`, so it is read as a ratio against the target's, the way `scale` is read against the
+ * target's text size. A topic takes, per property, in order:
+ *
+ *  1. the summary of its own probes — the median, or for `transform` the most voted;
+ *  2. the same over the topics the *target* gives the same default, nearest first: the rest of its own
  *     group, then any topic at all. A topic no probe reads (`water.lakes`, `streets.refs`,
  *     `streets.exits`) follows its neighbours, so lake names follow river names as they do for fonts;
  *  3. nothing — the target's own default stands.
  *
  * The median, not the mean: a style that haloes most labels at 1 and one at 4 should carry the 1, and
- * halo widths cluster on a handful of values rather than spreading.
+ * these values cluster on a handful of numbers rather than spreading.
  *
- * Step 2 pools only topics that share this one's target default, which is what keeps the target's
- * deliberate exceptions intact. `streets.refs` is haloed 0.1 because it sits on a shield, `addresses`
- * not at all — filling those from a street-name reading would erase the distinction and, worse, make a
- * round trip of the target's own style derive options it did not need: no probe reads either topic, so
- * both would take the 2 read off `streets.names` and be written out as differing from a default they
- * in fact match.
+ * Step 2 pools per property, and only topics sharing this one's default for it, which is what keeps the
+ * target's deliberate exceptions intact. `streets.refs` is haloed 0.1 because it sits on a shield,
+ * `addresses` not at all, and country, state, hamlet and district names are uppercased where nothing
+ * else is — filling those from a street-name or city-name reading would erase the distinction and,
+ * worse, make a round trip of the target's own style derive options it did not need: no probe reads
+ * those topics, so each would take a value off a neighbour and be written out as differing from a
+ * default it in fact matches.
  *
- * A width of 0 counts and propagates like any other — a style that draws no halo has to say so, since
- * most topics of the target default to a 2px halo. Blur is only read where a halo is actually drawn,
- * so it falls back to 0 rather than to the target's 1: blurring a halo that is not there would write a
- * property with nothing to show for it. Every topic reached is spelled out; minimising drops what
- * equals the target's own, so a style whose halos already match writes nothing.
+ * A halo width of 0 counts and propagates like any other — a style that draws no halo has to say so,
+ * since most topics of the target halo at 2px. Blur is only read where a halo is actually drawn, and
+ * forced to 0 where the width is, rather than falling back to the target's 1: a `text-halo-blur` on a
+ * label with no halo to blur has nothing to show for it. Every topic reached is spelled out; minimising
+ * drops what equals the target's own, so a style that already matches writes nothing.
  */
-function deriveHalo(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
+function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
 	const topicOf = textTopicOfLayer();
-	const widths = new Map<TextTopic, number[]>();
-	const blurs = new Map<TextTopic, number[]>();
+	const base = modelFor(osmTarget(), 'light').base;
+
+	// Per property, per topic, every value read for it.
+	const seen = new Map<DerivedLabelKey, Map<TextTopic, unknown[]>>();
+	const record = (key: DerivedLabelKey, topic: TextTopic, value: unknown) => {
+		const perTopic = seen.get(key) ?? seen.set(key, new Map()).get(key)!;
+		(perTopic.get(topic) ?? perTopic.set(topic, []).get(topic)!).push(value);
+	};
 	for (const reading of readings.values()) {
-		if (reading.textHaloWidth === undefined) continue;
 		const topic = topicOf.get(reading.probe.id);
 		if (!topic) continue;
-		(widths.get(topic) ?? widths.set(topic, []).get(topic)!).push(reading.textHaloWidth);
-		if (reading.textHaloBlur === undefined) continue;
-		(blurs.get(topic) ?? blurs.set(topic, []).get(topic)!).push(reading.textHaloBlur);
-	}
-	if (widths.size === 0) return {};
-
-	const targetHalo = (topic: TextTopic) => labelStyleOf(DEFAULT_LABEL_STYLES, topic).haloWidth;
-
-	// Readings from the topics the target haloes the same way as `topic`, its own group first. The two
-	// passes are separate so a neighbour always outweighs a distant topic, however many readings each has.
-	const pooled = (per: Map<TextTopic, number[]>, topic: TextTopic, group: string): number | undefined => {
-		const like = (other: TextTopic) => other !== topic && targetHalo(other) === targetHalo(topic);
-		for (const near of [true, false]) {
-			const values: number[] = [];
-			for (const other of TEXT_TOPICS) {
-				if (like(other) && other.startsWith(`${group}.`) === near) values.push(...(per.get(other) ?? []));
+		if (reading.labelStyle) {
+			for (const [key, value] of Object.entries(reading.labelStyle)) {
+				record(key as DerivedLabelKey, topic, value);
 			}
-			if (values.length > 0) return medianPx(values);
+		}
+		// `spacing` multiplies the target's own repeat distance, so only the ratio carries over — and
+		// only where both styles place this label along a line and so state one.
+		const own = base.get(reading.probe.id)?.symbolSpacing;
+		if (reading.symbolSpacing !== undefined && own) record('spacing', topic, reading.symbolSpacing / own);
+	}
+	if (seen.size === 0) return {};
+
+	const targetStyle = (topic: TextTopic) => labelStyleOf(DEFAULT_LABEL_STYLES, topic);
+	const summarise = (key: DerivedLabelKey, values: readonly unknown[]): unknown =>
+		key === 'transform'
+			? mostVoted(values.reduce((v: Map<unknown, number>, s) => (vote(v, s), v), new Map()))
+			: median05(values as number[]);
+
+	// Values from the topics the target styles like `topic` for `key`, its own group first. The two
+	// passes are separate so a neighbour always outweighs a distant topic, however many values each has.
+	const pooled = (key: DerivedLabelKey, topic: TextTopic, group: string): unknown => {
+		const perTopic = seen.get(key);
+		if (!perTopic) return undefined;
+		const mine = targetStyle(topic)[key as keyof typeof DEFAULT_LABEL_STYLES.addresses];
+		const like = (other: TextTopic) =>
+			other !== topic && targetStyle(other)[key as keyof typeof DEFAULT_LABEL_STYLES.addresses] === mine;
+		for (const near of [true, false]) {
+			const values: unknown[] = [];
+			for (const other of TEXT_TOPICS) {
+				if (like(other) && other.startsWith(`${group}.`) === near) values.push(...(perTopic.get(other) ?? []));
+			}
+			if (values.length > 0) return summarise(key, values);
 		}
 		return undefined;
 	};
@@ -812,15 +854,18 @@ function deriveHalo(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
 	const tree: Record<string, Record<string, unknown>> = {};
 	for (const topic of TEXT_TOPICS) {
 		const [group, leaf] = topic.split('.');
-		const own = widths.get(topic);
-		const haloWidth = own?.length ? medianPx(own) : pooled(widths, topic, group);
-		if (haloWidth === undefined) continue; // nothing was read that speaks for this topic
-		const ownBlur = blurs.get(topic);
-		// A halo of zero width shows no blur, and is stated rather than left out: most topics of the
-		// target blur their halo by 1, which would otherwise survive as a `text-halo-blur` on a label
-		// with no halo to blur.
-		const haloBlur = haloWidth === 0 ? 0 : ownBlur?.length ? medianPx(ownBlur) : (pooled(blurs, topic, group) ?? 0);
-		const style = { haloWidth, haloBlur };
+		const style: Record<string, unknown> = {};
+		for (const key of DERIVED_LABEL_KEYS) {
+			const own = seen.get(key)?.get(topic);
+			const value = own?.length ? summarise(key, own) : pooled(key, topic, group);
+			if (value !== undefined) style[key] = value;
+		}
+		// Blur means nothing without a halo, in either direction: drop a blur whose width was not read,
+		// and zero it where the width is zero.
+		if (style.haloWidth === undefined) delete style.haloBlur;
+		else if (style.haloWidth === 0) style.haloBlur = 0;
+		else style.haloBlur ??= 0;
+		if (Object.keys(style).length === 0) continue; // nothing was read that speaks for this topic
 		if (leaf === undefined) tree[group] = { ...tree[group], ...style };
 		else (tree[group] ??= {})[leaf] = { ...((tree[group]?.[leaf] as object | undefined) ?? {}), ...style };
 	}

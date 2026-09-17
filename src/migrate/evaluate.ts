@@ -24,6 +24,28 @@ export type RGBA = [number, number, number, number];
 /** The colour roles a probe reading can carry. */
 export type Channel = 'color' | 'outline' | 'casing' | 'text' | 'halo';
 
+/**
+ * The `LabelStyle` properties that carry over as they are read, named as the options name them.
+ *
+ * Every one is read through the spec's own default, so an unset property reads as what MapLibre would
+ * draw rather than as "not stated" — which is the honest answer for a migration, and necessary for the
+ * ones the target does not leave at the MapLibre default (it haloes most labels 2px and uppercases
+ * country, state, hamlet and district names).
+ *
+ * `font` and `scale` are not here: they have derivations of their own, against the glyph server's font
+ * list and against the target's own sizes.
+ */
+export type LabelStyleReading = {
+	/** 0 where the label draws no halo — an unset width, or one painted in a transparent colour. */
+	haloWidth: number;
+	/** Only set where a halo is actually drawn; a blur with no halo behind it says nothing. */
+	haloBlur?: number;
+	maxWidth: number;
+	lineHeight: number;
+	letterSpacing: number;
+	transform: string;
+};
+
 export type ProbeReading = {
 	readonly probe: Probe;
 	readonly zoom: number;
@@ -34,11 +56,12 @@ export type ProbeReading = {
 	readonly textSize?: number;
 	/** Symbol probes: the font stack. */
 	readonly textFont?: readonly string[];
-	/** Symbol probes: the halo width in px — 0 when the label draws no halo, which is a choice of its
-	 *  own and not the absence of one (the target haloes every label by default). */
-	readonly textHaloWidth?: number;
-	/** Symbol probes: the halo blur in px. Only read where a halo is actually drawn. */
-	readonly textHaloBlur?: number;
+	/** Symbol probes: the label style the layer draws with. */
+	readonly labelStyle?: LabelStyleReading;
+	/** Symbol probes: `symbol-spacing` in px, for line-placed labels only — MapLibre ignores it at a
+	 *  point. `text.spacing` multiplies the target's own value, so this means something only next to the
+	 *  same probe read off the target. */
+	readonly symbolSpacing?: number;
 	/** Symbol probes: the `text-field` layer and feature, for reading which name field it shows. */
 	readonly label?: { layer: StyleLayer; feature: ProbeFeature };
 	/** Fill probes: drawn as `fill-extrusion`. */
@@ -323,8 +346,8 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 		const colors: ProbeReading['colors'] = {};
 		let textSize: number | undefined;
 		let textFont: readonly string[] | undefined;
-		let textHaloWidth: number | undefined;
-		let textHaloBlur: number | undefined;
+		let labelStyle: LabelStyleReading | undefined;
+		let symbolSpacing: number | undefined;
 		if (text) {
 			const opacity = evaluateProperty(layer, 'paint', 'text-opacity', zoom, feature);
 			if (typeof opacity === 'number' && opacity <= 0.01) continue;
@@ -340,12 +363,34 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			const haloWidth = evaluateProperty(layer, 'paint', 'text-halo-width', zoom, feature);
 			const haloColor = toRGBA(evaluateProperty(layer, 'paint', 'text-halo-color', zoom, feature), opacity);
 			const haloDrawn = typeof haloWidth === 'number' && haloWidth > 0 && !!haloColor && haloColor[3] > 0.01;
+			let haloBlur: number | undefined;
 			if (haloDrawn) {
 				colors.halo = haloColor;
 				const blur = evaluateProperty(layer, 'paint', 'text-halo-blur', zoom, feature);
-				if (typeof blur === 'number') textHaloBlur = blur;
+				if (typeof blur === 'number') haloBlur = blur;
 			}
-			textHaloWidth = haloDrawn ? (haloWidth as number) : 0;
+
+			const num = (name: string, fallback: number): number => {
+				const value = evaluateProperty(layer, 'layout', name, zoom, feature);
+				return typeof value === 'number' ? value : fallback;
+			};
+			const transform = evaluateProperty(layer, 'layout', 'text-transform', zoom, feature);
+			labelStyle = {
+				haloWidth: haloDrawn ? (haloWidth as number) : 0,
+				...(haloBlur !== undefined && { haloBlur }),
+				maxWidth: num('text-max-width', 10),
+				lineHeight: num('text-line-height', 1.2),
+				letterSpacing: num('text-letter-spacing', 0),
+				transform: typeof transform === 'string' ? transform : 'none',
+			};
+
+			// Only where the label follows a line: MapLibre ignores `symbol-spacing` at a point, so
+			// reading it there would compare a number nothing draws with.
+			const placement = evaluateProperty(layer, 'layout', 'symbol-placement', zoom, feature);
+			if (placement === 'line' || placement === 'line-center') {
+				const spacing = evaluateProperty(layer, 'layout', 'symbol-spacing', zoom, feature);
+				if (typeof spacing === 'number' && spacing > 0) symbolSpacing = spacing;
+			}
 
 			const size = evaluateProperty(layer, 'layout', 'text-size', zoom, feature);
 			if (typeof size === 'number') textSize = size;
@@ -359,8 +404,8 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			colors,
 			textSize,
 			textFont,
-			textHaloWidth,
-			textHaloBlur,
+			labelStyle,
+			symbolSpacing,
 			...(text && { label: { layer, feature: source } }),
 		};
 	}

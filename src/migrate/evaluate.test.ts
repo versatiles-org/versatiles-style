@@ -140,7 +140,8 @@ describe('readProbe', () => {
 			},
 		]);
 		const reading = readProbe(s, OMT, probe('label-place-city'));
-		expect(reading).toMatchObject({ layers: ['city'], textSize: 16, textFont: ['Open Sans Bold'], textHaloWidth: 1 });
+		expect(reading).toMatchObject({ layers: ['city'], textSize: 16, textFont: ['Open Sans Bold'] });
+		expect(reading?.labelStyle).toMatchObject({ haloWidth: 1 });
 		expect(round(reading?.colors.halo)).toEqual([1, 1, 1, 1]);
 		expect(labelText(reading!.label!.layer, 10, probe('label-place-city'), reading!.label!.feature)).toBe(
 			NAME_MARKER + 'name:latin'
@@ -162,7 +163,7 @@ describe('readProbe', () => {
 		expect(Object.keys(reading.colors)).toEqual(['text']);
 		// The width is stated but paints nothing, so the label carries no halo — which is what a style
 		// rebuilt from this should draw. OpenFreeMap's Liberty does exactly this on its street names.
-		expect(reading.textHaloWidth).toBe(0);
+		expect(reading.labelStyle?.haloWidth).toBe(0);
 	});
 
 	it('reads a width of 0 from a label with no halo properties at all', () => {
@@ -180,8 +181,8 @@ describe('readProbe', () => {
 			},
 		]);
 		const reading = readProbe(s, OMT, probe('label-place-city'))!;
-		expect(reading.textHaloWidth).toBe(0);
-		expect(reading.textHaloBlur).toBeUndefined();
+		expect(reading.labelStyle?.haloWidth).toBe(0);
+		expect(reading.labelStyle?.haloBlur).toBeUndefined();
 		expect(reading.colors.halo).toBeUndefined();
 	});
 
@@ -202,7 +203,7 @@ describe('readProbe', () => {
 				},
 			},
 		]);
-		expect(readProbe(s, OMT, probe('label-place-city'))).toMatchObject({ textHaloWidth: 1.5, textHaloBlur: 0.5 });
+		expect(readProbe(s, OMT, probe('label-place-city'))?.labelStyle).toMatchObject({ haloWidth: 1.5, haloBlur: 0.5 });
 	});
 
 	it('skips labels that show nothing, and reads icons without text', () => {
