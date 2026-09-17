@@ -103,6 +103,39 @@ describe('readProbe', () => {
 		expect(readProbe(s, OMT, probe('building'))?.extruded).toBe(true);
 	});
 
+	// On the target the extrusion opacity is `layers.buildings`, not part of the building colour, so it
+	// is kept apart. Folded into the alpha it had nowhere to land but the colour, which the rebuilt
+	// style then multiplied by the layer opacity a second time.
+	it('reads an extrusion opacity apart from the colour, leaving the colour opaque', () => {
+		const s = style([
+			{
+				id: 'b3d',
+				type: 'fill-extrusion',
+				source: 'omt',
+				'source-layer': 'building',
+				paint: { 'fill-extrusion-color': '#888', 'fill-extrusion-opacity': 0.8 },
+			},
+		]);
+		const reading = readProbe(s, OMT, probe('building'));
+		expect(reading?.extrusionOpacity).toBe(0.8);
+		expect(round(reading?.colors.color)).toEqual([0.53, 0.53, 0.53, 1]);
+	});
+
+	it('still folds a flat fill opacity into its colour', () => {
+		const s = style([
+			{
+				id: 'b',
+				type: 'fill',
+				source: 'omt',
+				'source-layer': 'building',
+				paint: { 'fill-color': '#888', 'fill-opacity': 0.5 },
+			},
+		]);
+		const reading = readProbe(s, OMT, probe('building'));
+		expect(reading?.extrusionOpacity).toBeUndefined();
+		expect(round(reading?.colors.color)?.[3]).toBe(0.5);
+	});
+
 	it('reads a road casing: the wider line beneath the top one', () => {
 		const road = (id: string, color: string, width: number) => ({
 			id,

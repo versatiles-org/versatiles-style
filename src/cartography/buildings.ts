@@ -40,6 +40,13 @@ export function* buildings(ctx: LayerContext, vocab: BuildingVocabulary): Genera
 	});
 }
 
+/**
+ * How opaque an extrusion is drawn when the caller states nothing — translucent enough to read the
+ * streets and labels under a dense downtown. `layers.buildings` replaces it with a number of its own,
+ * and `migrate` reads it back out of a foreign style against this value.
+ */
+export const EXTRUSION_OPACITY = 0.7;
+
 // Extruded (3D) buildings, emitted as the topmost layer (above labels) so tall buildings render over
 // everything. A no-op unless `features.buildings === 'extruded'`. Stays in the `buildings` group so the
 // `layers.buildings` visibility toggle still controls it.
@@ -48,16 +55,15 @@ export function* buildings3d(ctx: LayerContext, vocab: BuildingVocabulary): Gene
 
 	if (ctx.features.buildings !== 'extruded') return;
 
-	// Extrusions are drawn translucent so the streets and labels beneath stay readable through a
-	// dense downtown. 0.7 is the cartographic default, and `layers.buildings` sets it outright: this
-	// is the one layer in its group in extruded mode (flat footprints emit nothing), so the group's
-	// opacity and the building opacity are the same number.
+	// `layers.buildings` sets the extrusion opacity outright: this is the one layer in its group in
+	// extruded mode (flat footprints emit nothing), so the group's opacity and the building opacity are
+	// the same number.
 	//
 	// Stating 1 here rather than the caller's value is what makes that work. `gate` then scales this
 	// layer by the same option, so a base of 1 lands on exactly what was asked for; writing the value
-	// here too would square it (0.5 → 0.25). Left at 0.7 when the option is `true` or unset, which
-	// mean "as the cartography drew it" — `gate` passes those through untouched.
-	const opacity = typeof ctx.layers.buildings === 'number' ? 1 : 0.7;
+	// here too would square it (0.5 → 0.25). Left at the cartographic default when the option is `true`
+	// or unset, which mean "as the cartography drew it" — `gate` passes those through untouched.
+	const opacity = typeof ctx.layers.buildings === 'number' ? 1 : EXTRUSION_OPACITY;
 
 	yield b.fillExtrusion('building-3d', {
 		sourceLayer: vocab.sourceLayer,

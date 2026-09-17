@@ -73,6 +73,9 @@ export type ProbeReading = {
 	readonly label?: { layer: StyleLayer; feature: ProbeFeature };
 	/** Fill probes: drawn as `fill-extrusion`. */
 	readonly extruded?: boolean;
+	/** Fill probes drawn as `fill-extrusion`: `fill-extrusion-opacity`. Held apart from the colour —
+	 *  on the target this is `layers.buildings`, not part of the building colour. */
+	readonly extrusionOpacity?: number;
 	/** Line probes: the line width in px. */
 	readonly lineWidth?: number;
 };
@@ -286,16 +289,27 @@ type Drawn = { layer: Layer; feature: EvalFeature; color?: RGBA; width?: number 
 
 function readFill(probe: Probe, zoom: number, matches: Match[]): ProbeReading | undefined {
 	const drawn: Drawn[] = [];
+	let extrusionOpacity: number | undefined;
 	for (const { layer, feature } of matches) {
 		const prefix = layer.type === 'fill' ? 'fill' : layer.type === 'fill-extrusion' ? 'fill-extrusion' : undefined;
 		if (!prefix) continue;
 		const opacity = evaluateProperty(layer, 'paint', `${prefix}-opacity`, zoom, feature);
+
+		// An extrusion's opacity is an option of its own on the target — `layers.buildings` — so it is
+		// kept apart from the colour rather than folded into its alpha like a flat fill's. The colour
+		// model is calibrated against the target's *flat* default, so an extrusion opacity folded in had
+		// nowhere to land but the building colour, which the rebuilt style then multiplied by the layer
+		// opacity a second time: the target's own extruded style came back at 0.49 instead of 0.7.
+		const extruded = layer.type === 'fill-extrusion';
+		const invisible = typeof opacity === 'number' && opacity <= 0.01;
+		if (extruded && typeof opacity === 'number') extrusionOpacity = opacity;
+
 		if (layer.paint?.[`${prefix}-pattern`] !== undefined) {
-			if (typeof opacity !== 'number' || opacity > 0.01) drawn.push({ layer, feature });
+			if (!invisible) drawn.push({ layer, feature });
 			continue;
 		}
-		const color = toRGBA(evaluateProperty(layer, 'paint', `${prefix}-color`, zoom, feature), opacity);
-		if (color && color[3] > 0.01) drawn.push({ layer, color, feature });
+		const color = toRGBA(evaluateProperty(layer, 'paint', `${prefix}-color`, zoom, feature), extruded ? 1 : opacity);
+		if (color && color[3] > 0.01 && !invisible) drawn.push({ layer, color, feature });
 	}
 	if (drawn.length === 0) return undefined;
 
@@ -323,6 +337,7 @@ function readFill(probe: Probe, zoom: number, matches: Match[]): ProbeReading | 
 			.map((d) => d.layer.id),
 		colors,
 		extruded: top.layer.type === 'fill-extrusion',
+		extrusionOpacity,
 	};
 }
 

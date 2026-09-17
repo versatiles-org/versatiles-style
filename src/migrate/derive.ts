@@ -1,5 +1,6 @@
 import { osm, satellite, guessSchema, type SchemaGuess } from '../api/index.js';
 import type { SchemaName } from '../lib/index.js';
+import { EXTRUSION_OPACITY } from '../cartography/index.js';
 import {
 	getLayerGroupMap,
 	getOverlayLayerGroupMap,
@@ -201,7 +202,7 @@ function derive(
 		const options: OsmOptions = {
 			theme: fitted.theme,
 			colors: fitted.colors,
-			layers: fitted.layers,
+			layers: withExtrusionOpacity(fitted.layers, readings, common.features),
 			...common.content,
 			features: common.features,
 			...common.globals,
@@ -415,6 +416,31 @@ function fitContent(
 	}
 
 	return { theme, colors, layers: hiddenGroups(model, readings, schemas, report) };
+}
+
+/**
+ * `layers.buildings` set to the opacity a style draws its extrusions at.
+ *
+ * On the target that option is the extrusion opacity outright, because in extruded mode `building-3d`
+ * is the only layer in its group — flat footprints emit nothing — so the group's opacity and the
+ * building opacity are the same number. `hiddenGroups` only ever writes `false`, so there is nothing
+ * to overwrite here; a hidden group is left hidden, and anyway a style that hides its buildings gives
+ * no extrusion to read.
+ *
+ * The cartographic default is left to say itself: `true` and an unset option both mean "as the
+ * cartography drew it", so a style already at {@link EXTRUSION_OPACITY} writes nothing.
+ */
+function withExtrusionOpacity(
+	layers: LayerGroupOptions,
+	readings: ReadonlyMap<string, ProbeReading>,
+	features: Common['features']
+): LayerGroupOptions {
+	if (features.buildings !== 'extruded' || layers.buildings === false) return layers;
+	const opacity = readings.get('building')?.extrusionOpacity;
+	if (opacity === undefined) return layers;
+	const rounded = Math.round(opacity * 20) / 20;
+	if (rounded <= 0 || rounded > 1 || rounded === EXTRUSION_OPACITY) return layers;
+	return { ...layers, buildings: rounded };
 }
 
 /**

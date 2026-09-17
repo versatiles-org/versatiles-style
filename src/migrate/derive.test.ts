@@ -250,6 +250,43 @@ describe('deriveOptions — round trips through the package builders', () => {
 		});
 	});
 
+	// The extrusion opacity used to be folded into the building colour's alpha, because the colour model
+	// is calibrated against the flat default and there was nowhere else for it to go. The rebuilt style
+	// then applied it twice — the target's own extruded style came back at an effective 0.49 instead of
+	// 0.7 — and no option could state it until `layers.buildings` began to.
+	describe('3D building opacity', () => {
+		const extruded = (layers?: number) =>
+			osm({ features: { buildings: 'extruded' }, ...(layers === undefined ? {} : { layers: { buildings: layers } }) });
+		/** What the extrusion actually comes out at: the colour's alpha times the layer's opacity. */
+		const effective = (style: StyleSpecification) => {
+			const paint = style.layers.find((l) => l.id === 'building-3d')?.paint as Record<string, unknown>;
+			const alpha = /rgba\([^)]*,\s*([\d.]+)\s*\)/.exec(String(paint['fill-extrusion-color']));
+			const ramp = paint['fill-extrusion-opacity'];
+			const opacity = Array.isArray(ramp) ? (ramp[ramp.length - 1] as number) : (ramp as number);
+			return Math.round((alpha ? Number(alpha[1]) : 1) * opacity * 1000) / 1000;
+		};
+
+		it.each([0.8, 0.5, 1])('round trips an opacity of %s', (opacity) => {
+			const derived = osmOptions(deriveOptions(extruded(opacity)));
+			expect((derived.layers as Record<string, unknown>).buildings).toBe(opacity);
+			expect(effective(osm(derived))).toBe(opacity);
+		});
+
+		it('says nothing where the style already draws the cartographic default', () => {
+			const derived = osmOptions(deriveOptions(extruded()));
+			expect(derived.layers).toBeUndefined();
+			expect(effective(osm(derived))).toBe(0.7);
+		});
+
+		it('leaves the building colour opaque rather than carrying the opacity in its alpha', () => {
+			for (const opacity of [undefined, 0.5]) {
+				const derived = osmOptions(deriveOptions(extruded(opacity)));
+				// an alpha here would be applied on top of the layer opacity, dimming the extrusion twice
+				expect(derived.colors?.building ?? '#000000').toMatch(/^#[0-9A-Fa-f]{6}$/);
+			}
+		});
+	});
+
 	it('reads OpenMapTiles and Protomaps styles alike', () => {
 		expect(osmOptions(deriveOptions(omt({ theme: 'toner', text: { language: 'en', languageStrict: true } })))).toEqual({
 			theme: 'toner',
