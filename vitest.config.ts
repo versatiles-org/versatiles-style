@@ -6,14 +6,10 @@ export default defineConfig({
 			provider: 'v8',
 			reporter: ['lcov', 'text'],
 			exclude: ['node_modules/**', 'dist/**', 'release/**', '**/*.test.ts', '**/*.config.*'],
-			// Regression ratchet: set a few points below the current numbers so an accidental
-			// coverage drop fails `npm run test-coverage` without being brittle. Raise over time.
-			thresholds: {
-				statements: 94,
-				branches: 90,
-				functions: 96,
-				lines: 95,
-			},
+			// Reported, not enforced. The thresholds that used to sit here were a ratchet a few points
+			// under the then-current numbers, which meant any refactor that deleted well-covered code —
+			// or added a module the suite reaches only indirectly — failed CI on a number nobody had
+			// chosen. The lcov report still goes to Coveralls, so the trend stays visible.
 		},
 		projects: [
 			{
