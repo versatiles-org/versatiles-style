@@ -62,6 +62,13 @@ export type ProbeReading = {
 	 *  point. `text.spacing` multiplies the target's own value, so this means something only next to the
 	 *  same probe read off the target. */
 	readonly symbolSpacing?: number;
+	/** Symbol probes that draw an icon: `icon-size`. Only set where the layer has an `icon-image` — the
+	 *  spec default of 1 says nothing about a layer that draws no icon at all. `icon.scale` multiplies
+	 *  it, so like `symbolSpacing` it only means something against the same probe read off the target. */
+	readonly iconSize?: number;
+	/** Symbol probes that draw a point icon: the first side of `icon-padding`, in px. `icon.spacing`
+	 *  adds to it rather than multiplying (see `PADDING_PER_SPACING`). */
+	readonly iconPadding?: number;
 	/** Symbol probes: the `text-field` layer and feature, for reading which name field it shows. */
 	readonly label?: { layer: StyleLayer; feature: ProbeFeature };
 	/** Fill probes: drawn as `fill-extrusion`. */
@@ -154,6 +161,24 @@ export function evaluateProperty(
 	} catch {
 		return undefined;
 	}
+}
+
+/**
+ * The first side of an evaluated padding, in px.
+ *
+ * The expression engine resolves a `padding` property to a `Padding` instance — `{ values: [t, r, b, l] }`
+ * — however the style spelled it, so neither a bare number nor a plain array comes back. Both are
+ * accepted anyway, in case a style is read without going through the engine. One side is enough:
+ * `padForSpacing` shifts all four by the same amount.
+ */
+function firstSide(value: unknown): number | undefined {
+	if (typeof value === 'number') return value;
+	if (Array.isArray(value)) return typeof value[0] === 'number' ? value[0] : undefined;
+	if (value && typeof value === 'object' && 'values' in value) {
+		const values = (value as { values: unknown }).values;
+		if (Array.isArray(values) && typeof values[0] === 'number') return values[0];
+	}
+	return undefined;
 }
 
 function toRGBA(value: unknown, opacity: unknown): RGBA | undefined {
@@ -348,6 +373,19 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 		let textFont: readonly string[] | undefined;
 		let labelStyle: LabelStyleReading | undefined;
 		let symbolSpacing: number | undefined;
+		let iconSize: number | undefined;
+		let iconPadding: number | undefined;
+		if (hasIcon) {
+			const size = evaluateProperty(layer, 'layout', 'icon-size', zoom, feature);
+			if (typeof size === 'number') iconSize = size;
+			// `icon-padding` is the point-placement exclusion; along a line MapLibre uses `symbol-spacing`
+			// instead. The spec default is a one-sided `[2]`, and `padForSpacing` shifts every side by the
+			// same amount, so the first side is enough to recover what was added.
+			const placement = evaluateProperty(layer, 'layout', 'symbol-placement', zoom, feature);
+			if (placement !== 'line' && placement !== 'line-center') {
+				iconPadding = firstSide(evaluateProperty(layer, 'layout', 'icon-padding', zoom, feature));
+			}
+		}
 		if (text) {
 			const opacity = evaluateProperty(layer, 'paint', 'text-opacity', zoom, feature);
 			if (typeof opacity === 'number' && opacity <= 0.01) continue;
@@ -406,6 +444,8 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 			textFont,
 			labelStyle,
 			symbolSpacing,
+			iconSize,
+			iconPadding,
 			...(text && { label: { layer, feature: source } }),
 		};
 	}

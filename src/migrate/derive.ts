@@ -19,6 +19,7 @@ import {
 	TEXT_TOPICS,
 	topicOf as labelStyleOf,
 	type ColorsOptions,
+	type IconOptions,
 	type TextTopic,
 	type LayerGroupOptions,
 	type OsmOptions,
@@ -49,6 +50,7 @@ import {
 	type ProbeReading,
 	type RGBA,
 } from './evaluate.js';
+import { PADDING_PER_SPACING } from '../lib/index.js';
 import { colorDistance, luminance, toHex } from './math.js';
 import { PROBES, type Probe } from './probes.js';
 
@@ -493,7 +495,7 @@ function setPath(target: Record<string, unknown>, path: string[], value: unknown
 // ── text, layout, features and globals ─────────────────────────────────────────
 
 type Common = {
-	content: { text?: TextOptions };
+	content: { text?: TextOptions; icon?: IconOptions };
 	features: NonNullable<OsmOptions['features']>;
 	globals: Pick<OsmOptions, 'sun' | 'projection'>;
 };
@@ -519,6 +521,8 @@ function deriveCommon(
 		deriveLabelStyle(readings)
 	);
 	if (Object.keys(text).length > 0) content.text = text;
+	const icon = deriveIcon(readings);
+	if (icon) content.icon = icon;
 
 	const features: Common['features'] = {};
 	if (readings.get('building')?.extruded) features.buildings = 'extruded';
@@ -870,6 +874,60 @@ function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>): TextOpti
 		else (tree[group] ??= {})[leaf] = { ...((tree[group]?.[leaf] as object | undefined) ?? {}), ...style };
 	}
 	return tree as TextOptions;
+}
+
+/**
+ * A multiplier over the target's own value, in steps of 0.05, or `undefined` when it lands within 10%
+ * of 1. Below that the evidence is a handful of layers whose sizes ramp differently from the target's,
+ * and the ratio says more about where the ramps cross than about the style.
+ *
+ * The geometric mean, not the median. A ratio's centre is multiplicative — halving and doubling should
+ * cancel — and with the two or three samples there are to average, `median05` would pick the upper of
+ * an even pair rather than anything between them: for OpenFreeMap's Liberty it chose the POI ratio of
+ * 1.29 outright and drew transit icons 39% too large, where the mean of 1.1 splits the difference.
+ */
+function deriveFactor(ratios: readonly number[]): number | undefined {
+	if (ratios.length === 0) return undefined;
+	const logs = ratios.reduce((sum, ratio) => sum + Math.log(ratio), 0);
+	const factor = Math.round(Math.exp(logs / ratios.length) * 20) / 20;
+	return Math.abs(factor - 1) >= 0.1 ? factor : undefined;
+}
+
+/**
+ * `icon`: how much bigger the style draws its icons than the target, and how much further apart.
+ *
+ * Both are multipliers over the target's own values rather than properties of their own, so both are
+ * read as a ratio against the same probe read off the target, the way `text.scale` is. `scale` compares
+ * `icon-size`; `spacing` compares `icon-padding`, which `applyIcon` shifts by a fixed step per unit
+ * rather than multiplying, so the ratio is recovered from the difference.
+ *
+ * Only the two probes that draw an icon in both styles can speak — POI names and transit stops — and
+ * only where both state a size. A layer with no `icon-image` reads the spec default of 1, which would
+ * otherwise turn a place label's small dot icon into evidence about a target layer that draws no icon
+ * at all. The icons themselves are not carried over (the target's sprite is used), so this is about the
+ * size at which that sprite is drawn.
+ *
+ * `icon.spacing` has a second half that no probe reaches: along a line `applyIcon` scales
+ * `symbol-spacing` instead, on layers that draw an icon and no text — oneway arrows and road markings.
+ * Nothing probes those, so a style that spaces its markings unusually still carries over at 1.
+ */
+function deriveIcon(readings: ReadonlyMap<string, ProbeReading>): IconOptions | undefined {
+	const base = modelFor(osmTarget(), 'light').base;
+	const scales: number[] = [];
+	const spacings: number[] = [];
+	for (const reading of readings.values()) {
+		const own = base.get(reading.probe.id);
+		// Sizes ramp with zoom, so a ratio only means something between readings taken at the same one.
+		if (!own || reading.zoom !== own.zoom) continue;
+		if (reading.iconSize !== undefined && own.iconSize) scales.push(reading.iconSize / own.iconSize);
+		if (reading.iconPadding !== undefined && own.iconPadding !== undefined) {
+			spacings.push(1 + (reading.iconPadding - own.iconPadding) / PADDING_PER_SPACING);
+		}
+	}
+	const scale = deriveFactor(scales);
+	const spacing = deriveFactor(spacings);
+	if (scale === undefined && spacing === undefined) return undefined;
+	return { ...(scale !== undefined && { scale }), ...(spacing !== undefined && { spacing }) };
 }
 
 /** The label size relative to the target's: the median ratio over every label read, in steps of 0.05. */

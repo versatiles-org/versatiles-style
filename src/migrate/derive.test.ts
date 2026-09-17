@@ -152,6 +152,41 @@ describe('deriveOptions — round trips through the package builders', () => {
 		});
 	});
 
+	// `icon` was never derived at all: an imported style kept the target's icon sizes whatever it drew.
+	describe('icon scale and spacing', () => {
+		const iconOf = (options: OsmOptions) => osmOptions(deriveOptions(osm(options))).icon;
+
+		it.each([[{ scale: 1.5 }], [{ scale: 0.5 }], [{ spacing: 2 }], [{ spacing: 3 }], [{ scale: 1.5, spacing: 2 }]])(
+			'round trips %o',
+			(icon) => {
+				expect(iconOf({ icon })).toEqual(icon);
+			}
+		);
+
+		// Both are global multipliers fitted to a couple of layers whose sizes ramp differently from the
+		// target's, so a factor this close to 1 is more likely to be where the ramps cross than a choice.
+		it('ignores a factor within 10% of 1', () => {
+			expect(iconOf({ icon: { scale: 1.05 } })).toBeUndefined();
+			expect(iconOf({ icon: { spacing: 1.05 } })).toBeUndefined();
+			expect(iconOf({})).toBeUndefined();
+		});
+
+		// Liberty draws a small dot beside its place names, which the target draws no icon for at all.
+		// Reading `icon-size` off a layer with no `icon-image` would take MapLibre's default of 1 as
+		// evidence and compare it with nothing, dragging the factor toward those dots.
+		it('reads a size only from layers that draw an icon', () => {
+			const withDots = osm();
+			for (const layer of withDots.layers) {
+				if (!layer.id.startsWith('label-place-')) continue;
+				((layer as { layout?: Record<string, unknown> }).layout ??= {})['icon-image'] = 'base:icon-dot';
+				(layer as { layout: Record<string, unknown> }).layout['icon-size'] = 0.2;
+			}
+			// the place labels say 0.2 against a target that draws no icon there; only the POI and transit
+			// probes compare like with like, and they are unchanged
+			expect(osmOptions(deriveOptions(withDots)).icon).toBeUndefined();
+		});
+	});
+
 	it('recovers colours, hidden groups, language, label size, terrain and projection', () => {
 		const options = osmOptions(
 			deriveOptions(

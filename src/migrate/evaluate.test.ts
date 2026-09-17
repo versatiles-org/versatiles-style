@@ -206,6 +206,38 @@ describe('readProbe', () => {
 		expect(readProbe(s, OMT, probe('label-place-city'))?.labelStyle).toMatchObject({ haloWidth: 1.5, haloBlur: 0.5 });
 	});
 
+	it('reads icon size and padding only from a layer that draws an icon', () => {
+		const poi = { type: 'symbol', source: 'omt', 'source-layer': 'poi' };
+		const withIcon = readProbe(
+			style([{ ...poi, id: 'icon', layout: { 'icon-image': 'cafe', 'icon-size': 0.6, 'icon-padding': 16 } }]),
+			OMT,
+			probe('poi-amenity')
+		);
+		expect(withIcon).toMatchObject({ iconSize: 0.6, iconPadding: 16 });
+
+		// no `icon-image`: MapLibre's default size of 1 says nothing about a layer that draws no icon
+		const textOnly = readProbe(
+			style([{ ...poi, id: 'text', layout: { 'text-field': '{name}' } }]),
+			OMT,
+			probe('poi-amenity')
+		);
+		expect(textOnly?.iconSize).toBeUndefined();
+		expect(textOnly?.iconPadding).toBeUndefined();
+	});
+
+	it('reads no icon padding from a line-placed icon, which MapLibre spaces instead', () => {
+		const s = style([
+			{
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'poi',
+				id: 'arrow',
+				layout: { 'icon-image': 'arrow', 'symbol-placement': 'line', 'icon-padding': 16 },
+			},
+		]);
+		expect(readProbe(s, OMT, probe('poi-amenity'))?.iconPadding).toBeUndefined();
+	});
+
 	it('skips labels that show nothing, and reads icons without text', () => {
 		const symbol = { type: 'symbol', source: 'omt', 'source-layer': 'poi' };
 		const s = style([

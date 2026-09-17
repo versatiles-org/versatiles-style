@@ -42,7 +42,7 @@ const DEFAULT_PADDING = 2;
 //
 // 14 px per step puts `spacing: 2` at 16 px and `spacing: 3` at 30 px — a visible thinning, where the
 // effect of doubling the default could not be told from noise.
-const PADDING_PER_SPACING = 14;
+export const PADDING_PER_SPACING = 14;
 
 /** Multiply a line-placed symbol layer's `symbol-spacing`, in place. */
 export function scaleSymbolSpacing(layout: Record<string, unknown>, spacing: number): void {

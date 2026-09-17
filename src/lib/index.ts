@@ -27,7 +27,7 @@ export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
 export { fetchTileJSON } from './fetchTileJSON.js';
 export { inlineSources } from './inlineSources.js';
 export { scaleLayerOpacity } from './opacity.js';
-export { padForSpacing, scaleSymbolSpacing, scaleValue } from './symbol-layout.js';
+export { padForSpacing, scaleSymbolSpacing, scaleValue, PADDING_PER_SPACING } from './symbol-layout.js';
 export { getLanguages } from './languages.js';
 export { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from './schema-signatures.js';
 
