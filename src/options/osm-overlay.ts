@@ -1,5 +1,8 @@
-import { DEFAULT_FONT_BOLD, DEFAULT_LABEL_STYLES, mapTopics, topicOf } from './parts/text.js';
 import {
+	DEFAULT_FONT_BOLD,
+	DEFAULT_LABEL_STYLES,
+	mapTopics,
+	topicOf,
 	checkKeys,
 	resolveColors,
 	resolveLayerGroups,

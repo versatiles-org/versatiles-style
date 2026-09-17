@@ -1,6 +1,12 @@
 import { osm, satellite, guessSchema, type SchemaGuess } from '../api/';
 import type { SchemaName } from '../lib/';
-import { getLayerGroupMap, getTextGroupMap, type LayerGroupMap, SHORTBREAD_SCHEMA } from '../shortbread/';
+import {
+	getLayerGroupMap,
+	getOverlayLayerGroupMap,
+	getTextGroupMap,
+	type LayerGroupMap,
+	SHORTBREAD_SCHEMA,
+} from '../shortbread/';
 import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/';
 import {
 	colorOptionsKeys,
@@ -44,7 +50,6 @@ import {
 	type RGBA,
 } from './evaluate.js';
 import { colorDistance, luminance, toHex } from './math.js';
-import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { PROBES, type Probe } from './probes.js';
 
 /**

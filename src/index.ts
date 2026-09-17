@@ -90,8 +90,7 @@
 
 export * from './exports.js';
 
-import { osm as osmCore, satellite as satelliteCore } from './api/';
-import { styleCode } from './api/code.js';
+import { osm as osmCore, satellite as satelliteCore, styleCode } from './api/';
 import { getOverlayLayerGroupMap } from './shortbread/layer-groups-map.js';
 import { minimizeOsmOptions, minimizeSatelliteOptions, type OsmOptions, type SatelliteOptions } from './options/';
 
