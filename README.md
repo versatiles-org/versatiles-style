@@ -95,6 +95,14 @@ Integrate it into your HTML application:
 >
 > If your own tile server publishes absolute tile URLs, you can skip it and stay fully synchronous.
 
+Everything the bundle provides is listed under
+[`browser`](https://versatiles.org/versatiles-style/modules/browser.html) in the API documentation —
+that page is generated from the bundle's own entry point, so it is the definitive answer to "is this
+available in the browser?". The surface is smaller than the npm one on purpose: the authoring helpers
+(`osm.minimizeOptions`, `osm.toCode`), the font-discovery functions and the TileJSON validators are
+npm-only, because a page that builds a style and hands it to MapLibre never calls them and would
+otherwise download them. The shipped `versatiles-style.d.ts` carries the same list as types.
+
 > **Requires MapLibre GL JS 5.0 or newer.**
 > The generated styles set the [`globe` projection](https://maplibre.org/maplibre-style-spec/projection/)
 > and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/). Older versions ignore both and

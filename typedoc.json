@@ -1,7 +1,13 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
 	"tsconfig": "tsconfig.docs.json",
-	"entryPoints": ["src/index.ts", "src/omt/index.ts", "src/protomaps/index.ts", "src/migrate/index.ts"],
+	"entryPoints": [
+		"src/index.ts",
+		"src/browser.ts",
+		"src/omt/index.ts",
+		"src/protomaps/index.ts",
+		"src/migrate/index.ts"
+	],
 	"out": "docs",
 	"intentionallyNotExported": ["ColorValue", "GroupName", "Groups"],
 	"highlightLanguages": [
