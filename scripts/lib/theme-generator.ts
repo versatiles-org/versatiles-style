@@ -56,8 +56,6 @@ export interface ThemeSettings {
 
 export const THEMES: Record<LightTheme, ThemeSettings> = {
 	colorful: {
-		contrast: { fill: 1, line: 1, label: 1 },
-		chroma: { fill: 1, line: 1, label: 1 },
 		darkLand: 0.02,
 	},
 	// stronger nature fills on a warm land
@@ -65,21 +63,20 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
 		land: '#F2EDDE',
 		contrast: { fill: 1.3, line: 1, label: 1 },
 		chroma: { fill: 1.4, line: 1, label: 1 },
-		darkLand: 0.022,
+		darkLand: 0.02,
 	},
 	// softer and less saturated throughout
 	muted: {
 		land: '#F4F0EE',
 		contrast: { fill: 0.7, line: 0.8, label: 0.9 },
 		chroma: { fill: 0.5, line: 0.6, label: 0.6 },
-		darkLand: 0.019,
+		darkLand: 0.02,
 	},
 	// fully desaturated: every colour is a gray, carrying colorful's hue separation as brightness
 	gray: {
-		contrast: { fill: 1, line: 1, label: 1 },
 		chroma: { fill: 0, line: 0, label: 0 },
-		decolorize: 0.5,
-		darkLand: 0.018,
+		decolorize: 0,
+		darkLand: 0.02,
 	},
 	// quiet fills, heavy lines, black labels
 	toner: {
