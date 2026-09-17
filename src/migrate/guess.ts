@@ -1,4 +1,5 @@
-import { loadTileSource, resolveUrl } from '../lib/';
+import { loadTileSource } from '../lib/';
+import { resolveUrl } from '../options/';
 import { fetchFontFaces } from '../lib/fetchFontFaces.js';
 import { checkKeys, type FetchLike } from '../options/';
 import type { StyleSpecification, TileJSONSpecification } from '../types/';

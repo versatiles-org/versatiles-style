@@ -10,7 +10,7 @@
  * An `no-restricted-imports` rule in `eslint.config.js` enforces this.
  */
 
-export { normalizeAttribution, resolveUrl, basename } from './utils.js';
+export { normalizeAttribution, basename } from './utils.js';
 export { STYLE_LICENSE, STYLE_METADATA, styleName } from './styleMeta.js';
 export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';

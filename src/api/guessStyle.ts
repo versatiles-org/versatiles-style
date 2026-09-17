@@ -2,7 +2,8 @@ import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVe
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike, OsmUrlsOptions } from '../options/';
 import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls } from '../options/';
-import { loadTileSource, resolveTileJSONTiles, resolveUrl } from '../lib/index.js';
+import { loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
+import { resolveUrl } from '../options/';
 import { osm } from './osm.js';
 import { checkKeys } from '../options/';
 import { satellite } from './satellite.js';

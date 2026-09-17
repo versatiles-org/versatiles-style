@@ -1,6 +1,6 @@
 import type { TileJSONSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/';
-import { resolveUrl } from './utils.js';
+import { resolveUrl } from '../options/';
 
 // In-memory cache of successful response bodies, keyed by request URL.
 // Promises (not resolved Blobs) are stored so concurrent requests for the same

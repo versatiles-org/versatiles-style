@@ -1,5 +1,5 @@
 import { checkKeys } from './keys.js';
-import { resolveUrl } from '../../lib/utils.js';
+import { resolveUrl } from './resolve-url.js';
 import type { TileJSONSpecification } from '../../types/tilejson.js';
 import { type SpriteEntries, resolveSprite } from './sprite.js';
 

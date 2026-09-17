@@ -30,7 +30,7 @@ import {
 	type TerrainOptions,
 	type TileSource,
 } from '../options/';
-import { resolveUrl } from '../lib/';
+import { resolveUrl } from '../options/';
 
 /**
  * Protomaps' options — in this directory, not in `src/options/`.

@@ -107,20 +107,6 @@ export function deepMerge<T extends object>(source0: T, ...sources: Partial<T>[]
 	return target;
 }
 
-export function resolveUrl(base: string, url: string): string {
-	if (!base) return url;
-	try {
-		url = new URL(url, base).href;
-	} catch {
-		// `new URL` throws a bare "Invalid base URL" that names neither value; say which option
-		// is at fault, since the base almost always comes from `urls.base`.
-		throw new Error(`Cannot resolve "${url}" against base "${base}" — check the \`urls.base\` option.`);
-	}
-	url = url.replace(/%7B/gi, '{');
-	url = url.replace(/%7D/gi, '}');
-	return url;
-}
-
 export function basename(url: string): string {
 	if (!url) return '';
 	try {

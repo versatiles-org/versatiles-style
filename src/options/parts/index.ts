@@ -22,6 +22,7 @@ export * from './keys.js';
 export * from './layer-groups.js';
 export * from './projection.js';
 export * from './recolor.js';
+export * from './resolve-url.js';
 export * from './satellite-raster.js';
 export * from './sky.js';
 export * from './sprite.js';
