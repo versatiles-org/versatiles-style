@@ -1,7 +1,12 @@
 import { checkKeys, DEFAULT_BASE, type FetchLike } from '../options/index.js';
 import { resolveUrl } from '../options/index.js';
 
-/** One glyph face a server publishes, described for a font picker. */
+/**
+ * One glyph face a server publishes, described for a font picker.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
+ */
 export type FontFaceInfo = {
 	/** The glyph name — a value for a `font` in `text`, e.g. `'fira_sans_condensed_light_italic'`. */
 	id: string;
@@ -108,6 +113,9 @@ export function fontFamiliesUrl(glyphsPattern: string): string | undefined {
  * Resolves to `undefined` when there is no list to read — a pattern without a `{fontstack}` segment, a
  * server that does not publish the file (any non-OK response), or a document that is not a face list —
  * so a UI can fall back to a free text field. Rejects only when the request itself fails.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export async function fetchFontFaces(
 	urls?: { base?: string; glyphsPattern?: string },

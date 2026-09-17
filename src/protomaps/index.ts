@@ -3,6 +3,8 @@
  *
  * As with the OpenMapTiles subpath: one function and its option types, with everything schema-neutral
  * left in the root entry (SCHEMA-SUPPORT-PLAN.md §5.3).
+ *
+ * @module @versatiles/style/protomaps
  */
 export { protomaps } from './api.js';
 export type {

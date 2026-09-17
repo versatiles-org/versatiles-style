@@ -104,6 +104,9 @@ function parseCodeblocks(codeblocks: string): [number, number][] {
 /**
  * The scripts `fontCovers` and `fontScripts` can check, as ISO 15924 codes (`'Latn'`, `'Cyrl'`, `'Grek'`,
  * …), in a fixed order: roughly by Unicode block, Latin first.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export const FONT_SCRIPTS: readonly string[] = Object.freeze(Object.keys(SCRIPT_SAMPLES));
 
@@ -122,6 +125,9 @@ function hasSamples(blocks: [number, number][], samples: readonly number[]): boo
  * Coverage is read from the `codeblocks` the glyph server lists for the face in its `font_families.json`
  * (see `fetchFontFaces`), by checking a few sample letters of each script. It is a hint for a font picker,
  * not a guarantee: the blocks are coarse, and a server's list can be incomplete.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function fontScripts(face: Pick<FontFaceInfo, 'codeblocks'>): string[] {
 	const blocks = parseCodeblocks(face.codeblocks);
@@ -136,6 +142,9 @@ export function fontScripts(face: Pick<FontFaceInfo, 'codeblocks'>): string[] {
  * `'user'` is the browser's language first, as for `text.language`. `undefined` for `'local'`, which shows
  * every name in its own script; for a language `Intl` cannot place in a script; and for a script outside
  * `FONT_SCRIPTS`.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function languageScript(language: string): string | undefined {
 	return placeLanguage(language)?.script;
@@ -173,6 +182,9 @@ const SCRIPT_PATTERNS: Readonly<Record<string, RegExp>> = Object.fromEntries(
  * to pick the fonts that can write them. Japanese text with kanji and kana is `['Hani', 'Jpan']`, matching
  * `fontScripts`, whose `Jpan` needs both. `[]` for text of digits, punctuation or scripts outside
  * `FONT_SCRIPTS` only.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function textScripts(text: string): string[] {
 	return FONT_SCRIPTS.filter((script) => SCRIPT_PATTERNS[script].test(text));
@@ -195,6 +207,9 @@ export function textScripts(text: string): string[] {
  * MapLibre GL JS draws CJK ideographs, Hangul and kana with a local browser font by default
  * (`localIdeographFontFamily`), so a `false` for Chinese, Japanese or Korean matters to MapLibre Native,
  * not to GL JS in its default setting.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function fontCovers(face: Pick<FontFaceInfo, 'codeblocks'>, language: string): boolean | undefined {
 	const placed = placeLanguage(language);

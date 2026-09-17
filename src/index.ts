@@ -1,30 +1,32 @@
 /**
  * This library provides everything you need to build a map style.
  *
- * You can use it in the browser:
- * ```html
- * <html>
- *   <head>
- *     <script src="https://tiles.versatiles.org/assets/lib/versatiles-style/versatiles-style.js"></script>
- *   </head>
- *   <body>
- *     <!-- ... -->
- *     <script>
- *       const style = VersaTilesStyle.osm();
- *       // ...
- *     </script>
- *   </body>
- * </html>
- * ```
+ * **This page documents the npm package.** Install it and import what you need:
  *
- * or in Node.js:
  * ```shell
  * npm i @versatiles/style
  * ```
- * ```
+ * ```ts
  * import { osm } from '@versatiles/style';
  * const style = osm({ theme: 'colorful' });
  * ```
+ *
+ * There is a second way to use the library — a prebuilt bundle loaded from a `<script>` tag, which
+ * puts the same functions on a `VersaTilesStyle` global:
+ *
+ * ```html
+ * <script src="https://tiles.versatiles.org/assets/lib/versatiles-style/versatiles-style.js"></script>
+ * <script>
+ *   const style = VersaTilesStyle.osm();
+ * </script>
+ * ```
+ *
+ * That bundle carries **less than this page lists**, and it is documented on its own page: see the
+ * {@link "versatiles-style.js"} module. Everything you build a style with — `osm`, `satellite`,
+ * `guessStyle`, `inlineSources`, `Color` — is in both. What only npm has is editor and tooling work:
+ * `osm.minimizeOptions` and `osm.toCode`, the font-discovery helpers, and the TileJSON validators.
+ * Each of those is marked **npm only** on its own page. They are left out so that a page which merely
+ * builds a style and hands it to MapLibre does not download them.
  *
  * ---
  *
@@ -83,7 +85,7 @@
  *
  * If you have any suggestions, please [open an issue](https://github.com/versatiles-org/versatiles-style/issues) or a pull request on [GitHub](https://github.com/versatiles-org/versatiles-style).
  *
- * @module
+ * @module @versatiles/style
  */
 
 // ── v6 API (new) ──────────────────────────────────────────────────────────────

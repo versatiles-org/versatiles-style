@@ -96,7 +96,7 @@ Integrate it into your HTML application:
 > If your own tile server publishes absolute tile URLs, you can skip it and stay fully synchronous.
 
 Everything the bundle provides is listed under
-[`browser`](https://versatiles.org/versatiles-style/modules/browser.html) in the API documentation —
+[`versatiles-style.js`](https://versatiles.org/versatiles-style/modules/versatiles-style.js.html) in the API documentation —
 that page is generated from the bundle's own entry point, so it is the definitive answer to "is this
 available in the browser?". The surface is smaller than the npm one on purpose: the authoring helpers
 (`osm.minimizeOptions`, `osm.toCode`), the font-discovery functions and the TileJSON validators are

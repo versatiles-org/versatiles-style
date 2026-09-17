@@ -39,6 +39,9 @@ export type TileJSONSpecification = TileJSONSpecificationRaster | TileJSONSpecif
  * Use {@link isTileJSONSpecification} when you want a boolean instead. These were one function
  * whose `spec is T` signature promised a predicate but which threw for every invalid input, so
  * `if (isTileJSONSpecification(x))` blew up rather than branching.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function assertTileJSONSpecification(spec: unknown): asserts spec is TileJSONSpecification {
 	if (typeof spec !== 'object' || spec === null) {
@@ -151,7 +154,12 @@ export function assertTileJSONSpecification(spec: unknown): asserts spec is Tile
 	}
 }
 
-/** Whether an object adheres to the TileJSON specification. Never throws. */
+/**
+ * Whether an object adheres to the TileJSON specification. Never throws.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
+ */
 export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecification {
 	try {
 		assertTileJSONSpecification(spec);
@@ -164,6 +172,9 @@ export function isTileJSONSpecification(spec: unknown): spec is TileJSONSpecific
 /**
  * Validate an object as a *raster* TileJSON — a TileJSON with no `vector_layers`.
  * Throws the same descriptive errors as {@link assertTileJSONSpecification}.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
  */
 export function assertRasterTileJSONSpecification(spec: unknown): asserts spec is TileJSONSpecificationRaster {
 	assertTileJSONSpecification(spec);
@@ -172,7 +183,12 @@ export function assertRasterTileJSONSpecification(spec: unknown): asserts spec i
 	}
 }
 
-/** Whether an object is a raster TileJSON (no `vector_layers`). Never throws. */
+/**
+ * Whether an object is a raster TileJSON (no `vector_layers`). Never throws.
+ *
+ * **npm only.** Not exported by the browser bundle (`versatiles-style.js`) — see the
+ * `versatiles-style.js` module for what that carries.
+ */
 export function isRasterTileJSONSpecification(spec: unknown): spec is TileJSONSpecificationRaster {
 	try {
 		assertRasterTileJSONSpecification(spec);

@@ -7,6 +7,8 @@
  *
  * A subpath of its own because it carries the style spec's expression engine and a calibration of the
  * builders, which a caller who only builds styles should not download.
+ *
+ * @module @versatiles/style/migrate
  */
 export { guessOptions, type GuessOptionsOptions } from './guess.js';
 export { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
