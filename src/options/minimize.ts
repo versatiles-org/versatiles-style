@@ -288,7 +288,20 @@ function withoutVisible(node: GroupTree): GroupTree | undefined {
 }
 
 /** A base no real URL has, to read each URL's default path off. */
+/**
+ * A base no caller would use, resolved once so that each URL key reveals the path it takes under a
+ * base. The trailing slash is load-bearing: `startsWith(PROBE_BASE)` without it also matches a
+ * caller-supplied `https://probe.invalid.example.com/…`, which would propose a nonsense base. Nothing
+ * unsafe followed — every candidate base is re-resolved and compared below, so a bogus one is
+ * discarded rather than believed — but the loose prefix test is what CodeQL's
+ * `js/incomplete-url-substring-sanitization` flags, and it is right that the boundary belongs here.
+ *
+ * The separator is kept out of `PROBE_BASE` itself so that `slice(PROBE_BASE.length)` still leaves the
+ * leading `/` on the path; folding it in would move it into the base and emit `urls.base` with a
+ * trailing slash.
+ */
 const PROBE_BASE = 'https://probe.invalid';
+const PROBE_PREFIX = `${PROBE_BASE}/`;
 
 /**
  * `urls` as the fewest keys that resolve to the same URLs.
@@ -313,7 +326,7 @@ function minimizeUrls(urls: unknown, resolveUrls: (urls: Plain) => object): Plai
 	const bases = new Set([DEFAULT_BASE, ...(typeof urls.base === 'string' ? [urls.base] : [])]);
 	for (const [key, url] of Object.entries(resolved)) {
 		const fallback = probe[key];
-		if (typeof url !== 'string' || typeof fallback !== 'string' || !fallback.startsWith(PROBE_BASE)) continue;
+		if (typeof url !== 'string' || typeof fallback !== 'string' || !fallback.startsWith(PROBE_PREFIX)) continue;
 		const path = fallback.slice(PROBE_BASE.length);
 		if (url.endsWith(path) && url.length > path.length) bases.add(url.slice(0, -path.length));
 	}
