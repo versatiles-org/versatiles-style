@@ -58,6 +58,18 @@ contract: unknown keys in its options count as an invalid argument and yield the
 
 Each key in `LayerGroupOptions` accepts `true`/`false` to show or hide, a `number` (0–1) to set opacity, or — for grouped keys — an object to configure sub-groups individually.
 
+A number scales the layer's own opacity rather than replacing it, so a zoom fade keeps its shape: a
+ramp of `{14: 0, 15: 0.8}` at `0.5` becomes `{14: 0, 15: 0.4}`. `0` hides the group outright (the
+layers are dropped, not emitted at zero opacity) and anything above `1` is clamped.
+
+`true` and `1` differ for one group. `true` means "as the cartography drew it", while `1` asks for
+full opacity — the same thing everywhere except `layers.buildings` in `features.buildings: 'extruded'`
+mode, where `building-3d` is drawn at 0.7 so the streets and labels under a dense downtown stay
+readable. There `layers.buildings` sets the extrusion opacity outright: `0.5` gives 0.5 and `1` gives
+an opaque block, where `true` and an unset option both leave the 0.7. It is the only layer in its
+group in that mode (flat footprints emit nothing), so the group's opacity and the building opacity
+are the same number.
+
 ```ts
 // `layers` also accepts a scalar in place of the object, cascading to every group:
 //   osm({ layers: false })  — no data layers at all (the v5 `empty` style)
@@ -114,7 +126,7 @@ type LayerGroupOptions = {
         ferries?: boolean | number; // ferry routes
         stops?: boolean | number; // bus stops, tram stops, train stations, airports as symbols
       };
-  buildings?: boolean | number;
+  buildings?: boolean | number; // in `features.buildings: 'extruded'` mode this is the extrusion opacity (default 0.7)
   sites?: boolean | number; // schools, hospitals, parking, construction, etc.
   airport?: boolean | number; // runways, taxiways
   pois?: boolean | number; // points of interest symbols
@@ -427,7 +439,7 @@ type OsmOptions = OsmOverlayOptions & {
     terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
     landcover?: boolean; // ESA WorldCover at z0–z10; default: false
-    buildings?: 'flat' | 'extruded'; // default: 'flat'
+    buildings?: 'flat' | 'extruded'; // default: 'flat'; extrusion opacity comes from `layers.buildings`
   };
   sun?: SunOptions; // default: unset — no `light` is written
   sky?: boolean | SkyOptions; // default: true

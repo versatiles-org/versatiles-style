@@ -156,12 +156,19 @@ type Scalar = boolean | number;
 
 const scalarOf = (v: unknown): Scalar | undefined => (typeof v === 'boolean' || typeof v === 'number' ? v : undefined);
 
-// Collapse a non-fractional opacity to a boolean: ≤ 0 is fully hidden (→ false), ≥ 1 is fully
-// visible (→ true). Only a fractional value in the open interval (0, 1) stays a number.
+// Collapse an out-of-range opacity: ≤ 0 is fully hidden (→ false), > 1 is clamped to fully visible
+// (→ true). A value in [0, 1] stays a number.
+//
+// An explicit `1` used to collapse to `true` as well, on the reasoning that for a layer drawn at full
+// opacity the two say the same thing. True of every layer but one: `building-3d` is drawn at 0.7, and
+// `true` means "leave the cartography alone", so `1` collapsed to `true` came back as 0.7 — the one
+// value a caller asking for opaque buildings cannot get, while 0.99 worked. Keeping the number costs
+// nothing elsewhere: `gate` treats a factor of 1 as the no-op it is, so every other group behaves
+// exactly as it did.
 const normalize = (v: Scalar): Scalar => {
 	if (typeof v === 'number') {
 		if (v <= 0) return false;
-		if (v >= 1) return true;
+		if (v > 1) return true;
 	}
 	return v;
 };

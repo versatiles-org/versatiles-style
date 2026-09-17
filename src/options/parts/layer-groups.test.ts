@@ -240,16 +240,25 @@ describe('resolveLayerGroups', () => {
 
 	// ── opacity normalization ──────────────────────────────────────────────────────
 
-	it('normalizes a non-fractional opacity to a boolean, keeping fractional values', () => {
+	it('normalizes an out-of-range opacity to a boolean, keeping values in [0, 1]', () => {
 		const r = resolveLayerGroups({
 			roads: { motorways: 0, highways: 1, paths: 0.5, steps: 2 },
 			buildings: -1,
 		});
 		expect(r.roads.motorways).toBe(false); // 0 → hidden
-		expect(r.roads.highways).toBe(true); // 1 → fully visible
+		expect(r.roads.highways).toBe(1); // 1 stays a number — see below
 		expect(r.roads.paths).toBe(0.5); // fractional stays a number
-		expect(r.roads.steps).toBe(true); // 2 → fully visible
+		expect(r.roads.steps).toBe(true); // 2 → clamped to fully visible
 		expect(r.buildings).toBe(false); // negative → hidden
+	});
+
+	// An explicit 1 used to collapse to `true`. It no longer does, because the two mean different
+	// things for a layer the cartography draws below full opacity: `true` leaves `building-3d` at its
+	// 0.7, where `1` asks for opaque. `gate` skips a factor of 1, so nothing else sees a difference.
+	it('keeps an explicit 1 distinct from true, which the 3D buildings opacity reads', () => {
+		expect(resolveLayerGroups({ buildings: 1 }).buildings).toBe(1);
+		expect(resolveLayerGroups({ buildings: true }).buildings).toBe(true);
+		expect(resolveLayerGroups({}).buildings).toBe(true);
 	});
 
 	it('normalizes a cascaded scalar too', () => {

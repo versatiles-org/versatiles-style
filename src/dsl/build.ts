@@ -363,14 +363,19 @@ function layerOpt(layers: ResolvedLayerGroups, path: string | undefined): boolea
 
 /** Filter/dim a stream of tagged layers by their group's resolved option: each layer is dropped
  *  entirely when hidden (`false`) rather than emitted at zero opacity, dimmed (opacity scaled) when
- *  fractional, and passed through unchanged when fully visible (`true`). Resolved options are already
- *  normalized (see `resolveLayerGroups`), so a group value is only ever `true`, `false`, or a
- *  fractional opacity in (0, 1). */
+ *  below 1, and passed through unchanged when fully visible (`true` or `1`). Resolved options are
+ *  already normalized (see `resolveLayerGroups`), so a group value is only ever `true`, `false`, or
+ *  an opacity in (0, 1].
+ *
+ *  A factor of exactly 1 scales nothing, so it is skipped rather than applied: `scaleLayerOpacity`
+ *  treats an absent opacity as fully opaque and writes the factor back, which would stamp
+ *  `fill-opacity: 1` (and friends) onto every layer that carried no opacity of its own. Skipping
+ *  keeps `layers: 1` byte-identical to the default style. */
 export function* gate(layers: ResolvedLayerGroups, tagged: Iterable<TaggedLayer>): Generator<TaggedLayer> {
 	for (const tl of tagged) {
 		const opt = layerOpt(layers, tl.group);
 		if (opt === false) continue; // invisible → filtered out, not emitted
-		if (typeof opt === 'number') scaleLayerOpacity(tl.layer, opt);
+		if (typeof opt === 'number' && opt !== 1) scaleLayerOpacity(tl.layer, opt);
 		yield tl;
 	}
 }

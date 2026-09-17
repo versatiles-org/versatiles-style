@@ -371,6 +371,60 @@ describe('osm() knob: features.buildings', () => {
 		expect(layer(s, 'building-3d')).toBeDefined();
 		expect(ids(s)[ids(s).length - 1]).toBe('building-3d');
 	});
+
+	// `layers.buildings` sets the extrusion opacity outright rather than dimming the 0.7 default: in
+	// extruded mode `building-3d` is the only layer in its group, so the two are the same number. The
+	// value is the target of the z14→15 fade, which has to survive — a flat opacity would make the
+	// buildings pop in, and the derived `minzoom` assumes the ramp.
+	describe('opacity via layers.buildings', () => {
+		const target = (opt?: number | boolean) => {
+			const s = build({
+				features: { buildings: 'extruded' },
+				...(opt === undefined ? {} : { layers: { buildings: opt } }),
+			});
+			const ramp = (layer(s, 'building-3d')?.paint as Record<string, unknown>)?.['fill-extrusion-opacity'];
+			return Array.isArray(ramp) ? ramp[ramp.length - 1] : ramp;
+		};
+
+		it('defaults to the cartographic 0.7, which `true` also means', () => {
+			expect(target()).toBe(0.7);
+			expect(target(true)).toBe(0.7);
+		});
+
+		it.each([
+			[1, 1], // opaque — unreachable while an explicit 1 collapsed to `true`
+			[0.9, 0.9],
+			[0.7, 0.7],
+			[0.5, 0.5],
+			[0.25, 0.25],
+		])('layers.buildings %s sets the opacity to %s', (opt, expected) => {
+			expect(target(opt)).toBe(expected);
+		});
+
+		it('keeps the z14→15 fade rather than flattening it', () => {
+			const s = build({ features: { buildings: 'extruded' }, layers: { buildings: 0.5 } });
+			const l = layer(s, 'building-3d');
+			expect((l?.paint as Record<string, unknown>)['fill-extrusion-opacity']).toStrictEqual([
+				'interpolate',
+				['linear'],
+				['zoom'],
+				14,
+				0,
+				15,
+				0.5,
+			]);
+			expect(l?.minzoom).toBe(14);
+		});
+
+		it('still drops the layer entirely when hidden', () => {
+			expect(
+				layer(build({ features: { buildings: 'extruded' }, layers: { buildings: false } }), 'building-3d')
+			).toBeUndefined();
+			expect(
+				layer(build({ features: { buildings: 'extruded' }, layers: { buildings: 0 } }), 'building-3d')
+			).toBeUndefined();
+		});
+	});
 });
 
 // ── features.landcover ───────────────────────────────────────────────────────────
@@ -522,6 +576,14 @@ describe('osm() knob: layers (group gating)', () => {
 		const s = build({ layers });
 		expect(layer(s, hidden), `${hidden} should be hidden`).toBeUndefined();
 		expect(layer(s, kept), `${kept} should remain`).toBeDefined();
+	});
+
+	// An explicit 1 stays a number through resolution so `building-3d` can read it, which puts a
+	// scale factor of 1 in front of every other group too. `gate` skips it: applying it would treat
+	// each layer's absent opacity as 1 and write it back, stamping `fill-opacity: 1` and friends onto
+	// layers that carried none.
+	it('layers: 1 leaves the style byte-identical to the default', () => {
+		expect(JSON.stringify(build({ layers: 1 }))).toBe(JSON.stringify(build()));
 	});
 
 	it('icons alias hides every icon group (pois, markings, transit stops) at once', () => {

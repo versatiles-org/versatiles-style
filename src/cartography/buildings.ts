@@ -48,12 +48,23 @@ export function* buildings3d(ctx: LayerContext, vocab: BuildingVocabulary): Gene
 
 	if (ctx.features.buildings !== 'extruded') return;
 
+	// Extrusions are drawn translucent so the streets and labels beneath stay readable through a
+	// dense downtown. 0.7 is the cartographic default, and `layers.buildings` sets it outright: this
+	// is the one layer in its group in extruded mode (flat footprints emit nothing), so the group's
+	// opacity and the building opacity are the same number.
+	//
+	// Stating 1 here rather than the caller's value is what makes that work. `gate` then scales this
+	// layer by the same option, so a base of 1 lands on exactly what was asked for; writing the value
+	// here too would square it (0.5 → 0.25). Left at 0.7 when the option is `true` or unset, which
+	// mean "as the cartography drew it" — `gate` passes those through untouched.
+	const opacity = typeof ctx.layers.buildings === 'number' ? 1 : 0.7;
+
 	yield b.fillExtrusion('building-3d', {
 		sourceLayer: vocab.sourceLayer,
 		filter: ['!=', ['get', 'hide_3d'], true],
 		color: c.building,
 		appear: 14,
-		opacity: 0.7,
+		opacity,
 		fillExtrusionHeight: ['coalesce', ['get', vocab.height], 5],
 		fillExtrusionBase: ['coalesce', ['get', vocab.minHeight], 0],
 		group: 'buildings',
