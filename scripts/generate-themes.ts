@@ -16,7 +16,8 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { colorOptionsKeys, type Palette, type ResolvedColors } from '../src/options/index.js';
 import { getPaletteColors, PALETTES } from '../src/themes/index.js';
-import { contrast, generate, oklabDistance, over, parse, THEMES } from './lib/theme-generator.js';
+import { REPORT_PAIRS, THEMES } from './config/themes.js';
+import { contrast, generate, oklabDistance, over, parse } from './lib/theme-generator.js';
 
 const FILE = resolve(fileURLToPath(import.meta.url), '../../src/themes/tables.ts');
 const args = process.argv.slice(2);
@@ -77,24 +78,10 @@ ${rows.join('\n')}
 }
 
 function report(): void {
-	const pairs: [string, string, string][] = [
-		['label/land', 'label', 'land'],
-		['labelWater/water', 'labelWater', 'water'],
-		['street/land', 'roadStreet', 'land'],
-		['streetBg/land', 'roadStreetBg', 'land'],
-		['street/streetBg', 'roadStreet', 'roadStreetBg'],
-		['motorway/land', 'roadMotorway', 'land'],
-		['rail/land', 'transitRail', 'land'],
-		['water/land', 'water', 'land'],
-		['building/land', 'building', 'land'],
-		['wood/land', 'natureWood', 'land'],
-		['glacier/land', 'glacier', 'land'],
-		['boundary/land', 'boundary', 'land'],
-	];
 	const themes = Object.keys(THEMES).flatMap((p) => [p, `${p}-dark`]) as Palette[];
 	console.log('\nSigned contrast: above 1 lighter than the background, below 1 darker.\n');
 	console.log('pair'.padEnd(18) + themes.map((t) => t.padEnd(15)).join(''));
-	for (const [label, fg, bg] of pairs) {
+	for (const { label, fg, bg } of REPORT_PAIRS) {
 		const cells = themes.map((theme) => {
 			const colors = (generated[theme] ?? getPaletteColors(theme)) as Record<string, string>;
 			const land = parse(colors.land);

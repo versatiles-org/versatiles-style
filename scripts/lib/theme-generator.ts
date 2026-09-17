@@ -17,188 +17,28 @@
  * the generator twice gives the same result. `npm run generate-themes` writes those tables, and a unit
  * test fails when they and the generator disagree.
  *
- * Three places to tune a derived theme, in order of how much they move:
+ * This file is the derivation. What the themes should look like is `scripts/config/themes.ts`, and
+ * what each of its settings means is documented on the types in `./theme-types.ts`. Three places to
+ * tune a derived theme there, in order of how much they move:
  *
  *   `THEMES`    a whole theme, by group — its land, and its contrast and chroma against colorful's.
- *   `FIXES`     a named handful of colours that should deviate, per mode. See the section below.
+ *   `FIXES`     a named handful of colours that should deviate, per mode.
  *   `OVERRIDES` one literal colour in one theme, bypassing the derivation entirely. A last resort.
  *
  * None of them can move `colorful` light, which is hand-written in `src/themes/colorful.ts`. Change a
  * colour there and every derived theme follows, since their targets are measured from it.
+ *
+ * What stays here, and is deliberately not configuration: `DARK_CHROMA`, `DARK_WATER_ROOM`,
+ * `DARK_GLACIER`, `CASINGS` and `groupOf`. Each defines what a derived theme *is* in this package,
+ * and moving any of them moves all nine at once — which is the blast radius `THEMES` and `FIXES`
+ * exist to avoid.
  */
 
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
 import type { Palette, ResolvedColors } from '../../src/options/index.js';
-interface Scale {
-	fill?: number;
-	line?: number;
-	label?: number;
-}
-type Group = keyof Scale;
-
-/** The five palettes; each is a light theme of that name and has a `-dark` theme. */
-export type LightTheme = 'colorful' | 'natural' | 'muted' | 'gray' | 'toner';
-
-export interface ThemeSettings {
-	/** Land (and background) of the light theme. The reference keeps its own. */
-	land?: string;
-	/** Exponent on colorful's contrast against the land, per group: above 1 stronger, below 1 softer. */
-	contrast?: Scale;
-	/** Chroma as a multiple of colorful's, per group. */
-	chroma?: Scale;
-	/**
-	 * How much of the separation that chroma carried is moved into lightness, 0–1.
-	 *
-	 * Taking the chroma out of a palette also takes out every distinction hue was making. Colorful's
-	 * water sits at 0.75 contrast against the land, but what tells the two apart on screen is blue
-	 * against cream, not the brightness step — desaturate both and the coast nearly disappears.
-	 *
-	 * Above 0, the reference each colour is derived from is first moved away from the land, by this
-	 * fraction of its OKLab chroma distance to it, in the direction it already leans. So what colorful
-	 * separates by colour, the theme separates by brightness. Only meaningful where `chroma` is 0.
-	 */
-	decolorize?: number;
-	/** Relative luminance of the dark theme's land — distinct per theme, so no two share a background. */
-	darkLand: number;
-}
-
-export const THEMES: Record<LightTheme, ThemeSettings> = {
-	colorful: {
-		darkLand: 0.02,
-	},
-	// stronger nature fills on a warm land
-	natural: {
-		land: '#F2EDDE',
-		contrast: { fill: 1.3, line: 1, label: 1 },
-		chroma: { fill: 1.4, line: 1, label: 1 },
-		darkLand: 0.02,
-	},
-	// softer and less saturated throughout
-	muted: {
-		land: '#F4F0EE',
-		contrast: { fill: 0.7, line: 0.8, label: 0.9 },
-		chroma: { fill: 0.5, line: 0.6, label: 0.6 },
-		darkLand: 0.02,
-	},
-	// fully desaturated: every colour is a gray, carrying colorful's hue separation as brightness
-	gray: {
-		chroma: { fill: 0, line: 0, label: 0 },
-		decolorize: 1,
-		darkLand: 0.02,
-	},
-	// quiet fills, heavy lines, black labels
-	toner: {
-		land: '#FFFFFF',
-		contrast: { fill: 0.8, line: 2, label: 1.4 },
-		chroma: { fill: 0.6, line: 1.2, label: 0 },
-		darkLand: 0.006,
-	},
-};
-
-/** Hand adjustments applied on top of the generated colours, keyed by theme name. */
-export const OVERRIDES: Partial<Record<Palette, Partial<ResolvedColors>>> = {};
-
-// ── fixes ─────────────────────────────────────────────────────────────────────
-//
-// `THEMES` tunes a whole theme, and only by group: colorful's relationships, scaled. A fix is the other
-// axis — a named handful of colours that should deviate from those relationships, in one mode and not
-// necessarily the other. "Water darker in light themes, lighter in dark ones" cannot be said in
-// `THEMES`, because the dark branch below takes `magnitude(target)` and so drops the sign: stronger
-// separation in a light theme and in a dark one point in opposite directions.
-//
-// A fix is folded into the derivation, never applied to its result. The two keys that are solved
-// against another generated colour — `labelWater` over the water, a road over its casing — are
-// therefore still correct afterwards: darkening the water moves the target `labelWater` is solved
-// against, and it re-solves. Adjusting the output colour instead would leave both sitting on a
-// background they were never solved for. That is the whole reason this hooks where it does.
-//
-// Three adjustments, entering at the three points the derivation offers. `blend` changes the reference
-// colour before anything reads it; `chroma` scales the chroma `tint` assigns; `lightness` scales the
-// contrast target that lightness is solved for. In that order, so a blended colour can still be
-// pushed lighter or more saturated than the wash left it.
-
-/** Multipliers on what the derivation would otherwise use; 1, or absent, changes nothing. */
-export interface Adjustment {
-	/**
-	 * Signed contrast against the background, as a multiple: above 1 lighter, below 1 darker.
-	 *
-	 * A multiplier rather than a lightness delta because the target is signed — above 1 where a colour
-	 * is lighter than its background, below 1 where darker. Multiplying therefore reads the same
-	 * whichever side of the land the colour sits on: 0.9 darkens a light theme's water, which sits
-	 * below 1, and a dark theme's, which may sit either side. So one number means "darker" in both
-	 * modes, and the asymmetry you want is expressed by giving `light` and `dark` different ones.
-	 *
-	 * It also composes with the rest of the derivation instead of overriding it: a fix bends colorful's
-	 * relationship, and the theme's own `contrast` exponent still scales what comes out.
-	 */
-	lightness?: number;
-	/** OKLCh chroma, as a multiple of the theme's own. */
-	chroma?: number;
-	/**
-	 * Mix the colour toward the land, 0–1: 0 leaves it alone, 1 makes it the land exactly.
-	 *
-	 * The one adjustment that is not a multiplier on the derivation but a change to the colour being
-	 * derived, so it is applied to the reference first, before anything reads it — see `blendReference`.
-	 * Hue, chroma and the contrast target then all follow from the blended colour, which is what
-	 * separates this from `lightness` and `chroma`: those bend one axis each and hold the rest, while a
-	 * blend moves all three together, the way washing a colour into its background actually looks.
-	 *
-	 * Reach for it to make something recede — a land use that should stop competing with what is drawn
-	 * on it — where dropping chroma alone would leave it the same brightness, and dropping contrast
-	 * alone would leave it the same hue.
-	 *
-	 * The reference's own alpha is kept: how translucent a colour is says what it hides, not how far it
-	 * stands out, and blending toward an opaque land would otherwise quietly make it solid.
-	 */
-	blend?: number;
-}
-
-/** A deliberate deviation from the relationships `colorful` sets, for some colours in some themes. */
-export interface Fix {
-	/** The colour keys to adjust. Not `land`, `background` or `labelHalo` — see `UNFIXABLE`. */
-	keys: readonly string[];
-	/**
-	 * Applied to the generated light themes.
-	 *
-	 * Never to `colorful` itself: that palette is hand-written in `src/themes/colorful.ts` and is the
-	 * reference every other theme is derived from, so the generator does not produce it and a fix
-	 * cannot reach it. To move colorful's own light colours, edit that file — every derived theme
-	 * follows, because their targets are measured from it.
-	 */
-	light?: Adjustment;
-	/** Applied to the dark themes, `colorful-dark` included — every one of those is generated. */
-	dark?: Adjustment;
-	/** Limit to these palettes and their dark themes; by default all five. */
-	themes?: readonly LightTheme[];
-}
-
-/**
- * The deviations in force. Empty means every theme keeps colorful's relationships exactly.
- *
- * Adding one changes `src/themes/tables.ts`, so run `npm run generate-themes` and look at the result
- * (`npm run schema-compare`, or `npm run compare -- --baseline` around the change).
- */
-export const FIXES: readonly Fix[] = [
-	{
-		themes: ['gray'],
-		keys: ['water'],
-		light: { lightness: 1.2 },
-		dark: { lightness: 0.9 },
-	},
-	{
-		themes: ['gray'],
-		keys: ['natureWood', 'natureGrass', 'naturePark', 'natureAgriculture', 'natureSand', 'natureRock', 'natureWetland', 'natureLeisure'],
-		light: { blend: 0.8 },
-		dark: { blend: 0.7 },
-	},
-	{
-		themes: ['gray'],
-		keys: ['roadStreet', 'roadStreetBg', 'roadMotorway', 'roadMotorwayBg', 'roadTrunk', 'roadTrunkBg', 'transitRail','transitSubway'],
-		light: { blend: 0.5 },
-		dark: { blend: 0.6 },
-	},
-];
+import { FIXES, OVERRIDES, THEMES } from '../config/themes.js';
+import type { Adjustment, Fix, Group, LightTheme } from './theme-types.js';
 
 /**
  * Keys no fix can reach, because they are not derived through a contrast target.
@@ -283,7 +123,7 @@ export function resolveFixes(fixes: readonly Fix[] = FIXES): Map<string, Require
 					if (prior !== undefined) {
 						throw new Error(
 							`two fixes both adjust ${key} in ${dark ? `${theme}-dark` : theme}: "${prior}" and "${name}" — ` +
-							`merge them into one, since a list of multipliers does not show which of two wins`
+								`merge them into one, since a list of multipliers does not show which of two wins`
 						);
 					}
 					owner.set(at, name);
@@ -295,7 +135,7 @@ export function resolveFixes(fixes: readonly Fix[] = FIXES): Map<string, Require
 		if (applications === 0) {
 			throw new Error(
 				`fix "${name}" applies to no generated theme. Note that colorful light is the hand-written ` +
-				`reference and is never generated — to move its own colours, edit src/themes/colorful.ts`
+					`reference and is never generated — to move its own colours, edit src/themes/colorful.ts`
 			);
 		}
 	}

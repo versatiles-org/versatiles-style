@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { Color } from '../../src/color/index.js';
 import type { Palette } from '../../src/options/index.js';
 import { PALETTES, getPaletteColors } from '../../src/themes/index.js';
-import { contrast, FIXES, generate, generateThemes, over, parse, type Fix } from './theme-generator.js';
+import { FIXES } from '../config/themes.js';
+import { contrast, generate, generateThemes, over, parse } from './theme-generator.js';
+import type { Fix } from './theme-types.js';
 
 // src/themes holds the generator's output. A hand edit to a derived table, or a generator change that
 // was never written out, would otherwise let the two drift apart unnoticed.

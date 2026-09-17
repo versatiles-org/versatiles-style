@@ -83,6 +83,13 @@ npm run compare -- --baseline        # after — every altered property, listed
 | `generate-themes.ts` | `generate-themes` | Regenerates the nine derived themes from `colorful` into `src/themes/tables.ts`. `--dry-run` lists what would change. |
 | `extract-palette.ts` | `extract-palette` | Pulls an area-colour palette out of an existing OpenMapTiles style, as a paste-ready object.                          |
 
+Three files, split by what changes for what reason:
+[`config/themes.ts`](./config/themes.ts) is what the themes should look like — settings, fixes and
+overrides, the only file to edit when tuning; [`lib/theme-types.ts`](./lib/theme-types.ts) is what
+each of those settings means; [`lib/theme-generator.ts`](./lib/theme-generator.ts) is the derivation
+that turns one into the other. `colorful` itself is hand-written in `src/themes/colorful.ts` and is
+never generated — change a colour there and all nine derived themes follow.
+
 ## Icons
 
 | Script                | Alias              | Does                                                                          |
@@ -97,6 +104,6 @@ Which icons end up on which sheet is configured in [`config/sprites.ts`](./confi
 | Directory                     | Holds                                                                                                                                               |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `lib/`                        | Shared modules — tile cache, native rendering, sprite packing, PMTiles and MVT readers, theme generation, output paths. Imported, never run.        |
-| `config/`                     | Data tables the scripts read: icon sets, sprite sheets, schema mappings.                                                                            |
+| `config/`                     | Data tables the scripts read: icon sets, sprite sheets, schema mappings, theme settings.                                                            |
 | `compare/`, `schema-compare/` | The two comparison tools, one module per concern. `schema-compare/baseline.json` is tracked — it is the accepted result each run is judged against. |
 | `ci/`                         | Plain ESM run by bare `node` in CI, outside the TypeScript project.                                                                                 |
