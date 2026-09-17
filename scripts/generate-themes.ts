@@ -7,7 +7,7 @@
  *
  * Writes `src/themes/tables.ts` whole — the nine derived tables, one encoded string each. The tenth,
  * `colorful`, is the hand-written reference in `src/themes/colorful.ts` and is never touched here. Tune
- * a derived theme through its settings or OVERRIDES in the generator, not in the tables: a unit test
+ * a derived theme through THEMES, FIXES or OVERRIDES in the generator, not in the tables: a unit test
  * fails when the two disagree.
  */
 
@@ -16,11 +16,19 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { colorOptionsKeys, type Palette, type ResolvedColors } from '../src/options/index.js';
 import { getPaletteColors, PALETTES } from '../src/themes/index.js';
-import { contrast, generateThemes, oklabDistance, over, parse, THEMES } from './lib/theme-generator.js';
+import { contrast, generate, oklabDistance, over, parse, THEMES } from './lib/theme-generator.js';
 
 const FILE = resolve(fileURLToPath(import.meta.url), '../../src/themes/tables.ts');
 const args = process.argv.slice(2);
-const generated = generateThemes();
+const { tables: generated, diagnostics } = generate();
+
+// What a fix asked for and the derivation could not give it. Printed before the diff, because it
+// explains a colour that did not move as much as the fix says it should.
+if (diagnostics.length > 0) {
+	console.warn(`${diagnostics.length} fix(es) could not be applied as written:`);
+	for (const { theme, key, message } of diagnostics) console.warn(`  ${theme} ${key}: ${message}`);
+	console.warn('');
+}
 
 let changes = 0;
 for (const [name, colors] of Object.entries(generated)) {
