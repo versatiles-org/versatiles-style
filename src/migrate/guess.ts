@@ -20,7 +20,7 @@ export type GuessOptionsOptions = {
  * list, fonts carry over their weight only.
  *
  * A TileJSON that cannot be downloaded is not fatal — the schema is then recognised from the
- * source-layers the style reads — and is reported in `report.warnings`. Never throws: an invalid
+ * source-layers the style reads — and is reported in `report.diagnostics`. Never throws: an invalid
  * argument or an unreachable style yields `kind: 'unknown'` with the reason in the warnings.
  */
 export async function guessOptions(

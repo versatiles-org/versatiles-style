@@ -196,6 +196,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   style looks most like it, with a report of what it read and what it could not carry over — for
   moving an existing map onto VersaTiles. `deriveOptions()` is its synchronous, I/O-free core. Its own
   subpath because it carries the style spec's expression engine and a calibration of the builders.
+- `guessOptions()` reports in structures a style editor can act on, rather than prose.
+  `report.diagnostics` is a list of records, each with a stable machine-readable `code`, a `severity`
+  (`error` blocks, `warning` is a real loss, `info` fires on every import), the `optionPath` it
+  concerns and a payload typed per code — so a consumer can group, count, suppress and translate them,
+  and mark the very control a person would use to fix the thing. Conflicts carry what they discarded:
+  `color.conflict` lists the colours several layers drew for one feature, grouped by colour with the
+  layers behind each, and `color.collapsed` lists features the source tells apart that the target
+  draws as one (Shortbread's POI layer is coarser than OpenMapTiles' by design). `worst()`,
+  `byCode()`, `byOption()` and `is()` read the list; `sortDiagnostics()` fixes its order.
+- `guessOptions()` also returns `report.provenance`: where each option came from — `observed`,
+  `pooled` (borrowed from a comparable topic), `inherited` (the chosen palette's value) or `default` —
+  with a `confidence` where one was genuinely measured. This records what the options cannot:
+  `minimizeOptions` deletes a derived value equal to the default, so a setting read from the style and
+  one never derived are both an absent key, and provenance tells them apart. It covers the options
+  under `PROVENANCE_COVERS` (`theme`, `colors`, `text`, `icon`); `isCovered(path)` distinguishes "not
+  annotated yet" from "nothing spoke for it", which a missing entry alone cannot.
 - Every palette has a dark theme of its own: `colorful-dark`, `natural-dark`, `muted-dark`, `gray-dark`
   and `toner-dark`. Pick one with `isDarkMode()` to follow the system setting. They are published
   like the light themes (`assets/styles/colorful-dark/style.json`, `…/en.json`, `…-terrain/…`).

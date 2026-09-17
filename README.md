@@ -211,7 +211,9 @@ import { osm } from '@versatiles/style';
 import { guessOptions } from '@versatiles/style/migrate';
 const guess = await guessOptions('https://example.org/my-style/style.json');
 // `diff: false` because this is a rebuilt style, not an edit of the running one
-if (guess.kind === 'osm') map.setStyle(osm(guess.options), { diff: false }); // guess.report says what it could not carry over
+if (guess.kind === 'osm') map.setStyle(osm(guess.options), { diff: false });
+// `guess.report.diagnostics` says what was lost, guessed at or chosen between — each with a stable
+// `code` and the option it concerns; `guess.report.provenance` says where each option came from.
 ```
 
 - `fetchFontFaces(urls?)`, `fontCovers(face, language)`, `fontScripts(face)`, `languageScript(language)`, `textScripts(text)`, `FONT_SCRIPTS` and `labelLanguage(language)` - for a font picker over the `font` of each `text` topic: the faces a glyph server publishes (from its `font_families.json`), with titles; whether a face has the glyphs for a label language; which writing systems a face covers, read from the `codeblocks` in that file — a hint, not a guarantee — and which a text uses; and the language `'user'` stands for. `osm.textGroups` lists the layers each topic sets.

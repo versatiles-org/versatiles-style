@@ -907,9 +907,9 @@ It lives in its own subpath because it carries the style spec's expression engin
 only builds styles should not download. `guessOptions` downloads the style when given a URL, the
 TileJSON of every vector source, and the font list of `osm()`'s default glyph server (`fetchFontFaces()`);
 `deriveOptions` is the synchronous core and does no I/O. Neither
-throws: what cannot be read yields `kind: 'unknown'` with the reason in `report.warnings`.
+throws: what cannot be read yields `kind: 'unknown'` with the reason in `report.diagnostics`.
 
-**How it reads a style.** Nothing is rendered. For each of about sixty _probes_ — a motorway, a forest,
+**How it reads a style.** Nothing is rendered. For each of 64 _probes_ — a motorway, a forest,
 a city label, each with the feature that stands for it in each schema — the style's filters and paint
 properties are evaluated with the style spec's own expression engine. That gives, per probe, the fill
 colour, the casing, the label colour, halo and size, or the fact that the style draws nothing for it.
@@ -934,9 +934,89 @@ buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from wha
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 
-**What it does not carry over**, and says so in the warnings: fonts the VersaTiles glyph server does
-not publish, beyond their weight, and icons (the VersaTiles sprite is used), zoom-dependent styling beyond the probe's zoom, and anything no probe covers —
-listed in `report.unmatched`. Tile URLs are not copied: the options build a style on VersaTiles tiles.
+**What it does not carry over**, and says so in `report.diagnostics`: fonts the VersaTiles glyph server
+does not publish, beyond their weight, and icons (the VersaTiles sprite is used), zoom-dependent styling
+beyond the probe's zoom, and anything no probe covers. Tile URLs are not copied: the options build a
+style on VersaTiles tiles.
+
+### The report
+
+```ts
+type GuessReport = {
+  diagnostics: Diagnostic[];          // what was lost, guessed at, or chosen between
+  provenance: ProvenanceMap;          // where each option came from, by option path
+  sources: { id; type; guess }[];     // the schema recognised for each source
+  evidence: { probe; zoom; layers }[]; // what each probe read, and from which layers
+};
+
+type Diagnostic = {
+  code: DiagnosticCode;   // stable and machine-readable: what to switch on, filter by and translate
+  severity: 'error' | 'warning' | 'info';
+  message: string;        // plain English, for a consumer that only prints strings
+  optionPath?: string;    // the setting it concerns, in the *output* vocabulary: 'colors.water'
+  origin?: { sourceId?; sourceLayer?; probe?; layers? }; // where it came from, in the *input* vocabulary
+  data: …;                // typed per code — see below
+};
+```
+
+A migration is best-effort, so it reports rather than throws, and a style editor needs more than prose:
+it wants to mark _which setting_ is a guess, offer the alternatives a choice discarded, and block only
+on what is actually wrong. Hence `code` rather than a sentence, and `optionPath` — the field that lets a
+UI put a marker beside the control a person would use to fix the thing, instead of printing a list.
+
+`data` is typed per code, so `switch (d.code)` narrows it with no cast; `is(d, code)` and
+`byCode(diagnostics, code)` narrow it outside a switch. That matters most for the codes whose payload
+_is_ the diagnostic: `color.conflict` carries the colours it passed over, grouped by colour with the
+layers that drew each, which is the list a consumer offers back as a choice.
+
+Severity belongs to the code, not to the call site, so one code cannot be blocking in one place and
+incidental in another. Anything that fires on every import is `info` however unfortunate — `icons.replaced`
+is true of every style with a sprite, and as a warning it would only teach people to stop reading the
+list. `sortDiagnostics` orders them most severe first, then by code, then by option; `worst()` gives the
+level to act on.
+
+Two kinds of loss are named separately because they are different: **`color.conflict`** is several layers
+drawing the _same_ feature, where z-order picked a winner, and **`color.collapsed`** is the source telling
+features apart that the target draws as one — Shortbread's POI layer is coarser than OpenMapTiles' by
+design, so an OMT style that colours shops differently from restaurants loses that distinction
+systematically, not incidentally.
+
+### Provenance
+
+`provenance` answers a question the options object structurally cannot. `minimizeOptions` deletes every
+derived value that equals the target's default, so "read from the style, and it happened to match the
+default" and "never derived at all" both come out as an absent key. Provenance records `observed` for the
+first and `default` for the second — the difference between "this is what your style says" and "we had
+nothing to go on". It is keyed by option path, and an entry may exist for an option that is absent from
+`options`.
+
+```ts
+type Provenance = {
+  origin: 'observed' | 'pooled' | 'inherited' | 'default';
+  confidence?: number; // 0..1, only where a number was genuinely computed
+  from?: string[]; // the probes that fed it
+};
+```
+
+`pooled` is why the annotation is worth having: a topic no probe reads takes its value from a topic the
+target styles the same way — lake names follow river names — and writes an option indistinguishable from
+a first-hand reading. `inherited` means the chosen palette's value stands. `confidence` is present only
+where something real was measured (a colour's evidence share); it is absent rather than invented for a
+font, which has no such measure.
+
+**Absence does not mean "nothing is known".** Provenance is recorded for the options under
+`PROVENANCE_COVERS` — currently `theme`, `colors`, `text` and `icon` — and is simply not reported yet for
+the rest, `layers` and `features` among them. A consumer that reads a missing entry as "nothing spoke for
+this" would be wrong for every option outside that set, so `isCovered(optionPath)` tells the two apart:
+
+```ts
+import { isCovered } from '@versatiles/style/migrate';
+
+const note = report.provenance[path];
+if (note) showMarker(note.origin);
+else if (isCovered(path)) showMarker('default'); // covered, and nothing spoke for it
+// otherwise: not annotated yet — say nothing rather than guess
+```
 
 To judge a migration by eye, `npm run migrate-compare -- <style URL> …` renders each style next to its
 migration at a few places, with live tiles on both sides, into `scripts/migrate-compare/out/index.html`.
