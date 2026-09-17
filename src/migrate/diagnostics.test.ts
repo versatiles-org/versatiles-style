@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { byCode, byOption, diagnostic, is, sortDiagnostics, worst, type Diagnostic } from './diagnostics.js';
+import { isCovered } from './provenance.js';
 
 describe('diagnostic()', () => {
 	// Severity belongs to the code, not to the call site: the same code reported as a warning in one
@@ -124,5 +125,19 @@ describe('narrowing a payload', () => {
 					break;
 			}
 		}
+	});
+});
+
+describe('isCovered()', () => {
+	it('separates "nothing is known" from "this is not annotated yet"', () => {
+		expect(isCovered('colors.water')).toBe(true);
+		expect(isCovered('theme')).toBe(true);
+		expect(isCovered('text.places.cities.font')).toBe(true);
+		expect(isCovered('icon.scale')).toBe(true);
+		// layer visibility and the feature flags carry no provenance yet
+		expect(isCovered('layers.buildings')).toBe(false);
+		expect(isCovered('features.terrain')).toBe(false);
+		// a prefix must be a whole path segment
+		expect(isCovered('themeish')).toBe(false);
 	});
 });

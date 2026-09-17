@@ -100,7 +100,7 @@ export async function guessOptions(
 					: diagnostic('input.unreadable', `the style could not be read: ${cause}`, { cause });
 		return {
 			kind: 'unknown',
-			report: { diagnostics: sortDiagnostics([...diagnostics, fatal]), sources: [], evidence: [] },
+			report: { diagnostics: sortDiagnostics([...diagnostics, fatal]), provenance: {}, sources: [], evidence: [] },
 		};
 	}
 }

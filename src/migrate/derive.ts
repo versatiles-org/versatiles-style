@@ -55,6 +55,7 @@ import { PADDING_PER_SPACING } from '../lib/index.js';
 import { colorDistance, luminance, toHex } from './math.js';
 import { PROBES, type Probe } from './probes.js';
 import { diagnostic, sortDiagnostics, type Diagnostic } from './diagnostics.js';
+import type { Provenance, ProvenanceMap } from './provenance.js';
 
 /**
  * `deriveOptions` — the options for `osm()` or `satellite()` that rebuild a foreign style as closely as
@@ -88,6 +89,14 @@ export type GuessReport = {
 	 * the setting a diagnostic concerns. Sorted (see `sortDiagnostics`), so a test diff is stable.
 	 */
 	diagnostics: Diagnostic[];
+	/**
+	 * Where each derived option came from, keyed by option path.
+	 *
+	 * Records the thing the options cannot: `minimizeOptions` deletes a derived value that equals the
+	 * target's default, so a setting read from the style and one never derived both come out absent.
+	 * See `PROVENANCE_COVERS` for which options are annotated.
+	 */
+	provenance: ProvenanceMap;
 	/** Every vector and raster source, with the schema recognised for it. */
 	sources: { id: string; type: string; guess: SchemaGuess }[];
 	/** Per probe the style draws: the zoom it was read at and the layers it was read from, topmost first. */
@@ -103,19 +112,24 @@ export type GuessReport = {
  * about the probes it had already read. Anything that is true at the moment it is learned is recorded
  * then, and `finish` only orders what has accumulated.
  */
-type ReportBuilder = GuessReport & {
+type ReportBuilder = Omit<GuessReport, 'provenance'> & {
 	/** Input layer ids something has already read, so the rest can be reported as unread. */
 	used: Set<string>;
+	provenance: Record<string, Provenance>;
 	say: (diagnostic: Diagnostic) => void;
+	/** Record where one option came from. Later calls win, so a derivation may refine its own note. */
+	note: (optionPath: string, provenance: Provenance) => void;
 };
 
 function newReport(): ReportBuilder {
 	const report: ReportBuilder = {
 		diagnostics: [],
+		provenance: {},
 		sources: [],
 		evidence: [],
 		used: new Set(),
 		say: (diagnostic) => void report.diagnostics.push(diagnostic),
+		note: (optionPath, provenance) => void (report.provenance[optionPath] = provenance),
 	};
 	return report;
 }
@@ -133,10 +147,13 @@ function finish(builder: ReportBuilder, style?: StyleSpecification): GuessReport
 			)
 		);
 	}
-	const { used: _used, say: _say, ...report } = builder;
+	const { used: _used, say: _say, note: _note, ...report } = builder;
 	void _used;
 	void _say;
-	return { ...report, diagnostics: sortDiagnostics(report.diagnostics) };
+	void _note;
+	// Sorted so a report reads and diffs the same way whichever derivation happened to run first.
+	const provenance = Object.fromEntries(Object.entries(report.provenance).sort(([a], [b]) => a.localeCompare(b)));
+	return { ...report, provenance, diagnostics: sortDiagnostics(report.diagnostics) };
 }
 
 /** Keys whose colour covers most of the map count more when choosing a palette. */
@@ -526,10 +543,27 @@ function fitContent(
 		);
 	}
 
+	report.note('theme', {
+		origin: 'observed',
+		// The margin over the runner-up, measured against the margin at which the choice stops being
+		// reported as a near-tie: 0 where the two palettes score alike, 1 once the winner is clear by
+		// `THEME_MARGIN` or more. Not a probability, and not comparable with a colour's evidence share —
+		// it says how far this choice sits from the point where it would be flagged as ambiguous.
+		confidence: Number.isFinite(margin) ? round2(Math.max(0, Math.min(1, margin / THEME_MARGIN))) : 1,
+	});
+
 	const palette = target.colorsFor(theme);
 	const solved = solveColors(model, observed, palette);
 	const colors: ColorsOptions = {};
 	const unobserved: string[] = [];
+	/** The probes that observed a key's channels, for the provenance note. */
+	const fedBy = (key: keyof ColorsOptions): string[] => {
+		const probes = new Set<string>();
+		for (const id of observed.keys()) {
+			if (model.channels.get(id)?.keys.includes(key)) probes.add(id.split('/')[0]);
+		}
+		return [...probes].sort();
+	};
 	for (const key of colorOptionsKeys) {
 		const evidence = solved.evidence.get(key) ?? 0;
 		if (evidence < FULL_EVIDENCE / 4) {
@@ -537,15 +571,21 @@ function fitContent(
 			// than reported one by one: on a real style this is a third of the palette, and forty-odd
 			// diagnostics saying the same thing would bury the ones that differ.
 			unobserved.push(key);
+			report.note(`colors.${key}`, { origin: 'inherited', confidence: round2(evidence / FULL_EVIDENCE) });
 			continue;
 		}
 		const estimate = solved.colors.get(key)!;
 		const distance = colorDistance(estimate, parseRGBA(palette[key]));
 		const threshold = overrideDistance(solved.residual.get(key)!);
+		const confidence = round2(Math.min(1, evidence / FULL_EVIDENCE));
 		if (distance > threshold) {
 			colors[key] = toHex(estimate);
+			report.note(`colors.${key}`, { origin: 'observed', confidence, from: fedBy(key) });
 			continue;
 		}
+		// Observed, but the palette's own value was kept. Still `observed`: the style was read and agreed
+		// with the palette, which is a different thing from never having looked.
+		report.note(`colors.${key}`, { origin: 'observed', confidence, from: fedBy(key) });
 		// Observed, estimated, and then discarded for sitting inside the threshold. Worth reporting only
 		// when the estimate actually differed: an estimate that lands on the palette exactly is the
 		// solver agreeing with it, which is the opposite of low confidence.
@@ -710,10 +750,10 @@ function deriveCommon(
 		scale !== undefined ? { scale } : {},
 		pitchAlignment !== undefined ? { pitchAlignment } : {},
 		deriveFonts(readings, fontNames, report),
-		deriveLabelStyle(readings)
+		deriveLabelStyle(readings, report)
 	);
 	if (Object.keys(text).length > 0) content.text = text;
-	const icon = deriveIcon(readings);
+	const icon = deriveIcon(readings, report);
 	if (icon) content.icon = icon;
 
 	const features: Common['features'] = {};
@@ -903,6 +943,8 @@ function deriveFonts(
 
 	const weights = { regular: [0, 0], bold: [0, 0] };
 	const topicFaces = new Map<TextTopic, Map<string, number>>();
+	/** Which probes spoke for each topic, so provenance can name them. */
+	const probesOf = new Map<TextTopic, string[]>();
 	const families = new Map<string, number>();
 	const lost = new Set<string>();
 	for (const reading of readings.values()) {
@@ -931,7 +973,10 @@ function deriveFonts(
 		}
 		vote(families, fontFamily(face));
 		const topic = topicOf.get(reading.probe.id);
-		if (topic) vote((topicFaces.get(topic) ?? topicFaces.set(topic, new Map()).get(topic))!, face);
+		if (topic) {
+			vote((topicFaces.get(topic) ?? topicFaces.set(topic, new Map()).get(topic))!, face);
+			(probesOf.get(topic) ?? probesOf.set(topic, []).get(topic)!).push(reading.probe.id);
+		}
 	}
 	if (lost.size > 0) {
 		const why = fontNames ? 'the glyph server does not publish' : 'unknown without the glyph server font list';
@@ -967,12 +1012,25 @@ function deriveFonts(
 			return mostVoted(votes);
 		};
 		const inFamily = family === undefined ? undefined : `${family}_${weightOf(role)}`;
+		// Which of the four steps produced the face, recorded alongside it: they write the same option
+		// and are indistinguishable afterwards, though the first is what the style asked for and the
+		// last is the target's own font picked by weight alone.
+		const own = mostVoted(topicFaces.get(topic) ?? new Map<string, number>());
+		const fromSibling = own === undefined ? sibling() : undefined;
+		const fromFamily =
+			own === undefined && fromSibling === undefined && inFamily !== undefined && known.has(inFamily)
+				? inFamily
+				: undefined;
 		const face =
-			mostVoted(topicFaces.get(topic) ?? new Map<string, number>()) ??
-			sibling() ??
-			(inFamily !== undefined && known.has(inFamily) ? inFamily : undefined) ??
+			own ??
+			fromSibling ??
+			fromFamily ??
 			(read[role] ? (weightOf(role) === 'bold' ? DEFAULT_FONT_BOLD : DEFAULT_FONT_REGULAR) : undefined);
 		if (face === undefined) continue;
+		report.note(`text.${topic}.font`, {
+			origin: own !== undefined ? 'observed' : (fromSibling ?? fromFamily) ? 'pooled' : 'default',
+			...(own !== undefined && { from: probesOf.get(topic) }),
+		});
 		if (leaf === undefined) tree[group] = { font: face };
 		else (tree[group] ??= {})[leaf] = { font: face };
 	}
@@ -1036,12 +1094,14 @@ type DerivedLabelKey = (typeof DERIVED_LABEL_KEYS)[number];
  * label with no halo to blur has nothing to show for it. Every topic reached is spelled out; minimising
  * drops what equals the target's own, so a style that already matches writes nothing.
  */
-function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>): TextOptions {
+function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>, report: ReportBuilder): TextOptions {
 	const topicOf = textTopicOfLayer();
 	const base = modelFor(osmTarget(), 'light').base;
 
 	// Per property, per topic, every value read for it.
 	const seen = new Map<DerivedLabelKey, Map<TextTopic, unknown[]>>();
+	/** Which probes spoke for each topic, so provenance can name them. */
+	const probesFor = new Map<TextTopic, string[]>();
 	const record = (key: DerivedLabelKey, topic: TextTopic, value: unknown) => {
 		const perTopic = seen.get(key) ?? seen.set(key, new Map()).get(key)!;
 		(perTopic.get(topic) ?? perTopic.set(topic, []).get(topic)!).push(value);
@@ -1049,6 +1109,7 @@ function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>): TextOpti
 	for (const reading of readings.values()) {
 		const topic = topicOf.get(reading.probe.id);
 		if (!topic) continue;
+		(probesFor.get(topic) ?? probesFor.set(topic, []).get(topic)!).push(reading.probe.id);
 		if (reading.labelStyle) {
 			for (const [key, value] of Object.entries(reading.labelStyle)) {
 				record(key as DerivedLabelKey, topic, value);
@@ -1093,6 +1154,13 @@ function deriveLabelStyle(readings: ReadonlyMap<string, ProbeReading>): TextOpti
 			const own = seen.get(key)?.get(topic);
 			const value = own?.length ? summarise(key, own) : pooled(key, topic, group);
 			if (value !== undefined) style[key] = value;
+			// `pooled` is why this annotation exists: a topic no probe read takes its value from a topic
+			// the target styles the same way, and the option it writes looks exactly like a first-hand
+			// reading. Recorded for every topic, including the ones left at the target's own value.
+			report.note(`text.${topic}.${key}`, {
+				origin: own?.length ? 'observed' : value !== undefined ? 'pooled' : 'default',
+				...(own?.length && { from: probesFor.get(topic) }),
+			});
 		}
 		// Blur means nothing without a halo, in either direction: drop a blur whose width was not read,
 		// and zero it where the width is zero.
@@ -1141,7 +1209,7 @@ function deriveFactor(ratios: readonly number[]): number | undefined {
  * `symbol-spacing` instead, on layers that draw an icon and no text — oneway arrows and road markings.
  * Nothing probes those, so a style that spaces its markings unusually still carries over at 1.
  */
-function deriveIcon(readings: ReadonlyMap<string, ProbeReading>): IconOptions | undefined {
+function deriveIcon(readings: ReadonlyMap<string, ProbeReading>, report: ReportBuilder): IconOptions | undefined {
 	const base = modelFor(osmTarget(), 'light').base;
 	const scales: number[] = [];
 	const spacings: number[] = [];
@@ -1156,6 +1224,10 @@ function deriveIcon(readings: ReadonlyMap<string, ProbeReading>): IconOptions | 
 	}
 	const scale = deriveFactor(scales);
 	const spacing = deriveFactor(spacings);
+	// A factor inside the dead band is not "nothing was read" — the ratios were computed and found too
+	// close to 1 to be a choice, which provenance records as observed with the target's own value.
+	report.note('icon.scale', { origin: scales.length > 0 ? 'observed' : 'default' });
+	report.note('icon.spacing', { origin: spacings.length > 0 ? 'observed' : 'default' });
 	if (scale === undefined && spacing === undefined) return undefined;
 	return { ...(scale !== undefined && { scale }), ...(spacing !== undefined && { spacing }) };
 }

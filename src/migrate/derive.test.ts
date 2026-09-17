@@ -8,6 +8,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 import { parseRGBA } from './calibrate.js';
 import { deriveOptions, type GuessReport, type OptionsGuess } from './derive.js';
 import { byCode } from './diagnostics.js';
+import { isCovered } from './provenance.js';
 
 /** The codes a report carries, which is what a test should assert on rather than the prose. */
 const codes = (report: GuessReport) => report.diagnostics.map((d) => d.code);
@@ -580,6 +581,52 @@ describe('deriveOptions — foreign styles', () => {
 		const invalid = deriveOptions({ layers: 'nope' } as never);
 		expect(invalid.kind).toBe('unknown');
 		expect(codes(invalid.report)).toEqual(['input.notAStyle']);
+	});
+
+	// Where each option came from, which the options object structurally cannot say: `minimizeOptions`
+	// deletes every derived value equal to a default, so "read, and it matched" and "never derived" both
+	// come out as an absent key.
+	describe('provenance', () => {
+		it('records a colour as observed even when minimising then deletes it', () => {
+			// the target's own style: every colour is read, and every one equals the palette, so the
+			// options come back empty while the provenance says all 45 were observed
+			const guess = deriveOptions(osm({ theme: 'gray' }));
+			expect(osmOptions(guess).colors).toBeUndefined();
+			const water = guess.report.provenance['colors.water'];
+			expect(water.origin).toBe('observed');
+			expect(water.from?.length).toBeGreaterThan(0);
+		});
+
+		it('marks a colour nothing spoke for as inherited from the palette', () => {
+			const guess = deriveOptions(omtStyle());
+			const unobserved = byCode(guess.report.diagnostics, 'color.unobserved')[0].data.keys;
+			for (const key of unobserved) expect(guess.report.provenance[`colors.${key}`].origin).toBe('inherited');
+		});
+
+		// `pooled` is the reason this annotation exists: a topic no probe reads takes a neighbour's value
+		// and writes an option indistinguishable from a first-hand reading.
+		it('tells a pooled label style from an observed one, and from a default', () => {
+			const guess = deriveOptions(osm({ text: { water: { haloWidth: 1.5 } } }));
+			const p = guess.report.provenance;
+			expect(p['text.water.rivers.haloWidth'].origin).toBe('observed'); // a probe reads river names
+			expect(p['text.water.lakes.haloWidth'].origin).toBe('pooled'); // none reads lake names
+			expect(p['text.streets.refs.haloWidth'].origin).toBe('default'); // nor anything haloed like refs
+		});
+
+		it('carries confidence only where a number was computed', () => {
+			const guess = deriveOptions(osm({ colors: { water: '#3366CC' } }));
+			expect(guess.report.provenance['colors.water'].confidence).toBeGreaterThan(0);
+			// a font has no measure of its own, so it states none rather than inventing one
+			expect(guess.report.provenance['text.places.cities.font'].confidence).toBeUndefined();
+		});
+
+		it('is sorted, and covers what it says it covers', () => {
+			const { provenance } = deriveOptions(osm()).report;
+			const paths = Object.keys(provenance);
+			expect(paths).toEqual([...paths].sort());
+			expect(paths.every((path) => isCovered(path))).toBe(true);
+			expect(isCovered('layers.buildings')).toBe(false);
+		});
 	});
 
 	// Numbers the solver already computed and then discarded. Neither needs the readers to change, which

@@ -24,3 +24,4 @@ export {
 	type DiagnosticOrigin,
 	type Severity,
 } from './diagnostics.js';
+export { isCovered, PROVENANCE_COVERS, type Origin, type Provenance, type ProvenanceMap } from './provenance.js';
