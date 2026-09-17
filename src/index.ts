@@ -92,9 +92,8 @@ export * from './exports.js';
 
 import { osm as osmCore, satellite as satelliteCore } from './api/';
 import { styleCode } from './api/code.js';
-import { minimizeOsmOptions, minimizeSatelliteOptions } from './options/minimize.js';
 import { getOverlayLayerGroupMap } from './shortbread/layer-groups-map.js';
-import type { OsmOptions, SatelliteOptions } from './options/';
+import { minimizeOsmOptions, minimizeSatelliteOptions, type OsmOptions, type SatelliteOptions } from './options/';
 
 /**
  * `osm()` with the authoring helpers attached.

@@ -4,6 +4,8 @@ import { getLayerGroupMap, getTextGroupMap, type LayerGroupMap, SHORTBREAD_SCHEM
 import { PALETTES, getPaletteColors, isDarkPalette } from '../themes/';
 import {
 	colorOptionsKeys,
+	minimizeOsmOptions,
+	minimizeSatelliteOptions,
 	resolveSatellite,
 	DEFAULT_FONT_BOLD,
 	DEFAULT_FONT_REGULAR,
@@ -42,9 +44,6 @@ import {
 	type RGBA,
 } from './evaluate.js';
 import { colorDistance, luminance, toHex } from './math.js';
-// Directly, not via `osm.minimizeOptions`: those helpers are attached only by the package entry, so
-// that the browser bundle can leave them out (see `src/browser.ts`).
-import { minimizeOsmOptions, minimizeSatelliteOptions } from '../options/minimize.js';
 import { getOverlayLayerGroupMap } from '../shortbread/layer-groups-map.js';
 import { PROBES, type Probe } from './probes.js';
 
@@ -185,6 +184,8 @@ function derive(
 		}
 		const sky = deriveSky(style.sky, satellite(options).sky);
 		if (sky) options.sky = sky;
+		// The standalone function, not `satellite.minimizeOptions`: those helpers are attached only by the
+		// package entry, so that the browser bundle can leave them out (see `src/browser.ts`).
 		guess = { kind: 'satellite', options: minimizeSatelliteOptions(options, getOverlayLayerGroupMap), report };
 	} else {
 		const target = osmTarget();
