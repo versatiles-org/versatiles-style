@@ -1,7 +1,7 @@
 /**
  * Render the same places in all three schemas and compare the pictures.
  *
- *   npm run schema-compare                       # every view → out/index.html, judged against baseline.json
+ *   npm run schema-compare                       # every view → .cache/schema-compare/index.html
  *   npm run schema-compare -- berlin tokyo-z16   # only views whose id contains one of these
  *   npm run schema-compare -- --offline          # tiles and glyphs from the cache only
  *   npm run schema-compare -- --refresh berlin   # refetch the tiles of these views first
@@ -23,7 +23,7 @@
  */
 
 import sharp from 'sharp';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getLayerGroupMap as shortbreadGroups, type LayerGroupMap } from '../../src/shortbread/index.js';
 import { getLayerGroupMap as omtGroups } from '../../src/omt/layer-groups-map.js';
@@ -31,6 +31,7 @@ import { getLayerGroupMap as protomapsGroups } from '../../src/protomaps/layer-g
 import type { OsmOptions, ResolvedColors } from '../../src/options/index.js';
 import type { StyleSpecification } from '../../src/types/index.js';
 import { NativeMap } from '../lib/native-render.js';
+import { cacheDir } from '../lib/paths.js';
 import { CACHE_DIR, explain, readTile, sourceMetadata, type SourceMetadata } from '../lib/tile-cache.js';
 import {
 	PAIRS,
@@ -50,7 +51,8 @@ import { coverage, differingGroups, isolateGroup, leafGroups, oddOneOut, overlap
 import { COMMON_OPTIONS, GEOMETRY_OPTIONS, buildStyle } from './styles.js';
 
 const DIR = import.meta.dirname;
-const OUT = resolve(DIR, 'out');
+const OUT = cacheDir('schema-compare');
+/** Tracked, unlike the renders: the accepted result every run is judged against. */
 const BASELINE = resolve(DIR, 'baseline.json');
 
 const PASSES = ['geometry', 'full', 'sentinel'] as const;
@@ -199,7 +201,6 @@ async function main() {
 	);
 	if (views.length === 0) throw new Error('no view matches the filters');
 	const cache = { offline: args.offline };
-	mkdirSync(OUT, { recursive: true });
 
 	// 1. what each tileset is
 	const metadata = {} as Record<Schema, SourceMetadata>;

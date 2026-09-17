@@ -4,7 +4,7 @@
  * Two modes, same engine:
  *
  *   Published v5 → working tree — did the v6 rewrite change what we ship?
- *     npm run compare                       # all mapped pairs → report.md
+ *     npm run compare                       # all pairs → .cache/compare/report.md
  *     npm run compare -- colorful --full    # one pair, list every changed layer
  *     npm run compare -- --refresh          # re-download the v5 styles
  *
@@ -24,12 +24,18 @@ import { dirname, resolve } from 'node:path';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite } from '../../src/index.js';
 import { getStyleVariants } from '../lib/variants.js';
+import { CACHE_ROOT, cacheDir } from '../lib/paths.js';
 import { diffStyles, type StyleDiff, type ValueChange } from './diff.js';
 
 const V5_BASE = 'https://tiles.versatiles.org/assets/styles';
 const DIR = new URL('.', import.meta.url).pathname;
-const CACHE_DIR = resolve(DIR, 'styles');
-const BASELINE_DIR = resolve(DIR, 'baseline');
+/**
+ * Resolved, not created: `--baseline` tells "no baseline saved yet" apart from an empty one by
+ * whether `BASELINE_DIR` exists, so nothing may bring it into being ahead of `--save-baseline`.
+ */
+const OUT_DIR = resolve(CACHE_ROOT, 'compare');
+const CACHE_DIR = resolve(OUT_DIR, 'styles');
+const BASELINE_DIR = resolve(OUT_DIR, 'baseline');
 /** Where the baseline records what it was built from. A dotfile, so no variant name can collide. */
 const BASELINE_META = resolve(BASELINE_DIR, '.meta.json');
 
@@ -293,7 +299,7 @@ async function compareBaseline(full: boolean, names: string[]): Promise<void> {
 		);
 	}
 
-	const out = resolve(DIR, 'report-baseline.md');
+	const out = resolve(cacheDir('compare'), 'report-baseline.md');
 	writeFileSync(out, report.join('\n'));
 	if (missing > 0) console.log(`${missing} variant(s) had no baseline file — re-run --save-baseline.`);
 	console.log(
@@ -340,7 +346,7 @@ async function compareV5(full: boolean, refresh: boolean, names: string[]): Prom
 		);
 	}
 
-	const out = resolve(DIR, 'report.md');
+	const out = resolve(cacheDir('compare'), 'report.md');
 	writeFileSync(out, report.join('\n'));
 	console.log(`\nReport written to ${out}`);
 }

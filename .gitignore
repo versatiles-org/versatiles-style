@@ -1,18 +1,12 @@
 
+.cache/
 .claude/
 .icon-sources/
 .DS_Store
 .vscode/
 coverage/
+dev/.tiles/
 dist/
 docs/
 node_modules/
 release/
-scripts/compare/baseline/
-dev/.tiles/
-scripts/tiles/
-scripts/compare/report-baseline.md
-scripts/compare/report.md
-scripts/compare/styles/style.*.json
-scripts/migrate-compare/
-scripts/schema-compare/out/

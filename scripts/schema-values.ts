@@ -23,19 +23,18 @@
  * is weak evidence — it may just not occur in the areas sampled. A value that *is* present is strong
  * evidence, and that asymmetry is what the output is for.
  *
- * Tiles are cached under `scripts/tiles/` (gitignored) so repeat runs cost nothing.
+ * Tiles are cached under `.cache/schema-tiles/` (gitignored) so repeat runs cost nothing.
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import process from 'node:process';
 import { decodeTile, type MvtValue } from './lib/mvt.js';
+import { cacheDir } from './lib/paths.js';
 import { PMTilesSource } from './lib/pmtiles.js';
 import { SAMPLE_PLACES, tileOf } from './lib/sample-places.js';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const CACHE = resolve(ROOT, 'scripts/tiles');
+const CACHE = cacheDir('schema-tiles');
 
 /**
  * Where each schema's tiles come from, matching `npm run vendor-schema`.
@@ -106,7 +105,6 @@ async function fetchTile(
 	if (!refresh && existsSync(file)) return readFileSync(file);
 	const body = await reader.read(z, x, y);
 	if (!body) return undefined;
-	mkdirSync(CACHE, { recursive: true });
 	writeFileSync(file, body);
 	return body;
 }

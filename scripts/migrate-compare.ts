@@ -7,7 +7,7 @@
  * `deriveOptions` is tested against the package's own builders, where the right answer is known. How
  * close it gets for a style written by someone else can only be judged by looking, so this renders
  * each style and its migration side by side at a few places and writes
- * `scripts/migrate-compare/out/index.html`.
+ * `.cache/migrate-compare/index.html`.
  *
  * Rendering goes through the shared tile cache (`scripts/lib/native-render.ts`): the VersaTiles side
  * reads Shortbread from it, and a foreign style on OpenFreeMap's OpenMapTiles tiles is pointed at the
@@ -17,15 +17,16 @@
  */
 
 import sharp from 'sharp';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { inlineSources, osm, satellite, type TileJSONSpecification } from '../src/index.js';
 import { guessOptions } from '../src/migrate/index.js';
 import { NativeMap, tileTemplate } from './lib/native-render.js';
+import { cacheDir } from './lib/paths.js';
 import { sourceMetadata, type TileSchema } from './lib/tile-cache.js';
 
-const OUT = resolve(import.meta.dirname, 'migrate-compare/out');
+const OUT = cacheDir('migrate-compare');
 
 /** Styles for OpenMapTiles tiles that need no API key. */
 const DEFAULT_STYLES = [
@@ -89,7 +90,6 @@ const escape = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '
 
 async function main() {
 	const urls = process.argv.slice(2).filter((arg) => !arg.startsWith('-'));
-	mkdirSync(OUT, { recursive: true });
 	let html =
 		'<!doctype html><meta charset="utf-8"><title>migrate compare</title>' +
 		'<style>body{font:14px system-ui;margin:2em}img{max-width:100%}pre{background:#f4f4f4;padding:1em;white-space:pre-wrap}</style>' +
