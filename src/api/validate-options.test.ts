@@ -166,3 +166,34 @@ describe('v5 colour key hints', () => {
 		expect(rows).toEqual(v5ColorKeys());
 	});
 });
+
+// A non-finite number serialises to `null`, so one that survived resolution reached the built style
+// as `"raster-opacity": null`, `light.position: [1.15, 210, null]`, `terrain.exaggeration: null`, or
+// an `interpolate` ramp with `null` outputs — each a style MapLibre rejects, with nothing naming the
+// option responsible. `NaN` is what an empty numeric input field yields (`parseFloat('')`), so a UI
+// reaches this without doing anything unusual.
+describe('non-finite numbers are rejected', () => {
+	const cases: [string, () => unknown][] = [
+		['osm.layers.buildings', () => osm({ layers: { buildings: NaN } })],
+		['osm.layers', () => osm({ layers: NaN })],
+		['osm.sun.altitude', () => osm({ sun: { altitude: NaN } })],
+		['osm.sun.direction', () => osm({ sun: { direction: Infinity } })],
+		['osm.icon.scale', () => osm({ icon: { scale: NaN } })],
+		['osm.features.terrain.exaggeration', () => osm({ features: { terrain: { exaggeration: NaN } } })],
+		['osm.features.hillshade.exaggeration', () => osm({ features: { hillshade: { exaggeration: -Infinity } } })],
+		['satellite.raster.opacity', () => satellite({ raster: { opacity: NaN } })],
+	];
+
+	for (const [path, build] of cases) {
+		it(`rejects ${path}`, () => {
+			expect(build).toThrow(new RegExp(path.replace(/\./g, '\\.')));
+		});
+	}
+
+	it('still accepts the finite values around the boundaries', () => {
+		expect(() => osm({ layers: { buildings: 0 } })).not.toThrow();
+		expect(() => osm({ layers: { buildings: 1 } })).not.toThrow();
+		expect(() => osm({ layers: { buildings: 0.5 } })).not.toThrow();
+		expect(() => osm({ sun: { altitude: 0, direction: 360 } })).not.toThrow();
+	});
+});

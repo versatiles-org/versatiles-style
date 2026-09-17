@@ -101,8 +101,8 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, vocab: R
 				: { size: { 6: 0, 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
 		case 'primary':
 			return isOutline
-				? { size: { 8: 0, 9: 1, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
-				: { size: { 8: 0, 9: 2, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
+				? { size: { 8: 0, 9: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
+				: { size: { 8: 0, 9: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
 		case 'secondary':
 			return isOutline
 				? { size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 } }

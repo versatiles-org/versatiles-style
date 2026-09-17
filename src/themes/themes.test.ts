@@ -82,4 +82,20 @@ describe('getPaletteColors()', () => {
 		const bgs = PALETTES.map((p) => getPaletteColors(p).background);
 		expect(new Set(bgs).size).toBe(PALETTES.length);
 	});
+
+	// `colorful` used to return the `COLORFUL` constant itself while the other nine decoded a fresh
+	// object each call. Since this is public API (`osm.colors`), a caller who edited the palette they
+	// were handed — what a style editor does — repainted every later style in the process.
+	it('returns a fresh object for every palette, so a caller cannot poison the table', () => {
+		for (const palette of PALETTES) {
+			expect(getPaletteColors(palette), palette).not.toBe(getPaletteColors(palette));
+		}
+	});
+
+	it('is unaffected by a caller mutating what it returned', () => {
+		const before = getPaletteColors('colorful').water;
+		const mine = getPaletteColors('colorful');
+		mine.water = '#FF0000';
+		expect(getPaletteColors('colorful').water).toBe(before);
+	});
 });

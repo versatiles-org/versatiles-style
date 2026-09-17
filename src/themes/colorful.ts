@@ -12,7 +12,10 @@
 
 import type { ResolvedColors } from '../options/index.js';
 
-export const COLORFUL: ResolvedColors = {
+// Frozen: this is the source every other table is generated from, so a stray write here would move
+// all ten palettes at once. `getPaletteColors` hands out copies; this makes a mistake there loud
+// (a frozen write throws in a module, which is always strict) instead of silent.
+export const COLORFUL: ResolvedColors = Object.freeze({
 	// Light mode mirrors the OpenMapTiles "OSM Bright" palette exactly (see style.osm-bright.json).
 	background: '#F8F4F0',
 	land: '#F8F4F0',
@@ -59,4 +62,4 @@ export const COLORFUL: ResolvedColors = {
 	labelPoi: '#66666666',
 	labelHousenumber: '#0F0B074D',
 	labelWater: '#4E5B68',
-};
+});

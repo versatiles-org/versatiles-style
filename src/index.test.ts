@@ -23,6 +23,28 @@ describe('exports', () => {
 		expect(lib.guessStyle('https://tiles.example.com/tiles.json')).toBeInstanceOf(Promise);
 	});
 
+	// Every static below is a module-level object handed out by reference — `layerGroups` and
+	// `textGroups` are memoized, so all callers share one. They are `readonly` in the types, which a
+	// JS caller never sees, and they back validation and `minimizeOptions`: `osm.palettes.splice(0, 1)`
+	// used to make `osm({ theme: 'colorful' })` throw "unknown palette" for the rest of the process.
+	it('hands out frozen statics, so a caller cannot corrupt the library', () => {
+		expect(Object.isFrozen(lib.osm.palettes)).toBe(true);
+		expect(Object.isFrozen(lib.osm.colorKeys)).toBe(true);
+		expect(Object.isFrozen(lib.osm.slots)).toBe(true);
+		expect(Object.isFrozen(lib.satellite.slots)).toBe(true);
+		expect(Object.isFrozen(lib.osm.layerGroups)).toBe(true);
+		expect(Object.isFrozen(lib.osm.textGroups)).toBe(true);
+	});
+
+	it('freezes the group maps through their leaves, not just the top level', () => {
+		const groups = lib.osm.layerGroups as Record<string, unknown>;
+		expect(Object.isFrozen(groups.buildings)).toBe(true);
+		// `roads` is a branch node, so its own leaves have to be frozen too.
+		const roads = groups.roads as Record<string, unknown>;
+		expect(Object.isFrozen(roads)).toBe(true);
+		expect(Object.isFrozen(Object.values(roads)[0])).toBe(true);
+	});
+
 	it('should expose osm static properties', () => {
 		expect(lib.osm.palettes).toStrictEqual([
 			'colorful',

@@ -1,4 +1,4 @@
-import { checkKeys } from './keys.js';
+import { checkKeys, checkFinite } from './keys.js';
 
 export type SunOptions =
 	| true
@@ -30,6 +30,7 @@ export function resolveSun(sun?: SunOptions, path = 'sun'): ResolvedSun {
 	if (sun === true) sun = {};
 	if (sun === undefined) return undefined;
 	checkKeys(sun, { direction: true, altitude: true, anchor: true, color: true, intensity: true }, path);
+	checkFinite(sun, path);
 	return {
 		direction: sun?.direction ?? 210,
 		altitude: sun?.altitude ?? 60,

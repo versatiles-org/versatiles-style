@@ -79,7 +79,9 @@ export type ColorsOptions = {
 	labelWater?: string;
 };
 
-export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
+// Frozen for the same reason as `PALETTES`: it is public API as `osm.colorKeys` and it drives colour
+// validation, so an in-place edit by a caller would change what the library accepts.
+export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = Object.freeze([
 	'background',
 	'land',
 	'water',
@@ -125,4 +127,4 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
 	'labelPoi',
 	'labelHousenumber',
 	'labelWater',
-] as const;
+] as const);

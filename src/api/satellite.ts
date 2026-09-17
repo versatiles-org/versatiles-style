@@ -21,11 +21,11 @@ import { osm } from './osm.js';
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
 
-export const SAT_SLOT_IDS = {
+export const SAT_SLOT_IDS = Object.freeze({
 	belowRaster: SAT_SLOT_BELOW_RASTER,
 	belowSymbols: SLOT_BELOW_SYMBOLS,
 	belowLabels: SLOT_BELOW_LABELS,
-} as const;
+} as const);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

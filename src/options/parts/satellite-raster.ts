@@ -1,4 +1,4 @@
-import { checkKeys } from './keys.js';
+import { checkKeys, checkFinite } from './keys.js';
 export type SatelliteRasterOptions = {
 	opacity?: number;
 	hueRotate?: number;
@@ -16,6 +16,7 @@ export function resolveSatelliteRaster(options?: SatelliteRasterOptions, path = 
 		{ opacity: true, hueRotate: true, brightnessMin: true, brightnessMax: true, saturation: true, contrast: true },
 		path
 	);
+	checkFinite(options, path);
 	return {
 		opacity: options?.opacity ?? 1,
 		hueRotate: options?.hueRotate ?? 0,

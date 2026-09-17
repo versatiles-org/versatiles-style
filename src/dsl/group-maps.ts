@@ -61,5 +61,22 @@ export function buildGroupMaps(builds: Iterable<Iterable<TaggedLayer>>): {
 		...((transit?.stops as string[]) ?? []),
 	];
 
-	return { layers, text };
+	return { layers: deepFreeze(layers), text: deepFreeze(text) };
+}
+
+/**
+ * Freeze a group map through its leaves.
+ *
+ * These maps are memoized per schema and handed straight out as `osm.layerGroups` / `osm.textGroups`,
+ * so every caller shares one object. A caller who sorted or spliced a group in place — the natural
+ * thing to do with an array you were given — was corrupting the map for the rest of the process, and
+ * `minimizeOptions` reads the same map. Freezing makes that a thrown error at the mutation instead of
+ * wrong output somewhere later.
+ */
+function deepFreeze(map: LayerGroupMap): LayerGroupMap {
+	for (const value of Object.values(map)) {
+		if (Array.isArray(value)) Object.freeze(value);
+		else deepFreeze(value);
+	}
+	return Object.freeze(map);
 }

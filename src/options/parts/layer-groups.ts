@@ -1,4 +1,4 @@
-import { checkKeys, type KnownKeys } from './keys.js';
+import { checkKeys, checkFinite, type KnownKeys } from './keys.js';
 export type LayerGroupOptions = {
 	land?:
 		| boolean
@@ -196,6 +196,7 @@ function resolveFlat<T>(
  * and `layers: 0.5` dims the entire map.
  */
 export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, path = 'layers'): ResolvedLayerGroups {
+	checkFinite(opts, path);
 	checkKeys(
 		opts,
 		{

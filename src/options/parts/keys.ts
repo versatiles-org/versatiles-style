@@ -44,3 +44,24 @@ export function checkKeys<T>(value: T, known: NoInfer<KnownKeys<T>>, path: strin
 			: `${label}: ${lines.length} unknown options\n${lines.map((line) => `  ${line}`).join('\n')}${guide}`
 	);
 }
+
+/**
+ * Reject a non-finite number anywhere in `value`, naming where it sits.
+ *
+ * `NaN` and the infinities are JSON-serialised as `null`, so one that survives resolution reaches the
+ * built style as `null` and MapLibre rejects the style: `"raster-opacity": null`,
+ * `light.position: [1.15, 210, null]`, `terrain.exaggeration: null`, or an `interpolate` ramp with
+ * `null` outputs. None of that names the option that caused it.
+ *
+ * A caller reaches this without doing anything unusual: `parseFloat('')` on an empty input field,
+ * `Number(undefined)` from an unset config key, or arithmetic on either. Called at the top of a
+ * resolver, before the defaults are filled in, so the path points at the caller's own key.
+ */
+export function checkFinite(value: unknown, path: string): void {
+	if (typeof value === 'number' && !Number.isFinite(value)) {
+		throw new Error(`${path}: expected a finite number, got ${value}`);
+	}
+	if (value && typeof value === 'object' && !Array.isArray(value)) {
+		for (const [key, child] of Object.entries(value)) checkFinite(child, `${path}.${key}`);
+	}
+}

@@ -49,12 +49,12 @@ import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 const SOURCE_NAME = 'protomaps';
 
 /** Stable layer IDs for use as MapLibre `beforeId` — the same four anchors every schema must emit. */
-const SLOT_IDS = {
+const SLOT_IDS = Object.freeze({
 	belowFills: SLOT_BELOW_FILLS,
 	belowStreets: SLOT_BELOW_STREETS,
 	belowSymbols: SLOT_BELOW_SYMBOLS,
 	belowLabels: SLOT_BELOW_LABELS,
-} as const;
+} as const);
 
 function buildBase(resolved: ResolvedProtomaps): StyleSpecification {
 	const source = buildSourceDescriptor('vector', resolved.urls.protomaps) as StyleSpecification['sources'][string];

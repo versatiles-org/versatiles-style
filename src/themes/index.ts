@@ -8,7 +8,11 @@ import { colorOptionsKeys } from './color-keys.js';
 import { COLORFUL } from './colorful.js';
 import { TABLES } from './tables.js';
 
-export const PALETTES: ReadonlyArray<Palette> = [
+// Frozen, not merely `ReadonlyArray`: this is handed out as `osm.palettes` (and `omt`'s, and
+// `protomaps`'), and `readonly` is a compile-time claim a JS caller never sees. It also backs the
+// palette validation and the theme search in `deriveOptions`, so a caller sorting it in place would
+// break `osm({ theme })` for the rest of the process.
+export const PALETTES: ReadonlyArray<Palette> = Object.freeze([
 	'colorful',
 	'colorful-dark',
 	'natural',
@@ -19,7 +23,7 @@ export const PALETTES: ReadonlyArray<Palette> = [
 	'gray-dark',
 	'toner',
 	'toner-dark',
-] as const;
+] as const);
 
 /**
  * The colour table of a palette.
@@ -32,9 +36,14 @@ export const PALETTES: ReadonlyArray<Palette> = [
  * Decoding is cheap and the result is not cached: every caller here — `resolveColors`, the palette
  * search in `deriveOptions` — copies or reshapes the table anyway, so a shared frozen object would buy
  * nothing and risk being mutated by one of them.
+ *
+ * Every palette therefore returns a **fresh** object, `colorful` included. It used to hand back the
+ * `COLORFUL` constant itself, which is public API through `osm.colors` — so a caller editing the
+ * returned palette (exactly what a style editor does) silently repainted every later `osm()` in the
+ * process, and every derived table with it, since all nine are generated from this one.
  */
 export function getPaletteColors(palette: Palette): ResolvedColors {
-	if (palette === 'colorful') return COLORFUL;
+	if (palette === 'colorful') return { ...COLORFUL };
 	const values = TABLES[palette].split(',');
 	return Object.fromEntries(colorOptionsKeys.map((key, index) => [key, `#${values[index]}`])) as ResolvedColors;
 }
