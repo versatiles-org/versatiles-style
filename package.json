@@ -27,7 +27,7 @@
 	"devEngines": {
 		"runtime": {
 			"name": "node",
-			"version": ">= 20.0.0"
+			"version": ">= 22.12.0"
 		}
 	},
 	"engines": {
@@ -35,6 +35,7 @@
 	},
 	"scripts": {
 		"check": "npm run format && npm run lint && npm run build && npm run typecheck && npm run check-exports && npm run test:all",
+		"check-ci": "npm run format:check && npm run lint && npm run build && npm run typecheck && npm run check-exports && npm run test:all",
 		"check-exports": "tsx scripts/check-exports.ts",
 		"compare": "tsx scripts/compare/compare.ts",
 		"build": "rm -rf release; npm run build-browser && npm run build-node && npm run build-styles && npm run build-sprites && npm run icons-report && npm run doc",
@@ -60,6 +61,7 @@
 		"prepack": "npm run build",
 		"release": "vrt release-npm",
 		"schema-gate": "tsx scripts/schema-gate.ts",
+		"smoke": "node scripts/ci/smoke.mjs",
 		"schema-compare": "tsx scripts/schema-compare/compare.ts",
 		"schema-values": "tsx scripts/schema-values.ts",
 		"test": "vitest run --project unit",

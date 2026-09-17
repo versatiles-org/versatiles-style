@@ -29,6 +29,8 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v7
         with:
+          # The dev toolchain's floor, not the package's: vitest requires >= 22.12. What the
+          # published package supports is `engines` (>= 20), which the `package-smoke` job checks.
           node-version: 22
           cache: 'npm'
 
@@ -38,14 +40,16 @@ jobs:
       - name: Audit
         run: npm audit --omit dev
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm run test:all
+      # One script rather than a list of steps, so CI and `npm run check` cannot drift apart. The
+      # difference between them is deliberate and is the whole reason for a second name: `check` runs
+      # `format` (which rewrites files), `check-ci` runs `format:check` (which fails instead). CI must
+      # never be able to "pass" by editing the working tree.
+      #
+      # This also adds typecheck and check-exports to CI, neither of which ran here before. They are
+      # not redundant with the build: `tsc --noEmit` covers tests and scripts, which rollup never
+      # compiles, and `check-exports` is what proves a public type is reachable from an entry point.
+      - name: Check (format, lint, build, typecheck, exports, tests)
+        run: npm run check-ci
 
       - name: Generate coverage
         run: npm run test-coverage
@@ -54,3 +58,55 @@ jobs:
         uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  package-smoke:
+    name: Published package on Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # `engines` promises >= 20, so 20 is the version that claim has to hold on. 20.11 is the
+        # real floor for anything running from this repo (the build scripts use
+        # `import.meta.dirname`), but a consumer only ever runs `dist/`, so plain 20 is the honest
+        # test of the published artifact.
+        node: ['20', '22', '24']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Build with a Node the toolchain actually supports…
+      - name: Use Node (build)
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pack
+        run: npm pack --pack-destination /tmp
+
+      # …then install and import the tarball under the version being tested, with no devDependencies
+      # in sight. This is the only check that the shipped `dist/` runs where `engines` says it does;
+      # the unit suite cannot answer it, because vitest itself will not start on Node 20.
+      - name: Use Node (run)
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+
+      # The script is *copied into* the install directory rather than run from the workspace. Node
+      # resolves a bare import from the importing file's own directory upward, so running it in place
+      # would resolve `@versatiles/style` to the repo itself — a package can self-reference by name
+      # once it has an `exports` map — and the job would test the working tree's `dist/` while
+      # appearing to test the tarball.
+      - name: Install the packed package
+        run: |
+          mkdir -p /tmp/smoke && cd /tmp/smoke
+          npm init -y >/dev/null
+          npm install /tmp/versatiles-style-*.tgz
+          cp "$GITHUB_WORKSPACE/scripts/ci/smoke.mjs" /tmp/smoke/
+
+      - name: Smoke-test every published subpath
+        run: node ./smoke.mjs
+        working-directory: /tmp/smoke

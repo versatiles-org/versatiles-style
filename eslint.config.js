@@ -62,6 +62,20 @@ export default [
 		ignores: ['**/dist/**/*.*', '**/coverage/**/*.*', '**/release/**/*.*', '**/docs/**/*.*', '**/.icon-sources/**/*.*'],
 	},
 	{
+		// Plain ESM run by bare `node`, outside the TypeScript project: `scripts/ci/smoke.mjs` imports
+		// the *installed* package, so it cannot be compiled or type-checked against this repo's source.
+		// It needs the Node globals declared explicitly, since the block below only covers `.ts`.
+		files: ['**/scripts/**/*.mjs'],
+		languageOptions: {
+			ecmaVersion: 'latest',
+			sourceType: 'module',
+			globals: {
+				console: 'readonly',
+				process: 'readonly',
+			},
+		},
+	},
+	{
 		files: ['**/scripts/**/*.ts', '**/src/**/*.ts'],
 		languageOptions: {
 			ecmaVersion: 'latest',
