@@ -757,7 +757,13 @@ function derivePitchAlignment(readings: ReadonlyMap<string, ProbeReading>): Pitc
 function deriveSun(light: NonNullable<StyleSpecification['light']>): SunOptions {
 	const sun: Exclude<SunOptions, true> = {};
 	const position = light.position;
-	if (Array.isArray(position) && position.every((v) => typeof v === 'number')) {
+	// `length === 3` as well as the type check: `every` is vacuously true for a shorter array, so a
+	// two-element `position` passed and `90 - position[2]` came out `NaN`. `minimizeOsmOptions` cannot
+	// drop it either — `JSON.stringify(NaN)` is `"null"`, which never equals the default — so the NaN
+	// reached the returned options and built a style with `light.position: [1.15, 210, null]`, which
+	// MapLibre rejects. `guessOptions` promises options that build, so a malformed light is one this
+	// reads nothing from rather than one it mistranslates.
+	if (Array.isArray(position) && position.length === 3 && position.every((v) => typeof v === 'number')) {
 		sun.direction = position[1] as number;
 		sun.altitude = 90 - (position[2] as number);
 	}

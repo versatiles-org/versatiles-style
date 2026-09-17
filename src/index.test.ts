@@ -14,6 +14,15 @@ describe('exports', () => {
 		expect(typeof lib.labelLanguage).toBe('function');
 		expect(typeof lib.fetchTileJSON).toBe('function');
 		expect(typeof lib.inlineSources).toBe('function');
+		// The v5 migration table sends `HSV.randomColor` here and the changelog documents its v6
+		// behaviour changes, but nothing exported it — a v5 user following the table got an import
+		// error. The `hsv` space it is built on ships either way, so the bytes were already paid for.
+		expect(typeof lib.randomColor).toBe('function');
+	});
+
+	it('randomColor returns a Color and is seedable', () => {
+		expect(lib.randomColor({ seed: 42 })).toBeInstanceOf(lib.Color);
+		expect(lib.randomColor({ seed: 42 }).asString()).toBe(lib.randomColor({ seed: 42 }).asString());
 	});
 
 	it('osm(), satellite() and guessSchema() are synchronous; guessStyle() is not', () => {

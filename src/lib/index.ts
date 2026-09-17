@@ -9,7 +9,7 @@
  * `src/import-graph.test.ts` fails if that changes.
  */
 
-export { normalizeAttribution, basename } from './utils.js';
+export { normalizeAttribution } from './utils.js';
 export { STYLE_LICENSE, STYLE_METADATA, styleName } from './styleMeta.js';
 export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 export { buildSourceDescriptor, inlinedFields } from './tileSource.js';

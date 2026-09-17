@@ -187,8 +187,8 @@ export class Color implements ColorValue {
 	 * Returns this colour.
 	 *
 	 * A `Color` is frozen and every method returns a new instance, so there is nothing a copy could
-	 * protect against. It stays because v5 had it, and because `deepClone` recognises anything with a
-	 * `clone()` method.
+	 * protect against. It stays because v5 had it, and because the duck-typed clone convention is
+	 * what a generic deep-copy would look for.
 	 */
 	clone(): Color {
 		return this;

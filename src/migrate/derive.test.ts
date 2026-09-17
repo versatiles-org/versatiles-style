@@ -295,6 +295,24 @@ describe('deriveOptions — foreign styles', () => {
 		expect(options.features).toMatchObject({ terrain: true, hillshade: { exaggeration: 0.3 } });
 	});
 
+	// MapLibre's `light.position` is `[radial, azimuthal, polar]`. A shorter array passed the old
+	// `every(isNumber)` check vacuously, so `90 - position[2]` was `NaN` — which `minimizeOptions`
+	// could not drop (`JSON.stringify(NaN)` is `"null"`) and which built an unusable style.
+	it('reads nothing from a malformed light.position rather than deriving NaN', () => {
+		for (const position of [[1.15, 210], [1.15], [], [1.15, 210, 30, 7]]) {
+			const options = osmOptions(deriveOptions(omtStyle({ light: { anchor: 'map', position } as never })));
+			const sun = options.sun;
+			expect(JSON.stringify(sun) ?? '', JSON.stringify(position)).not.toContain('null');
+			expect(typeof sun === 'object' && 'altitude' in sun, JSON.stringify(position)).toBe(false);
+		}
+	});
+
+	it('still builds a usable style from a light it could not read', () => {
+		const guess = deriveOptions(omtStyle({ light: { anchor: 'map', position: [1.15, 210] } as never }));
+		const style = osm(osmOptions(guess));
+		expect(JSON.stringify(style.light ?? {})).not.toContain('null');
+	});
+
 	it('reads the language of legacy tokens and expressions', () => {
 		const labels = (textField: unknown) =>
 			omtStyle({}, [

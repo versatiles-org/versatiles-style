@@ -24,7 +24,8 @@
  * That bundle carries **less than this page lists**, and it is documented on its own page: see the
  * {@link "versatiles-style.js"} module. Everything you build a style with — `osm`, `satellite`,
  * `guessStyle`, `inlineSources`, `Color` — is in both. What only npm has is editor and tooling work:
- * `osm.minimizeOptions` and `osm.toCode`, the font-discovery helpers, and the TileJSON validators.
+ * `osm.minimizeOptions` and `osm.toCode`, the font-discovery helpers, `randomColor`, and the TileJSON
+ * validators.
  * Each of those is marked **npm only** on its own page. They are left out so that a page which merely
  * builds a style and hands it to MapLibre does not download them.
  *
@@ -152,6 +153,15 @@ export {
 // npm only. These answer "which faces does this glyph server have, and which of them can write this
 // language" — the question a font *picker* asks, which is editor work. Nothing in the style-building
 // path uses them, so a page that loads the CDN bundle would carry 4 KB it never calls.
+
+// ── Random colours ────────────────────────────────────────────────────────────
+//
+// npm only, for the same reason as the helpers above: picking a colour is authoring work, not
+// style-building work. The v5 migration table sends `HSV.randomColor` here, but nothing exported it,
+// so a v5 user following the table got an import error. Attaching it to the CDN bundle instead would
+// cost every page ~1.2 KB gzipped for its hue dictionary — measured, not guessed.
+
+export { randomColor } from './color/index.js';
 
 export { fetchFontFaces } from './lib/fetchFontFaces.js';
 export type { FontFaceInfo } from './lib/fetchFontFaces.js';
