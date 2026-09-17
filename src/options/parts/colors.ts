@@ -1,122 +1,12 @@
 import { checkKeys, type KnownKeys } from './keys.js';
+import { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
 import type { ResolvedTheme } from './theme.js';
 import { getPaletteColors } from '../../themes/index.js';
 
-export type ColorsOptions = {
-	// base
-	background?: string;
-	land?: string;
-	water?: string;
-	glacier?: string;
-
-	// natural land cover
-	natureWood?: string;
-	natureGrass?: string;
-	naturePark?: string;
-	natureAgriculture?: string;
-	natureSand?: string;
-	natureRock?: string;
-	natureWetland?: string;
-	natureLeisure?: string;
-
-	// urban land use
-	areaResidential?: string;
-	areaCommercial?: string;
-	areaIndustrial?: string;
-	areaWaste?: string;
-	areaBurial?: string;
-
-	// sites
-	siteConstruction?: string;
-	siteEducation?: string;
-	siteHospital?: string;
-	siteDanger?: string;
-	sitePrison?: string;
-	siteParking?: string;
-	siteSports?: string;
-
-	// buildings
-	building?: string;
-	buildingBg?: string;
-
-	// roads
-	roadStreet?: string;
-	roadStreetBg?: string;
-	roadMotorway?: string;
-	roadMotorwayBg?: string;
-	roadTrunk?: string;
-	roadTrunkBg?: string;
-
-	// transit
-	transitRail?: string;
-	transitSubway?: string;
-	transitCycle?: string;
-	transitFoot?: string;
-
-	// boundaries
-	boundary?: string;
-	boundaryDisputed?: string;
-
-	// labels & symbols
-	label?: string;
-	labelHalo?: string;
-	labelShield?: string;
-	labelSymbol?: string;
-	labelPoi?: string;
-	labelHousenumber?: string;
-	/** Lake, sea and river names — a darkened water tone, so they read as water, not as places. */
-	labelWater?: string;
-};
+// Re-exported so every consumer keeps reaching them through this module, and through the barrel.
+export { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
 
 export type ResolvedColors = Required<ColorsOptions>;
-
-export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = [
-	'background',
-	'land',
-	'water',
-	'glacier',
-	'natureWood',
-	'natureGrass',
-	'naturePark',
-	'natureAgriculture',
-	'natureSand',
-	'natureRock',
-	'natureWetland',
-	'natureLeisure',
-	'areaResidential',
-	'areaCommercial',
-	'areaIndustrial',
-	'areaWaste',
-	'areaBurial',
-	'siteConstruction',
-	'siteEducation',
-	'siteHospital',
-	'siteDanger',
-	'sitePrison',
-	'siteParking',
-	'siteSports',
-	'building',
-	'buildingBg',
-	'roadStreet',
-	'roadStreetBg',
-	'roadMotorway',
-	'roadMotorwayBg',
-	'roadTrunk',
-	'roadTrunkBg',
-	'transitRail',
-	'transitSubway',
-	'transitCycle',
-	'transitFoot',
-	'boundary',
-	'boundaryDisputed',
-	'label',
-	'labelHalo',
-	'labelShield',
-	'labelSymbol',
-	'labelPoi',
-	'labelHousenumber',
-	'labelWater',
-] as const;
 
 const COLOR_KEYS = Object.fromEntries(colorOptionsKeys.map((key) => [key, true])) as KnownKeys<ColorsOptions>;
 
