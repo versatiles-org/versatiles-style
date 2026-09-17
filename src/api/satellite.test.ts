@@ -1,7 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { satellite } from './satellite.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import { jsonResponse } from '../lib/loadTileSource.test.js';
+import { tileJSONFetch } from '../lib/loadTileSource.test.js';
 import { inlineSources } from '../lib/index.js';
 
 function layerIds(style: StyleSpecification): string[] {
@@ -77,15 +77,9 @@ describe('satellite()', () => {
 	});
 
 	it('accepts explicit satellite URL string, resolved by inlineSources', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				jsonResponse({
-					tiles: ['https://sat/{z}/{x}/{y}'],
-					minzoom: 0,
-					maxzoom: 18,
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch({
+			'https://sat/': { tiles: ['https://sat/{z}/{x}/{y}'], minzoom: 0, maxzoom: 18 },
+		});
 		const built = satellite({ urls: { satellite: 'https://sat/tiles.json' } });
 		expect(built.sources['satellite'] as { url: string }).toMatchObject({ url: 'https://sat/tiles.json' });
 
@@ -98,14 +92,7 @@ describe('satellite()', () => {
 	// ── Tile size ─────────────────────────────────────────────────────────────
 
 	it('uses tile_size from the satellite TileJSON as the raster tileSize', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				jsonResponse({
-					tiles: ['https://sat/{z}/{x}/{y}'],
-					tile_size: 512,
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch({ 'https://sat/': { tiles: ['https://sat/{z}/{x}/{y}'], tile_size: 512 } });
 		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
@@ -115,7 +102,7 @@ describe('satellite()', () => {
 
 	it('omits raster tileSize when the TileJSON omits tile_size', async () => {
 		// Declaring a guessed tileSize would silently override MapLibre's own default.
-		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['https://sat/{z}/{x}/{y}'] })));
+		const fetchFn = tileJSONFetch({ 'https://sat/': { tiles: ['https://sat/{z}/{x}/{y}'] } });
 		const style = await inlineSources(satellite({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});

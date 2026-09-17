@@ -1,9 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
 import type { TileJSONSpecification } from '../types/index.js';
+import type { FetchLike } from '../options/index.js';
 
 export function jsonResponse(body: unknown, status = 200): Response {
 	return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+}
+
+/**
+ * A `fetch` mock for tests that inline a whole style.
+ *
+ * `inlineSources` rejects a vector source whose TileJSON lists no `vector_layers`, so a mock that
+ * answers every URL with one raster-shaped document no longer works on a style that also carries
+ * the OSM source: it trips exactly the mismatch that check exists to catch. This answers the OSM
+ * URL with a vector document and everything else with a raster one, and takes `overrides` for the
+ * one URL a test is actually about (matched by substring).
+ */
+export function tileJSONFetch(overrides: Record<string, unknown> = {}): FetchLike {
+	return vi.fn((input: RequestInfo | URL): Promise<Response> => {
+		const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+		const override = Object.entries(overrides).find(([match]) => url.includes(match));
+		if (override) return Promise.resolve(jsonResponse(override[1]));
+		const tiles = [`${url.replace(/\/[^/]*$/, '')}/{z}/{x}/{y}`];
+		const body = url.includes('/osm/') ? { tiles, vector_layers: [{ id: 'water_polygons' }] } : { tiles };
+		return Promise.resolve(jsonResponse(body));
+	});
 }
 
 describe('resolveTileJSONTiles()', () => {

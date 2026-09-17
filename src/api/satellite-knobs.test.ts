@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { satellite } from './satellite.js';
 import type { SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
+import { tileJSONFetch } from '../lib/loadTileSource.test.js';
 import { osm } from './osm.js';
 import { Color } from '../color/index.js';
 
@@ -245,14 +246,9 @@ describe('satellite() knob: urls', () => {
 	});
 
 	it('an explicit satellite TileJSON is fetched, and its tile_size becomes tileSize', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'], tile_size: 512, minzoom: 0, maxzoom: 18 }), {
-					status: 200,
-					headers: { 'content-type': 'application/json' },
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch({
+			'https://sat/': { tiles: ['https://sat/{z}/{x}/{y}'], tile_size: 512, minzoom: 0, maxzoom: 18 },
+		});
 		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});
@@ -263,14 +259,7 @@ describe('satellite() knob: urls', () => {
 	});
 
 	it('omits raster tileSize when the TileJSON omits tile_size (after inlining)', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				new Response(JSON.stringify({ tiles: ['https://sat/{z}/{x}/{y}'] }), {
-					status: 200,
-					headers: { 'content-type': 'application/json' },
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch({ 'https://sat/': { tiles: ['https://sat/{z}/{x}/{y}'] } });
 		const s = await inlineSources(build({ urls: { satellite: 'https://sat/tiles.json' } }), {
 			fetch: fetchFn,
 		});

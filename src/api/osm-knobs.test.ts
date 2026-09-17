@@ -3,6 +3,7 @@ import { osm } from '../index.js';
 import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
+import { tileJSONFetch } from '../lib/loadTileSource.test.js';
 import { Color } from '../color/index.js';
 
 // Exhaustive behavioural coverage of every osm() option ("knob"). Where a resolve-level
@@ -434,14 +435,7 @@ describe('osm() knob: urls', () => {
 	});
 
 	it('custom elevation URL is referenced, and inlineSources embeds it', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				new Response(JSON.stringify({ tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 }), {
-					status: 200,
-					headers: { 'content-type': 'application/json' },
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch({ 'https://dem/': { tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 } });
 		const s = build({
 			features: { terrain: true },
 			urls: { elevation: 'https://dem/tiles.json' },
@@ -470,14 +464,7 @@ describe('osm() knob: urls', () => {
 	});
 
 	it('building performs no I/O, so a custom fetch belongs to inlineSources, not to urls', async () => {
-		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				new Response(JSON.stringify({ tiles: ['https://x/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14 }), {
-					status: 200,
-					headers: { 'content-type': 'application/json' },
-				})
-			)
-		);
+		const fetchFn = tileJSONFetch();
 		expect(() => build({ urls: { fetch: fetchFn } } as never)).toThrow('osm: unknown option "urls.fetch"');
 
 		const s = build();

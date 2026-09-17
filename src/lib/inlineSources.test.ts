@@ -9,12 +9,14 @@ function styleWith(sources: Record<string, unknown>): StyleSpecification {
 	return { version: 8, sources, layers: [] } as unknown as StyleSpecification;
 }
 
+// A minimal valid vector TileJSON. `vector_layers` is what marks a tileset as vector, so a
+// `type: 'vector'` source will not inline a document that omits it.
+const vectorTJ = { tiles: ['https://t/{z}/{x}/{y}'], vector_layers: [{ id: 'water', fields: {} }] };
+
 describe('inlineSources()', () => {
 	it('replaces a source `url` with the fetched TileJSON fields', async () => {
 		const fetchFn = vi.fn(() =>
-			Promise.resolve(
-				json({ tiles: ['https://t/{z}/{x}/{y}'], minzoom: 0, maxzoom: 14, bounds: [-1, -2, 3, 4], attribution: '© x' })
-			)
+			Promise.resolve(json({ ...vectorTJ, minzoom: 0, maxzoom: 14, bounds: [-1, -2, 3, 4], attribution: '© x' }))
 		);
 		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
 			fetch: fetchFn,
@@ -36,7 +38,7 @@ describe('inlineSources()', () => {
 	});
 
 	it('does not mutate the input style', async () => {
-		const fetchFn = vi.fn(() => Promise.resolve(json({ tiles: ['https://t/{z}/{x}/{y}'] })));
+		const fetchFn = vi.fn(() => Promise.resolve(json(vectorTJ)));
 		const input = styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } });
 		await inlineSources(input, { fetch: fetchFn });
 		expect(input.sources['v']).toStrictEqual({ type: 'vector', url: 'https://t/tiles.json' });
@@ -75,22 +77,73 @@ describe('inlineSources()', () => {
 	});
 });
 
+// A wrong `url` used to inline cleanly and surface only as an empty map, because the fetched
+// document was cast, never checked. These are the failures that cast hid.
+describe('inlineSources() validation', () => {
+	const rasterTJ = { tiles: ['https://t/{z}/{x}/{y}'] };
+
+	it('rejects a vector source whose TileJSON has no vector_layers', async () => {
+		await expect(
+			inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+				fetch: vi.fn(() => Promise.resolve(json(rasterTJ))),
+			})
+		).rejects.toThrow(/source "v" .*type: "vector".*no `vector_layers`/s);
+	});
+
+	it('rejects a raster source whose TileJSON has vector_layers', async () => {
+		await expect(
+			inlineSources(styleWith({ r: { type: 'raster', url: 'https://t/tiles.json' } }), {
+				fetch: vi.fn(() => Promise.resolve(json(vectorTJ))),
+			})
+		).rejects.toThrow(/source "r" .*type: "raster".*lists `vector_layers`/s);
+	});
+
+	it('rejects a raster-dem source whose TileJSON has vector_layers', async () => {
+		await expect(
+			inlineSources(styleWith({ e: { type: 'raster-dem', url: 'https://t/tiles.json' } }), {
+				fetch: vi.fn(() => Promise.resolve(json(vectorTJ))),
+			})
+		).rejects.toThrow(/type: "raster-dem"/);
+	});
+
+	it('rejects a document that is not a TileJSON at all', async () => {
+		await expect(
+			inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+				fetch: vi.fn(() => Promise.resolve(json({}))),
+			})
+		).rejects.toThrow(/did not return a valid TileJSON — .*spec\.tiles/);
+	});
+
+	it('names the offending source and its url', async () => {
+		await expect(
+			inlineSources(styleWith({ basemap: { type: 'vector', url: 'https://t/wrong.json' } }), {
+				fetch: vi.fn(() => Promise.resolve(json(rasterTJ))),
+			})
+		).rejects.toThrow('inlineSources: source "basemap" (https://t/wrong.json)');
+	});
+
+	it('leaves source types it cannot resolve to the shape check alone', async () => {
+		const out = await inlineSources(styleWith({ g: { type: 'geojson', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(() => Promise.resolve(json(vectorTJ))),
+		});
+		expect(out.sources['g'] as Record<string, unknown>).toMatchObject({ type: 'geojson' });
+	});
+});
+
 // Upstream TileJSONs quote HTML attributes inconsistently (the satellite source uses single
 // quotes, OSM and elevation use double), so a style inlining several sources would show mixed
 // markup in one attribution bar. v5 normalised; v6 kept the helper but stopped calling it (F6).
 describe('attribution normalisation', () => {
 	it('rewrites single-quoted attributes to double', async () => {
 		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
-			fetch: vi.fn(() =>
-				Promise.resolve(json({ tiles: ['https://t/{z}/{x}/{y}'], attribution: "<a href='https://x.example/'>X</a>" }))
-			),
+			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, attribution: "<a href='https://x.example/'>X</a>" }))),
 		});
 		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe('<a href="https://x.example/">X</a>');
 	});
 
 	it('collapses whitespace and trims', async () => {
 		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
-			fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://t/{z}/{x}/{y}'], attribution: '  a \n\t b  ' }))),
+			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, attribution: '  a \n\t b  ' }))),
 		});
 		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe('a b');
 	});
@@ -98,7 +151,7 @@ describe('attribution normalisation', () => {
 	it('leaves already-normalised markup untouched', async () => {
 		const attribution = '<a href="https://x.example/" target="_blank">&copy; X</a>';
 		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
-			fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://t/{z}/{x}/{y}'], attribution }))),
+			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, attribution }))),
 		});
 		expect((out.sources['v'] as Record<string, unknown>).attribution).toBe(attribution);
 	});
