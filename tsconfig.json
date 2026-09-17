@@ -15,7 +15,8 @@
 		"paths": {
 			"@versatiles/style": ["./src/index.ts"],
 			"@versatiles/style/omt": ["./src/omt/index.ts"],
-			"@versatiles/style/protomaps": ["./src/protomaps/index.ts"]
+			"@versatiles/style/protomaps": ["./src/protomaps/index.ts"],
+			"@versatiles/style/migrate": ["./src/migrate/index.ts"]
 		}
 	},
 	"include": ["rollup.config.*", "scripts/**/*.ts", "src/**/*.ts"],

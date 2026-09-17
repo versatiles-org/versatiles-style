@@ -45,7 +45,7 @@ import { resolveUrl } from '../options/index.js';
 
 /**
  * Protomaps URLs. Like OpenMapTiles, the vector source does not default relative to `base` — the
- * VersaTiles CDN serves Shortbread tiles (§5.5) — but unlike it there is no hosted endpoint to fall back
+ * VersaTiles CDN serves Shortbread tiles — but unlike it there is no hosted endpoint to fall back
  * on either: Protomaps publishes a PMTiles archive and its docs discourage hotlinking the daily builds.
  * So `protomaps` has **no default**, normally a `pmtiles://` URL the MapLibre plugin resolves.
  */
@@ -138,9 +138,9 @@ export function resolveProtomapsFeatures(
 /**
  * Options for `omt()`.
  *
- * The third schema, and the same story as the second (§19 was too pessimistic). They differ in exactly
+ * The third schema, and the same story as the second. They differ in exactly
  * one place, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `features`, `sun`, `sky`,
- * `projection` — is identical, because the option vocabulary names concepts rather than layers (§2):
+ * `projection` — is identical, because the option vocabulary names concepts rather than layers:
  *
  *  - `urls.protomaps` replaces `urls.osm`, and has no default (see `PROTOMAPS_PLACEHOLDER`).
  *
@@ -163,7 +163,7 @@ export type ResolvedProtomaps = ResolvedOsmOverlay & {
 };
 
 export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps {
-	// Its own static, type-derived whitelist, as each schema has (§5.1.3).
+	// Its own static, type-derived whitelist, as each schema has.
 	checkKeys(
 		options,
 		{

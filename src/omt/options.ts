@@ -46,7 +46,7 @@ import { resolveUrl } from '../options/index.js';
 /**
  * OpenMapTiles URLs. `omt` replaces `osm` as the vector tile source, and unlike every other URL here it
  * does **not** default relative to `base`: the VersaTiles CDN serves Shortbread tiles, so there is no
- * OpenMapTiles tileset behind it (SCHEMA-SUPPORT-PLAN.md §5.5). Glyphs, sprites and elevation still come
+ * OpenMapTiles tileset behind it. Glyphs, sprites and elevation still come
  * from `base` — those are the style's own assets, not the tileset's.
  */
 export type OmtUrlsOptions = {
@@ -85,7 +85,7 @@ export function resolveOmtUrls(urls?: OmtUrlsOptions, path = 'urls'): ResolvedOm
 /**
  * OpenMapTiles features: the OSM set minus `landcover`, which exists for the Shortbread low-zoom
  * landcover extension and has no counterpart here. Leaving it out means
- * `omt({ features: { landcover: true } })` throws rather than silently doing nothing (§5.3, risk 3).
+ * `omt({ features: { landcover: true } })` throws rather than silently doing nothing.
  */
 export type OmtFeaturesOptions = {
 	terrain?: TerrainOptions;
@@ -111,12 +111,12 @@ export function resolveOmtFeatures(features?: OmtFeaturesOptions, path = 'featur
 /**
  * Options for `omt()`.
  *
- * §19 predicted that per-schema group trees would make `OmtOptions` and `OsmOptions` diverge and
+ * Per-schema group trees were expected to make `OmtOptions` and `OsmOptions` diverge and
  * multiply the work for downstream UI tools. In the event they differ in exactly two places, and the
  * shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `sun`, `sky`, `projection` —
- * is identical, because the option vocabulary names concepts rather than layers (§2):
+ * is identical, because the option vocabulary names concepts rather than layers:
  *
- *  - `urls.omt` replaces `urls.osm`, and does not default relative to `base` (§5.5);
+ *  - `urls.omt` replaces `urls.osm`, and does not default relative to `base`;
  *  - `features` has no `landcover`, a Shortbread tileset extension.
  *
  * The `layers` tree is the *same* tree: every group Shortbread controls is expressible here.
@@ -138,7 +138,7 @@ export type ResolvedOmt = ResolvedOsmOverlay & {
 };
 
 export function resolveOmt(options?: OmtOptions): ResolvedOmt {
-	// Its own static, type-derived whitelist, as each schema has (§5.1.3).
+	// Its own static, type-derived whitelist, as each schema has.
 	checkKeys(
 		options,
 		{

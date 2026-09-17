@@ -5,11 +5,11 @@ import * as b from '../dsl/index.js';
 /**
  * Public-transport stop cartography, shared by every schema.
  *
- * 69 of ~80 lines were identical between the ports (§7 step 8), and all of it was the symbol style —
+ * 69 of ~80 lines were identical between the ports, and all of it was the symbol style —
  * the old `symbol-*` wildcard rule. What is per-schema is *which* features are a bus stop or a station,
  * which is a filter and a source-layer, so each schema passes its own list of stops.
  *
- * Icons are constrained: §5.5 forbids growing the `base` sheet for a schema the CDN does not serve, so
+ * Icons are constrained: the `base` sheet must not grow for a schema the CDN does not serve, so
  * a schema that distinguishes more stop kinds than `base` has glyphs for must reuse one and earn the
  * separate layer through zoom instead. The OpenMapTiles subway stop is exactly that case.
  */

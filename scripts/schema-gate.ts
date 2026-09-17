@@ -5,7 +5,7 @@
  *   npm run schema-gate -- omt           # just one
  *   npm run schema-gate -- omt --verbose # also list every group and every unbound layer
  *
- * This is SCHEMA-SUPPORT-PLAN.md §7 step 2 — the cheapest step in the whole plan, and the one worth
+ * This is the cheapest step in assessing a prospective schema, and the one worth
  * being willing to stop at. It runs the *existing* conformance audit with the *existing* Shortbread
  * style against another schema's vendored record, so it costs nothing and needs no cartography.
  *
@@ -22,7 +22,7 @@
  *   portable   — every source-layer it reads maps exactly; a rename and a filter rewrite.
  *   re-derive  — the concept exists but is decomposed differently or loses a field the style reads,
  *                so the cartography has to be rewritten rather than re-pointed.
- *   blocked    — a source-layer it needs has no counterpart at all. This is what §9's stop criterion
+ *   blocked    — a source-layer it needs has no counterpart at all. This is what the stop criterion
  *                counts: abandon if more than a handful of groups land here.
  *
  * The mapping is a reviewed-by-nobody hypothesis; its own header says so, and the gate validates what
@@ -205,7 +205,7 @@ function mappedReport(name: string, schema: SchemaRecord, mapping: Record<string
 
 	const blocked = verdicts.filter((g) => g.verdict === 'blocked');
 	if (blocked.length > 0) {
-		console.log(`\n    Groups ${name} cannot carry at all — §9's stop criterion counts these:\n`);
+		console.log(`\n    Groups ${name} cannot carry at all — the stop criterion counts these:\n`);
 		for (const g of blocked) {
 			console.log(
 				`      ✗ ${g.group.padEnd(30)} all ${String(g.layers).padStart(3)} layers   no counterpart for: ${g.blockedBy.join(', ')}`

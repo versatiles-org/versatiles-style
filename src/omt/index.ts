@@ -3,7 +3,7 @@
  *
  * Deliberately small: one function and its option types. Everything schema-neutral — palettes, colour
  * helpers, `inlineSources`, `guessStyle`, the TileJSON types — stays in the root entry, because a
- * caller using both schemas should import those once, not twice (SCHEMA-SUPPORT-PLAN.md §5.3).
+ * caller using both schemas should import those once, not twice.
  *
  * @module @versatiles/style/omt
  */

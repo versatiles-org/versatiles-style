@@ -9,7 +9,7 @@ import * as b from '../../dsl/index.js';
 // Only the *structure* is here: which source-layer and filter select each road type, at each of the
 // three levels (tunnel / surface / bridge). The styling is shared with every other schema in
 // `src/cartography/roads.ts`, which dispatches on the layer ids this file names; see that module for
-// why it is shared and what `RoadVocabulary` carries (SCHEMA-SUPPORT-PLAN.md §7 step 8).
+// why it is shared and what `RoadVocabulary` carries.
 
 // ── Layer structures (tunnel / surface / bridge levels + rail/aerialway/ferry) ──
 

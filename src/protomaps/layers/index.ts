@@ -23,7 +23,7 @@ import { PROTOMAPS_SCHEMA } from '../schema.js';
  * `src/dsl/`, and five of the twelve modules are thin wrappers over `src/cartography/`.
  */
 
-// Slot anchor layers — the same four ids every schema emits (§6).
+// Slot anchor layers — the same four ids every schema emits.
 export const SLOT_BELOW_FILLS = 'slot-below-fills';
 export const SLOT_BELOW_STREETS = 'slot-below-streets';
 export const SLOT_BELOW_SYMBOLS = 'slot-below-symbols';

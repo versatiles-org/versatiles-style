@@ -7,9 +7,9 @@ import { buildContext } from './context.js';
 import { buildStyleLayers, protomapsLayers } from './layers/index.js';
 import type { StyleSpecification } from '../types/index.js';
 
-// The same audit as the other two schemas, against a third record — SCHEMA-SUPPORT-PLAN.md §8.1. It
+// The same audit as the other two schemas, against a third record. It
 // proves the layers read source-layers and fields Protomaps has, and are not drawn before their data;
-// it cannot prove a filter matches anything, which needs tiles (§8.2).
+// it cannot prove a filter matches anything, which needs tiles.
 
 // `landcover` on, so the audit covers every layer the style can emit, the low-zoom band included.
 const ctx = buildContext(
@@ -51,7 +51,7 @@ describe('the ported layers read data Protomaps carries', () => {
 			'water',
 		]);
 		// `earth` is the landmass polygon. Shortbread has no counterpart — its background fill serves the
-		// same purpose — so drawing it would add a layer only this schema has, which §23 warns against.
+		// same purpose — so drawing it would add a layer only this schema has, which is the divergence to avoid.
 		expect(audit.unrendered).toEqual(['earth']);
 	});
 });
@@ -62,7 +62,7 @@ describe('the schema seam', () => {
 		expect([...sources]).toEqual(['protomaps']);
 	});
 
-	it('emits the four slot anchors §6 requires of every schema', () => {
+	it('emits the four slot anchors every schema must emit', () => {
 		const anchors = style.layers.filter((l) => l.id.startsWith('slot-')).map((l) => l.id);
 		expect(anchors).toEqual(['slot-below-fills', 'slot-below-streets', 'slot-below-symbols', 'slot-below-labels']);
 	});

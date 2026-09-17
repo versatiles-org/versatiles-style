@@ -6,7 +6,7 @@ import { DEFAULT_BASE } from '../options/index.js';
  * It always goes through `inlineSources`: the VersaTiles tile server publishes relative tile URLs,
  * which MapLibre cannot resolve from a source `url` on its own. Options are written as a JavaScript object literal.
  */
-/** Where each builder is imported from — a schema function lives on its own subpath (§5.3). */
+/** Where each builder is imported from — a schema function lives on its own subpath. */
 const IMPORT_PATH: Record<string, string> = {
 	osm: '@versatiles/style',
 	satellite: '@versatiles/style',

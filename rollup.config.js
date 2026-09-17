@@ -12,7 +12,7 @@ const browser = BUILD === 'browser';
 /**
  * Published entry points, one per `exports` subpath in package.json.
  *
- * Adding a second schema (see SCHEMA-SUPPORT-PLAN.md §5.3 — `@versatiles/style/omt`) means adding one
+ * Adding a second schema (e.g. `@versatiles/style/omt`) means adding one
  * line here and one block to `exports`; nothing else in the build has to change. Rollup emits shared
  * code as common chunks, so a subpath only carries what the root entry does not already contain.
  *
@@ -79,7 +79,11 @@ const nodeConfig = [
 		output: {
 			dir: 'dist',
 			format: 'es',
-			sourcemap: true,
+			// No sourcemaps in the npm package. The node build is not minified, so stack traces into
+			// `dist` are already readable, and the maps that used to ship carried no `sourcesContent`
+			// and pointed at `../src/**.ts`, which `files` does not publish — 396 KB that resolved to
+			// nothing. The browser bundle still emits one: it *is* minified, and devtools needs it.
+			sourcemap: false,
 			indent: true,
 			entryFileNames: '[name].js',
 			chunkFileNames: 'chunks/[name]-[hash].js',
@@ -88,14 +92,13 @@ const nodeConfig = [
 			nodeResolve({ browser: false }),
 			typescript({
 				tsconfig: 'tsconfig.build.json',
-				sourceMap: true,
+				sourceMap: false,
 				declaration: true,
 				noEmit: true,
 				outDir: 'dist',
 				declarationDir: 'dist/declaration',
 			}),
 			commonjs(),
-			sourcemaps(),
 		],
 		onLog(level, log, handler) {
 			if (log.code === 'CIRCULAR_DEPENDENCY') return;

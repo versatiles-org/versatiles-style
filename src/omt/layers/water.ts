@@ -6,8 +6,8 @@ import * as b from '../../dsl/index.js';
 //
 // ── What this module is, and what it is not ───────────────────────────────────
 //
-// This is the seed module of SCHEMA-SUPPORT-PLAN.md §7 step 4 — one module ported so the per-module
-// effort can be measured against the estimate rather than guessed. It is a port of
+// This was the seed module of the port — the first one carried over, so the per-module effort could be
+// measured against the estimate rather than guessed. It is a port of
 // `src/shortbread/layers/water.ts`: the same groups, the same colour derivation, the same widths, so
 // that what differs is only what the schema forces to differ.
 //

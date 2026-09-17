@@ -10,7 +10,7 @@ const SOURCE_NAME = 'protomaps';
 
 /**
  * Protomaps carries translations only as `name:xx`, with `name` as the local fallback — the convention
- * SCHEMA-SUPPORT-PLAN.md §3 predicted for it, and the simplest of the three: Shortbread has only
+ * expected for it, and the simplest of the three: Shortbread has only
  * `name_xx`, OpenMapTiles has both and needs them coalesced, Protomaps has only the colon form.
  *
  * The vendored record also lists `name2`, `name3` and a `pgf:` family (pre-rendered glyph fallbacks for

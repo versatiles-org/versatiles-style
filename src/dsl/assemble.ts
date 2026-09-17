@@ -10,7 +10,7 @@ import { applyText } from './text.js';
  * things that really are per-schema: the render-order list (`assembleLayers`) and the `MERGES` table,
  * which is keyed by layer id and so speaks a schema's own dialect. The machinery around them is not:
  * raising a layer to its data floor, collapsing registered identical runs, and materializing the
- * stream are the same operations whichever tileset is underneath (SCHEMA-SUPPORT-PLAN.md §3).
+ * stream are the same operations whichever tileset is underneath.
  *
  * Both entry points take their per-schema data as an argument, so a second schema composes this rather
  * than copying it — which is the difference between duplicating cartography (option A's accepted cost)

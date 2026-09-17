@@ -30,14 +30,14 @@ import { transitStops as draw, type StopDef } from '../../cartography/index.js';
 // OpenMapTiles' London Underground unmarked at z13.
 //
 // What it does not get is its own icon. `base` carries exactly four transit glyphs — `icon-bus`,
-// `icon-rail`, `transport-tram`, plus `icon-airfield`/`icon-airport` — and §5.5 is explicit that a schema
-// the CDN does not serve must not grow that sheet, since every map downloads it. So the subway stop draws
+// `icon-rail`, `transport-tram`, plus `icon-airfield`/`icon-airport` — and a schema the CDN does not
+// serve must not grow that sheet, since every map downloads it. So the subway stop draws
 // the rail glyph and earns its separate layer through zoom, not shape. A metro glyph would belong in a
 // separate sheet, not in `base`.
 //
 // Not drawn, for the same reason plus precedent: `ferry_terminal` and the two `entrance` subclasses.
 // `base` has no glyph for either, and Shortbread draws neither — so adding them would make this schema's
-// coverage diverge from the other's in the one direction §23 warns about.
+// coverage diverge from the other's, which is the divergence to avoid.
 
 const STOPS: StopDef[] = [
 	{

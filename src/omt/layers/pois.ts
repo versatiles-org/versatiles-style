@@ -5,12 +5,11 @@ import * as b from '../../dsl/index.js';
 //
 // Shortbread emits nine layers, one per raw OSM tag key (`amenity`, `shop`, `tourism`, …), each with a
 // `match` on that key's value. OpenMapTiles has pre-classified everything into `class` + `subclass`, so
-// this is **one layer** with one match — the single largest structural simplification in the port, and
-// the mapping SCHEMA-SUPPORT-PLAN.md §4 cites when it rejects option C outright.
+// this is **one layer** with one match — the single largest structural simplification in the port.
 //
 // ── The two constraints that shaped this ──────────────────────────────────────
 //
-// 1. **Only icons `base` already carries.** §5.5 is explicit: the sprite sheet must not grow for a schema
+// 1. **Only icons `base` already carries.** The sprite sheet must not grow for a schema
 //    the CDN does not serve, because every map downloads it. `base` has 120 icons; every entry below
 //    resolves to one of them, and `poi-icons.test.ts` fails if that stops being true.
 //

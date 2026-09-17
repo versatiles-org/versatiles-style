@@ -9,14 +9,14 @@ import * as b from '../dsl/index.js';
  *
  * ── Why this is shared when the rest of the cartography is not ────────────────
  *
- * SCHEMA-SUPPORT-PLAN.md chose option A — duplicate the cartography, revisit option B at §7 step 8 with
- * two real implementations in hand rather than betting on an abstraction derived from one. This module
+ * The port duplicated the cartography first, deferring any shared abstraction until there were
+ * two real implementations in hand rather than betting on one derived from a single schema. This module
  * is that revisit, and the measurement that justified it: of the roads module's ~330 lines of style code,
  * **314 were byte-identical** between the Shortbread and OpenMapTiles ports, and every one of the 27
  * lines that differed was the same vocabulary difference — Shortbread names its ordinary streets
  * `residential`/`unclassified`/`living_street`, OpenMapTiles calls all three `minor`. No logic differed.
  *
- * So the split §3 measured on `roads.ts` (24% structure / 72% style) turned out to be real and to
+ * So the split measured on `roads.ts` (24% structure / 72% style) turned out to be real and to
  * generalise across schemas, and what remained per-schema was a table, not a shape. That table is
  * `RoadVocabulary`; everything else lives here once.
  *

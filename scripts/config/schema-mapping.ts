@@ -8,7 +8,6 @@
  * checked against real tiles with `npm run schema-values`, which reports the values a field actually
  * carries; the rest have not. A record alone cannot settle a value claim: that
  * `transportation.subclass` exists is verifiable from the record, that it carries `pier` is not.
- * See SCHEMA-SUPPORT-PLAN.md §7 step 2.
  *
  * Sampling has corrected this table five times so far, in both directions — which is the reason it is
  * worth keeping rather than deleting once the port is done: it is the record of what was checked and how.
@@ -138,7 +137,7 @@ export const SHORTBREAD_TO_OMT: Record<string, LayerMapping> = {
 	pois: {
 		targets: ['poi'],
 		confidence: 'partial',
-		note: 'raw OSM tags (amenity, shop, tourism, …) vs class/subclass: a full re-derivation, and §5.5 caps it at existing icons.',
+		note: 'raw OSM tags (amenity, shop, tourism, …) vs class/subclass: a full re-derivation, and it is capped at existing icons.',
 	},
 	public_transport: {
 		targets: ['poi'],

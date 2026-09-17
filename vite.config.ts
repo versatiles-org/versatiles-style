@@ -56,6 +56,7 @@ export default defineConfig({
 			// '@versatiles/style' rule would otherwise swallow '@versatiles/style/omt'.
 			'@versatiles/style/omt': new URL('./src/omt/index.ts', import.meta.url).pathname,
 			'@versatiles/style/protomaps': new URL('./src/protomaps/index.ts', import.meta.url).pathname,
+			'@versatiles/style/migrate': new URL('./src/migrate/index.ts', import.meta.url).pathname,
 			'@versatiles/style': new URL('./src/index.ts', import.meta.url).pathname,
 		},
 	},

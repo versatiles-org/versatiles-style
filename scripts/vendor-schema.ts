@@ -40,7 +40,7 @@ type Source = {
 	 *
 	 * `tilejson` reads a TileJSON document. `pmtiles` reads the metadata out of a PMTiles archive with two
 	 * range requests, because Protomaps publishes no TileJSON: its schema lives inside the archive
-	 * (SCHEMA-SUPPORT-PLAN.md §7 step 7).
+	 * metadata.
 	 */
 	kind?: 'tilejson' | 'pmtiles';
 	/** For `tilejson`, the document URL. For `pmtiles`, ignored — see `resolveUrl`. */

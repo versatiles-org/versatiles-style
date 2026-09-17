@@ -22,7 +22,7 @@ import { SCHEMA_NAMES } from '../lib/index.js';
  *
  * ── Why `schemas` is an option and a registry was not ─────────────────────────
  *
- * SCHEMA-SUPPORT-PLAN.md §5.3, risk 10: auto-dispatch is the one thing one-function-per-subpath does not
+ * Auto-dispatch is the one thing one-function-per-subpath does not
  * get for free. `guessStyle` lives in the root entry, so importing every schema here would reintroduce
  * exactly the bundle cost that design avoids — a CDN user who never touches OpenMapTiles would still
  * download it. Injection keeps the cost with the caller who asked for it:
@@ -33,7 +33,7 @@ import { SCHEMA_NAMES } from '../lib/index.js';
  * await guessStyle(tileJSON, { schemas: [omt] });
  * ```
  *
- * This is acceptable here precisely where a global registry was not (§5.2): `guessStyle` is already
+ * This is acceptable here precisely where a global registry was not: `guessStyle` is already
  * async, already does runtime detection, already takes a function-valued option (`fetch`), and its
  * options never pass through `minimizeOptions`/`toCode`, so nothing here has to round-trip.
  *

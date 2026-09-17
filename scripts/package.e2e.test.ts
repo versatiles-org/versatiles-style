@@ -71,8 +71,8 @@ describe('maplibre-gl peer range', () => {
 // The `exports` map is the package's public shape, and it is unforgiving: a subpath that resolves to
 // a file the build does not emit fails only for consumers, after publication, and `files` silently
 // decides whether the file ships at all. Adding a subpath means adding an entry to `ENTRIES` in
-// rollup.config.js *and* a block here, so this test checks the two ended up agreeing — see
-// SCHEMA-SUPPORT-PLAN.md §5.3, where one subpath per schema is the whole API design.
+// rollup.config.js *and* a block here, so this test checks the two ended up agreeing —
+// one subpath per schema is the whole API design.
 describe('exports map', () => {
 	it('resolves every subpath to a file the build actually emitted, with types beside it', async () => {
 		const { readFileSync, existsSync } = await import('node:fs');

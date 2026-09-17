@@ -8,7 +8,7 @@ import * as b from '../../dsl/index.js';
 //
 // Only the *structure* is here. The styling that used to be duplicated below now lives once in
 // `src/cartography/roads.ts`: 314 of its ~330 lines were byte-identical between the two schemas, and
-// every line that differed was the vocabulary in `VOCAB` (SCHEMA-SUPPORT-PLAN.md §7 step 8).
+// every line that differed was the vocabulary in `VOCAB`.
 //
 // ── What the tiles say ────────────────────────────────────────────────────────
 //

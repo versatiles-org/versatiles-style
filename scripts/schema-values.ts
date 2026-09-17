@@ -17,7 +17,7 @@
  *
  * ── Why it is a script, never a test ──────────────────────────────────────────
  *
- * It needs live tiles, so it can never be a CI gate (SCHEMA-SUPPORT-PLAN.md §8.2, risk 15). Two further
+ * It needs live tiles, so it can never be a CI gate. Two further
  * reasons to keep it manual: OpenFreeMap's tile URL embeds a build timestamp and rotates daily, so the
  * TileJSON has to be resolved each run; and the sample is a dozen tiles of a planet, so an absent value
  * is weak evidence — it may just not occur in the areas sampled. A value that *is* present is strong
@@ -118,8 +118,7 @@ const INTERESTING =
  * Above this many distinct values a field is an identifier or a name, not a vocabulary, and listing it
  * buries the report — `poi.rank` alone has 659. `--all` lifts the cutoff, which is what the POI port
  * needs: `poi.class` has 90 values and `poi.subclass` 269, and that long tail *is* the finding there
- * (SCHEMA-SUPPORT-PLAN.md §4 — raw OSM tags against class/subclass is the mapping that rejected
- * option C).
+ * (raw OSM tags against class/subclass is the mapping that matters there).
  */
 const MAX_DISTINCT = 60;
 

@@ -6,7 +6,7 @@ import * as b from '../dsl/index.js';
 /**
  * Label cartography shared by every schema — the style blocks and the place-label emitter.
  *
- * Labels extract less cleanly than roads (§7 step 8): the two ports were 152 of ~250 lines identical,
+ * Labels extract less cleanly than roads: the two ports were 152 of ~250 lines identical,
  * but much of that is the same four style objects restated, not one algorithm keyed on ids. The
  * schemas genuinely differ in *what they can bucket by* — Shortbread sizes country labels by `way_area`
  * and sorts settlements by `population`, OpenMapTiles has neither and offers `rank` instead — so the

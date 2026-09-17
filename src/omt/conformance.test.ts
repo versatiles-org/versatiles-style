@@ -11,12 +11,12 @@ import type { StyleSpecification } from '../types/index.js';
 //
 // The same guard as `src/shortbread/schema.test.ts`, on the same audit, against a different record —
 // which is the whole point of having made it generic in step 2: a schema inherits the check by naming
-// its record and its style, not by restating the logic (SCHEMA-SUPPORT-PLAN.md §8.1).
+// its record and its style, not by restating the logic.
 //
 // Scope, stated plainly: this proves the layers read source-layers and fields OpenMapTiles *has*, and
 // are not drawn before their data. It cannot prove a filter matches anything, because the vendored
 // record lists field names and not the values behind them — so `class: lake` being right is a claim no
-// offline test can settle. That needs tiles, and §8.2 is where it belongs.
+// offline test can settle. That needs tiles, so it belongs in a sampling script rather than here.
 
 const style = { version: 8, sources: {}, layers: buildStyleLayers(buildContext(resolveOmt())) } as StyleSpecification;
 const audit = auditSchema(style, OMT_SCHEMA);
@@ -68,7 +68,7 @@ describe('coverage, while the port is incomplete', () => {
 		expect(audit.unrendered).toEqual([
 			// Both deliberate, not pending. `mountain_peak` (peak / cliff / saddle, with `ele` and `rank`)
 			// has no Shortbread counterpart at all, and adding a layer only this schema draws would make the
-			// two maps diverge in the direction §23 warns about — it is a candidate for later, not a gap.
+			// two maps diverge in the direction worth avoiding — it is a candidate for later, not a gap.
 			'mountain_peak',
 			// `park` holds protected areas, and its `class` was sampled at 56+ values including raw localised
 			// titles ("Natura 2000-gebied", "Ruhezone I/5"), so nothing filters on it. Urban parks come from
@@ -84,7 +84,7 @@ describe('the schema seam', () => {
 		expect([...sources]).toEqual(['openmaptiles']);
 	});
 
-	it('emits the four slot anchors §6 requires of every schema', () => {
+	it('emits the four slot anchors every schema must emit', () => {
 		// The page background is a background-type layer too, so anchors are identified by id.
 		const anchors = style.layers.filter((l) => l.id.startsWith('slot-')).map((l) => l.id);
 		expect(anchors).toEqual(['slot-below-fills', 'slot-below-streets', 'slot-below-symbols', 'slot-below-labels']);
@@ -140,10 +140,10 @@ describe('mixed-geometry source-layers', () => {
 });
 
 describe('group tagging', () => {
-	// §8.1's primary divergence guard, in its cheapest form: the option vocabulary is schema-neutral, so
+	// The primary divergence guard, in its cheapest form: the option vocabulary is schema-neutral, so
 	// both schemas must tag every data layer with a group that resolves against the *same* option tree. A
 	// group a schema cannot express should be an option that is absent — never one that silently does
-	// nothing (risk 3), and never an untagged layer a caller cannot hide at all.
+	// nothing, and never an untagged layer a caller cannot hide at all.
 	const tagged = [...omtLayers(buildContext(resolveOmt()))];
 
 	it('tags every layer that reads tile data', () => {

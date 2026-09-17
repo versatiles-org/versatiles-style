@@ -35,7 +35,7 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 //     (reintroducing that bug) or none of them early (losing the great lakes' low-zoom names). This
 //     module takes the second: `sea`/`strait` from z4 and `bay` from z8, where the class itself implies
 //     scale, and `lake` only from z11. A great lake therefore goes unnamed at world zoom, which is a
-//     visible difference from the Shortbread map and belongs in a §8.2 comparison, not in a silent fix.
+//     visible difference from the Shortbread map and belongs in a rendered comparison, not in a silent fix.
 //  3. **Two label layers collapse into one each.** Pedestrian-square labels have no separate source here
 //     (`transportation_name` carries no polygons), so they fold into the pedestrian street label; and
 //     state labels come from `place` rather than a boundary-label layer.

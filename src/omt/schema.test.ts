@@ -9,8 +9,7 @@ import { OMT_SCHEMA } from './schema.js';
 // half of the guard, and the half that needs network: it answers whether the record is still current.
 //
 // There is no style-conformance test here yet, and there should not be: no OpenMapTiles cartography
-// exists. `npm run schema-gate -- omt` is what reads this record today (SCHEMA-SUPPORT-PLAN.md §7
-// step 2).
+// exists. `npm run schema-gate -- omt` is what reads this record today.
 
 describe('OMT_SCHEMA', () => {
 	it('carries the full OpenFreeMap layer inventory', () => {

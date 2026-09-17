@@ -3,7 +3,7 @@ import * as b from '../../dsl/index.js';
 
 // Point-of-interest icons for Protomaps — one layer, as in the OpenMapTiles port, keyed on `kind`.
 //
-// The same two constraints apply and for the same reasons: only icons `base` already carries (§5.5),
+// The same two constraints apply and for the same reasons: only icons `base` already carries,
 // and no generic fallback for unlisted kinds, because `pois` carries street furniture that would bury
 // the map in dots. A kind earns an icon only where Shortbread maps the equivalent OSM tag to it.
 //

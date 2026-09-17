@@ -80,9 +80,9 @@ describe('sprite coverage', () => {
 
 // ── Schemas that are not published ────────────────────────────────────────────
 //
-// The checks above walk `getStyleVariants()`, which is Shortbread only: SCHEMA-SUPPORT-PLAN.md §5.5
-// decided against publishing variants for other schemas, so their icon references are invisible to them.
-// That is risk 13 — and the same §5.5 turns it into a design constraint: another schema must reuse the
+// The checks above walk `getStyleVariants()`, which is Shortbread only: the project deliberately
+// publishes no style variants for other schemas, so their icon references are invisible to them.
+// That turns into a design constraint: another schema must reuse the
 // icons `base` already carries, never grow the sheet, since every map downloads it.
 //
 // Only direction (1) is checked here. Direction (2) — an icon built but unused — deliberately stays

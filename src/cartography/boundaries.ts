@@ -5,7 +5,7 @@ import * as b from '../dsl/index.js';
 /**
  * Administrative boundary cartography, shared by every schema.
  *
- * 81 of 95 lines were identical between the two ports (§7 step 8). What differed was the source-layer
+ * 81 of 95 lines were identical between the two ports. What differed was the source-layer
  * name and — the part worth stating loudly — **the value a flag carries when true**. Shortbread's
  * `disputed` and `maritime` are booleans; OpenMapTiles' are integers 0/1, so a copied
  * `['==', ['get', 'disputed'], true]` is simply false against a `1` and draws no disputed borders at

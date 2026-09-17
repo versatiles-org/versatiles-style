@@ -16,20 +16,15 @@ import { water } from './water.js';
 import { OMT_SCHEMA } from '../schema.js';
 
 /**
- * The OpenMapTiles layer assembler — **incomplete**, one module in.
+ * The OpenMapTiles layer assembler, reached through `omt()` on `@versatiles/style/omt`.
  *
- * SCHEMA-SUPPORT-PLAN.md §7 step 4 seeds this directory with a single module so the real per-module
- * cost can be measured before committing to the remaining twelve. Nothing here is wired into a public
- * `omt()` yet (that is step 6), and §23 is explicit that a half-ported schema reads as broken, so this
- * must not be exported from `src/index.ts` or a subpath until the port is complete.
- *
- * What it demonstrates is the shape of the seam: compared with `src/shortbread/layers/index.ts` the only
+ * Note the shape of the seam: compared with `src/shortbread/layers/index.ts` the only
  * things restated are the render order below and the merge table — the slot anchors, the gating, the data
  * floor and the merge machinery all come from `src/dsl/`.
  */
 
-// Slot anchor layers. The ids are deliberately the same strings Shortbread uses: §6 requires every
-// schema to emit the same four anchors, so that `slots` stays a schema-neutral static and a caller's
+// Slot anchor layers. The ids are deliberately the same strings Shortbread uses: every
+// schema emits the same four anchors, so that `slots` stays a schema-neutral static and a caller's
 // `beforeId` keeps working whichever schema built the style.
 export const SLOT_BELOW_FILLS = 'slot-below-fills';
 export const SLOT_BELOW_STREETS = 'slot-below-streets';
@@ -78,7 +73,7 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
  *
  * Empty while only `water` exists: its layers differ in colour or width, so no run is identical. This
  * table is per-schema by necessity — it is keyed by layer id, and ids are a schema's own dialect — and
- * it is the one §3 names as such alongside the cartography.
+ * it is one of the few genuinely schema-specific parts, alongside the cartography.
  */
 const MERGES: MergeTable = {};
 

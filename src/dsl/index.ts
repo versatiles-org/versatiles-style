@@ -10,7 +10,7 @@
  * Nothing here knows which tileset it is building for — that is the point. It was lifted out of
  * `src/shortbread/` so a second schema composes the same DSL rather than a copy of it, which also
  * makes it the one real coupling point between schemas: a change here is felt by all of them, so
- * `build.test.ts` travels with it (SCHEMA-SUPPORT-PLAN.md §7 step 3, risk 12).
+ * `build.test.ts` travels with it.
  */
 export * from './build.js';
 export { buildLayers, mergeIdenticalLayers } from './assemble.js';

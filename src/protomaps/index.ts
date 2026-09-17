@@ -2,7 +2,7 @@
  * `@versatiles/style/protomaps` — the Protomaps Basemap entry point.
  *
  * As with the OpenMapTiles subpath: one function and its option types, with everything schema-neutral
- * left in the root entry (SCHEMA-SUPPORT-PLAN.md §5.3).
+ * left in the root entry.
  *
  * @module @versatiles/style/protomaps
  */

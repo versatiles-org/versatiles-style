@@ -8,12 +8,12 @@ import { createLimiter, type Limiter } from './limit.js';
  *
  * Every other tileset this repo vendors a schema record from publishes a TileJSON document at a URL.
  * Protomaps does not: its basemap ships as a single PMTiles archive, and the `vector_layers` block lives
- * inside it (SCHEMA-SUPPORT-PLAN.md §7 step 7 — "deriving its record from the PMTiles archive
- * metadata"). The archive is a planet file of tens of gigabytes, so reading it whole is out of the
+ * inside it, so its record has to be derived from the PMTiles archive
+ * metadata. The archive is a planet file of tens of gigabytes, so reading it whole is out of the
  * question — but the format is designed for exactly this: a fixed 127-byte header at offset 0 names
  * where the metadata is, and both fit comfortably in one HTTP range request.
  *
- * That also answers the etiquette question §8.3 raises. Protomaps' docs discourage hotlinking their
+ * That also answers the etiquette question. Protomaps' docs discourage hotlinking their
  * builds; two range requests totalling a couple of kilobytes, once, to vendor a record is not
  * hotlinking, and nothing in the test suite ever touches the network.
  *

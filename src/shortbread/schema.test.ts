@@ -18,8 +18,7 @@ import type { StyleSpecification } from '../types/index.js';
 // `symbol-transit-subway` came to filter on a non-existent `station` field and never render.
 //
 // The audit itself lives in `src/lib/schema-audit.ts` and is generic over (style, record), so a
-// second schema gets the same guard by restating only these three lines. See
-// SCHEMA-SUPPORT-PLAN.md §8.1.
+// second schema gets the same guard by restating only these three lines.
 //
 // See https://shortbread-tiles.org/schema/1.1/ for the prose specification.
 

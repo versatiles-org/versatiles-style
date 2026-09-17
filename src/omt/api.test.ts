@@ -4,7 +4,7 @@ import { resolve, dirname } from 'node:path';
 import { omt } from './api.js';
 import { osm } from '../index.js';
 
-// The four properties SCHEMA-SUPPORT-PLAN.md §5.3 claims for one-function-per-subpath, each asserted
+// The four properties one-function-per-subpath claims, each asserted
 // rather than argued: bundle isolation, purity, per-schema validation, runnable codegen.
 
 describe('omt()', () => {
@@ -16,13 +16,13 @@ describe('omt()', () => {
 	});
 
 	it('is a pure function of its options — no registration, no shared state', () => {
-		// The registry design §5.2 rejected would have made this depend on what had been registered.
+		// A registry design would have made this depend on what had been registered.
 		expect(JSON.stringify(omt({ theme: 'muted' }))).toBe(JSON.stringify(omt({ theme: 'muted' })));
 		expect(JSON.stringify(omt({ theme: 'muted' }))).not.toBe(JSON.stringify(omt({ theme: 'colorful' })));
 	});
 
 	it('defaults its tile source to OpenFreeMap, not to the VersaTiles base', () => {
-		// The CDN serves Shortbread (§5.5), so there is nothing behind `base` for this schema to read.
+		// The CDN serves Shortbread, so there is nothing behind `base` for this schema to read.
 		expect(JSON.stringify(omt().sources.openmaptiles)).toContain('tiles.openfreemap.org');
 		// Everything that is the *style's* asset rather than the tileset's still comes from `base`.
 		expect(omt().glyphs).toContain('versatiles.org');
@@ -36,8 +36,8 @@ describe('omt()', () => {
 
 describe('validation is per schema', () => {
 	it('rejects `features.landcover`, which is a Shortbread tileset extension', () => {
-		// §5.3: a concept this schema cannot express is an unknown key that throws, never an option that
-		// silently does nothing (risk 3).
+		// A concept this schema cannot express is an unknown key that throws, never an option that
+		// silently does nothing.
 		expect(() => omt({ features: { landcover: true } } as never)).toThrow(/features\.landcover/);
 		// …and it stays valid on the schema that does have it.
 		expect(() => osm({ features: { landcover: true } })).not.toThrow();
@@ -72,7 +72,7 @@ describe('statics', () => {
 		expect(JSON.stringify(groups)).toContain('street-minor');
 	});
 
-	it('emits the same four slot anchors as every other schema (§6)', () => {
+	it('emits the same four slot anchors as every other schema', () => {
 		expect(omt.slots).toEqual(osm.slots);
 	});
 
@@ -98,7 +98,7 @@ describe('statics', () => {
 
 describe('toCode()', () => {
 	it('emits the subpath import, so the snippet runs where it is pasted', () => {
-		// §5.2's first objection to a registry: its `toCode` output would have lacked exactly this line.
+		// The first objection to a registry: its `toCode` output would have lacked exactly this line.
 		const code = omt.toCode({ theme: 'muted' });
 		expect(code).toContain("import { omt } from '@versatiles/style/omt';");
 		expect(code).toContain("import { inlineSources } from '@versatiles/style';");
@@ -110,7 +110,7 @@ describe('toCode()', () => {
 	});
 });
 
-describe('bundle isolation (§5.3)', () => {
+describe('bundle isolation', () => {
 	// The claim is that the CDN bundle cannot contain another schema, and that no build flag enforces
 	// it — the import graph does. So the graph is what this walks: from `src/index.ts`, following every
 	// relative import, nothing under `src/omt/` may be reachable. A stray re-export from the root entry
@@ -157,7 +157,7 @@ describe('bundle isolation (§5.3)', () => {
 	});
 });
 
-describe('guessStyle injection (§5.3, risk 10)', () => {
+describe('guessStyle injection', () => {
 	// Auto-dispatch is the one thing one-function-per-subpath does not get for free: `guessStyle` lives
 	// in the root entry, so it cannot import every schema without reintroducing the bundle cost the
 	// design exists to avoid. The caller injects instead, and pays only for what they import.

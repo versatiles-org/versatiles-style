@@ -28,7 +28,7 @@ import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 /**
  * `omt()` — the OpenMapTiles counterpart of `osm()`, exported from `@versatiles/style/omt`.
  *
- * SCHEMA-SUPPORT-PLAN.md §5.3: one function per schema, one subpath each, no registry. What that buys,
+ * The design: one function per schema, one subpath each, no registry. What that buys,
  * restated here because each point is a property of *this* file:
  *
  *  - **Bundle**: the browser entry imports `src/index.ts`, which does not import this module, so an
@@ -42,7 +42,7 @@ import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
 
 const SOURCE_NAME = 'openmaptiles';
 
-/** Stable layer IDs for use as MapLibre `beforeId` — the same four anchors every schema must emit (§6). */
+/** Stable layer IDs for use as MapLibre `beforeId` — the same four anchors every schema must emit. */
 const SLOT_IDS = {
 	belowFills: SLOT_BELOW_FILLS,
 	belowStreets: SLOT_BELOW_STREETS,
@@ -97,7 +97,7 @@ function omtFn(options?: OmtOptions): StyleSpecification {
 }
 
 export const omt = Object.assign(omtFn, {
-	/** All available palette names — the palettes are schema-neutral, so these are `osm`'s (§6). */
+	/** All available palette names — the palettes are schema-neutral, so these are `osm`'s. */
 	palettes: PALETTES,
 
 	/** All color key names accepted by ColorsOptions. Some are inert under this schema. */
@@ -132,7 +132,7 @@ export const omt = Object.assign(omtFn, {
 
 	/**
 	 * How `guessStyle` recognises an OpenMapTiles tileset and builds a style for it — the injection
-	 * point of §5.3: `guessStyle(tileJSON, { schemas: [omt] })`.
+	 * point: `guessStyle(tileJSON, { schemas: [omt] })`.
 	 */
 	tileset: {
 		id: 'openmaptiles',
@@ -149,7 +149,7 @@ export const omt = Object.assign(omtFn, {
 	 */
 	minimizeOptions: minimizeOmtOptions,
 
-	/** A runnable snippet for these options. Emits the subpath import, so it runs as pasted (§5.3). */
+	/** A runnable snippet for these options. Emits the subpath import, so it runs as pasted. */
 	toCode(options?: OmtOptions): string {
 		return styleCode('omt', minimizeOmtOptions(options));
 	},

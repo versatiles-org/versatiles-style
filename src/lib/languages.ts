@@ -3,7 +3,7 @@ import type { TileJSONSpecification, TileJSONSpecificationVector } from '../type
 /**
  * The language codes a tileset carries, from its TileJSON.
  *
- * Both naming conventions are scanned, as SCHEMA-SUPPORT-PLAN.md §6 requires of a neutral static:
+ * Both naming conventions are scanned, as a schema-neutral static must:
  * Shortbread and OpenMapTiles spell a translation `name_de`, Protomaps spells it `name:de`, and
  * OpenMapTiles carries both — `name_de`/`name_en`/`name_int` alongside the full `name:xx` set. A caller
  * asking which languages a tileset offers wants the union, not whichever spelling the style happens to

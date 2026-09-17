@@ -5,7 +5,7 @@ import { buildGroupMaps, type TextGroupMap, type LayerGroupMap } from '../dsl/in
 
 // This schema's own group maps, with their own module-level cache.
 //
-// SCHEMA-SUPPORT-PLAN.md §6: under option A this needs no new mechanism — `protomaps.layerGroups` is
+// Because each schema keeps its own cartography, this needs no new mechanism — `protomaps.layerGroups` is
 // correct by construction because it is built from `protomaps`'s own layers, and the cache stays valid
 // because each schema module has one of its own. The map *types* and the builder are shared; the maps
 // are not.

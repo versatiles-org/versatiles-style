@@ -15,7 +15,7 @@
  *  - `scripts/schema-gate.ts` points one schema's style at *another* schema's record, which is how a
  *    prospective schema is assessed before any cartography is written: every mismatch it reports is a
  *    concept that has to be re-bound, and every group that cannot bind at all is a concept the other
- *    schema does not express (see SCHEMA-SUPPORT-PLAN.md §7 step 2).
+ *    schema does not express.
  *
  * It is deliberately not re-exported from `src/lib/index.ts` or the public entry: it is tooling, and
  * keeping it unreachable from `src/index.ts` is what keeps it out of the published bundle.

@@ -4,7 +4,7 @@ import * as b from '../dsl/index.js';
 /**
  * Building cartography, shared by every schema.
  *
- * The cheapest of the extractions (§7 step 8): the two ports were 27 of 33 lines identical, and all six
+ * The cheapest of the extractions: the two ports were 27 of 33 lines identical, and all six
  * differing lines were names — the source-layer, and the two height fields OpenMapTiles prefixes with
  * `render_` because it pre-computes them from the building's tags.
  */
