@@ -1,7 +1,18 @@
-import type { ResolvedColors } from '../options/index.js';
-import type { PaletteDefinition } from './types.js';
+/**
+ * The reference palette: the one colour table in this package written by hand.
+ *
+ * Every other theme — the four other light palettes and all five dark ones — is derived from it by
+ * `scripts/lib/theme-generator.ts` and lives in `tables.ts` in a compact form, because nobody edits
+ * those by hand. This one stays spelled out: it is the thing a person reads, compares against
+ * OSM Bright, and changes.
+ *
+ * Change a colour here and every derived theme moves with it — run `npm run generate-themes`, which
+ * rewrites `tables.ts`, and `npm run compare -- --baseline` to see the effect.
+ */
 
-const light: ResolvedColors = {
+import type { ResolvedColors } from '../options/index.js';
+
+export const COLORFUL: ResolvedColors = {
 	// Light mode mirrors the OpenMapTiles "OSM Bright" palette exactly (see style.osm-bright.json).
 	background: '#F8F4F0',
 	land: '#F8F4F0',
@@ -49,55 +60,3 @@ const light: ResolvedColors = {
 	labelHousenumber: '#0F0B074D',
 	labelWater: '#4E5B68',
 };
-
-// Light colors are taken directly from the v5 Colorful palette.
-const dark: ResolvedColors = {
-	background: '#282725',
-	land: '#282725',
-	water: '#0C1C2A',
-	glacier: '#464646',
-	natureWood: '#2B3B1D',
-	natureGrass: '#2C3923',
-	naturePark: '#383F1F',
-	natureAgriculture: '#292D17',
-	natureSand: '#2C2B14',
-	natureRock: '#2A2922',
-	natureWetland: '#2A362F',
-	natureLeisure: '#2B2F25',
-	areaResidential: '#2B2826',
-	areaCommercial: '#2E2829',
-	areaIndustrial: '#2B271C',
-	areaWaste: '#3E3B2B',
-	areaBurial: '#31332F',
-	siteConstruction: '#5959591A',
-	siteEducation: '#2B2B0020',
-	siteHospital: '#C752511A',
-	siteDanger: '#FF76654D',
-	sitePrison: '#2C252B1A',
-	siteParking: '#302E2D',
-	siteSports: '#29272426',
-	building: '#312C27',
-	buildingBg: '#393734',
-	roadStreet: '#525252',
-	roadStreetBg: '#353432',
-	roadMotorway: '#694710',
-	roadMotorwayBg: '#5A3104',
-	roadTrunk: '#695D2B',
-	roadTrunkBg: '#5A3104',
-	transitRail: '#474E54',
-	transitSubway: '#45525C',
-	transitCycle: '#24292D',
-	transitFoot: '#302732',
-	boundary: '#575770',
-	boundaryDisputed: '#4A4956',
-	label: '#DEDEF0',
-	labelHalo: '#000000CC',
-	labelShield: '#000000',
-	labelSymbol: '#9E9BA2',
-	labelPoi: '#84848466',
-	labelHousenumber: '#C5C0BB4D',
-	labelWater: '#7D8893',
-};
-
-// Generated from `colorful` by `npm run generate-themes` — change the generator, not these values.
-export const colorful: PaletteDefinition = { light, dark };

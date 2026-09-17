@@ -1,4 +1,4 @@
-import { colorOptionsKeys } from './color-keys.js';
+import { colorOptionsKeys } from '../../themes/color-keys.js';
 
 /*
  * The v6 names of options that existed in v5, so an unknown-key error can say what to use instead.
@@ -6,7 +6,7 @@ import { colorOptionsKeys } from './color-keys.js';
  *
  * Everything here is built on first use. That began as a way to survive a cycle — `colors.ts` imported
  * the key check, which imports this module, so reading `colorOptionsKeys` at load time ran before it
- * existed — and the cycle is gone now that the key list lives in `color-keys.ts`. The laziness stays
+ * existed — and the cycle is gone now that the key list lives in `themes/color-keys.ts`. The laziness stays
  * for a better reason: these tables are consulted only when a caller passes an option key that does not
  * exist, and building them at module load would spend that work in every program that never does.
  */

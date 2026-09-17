@@ -1,11 +1,16 @@
 /**
- * The colour keys, and the type that names them.
+ * The colour slots a palette fills: their names, their order, and the option type that mirrors them.
  *
- * A leaf on purpose: it imports nothing, so anything may read the key list without dragging the
- * resolver — and its `checkKeys` dependency — along with it. `v5-hints.ts` is the reason. It needs the
- * list to map v5 colour names onto v6 ones, and while the list lived beside `resolveColors` that single
- * import closed a cycle: `keys → v5-hints → colors → keys`, which survived only because `v5-hints`
+ * A leaf on purpose — it imports nothing — so anything may read the key list without dragging the
+ * resolver, and its `checkKeys` dependency, along with it. `options/parts/v5-hints.ts` is why: it needs
+ * the list to map v5 colour names onto v6 ones, and while the list lived beside `resolveColors` that
+ * single import closed a cycle (`keys → v5-hints → colors → keys`), survived only because `v5-hints`
  * built its tables lazily.
+ *
+ * It sits in `themes/` rather than `options/` because the order is load-bearing here: `tables.ts` stores
+ * each derived palette as bare values in exactly this sequence, and `getPaletteColors` zips them back
+ * together against this array. `options` re-exports both names from `parts/colors.ts`, so callers still
+ * import them from the options surface; the dependency runs options → themes, never back.
  */
 
 export type ColorsOptions = {

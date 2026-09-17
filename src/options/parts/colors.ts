@@ -1,10 +1,10 @@
 import { checkKeys, type KnownKeys } from './keys.js';
-import { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
+import { colorOptionsKeys, type ColorsOptions } from '../../themes/color-keys.js';
 import type { ResolvedTheme } from './theme.js';
 import { getPaletteColors } from '../../themes/index.js';
 
 // Re-exported so every consumer keeps reaching them through this module, and through the barrel.
-export { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
+export { colorOptionsKeys, type ColorsOptions } from '../../themes/color-keys.js';
 
 export type ResolvedColors = Required<ColorsOptions>;
 

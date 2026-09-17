@@ -51,6 +51,23 @@ describe('palette color key coverage', () => {
 	}
 });
 
+// ── The encoded tables ───────────────────────────────────────────────────────
+
+describe('the encoded tables in tables.ts', () => {
+	// Nine of the ten palettes are stored as one comma-separated string of hex digits, decoded against
+	// `colorOptionsKeys` by position. Nothing about that is self-checking: a table one value short, or a
+	// key added to the middle of the list without regenerating, would silently shift every colour after
+	// it onto the wrong key — a wrong style, not an error. The shape of the decoded value is the guard.
+	for (const palette of PALETTES) {
+		it(`${palette} decodes to ${ALL_KEYS.length} plain hex colours`, () => {
+			const colors = getPaletteColors(palette) as Record<string, string>;
+			expect(Object.keys(colors)).toHaveLength(ALL_KEYS.length);
+			const malformed = ALL_KEYS.filter((key) => !/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(colors[key]));
+			expect(malformed).toEqual([]);
+		});
+	}
+});
+
 // ── getPaletteColors ─────────────────────────────────────────────────────────
 
 describe('getPaletteColors()', () => {

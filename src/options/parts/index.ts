@@ -3,9 +3,9 @@
  * composite resolvers need, instead of a seventeen-line preamble in each of them.
  *
  * ⚠️ **Nothing re-exported here may import this file.** That is the whole rule, and it is what keeps
- * the module graph acyclic. The modules themselves form a small DAG — `color-keys` and `resolve-url`
- * import nothing, `keys` reads the v5 hints, `colors` and `urls` build on those — so a barrel over them
- * is safe as long as none of them reaches back through it. `osm-overlay`, `osm` and `satellite` sit
+ * the module graph acyclic. The modules themselves form a small DAG — `resolve-url` imports nothing,
+ * `keys` reads the v5 hints, `colors` and `urls` build on those — so a barrel over them is safe as long
+ * as none of them reaches back through it. `osm-overlay`, `osm` and `satellite` sit
  * *above* this file and import from it, which is why they are deliberately absent.
  *
  * A cycle here would not fail loudly: it would surface as a temporal-dead-zone error at a module-level

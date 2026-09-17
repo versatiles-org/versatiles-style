@@ -15,7 +15,6 @@
 		"collapse-dir": [
 			"src/options/parts/*",
 			"src/cartography/*",
-			"src/themes/*",
 			"src/features/*",
 			"src/omt/layers/*",
 			"src/protomaps/layers/*",

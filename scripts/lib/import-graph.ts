@@ -103,13 +103,22 @@ export function findCycles(graph: ReadonlyMap<string, ReadonlySet<string>>): str
 	return cycles;
 }
 
-/** Every relative specifier `file` imports or re-exports, resolved. Unlike `runtimeImports`, type-only ones count. */
-function allImports(file: string): { specifier: string; target: string }[] {
+/** Every relative specifier `file` imports or re-exports, each flagged with whether it survives to runtime. */
+function allImports(file: string): { specifier: string; target: string; runtime: boolean }[] {
 	const source = readFileSync(file, 'utf8');
-	const found: { specifier: string; target: string }[] = [];
-	for (const match of source.matchAll(/(?:^|\n)\s*(?:import|export)\s+(?:type\s+)?[\s\S]*?from\s+'(\.[^']+)'/g)) {
-		const target = resolveSpecifier(file, match[1]);
-		if (target) found.push({ specifier: match[1], target });
+	const found: { specifier: string; target: string; runtime: boolean }[] = [];
+	for (const match of source.matchAll(/(?:^|\n)\s*(?:import|export)\s+(type\s+)?([\s\S]*?)from\s+'(\.[^']+)'/g)) {
+		const [, typeKeyword, clause, specifier] = match;
+		const braced = /\{([\s\S]*)\}/.exec(clause);
+		const names = braced
+			? braced[1]
+					.split(',')
+					.map((name) => name.trim())
+					.filter(Boolean)
+			: [];
+		const runtime = !typeKeyword && !(names.length > 0 && names.every((name) => name.startsWith('type ')));
+		const target = resolveSpecifier(file, specifier);
+		if (target) found.push({ specifier, target, runtime });
 	}
 	return found;
 }
@@ -142,22 +151,28 @@ function sourceFiles(directory: string = SRC): string[] {
  * Deep imports that the barrel beside them already covers — `'../options/minimize.js'` in a file whose
  * next line reads `from '../options/index.js'`.
  *
- * Only that exact shape is reported, and both halves of it matter. A barrel that does not re-export the
+ * Only that exact shape is reported, and every half of it matters. A barrel that does not re-export the
  * module cannot replace the deep import; and where the importing file does *not* already pull the barrel
  * in, the deep import is a real choice — `src/index.ts` names `shortbread/layer-groups-map.js` precisely
- * so that the npm entry does not drag the whole schema in behind it. What is left over is the case that
- * costs a second edge in the dependency graph and buys nothing: the module is loaded either way.
+ * so that the npm entry does not drag the whole schema in behind it.
+ *
+ * The last half is that a *value* deep import is only redundant when the barrel is already imported at
+ * runtime too. Where the file takes nothing but types from the barrel, that edge is erased and the deep
+ * import is what keeps it erased: `src/themes/index.ts` reads `colorOptionsKeys` from the leaf
+ * `options/parts/color-keys.js` because the options barrel reaches back into `themes`, and routing that
+ * one value through it closes a runtime loop that fails as a temporal-dead-zone error three files away.
  */
 export function redundantDeepImports(): string[] {
 	const findings: string[] = [];
 	for (const file of sourceFiles()) {
 		const imports = allImports(file);
-		const targets = new Set(imports.map((i) => i.target));
-		for (const { specifier, target } of imports) {
+		const present = new Set(imports.map((i) => i.target));
+		const atRuntime = new Set(imports.filter((i) => i.runtime).map((i) => i.target));
+		for (const { specifier, target, runtime } of imports) {
 			if (target.endsWith('/index.ts') || dirname(target) === dirname(file)) continue;
 			const barrel = resolve(dirname(target), 'index.ts');
-			if (!targets.has(barrel) || !existsSync(barrel)) continue;
-			if (!reExports(barrel, target)) continue;
+			if (!existsSync(barrel) || !reExports(barrel, target)) continue;
+			if (!(runtime ? atRuntime.has(barrel) : present.has(barrel))) continue;
 			findings.push(`${relative(SRC, file)} imports '${specifier}', but already imports ${relative(SRC, barrel)}`);
 		}
 	}
