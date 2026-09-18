@@ -64,10 +64,27 @@ const LINE_OPACITY = 0.2;
  * 0.2 everywhere else. Since boundary and road geometry is split per way and per tile, that is a bright
  * bead at every vertex and every seam between features — the whole overlay reads as noisy.
  *
- * So the overlay drops them and takes MapLibre's own `butt` and `miter`, which do not overlap: a butt
- * cap stops at the endpoint, and a miter join extends the two segment quads to meet at a point. Sharp
- * corners fall back to a bevel past `line-miter-limit`, which does not overlap either. Only `round` is
- * removed — a layer that asked for `butt` meant it.
+ * So the overlay drops them and takes MapLibre's own `butt` and `miter`. Only `round` is removed — a
+ * layer that asked for `butt` meant it.
+ *
+ * The two are not worth the same, and `butt` is the one doing the work. Measured on
+ * `@maplibre/maplibre-gl-native` 6.4.1 at `line-opacity` 0.2, counting covered pixels by blend depth:
+ *
+ * - caps, two features meeting end to end — `butt` 0.33% of covered pixels blended twice, `round`
+ *   3.34%. A round cap really does stop overlapping once it is gone.
+ * - joins, one continuous zig-zag (bends only, no interior caps) — `miter` 10.53%, `bevel` 10.53%
+ *   (pixel-identical), `round` 14.26%.
+ *
+ * So `miter` does *not* avoid overlap, the way this comment used to claim. The two segment quads
+ * overlap each other on the *inside* of every corner whatever the join is, and that is most of the
+ * beading; unrounding a join removes only about a quarter of it. On real border geometry the same
+ * holds — `boundary-country` at z6 goes 11.23% (miter) to 16.51% (round) — but the two render
+ * indistinguishably: 1.5% of pixels differ by more than 8/255 at z6, 0.4% at z8, 0.001% at z10, and
+ * every difference sits on a corner. What makes a boundary look noisy is the layer crossing itself
+ * (see the note above), which no join style touches.
+ *
+ * Joins are therefore unrounded for consistency and a small gain, not because they were the problem.
+ * Caps are unrounded because they were.
  */
 function unroundJoins(layer: MaplibreLayer): void {
 	const holder = layer as { layout?: Record<string, unknown> };
