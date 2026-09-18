@@ -71,6 +71,11 @@ jobs:
         # test of the published artifact.
         node: ['20', '22', '24']
     steps:
+      # `npm pack` runs `prepack`, which is the full build — including `build-sprites`, which
+      # shells out to optipng. Without this the Pack step dies with `spawn optipng ENOENT`.
+      - name: Install optipng
+        run: sudo apt-get install -y optipng
+
       - name: Checkout
         uses: actions/checkout@v7
 
