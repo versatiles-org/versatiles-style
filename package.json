@@ -70,8 +70,7 @@
 		"test-coverage": "vitest run --coverage",
 		"typecheck": "tsc --noEmit",
 		"upgrade": "vrt deps-upgrade",
-		"vendor-schema": "tsx scripts/vendor-schema.ts",
-		"prepare": "husky || true"
+		"vendor-schema": "tsx scripts/vendor-schema.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -114,7 +113,6 @@
 		"@vitest/coverage-v8": "^5.0.1",
 		"bin-pack": "^1.0.2",
 		"eslint": "^10.10.0",
-		"husky": "^9.1.7",
 		"maplibre-gl": "^6.10.0",
 		"prettier": "^3.9.7",
 		"rollup": "^4.63.3",

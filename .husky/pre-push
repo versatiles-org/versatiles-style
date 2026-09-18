@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-npm run lint
-npm run test
-npm run format:check
