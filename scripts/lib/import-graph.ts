@@ -179,6 +179,69 @@ export function redundantDeepImports(): string[] {
 	return findings.sort();
 }
 
+/**
+ * A deep import into another directory that the barrel beside it already re-exports — the import that
+ * *could* have read `from '../color/index.js'` and instead names a file inside `color/`.
+ *
+ * This is the broader cousin of `redundantDeepImports`, which only reports the case where the barrel is
+ * imported by the same file anyway. Here the barrel need not be imported at all: the rule is that
+ * crossing a directory boundary goes through that directory's front door, so a module's internal layout
+ * stays its own business.
+ *
+ * Sibling imports are untouched — inside a directory, naming the file *is* the front door — and so is a
+ * target no barrel re-exports, which has no door to use.
+ *
+ * Two shapes are out of scope rather than exempted, because for them the barrel is not an option a
+ * person is declining to take:
+ *
+ *   - **A child reaching up into its own parent**, `shortbread/layers/roads.ts` → `../context.js`. The
+ *     barrel above it imports `layers/`, so routing back through it is the very cycle the tests above
+ *     forbid. 18 imports have this shape and every one of them is structural.
+ *   - **Test files.** A test names the module it is about; making it enter through a barrel pulls in the
+ *     directory's whole surface to exercise one function, which is noise rather than encapsulation. 33
+ *     imports have this shape.
+ *
+ * `exemptions` are what is left: deep imports that exist for a reason the rule cannot see; each is the
+ * exact `<file> -> <specifier>` pair, and an entry that no longer matches anything is itself reported,
+ * so the list cannot quietly rot.
+ */
+export function avoidableDeepImports(exemptions: Readonly<Record<string, string>> = DEEP_IMPORT_EXEMPTIONS): string[] {
+	const findings: string[] = [];
+	const unused = new Set(Object.keys(exemptions));
+	for (const file of sourceFiles()) {
+		if (file.endsWith('.test.ts')) continue;
+		for (const { specifier, target } of allImports(file)) {
+			if (target.endsWith('/index.ts') || dirname(target) === dirname(file)) continue;
+			const barrel = resolve(dirname(target), 'index.ts');
+			if (!existsSync(barrel) || !reExports(barrel, target)) continue;
+			// The barrel sits above the importing file: see "a child reaching up into its own parent".
+			if (!relative(dirname(barrel), file).startsWith('..')) continue;
+			const key = `${relative(SRC, file)} -> ${specifier}`;
+			if (key in exemptions) {
+				unused.delete(key);
+				continue;
+			}
+			findings.push(`${key} (use ${relative(SRC, barrel)})`);
+		}
+	}
+	for (const key of unused) findings.push(`exemption no longer applies: ${key}`);
+	return findings.sort();
+}
+
+/**
+ * The deep imports `avoidableDeepImports` allows, each with why it is not a style choice.
+ *
+ * The bar is that routing the import through its barrel would change what *runs*, not how it reads — so
+ * a type-only deep import never belongs here, being erased before anything runs. That is why the list
+ * holds one entry and not three: `options/minimize.ts` and `options/parts/urls.ts` reached past their
+ * barrels for types alone and now go through them.
+ */
+export const DEEP_IMPORT_EXEMPTIONS: Readonly<Record<string, string>> = {
+	'index.ts -> ./shortbread/layer-groups-map.js':
+		'The npm entry takes one function from the module. Through `shortbread/index.ts` it would pull the ' +
+		'whole schema into the published bundle behind it.',
+};
+
 /** The same graph one level up: `options/parts/urls.ts` counts as `options`. Self-edges are dropped. */
 export function directoryGraph(graph: ReadonlyMap<string, ReadonlySet<string>>): Map<string, Set<string>> {
 	const directoryOf = (file: string): string => {

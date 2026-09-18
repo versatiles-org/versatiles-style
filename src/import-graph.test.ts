@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { ENTRIES, directoryGraph, findCycles, importGraph, redundantDeepImports } from '../scripts/lib/import-graph.js';
+import {
+	ENTRIES,
+	avoidableDeepImports,
+	directoryGraph,
+	findCycles,
+	importGraph,
+	redundantDeepImports,
+} from '../scripts/lib/import-graph.js';
 
 /**
  * The source tree has no import cycles — neither between modules nor between directories.
@@ -57,6 +64,30 @@ describe('the import graph', () => {
 		// because the barrel above them imports `layers/`. Neither also imports the barrel, so neither is
 		// reported. See `redundantDeepImports`.
 		expect(redundantDeepImports()).toStrictEqual([]);
+	});
+
+	it('crosses a directory boundary through that directory’s barrel', () => {
+		// The stronger rule, and the one that keeps a directory's internal layout its own business: where a
+		// barrel re-exports the module, reach it by the barrel rather than by naming a file inside.
+		//
+		// Two shapes are out of scope, not exempted, because the barrel is genuinely unavailable there: a
+		// child reaching up into its own parent (`shortbread/layers/roads.ts` → `../context.js`, which
+		// through `shortbread/index.ts` would be a cycle), and test files, which name the module under test
+		// on purpose. What is left is `DEEP_IMPORT_EXEMPTIONS` — deep imports that change what *runs*, of
+		// which there is exactly one. A stale entry there fails this test too.
+		expect(avoidableDeepImports()).toStrictEqual([]);
+	});
+
+	it('finds the deep imports it exempts, and says when an exemption is stale', () => {
+		// The positive control for the rule above: exempt nothing and the one entry has to come back, or
+		// an empty list up there would mean the check matches nothing rather than that the tree is clean.
+		expect(avoidableDeepImports({})).toStrictEqual([
+			'index.ts -> ./shortbread/layer-groups-map.js (use shortbread/index.ts)',
+		]);
+		// and an exemption for an import that no longer exists is a finding of its own
+		expect(avoidableDeepImports({ 'gone.ts -> ./nowhere.js': 'stale' })).toContain(
+			'exemption no longer applies: gone.ts -> ./nowhere.js'
+		);
 	});
 
 	it('has no directory cycles', () => {

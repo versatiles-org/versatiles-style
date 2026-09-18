@@ -30,7 +30,7 @@ import { Color } from '../color/index.js';
 // depend on `shortbread`, which depends on `dsl`, which depends back on these options — one edge
 // that fuses half the package into a single cycle. The overlay's group map is therefore passed in
 // by the caller (`src/api/satellite.ts`), which already knows about schemas.
-import type { LayerGroupMap } from '../shortbread/layer-groups-map.js';
+import type { LayerGroupMap } from '../shortbread/index.js';
 
 type Plain = Record<string, unknown>;
 
