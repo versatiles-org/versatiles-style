@@ -1,4 +1,5 @@
 import { checkKeys } from './keys.js';
+import { reportIssue } from './issues.js';
 
 /**
  * A glyph name, as the glyph server publishes it: `'noto_sans_regular'`, `'fira_sans_semibold_italic'`,
@@ -210,14 +211,16 @@ function checkStyleValue(key: (typeof LABEL_STYLE_KEYS)[number], value: unknown,
 				: typeof value === 'number' && Number.isFinite(value)
 					? undefined
 					: 'a number';
-	if (expected !== undefined) throw new Error(`${path}: expected ${expected}, got ${JSON.stringify(value)}`);
+	if (expected !== undefined) reportIssue({ path, message: `expected ${expected}, got ${JSON.stringify(value)}` });
 }
 
 /** A node of the text tree, checked: an object with only `known` keys and well-typed style values. */
 function textNode(value: unknown, known: readonly string[], path: string): Node | undefined {
 	if (value === undefined) return undefined;
 	if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-		throw new Error(`${path}: expected an object, got ${JSON.stringify(value)}`);
+		reportIssue({ path, message: `expected an object, got ${JSON.stringify(value)}` });
+		// Collecting: nothing below can read a non-object, so this subtree contributes no further issues.
+		return undefined;
 	}
 	checkKeys(value as Node, keySet(known) as never, path);
 	for (const key of LABEL_STYLE_KEYS) checkStyleValue(key, (value as Node)[key], `${path}.${key}`);
@@ -240,9 +243,10 @@ export function resolveText(
 	);
 	const pitchAlignment = text?.pitchAlignment ?? 'map';
 	if (!PITCH_ALIGNMENTS.includes(pitchAlignment)) {
-		throw new Error(
-			`${path}.pitchAlignment: unknown value "${String(pitchAlignment)}". Valid values: ${PITCH_ALIGNMENTS.join(', ')}.`
-		);
+		reportIssue({
+			path: `${path}.pitchAlignment`,
+			message: `unknown value "${String(pitchAlignment)}". Valid values: ${PITCH_ALIGNMENTS.join(', ')}.`,
+		});
 	}
 
 	const nodes = new Map<string, Node | undefined>();

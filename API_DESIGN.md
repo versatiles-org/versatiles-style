@@ -503,6 +503,9 @@ osm.slots: {
 osm.resolveOptions(options?: OsmOptions): ResolvedOsm
 osm.minimizeOptions(options?: OsmOptions): OsmOptions
 osm.toCode(options?: OsmOptions): string
+osm.validateOptions(options?: OsmOptions):
+  | { ok: true;  issues: readonly []; options: ResolvedOsm }
+  | { ok: false; issues: readonly OptionIssue[] }
 ```
 
 `osm.defaults` and `osm.resolveOptions()` fill in every `sky` value except `sky.skyColor`, which stays
@@ -514,7 +517,29 @@ still follows. A UI shows `colors.water` for the sky colour while it is unset.
 when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
 means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
 
-> **npm only.** `minimizeOptions`, `toCode` and the font-discovery helpers
+`osm.validateOptions(options)` checks options **without throwing**, and reports every problem at once
+rather than the first. `resolveOptions` stays the call for a program that cannot proceed — it throws,
+with the same message it always did. This is for a tool handing back input someone else typed: a pasted
+options object, a URL, a form.
+
+```ts
+osm.validateOptions({ textScale: 2, colors: { streetbg: '#f00' } });
+// { ok: false, issues: [
+//     { path: 'textScale',       message: '"textScale" — in v6 this is "text.scale"',
+//       suggestion: 'text.scale' },
+//     { path: 'colors.streetbg', message: '"colors.streetbg" — in v6 this is "colors.roadStreetBg"',
+//       suggestion: 'colors.roadStreetBg' },
+//   ] }
+```
+
+Each `path` is relative to the options object, so a UI can mark the control it names; `message`
+describes that one node without the path prefixed; and `suggestion` carries the v6 key where the
+migration tables know one, so "rename it for me" needs no parsing of English. Resolution runs once with
+the validators collecting instead of throwing, so the list is what a single pass reached — it is not
+guaranteed exhaustive, since a subtree that could not be read at all (`text: 42`) has nothing below it
+to check. Fix what is reported and validate again, as with a compiler.
+
+> **npm only.** `minimizeOptions`, `toCode`, `validateOptions` and the font-discovery helpers
 > (`fetchFontFaces`, `fontCovers`, `fontScripts`, `languageScript`, `textScripts`, `FONT_SCRIPTS`) are
 > not in the browser bundle served from the CDN.
 > They exist to store options compactly or print a snippet — work for a style _editor_, which is an npm
@@ -691,7 +716,7 @@ imports `Color`, `inlineSources`, `guessStyle` and the palettes once, from the r
 Each builder takes the **same option vocabulary** as `osm()` — `theme`, `colors`, `recolor`, `layers`,
 `text`, `icon`, `sun`, `sky`, `projection` — and carries the same statics (`palettes`, `colorKeys`,
 `layerGroups`, `textGroups`, `defaults`, `colors`, `languages`, `slots`, `resolveOptions`,
-`minimizeOptions`, `toCode`, `tileset`). The option names describe concepts rather than layers, so they
+`minimizeOptions`, `toCode`, `validateOptions`, `tileset`). The option names describe concepts rather than layers, so they
 survive the change of tileset. What differs is only what the tiles themselves can express:
 
 |                      | `osm()`                | `omt()`               | `protomaps()`                   |

@@ -1,4 +1,5 @@
 import { PALETTES } from '../../themes/index.js';
+import { reportIssue } from './issues.js';
 
 /**
  * A theme name. Each of the five palettes is a light theme and has a dark theme of its own, named
@@ -49,31 +50,41 @@ export function isDarkMode(): boolean {
  * table. The realistic trigger is a v5 style name (`eclipse`, `graybeard`, …) carried over from an
  * old link or config, so those are answered with their v6 theme.
  */
-function checkPalette(palette: string, path: string): Palette {
+function checkPalette(palette: string, path: string, fallback: Palette): Palette {
 	if ((PALETTES as readonly string[]).includes(palette)) return palette as Palette;
 	const v5: string | undefined = Object.prototype.hasOwnProperty.call(V5_STYLE_THEMES, palette)
 		? V5_STYLE_THEMES[palette as keyof typeof V5_STYLE_THEMES]
 		: undefined;
-	throw new Error(
+	reportIssue(
+		{
+			path,
+			message: `unknown palette "${palette}". Valid palettes: ${PALETTES.join(', ')}.`,
+			...(v5 === undefined ? {} : { suggestion: v5 }),
+		},
 		`${path}: unknown palette "${palette}". Valid palettes: ${PALETTES.join(', ')}.` +
 			(v5 === undefined ? '' : ` "${palette}" is a v5 style name — in v6 use "${v5}".`)
 	);
+	// Only reached while collecting: every colour below here reads the palette table, so carry on with
+	// the default rather than with a name that has no table.
+	return fallback;
 }
 
 /**
- * The error for a theme object. Until dark variants became themes of their own, `theme` also took
- * `{ palette, darkMode }`; name the theme such an object asked for, so the fix is a copy and paste.
+ * The complaint about a theme object, without its path — `reportIssue` prefixes the path for the thrown
+ * form and keeps it a separate field for the collected one. Until dark variants became themes of their
+ * own, `theme` also took `{ palette, darkMode }`; name the theme such an object asked for, so the fix is
+ * a copy and paste.
  */
-function themeObjectError(theme: object, defaultPalette: Palette, path: string): Error {
+function themeObjectMessage(theme: object, defaultPalette: Palette): string {
 	const { palette, darkMode } = theme as { palette?: unknown; darkMode?: unknown };
 	const light = typeof palette === 'string' ? palette : defaultPalette;
 	const dark = `${light}-dark`;
 	let replacement = `"${light}"`;
 	if (darkMode === true) replacement = `"${dark}"`;
 	else if (darkMode === 'auto') replacement = `isDarkMode() ? "${dark}" : "${light}"`;
-	return new Error(
-		`${path}: expected a theme name, not an object — use ${replacement}. ` +
-			'Dark variants are themes of their own ("colorful-dark", …); "darkMode" was removed.'
+	return (
+		`expected a theme name, not an object — use ${replacement}. ` +
+		'Dark variants are themes of their own ("colorful-dark", …); "darkMode" was removed.'
 	);
 }
 
@@ -87,6 +98,9 @@ export function resolveTheme(
 	path = 'theme'
 ): ResolvedTheme {
 	if (theme == null) return defaultPalette;
-	if (typeof theme === 'object') throw themeObjectError(theme, defaultPalette, path);
-	return checkPalette(String(theme), path);
+	if (typeof theme === 'object') {
+		reportIssue({ path, message: themeObjectMessage(theme, defaultPalette) });
+		return defaultPalette;
+	}
+	return checkPalette(String(theme), path, defaultPalette);
 }

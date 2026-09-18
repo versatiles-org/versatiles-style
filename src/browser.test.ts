@@ -7,7 +7,7 @@ import * as browser from './browser.js';
  * The CDN bundle's surface, and what it is allowed to pull in.
  *
  * Two groups of exports are deliberately npm-only, because they serve tooling rather than pages: the
- * authoring helpers (`minimizeOptions`, `toCode`) and font discovery. Nothing in the style-building
+ * authoring helpers (`minimizeOptions`, `toCode`, `validateOptions`) and font discovery. Nothing in the style-building
  * path uses either. (`getStyleVariants` was a third until it moved out of `src` altogether, to
  * `scripts/lib/variants.ts` — the strongest form of this guarantee, and the reason it is not listed
  * here: a module outside `src` cannot be reached by anything in it.)
@@ -121,6 +121,7 @@ describe('the browser entry', () => {
 		for (const fn of [browser.osm, browser.satellite]) {
 			expect('minimizeOptions' in fn).toBe(false);
 			expect('toCode' in fn).toBe(false);
+			expect('validateOptions' in fn).toBe(false);
 		}
 		// what stays on them: everything a page builds a style with
 		expect('defaults' in browser.osm).toBe(true);

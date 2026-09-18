@@ -10,6 +10,8 @@
  * this — putting it there would trade a directory cycle for a file one.
  */
 
+import { reportIssue } from './issues.js';
+
 export function resolveUrl(base: string, url: string): string {
 	if (!base) return url;
 	try {
@@ -17,7 +19,10 @@ export function resolveUrl(base: string, url: string): string {
 	} catch {
 		// `new URL` throws a bare "Invalid base URL" that names neither value; say which option
 		// is at fault, since the base almost always comes from `urls.base`.
-		throw new Error(`Cannot resolve "${url}" against base "${base}" — check the \`urls.base\` option.`);
+		reportIssue(
+			{ path: 'urls.base', message: `cannot resolve "${url}" against base "${base}"` },
+			`Cannot resolve "${url}" against base "${base}" — check the \`urls.base\` option.`
+		);
 	}
 	url = url.replace(/%7B/gi, '{');
 	url = url.replace(/%7D/gi, '}');

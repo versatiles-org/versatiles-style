@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import { colorOptionsKeys } from '../options/index.js';
+import { colorOptionsKeys, validateOptions } from '../options/index.js';
 import { minimizeOmtOptions, resolveOmt, type OmtOptions, type ResolvedOmt } from './options.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
@@ -142,6 +142,13 @@ export const omt = Object.assign(omtFn, {
 
 	/** Resolve raw OmtOptions to a fully validated ResolvedOmt. */
 	resolveOptions: resolveOmt,
+
+	/**
+	 * Check options without throwing, reporting every problem at once as data rather than as a message
+	 * to parse — for a tool validating options someone else typed. `resolveOptions` stays the call for a
+	 * program that cannot proceed: it throws on the first problem.
+	 */
+	validateOptions: (options?: OmtOptions) => validateOptions(resolveOmt, options, 'omt'),
 
 	/**
 	 * The smallest options object that builds the same style: every value equal to its default is

@@ -60,6 +60,9 @@ export type {
 	ResolvedSatelliteRaster,
 	ResolvedSatelliteUrls,
 	ResolvedSky,
+	// ── Validation (`validateOptions`) ──
+	OptionIssue,
+	ValidationResult,
 	ResolvedSun,
 	ResolvedTerrain,
 	ResolvedText,

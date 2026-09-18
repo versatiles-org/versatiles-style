@@ -98,6 +98,9 @@ import { getOverlayLayerGroupMap } from './shortbread/layer-groups-map.js';
 import {
 	minimizeOsmOptions,
 	minimizeSatelliteOptions,
+	resolveOsm,
+	resolveSatellite,
+	validateOptions,
 	type OsmOptions,
 	type SatelliteOptions,
 } from './options/index.js';
@@ -127,6 +130,13 @@ export const osm = Object.assign(osmCore, {
 	 */
 	toCode: (options?: OsmOptions, codeOptions?: CodeOptions): string =>
 		styleCode('osm', minimizeOsmOptions(options), codeOptions),
+
+	/**
+	 * Check options without throwing, reporting every problem at once as data rather than as a message
+	 * to parse. `resolveOptions` stays the call for a program that cannot proceed: it throws on the
+	 * first problem.
+	 */
+	validateOptions: (options?: OsmOptions) => validateOptions(resolveOsm, options, 'osm'),
 });
 
 /** `satellite()` with the same authoring helpers. */
@@ -140,6 +150,9 @@ export const satellite = Object.assign(satelliteCore, {
 	/** A runnable `@versatiles/style` snippet for these options, minimised first. */
 	toCode: (options?: SatelliteOptions, codeOptions?: CodeOptions): string =>
 		styleCode('satellite', minimizeSatelliteOptions(options, getOverlayLayerGroupMap), codeOptions),
+
+	/** Check options without throwing, reporting every problem at once. See `osm.validateOptions`. */
+	validateOptions: (options?: SatelliteOptions) => validateOptions(resolveSatellite, options, 'satellite'),
 });
 
 // ── TileJSON validation ───────────────────────────────────────────────────────

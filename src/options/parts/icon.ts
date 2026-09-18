@@ -1,4 +1,5 @@
 import { checkKeys } from './keys.js';
+import { reportIssue } from './issues.js';
 
 /** Size and spacing of icons: POI and transit-stop icons, motorway shields and road markings. */
 export type IconOptions = {
@@ -18,7 +19,8 @@ export function resolveIcon(icon?: IconOptions, path = 'icon'): ResolvedIcon {
 	for (const key of ['scale', 'spacing'] as const) {
 		const value = icon?.[key];
 		if (value !== undefined && (typeof value !== 'number' || !Number.isFinite(value))) {
-			throw new Error(`${path}.${key}: expected a number, got ${JSON.stringify(value)}`);
+			// Continues while collecting; the default below is used in place of the rejected value.
+			reportIssue({ path: `${path}.${key}`, message: `expected a number, got ${JSON.stringify(value)}` });
 		}
 	}
 	return { scale: icon?.scale ?? 1, spacing: icon?.spacing ?? 1 };

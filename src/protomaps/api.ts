@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import { colorOptionsKeys } from '../options/index.js';
+import { colorOptionsKeys, validateOptions } from '../options/index.js';
 import {
 	minimizeProtomapsOptions,
 	resolveProtomaps,
@@ -160,6 +160,13 @@ export const protomaps = Object.assign(protomapsFn, {
 
 	/** Resolve raw ProtomapsOptions to a fully validated ResolvedProtomaps. */
 	resolveOptions: resolveProtomaps,
+
+	/**
+	 * Check options without throwing, reporting every problem at once as data rather than as a message
+	 * to parse — for a tool validating options someone else typed. `resolveOptions` stays the call for a
+	 * program that cannot proceed: it throws on the first problem.
+	 */
+	validateOptions: (options?: ProtomapsOptions) => validateOptions(resolveProtomaps, options, 'protomaps'),
 
 	/**
 	 * The smallest options object that builds the same style: every value equal to its default is

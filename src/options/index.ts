@@ -9,6 +9,7 @@
 // building blocks those modules compose (`resolveTheme`, `resolveTileSource`, `minimizeThemed`, …) are
 // exported from here; the per-schema assembly of them is not.
 export * from './parts/index.js';
+export * from './validate.js';
 export * from './minimize.js';
 export * from './osm-overlay.js';
 export * from './osm.js';
