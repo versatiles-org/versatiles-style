@@ -71,7 +71,7 @@
 		"typecheck": "tsc --noEmit",
 		"upgrade": "vrt deps-upgrade",
 		"vendor-schema": "tsx scripts/vendor-schema.ts",
-		"prepare": "husky"
+		"prepare": "husky || true"
 	},
 	"repository": {
 		"type": "git",
