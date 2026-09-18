@@ -28,6 +28,33 @@ const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 /** Multiplier applied to every line's opacity, so roads read as an overlay rather than a basemap. */
 const LINE_OPACITY = 0.2;
 
+/**
+ * Round caps and joins, which a translucent line cannot afford.
+ *
+ * A round cap puts a semicircle *past* the end of a segment and a round join a fan at every vertex, so
+ * both cover pixels the adjoining geometry already covers. Drawn opaque that is free — the same colour
+ * lands on the same colour — and it is why the basemap asks for them: they keep a boundary or a road
+ * smooth round its corners. Drawn at {@link LINE_OPACITY} it is not free: MapLibre blends each
+ * overlapping triangle in turn, so those pixels composite twice and come out at 1 − 0.8² = 0.36 against
+ * 0.2 everywhere else. Since boundary and road geometry is split per way and per tile, that is a bright
+ * bead at every vertex and every seam between features — the whole overlay reads as noisy.
+ *
+ * So the overlay drops them and takes MapLibre's own `butt` and `miter`, which do not overlap: a butt
+ * cap stops at the endpoint, and a miter join extends the two segment quads to meet at a point. Sharp
+ * corners fall back to a bevel past `line-miter-limit`, which does not overlap either. Only `round` is
+ * removed — a layer that asked for `butt` meant it.
+ */
+function unroundJoins(layer: MaplibreLayer): void {
+	const holder = layer as { layout?: Record<string, unknown> };
+	if (!holder.layout) return;
+	for (const key of ['line-cap', 'line-join'] as const) {
+		if (holder.layout[key] === 'round') delete holder.layout[key];
+	}
+	// A layer whose layout held nothing but those two is left with an empty object; the base style
+	// emits none, so the overlay should not start.
+	if (Object.keys(holder.layout).length === 0) delete holder.layout;
+}
+
 /** Whether a layer belongs in the overlay at all. */
 export function keepInOverlay(layer: { id: string; type: string }): boolean {
 	// Fills would hide the imagery outright.
@@ -48,6 +75,7 @@ export function keepInOverlay(layer: { id: string; type: string }): boolean {
 export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): void {
 	if (layer.type === 'line') {
 		scaleLayerOpacity(layer, LINE_OPACITY);
+		unroundJoins(layer);
 		return;
 	}
 	if (layer.type === 'symbol') {

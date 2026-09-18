@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { satellite } from './satellite.js';
+import { osm } from './osm.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { tileJSONFetch } from '../lib/loadTileSource.test.js';
 import { inlineSources } from '../lib/index.js';
@@ -156,6 +157,52 @@ describe('satellite()', () => {
 		const style = satellite({ osmOverlay: {} });
 		const symbols = style.layers.filter((l) => l.type === 'symbol');
 		expect(symbols.length).toBeGreaterThan(0);
+	});
+
+	// A translucent line whose caps and joins are round covers some pixels twice, and MapLibre blends
+	// each overlapping triangle in turn — so every vertex and every seam between features composites to
+	// 1 − 0.8² = 0.36 against 0.2 elsewhere, which reads as a bright bead. Free in the opaque basemap,
+	// which is why the cartography asks for round; not free once the overlay dims every line.
+	describe('overlay lines do not overlap themselves', () => {
+		const lines = (style: StyleSpecification) => style.layers.filter((l) => l.type === 'line');
+		const rounded = (layer: StyleSpecification['layers'][number]) => {
+			const layout = (layer as { layout?: Record<string, unknown> }).layout ?? {};
+			return layout['line-cap'] === 'round' || layout['line-join'] === 'round';
+		};
+
+		it('leaves no round cap or join on any overlay line', () => {
+			const overlay = lines(satellite({ osmOverlay: {} }));
+			expect(overlay.length).toBeGreaterThan(100);
+			expect(overlay.filter(rounded).map((l) => l.id)).toEqual([]);
+		});
+
+		it('keeps the basemap rounded, where the lines are opaque and it costs nothing', () => {
+			expect(lines(osm()).filter(rounded).length).toBeGreaterThan(100);
+		});
+
+		it('leaves a cap the cartography chose deliberately', () => {
+			// only `round` is dropped: a layer that asked for `butt` meant it
+			const butt = lines(osm()).filter(
+				(l) => ((l as { layout?: Record<string, unknown> }).layout ?? {})['line-cap'] === 'butt'
+			);
+			const overlay = new Map(lines(satellite({ osmOverlay: {} })).map((l) => [l.id, l]));
+			const kept = butt.filter((l) => overlay.has(l.id));
+			expect(kept.length).toBeGreaterThan(0);
+			for (const layer of kept) {
+				expect(((overlay.get(layer.id) as { layout?: Record<string, unknown> }).layout ?? {})['line-cap']).toBe('butt');
+			}
+		});
+
+		it('does not leave an empty layout behind', () => {
+			// the basemap emits none, so the overlay should not start
+			const empty = (style: StyleSpecification) =>
+				style.layers.filter((l) => {
+					const layout = (l as { layout?: Record<string, unknown> }).layout;
+					return layout !== undefined && Object.keys(layout).length === 0;
+				});
+			expect(empty(osm())).toEqual([]);
+			expect(empty(satellite({ osmOverlay: {} }))).toEqual([]);
+		});
 	});
 
 	it('osmOverlay does not add fill layers (land/water obscure satellite)', () => {
