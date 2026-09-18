@@ -8,7 +8,7 @@ import type { SourceMetadata } from '../lib/tile-cache.js';
 import type { Schema } from './baseline.js';
 
 /**
- * Building the style of one schema for the comparison, shared by `compare.ts` and `findings-report.ts`.
+ * Building the style of one schema for the comparison, used by `compare.ts`.
  *
  * Everything that is not about the schema is held fixed — theme, projection, no sky — so that only the
  * schema varies, and the vector source is the tile cache (see `scripts/lib/native-render.ts`).

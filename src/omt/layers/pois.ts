@@ -11,7 +11,7 @@ import * as b from '../../dsl/index.js';
 //
 // 1. **Only icons `base` already carries.** The sprite sheet must not grow for a schema
 //    the CDN does not serve, because every map downloads it. `base` has 120 icons; every entry below
-//    resolves to one of them, and `poi-icons.test.ts` fails if that stops being true.
+//    resolves to one of them, and `scripts/sprite-coverage.test.ts` fails if that stops being true.
 //
 // 2. **No generic fallback for unlisted classes.** This is the one place the port deliberately does *not*
 //    copy Shortbread's behaviour. Shortbread's `amenity` match ends in a generic marker, which is safe

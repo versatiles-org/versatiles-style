@@ -80,7 +80,7 @@ export function resolveOsmOverlay(
  * dependency one-way (features → options) is what stops that from being possible.
  */
 
-/** Halo tuned for imagery: tight and hard, rather than the wide soft halo used on a flat basemap (`OVERLAY_LABEL_STYLES`). */
+/** Halo tuned for imagery: tight and hard, rather than the wide soft halo a flat basemap uses (`DEFAULT_LABEL_STYLES`). Applied by `OVERLAY_LABEL_STYLES` below. */
 const HALO_WIDTH = 1;
 const HALO_BLUR = 0;
 

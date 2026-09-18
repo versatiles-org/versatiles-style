@@ -157,7 +157,7 @@ type Scalar = boolean | number;
 const scalarOf = (v: unknown): Scalar | undefined => (typeof v === 'boolean' || typeof v === 'number' ? v : undefined);
 
 // Collapse an out-of-range opacity: ≤ 0 is fully hidden (→ false), > 1 is clamped to fully visible
-// (→ true). A value in [0, 1] stays a number.
+// (→ true). A value in (0, 1] stays a number.
 //
 // An explicit `1` used to collapse to `true` as well, on the reasoning that for a layer drawn at full
 // opacity the two say the same thing. True of every layer but one: `building-3d` is drawn at 0.7, and

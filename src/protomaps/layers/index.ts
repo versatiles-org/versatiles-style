@@ -37,7 +37,8 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
 	yield* water(ctx);
-	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
+	// Aeroway (runways/taxiways) sits above water and below buildings, so a terminal reads on top of
+	// the apron it stands on, and the street network above both.
 	yield* airport(ctx);
 	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
@@ -53,7 +54,6 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// Transit stops sit between the two label bands so a stop outranks the street name it stands on;
 	// see the Shortbread assembler for why emitting them before the labels drops most of them.
 	yield* transitStops(ctx);
-	// `mountain_peak` has no Shortbread counterpart and is therefore not drawn; see the conformance test.
 	yield* placeLabels(ctx);
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);

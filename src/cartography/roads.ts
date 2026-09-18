@@ -195,7 +195,8 @@ function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b
 
 // Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
 // casing, growing in from 0 width at z13. footway/steps/path use the lavender foot color; cycleway
-// the light-blue cycle color. Tunnels dash the fill; bridges also get a deck (see bridgeDeckStyle).
+// the light-blue cycle color. Tunnels are dimmed by `underground` (no dash — see the note there);
+// bridges also get a deck (see bridgeDeckStyle).
 function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg } = ctx;
 	const fill = t === 'cycleway' ? c.transitCycle : c.transitFoot;
@@ -217,8 +218,9 @@ function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProp
 	};
 }
 
-// Returns null for variants that should not be drawn at all (e.g. ferry casing,
-// service-track rail/subway/tram) so the caller skips them instead of emitting a bare layer.
+// Returns null for variants that should not be drawn at all (e.g. ferry casing, and service track on
+// subway and the tram family) so the caller skips them instead of emitting a bare layer. Rail and
+// lightrail DO draw their service tracks, in a lighter, narrower variant.
 function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	const { c, fg, bg } = ctx;
 

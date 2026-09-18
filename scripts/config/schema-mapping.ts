@@ -22,7 +22,7 @@
  *
  * ── Why a mapping is needed at all ────────────────────────────────────────────
  *
- * Without one the gate reports that OpenMapTiles binds 0 of 40 layer groups, which is true and
+ * Without one the gate reports that OpenMapTiles binds 0 of 46 layer groups, which is true and
  * useless: the two schemas share no layer names, so a name-level diff measures vocabulary, not
  * capability. With it, the gate answers the question the plan's stop criterion is written against —
  * *which cartographic concepts does the other tileset not carry at all?*

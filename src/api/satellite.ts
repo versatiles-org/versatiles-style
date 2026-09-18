@@ -52,11 +52,10 @@ function buildRasterPaint(raster: ResolvedSatellite['raster']): Record<string, n
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
 function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecification['layers'] {
-	// Run the full OSM pipeline using the overlay's resolved options.
-	// We reconstruct OsmOptions from the resolved overlay so that osm() re-resolves it
-	// (including URL configuration that was inherited from the satellite options).
-	// `osmSource` is the already-prefetched OSM source, passed through so osm() reuses it
-	// (a resolved TileJSON object is used as-is, avoiding a second download).
+	// Run the full OSM pipeline on the overlay's already-resolved options. `ResolvedOsmOverlay` carries
+	// only the cartographic half — theme, layers, text, icon, colors, recolor — so `osm()` fills in its
+	// own URL defaults here. The style built from them is used for its layers alone; `satelliteFn`
+	// attaches the real vector source afterwards, from the satellite options' own `urls.osm`.
 	const overlayStyle = osm(overlayResolved);
 
 	// Filter: remove the opaque background layer and all fill layers.

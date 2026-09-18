@@ -46,7 +46,8 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
 	yield* water(ctx);
-	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
+	// Aeroway (runways/taxiways) sits above water and below buildings, so a terminal reads on top of
+	// the apron it stands on, and the street network above both.
 	yield* airport(ctx);
 	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);

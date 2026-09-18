@@ -31,9 +31,9 @@ import { getTextGroupMap, getLayerGroupMap } from './layer-groups-map.js';
  * The design: one function per schema, one subpath each, no registry. What that buys,
  * restated here because each point is a property of *this* file:
  *
- *  - **Bundle**: the browser entry imports `src/index.ts`, which does not import this module, so an
+ *  - **Bundle**: the browser entry is `src/browser.ts`, which does not reach this module, so an
  *    OpenMapTiles style cannot end up in the CDN bundle. No build flag decides that — the import graph
- *    does (verified by a test in `src/index.test.ts`).
+ *    does (verified by a test in `src/browser.test.ts`).
  *  - **Purity**: no registration, no global state. `omt(options)` is a function of its argument.
  *  - **Validation**: `resolveOmt` carries its own static, type-derived `checkKeys` whitelist, so the
  *    "cannot drift" guarantee survives per schema rather than being weakened into one shared list.

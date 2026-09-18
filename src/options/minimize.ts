@@ -29,7 +29,7 @@ import { Color } from '../color/index.js';
 // Type-only, and deliberately so: a *value* imported from a schema would make the option layer
 // depend on `shortbread`, which depends on `dsl`, which depends back on these options — one edge
 // that fuses half the package into a single cycle. The overlay's group map is therefore passed in
-// by the caller (`src/api/satellite.ts`), which already knows about schemas.
+// by the caller (`src/index.ts`, and `src/migrate/derive.ts`), which already knows about schemas.
 import type { LayerGroupMap } from '../shortbread/index.js';
 
 type Plain = Record<string, unknown>;
@@ -248,7 +248,7 @@ type GroupTree = { [key: string]: GroupScalar | GroupTree };
 /**
  * `layers` in its smallest spelling: resolved, then every branch whose groups all hold the same value
  * collapsed to that value, then every group left visible dropped. `{ labels: false }` resolves to
- * thirteen `false` leaves and comes back as `{ labels: false }`.
+ * twelve `false` leaves and comes back as `{ labels: false }`.
  *
  * `icons` is left out. It is only a fallback for `pois`, `markings` and `transit.stops`, which the
  * resolved tree always sets, so its own resolved value changes nothing — and writing it would hide

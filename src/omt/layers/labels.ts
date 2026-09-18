@@ -10,7 +10,7 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 // ── Where the schemas part ────────────────────────────────────────────────────
 //
 // Shortbread keeps names in label layers of their own — `street_labels`, `water_polygons_labels`,
-// `place_labels`, `boundary_labels`, eight in all. OpenMapTiles has three: `transportation_name`,
+// `place_labels`, `boundary_labels`, seven in all. OpenMapTiles has three: `transportation_name`,
 // `water_name` and `place`, with `waterway` and `housenumber` carrying their own names. Sampled with
 // `npm run schema-values -- omt place water_name transportation_name`:
 //

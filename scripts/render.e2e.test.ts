@@ -4,8 +4,9 @@ import sharp from 'sharp';
 import { osm, satellite } from '../src/index.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
-// Smoke test for the native MapLibre engine (`@maplibre/maplibre-gl-native`), the renderer
-// used by scripts/screenshots.ts and otherwise never exercised by the test suite. It confirms
+// Smoke test for the native MapLibre engine (`@maplibre/maplibre-gl-native`), the renderer used by
+// scripts/screenshots.ts — driven here directly, where `lib/native-render.e2e.test.ts` exercises the
+// same engine through the cache-backed `NativeMap` wrapper the comparisons use. It confirms
 // the C++ engine can parse AND rasterize a style produced by osm()/satellite() without error —
 // a much stronger guarantee than validateStyleMin, which only checks the JSON against the spec.
 //

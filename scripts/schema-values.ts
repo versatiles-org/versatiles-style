@@ -19,7 +19,7 @@
  *
  * It needs live tiles, so it can never be a CI gate. Two further
  * reasons to keep it manual: OpenFreeMap's tile URL embeds a build timestamp and rotates daily, so the
- * TileJSON has to be resolved each run; and the sample is a dozen tiles of a planet, so an absent value
+ * TileJSON has to be resolved each run; and the sample is a handful of tiles of a planet, so an absent value
  * is weak evidence — it may just not occur in the areas sampled. A value that *is* present is strong
  * evidence, and that asymmetry is what the output is for.
  *
@@ -209,7 +209,7 @@ async function main(): Promise<void> {
 	}
 
 	console.log(
-		'Absence is weak evidence: a value missing here may simply not occur in these twelve tiles.\n' +
+		`Absence is weak evidence: a value missing here may simply not occur in these ${SAMPLE_PLACES.length} tiles.\n` +
 			'Presence is strong — a value listed above is one a filter can rely on.'
 	);
 }

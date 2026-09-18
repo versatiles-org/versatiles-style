@@ -32,7 +32,8 @@ export const WATER_POLYGONS_APPEAR = 4;
 
 // Render order (bottom → top) mirrors the old VersaTiles Colorful land stacking: developed `landuse`
 // fills and managed green space (park/garden/leisure) go lowest, then natural `landcover` — rock,
-// forest, grass, vegetation — on top, so forest reads over overlapping parks; beach/sand last.
+// forest, grass, vegetation — on top, so forest reads over overlapping parks; then beach/sand, with
+// wetland last of all.
 const LAND: LandDef[] = [
 	// Developed / modified land, drawn lowest.
 	{

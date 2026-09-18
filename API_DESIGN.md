@@ -556,7 +556,7 @@ file. A resolved object comes back as small as the options that made it:
 - `text` is written as the smallest tree that resolves to the same label styles, one property at a
   time: every topic in `fira_sans_regular` becomes `text: { font: 'fira_sans_regular' }`, and a value
   equal to a topic's own default is left out.
-- `layers` collapses every group whose sub-groups all hold the same value: thirteen `false` labels
+- `layers` collapses every group whose sub-groups all hold the same value: twelve `false` labels
   become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
   `transit.stops` itself, so the alias has no effect there.
 - `features.terrain`, `features.hillshade` and `sun` become `true` when they equal what `true` resolves to.
@@ -916,10 +916,10 @@ type OptionsGuess =
   | { kind: 'unknown';                              report: GuessReport }
 
 type GuessReport = {
-  sources:   { id: string; type: string; guess: SchemaGuess }[]
-  evidence:  { probe: string; zoom: number; layers: string[] }[]  // what was read, from which layers
-  unmatched: string[]                                             // layers nothing read
-  warnings:  string[]                                             // what was not carried over
+  diagnostics: Diagnostic[]                                       // what was lost, guessed at, or chosen between
+  provenance:  ProvenanceMap                                      // where each option came from, by option path
+  sources:     { id: string; type: string; guess: SchemaGuess }[]
+  evidence:    { probe: string; zoom: number; layers: string[] }[] // what was read, from which layers
 }
 ```
 
@@ -1044,7 +1044,7 @@ else if (isCovered(path)) showMarker('default'); // covered, and nothing spoke f
 ```
 
 To judge a migration by eye, `npm run migrate-compare -- <style URL> …` renders each style next to its
-migration at a few places, with live tiles on both sides, into `scripts/migrate-compare/out/index.html`.
+migration at a few places, with live tiles on both sides, into `.cache/migrate-compare/index.html`.
 
 ---
 

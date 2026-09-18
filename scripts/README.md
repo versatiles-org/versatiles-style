@@ -8,9 +8,10 @@ Run each script through its `npm run` alias rather than `tsx` directly; the alia
 
 ## Where output goes
 
-Scripts never write next to their own source. Everything generated — renders, reports, downloaded
-styles, sampled tiles — lands under **`.cache/`** at the repository root, which is gitignored in
-full. To start clean:
+Scripts never write next to their own source. Everything generated for a developer to look at —
+renders, reports, downloaded styles, sampled tiles — lands under **`.cache/`** at the repository
+root, which is gitignored in full. (Build artifacts are the separate case: those are published, so
+they go to `release/`.) To start clean:
 
 ```sh
 rm -rf .cache
@@ -25,19 +26,20 @@ because it is expensive to refill — see `lib/tile-cache.ts`.
 
 ## Build
 
-Run by `npm run build`; you rarely invoke these by hand.
+Run by `npm run build`, except `screenshots.ts` as noted below; you rarely invoke these by hand.
 
-| Script              | Alias                         | Does                                                                             |
-| ------------------- | ----------------------------- | -------------------------------------------------------------------------------- |
-| `build-styles.ts`   | `build-styles`                | Bundles every style variant into `release/styles.tar.gz`.                        |
-| `build-sprites.ts`  | `build-sprites`               | Packs `icons/` into sprite sheets under `release/sprites/`.                      |
-| `icons-report.ts`   | `icons-report`, `doc-sprites` | Renders the icon overview; `--public` writes `docs/sprites.html`.                |
-| `bundle-treemap.ts` | `doc-bundle`                  | Attributes every byte of the browser bundle to a source file, via the sourcemap. |
-| `screenshots.ts`    | `doc-screenshots`             | Renders the style previews used in the README.                                   |
+| Script              | Alias                         | Does                                                                               |
+| ------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| `build-styles.ts`   | `build-styles`                | Bundles every style variant into `release/styles.tar.gz`.                          |
+| `build-sprites.ts`  | `build-sprites`               | Packs `icons/` into sprite sheets under `release/sprites/`.                        |
+| `icons-report.ts`   | `icons-report`, `doc-sprites` | Renders the icon overview; `--public` writes `docs/sprites.html`.                  |
+| `bundle-treemap.ts` | `doc-bundle`                  | Attributes every byte of the browser bundle to a source file, via the sourcemap.   |
+| `screenshots.ts`    | `doc-screenshots`             | Renders the style previews used in the README. Release workflow only, not `build`. |
 
 ## Checks
 
-Run by `npm run check` and in CI.
+Run by `npm run check` and in CI, except `schema-gate.ts`, which you invoke by hand when assessing a
+prospective schema.
 
 | Script             | Alias           | Does                                                                           |
 | ------------------ | --------------- | ------------------------------------------------------------------------------ |

@@ -37,7 +37,7 @@ import { resolveUrl } from '../options/index.js';
  *
  * Anything reachable from `src/index.ts` ships in the CDN bundle, and `src/options/index.js` is
  * reachable from it. Keeping this module here is what makes the per-schema bundle cost genuinely zero
- * rather than nearly zero: a caller who never imports `@versatiles/style/omt` downloads none of it.
+ * rather than nearly zero: a caller who never imports `@versatiles/style/protomaps` downloads none of it.
  * See the note at the top of `src/options/index.ts`.
  *
  * The building blocks below all come from the shared option surface; only their assembly is per schema.
@@ -136,7 +136,7 @@ export function resolveProtomapsFeatures(
 }
 
 /**
- * Options for `omt()`.
+ * Options for `protomaps()`.
  *
  * The third schema, and the same story as the second. They differ in exactly
  * one place, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `features`, `sun`, `sky`,

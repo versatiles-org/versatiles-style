@@ -158,8 +158,8 @@ function sourceFiles(directory: string = SRC): string[] {
  *
  * The last half is that a *value* deep import is only redundant when the barrel is already imported at
  * runtime too. Where the file takes nothing but types from the barrel, that edge is erased and the deep
- * import is what keeps it erased: `src/themes/index.ts` reads `colorOptionsKeys` from the leaf
- * `options/parts/color-keys.js` because the options barrel reaches back into `themes`, and routing that
+ * import is what keeps it erased: `src/themes/index.ts` reads `colorOptionsKeys` from its own leaf
+ * `themes/color-keys.js` because the options barrel reaches back into `themes`, and routing that
  * one value through it closes a runtime loop that fails as a temporal-dead-zone error three files away.
  */
 export function redundantDeepImports(): string[] {

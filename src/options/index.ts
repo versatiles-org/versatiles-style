@@ -1,5 +1,5 @@
 // The option surface, in dependency order: the composable parts, then the resolvers built from them.
-// See `parts.ts` for why that split exists.
+// See `parts/index.ts` for why that split exists.
 //
 // ⚠️ **Per-schema option code does not live here.** `osm` and `satellite` do, because they are the
 // package's root entry. Each additional schema keeps its options in its own directory —

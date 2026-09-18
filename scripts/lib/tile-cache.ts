@@ -62,7 +62,7 @@ export class CacheMiss extends Error {}
  */
 const TILE_TIMEOUT_MS = 5_000;
 
-/** The TileJSON is fetched once per process, so it can afford to wait longer. */
+/** The TileJSON is fetched once per process; the same bound as a tile has proved enough. */
 const METADATA_TIMEOUT_MS = 5_000;
 
 /** Attempts per upstream tile: one retry. */

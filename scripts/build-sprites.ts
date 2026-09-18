@@ -25,7 +25,7 @@ for (const [name, sets] of Object.entries(config.spritesheets)) {
 	const maxScale = 12;
 	const spriteBig = await Sprite.fromIcons(icons, maxScale, 5);
 
-	// Flat layout: each sheet is `sprites/<name>{,@2x,@3x,@4x}.{png,json}` (the sheet name is the
+	// Flat layout: each sheet is `sprites/<name>{,@2x}.{png,json}` — one pair per `config.ratios` (the sheet name is the
 	// filename, so a sprite `id` maps 1:1 to its URL tail — e.g. id "base" → sprites/base).
 	for (const scale of config.ratios) {
 		console.log('  - write scale ' + scale);

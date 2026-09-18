@@ -307,8 +307,8 @@ const POI_KEYS = ['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic
 export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// POI icons are SDF sprites: their translucency lives in the `labelPoi` token's alpha, applied via
 	// symbol `opacity` — which covers both the icon and the label, so they share the opaque `labelPoi`
-	// colour and the same alpha. From z19 the POI's name is drawn as a label beneath the icon, in the
-	// same colour as the icon.
+	// colour and the same alpha. Over z18–18.5 the POI's name fades in as a label beneath the icon, in
+	// the same colour as the icon.
 	const iconColor = ctx.c.labelPoi.opaque();
 	const iconOpacity = ctx.c.labelPoi.alpha;
 	for (const key of POI_KEYS) {
@@ -319,9 +319,9 @@ export function* pois(ctx: LayerContext): Generator<b.TaggedLayer> {
 			iconSize: { base: 2, stops: { 16: 0.4, 20: 1.2 } },
 			iconOpacity: { 16: 0, 17: iconOpacity },
 			textOpacity: { 18: 0, 18.5: iconOpacity },
-			// Name label under the icon, appearing from z19+. `text-size` is 0 below z18 so the label
-			// adds no collision box at mid zoom (only icons compete there), and an empty name renders
-			// nothing. `textOptional` keeps the icon visible even when the label can't be placed.
+			// Name label under the icon, fading in over z18–18.5. `text-size` is 0 at z17 and below, so
+			// the label adds no collision box at mid zoom (only icons compete there), and an empty name
+			// renders nothing. `textOptional` keeps the icon visible even when the label can't be placed.
 			text: ctx.nameField,
 			size: { 17: 0, 18: 11, 22: 13 },
 			textAnchor: 'top',

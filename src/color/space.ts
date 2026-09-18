@@ -95,7 +95,8 @@ function normalizeChannel(value: number, channel: ChannelSpec): number {
 
 /**
  * Brings coordinates into their space's ranges: clamping what clamps, wrapping hues, and mapping `NaN`
- * to the channel's floor (0° for a hue) so a bad number can never travel further as a silent `NaN`.
+ * to 0 — every channel's range contains it, where a floor would not (see `normalizeChannel`) — so a bad
+ * number can never travel further as a silent `NaN`.
  *
  * Idempotent, and a no-op for any colour already inside its ranges — which is why a conversion may be
  * followed by it without moving an in-gamut colour.

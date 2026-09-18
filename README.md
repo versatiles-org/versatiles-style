@@ -138,8 +138,8 @@ The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, 
 `fetchTileJSON()`, `Color` and the rest of the documented API. Four things ship in the npm package
 only, because they serve tooling rather than pages:
 
-- `minimizeOptions()` and `toCode()` on `osm`/`satellite` — storing options, emitting a snippet: a
-  style editor's job.
+- `minimizeOptions()`, `toCode()` and `validateOptions()` on `osm`/`satellite` — storing options,
+  emitting a snippet, reporting everything wrong with an options object: a style editor's job.
 - the font-discovery helpers (`fetchFontFaces()`, `fontCovers()`, `fontScripts()`, `languageScript()`,
   `textScripts()`, `FONT_SCRIPTS`) — they serve a font picker, not a map.
 - `randomColor()` — picking a colour is authoring work, and its hue dictionary costs \~1.2 KB gzipped.

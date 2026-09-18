@@ -316,8 +316,8 @@ asserts the pin geometry and that every icon within a group agrees on one render
 
 **One color.** Every icon is packed as SDF (`"sdf": true`), so it is a single silhouette that
 MapLibre recolors via `icon-color`, and there is no way to bake two colors into one image — see
-below for what to do instead. The one exception is `base`'s `pattern` group, which sets
-`useSDF: false`: those are tiled polygon fills, not recolorable point symbols.
+below for what to do instead. The exceptions are the `pattern` groups of `base` and `extras`, which
+set `useSDF: false`: those are tiled polygon fills, not recolorable point symbols.
 
 ### Two-color markers
 

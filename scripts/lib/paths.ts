@@ -1,9 +1,14 @@
 /**
  * Where scripts put what they generate.
  *
- * Everything a script writes goes under `.cache/` at the repository root — renders, reports,
- * downloaded styles, sampled tiles. One gitignored directory, so `scripts/` holds source and
+ * Everything routed through this module goes under `.cache/` at the repository root — renders,
+ * reports, downloaded styles, sampled tiles. One gitignored directory, so `scripts/` holds source and
  * nothing else, and a stale run is cleared with a single `rm -rf .cache`.
+ *
+ * Three write roots sit outside it, each for its own reason: build artifacts go to `release/` because
+ * they are published, the upstream icon archives to `.icon-sources/` because they are fetched per
+ * version rather than per run, and the dev tile cache to `dev/.tiles/` because the dev server serves
+ * it directly.
  *
  * The rule this encodes: a script never writes next to its own source. Output that lands in
  * `scripts/` has to be gitignored path by path, and the ignore rules drift out of step with the

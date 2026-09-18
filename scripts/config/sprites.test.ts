@@ -5,7 +5,7 @@ import config from './sprites.js';
 import type { IconSpec } from '../lib/icons.js';
 import { iconSrc, loadIcons, spriteName, svgSize } from '../lib/icons.js';
 
-// The sprite config maps ~180 sprite names onto source files under `icons/<source>/`. loadIcons()
+// The sprite config maps ~360 sprite names onto source files under `icons/<source>/`. loadIcons()
 // reads each one and throws if it is missing — so building the icon list is itself the existence
 // check. Guards against a typo'd source path silently producing an incomplete sprite sheet.
 

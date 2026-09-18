@@ -194,7 +194,7 @@ const LAND: LandDef[] = [
 export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c } = ctx;
 
-	// Glacier, from both bands: `landcover` covers it at world zoom, `landuse` in detail above.
+	// Glacier, from `landuse` only — it is not among the kinds this schema's `landcover` band carries.
 	yield b.fill('land-glacier', {
 		sourceLayer: 'landuse',
 		filter: ['==', ['get', 'kind'], 'glacier'],

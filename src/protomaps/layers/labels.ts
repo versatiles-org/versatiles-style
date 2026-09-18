@@ -7,7 +7,7 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 //
 // ── No label layers at all ────────────────────────────────────────────────────
 //
-// Shortbread has six label source-layers and OpenMapTiles three; Protomaps has none. Names live on the
+// Shortbread has seven label source-layers and OpenMapTiles three; Protomaps has none. Names live on the
 // feature layers themselves — `roads` carries `name` and six `shield_text` slots, `water` its own names,
 // `buildings` an `addr_housenumber`. So every label here reads the same source-layer as the geometry it
 // names, and the layers that would otherwise pair up (`street_labels` with `streets`) collapse.

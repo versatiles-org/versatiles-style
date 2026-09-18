@@ -36,7 +36,8 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	// OSM Bright renders site areas (hospital/school/…) as low `landuse` fills, beneath water.
 	yield* sites(ctx);
 	yield* water(ctx);
-	// OSM Bright draws aeroway (runways/taxiways) above buildings, below the street network.
+	// Aeroway (runways/taxiways) sits above water and below buildings, so a terminal reads on top of
+	// the apron it stands on, and the street network above both.
 	yield* airport(ctx);
 	yield* buildings(ctx);
 	yield slot(SLOT_BELOW_STREETS);
@@ -139,8 +140,8 @@ const MERGES: MergeTable = {
 	'bridge-street-arterial-link:bridge': ['bridge-street-secondary-link:bridge', 'bridge-street-primary-link:bridge'],
 	'bridge-street-arterial-link:outline': ['bridge-street-secondary-link:outline', 'bridge-street-primary-link:outline'],
 	'bridge-street-arterial-link': ['bridge-street-secondary-link', 'bridge-street-primary-link'],
-	// tram / narrowgauge / funicular / monorail share one style — `wayStyle` handles all four in a
-	// single branch.
+	// tram / narrowgauge / funicular / monorail share one style — `transportStyle` handles all four in
+	// its final branch.
 	'tunnel-transport-minorrail:outline': [
 		'tunnel-transport-narrowgauge:outline',
 		'tunnel-transport-tram:outline',

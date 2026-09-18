@@ -31,8 +31,8 @@ const SOURCE_NAME = 'versatiles-shortbread';
 // ── Build base style from resolved options ────────────────────────────────────
 
 // The base style skeleton (version, metadata, glyphs/sprite, Shortbread vector source).
-// `osmSource` is the resolved OSM source: a tile URL template, or a TileJSON whose
-// `tiles[]` have already been made absolute.
+// The source comes from `resolved.urls.osm`: a tile URL template, or a TileJSON whose `tiles[]` have
+// already been made absolute.
 function buildBase(resolved: ResolvedOsm): StyleSpecification {
 	const source = buildSourceDescriptor('vector', resolved.urls.osm) as StyleSpecification['sources'][string];
 
@@ -74,7 +74,8 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	const ctx = buildContext(resolved);
 	style.layers = buildStyleLayers(ctx) as StyleSpecification['layers'];
 
-	// 5. Text/icon size scaling + symbol spacing
+	// 5. Icon size scaling + symbol spacing. Text sizing is not here: it is per topic, and was already
+	// applied inside `buildStyleLayers` above.
 	applyIcon(style, resolved.icon);
 
 	// 6. Optional features
