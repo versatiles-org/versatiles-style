@@ -186,7 +186,11 @@ describe('non-finite numbers are rejected', () => {
 
 	for (const [path, build] of cases) {
 		it(`rejects ${path}`, () => {
-			expect(build).toThrow(new RegExp(path.replace(/\./g, '\\.')));
+			// A string matcher is a literal substring match, which is what building a regex and escaping
+			// the dots was approximating — and it cannot be an incomplete escape, which that was: it
+			// replaced `.` but not `\`, so a path containing a backslash would have compiled to a
+			// different pattern than the one intended (CodeQL js/incomplete-sanitization).
+			expect(build).toThrow(path);
 		});
 	}
 
