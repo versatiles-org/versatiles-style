@@ -91,7 +91,7 @@
 		"@maplibre/maplibre-gl-style-spec": "^26.4.4"
 	},
 	"peerDependencies": {
-		"maplibre-gl": ">=6.0.0"
+		"maplibre-gl": ">=5.0.0"
 	},
 	"peerDependenciesMeta": {
 		"maplibre-gl": {

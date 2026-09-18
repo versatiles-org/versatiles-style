@@ -170,17 +170,17 @@ describe('satellite()', () => {
 			return layout['line-cap'] === 'round' || layout['line-join'] === 'round';
 		};
 
-		it('leaves no round cap or join on a per-feature-dimmed overlay line', () => {
-			const overlay = lines(satellite({ osmOverlay: {} })).filter((l) => !l.id.startsWith('boundary-'));
+		it('leaves no round cap or join on any overlay line', () => {
+			// every line is dimmed per feature, so every round cap or join would blend twice
+			const overlay = lines(satellite({ osmOverlay: {} }));
 			expect(overlay.length).toBeGreaterThan(100);
 			expect(overlay.filter(rounded).map((l) => l.id)).toEqual([]);
 		});
 
-		it('keeps boundaries rounded, where the whole layer is composited at once', () => {
-			// dimmed through `line-layer-opacity`, so an overlapping cap or join no longer blends twice
+		it('unrounds boundaries too, which are dimmed per feature like everything else', () => {
 			const boundaries = lines(satellite({ osmOverlay: {} })).filter((l) => l.id.startsWith('boundary-'));
 			expect(boundaries.length).toBeGreaterThan(0);
-			expect(boundaries.every(rounded)).toBe(true);
+			expect(boundaries.some(rounded)).toBe(false);
 		});
 
 		it('keeps the basemap rounded, where the lines are opaque and it costs nothing', () => {
@@ -212,39 +212,44 @@ describe('satellite()', () => {
 		});
 	});
 
-	// An administrative border wanders more tightly than its own line is wide, so at low zoom the line
-	// runs back over itself — and `line-opacity`, applied per feature, blends every one of those
-	// crossings again. `line-layer-opacity` composites the layer's output once instead.
-	describe('boundaries are dimmed as a whole layer, not per feature', () => {
+	// `line-layer-opacity` would composite a self-overlapping layer once and remove the noise a border
+	// drawn over itself produces — but MapLibre Native does not implement it (maplibre-native#4298) and
+	// drops any layer carrying it, so boundaries vanished on Android and iOS. Until a style can be
+	// emitted per renderer, no layer may set it. See the note in `features/satellite-overlay.ts`.
+	describe('every overlay line is dimmed per feature', () => {
 		const boundaries = (style: StyleSpecification) =>
 			style.layers.filter((l) => l.type === 'line' && l.id.startsWith('boundary-'));
 		const paintOf = (layer: StyleSpecification['layers'][number]) =>
 			(layer as { paint?: Record<string, unknown> }).paint ?? {};
 
-		it('moves the whole opacity across, leaving no per-feature value to accumulate', () => {
-			const overlay = boundaries(satellite({ osmOverlay: {} }));
-			expect(overlay.length).toBeGreaterThan(0);
-			for (const layer of overlay) {
-				expect(paintOf(layer)).toHaveProperty('line-layer-opacity');
-				expect(paintOf(layer)).not.toHaveProperty('line-opacity');
+		it('sets no *-layer-opacity anywhere, which MapLibre Native would drop the layer over', () => {
+			for (const style of [satellite({ osmOverlay: {} }), satellite(), osm()]) {
+				const offenders = style.layers.filter((l) => Object.keys(paintOf(l)).some((k) => k.endsWith('-layer-opacity')));
+				expect(offenders.map((l) => l.id)).toEqual([]);
 			}
 		});
 
-		it('composites to exactly what the per-feature dimming used to give', () => {
+		it('dims boundaries through line-opacity, like every other line', () => {
+			const overlay = boundaries(satellite({ osmOverlay: {} }));
+			expect(overlay.length).toBeGreaterThan(0);
+			for (const layer of overlay) expect(paintOf(layer)).toHaveProperty('line-opacity');
+		});
+
+		it('scales the basemap opacity rather than replacing it', () => {
 			// the basemap's own opacity times the overlay's 0.2 — the halo casing stays a halo
 			const base = new Map(boundaries(osm()).map((l) => [l.id, paintOf(l)['line-opacity'] ?? 1]));
 			for (const layer of boundaries(satellite({ osmOverlay: {} }))) {
 				const before = base.get(layer.id);
 				if (typeof before !== 'number') continue;
-				expect(paintOf(layer)['line-layer-opacity']).toBeCloseTo(before * 0.2, 10);
+				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.2, 10);
 			}
 		});
 
-		it('carries an appear fade across, which the property allows because it is zoom-only', () => {
-			// `boundary-state` ramps 0 → 0.2 over z7→8; that has to survive, not flatten to a constant
+		it('carries an appear fade across rather than flattening it to a constant', () => {
+			// `boundary-state` ramps 0 → 0.2 over z7→8; that has to survive
 			const state = boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-state');
 			expect(state).toBeDefined();
-			expect(paintOf(state!)['line-layer-opacity']).toEqual([
+			expect(paintOf(state!)['line-opacity']).toEqual([
 				'interpolate',
 				['linear'],
 				['zoom'],
@@ -253,14 +258,6 @@ describe('satellite()', () => {
 				8,
 				expect.closeTo(0.2, 10),
 			]);
-		});
-
-		it('leaves every other overlay line dimmed per feature, where it costs no offscreen pass', () => {
-			const others = satellite({ osmOverlay: {} }).layers.filter(
-				(l) => l.type === 'line' && !l.id.startsWith('boundary-')
-			);
-			expect(others.length).toBeGreaterThan(100);
-			for (const layer of others) expect(paintOf(layer)).not.toHaveProperty('line-layer-opacity');
 		});
 	});
 

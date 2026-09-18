@@ -1,5 +1,5 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
-import { scaleLayerOpacity, liftLineOpacityToLayer } from '../lib/index.js';
+import { scaleLayerOpacity } from '../lib/index.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -29,24 +29,29 @@ const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 const LINE_OPACITY = 0.2;
 
 /**
- * Layers dimmed through `line-layer-opacity` rather than `line-opacity`, because their own geometry
- * overlaps itself.
+ * Why every line here is dimmed per feature, including the ones that overlap themselves.
  *
- * {@link unroundJoins} removes the overlap a *style* creates. This is the overlap the *data* creates,
- * and no paint value can avoid it: an administrative border wanders far more tightly than the line
- * drawn for it is wide, so at low zoom the line runs back over itself. Measured against
+ * {@link unroundJoins} removes the overlap a *style* creates. There is a second overlap the *data*
+ * creates, which no paint value avoids: an administrative border wanders far more tightly than the
+ * line drawn for it is wide, so at low zoom the line runs back over itself. Measured against
  * `tiles.versatiles.org` shortbread at z7, 29–39% of the vertices of the admin-level-2 feature sit
  * within one line width of a non-adjacent part of the same feature — and a render of that layer at
  * `line-opacity` 0.5 has 8% of its covered pixels brighter than half the opaque coverage, in
- * clusters landing exactly on the two-, three-, four-, five- and six-fold blend values. That is the
- * noise: a border ends up drawn over a border.
+ * clusters landing exactly on the two-, three-, four-, five- and six-fold blend values. A border
+ * ends up drawn over a border, and the overlay carries that noise.
  *
- * Roads wander too, but they are separate features and mostly separate *layers* (motorway, trunk,
- * street…), and `line-layer-opacity` composites one layer at a time — it cannot merge across layers.
- * So the property buys nothing there, and it is not free: each layer it is set on costs an offscreen
- * pass. Hence boundaries only, where a single layer really does cover itself.
+ * The style spec has the cure — `line-layer-opacity` composites a layer's finished output once — and
+ * boundaries used it until it turned out to be unshippable. MapLibre Native does not implement the
+ * property (maplibre-native#4298, open), and it does not degrade: a layer carrying it is **dropped
+ * entirely**, so the satellite overlay lost every border on Android and iOS. Keeping a `line-opacity`
+ * alongside as a fallback does not rescue it — the layer still goes. Measured on
+ * `@maplibre/maplibre-gl-native` 6.4.1: one red line on white renders `255,0,0` with no opacity
+ * property and `255,204,204` at `line-opacity` 0.2, but `255,255,255` — nothing at all — at
+ * `line-layer-opacity` 0.2, with or without a `line-opacity` beside it.
+ *
+ * So the self-overlap noise is accepted as the lesser artefact. Restoring the property means first
+ * being able to emit a different style per renderer; until then it must not be set on any layer.
  */
-const SELF_OVERLAPPING = /^boundary-/;
 
 /**
  * Round caps and joins, which a translucent line cannot afford.
@@ -63,9 +68,6 @@ const SELF_OVERLAPPING = /^boundary-/;
  * cap stops at the endpoint, and a miter join extends the two segment quads to meet at a point. Sharp
  * corners fall back to a bevel past `line-miter-limit`, which does not overlap either. Only `round` is
  * removed — a layer that asked for `butt` meant it.
- *
- * {@link SELF_OVERLAPPING} layers are exempt: they are composited as a whole, so nothing they overlap
- * blends twice and the round corners cost nothing.
  */
 function unroundJoins(layer: MaplibreLayer): void {
 	const holder = layer as { layout?: Record<string, unknown> };
@@ -97,12 +99,6 @@ export function keepInOverlay(layer: { id: string; type: string }): boolean {
  */
 export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): void {
 	if (layer.type === 'line') {
-		// A layer composited as a whole can afford round caps and joins again: they overlap, but the
-		// overlap no longer blends twice. So it keeps the cartography's own smooth corners.
-		if (SELF_OVERLAPPING.test(layer.id)) {
-			liftLineOpacityToLayer(layer, LINE_OPACITY);
-			return;
-		}
 		scaleLayerOpacity(layer, LINE_OPACITY);
 		unroundJoins(layer);
 		return;
