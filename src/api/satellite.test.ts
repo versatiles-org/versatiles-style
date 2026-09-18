@@ -170,10 +170,17 @@ describe('satellite()', () => {
 			return layout['line-cap'] === 'round' || layout['line-join'] === 'round';
 		};
 
-		it('leaves no round cap or join on any overlay line', () => {
-			const overlay = lines(satellite({ osmOverlay: {} }));
+		it('leaves no round cap or join on a per-feature-dimmed overlay line', () => {
+			const overlay = lines(satellite({ osmOverlay: {} })).filter((l) => !l.id.startsWith('boundary-'));
 			expect(overlay.length).toBeGreaterThan(100);
 			expect(overlay.filter(rounded).map((l) => l.id)).toEqual([]);
+		});
+
+		it('keeps boundaries rounded, where the whole layer is composited at once', () => {
+			// dimmed through `line-layer-opacity`, so an overlapping cap or join no longer blends twice
+			const boundaries = lines(satellite({ osmOverlay: {} })).filter((l) => l.id.startsWith('boundary-'));
+			expect(boundaries.length).toBeGreaterThan(0);
+			expect(boundaries.every(rounded)).toBe(true);
 		});
 
 		it('keeps the basemap rounded, where the lines are opaque and it costs nothing', () => {
@@ -202,6 +209,58 @@ describe('satellite()', () => {
 				});
 			expect(empty(osm())).toEqual([]);
 			expect(empty(satellite({ osmOverlay: {} }))).toEqual([]);
+		});
+	});
+
+	// An administrative border wanders more tightly than its own line is wide, so at low zoom the line
+	// runs back over itself — and `line-opacity`, applied per feature, blends every one of those
+	// crossings again. `line-layer-opacity` composites the layer's output once instead.
+	describe('boundaries are dimmed as a whole layer, not per feature', () => {
+		const boundaries = (style: StyleSpecification) =>
+			style.layers.filter((l) => l.type === 'line' && l.id.startsWith('boundary-'));
+		const paintOf = (layer: StyleSpecification['layers'][number]) =>
+			(layer as { paint?: Record<string, unknown> }).paint ?? {};
+
+		it('moves the whole opacity across, leaving no per-feature value to accumulate', () => {
+			const overlay = boundaries(satellite({ osmOverlay: {} }));
+			expect(overlay.length).toBeGreaterThan(0);
+			for (const layer of overlay) {
+				expect(paintOf(layer)).toHaveProperty('line-layer-opacity');
+				expect(paintOf(layer)).not.toHaveProperty('line-opacity');
+			}
+		});
+
+		it('composites to exactly what the per-feature dimming used to give', () => {
+			// the basemap's own opacity times the overlay's 0.2 — the halo casing stays a halo
+			const base = new Map(boundaries(osm()).map((l) => [l.id, paintOf(l)['line-opacity'] ?? 1]));
+			for (const layer of boundaries(satellite({ osmOverlay: {} }))) {
+				const before = base.get(layer.id);
+				if (typeof before !== 'number') continue;
+				expect(paintOf(layer)['line-layer-opacity']).toBeCloseTo(before * 0.2, 10);
+			}
+		});
+
+		it('carries an appear fade across, which the property allows because it is zoom-only', () => {
+			// `boundary-state` ramps 0 → 0.2 over z7→8; that has to survive, not flatten to a constant
+			const state = boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-state');
+			expect(state).toBeDefined();
+			expect(paintOf(state!)['line-layer-opacity']).toEqual([
+				'interpolate',
+				['linear'],
+				['zoom'],
+				7,
+				0,
+				8,
+				expect.closeTo(0.2, 10),
+			]);
+		});
+
+		it('leaves every other overlay line dimmed per feature, where it costs no offscreen pass', () => {
+			const others = satellite({ osmOverlay: {} }).layers.filter(
+				(l) => l.type === 'line' && !l.id.startsWith('boundary-')
+			);
+			expect(others.length).toBeGreaterThan(100);
+			for (const layer of others) expect(paintOf(layer)).not.toHaveProperty('line-layer-opacity');
 		});
 	});
 

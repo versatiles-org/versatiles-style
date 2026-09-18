@@ -41,3 +41,24 @@ export function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
 	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
 	for (const prop of props) paint[prop] = scaleOpacity(paint[prop], factor);
 }
+
+/**
+ * The same dimming, but moved onto `line-layer-opacity` — for a layer whose own geometry overlaps
+ * itself.
+ *
+ * `line-opacity` is applied per feature, so wherever a line covers a pixel twice MapLibre blends
+ * twice and the pixel comes out brighter than the value asked for. `line-layer-opacity` composites
+ * the layer's finished output once instead, so overlapping lines read as one surface. The whole
+ * value moves — the property is data-constant but takes zoom expressions, so an `appear` fade
+ * survives the trip — because a `line-opacity` left behind would accumulate again *before* the
+ * layer is composited, which is the artefact this exists to remove.
+ *
+ * Requires MapLibre GL JS 6. Older renderers, and MapLibre Native (maplibre-native#4298), ignore the
+ * property and draw the layer opaque.
+ */
+export function liftLineOpacityToLayer(layer: MaplibreLayer, factor: number): void {
+	if (layer.type !== 'line') return;
+	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+	paint['line-layer-opacity'] = scaleOpacity(paint['line-opacity'], factor);
+	delete paint['line-opacity'];
+}

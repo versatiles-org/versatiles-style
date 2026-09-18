@@ -49,19 +49,21 @@ describe('published package', () => {
 	});
 });
 
-// The styles emit `projection: { type: 'globe' }`, which MapLibre GL JS only understands from 5.0.
-// Declared optional: the package has no runtime dependency on MapLibre and works fine for anyone
-// generating style JSON server-side, so it must never be auto-installed — only range-checked when
-// the consumer already has it.
+// The satellite overlay dims boundaries with `line-layer-opacity`, which MapLibre GL JS only
+// understands from 6.0 — and a renderer that does not understand it ignores it and draws those
+// layers opaque, which is worse than the artefact the property removes. (Before that it was globe
+// projection, needing 5.0.) Declared optional: the package has no runtime dependency on MapLibre and
+// works fine for anyone generating style JSON server-side, so it must never be auto-installed — only
+// range-checked when the consumer already has it.
 describe('maplibre-gl peer range', () => {
-	it('is declared, optional, and requires >= 5', async () => {
+	it('is declared, optional, and requires >= 6', async () => {
 		const { readFileSync } = await import('node:fs');
 		const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
 			peerDependencies?: Record<string, string>;
 			peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 			dependencies?: Record<string, string>;
 		};
-		expect(pkg.peerDependencies?.['maplibre-gl']).toBe('>=5.0.0');
+		expect(pkg.peerDependencies?.['maplibre-gl']).toBe('>=6.0.0');
 		expect(pkg.peerDependenciesMeta?.['maplibre-gl']?.optional).toBe(true);
 		// A hard peer would drag ~800 KB of MapLibre into builds that never render a map.
 		expect(pkg.dependencies?.['maplibre-gl']).toBeUndefined();
