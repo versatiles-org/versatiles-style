@@ -21,7 +21,6 @@ import {
 } from './parts/index.js';
 import {
 	resolveOsmOverlay,
-	OVERLAY_DEFAULTS,
 	OVERLAY_LABEL_STYLES,
 	type OsmOverlayOptions,
 	type ResolvedOsmOverlay,
@@ -52,20 +51,6 @@ export type ResolvedSatellite = {
 	raster: ResolvedSatelliteRaster;
 };
 
-/**
- * The overlay's imagery colours, with the caller's own values layered on top so an explicit
- * `colors.label` still wins. Its label styles are not merged here but passed as the defaults of
- * `text` (`OVERLAY_LABEL_STYLES`), so a caller who sets one topic keeps the overlay's others.
- * See `features/satellite-overlay.ts`.
- */
-function overlayDefaults(overlay: boolean | OsmOverlayOptions | undefined): OsmOverlayOptions {
-	const o = typeof overlay === 'object' ? overlay : {};
-	return {
-		...o,
-		colors: { ...OVERLAY_DEFAULTS.colors, ...o.colors },
-	};
-}
-
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
 	checkKeys(
 		options,
@@ -79,10 +64,20 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// v5 built the satellite overlay from `graybeard`; `gray` is its successor and the least
 	// saturated palette, so roads and labels stay out of the imagery's way. An explicit
 	// `osmOverlay.theme` still wins.
+	//
+	// The overlay's imagery treatment rides on the theme rather than being merged in here: its label
+	// colours are derived from the palette by `overlayLabelColors` and its label styles are passed as
+	// the defaults of `text` (`OVERLAY_LABEL_STYLES`), so a caller who sets one topic keeps the
+	// overlay's others. See `features/satellite-overlay.ts`.
 	const osmOverlay =
 		overlay === false
 			? false
-			: resolveOsmOverlay(overlayDefaults(overlay), 'gray', 'satellite.osmOverlay', OVERLAY_LABEL_STYLES);
+			: resolveOsmOverlay(
+					typeof overlay === 'object' ? overlay : {},
+					'gray',
+					'satellite.osmOverlay',
+					OVERLAY_LABEL_STYLES
+				);
 
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),

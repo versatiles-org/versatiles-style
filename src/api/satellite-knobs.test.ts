@@ -6,6 +6,7 @@ import { inlineSources } from '../lib/index.js';
 import { tileJSONFetch } from '../lib/loadTileSource.test.js';
 import { osm } from './osm.js';
 import { Color } from '../color/index.js';
+import { PALETTES } from '../themes/index.js';
 
 // Exhaustive behavioural coverage of every satellite() option ("knob"): raster paint
 // adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/sun,
@@ -18,6 +19,23 @@ const layer = (s: StyleSpecification, id: string) => s.layers.find((l) => l.id =
 const paint = (s: StyleSpecification, id: string): Record<string, unknown> =>
 	(layer(s, id)?.paint ?? {}) as Record<string, unknown>;
 const hasFills = (s: StyleSpecification): boolean => s.layers.some((l) => l.type === 'fill');
+
+// The overlay's label treatment is asserted as a rule rather than as fixed hex — see
+// `overlayLabelColors` in `options/osm-overlay.ts`. These mirror its thresholds.
+const LABEL_LIGHTNESS = 0.92;
+const HALO_LIGHTNESS = 0.15;
+const WATER_LIGHTNESS = 0.85;
+/**
+ * The derivation sets lightness in OKLCh but emits 8-bit hex, so a value comes back a hair under the
+ * threshold it was set to (`colorful`'s label lands on 0.9194). The rule is the threshold; this is the
+ * width of the rounding, not slack for a colour that genuinely misses.
+ */
+const QUANTISATION = 0.002;
+const oklch = (v: unknown) => Color.parse(v as string).to('oklch').coords;
+const lightness = (v: unknown): number => oklch(v)[0];
+/** 0 for a grey; a hue with no chroma reports `NaN`, which no comparison here should see. */
+const chroma = (v: unknown): number => oklch(v)[1];
+const alpha = (v: unknown): number => Color.parse(v as string).alpha;
 
 // ── raster paint (all six knobs) ─────────────────────────────────────────────────
 
@@ -93,8 +111,8 @@ describe('satellite() knob: osmOverlay', () => {
 	});
 
 	it('forwards the theme knob to the overlay', () => {
-		// Label colours are fixed white-on-black for imagery regardless of palette (A2), so the
-		// theme is observed on a road colour, which still varies.
+		// Label colours follow the palette only in hue and chroma — every theme puts them at the same
+		// lightness — so the theme is observed on a road colour, which varies outright.
 		const roadColor = (s: StyleSpecification) =>
 			(layer(s, 'street-motorway')?.paint as Record<string, unknown>)['line-color'];
 		expect(roadColor(build({ osmOverlay: { theme: 'toner' } }))).not.toBe(
@@ -103,38 +121,56 @@ describe('satellite() knob: osmOverlay', () => {
 	});
 
 	it('applies the imagery treatment to labels regardless of palette', () => {
-		for (const theme of ['gray', 'toner', 'colorful'] as const) {
+		// The treatment is a rule, not a set of fixed colours: light text on a dark halo, with hue and
+		// chroma left to the theme. Pinning literal hex here is what let a hardcoded water blue sit in
+		// `gray` unnoticed, so assert the property that has to hold for every palette instead.
+		//
+		// The two lightness bounds are what carry the legibility: holding text at >= 0.92 and halo at
+		// <= 0.15 puts every palette between 15.4:1 and 21.0:1 on the halo (water labels, at the lower
+		// WATER_LIGHTNESS, between 12.6:1 and 15.6:1).
+		for (const theme of PALETTES) {
 			const paint = layer(build({ osmOverlay: { theme } }), 'label-place-village')?.paint as Record<string, unknown>;
-			const hex = (v: unknown) =>
-				Color.parse(v as string)
-					.asHex()
-					.toLowerCase();
-			expect(hex(paint['text-color']), `${theme} label colour`).toBe('#ffffff');
-			expect(hex(paint['text-halo-color']), `${theme} halo colour`).toBe('#000000');
+			expect(lightness(paint['text-color']), `${theme} label lightness`).toBeGreaterThanOrEqual(
+				LABEL_LIGHTNESS - QUANTISATION
+			);
+			expect(lightness(paint['text-halo-color']), `${theme} halo lightness`).toBeLessThanOrEqual(
+				HALO_LIGHTNESS + QUANTISATION
+			);
+			expect(alpha(paint['text-color']), `${theme} label alpha`).toBe(1);
 			expect(paint['text-halo-width']).toBe(1);
 			expect(paint['text-halo-blur'] ?? 0).toBe(0); // 0 is MapLibre's default, so it is not written
 		}
 	});
 
-	it('lightens water labels too, in a water blue rather than plain white', () => {
-		// Lake and river names are the one label the overlay does not whiten. They used to be missed
-		// entirely and kept the basemap's dark slate, which sat at 2.9:1 on the forced black halo.
-		for (const theme of ['gray', 'toner', 'colorful'] as const) {
-			for (const id of ['label-water-area-major', 'label-water-river']) {
+	it('keeps an achromatic palette achromatic', () => {
+		// `gray` is chroma 0 across all 45 of its colours. A label the theme cannot account for — the
+		// hardcoded `#8FC1ED` water blue this replaced — makes the overlay the only coloured thing on
+		// an explicitly colourless map.
+		for (const theme of ['gray', 'gray-dark'] as const) {
+			for (const id of ['label-place-village', 'label-water-river', 'poi-amenity']) {
 				const paint = layer(build({ osmOverlay: { theme } }), id)?.paint as Record<string, unknown>;
-				expect(
-					Color.parse(paint['text-color'] as string)
-						.asHex()
-						.toLowerCase(),
-					`${theme} ${id}`
-				).toBe('#8fc1ed');
-				expect(
-					Color.parse(paint['text-halo-color'] as string)
-						.asHex()
-						.toLowerCase()
-				).toBe('#000000');
+				expect(chroma(paint['text-color']), `${theme} ${id}`).toBeCloseTo(0, 5);
 			}
 		}
+	});
+
+	it('lightens water labels too, keeping the theme water hue where it has one', () => {
+		// Lake and river names are the one label the overlay does not simply lighten: they take their
+		// hue from the theme's `water` polygon colour, because over imagery the label is alone and has
+		// to carry the "this is water" cue the polygon carries on the basemap. They used to be missed
+		// entirely and kept the basemap's dark slate, which sat at ~3:1 on the overlay's halo.
+		for (const theme of PALETTES) {
+			for (const id of ['label-water-area-major', 'label-water-river']) {
+				const paint = layer(build({ osmOverlay: { theme } }), id)?.paint as Record<string, unknown>;
+				expect(lightness(paint['text-color']), `${theme} ${id}`).toBeGreaterThanOrEqual(WATER_LIGHTNESS - QUANTISATION);
+			}
+		}
+		// …and where the theme does have a water hue, the label keeps it rather than going plain white.
+		const blue = layer(build({ osmOverlay: { theme: 'colorful' } }), 'label-water-river')?.paint as Record<
+			string,
+			unknown
+		>;
+		expect(chroma(blue['text-color'])).toBeGreaterThan(0.02);
 	});
 
 	it('lets an explicit water-label colour override the imagery default', () => {
@@ -177,8 +213,10 @@ describe('satellite() knob: osmOverlay', () => {
 		expect(paint(s, 'label-place-village')).toMatchObject({ 'text-halo-width': 3, 'text-halo-blur': 2 });
 		expect(paint(s, 'label-street-residential')['text-halo-width']).toBe(1);
 		expect(paint(s, 'label-street-residential')['text-halo-blur'] ?? 0).toBe(0);
-		// the halo colour is still forced to the overlay's own
-		expect(Color.parse(paint(s, 'label-place-village')['text-halo-color'] as string).asHex()).toBe('#000000');
+		// the halo colour is still the overlay's own, derived from the theme
+		expect(lightness(paint(s, 'label-place-village')['text-halo-color'])).toBeLessThanOrEqual(
+			HALO_LIGHTNESS + QUANTISATION
+		);
 	});
 
 	it('keeps house numbers without a halo, as on the basemap', () => {
