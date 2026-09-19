@@ -22,12 +22,16 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       # optipng: `build-sprites` shells out to it.
-      # libopengl0/libegl1/libgles2: `@maplibre/maplibre-gl-native` links against libOpenGL.so.0 and
-      # fails to load without them — `Test (e2e)` renders through it. CI does not need this because
-      # its test job runs on macos-latest, where the GL libraries are part of the OS; this is the only
+      # The rest are for `@maplibre/maplibre-gl-native`, which `Test (e2e)` renders through. It needs
+      # two separate things on Linux, and each fails differently: without libopengl0/libegl1/libgles2
+      # the module will not load at all (`libOpenGL.so.0: cannot open shared object file`), and with
+      # them but no display it loads and then aborts mid-render (`Failed to open X display`, SIGABRT),
+      # because its Linux backend draws through GLX rather than surfaceless EGL. Hence xvfb, and the
+      # `xvfb-run` wrapper on the step below. CI needs none of this: its test job runs on macos-latest,
+      # where the GL stack is part of the OS and there is no X server in the picture. This is the only
       # job that runs the native renderer on Linux.
       - name: Install system dependencies
-        run: sudo apt-get install -y optipng libopengl0 libegl1 libgles2
+        run: sudo apt-get install -y optipng libopengl0 libegl1 libgles2 xvfb
 
       - name: Checkout
         uses: actions/checkout@v7
@@ -47,8 +51,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      # `xvfb-run -a`: the native renderer needs an X display (see the install step above).
       - name: Test (e2e)
-        run: npm run test:e2e
+        run: xvfb-run -a npm run test:e2e
 
       - name: Tar sprites
         run: |
