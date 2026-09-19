@@ -60,12 +60,27 @@ jobs:
           cd release/sprites
           tar -cf - * | gzip -9 > ../sprites.tar.gz
 
-      - name: Verify sprites.tar.gz size
+      # Guards against shipping a sprite build that silently lost a sheet.
+      #
+      # The entry count is the real check, because it is what actually goes wrong: three sheets at two
+      # ratios, each a .json + .png, plus index.json — 13 files. A size floor alone cannot tell "one
+      # sheet is missing" from "the icons got smaller", which is why the old 1 MB floor failed v6.0.0
+      # on a perfectly good build: v5 shipped 2 sheets at FOUR ratios (1.37 MB), v6 ships 3 sheets at
+      # two (855 KB), because @3x/@4x are never fetched and the icons are SDF (see config/sprites.ts).
+      # The size floor stays as a backstop for a sheet that is present but empty, well below the real
+      # figure so that adding icons never trips it.
+      - name: Verify sprites.tar.gz
         run: |
           SIZE=$(stat -c%s release/sprites.tar.gz)
-          echo "sprites.tar.gz size: $SIZE bytes"
-          if [ "$SIZE" -lt 1048576 ]; then
-            echo "ERROR: sprites.tar.gz is smaller than 1 MB ($SIZE bytes)"
+          FILES=$(tar -tzf release/sprites.tar.gz | grep -c '\.\(json\|png\)$')
+          echo "sprites.tar.gz: $SIZE bytes, $FILES files"
+          if [ "$FILES" -ne 13 ]; then
+            echo "ERROR: expected 13 sprite files, found $FILES"
+            tar -tzf release/sprites.tar.gz
+            exit 1
+          fi
+          if [ "$SIZE" -lt 524288 ]; then
+            echo "ERROR: sprites.tar.gz is smaller than 512 KB ($SIZE bytes)"
             exit 1
           fi
 
