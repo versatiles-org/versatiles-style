@@ -21,8 +21,13 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Install optipng
-        run: sudo apt-get install -y optipng
+      # optipng: `build-sprites` shells out to it.
+      # libopengl0/libegl1/libgles2: `@maplibre/maplibre-gl-native` links against libOpenGL.so.0 and
+      # fails to load without them — `Test (e2e)` renders through it. CI does not need this because
+      # its test job runs on macos-latest, where the GL libraries are part of the OS; this is the only
+      # job that runs the native renderer on Linux.
+      - name: Install system dependencies
+        run: sudo apt-get install -y optipng libopengl0 libegl1 libgles2
 
       - name: Checkout
         uses: actions/checkout@v7
