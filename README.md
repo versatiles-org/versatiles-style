@@ -25,14 +25,14 @@ The `osm()` function renders OpenStreetMap vector tiles using one of five built-
 each available as a light theme and a dark one (`colorful-dark`, …). `satellite()` renders raster/satellite tiles with an optional
 vector overlay.
 
-| Palette       | Preview                                                                                               |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   |
-| **natural**   | <img width="384" src="https://versatiles.org/versatiles-style/natural.png" alt="natural style" />     |
-| **muted**     | <img width="384" src="https://versatiles.org/versatiles-style/muted.png" alt="muted style" />         |
-| **gray**      | <img width="384" src="https://versatiles.org/versatiles-style/gray.png" alt="gray style" />           |
-| **toner**     | <img width="384" src="https://versatiles.org/versatiles-style/toner.png" alt="toner style" />         |
-| **satellite** | <img width="384" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> |
+| Palette       | Light                                                                                                 | Dark                                                                                                          |
+| ------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   | <img width="384" src="https://versatiles.org/versatiles-style/colorful-dark.png" alt="colorful-dark style" /> |
+| **natural**   | <img width="384" src="https://versatiles.org/versatiles-style/natural.png" alt="natural style" />     | <img width="384" src="https://versatiles.org/versatiles-style/natural-dark.png" alt="natural-dark style" />   |
+| **muted**     | <img width="384" src="https://versatiles.org/versatiles-style/muted.png" alt="muted style" />         | <img width="384" src="https://versatiles.org/versatiles-style/muted-dark.png" alt="muted-dark style" />       |
+| **gray**      | <img width="384" src="https://versatiles.org/versatiles-style/gray.png" alt="gray style" />           | <img width="384" src="https://versatiles.org/versatiles-style/gray-dark.png" alt="gray-dark style" />         |
+| **toner**     | <img width="384" src="https://versatiles.org/versatiles-style/toner.png" alt="toner style" />         | <img width="384" src="https://versatiles.org/versatiles-style/toner-dark.png" alt="toner-dark style" />       |
+| **satellite** | <img width="384" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> | —                                                                                                             |
 
 ---
 
@@ -99,7 +99,8 @@ Everything the bundle provides is listed under
 [`versatiles-style.js`](https://versatiles.org/versatiles-style/modules/versatiles-style.js.html) in the API documentation —
 that page is generated from the bundle's own entry point, so it is the definitive answer to "is this
 available in the browser?". The surface is smaller than the npm one on purpose: the authoring helpers
-(`osm.minimizeOptions`, `osm.toCode`), the font-discovery functions, `randomColor` and the TileJSON
+(`osm.minimizeOptions`, `osm.toCode`, `osm.validateOptions`), the font-discovery functions,
+`randomColor` and the TileJSON
 validators are npm-only, because a page that builds a style and hands it to MapLibre never calls them
 and would otherwise download them. The shipped `versatiles-style.d.ts` carries the same list as types.
 

@@ -57,15 +57,17 @@ const request = (
  * and `sharp` for image processing. It generates map images for a set
  * of predefined styles and saves them in the `docs` directory.
  */
+// Driven off `osm.palettes` rather than a list repeated here, so a palette added to the package gets
+// a preview without anyone remembering to add one — which is how the dark themes went unillustrated
+// in the README for a whole major version. The name is the palette's own, so `colorful-dark.png`
+// sits beside `colorful.png` and the README can pair them.
+//
 // Awaited, with an explicit failure exit. Left floating, a rejected render surfaced as an unhandled
 // rejection with no indication of which style failed — and this runs in the release workflow's docs
 // job, where a silent-looking crash mid-way would publish a page missing a preview image.
 Promise.all([
-	draw('colorful', osm({ theme: 'colorful' })),
-	draw('natural', osm({ theme: 'natural' })),
-	draw('muted', osm({ theme: 'muted' })),
-	draw('gray', osm({ theme: 'gray' })),
-	draw('toner', osm({ theme: 'toner' })),
+	...osm.palettes.map((theme) => draw(theme, osm({ theme }))),
+	// No dark counterpart: the imagery is the background, and only the overlay could be themed.
 	draw('satellite', satellite()),
 ]).catch((error: unknown) => {
 	console.error('screenshots failed:', error);
