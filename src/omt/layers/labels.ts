@@ -105,8 +105,13 @@ const COUNTRIES: { id: string; rank: ExpressionSpecification; minzoom: number; m
 		{ id: 'small', rank: ['>=', ['get', 'rank'], 3], minzoom: 5, maxzoom: 10, size: { 4: 8, 5: 11 } },
 	];
 
-/** Street classes that carry a name worth drawing — Shortbread's list, with `minor` for its three. */
-const STREET_CLASSES = ['minor', 'tertiary', 'secondary', 'primary', 'trunk', 'track'];
+/**
+ * Street classes that carry a name worth drawing — Shortbread's list, with `minor` for its three.
+ *
+ * Ascending importance, because the last layer is placed first and wins a collision: `track` leads
+ * rather than trailing, as in the Shortbread module.
+ */
+const STREET_CLASSES = ['track', 'minor', 'tertiary', 'secondary', 'primary', 'trunk'];
 
 // House numbers. `housenumber` is the whole layer and its only field — OpenMapTiles carries no `unit`,
 // so Shortbread's `housenumber/unit` concatenation for sub-addresses (issue #118) has nothing to read
@@ -181,8 +186,9 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// ── Water labels ────────────────────────────────────────────────────────────
 	const waterBase = labelStyles(ctx).water;
 
-	// Bucketed by `class`, not by area — see finding 2, and the regression it records. Larger classes come
-	// first so they win symbol collisions, as in the Shortbread module.
+	// Bucketed by `class`, not by area — see finding 2, and the regression it records. Larger classes
+	// come first, so the smaller one wins a collision (the last layer is placed first) — the same
+	// ordering, and the same reasoning, as in the Shortbread module.
 	const WATER_AREAS: { id: string; classes: string[]; appear: number; size: Record<number, number> }[] = [
 		{ id: 'major', classes: ['sea', 'strait'], appear: 4, size: { 4: 11, 10: 14 } },
 		{ id: 'large', classes: ['bay'], appear: 8, size: { 8: 10, 12: 13 } },

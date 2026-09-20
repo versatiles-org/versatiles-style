@@ -51,6 +51,7 @@ exports[`generator: featureLabels > yielded layer ids are stable 1`] = `
 [
   "symbol:label-motorway-exit",
   "symbol:label-motorway-shield",
+  "symbol:label-street-track",
   "symbol:label-street-pedestrian",
   "symbol:label-street-livingstreet",
   "symbol:label-street-residential",
@@ -59,7 +60,6 @@ exports[`generator: featureLabels > yielded layer ids are stable 1`] = `
   "symbol:label-street-secondary",
   "symbol:label-street-primary",
   "symbol:label-street-trunk",
-  "symbol:label-street-track",
   "symbol:label-street-pedestrian-zone",
   "symbol:label-water-area-major",
   "symbol:label-water-area-large",

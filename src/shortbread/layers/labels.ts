@@ -38,7 +38,12 @@ const PLACES_LARGE: PlaceLabelDef[] = [
 // Old VersaTiles settlement text is a dark blue-grey; districts/state are a lighter variant. Both are
 // derived from the `label` palette colour (so they invert correctly in dark mode) with its saturation
 // boosted to bring back the blue tint the OSM-Bright variant had desaturated away.
+// Ascending importance: the *last* layer is placed first and so wins a collision (see the ordering
+// note in `./index.ts`). `track` therefore belongs at the bottom, not appended at the end — a forest
+// track's name must not displace the trunk road it crosses. OSM Bright draws the same line, grouping
+// `minor, service, track` into one low-priority layer below `primary, secondary, tertiary, trunk`.
 const STREET_KINDS = [
+	'track',
 	'pedestrian',
 	'living_street',
 	'residential',
@@ -47,7 +52,6 @@ const STREET_KINDS = [
 	'secondary',
 	'primary',
 	'trunk',
-	'track',
 ];
 
 const ADMIN2: FilterSpecification = ['in', ['get', 'admin_level'], ['literal', [2, '2']]];
@@ -159,8 +163,16 @@ export function* featureLabels(ctx: LayerContext): Generator<b.TaggedLayer> {
 	// Norway can carry the same `way_area` as a noticeably larger lake in Kenya.
 	//
 	// Each bucket declares its appearance zoom with `appear`, so it fades in like everything else and
-	// its `minzoom` is derived rather than hand-written. Larger buckets come first: symbol collision
-	// is resolved in layer order, so big water wins over small when the two compete.
+	// its `minzoom` is derived rather than hand-written.
+	//
+	// Larger buckets come first, which means the *smaller* one wins a collision: the last layer is
+	// placed first (see the ordering note in `./index.ts`). That is deliberate and matches what the
+	// reference styles do — Protomaps emits `water_label_ocean` before `water_label_lakes`, OSM Bright
+	// emits `water-name-ocean` before `water-name-other` — because the buckets only ever compete at the
+	// zooms where the small one is live (`small` appears at z15, by which point the sea's name is a
+	// caption for something far off-screen and the pond is what is actually being looked at).
+	// The within-bucket order is the opposite and is the tiles' doing: `water_polygons_labels` is
+	// pre-sorted by `way_area`, so among equals the largest still wins.
 	//
 	// Glaciers are left out. `water_polygons_labels` carries their names too (`kind: glacier`, 225 in the
 	// cached tiles), and filtered on `way_area` alone they were lettered in the water style — blue glacier
