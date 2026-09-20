@@ -58,7 +58,7 @@
 		"format:check": "prettier --check .",
 		"lint": "eslint --color .",
 		"migrate-compare": "tsx scripts/migrate-compare.ts",
-		"prepack": "npm run build",
+		"prepack": "npm run build-node",
 		"release": "vrt release-npm",
 		"schema-gate": "tsx scripts/schema-gate.ts",
 		"smoke": "node scripts/ci/smoke.mjs",

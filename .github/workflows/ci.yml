@@ -71,11 +71,11 @@ jobs:
         # test of the published artifact.
         node: ['20', '22', '24']
     steps:
-      # `npm pack` runs `prepack`, which is the full build — including `build-sprites`, which
-      # shells out to optipng. Without this the Pack step dies with `spawn optipng ENOENT`.
-      - name: Install optipng
-        run: sudo apt-get install -y optipng
-
+      # No optipng here any more. `prepack` used to be the whole `build` — sprites, styles, the browser
+      # bundle and the docs — of which the tarball ships none: `files` is `dist/*` plus three tracked
+      # markdown files, and only `build-node` writes `dist/`. So packing shelled out to optipng (this
+      # step existed solely to stop `spawn optipng ENOENT`), fetched TileJSON over the network, and
+      # rewrote tracked `README.md` and `assets/*.svg` as a side effect of `npm publish`.
       - name: Checkout
         uses: actions/checkout@v7
 
