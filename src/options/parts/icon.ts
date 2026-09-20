@@ -1,5 +1,5 @@
 import { checkKeys } from './keys.js';
-import { reportIssue } from './issues.js';
+import { reportIssue, describeValue } from './issues.js';
 
 /** Size and spacing of icons: POI and transit-stop icons, motorway shields and road markings. */
 export type IconOptions = {
@@ -20,7 +20,11 @@ export function resolveIcon(icon?: IconOptions, path = 'icon'): ResolvedIcon {
 		const value = icon?.[key];
 		if (value !== undefined && (typeof value !== 'number' || !Number.isFinite(value))) {
 			// Continues while collecting; the default below is used in place of the rejected value.
-			reportIssue({ path: `${path}.${key}`, message: `expected a number, got ${JSON.stringify(value)}` });
+			// A number that is merely not finite is named as such, matching `checkFinite` — the two
+			// validators cover the same mistake in different parts of the tree and used to describe it
+			// differently.
+			const expected = typeof value === 'number' ? 'a finite number' : 'a number';
+			reportIssue({ path: `${path}.${key}`, message: `expected ${expected}, got ${describeValue(value)}` });
 		}
 	}
 	return { scale: icon?.scale ?? 1, spacing: icon?.spacing ?? 1 };

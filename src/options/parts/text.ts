@@ -1,5 +1,5 @@
 import { checkKeys } from './keys.js';
-import { reportIssue } from './issues.js';
+import { reportIssue, describeValue } from './issues.js';
 
 /**
  * A glyph name, as the glyph server publishes it: `'noto_sans_regular'`, `'fira_sans_semibold_italic'`,
@@ -210,15 +210,19 @@ function checkStyleValue(key: (typeof LABEL_STYLE_KEYS)[number], value: unknown,
 					: `one of ${TRANSFORMS.join(', ')}`
 				: typeof value === 'number' && Number.isFinite(value)
 					? undefined
-					: 'a number';
-	if (expected !== undefined) reportIssue({ path, message: `expected ${expected}, got ${JSON.stringify(value)}` });
+					: // A number that is merely not finite is named as such, matching `checkFinite` and
+						// `resolveIcon` — all three cover the same mistake in different parts of the tree.
+						typeof value === 'number'
+						? 'a finite number'
+						: 'a number';
+	if (expected !== undefined) reportIssue({ path, message: `expected ${expected}, got ${describeValue(value)}` });
 }
 
 /** A node of the text tree, checked: an object with only `known` keys and well-typed style values. */
 function textNode(value: unknown, known: readonly string[], path: string): Node | undefined {
 	if (value === undefined) return undefined;
 	if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-		reportIssue({ path, message: `expected an object, got ${JSON.stringify(value)}` });
+		reportIssue({ path, message: `expected an object, got ${describeValue(value)}` });
 		// Collecting: nothing below can read a non-object, so this subtree contributes no further issues.
 		return undefined;
 	}

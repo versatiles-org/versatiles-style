@@ -276,3 +276,44 @@ describe('unparseable colours are rejected', () => {
 		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.water', 'sun.altitude']);
 	});
 });
+
+// The three number validators — `checkFinite`, `resolveIcon`'s inline check and `text.ts`'s
+// `checkStyleValue` — cover the same mistake in different parts of the tree, and used to describe it
+// differently: the latter two rendered the value with `JSON.stringify`, which has no NaN or Infinity
+// and printed all three as `null`. The commonest way to land here is an empty form field through
+// `parseFloat`, so "expected a number, got null" sent the reader hunting for a null they never wrote.
+describe('rejected values are described as the caller wrote them', () => {
+	const messageFor = (options: Parameters<typeof osm.validateOptions>[0]): string => {
+		const result = osm.validateOptions(options);
+		if (result.ok) throw new Error('expected these options to be rejected');
+		return result.issues.map((issue) => issue.message).join(' | ');
+	};
+
+	it('prints non-finite numbers as themselves, not as null', () => {
+		expect(messageFor({ icon: { scale: NaN } })).toBe('expected a finite number, got NaN');
+		expect(messageFor({ icon: { spacing: Infinity } })).toBe('expected a finite number, got Infinity');
+		expect(messageFor({ text: { scale: -Infinity } })).toBe('expected a finite number, got -Infinity');
+		expect(messageFor({ text: { places: { cities: { haloWidth: NaN } } } })).toBe('expected a finite number, got NaN');
+	});
+
+	// All three validators agree on the wording, so the same mistake reads the same way wherever it sits.
+	it('agrees with checkFinite, which covers the rest of the tree', () => {
+		expect(messageFor({ sun: { altitude: NaN } })).toBe('expected a finite number, got NaN');
+		expect(messageFor({ recolor: { brightness: NaN } })).toBe('expected a finite number, got NaN');
+	});
+
+	// `null` is still reported as `null` — that is now unambiguous, because NaN no longer collides with it.
+	it('distinguishes a wrong type from a non-finite number', () => {
+		expect(messageFor({ icon: { scale: null } } as never)).toBe('expected a number, got null');
+		expect(messageFor({ icon: { scale: true } } as never)).toBe('expected a number, got true');
+	});
+
+	// Quoted, so a number written as a string is distinguishable from the number itself.
+	it('quotes strings', () => {
+		expect(messageFor({ icon: { scale: '2' } } as never)).toBe('expected a number, got "2"');
+		expect(messageFor({ text: { places: { cities: { font: 42 } } } } as never)).toBe(
+			'expected a font name string, got 42'
+		);
+		expect(messageFor({ text: { places: 42 } } as never)).toBe('expected an object, got 42');
+	});
+});
