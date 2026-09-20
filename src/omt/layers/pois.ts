@@ -186,12 +186,14 @@ const ATTRACTION_ICON: unknown = [
 const OFFICE_ICON: unknown = ['match', ['get', 'subclass'], 'diplomatic', 'base:icon-embassy', ''];
 
 /** Classes matched on `subclass` rather than mapped straight to an icon. */
-const SUBCLASS_MATCHES: Record<string, unknown> = {
+// Frozen: `buildIconMatch` builds a fresh outer array per call but pushes these values into it by
+// reference, so each sub-match is one object shared by every style the process builds.
+const SUBCLASS_MATCHES: Record<string, unknown> = b.deepFreeze({
 	place_of_worship: WORSHIP_ICON,
 	shop: SHOP_ICON,
 	attraction: ATTRACTION_ICON,
 	office: OFFICE_ICON,
-};
+});
 
 /** Every class this layer draws — the filter, so nothing else reaches the match. */
 export const DRAWN_CLASSES: string[] = [...Object.keys(CLASS_ICONS), ...Object.keys(SUBCLASS_MATCHES)].sort();

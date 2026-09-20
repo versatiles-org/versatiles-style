@@ -3,7 +3,13 @@ import type { StyleSpecification } from '../types/index.js';
 /** The styles are CC0, like the VersaTiles data they render. */
 export const STYLE_LICENSE = 'https://creativecommons.org/publicdomain/zero/1.0/';
 
-export const STYLE_METADATA: StyleSpecification['metadata'] = { license: STYLE_LICENSE };
+/**
+ * The metadata every builder starts from. Typed as a concrete record rather than the spec's
+ * `unknown`, so that the builders can spread it — each style gets its **own copy**, because `metadata`
+ * is the one part of a built style a caller is likely to write to, and a shared constant turned that
+ * into a process-wide edit affecting every later style in every schema.
+ */
+export const STYLE_METADATA: Record<string, unknown> = { license: STYLE_LICENSE };
 
 /** Which builder a recorded set of options belongs to. */
 export type StyleBuilder = 'osm' | 'satellite' | 'omt' | 'protomaps';

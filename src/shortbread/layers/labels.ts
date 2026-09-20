@@ -9,7 +9,8 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 // (settlement and state/country names). House numbers are a separate, lowest-priority symbol (see
 // `addresses`) emitted below POIs so they yield to them in collisions.
 
-const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
+// Frozen because it is attached to all nine place layers by reference, and shared across builds.
+const POP_SORT_KEY = b.deepFreeze(['-', ['to-number', ['get', 'population'], 0]]);
 
 /** Where settlement labels come from, and what decides which one survives a collision. */
 const PLACE_SOURCE = { sourceLayer: 'place_labels', sortKey: POP_SORT_KEY };

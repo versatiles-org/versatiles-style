@@ -1,5 +1,6 @@
 import type { TaggedLayer } from './build.js';
 import { textTopic } from './text.js';
+import { deepFreeze as freeze } from './freeze.js';
 
 /**
  * A tree mirroring `LayerGroupOptions`, with the layer IDs each group controls at the leaves.
@@ -72,11 +73,8 @@ export function buildGroupMaps(builds: Iterable<Iterable<TaggedLayer>>): {
  * thing to do with an array you were given — was corrupting the map for the rest of the process, and
  * `minimizeOptions` reads the same map. Freezing makes that a thrown error at the mutation instead of
  * wrong output somewhere later.
+ *
+ * The same reasoning now covers the expressions a built style shares with the modules that declare
+ * them, so the walk itself lives in `freeze.ts`; this is the typed wrapper for a group map.
  */
-function deepFreeze(map: LayerGroupMap): LayerGroupMap {
-	for (const value of Object.values(map)) {
-		if (Array.isArray(value)) Object.freeze(value);
-		else deepFreeze(value);
-	}
-	return Object.freeze(map);
-}
+const deepFreeze = (map: LayerGroupMap): LayerGroupMap => freeze(map);

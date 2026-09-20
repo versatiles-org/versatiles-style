@@ -100,7 +100,7 @@ const KIND_ICONS: Record<string, string> = {
  * `place_of_worship`'s religion is in `kind_detail`, the same shape OpenMapTiles uses for its
  * `subclass` — so Shortbread's religion match ports across a second time unchanged.
  */
-const WORSHIP_ICON: unknown = [
+const WORSHIP_ICON: unknown = b.deepFreeze([
 	'match',
 	['get', 'kind_detail'],
 	'christian',
@@ -118,13 +118,15 @@ const WORSHIP_ICON: unknown = [
 	'taoist',
 	'base:icon-yin_yang',
 	'base:icon-person_kneeling_and_praying',
-];
+]);
 
 export const DRAWN_KINDS: string[] = [...Object.keys(KIND_ICONS), 'place_of_worship'].sort();
 
 function buildIconMatch(): unknown {
 	const cases: unknown[] = [];
 	for (const [kind, icon] of Object.entries(KIND_ICONS)) cases.push(kind, icon);
+	// By reference: the outer array is fresh per call, but this sub-match is one object shared by
+	// every style the process builds, so it is frozen where it is declared.
 	cases.push('place_of_worship', WORSHIP_ICON);
 	return ['match', ['get', 'kind'], ...cases, ''];
 }

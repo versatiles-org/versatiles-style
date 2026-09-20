@@ -39,7 +39,10 @@ function buildBase(resolved: ResolvedOsm): StyleSpecification {
 	const style: StyleSpecification = {
 		version: 8,
 		name: styleName(resolved.theme),
-		metadata: STYLE_METADATA,
+		// Copied, not shared: `metadata` is the one part of a built style a caller is likely to annotate
+		// (a name, an author), and the constant is module-level — writing through it rewrote the metadata
+		// of every style the process built afterwards, in every schema.
+		metadata: { ...STYLE_METADATA },
 		glyphs: resolved.urls.glyphsPattern,
 		sprite: resolved.urls.sprite as StyleSpecification['sprite'],
 		sources: {

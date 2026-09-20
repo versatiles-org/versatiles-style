@@ -6,6 +6,8 @@ import * as b from '../../dsl/index.js';
 // single Shortbread value, so their match has one entry).
 
 // Icon match expressions (verbatim from the v5/old rules table), keyed by POI category.
+// Frozen at the bottom of this table: each entry is attached to its POI layer by reference, so one
+// object is shared by every style the process builds.
 const IMAGES: Record<string, unknown> = {
 	amenity: [
 		'match',
@@ -301,6 +303,7 @@ const IMAGES: Record<string, unknown> = {
 	highway: ['match', ['get', 'highway'], 'emergency_access_point', 'base:icon-emergency_access', ''],
 	office: ['match', ['get', 'office'], 'diplomatic', 'base:icon-embassy', ''],
 };
+b.deepFreeze(IMAGES);
 
 const POI_KEYS = ['amenity', 'leisure', 'tourism', 'shop', 'man_made', 'historic', 'emergency', 'highway', 'office'];
 

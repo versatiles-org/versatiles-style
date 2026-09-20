@@ -22,8 +22,9 @@ import { labelStyles, placeLabel, placeSecondary, type PlaceLabelDef } from '../
 const LINES: ExpressionSpecification = ['==', ['geometry-type'], 'LineString'];
 const POINTS: ExpressionSpecification = ['==', ['geometry-type'], 'Point'];
 
-/** Shortbread's sort key, which Protomaps can reproduce exactly. */
-const POP_SORT_KEY = ['-', ['to-number', ['get', 'population'], 0]];
+/** Shortbread's sort key, which Protomaps can reproduce exactly. Frozen: shared by reference across
+ *  all nine place layers and across builds. */
+const POP_SORT_KEY = b.deepFreeze(['-', ['to-number', ['get', 'population'], 0]]);
 const PLACE_SOURCE = { sourceLayer: 'places', sortKey: POP_SORT_KEY };
 
 const byKind = (...kinds: string[]): ExpressionSpecification =>

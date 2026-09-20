@@ -45,7 +45,8 @@ const POINTS: ExpressionSpecification = ['==', ['geometry-type'], 'Point'];
 
 /** Settlement priority. Shortbread sorts by descending population; `rank` ascends with unimportance,
  *  so it is used directly — and a missing rank sorts last rather than first. */
-const RANK_SORT_KEY = ['to-number', ['get', 'rank'], 99];
+// Frozen: attached to all nine place layers by reference, and shared across builds.
+const RANK_SORT_KEY = b.deepFreeze(['to-number', ['get', 'rank'], 99]);
 
 /** Where settlement labels come from, and what decides which one survives a collision. */
 const PLACE_SOURCE = { sourceLayer: 'place', sortKey: RANK_SORT_KEY };

@@ -3,6 +3,7 @@ import { Color } from '../color/index.js';
 import type { MaplibreLayer } from '../types/index.js';
 import type { ResolvedLayerGroups } from '../options/index.js';
 import { scaleLayerOpacity } from '../lib/index.js';
+import { deepFreeze } from './freeze.js';
 
 // ── Public value types ────────────────────────────────────────────────────────
 
@@ -305,7 +306,11 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	const { sourceLayer, filter, layout, group, appear, disappear, ...style } = opts;
 	const layer = { id, type } as MaplibreLayer;
 	if (sourceLayer != null) (layer as Record<string, unknown>)['source-layer'] = sourceLayer;
-	if (filter != null) (layer as Record<string, unknown>).filter = filter;
+	// Filters are the bulk of what a style shares by reference with the modules that declare them, and
+	// nothing ever writes through one — `assemble.ts` replaces a merged layer's filter wholesale rather
+	// than editing it. Freezing here covers every schema at once, so a new filter constant cannot
+	// reintroduce the hazard (see `freeze.ts`).
+	if (filter != null) (layer as Record<string, unknown>).filter = deepFreeze(filter);
 	if (layout != null) (layer as Record<string, unknown>).layout = { ...layout };
 
 	if (appear != null || disappear != null) {

@@ -75,7 +75,10 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 	const style: StyleSpecification = {
 		version: 8,
 		name: 'versatiles-satellite',
-		metadata: STYLE_METADATA,
+		// Copied, not shared: `metadata` is the one part of a built style a caller is likely to annotate
+		// (a name, an author), and the constant is module-level — writing through it rewrote the metadata
+		// of every style the process built afterwards, in every schema.
+		metadata: { ...STYLE_METADATA },
 		sources: {},
 		layers: [],
 		glyphs: resolved.urls.glyphsPattern,
