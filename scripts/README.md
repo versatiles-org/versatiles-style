@@ -28,13 +28,18 @@ because it is expensive to refill — see `lib/tile-cache.ts`.
 
 Run by `npm run build`, except `screenshots.ts` as noted below; you rarely invoke these by hand.
 
-| Script              | Alias                         | Does                                                                               |
-| ------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
-| `build-styles.ts`   | `build-styles`                | Bundles every style variant into `release/styles.tar.gz`.                          |
-| `build-sprites.ts`  | `build-sprites`               | Packs `icons/` into sprite sheets under `release/sprites/`.                        |
-| `icons-report.ts`   | `icons-report`, `doc-sprites` | Renders the icon overview; `--public` writes `docs/sprites.html`.                  |
-| `bundle-treemap.ts` | `doc-bundle`                  | Attributes every byte of the browser bundle to a source file, via the sourcemap.   |
-| `screenshots.ts`    | `doc-screenshots`             | Renders the style previews used in the README. Release workflow only, not `build`. |
+| Script             | Alias                         | Does                                                                               |
+| ------------------ | ----------------------------- | ---------------------------------------------------------------------------------- |
+| `build-styles.ts`  | `build-styles`                | Bundles every style variant into `release/styles.tar.gz`.                          |
+| `build-sprites.ts` | `build-sprites`               | Packs `icons/` into sprite sheets under `release/sprites/`.                        |
+| `icons-report.ts`  | `icons-report`, `doc-sprites` | Renders the icon overview; `--public` writes `docs/sprites.html`.                  |
+| `screenshots.ts`   | `doc-screenshots`             | Renders the style previews used in the README. Release workflow only, not `build`. |
+
+`doc-bundle` has no script of its own: `vrt bundle-treemap` attributes every byte of the browser
+bundle to a source file through the sourcemap, which is what `bundle-treemap.ts` used to do here. Its
+`--min-size 1400` is the one judgement call — the README wants the shape of the bundle, which
+directory costs what and which few files dominate it, and the tool's default fold-in threshold (0.5 %
+of the bundle) leaves ~70 leaves whose labels no longer fit their rectangles.
 
 ## Checks
 
