@@ -886,34 +886,48 @@ function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: ReportB
 	// whose city names are German and whose town names are French had no way of saying so, because the
 	// second was never looked at. The first still wins — `LANGUAGE_PROBES` is in order of how telling
 	// each is — but the disagreement is now reportable.
-	const languages = new Map<string, string[]>();
+	// One walk, feeding both the decision and the conflict report. They used to be two, computing the
+	// same field by different routes and disagreeing about it: the scan ignored any probe reading a
+	// plain `name`, while the decision *stopped* at the first of them. So a style whose city labels are
+	// local and whose town and village labels are German and French was reported as `text.language`
+	// = "de" — `optionPath` and all — while the options it returned carried no language at all.
+	const seen: { id: string; language?: string }[] = [];
 	for (const id of LANGUAGE_PROBES) {
 		const field = nameFieldOf(readings.get(id));
-		const language = field === undefined ? undefined : /^name[_:]([a-z]{2,3})$/.exec(field)?.[1];
+		if (field === undefined) continue; // no label, or one that reads no name field
+		seen.push({ id, language: /^name[_:]([a-z]{2,3})$/.exec(field)?.[1] });
+	}
+
+	// `LANGUAGE_PROBES` is in order of how telling each probe is, so the first that reads a name field
+	// decides — including when it reads a plain `name`, which is itself an answer: local names.
+	const chosen = decide(seen[0]);
+
+	const languages = new Map<string, string[]>();
+	for (const { id, language } of seen) {
 		if (language) (languages.get(language) ?? languages.set(language, []).get(language)!).push(id);
 	}
 	if (languages.size > 1) {
 		const observed = [...languages].map(([language, probes]) => ({ language, probes }));
+		// Named from the decision rather than from `observed[0]`, so the report cannot claim a language
+		// the returned options do not set — which is what it did whenever the two walks disagreed, and
+		// whenever the winning language turned out to be one the tiles do not carry.
+		const taken = chosen?.language;
 		report.say(
 			diagnostic(
 				'language.conflict',
-				`labels are read in ${languages.size} languages (${observed.map((o) => o.language).join(', ')}); "${observed[0].language}" was taken`,
-				{ chosen: observed[0].language, observed },
+				`labels are read in ${languages.size} languages (${observed.map((o) => o.language).join(', ')}); ${
+					taken ? `"${taken}"` : 'the local name'
+				} was taken`,
+				{ chosen: taken, observed },
 				{ optionPath: 'text.language' }
 			)
 		);
 	}
+	return chosen;
 
-	for (const id of LANGUAGE_PROBES) {
-		const reading = readings.get(id);
-		if (!reading?.label) continue;
-		const { layer, feature } = reading.label;
-		const shown = labelText(layer, reading.zoom, reading.probe, feature);
-		const field = new RegExp(NAME_MARKER + '(name[\\w:-]*)').exec(shown)?.[1];
-		if (!field) continue;
-
-		const language = /^name[_:]([a-z]{2,3})$/.exec(field)?.[1];
-		if (!language) return undefined; // `name`, or a transliteration such as `name:latin`
+	function decide(first: { id: string; language?: string } | undefined): TextOptions | undefined {
+		if (!first?.language) return undefined; // nothing read a name field, or it read `name`/`name:latin`
+		const { language } = first;
 		if (!LANGUAGES.has(language)) {
 			report.say(
 				diagnostic(
@@ -925,17 +939,18 @@ function deriveText(readings: ReadonlyMap<string, ProbeReading>, report: ReportB
 			);
 			return undefined;
 		}
+		const reading = readings.get(first.id);
+		if (!reading?.label) return undefined;
 		// Strict when hiding the language — in either spelling, which OpenMapTiles both carries — leaves no name.
 		const fallback = labelText(
-			layer,
+			reading.label.layer,
 			reading.zoom,
 			reading.probe,
-			feature,
+			reading.label.feature,
 			new Set([`name_${language}`, `name:${language}`])
 		);
 		return { language, ...(!fallback.includes(NAME_MARKER) && { languageStrict: true }) };
 	}
-	return undefined;
 }
 
 /** Recursively merge `text` option trees, later trees winning leaf by leaf rather than branch by branch. */

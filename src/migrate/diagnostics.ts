@@ -109,8 +109,15 @@ export type DiagnosticData = {
 	};
 	/** Icons were sized inconsistently relative to the target's; one multiplier had to serve. */
 	'icon.conflict': { option: 'scale' | 'spacing'; chosen: number; observed: { probe: string; ratio: number }[] };
-	/** Labels were read in more than one language; the first place label's was taken. */
-	'language.conflict': { chosen: string; observed: { language: string; probes: string[] }[] };
+	/**
+	 * Labels were read in more than one language; the first place label's was taken.
+	 *
+	 * `chosen` is absent when that first label reads a plain `name` — local names, which sets no
+	 * `text.language` at all — or when the language it reads is one the tiles do not carry. It is
+	 * optional precisely so that case cannot be mistaken for a language: the field used to name the
+	 * first language *observed*, which was not always the one applied.
+	 */
+	'language.conflict': { chosen?: string; observed: { language: string; probes: string[] }[] };
 	// ── uncertainty ──
 	/** Two palettes fit almost equally well; the cheaper one was taken. */
 	'theme.ambiguous': { chosen: string; cost: number; runnerUp: string; runnerUpCost: number; margin: number };

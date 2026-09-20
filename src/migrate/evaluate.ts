@@ -566,10 +566,17 @@ function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading 
 		// which is what the map shows; these are the ones an OpenMapTiles style stacks underneath, and
 		// without them a dozen POI layers in four colours read as a single uncontested colour.
 		const passedOver = groupDiscarded(
-			matches.slice(0, i).map(({ layer: below, feature: belowFeature }) => ({
+			// `labelText` takes the `ProbeFeature` and builds its own eval feature from `.props`;
+			// `evaluateProperty` takes the already-built `EvalFeature`. A `Match` carries both, and this
+			// passed the latter to the former behind an `as never`: `toEvalFeature` then spread a `props`
+			// that does not exist on an `EvalFeature`, so every below-layer label was evaluated against an
+			// empty property bag. A `text-field` of `['get', 'amenity']` came back empty, the layer looked
+			// like it drew nothing, and its colour was dropped from `discarded` — which is what feeds the
+			// `color.conflict` diagnostic, so the alternative colour was never offered back.
+			matches.slice(0, i).map(({ layer: below, feature: belowFeature, source: belowSource }) => ({
 				layer: below,
 				color:
-					below.type === 'symbol' && labelText(below, zoom, probe, belowFeature as never)
+					below.type === 'symbol' && labelText(below, zoom, probe, belowSource)
 						? toRGBA(
 								evaluateProperty(below, 'paint', 'text-color', zoom, belowFeature),
 								evaluateProperty(below, 'paint', 'text-opacity', zoom, belowFeature)

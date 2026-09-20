@@ -309,4 +309,35 @@ describe('readProbe', () => {
 		]);
 		expect(readProbe(s, OMT, probe('water-area'))).toBeUndefined();
 	});
+
+	// The below-layer scan used to pass the `EvalFeature` where `labelText` wants the `ProbeFeature`,
+	// behind an `as never`. `toEvalFeature` spread a `props` that an `EvalFeature` does not have, so the
+	// label was evaluated against an empty property bag: a `text-field` reading anything other than a
+	// name came back empty, the layer looked like it drew nothing, and its colour never reached
+	// `discarded` — which is what `deriveOptions` turns into a `color.conflict`.
+	it('reads a below-layer label whose text-field is not a name field', () => {
+		const s = style([
+			{
+				id: 'below',
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'place',
+				layout: { 'text-field': ['get', 'class'], 'text-font': ['x'], 'text-size': 12 },
+				paint: { 'text-color': '#ff0000' },
+			},
+			{
+				id: 'top',
+				type: 'symbol',
+				source: 'omt',
+				'source-layer': 'place',
+				layout: { 'text-field': ['get', 'name'], 'text-font': ['x'], 'text-size': 12 },
+				paint: { 'text-color': '#0000ff' },
+			},
+		]);
+		const reading = readProbe(s, OMT, probe('label-place-city'), 10);
+		expect(reading?.layers).toEqual(['top']);
+		expect(round(reading?.colors.text)).toEqual([0, 0, 1, 1]);
+		// The red layer below is overdrawn, not absent: its colour is the alternative to offer back.
+		expect(reading?.discarded?.text).toEqual([{ color: [1, 0, 0, 1], layers: ['below'] }]);
+	});
 });

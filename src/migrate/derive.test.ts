@@ -718,6 +718,28 @@ describe('deriveOptions — foreign styles', () => {
 			expect(conflict?.data.chosen).toBe('de'); // the city probe, which LANGUAGE_PROBES puts first
 		});
 
+		// The conflict scan and the decision were two separate walks and could disagree: the scan ignored
+		// any probe reading a plain `name`, while the decision stopped at the first of them. A style whose
+		// city labels are local was therefore reported as `text.language` = "de" — `optionPath` and all —
+		// while the options it returned carried no language.
+		it('names the language it actually applied, not the first one observed', () => {
+			const style = osm({ text: { language: 'de' } });
+			for (const layer of style.layers) {
+				const layout = (layer as { layout?: Record<string, unknown> }).layout;
+				// The city probe comes first in LANGUAGE_PROBES, so a plain `name` there decides: local names.
+				if (layer.id === 'label-place-city') layout!['text-field'] = ['get', 'name'];
+				if (layer.id === 'label-place-village') layout!['text-field'] = ['get', 'name_fr'];
+			}
+			const guess = deriveOptions(style);
+			const conflict = byCode(guess.report.diagnostics, 'language.conflict')[0];
+
+			expect(conflict?.data.observed.map((o) => o.language).sort()).toEqual(['de', 'fr']);
+			// The decision and the report have to be the same answer.
+			expect(osmOptions(guess).text?.language).toBeUndefined();
+			expect(conflict?.data.chosen).toBeUndefined();
+			expect(conflict?.message).toContain('the local name was taken');
+		});
+
 		// A style these builders produced has one layer per probe and one value per topic, so a conflict
 		// on it would mean the detection is firing on agreement.
 		it("finds none in the target's own styles", () => {
