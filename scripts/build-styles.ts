@@ -1,18 +1,23 @@
-import { createWriteStream, mkdirSync } from 'fs';
+import { mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { getStyleVariants } from './lib/variants.js';
 import { inlineSources } from '../src/lib/index.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
-import tar from 'tar-stream';
-import { createGzip } from 'zlib';
+import { writeTarball, type TarEntry } from './lib/tarball.js';
 
 const dirDst = new URL('../release', import.meta.url).pathname;
 mkdirSync(dirDst, { recursive: true });
 
-const pack = tar.pack();
+/**
+ * Well under the real figure (~950 KB for 107 styles), so adding a variant never trips it. The entry
+ * count below is the check that actually catches a lost style; this is the backstop for entries that
+ * are present but empty, which a count cannot see.
+ */
+const MIN_BYTES = 200_000;
 
 const variants = getStyleVariants();
 const validationIssues: { name: string; errors: ReturnType<typeof validateStyleMin> }[] = [];
+const entries: TarEntry[] = [];
 const bar = makeProgressBar(variants.length);
 
 for (let i = 0; i < variants.length; i++) {
@@ -25,24 +30,39 @@ for (let i = 0; i < variants.length; i++) {
 bar.update(variants.length, 'done');
 bar.done();
 
-// Report any validation problems after the progress bar, so it stays intact.
-for (const { name, errors } of validationIssues) {
-	console.log(`Validation errors in ${name}:`, errors);
+// Report every invalid style — after the progress bar, so it stays intact — and then stop.
+//
+// These used to be printed as "warnings" and the script exited 0 regardless, so `release/styles.tar.gz`
+// could be built, uploaded to a GitHub release and served to maps while holding styles MapLibre
+// rejects. `validateStyleMin` returns *errors*; there is no such thing as a style that is worth
+// publishing and does not load. Nothing is written when any style fails, so a failed run cannot leave
+// a half-valid archive behind for the next step to upload.
+if (validationIssues.length > 0) {
+	for (const { name, errors } of validationIssues) {
+		console.error(`Validation errors in ${name}:`, errors);
+	}
+	throw new Error(
+		`build-styles: ${validationIssues.length} of ${variants.length} styles are invalid (${validationIssues
+			.map(({ name }) => name)
+			.join(', ')}) — not writing styles.tar.gz`
+	);
 }
-console.log(
-	`Saved ${variants.length} styles${validationIssues.length ? ` (${validationIssues.length} with warnings)` : ''}.`
-);
 
-pack.finalize();
-pack.pipe(createGzip({ level: 9 })).pipe(createWriteStream(resolve(dirDst, 'styles.tar.gz')));
+// Awaited, and verified against the number of styles that went in: the write used to be a bare
+// `pack.pipe(...).pipe(...)`, which returns before any of it has happened, so a write error surfaced as
+// an unhandled stream error rather than a non-zero exit.
+const size = await writeTarball(resolve(dirDst, 'styles.tar.gz'), entries, {
+	entries: variants.length,
+	minBytes: MIN_BYTES,
+});
+console.log(`Saved ${variants.length} styles into styles.tar.gz (${(size / 1024).toFixed(0)} KB).`);
 
 function produce(name: string, style: StyleSpecification): void {
 	// Validate the style; collect errors to report once the progress bar finishes.
 	const errors = validateStyleMin(style);
 	if (errors.length > 0) validationIssues.push({ name, errors });
 
-	// write
-	pack.entry({ name: name + '.json' }, prettyStyleJSON(style));
+	entries.push({ name: name + '.json', body: prettyStyleJSON(style) });
 }
 
 function makeProgressBar(total: number, width = 30) {
