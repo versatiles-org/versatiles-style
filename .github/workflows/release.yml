@@ -36,6 +36,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # The tag that triggered the run decides which release is written to — not `package.json`, which
+      # this used to derive the tag from further down, after the whole build.
+      #
+      # The two can disagree: a tag pushed before the version bump lands, a bump landing without the
+      # tag, or a `workflow_dispatch` from a branch, where there is no tag at all. The consequence was
+      # silent and destructive rather than a no-op — `gh release upload --clobber` would overwrite the
+      # assets of whatever *other* release `package.json` happened to name, and the `gh release edit
+      # --latest` after it would then flip that release to "latest". A stale `package.json` on a
+      # dispatch could republish an old release with new artifacts.
+      #
+      # Run before the build, not after it: a mismatch is knowable from the checkout alone, and there
+      # is no reason to spend the build (and the e2e render) to find out.
+      #
+      # `github.*` goes through `env` rather than into the script body: a `${{ }}` expanded inside
+      # `run:` is textual substitution, so a tag name is free to carry shell metacharacters.
+      - name: Verify the tag matches package.json
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          VERSION="$(jq -r '.version' package.json)"
+          if [ "$REF_TYPE" != "tag" ]; then
+            echo "::error::This workflow writes to the release named by the tag it runs on, so it has to run from one — got $REF_TYPE '$REF_NAME'. Re-run it against tag v$VERSION."
+            exit 1
+          fi
+          if [ "$REF_NAME" != "v$VERSION" ]; then
+            echo "::error::Tag '$REF_NAME' does not match package.json version '$VERSION'. Refusing to touch a release this commit does not describe."
+            exit 1
+          fi
+          echo "Releasing $REF_NAME."
+          echo "RELEASE_TAG=$REF_NAME" >> "$GITHUB_ENV"
+
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
@@ -84,9 +116,7 @@ jobs:
             exit 1
           fi
 
-      - name: Get version
-        run: 'echo "RELEASE_TAG=v$(jq -r ''.version'' package.json)" >> $GITHUB_ENV'
-
+      # `RELEASE_TAG` is set by the verify step at the top of this job, from the tag that triggered it.
       - name: Upload file to release
         run: gh release upload $RELEASE_TAG sprites.tar.gz styles.tar.gz versatiles-style.tar.gz --clobber
         working-directory: release
