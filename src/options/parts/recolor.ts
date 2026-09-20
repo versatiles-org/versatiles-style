@@ -1,4 +1,5 @@
 import { checkKeys } from './keys.js';
+import { checkColors } from './color-check.js';
 export type RecolorOptions = {
 	invertBrightness?: boolean;
 	rotateHue?: number;
@@ -38,6 +39,8 @@ export function resolveRecolor(recolor?: RecolorOptions, path = 'recolor'): Reso
 	);
 	checkKeys(recolor?.tint, { color: true, amount: true }, `${path}.tint`);
 	checkKeys(recolor?.blend, { color: true, amount: true }, `${path}.blend`);
+	checkColors(recolor?.tint, ['color'], `${path}.tint`);
+	checkColors(recolor?.blend, ['color'], `${path}.blend`);
 	return {
 		invertBrightness: recolor?.invertBrightness ?? false,
 		rotateHue: recolor?.rotateHue ?? 0,

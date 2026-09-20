@@ -1,4 +1,5 @@
 import { checkKeys, checkFinite } from './keys.js';
+import { checkColors } from './color-check.js';
 export type HillshadeOptions =
 	| boolean
 	| {
@@ -26,6 +27,7 @@ export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade
 		path
 	);
 	checkFinite(hillshade, path);
+	checkColors(hillshade, ['shadowColor', 'highlightColor', 'accentColor'], path);
 	if (!hillshade) return false;
 	const h = typeof hillshade === 'object' ? hillshade : {};
 	return {

@@ -1,4 +1,5 @@
 import { checkKeys } from './keys.js';
+import { checkColors } from './color-check.js';
 import type { PropertyValueSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 /**
@@ -72,6 +73,7 @@ export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSk
 		},
 		path
 	);
+	checkColors(options, ['fogColor', 'horizonColor', 'skyColor'], path);
 	return {
 		fogColor: options.fogColor ?? SKY_DEFAULTS.fogColor,
 		horizonColor: options.horizonColor ?? SKY_DEFAULTS.horizonColor,

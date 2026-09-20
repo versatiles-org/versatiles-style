@@ -201,3 +201,58 @@ describe('non-finite numbers are rejected', () => {
 		expect(() => osm({ sun: { altitude: 0, direction: 360 } })).not.toThrow();
 	});
 });
+
+// Colour options were the one part of the surface no resolver looked at: the value was copied through
+// and the first `Color.parse` happened deep in layer building, so the builder threw an error naming only
+// the string while `validateOptions` of the same object answered `{ ok: true }`. See options/parts/color-check.ts.
+describe('unparseable colours are rejected', () => {
+	const cases: [string, () => unknown][] = [
+		['osm.colors.water', () => osm({ colors: { water: 'bananas' } })],
+		['osm.sun.color', () => osm({ sun: { color: 'not-a-colour' } })],
+		['osm.sky.fogColor', () => osm({ sky: { fogColor: 'nope' } })],
+		['osm.sky.horizonColor', () => osm({ sky: { horizonColor: 'nope' } })],
+		['osm.sky.skyColor', () => osm({ sky: { skyColor: 'nope' } })],
+		['osm.features.hillshade.shadowColor', () => osm({ features: { hillshade: { shadowColor: 'zzz' } } })],
+		['osm.features.hillshade.highlightColor', () => osm({ features: { hillshade: { highlightColor: 'zzz' } } })],
+		['osm.features.hillshade.accentColor', () => osm({ features: { hillshade: { accentColor: 'zzz' } } })],
+		['osm.recolor.tint.color', () => osm({ recolor: { tint: { color: 'xxx', amount: 0.5 } } })],
+		['osm.recolor.blend.color', () => osm({ recolor: { blend: { color: 'yyy', amount: 0.5 } } })],
+		['satellite.osmOverlay.colors.water', () => satellite({ osmOverlay: { colors: { water: 'bananas' } } })],
+	];
+
+	// The builder threw before this change too — `Color.parse` reached the value eventually — but named
+	// only the string. What is pinned here is that the error names the *option*, so the message says
+	// which field to fix.
+	for (const [path, build] of cases) {
+		it(`names ${path} in the thrown error`, () => {
+			expect(build).toThrow(path);
+		});
+	}
+
+	it('reports them as issues rather than throwing, one per bad colour', () => {
+		const result = osm.validateOptions({
+			colors: { water: 'bananas', land: 'pears' },
+			sun: { color: 'zzz' },
+		});
+		expect(result.ok).toBe(false);
+		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.land', 'colors.water', 'sun.color']);
+	});
+
+	it('still accepts every colour syntax the library parses', () => {
+		expect(() =>
+			osm({
+				colors: { water: '#abc', land: '#aabbccdd', glacier: 'rgb(1,2,3)', building: 'hsl(1,2%,3%)' },
+				sun: { color: 'oklch(0.7 0.1 45)' },
+				recolor: { tint: { color: 'rgba(1,2,3,0.5)', amount: 0.5 } },
+			})
+		).not.toThrow();
+	});
+
+	// A colour that cannot be parsed falls back to the palette's own, so the pass continues and reaches
+	// the rest of the tree instead of stopping at the first bad key.
+	it('does not stop the pass at the first bad colour', () => {
+		const result = osm.validateOptions({ colors: { water: 'bananas' }, sun: { altitude: NaN } });
+		expect(result.ok).toBe(false);
+		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.water', 'sun.altitude']);
+	});
+});
