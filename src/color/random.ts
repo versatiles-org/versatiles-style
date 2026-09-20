@@ -61,16 +61,26 @@ export default function randomColor(options?: RandomColorOptions): Color {
 	}
 
 	function pickSaturation(hue: number, options: RandomColorOptions): number {
+		// `monochrome` is a statement about the hue that requires zero saturation, so it outranks an
+		// explicit `saturation` — the two are contradictory and this is the stronger of them.
 		if (options.hue === 'monochrome') return 0;
-		if (options.luminosity === 'random') return randomWithin([0, 100]);
 
 		let [sMin, sMax] = getColorInfo(hue).saturationRange;
 
+		// An explicit `saturation` is honoured whatever the luminosity, `'random'` included. It used to
+		// be checked *after* the `luminosity === 'random'` early return below, so that one mode silently
+		// discarded it: `{ saturation: 5, luminosity: 'random' }` and `{ saturation: 95, luminosity:
+		// 'random' }` returned the same colour. That is the same class of bug as the v5 one noted next,
+		// which is why both are pinned by tests.
+		//
 		// v5 understood only 'strong' here: a number or 'weak' fell through to the default range, so
 		// `{ saturation: 20 }` and `{ saturation: 'weak' }` both silently returned the default colour.
 		if (typeof options.saturation === 'number') return clamp(options.saturation, 0, 100);
 		if (options.saturation === 'strong') return sMax;
 		if (options.saturation === 'weak') return sMin;
+
+		// No saturation asked for: 'random' means anywhere in the full range, ignoring the hue's own.
+		if (options.luminosity === 'random') return randomWithin([0, 100]);
 
 		switch (options.luminosity) {
 			case 'bright':

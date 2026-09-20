@@ -87,6 +87,33 @@ describe('RandomColor', () => {
 			}
 		});
 
+		// `luminosity: 'random'` used to be checked before `saturation` and returned a random value from
+		// the full range, discarding whatever the caller asked for: 5 and 95 gave the same colour. Same
+		// class of bug as the v5 one above, one branch further down.
+		it('honours saturation even when luminosity is "random"', () => {
+			for (const saturation of [5, 50, 95]) {
+				expect(randomColor({ seed: 7, saturation, luminosity: 'random' }).hsv.s).toBeCloseTo(saturation, 6);
+			}
+			const weak = randomColor({ seed: 7, saturation: 'weak', luminosity: 'random' }).hsv.s;
+			const strong = randomColor({ seed: 7, saturation: 'strong', luminosity: 'random' }).hsv.s;
+			expect(strong).toBeGreaterThan(weak);
+		});
+
+		// `monochrome` is a statement about the hue that requires zero saturation, so it stays the
+		// stronger of the two when a caller asks for both.
+		it('lets hue "monochrome" outrank an explicit saturation', () => {
+			expect(randomColor({ seed: 7, saturation: 95, hue: 'monochrome' }).hsv.s).toBe(0);
+			expect(randomColor({ seed: 7, saturation: 95, hue: 'monochrome', luminosity: 'random' }).hsv.s).toBe(0);
+		});
+
+		// The fix must not have narrowed `luminosity: 'random'` itself: with no saturation asked for it
+		// still ranges across the full scale rather than the hue's own band.
+		it('still randomises saturation when none is given', () => {
+			const values = [1, 2, 3, 4, 5].map((seed) => randomColor({ seed, luminosity: 'random' }).hsv.s);
+			expect(new Set(values).size).toBeGreaterThan(1);
+			expect(Math.max(...values) - Math.min(...values)).toBeGreaterThan(20);
+		});
+
 		it('gives a different colour each time when no seed is given', () => {
 			// v5 seeded with 0 when no seed was passed, so every unseeded call returned the same colour
 			const colors = new Set(Array.from({ length: 10 }, () => randomColor().asHex()));
