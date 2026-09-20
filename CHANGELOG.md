@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.1] - 2026-09-20
+
+### Bug Fixes
+
+- update README and screenshot generation to include dark theme previews and streamline palette handling ([3e2768d](https://github.com/versatiles-org/versatiles-style/commit/3e2768df6f4f4274fc934d9ca6bb642904f7239a))
+- add disappear property to place labels for better zoom handling and opacity control ([585ac6d](https://github.com/versatiles-org/versatiles-style/commit/585ac6d47015a2ce5f1332258f662aa166ecc2db))
+- update street label order and add 'track' to feature labels for improved rendering ([a4a9aea](https://github.com/versatiles-org/versatiles-style/commit/a4a9aea2f9e30db417b1956553817eee645ae7ec))
+- remove width-less bicycle overlays from style snapshots and update related tests for clarity ([30fcb33](https://github.com/versatiles-org/versatiles-style/commit/30fcb330db629528f8e591cffbdf1a2ea93a700e))
+- ensure style metadata is copied per build to prevent shared mutations and add deep freeze utility for shared objects ([d265128](https://github.com/versatiles-org/versatiles-style/commit/d2651286c9e8fb9550e99106265b9179dcc61b4a))
+- add color validation to options to ensure proper parsing and reporting of unparseable colors ([c495cfc](https://github.com/versatiles-org/versatiles-style/commit/c495cfc7273dbc0b73346b48896e10b5a4ac142b))
+- add finite number checks for recolor and sky options to prevent invalid StyleJSON ([257dc25](https://github.com/versatiles-org/versatiles-style/commit/257dc25c4ea69bbaab93dd180bb6fe25a402f6e7))
+- improve error messaging for non-finite numbers and type mismatches in option validation ([3d0cbe1](https://github.com/versatiles-org/versatiles-style/commit/3d0cbe1988c229ef72e47164f9c4f5c3cd5adb1f))
+- ensure saturation options are honored correctly with random luminosity and add related tests ([1dbf6c5](https://github.com/versatiles-org/versatiles-style/commit/1dbf6c5cdf9412302a5b1d5e2cbc01bbe1f631be))
+- resolve language conflict reporting and improve label evaluation for below-layer symbols ([94cb2b7](https://github.com/versatiles-org/versatiles-style/commit/94cb2b74f9e7c294ab5bfa12da37495ca9c9956c))
+- correct function naming in error messages for protomaps options validation ([9413a11](https://github.com/versatiles-org/versatiles-style/commit/9413a11bdfb26943016528471bc8adc91fd78da5))
+- replace shell command with script for packing browser bundle and add validation for entries ([73307a3](https://github.com/versatiles-org/versatiles-style/commit/73307a3d448ab64532a600289ff00a98e6de5f5a))
+- refactor style packaging to use writeTarball and improve validation error handling ([9277d83](https://github.com/versatiles-org/versatiles-style/commit/9277d834c970980fab1b31fffad247889e10c04e))
+- add tag verification step to ensure release consistency with package.json version ([d0fb0f7](https://github.com/versatiles-org/versatiles-style/commit/d0fb0f7445476f21e7e2d804b191df4d6988bcf1))
+- update prepack script to use build-node and remove optipng installation from CI ([b5c8751](https://github.com/versatiles-org/versatiles-style/commit/b5c8751493b87a23541ddd3c248961a0a450a302))
+
 ## [6.0.0] - 2026-09-18
 
 ### ⚠ BREAKING CHANGES
