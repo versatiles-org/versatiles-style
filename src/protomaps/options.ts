@@ -179,7 +179,12 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 			sky: true,
 			projection: true,
 		},
-		'omt'
+		// `protomaps`, not `omt`: this was copied from `resolveOmt` and named a function the caller never
+		// called. Every other path in here is already `protomaps.*`, so one call could report two
+		// different function names — a top-level typo said `omt` while `text.fonts` said `protomaps`.
+		// `checkKeys` also keys the v5 and pre-release hints off this first segment, so the `protomaps`
+		// branch `v5-hints.ts` already carries was unreachable for top-level keys.
+		'protomaps'
 	);
 	const theme = resolveTheme(options?.theme, undefined, 'protomaps.theme');
 	const colors = resolveColors(theme, options?.colors, 'protomaps.colors');

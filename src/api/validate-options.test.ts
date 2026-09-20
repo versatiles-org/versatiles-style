@@ -4,6 +4,10 @@ import { fetchTileJSON, inlineSources } from '../lib/index.js';
 import { v5ColorKeys } from '../options/index.js';
 import { osm } from '../index.js';
 import { satellite } from '../index.js';
+import { omt } from '../omt/index.js';
+import { protomaps } from '../protomaps/index.js';
+
+const PMTILES = 'pmtiles://https://example.org/x.pmtiles';
 
 // Unknown option keys are rejected rather than silently ignored: a v5 option, a typo or a renamed v5
 // colour key used to build the default style without a word. See src/options/validate.ts.
@@ -120,6 +124,30 @@ describe('unknown option keys are rejected', () => {
 				'  "textScale" — in v6 this is "text.scale"\n' +
 				'  "baseUrl" — in v6 this is "urls.base"\n' +
 				'  "bounds" was removed in v6'
+		);
+	});
+
+	// Each entry point names *itself* in its errors. The root is a literal passed to `checkKeys`, so it
+	// is copy-pasteable between schemas and was: `resolveProtomaps` said `omt`, naming a function the
+	// caller never called, while paths one level down said `protomaps` — two function names from one
+	// call. It also keys the v5 and pre-release hints, so the wrong root silently disables them.
+	it('names the function the caller called, in every schema', () => {
+		const cases: [string, () => unknown][] = [
+			['osm', () => osm({ nope: 1 } as never)],
+			['satellite', () => satellite({ nope: 1 } as never)],
+			['omt', () => omt({ nope: 1 } as never)],
+			['protomaps', () => protomaps({ urls: { protomaps: PMTILES }, nope: 1 } as never)],
+		];
+		for (const [name, build] of cases) {
+			expect(build, name).toThrow(new RegExp(`^${name}: unknown option "nope"`));
+		}
+	});
+
+	// The same root drives the pre-release hint, which `v5-hints.ts` already carried a `protomaps`
+	// branch for — unreachable for top-level keys while the root said `omt`.
+	it('offers the pre-release hint under the right schema name', () => {
+		expect(() => protomaps({ urls: { protomaps: PMTILES }, layout: {} } as never)).toThrow(
+			'protomaps: unknown option "layout" — this is now "text.scale, text.spacing, text.pitchAlignment, icon.scale and icon.spacing"'
 		);
 	});
 

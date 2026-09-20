@@ -64,6 +64,10 @@ describe('validation is per schema', () => {
 
 	it('rejects an unknown option key', () => {
 		expect(() => pm({ textScale: 2 } as never)).toThrow(/textScale/);
+		// Naming the function the caller actually called. The root passed to `checkKeys` was `omt`,
+		// copied from `resolveOmt`, so this said `omt: unknown option …` — while `text.fonts`, resolved
+		// one level down, correctly said `protomaps`. Matching only `/textScale/` is what let it through.
+		expect(() => pm({ textScale: 2 } as never)).toThrow(/^protomaps: unknown option/);
 	});
 
 	it('shares the whole neutral option vocabulary with osm()', () => {
