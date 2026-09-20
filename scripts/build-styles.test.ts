@@ -63,5 +63,8 @@ describe('build-styles', () => {
 		// The count the script asks `writeTarball` to verify has to be the number of entries it passed,
 		// or the check it added would pass vacuously.
 		expect(captured.calls[0].entries.length).toBe(expectedFiles.length);
-	});
+		// Importing the script builds every variant for real — ~1.3s alone, but over 5s on a loaded CI
+		// runner sharing cores with the rest of the suite, which is what failed the v6.0.1 release on
+		// the default 5s timeout. Same headroom as `build-sprites.test.ts`.
+	}, 30000);
 });
