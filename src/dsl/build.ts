@@ -270,9 +270,17 @@ export function fadeOut(disappear: number, target = 1, span = 1): Record<number,
 /** VersaTiles tiles are generated for z0–14 only; z14 is always the deepest real tile. */
 const SOURCE_MAXZOOM = 14;
 
-/** The first zoom of a `{ z: 0, … }` ramp, or undefined if the value is not such a ramp. */
+/**
+ * The first zoom of a `{ z: 0, … }` ramp, or undefined if the value is not such a ramp.
+ *
+ * Reads through the `{ base, stops }` form as well as flat zoom stops. Without that it silently
+ * returned undefined for every `ExpStops`, so a width written in that form ramped from 0 but derived
+ * no `minzoom` — the layer drew from its data floor instead, invisibly, with nothing to show for it.
+ */
 function rampFromZero(value: unknown): number | undefined {
 	if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
+	const stops = (value as { stops?: unknown }).stops;
+	if (stops !== undefined) return rampFromZero(stops);
 	const zooms = Object.keys(value as Record<string, number>)
 		.map(Number)
 		.filter((z) => Number.isFinite(z))

@@ -151,13 +151,14 @@ describe('underground treatment', () => {
 	// Merged layers appear once under their merged ID (see MERGES in layers/index.ts): the two
 	// bus kinds as `tunnel-street-bus`, and livingstreet/residential/unclassified bicycle overlays
 	// as `tunnel-street-minor-bicycle`.
+	// `tunnel-street-track-bicycle` and `tunnel-street-service-bicycle` used to sit here too. They were
+	// not roads the treatment failed to reach but width-less 1px hairlines that had no opacity to fade
+	// in the first place; `bicycleStyle` now returns null for those bases, so they are not emitted at all.
 	const NO_COLOUR_HEADROOM = [
 		'tunnel-way-cycleway',
 		'tunnel-street-service',
 		'tunnel-street-bus',
-		'tunnel-street-track-bicycle',
 		'tunnel-street-pedestrian-bicycle',
-		'tunnel-street-service-bicycle',
 		'tunnel-street-minor-bicycle',
 	];
 

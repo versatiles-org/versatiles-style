@@ -40,6 +40,10 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 	drain: { base: 1.3, stops: { 13: 0.5, 20: 2 } },
 };
 
+// Pier/breakwater line width, carried over unchanged from the Shortbread module — see
+// `LINEAR_STRUCTURE_WIDTH` there for why it ramps from 0 at z12 and why the stops are flat.
+const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 12: 0, 13: 1, 16: 4, 18: 18, 20: 90 };
+
 // Per-class data floors inside `waterway`. The record states the source-layer starts at z3, which is
 // true of rivers; the smaller classes are not tiled nearly that early, and `applyDataFloor` can only
 // gate at the source-layer minzoom, so without this they would be processed for ten zoom levels that
@@ -131,6 +135,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.land,
 		lineCap: 'round',
 		lineJoin: 'round',
+		size: LINEAR_STRUCTURE_WIDTH,
 		group: 'water.piers',
 	});
 }

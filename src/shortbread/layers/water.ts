@@ -14,6 +14,23 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 	ditch: { base: 1.3, stops: { 13: 0.5, 20: 2 } },
 };
 
+/**
+ * Width for the linear built structures in water — dam crests and pier/breakwater/groyne lines.
+ *
+ * They are drawn as lines only where the tiles carry no polygon for them, so they stand in for a
+ * structure a few metres wide: about three quarters of a minor road (`MINOR_WIDTH.main`), which is
+ * what they sit beside on a harbour front. Ramping from 0 at z12 both fades them in and is what
+ * derives their `minzoom`, matching the `{ 12: 0, 13: 1 }` opacity of the `*-area` fills that cover
+ * the same features where a polygon does exist.
+ *
+ * Without a width they were not absent but 1px — MapLibre's `line-width` default — with no ramp to
+ * derive a gate from, so they drew at the source-layer data floor.
+ *
+ * Flat zoom stops rather than the `{ base, stops }` form the waterway widths use, matching the road
+ * widths: only this form is a ramp `appearZoom` can read, so it is what derives the `minzoom`.
+ */
+const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 12: 0, 13: 1, 16: 4, 18: 18, 20: 90 };
+
 // Per-kind data floors inside `water_lines`. `applyDataFloor` can only gate at the SOURCE-LAYER
 // minzoom, which the tileset reports as 9 — true for rivers and canals, but streams and ditches are
 // not tiled until z14, so without this they would be processed for five zoom levels that carry no
@@ -85,6 +102,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.water,
 		lineCap: 'round',
 		lineJoin: 'round',
+		size: LINEAR_STRUCTURE_WIDTH,
 		group: 'water.piers',
 	});
 
@@ -103,6 +121,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.land,
 		lineCap: 'round',
 		lineJoin: 'round',
+		size: LINEAR_STRUCTURE_WIDTH,
 		group: 'water.piers',
 	});
 }

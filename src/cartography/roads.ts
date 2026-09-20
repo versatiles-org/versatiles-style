@@ -179,18 +179,22 @@ function zoneStyle(ctx: LayerContext, prefix: Prefix): b.StyleProps {
 	return { color: c.roadStreet, opacity: { 12: 0, 13: 1 } };
 }
 
-function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b.StyleProps {
+function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b.StyleProps | null {
 	const { c } = ctx;
-	const r: b.StyleProps = { lineJoin, lineCap };
-	r.color = c.roadStreet;
-	// minor width for these bicycle overlays (track/service overlays get none)
-	if (vocab.minorBases.includes(base) || base === 'pedestrian') {
-		r.size = MINOR_WIDTH.main;
-		r.opacity = { 12: 0, 13: 1 };
-		r.color = c.transitCycle;
-		r.lineCap = 'round';
-	}
-	return r;
+	// Only the minor bases and `pedestrian` carry a bicycle overlay. Track and service get none — and
+	// "none" has to be `null`, not a style without a `size`: a line layer with no `line-width` is not
+	// invisible, MapLibre falls back to the property default of 1px. Returning the width-less base drew
+	// a solid white hairline along every `bicycle=designated` track and service road, with no opacity
+	// ramp to derive a `minzoom` from, so it started at the source-layer data floor (z5) — six zoom
+	// levels before the roads it was meant to overlay fade in at all.
+	if (!vocab.minorBases.includes(base) && base !== 'pedestrian') return null;
+	return {
+		lineJoin,
+		lineCap: 'round',
+		color: c.transitCycle,
+		size: MINOR_WIDTH.main,
+		opacity: { 12: 0, 13: 1 },
+	};
 }
 
 // Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
@@ -303,7 +307,7 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.Sty
 	return r;
 }
 
-function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b.StyleProps {
+function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b.StyleProps | null {
 	const { c, fg } = ctx;
 	const base: b.StyleProps = {
 		lineCap,
@@ -342,8 +346,12 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 		case 'service':
 		case 'track':
 			return { ...base, size: { 14: 3, 16: 6, 18: 25, 19: 67, 20: 134 }, opacity: { 14: 0, 15: 1 } };
-		default: // the bus ways, which carry no deck
-			return base;
+		// The bus ways, which carry no deck. `base` has a colour and a constant 0.5 opacity but no
+		// `size`, so returning it emitted a translucent 1px land-coloured line along every busway
+		// bridge — and with no ramp to derive a `minzoom` from, it started at the data floor (z5)
+		// while every other bridge deck is gated at z12+. No deck means no layer.
+		default:
+			return null;
 	}
 }
 

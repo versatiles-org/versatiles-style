@@ -100,3 +100,19 @@ describe('road casing is never narrower than its fill', () => {
 		});
 	}
 });
+
+// The casing/fill check above compares two width curves, so it can only skip a layer that has none —
+// `if (!casingStops || !fillStops) continue`. That blind spot is exactly where nine width-less line
+// layers hid: a `line` layer with no `line-width` is not invisible, it is MapLibre's 1px default, and
+// with no ramp to derive a gate from it drew from the source-layer data floor. The bicycle overlays
+// came out as solid white hairlines over every track and service road from z5.
+describe.each(STYLES)('%s line layers', (_, style) => {
+	it('all declare a line-width', () => {
+		const widthless = style.layers
+			.filter((layer) => layer.type === 'line')
+			.filter((layer) => (layer as { paint?: Record<string, unknown> }).paint?.['line-width'] === undefined)
+			.map((layer) => layer.id);
+
+		expect(widthless).toEqual([]);
+	});
+});
