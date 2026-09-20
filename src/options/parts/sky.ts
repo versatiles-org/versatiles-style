@@ -1,4 +1,4 @@
-import { checkKeys } from './keys.js';
+import { checkKeys, checkFinite } from './keys.js';
 import { checkColors } from './color-check.js';
 import type { PropertyValueSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -73,6 +73,9 @@ export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSk
 		},
 		path
 	);
+	// A non-finite blend serialised to `null` in the emitted style — not a wrong sky but an invalid
+	// StyleJSON, since JSON has no NaN.
+	checkFinite(options, path);
 	checkColors(options, ['fogColor', 'horizonColor', 'skyColor'], path);
 	return {
 		fogColor: options.fogColor ?? SKY_DEFAULTS.fogColor,

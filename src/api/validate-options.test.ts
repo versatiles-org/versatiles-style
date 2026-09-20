@@ -182,6 +182,20 @@ describe('non-finite numbers are rejected', () => {
 		['osm.features.terrain.exaggeration', () => osm({ features: { terrain: { exaggeration: NaN } } })],
 		['osm.features.hillshade.exaggeration', () => osm({ features: { hillshade: { exaggeration: -Infinity } } })],
 		['satellite.raster.opacity', () => satellite({ raster: { opacity: NaN } })],
+		// `recolor` and `sky` had no `checkFinite` at all. NaN reached the colour transforms, where
+		// `clamp` maps it to the *minimum* — `brightness` rendered the whole map black, `gamma` white,
+		// `contrast` mid-grey — and a non-finite sky blend serialised to `null`, i.e. invalid StyleJSON.
+		['osm.recolor.rotateHue', () => osm({ recolor: { rotateHue: NaN } })],
+		['osm.recolor.saturate', () => osm({ recolor: { saturate: NaN } })],
+		['osm.recolor.brightness', () => osm({ recolor: { brightness: NaN } })],
+		['osm.recolor.contrast', () => osm({ recolor: { contrast: Infinity } })],
+		['osm.recolor.gamma', () => osm({ recolor: { gamma: -Infinity } })],
+		['osm.recolor.tint.amount', () => osm({ recolor: { tint: { color: '#00ff00', amount: NaN } } })],
+		['osm.recolor.blend.amount', () => osm({ recolor: { blend: { color: '#00ff00', amount: NaN } } })],
+		['osm.sky.atmosphereBlend', () => osm({ sky: { atmosphereBlend: NaN } })],
+		['osm.sky.fogGroundBlend', () => osm({ sky: { fogGroundBlend: NaN } })],
+		['osm.sky.horizonFogBlend', () => osm({ sky: { horizonFogBlend: NaN } })],
+		['osm.sky.skyHorizonBlend', () => osm({ sky: { skyHorizonBlend: NaN } })],
 	];
 
 	for (const [path, build] of cases) {
@@ -199,6 +213,12 @@ describe('non-finite numbers are rejected', () => {
 		expect(() => osm({ layers: { buildings: 1 } })).not.toThrow();
 		expect(() => osm({ layers: { buildings: 0.5 } })).not.toThrow();
 		expect(() => osm({ sun: { altitude: 0, direction: 360 } })).not.toThrow();
+		expect(() =>
+			osm({
+				recolor: { brightness: 0.5, gamma: 2, contrast: 0, rotateHue: 180, saturate: -1 },
+				sky: { atmosphereBlend: 0, skyHorizonBlend: 1 },
+			})
+		).not.toThrow();
 	});
 });
 

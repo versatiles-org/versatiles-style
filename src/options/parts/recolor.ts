@@ -1,4 +1,4 @@
-import { checkKeys } from './keys.js';
+import { checkKeys, checkFinite } from './keys.js';
 import { checkColors } from './color-check.js';
 export type RecolorOptions = {
 	invertBrightness?: boolean;
@@ -39,6 +39,10 @@ export function resolveRecolor(recolor?: RecolorOptions, path = 'recolor'): Reso
 	);
 	checkKeys(recolor?.tint, { color: true, amount: true }, `${path}.tint`);
 	checkKeys(recolor?.blend, { color: true, amount: true }, `${path}.blend`);
+	// Walks the whole subtree, so `tint.amount` and `blend.amount` are covered with it. Without this,
+	// an empty form field reaching `parseFloat` put NaN into the colour transforms, where `clamp` maps
+	// it to the *minimum*: `brightness` rendered the map black, `gamma` white, `contrast` mid-grey.
+	checkFinite(recolor, path);
 	checkColors(recolor?.tint, ['color'], `${path}.tint`);
 	checkColors(recolor?.blend, ['color'], `${path}.blend`);
 	return {
