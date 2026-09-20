@@ -51,13 +51,14 @@ const IS_CAPITAL: ExpressionSpecification = ['in', CAPITAL, ['literal', ['yes', 
 const IS_STATE_CAPITAL: ExpressionSpecification = ['==', CAPITAL, '4'];
 const NOT_A_CAPITAL: ExpressionSpecification = ['!', ['in', CAPITAL, ['literal', ['yes', '2', '4']]]];
 
+// Sizes and `disappear` carried over from the Shortbread module.
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byType('neighbourhood'), minzoom: 14, size: 12 },
-	{ id: 'quarter', filter: byType('quarter'), minzoom: 13, size: 13 },
-	{ id: 'suburb', filter: byType('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
-	{ id: 'hamlet', filter: byType('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
-	{ id: 'village', filter: byType('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
-	{ id: 'town', filter: ['all', byType('town'), NOT_A_CAPITAL], minzoom: 7, size: { 8: 11, 12: 14 } },
+	{ id: 'neighbourhood', filter: byType('neighbourhood'), minzoom: 14, disappear: 18, size: 12 },
+	{ id: 'quarter', filter: byType('quarter'), minzoom: 13, disappear: 16, size: 13 },
+	{ id: 'suburb', filter: byType('suburb'), minzoom: 10, disappear: 15, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byType('hamlet'), minzoom: 13, disappear: 18, size: { 10: 11, 12: 14 } },
+	{ id: 'village', filter: byType('village'), minzoom: 10, disappear: 16, size: { 9: 11, 12: 14 } },
+	{ id: 'town', filter: ['all', byType('town'), NOT_A_CAPITAL], minzoom: 7, disappear: 15, size: { 8: 11, 12: 14 } },
 ];
 
 const PLACES_LARGE: PlaceLabelDef[] = [
@@ -65,11 +66,11 @@ const PLACES_LARGE: PlaceLabelDef[] = [
 		id: 'city',
 		filter: ['all', byType('city'), NOT_A_CAPITAL],
 		minzoom: 6,
-		maxzoom: 14,
+		disappear: 14,
 		size: { 7: 11, 10: 14 },
 	},
-	{ id: 'statecapital', filter: IS_STATE_CAPITAL, minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
-	{ id: 'capital', filter: IS_CAPITAL, minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
+	{ id: 'statecapital', filter: IS_STATE_CAPITAL, minzoom: 4, disappear: 14, size: { 6: 11, 10: 15 } },
+	{ id: 'capital', filter: IS_CAPITAL, minzoom: 4, disappear: 12, size: { 5: 12, 10: 16 } },
 ];
 
 /**

@@ -53,14 +53,20 @@ const PLACE_SOURCE = { sourceLayer: 'place', sortKey: RANK_SORT_KEY };
 const byClass = (...classes: string[]): ExpressionSpecification =>
 	classes.length === 1 ? ['==', ['get', 'class'], classes[0]] : ['in', ['get', 'class'], ['literal', [...classes]]];
 
-// Districts and quarters are lighter, as in the Shortbread module. Sizes carried over.
+// Districts and quarters are lighter, as in the Shortbread module. Sizes and `disappear` carried over.
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byClass('neighbourhood', 'borough'), minzoom: 14, size: 12 },
-	{ id: 'quarter', filter: byClass('quarter'), minzoom: 13, size: 13 },
-	{ id: 'suburb', filter: byClass('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
-	{ id: 'hamlet', filter: byClass('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
-	{ id: 'village', filter: byClass('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
-	{ id: 'town', filter: ['all', byClass('town'), ['!', ['has', 'capital']]], minzoom: 7, size: { 8: 11, 12: 14 } },
+	{ id: 'neighbourhood', filter: byClass('neighbourhood', 'borough'), minzoom: 14, disappear: 18, size: 12 },
+	{ id: 'quarter', filter: byClass('quarter'), minzoom: 13, disappear: 16, size: 13 },
+	{ id: 'suburb', filter: byClass('suburb'), minzoom: 10, disappear: 15, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byClass('hamlet'), minzoom: 13, disappear: 18, size: { 10: 11, 12: 14 } },
+	{ id: 'village', filter: byClass('village'), minzoom: 10, disappear: 16, size: { 9: 11, 12: 14 } },
+	{
+		id: 'town',
+		filter: ['all', byClass('town'), ['!', ['has', 'capital']]],
+		minzoom: 7,
+		disappear: 15,
+		size: { 8: 11, 12: 14 },
+	},
 ];
 
 // `capital` is an admin level, not a boolean: 2 marks a national capital, 4 a state capital. A city that
@@ -70,17 +76,17 @@ const PLACES_LARGE: PlaceLabelDef[] = [
 		id: 'city',
 		filter: ['all', byClass('city'), ['!', ['in', ['get', 'capital'], ['literal', [2, 4]]]]],
 		minzoom: 6,
-		maxzoom: 14,
+		disappear: 14,
 		size: { 7: 11, 10: 14 },
 	},
 	{
 		id: 'statecapital',
 		filter: ['==', ['get', 'capital'], 4],
 		minzoom: 4,
-		maxzoom: 14,
+		disappear: 14,
 		size: { 6: 11, 10: 15 },
 	},
-	{ id: 'capital', filter: ['==', ['get', 'capital'], 2], minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
+	{ id: 'capital', filter: ['==', ['get', 'capital'], 2], minzoom: 4, disappear: 12, size: { 5: 12, 10: 16 } },
 ];
 
 /**

@@ -68,6 +68,15 @@ type StructuralProps = {
 	 *  drawing it invisibly. `addLandcover` clears the `minzoom` again on the fills it flattens,
 	 *  which is what lets the landcover feature reveal them at low zoom. */
 	appear?: number;
+	/** The mirror of `appear`: fade this layer out over `disappear-1`→`disappear` by ramping opacity
+	 *  target → 0, so it doesn't pop out. Combines with `appear` (the two ramps are merged into one
+	 *  set of stops) and is likewise mutually exclusive with a zoom-stops `opacity`.
+	 *
+	 *  Also sets `maxzoom` to the same zoom: MapLibre's `maxzoom` is exclusive, so the layer is hidden
+	 *  from exactly the zoom the fade reaches 0 — output-identical, and it lets MapLibre skip the layer
+	 *  instead of drawing it at zero opacity. Unlike `minzoom` there is no `SOURCE_MAXZOOM` clamp:
+	 *  overzoomed tiles still carry the features, so a label fading out at z18 is real. */
+	disappear?: number;
 };
 
 export type BuildOpts = StyleProps & StructuralProps;
@@ -252,6 +261,12 @@ export function fadeIn(appear: number, target = 1, span = 1): Record<number, num
 	return { [appear]: 0, [appear + span]: target };
 }
 
+/** Opacity ramp `target` → 0 over `disappear-span`→`disappear` (held at `target` below). The mirror
+ *  of {@link fadeIn}, for a layer that stops being meaningful above some zoom rather than below it. */
+export function fadeOut(disappear: number, target = 1, span = 1): Record<number, number> {
+	return { [disappear - span]: target, [disappear]: 0 };
+}
+
 /** VersaTiles tiles are generated for z0–14 only; z14 is always the deepest real tile. */
 const SOURCE_MAXZOOM = 14;
 
@@ -279,16 +294,29 @@ function appearZoom(style: StyleProps): number | undefined {
 }
 
 function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedLayer {
-	const { sourceLayer, filter, layout, group, appear, ...style } = opts;
+	const { sourceLayer, filter, layout, group, appear, disappear, ...style } = opts;
 	const layer = { id, type } as MaplibreLayer;
 	if (sourceLayer != null) (layer as Record<string, unknown>)['source-layer'] = sourceLayer;
 	if (filter != null) (layer as Record<string, unknown>).filter = filter;
 	if (layout != null) (layer as Record<string, unknown>).layout = { ...layout };
 
-	if (appear != null) {
+	if (appear != null || disappear != null) {
 		if (style.opacity != null && typeof style.opacity !== 'number')
-			throw new Error(`build: layer "${id}" combines \`appear\` with a zoom-stops \`opacity\` — use one or the other`);
-		style.opacity = fadeIn(appear, style.opacity ?? 1);
+			throw new Error(
+				`build: layer "${id}" combines \`appear\`/\`disappear\` with a zoom-stops \`opacity\` — use one or the other`
+			);
+		// The two fades share one target (the layer's own constant opacity) and one set of stops, so a
+		// layer can ramp up, hold, and ramp down. They must not overlap: the hold has to be at least one
+		// zoom wide, or the merged stops would descend before they finished ascending.
+		if (appear != null && disappear != null && disappear - 1 < appear + 1)
+			throw new Error(
+				`build: layer "${id}" fades out at z${disappear} before it has finished fading in at z${appear + 1}`
+			);
+		const target = style.opacity ?? 1;
+		style.opacity = {
+			...(appear != null ? fadeIn(appear, target) : {}),
+			...(disappear != null ? fadeOut(disappear, target) : {}),
+		};
 	}
 
 	// ── minzoom is derived, never hand-written ────────────────────────────────────
@@ -310,6 +338,13 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	// the appearance mechanism. `addLandcover` clears the derived value on the fills it flattens.
 	const appearsAt = appearZoom(style);
 	if (appearsAt !== undefined) style.minzoom = Math.min(appearsAt, SOURCE_MAXZOOM);
+
+	// `maxzoom` is derived from `disappear` for the same reason, in the other direction: MapLibre's
+	// `maxzoom` is exclusive, so the layer stops drawing at exactly the zoom its fade reaches 0. The
+	// `SOURCE_MAXZOOM` clamp deliberately does not apply — overzoomed tiles still carry every feature,
+	// so a label that stays useful to z18 (a hamlet, which fits on screen long after a city does not)
+	// must be allowed to say so.
+	if (disappear != null) style.maxzoom = disappear;
 
 	applyProps(layer, style as StyleProps);
 	return { layer, group };

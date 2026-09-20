@@ -18,19 +18,21 @@ const PLACE_SOURCE = { sourceLayer: 'place_labels', sortKey: POP_SORT_KEY };
 // variant. Text sizes restored from the old style; capitalization comes from the text options.
 const byKind = (kind: string): FilterSpecification => ['==', ['get', 'kind'], kind];
 
+// `disappear` = the zoom the label has faded out by, scaled to how big the settlement is on the
+// ground rather than shared across kinds — see `PlaceLabelDef.disappear` for the rule.
 const PLACES_SMALL: PlaceLabelDef[] = [
-	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, size: 12 },
-	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, size: 13 },
-	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, size: { 11: 11, 13: 14 } },
-	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, size: { 10: 11, 12: 14 } },
-	{ id: 'village', filter: byKind('village'), minzoom: 10, size: { 9: 11, 12: 14 } },
-	{ id: 'town', filter: byKind('town'), minzoom: 7, size: { 8: 11, 12: 14 } },
+	{ id: 'neighbourhood', filter: byKind('neighbourhood'), minzoom: 14, disappear: 18, size: 12 },
+	{ id: 'quarter', filter: byKind('quarter'), minzoom: 13, disappear: 16, size: 13 },
+	{ id: 'suburb', filter: byKind('suburb'), minzoom: 10, disappear: 15, size: { 11: 11, 13: 14 } },
+	{ id: 'hamlet', filter: byKind('hamlet'), minzoom: 13, disappear: 18, size: { 10: 11, 12: 14 } },
+	{ id: 'village', filter: byKind('village'), minzoom: 10, disappear: 16, size: { 9: 11, 12: 14 } },
+	{ id: 'town', filter: byKind('town'), minzoom: 7, disappear: 15, size: { 8: 11, 12: 14 } },
 ];
 // minzoom = the Shortbread place_labels schema minzoom for each kind.
 const PLACES_LARGE: PlaceLabelDef[] = [
-	{ id: 'city', filter: byKind('city'), minzoom: 6, maxzoom: 14, size: { 7: 11, 10: 14 } },
-	{ id: 'statecapital', filter: byKind('state_capital'), minzoom: 4, maxzoom: 14, size: { 6: 11, 10: 15 } },
-	{ id: 'capital', filter: byKind('capital'), minzoom: 4, maxzoom: 12, size: { 5: 12, 10: 16 } },
+	{ id: 'city', filter: byKind('city'), minzoom: 6, disappear: 14, size: { 7: 11, 10: 14 } },
+	{ id: 'statecapital', filter: byKind('state_capital'), minzoom: 4, disappear: 14, size: { 6: 11, 10: 15 } },
+	{ id: 'capital', filter: byKind('capital'), minzoom: 4, disappear: 12, size: { 5: 12, 10: 16 } },
 ];
 
 // Old VersaTiles settlement text is a dark blue-grey; districts/state are a lighter variant. Both are

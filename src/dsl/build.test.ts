@@ -168,7 +168,84 @@ describe('appear → fade-in opacity', () => {
 
 	it('throws when `appear` is combined with a zoom-stops `opacity`', () => {
 		expect(() => b.fill('x', { sourceLayer: 'land', color: '#000', appear: 14, opacity: { 14: 0, 16: 1 } })).toThrow(
-			/combines `appear` with a zoom-stops `opacity`/
+			/combines `appear`\/`disappear` with a zoom-stops `opacity`/
+		);
+	});
+});
+
+describe('fadeOut()', () => {
+	it('defaults to a one-zoom 1→0 ramp', () => {
+		expect(b.fadeOut(15)).toStrictEqual({ 14: 1, 15: 0 });
+	});
+	it('honours a custom target and span', () => {
+		expect(b.fadeOut(15, 0.8)).toStrictEqual({ 14: 0.8, 15: 0 });
+		expect(b.fadeOut(8, 1, 2)).toStrictEqual({ 6: 1, 8: 0 });
+	});
+});
+
+describe('disappear → fade-out opacity', () => {
+	const opts = { sourceLayer: 'land', color: '#000' } as const;
+
+	it('turns `disappear` into a 1→0 opacity ramp', () => {
+		expect(paintOf(b.fill('x', { ...opts, disappear: 15 }))['fill-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			14,
+			1,
+			15,
+			0,
+		]);
+	});
+
+	it('derives `maxzoom` from the zoom the fade reaches 0', () => {
+		expect(b.fill('x', { ...opts, disappear: 15 }).layer.maxzoom).toBe(15);
+	});
+
+	// Unlike `minzoom`, which is clamped to the deepest real tile: overzoomed tiles still carry the
+	// features, so a label that stays useful past z14 must be able to say so.
+	it('does not clamp `maxzoom` to SOURCE_MAXZOOM', () => {
+		expect(b.fill('x', { ...opts, disappear: 18 }).layer.maxzoom).toBe(18);
+	});
+
+	it('uses a constant `opacity` as the fade target', () => {
+		expect(paintOf(b.fill('x', { ...opts, disappear: 15, opacity: 0.8 }))['fill-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			14,
+			0.8,
+			15,
+			0,
+		]);
+	});
+
+	it('merges with `appear` into one ramp that rises, holds, and falls', () => {
+		const layer = b.fill('x', { ...opts, appear: 10, disappear: 15 });
+		expect(paintOf(layer)['fill-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			10,
+			0,
+			11,
+			1,
+			14,
+			1,
+			15,
+			0,
+		]);
+		expect(layer.layer.minzoom).toBe(10);
+		expect(layer.layer.maxzoom).toBe(15);
+	});
+
+	it('leaves a hand-written `minzoom` alone — a fade-out ramp does not start at 0', () => {
+		expect(b.fill('x', { ...opts, minzoom: 13, disappear: 18 }).layer.minzoom).toBe(13);
+	});
+
+	it('throws when the two fades overlap instead of leaving a hold', () => {
+		expect(() => b.fill('x', { ...opts, appear: 10, disappear: 11 })).toThrow(
+			/fades out at z11 before it has finished fading in at z11/
 		);
 	});
 });

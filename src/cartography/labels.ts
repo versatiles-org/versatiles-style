@@ -86,7 +86,22 @@ export type PlaceLabelDef = {
 	readonly id: keyof typeof PLACE_GROUPS;
 	readonly filter: FilterSpecification;
 	readonly minzoom: number;
-	readonly maxzoom?: number;
+	/**
+	 * The zoom the label has faded out by — required, and per kind, because it is a property of how
+	 * big the settlement is on the ground.
+	 *
+	 * A place is a point, but the thing it names has an extent. While that extent is larger than the
+	 * viewport the point no longer marks "the place", it marks an arbitrary building inside it — which
+	 * is why a city name at z18 lands on a parking lot. So the label goes once the settlement stops
+	 * fitting on screen: with a ~1000px viewport covering ~80150/2^z km, that is
+	 * `disappear ≈ log2(80150 / typical diameter in km)`.
+	 *
+	 * The consequence is that *smaller* places persist longer, not shorter — a 300 m hamlet still fits
+	 * on screen at z18, and its name is the only and correct label for what is there. There is no
+	 * default on purpose: a new kind has to state its own, rather than inherit one chosen for a
+	 * different size of place.
+	 */
+	readonly disappear: number;
 	readonly size: b.SizeValue;
 };
 
@@ -109,7 +124,7 @@ export function placeLabel(
 		layout: { 'text-field': ctx.nameField, 'symbol-sort-key': source.sortKey },
 		...base,
 		minzoom: def.minzoom,
-		maxzoom: def.maxzoom ?? 15,
+		disappear: def.disappear,
 		size: def.size,
 		group: 'labels.places.' + PLACE_GROUPS[def.id],
 	});
