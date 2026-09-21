@@ -1,7 +1,29 @@
 {
+	"name": "VersaTiles Landcover",
+	"description": "Landcover vector tiles based on ESA Worldcover 2021, © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+	"attribution": "<a href=\"https://esa-worldcover.org/en/data-access\">© ESA WorldCover project 2021</a>",
+	"license": "CC BY 4.0",
 	"tile_format": "vnd.mapbox-vector-tile",
 	"tile_schema": "other",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/landcover-vectors/{z}/{x}/{y}"]
+	"tiles": ["/tiles/landcover-vectors/{z}/{x}/{y}"],
+	"vector_layers": [
+		{
+			"fields": {
+				"kind": "String"
+			},
+			"id": "land",
+			"maxzoom": 10,
+			"minzoom": 0
+		},
+		{
+			"fields": {
+				"kind": "String"
+			},
+			"id": "water_polygons",
+			"maxzoom": 3,
+			"minzoom": 0
+		}
+	]
 }

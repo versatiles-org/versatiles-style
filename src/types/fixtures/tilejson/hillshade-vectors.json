@@ -1,11 +1,11 @@
 {
+	"name": "VersaTiles Hillshade Vectors",
+	"description": "VersaTiles Hillshade Vectors based on Mapzen Jörð Terrain Tiles",
 	"attribution": "<a href=\"https://github.com/tilezen/joerd/blob/master/docs/attribution.md\">Mapzen Terrain Tiles, DEM Sources</a>",
 	"bounds": [-180, -85.051129, 180, 85.051129],
-	"description": "Versatiles Hillshade Vectors based on Mapzen Jörð Terrain Tiles",
 	"format": "pbf",
 	"maxzoom": 12,
 	"minzoom": 0,
-	"name": "Versatiles Hillshade Vectors",
 	"scheme": "xyz",
 	"tile_format": "vnd.mapbox-vector-tile",
 	"tile_schema": "other",

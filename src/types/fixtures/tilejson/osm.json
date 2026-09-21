@@ -1,12 +1,12 @@
 {
-	"author": "OpenStreetMap contributors",
+	"name": "VersaTiles OSM",
+	"description": "Vector tiles based on OSM in Shortbread scheme",
+	"attribution": "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap contributors</a>",
 	"bounds": [-180, -85.06, 180, 85.06],
 	"center": [0, 0, 7],
-	"description": "Vector tiles based on OSM in Shortbread scheme",
 	"license": "Open Database License 1.0",
 	"maxzoom": 14,
 	"minzoom": 0,
-	"name": "VersaTiles OSM",
 	"tile_format": "vnd.mapbox-vector-tile",
 	"tile_schema": "shortbread@1.0",
 	"tile_type": "vector",
@@ -15,13 +15,20 @@
 	"type": "baselayer",
 	"vector_layers": [
 		{
-			"fields": { "housename": "String", "housenumber": "String" },
+			"fields": {
+				"block": "String",
+				"housename": "String",
+				"housenumber": "String",
+				"unit": "String"
+			},
 			"id": "addresses",
 			"maxzoom": 14,
 			"minzoom": 14
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {
+				"kind": "String"
+			},
 			"id": "aerialways",
 			"maxzoom": 14,
 			"minzoom": 12
@@ -58,52 +65,48 @@
 			"minzoom": 2
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {
+				"kind": "String",
+				"name": "String",
+				"name_ar": "String",
+				"name_de": "String",
+				"name_el": "String",
+				"name_en": "String",
+				"name_es": "String",
+				"name_fr": "String",
+				"name_it": "String",
+				"name_nl": "String",
+				"name_pl": "String",
+				"name_pt": "String",
+				"name_uk": "String"
+			},
 			"id": "bridges",
 			"maxzoom": 14,
 			"minzoom": 12
 		},
 		{
 			"fields": {
-				"amenity": "String",
-				"atm": "Boolean",
-				"cuisine": "String",
-				"denomination": "String",
 				"dummy": "Number",
-				"emergency": "String",
-				"highway": "String",
-				"historic": "String",
-				"housename": "String",
-				"housenumber": "String",
-				"information": "String",
-				"leisure": "String",
-				"man_made": "String",
-				"name": "String",
-				"name_ar": "String",
-				"name_de": "String",
-				"name_en": "String",
-				"name_es": "String",
-				"name_fr": "String",
-				"name_pl": "String",
-				"name_pt": "String",
-				"office": "String",
-				"religion": "String",
-				"shop": "String",
-				"sport": "String",
-				"tourism": "String"
+				"height": "Number",
+				"hide_3d": "Boolean",
+				"min_height": "Number"
 			},
 			"id": "buildings",
 			"maxzoom": 14,
 			"minzoom": 14
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {
+				"kind": "String"
+			},
 			"id": "dam_lines",
 			"maxzoom": 14,
 			"minzoom": 12
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {
+				"kind": "String"
+			},
 			"id": "dam_polygons",
 			"maxzoom": 14,
 			"minzoom": 12
@@ -126,28 +129,34 @@
 			},
 			"id": "ferries",
 			"maxzoom": 14,
-			"minzoom": 8
-		},
-		{
-			"fields": { "kind": "String" },
-			"id": "land",
-			"maxzoom": 14,
 			"minzoom": 10
 		},
 		{
-			"fields": { "x": "Number", "y": "Number" },
-			"id": "ocean",
+			"fields": {
+				"kind": "String"
+			},
+			"id": "land",
 			"maxzoom": 14,
-			"minzoom": 8
+			"minzoom": 7
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {},
+			"id": "ocean",
+			"maxzoom": 14,
+			"minzoom": 0
+		},
+		{
+			"fields": {
+				"kind": "String"
+			},
 			"id": "pier_lines",
 			"maxzoom": 14,
 			"minzoom": 12
 		},
 		{
-			"fields": { "kind": "String" },
+			"fields": {
+				"kind": "String"
+			},
 			"id": "pier_polygons",
 			"maxzoom": 14,
 			"minzoom": 12
@@ -171,7 +180,7 @@
 			},
 			"id": "place_labels",
 			"maxzoom": 14,
-			"minzoom": 3
+			"minzoom": 4
 		},
 		{
 			"fields": {
@@ -238,20 +247,7 @@
 		},
 		{
 			"fields": {
-				"amenity": "String",
-				"emergency": "String",
-				"highway": "String",
-				"historic": "String",
-				"housename": "String",
-				"housenumber": "String",
-				"kind": "String",
-				"leisure": "String",
-				"man_made": "String",
-				"name": "String",
-				"name_en": "String",
-				"office": "String",
-				"shop": "String",
-				"tourism": "String"
+				"kind": "String"
 			},
 			"id": "sites",
 			"maxzoom": 14,
@@ -306,10 +302,6 @@
 			"fields": {
 				"bridge": "Boolean",
 				"kind": "String",
-				"name": "String",
-				"name_ar": "String",
-				"name_en": "String",
-				"name_es": "String",
 				"rail": "Boolean",
 				"service": "String",
 				"surface": "String",
@@ -336,7 +328,7 @@
 			},
 			"id": "streets",
 			"maxzoom": 14,
-			"minzoom": 14
+			"minzoom": 5
 		},
 		{
 			"fields": {
@@ -359,10 +351,14 @@
 			"minzoom": 14
 		},
 		{
-			"fields": { "bridge": "Boolean", "kind": "String", "tunnel": "Boolean" },
+			"fields": {
+				"bridge": "Boolean",
+				"kind": "String",
+				"tunnel": "Boolean"
+			},
 			"id": "water_lines",
 			"maxzoom": 14,
-			"minzoom": 4
+			"minzoom": 9
 		},
 		{
 			"fields": {
@@ -384,10 +380,13 @@
 			},
 			"id": "water_lines_labels",
 			"maxzoom": 14,
-			"minzoom": 4
+			"minzoom": 12
 		},
 		{
-			"fields": { "kind": "String", "way_area": "Number" },
+			"fields": {
+				"kind": "String",
+				"way_area": "Number"
+			},
 			"id": "water_polygons",
 			"maxzoom": 14,
 			"minzoom": 4
@@ -411,7 +410,7 @@
 			},
 			"id": "water_polygons_labels",
 			"maxzoom": 14,
-			"minzoom": 14
+			"minzoom": 4
 		}
 	],
 	"version": "2.0"
