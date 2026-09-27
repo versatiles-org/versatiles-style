@@ -18,8 +18,8 @@ describe('construction', () => {
 		expect(Color.oklch(0.6279554, 0.2576833, 29.2338851).asHex()).toBe('#FF0000');
 	});
 
-	it('normalises on the way in', () => {
-		expect(Color.srgb(-10, 300, 128).coords).toStrictEqual([0, 255, 128]);
+	it('keeps out-of-range channels, wraps hues and clamps alpha on the way in', () => {
+		expect(Color.srgb(-10, 300, 128).coords).toStrictEqual([-10, 300, 128]);
 		expect(Color.hsl(-30, 50, 50).coords[0]).toBe(330);
 		expect(Color.srgb(0, 0, 0, 5).alpha).toBe(1);
 		expect(Color.srgb(0, 0, 0, -5).alpha).toBe(0);
@@ -234,7 +234,8 @@ describe('the cartographic vocabulary', () => {
 		expect(red.rotateHue(120).asHex()).toBe('#00FF00');
 		expect(red.rotateHue(-120).asHex()).toBe('#0000FF');
 		expect(Color.hsl(0, 50, 50).saturate(1).hsl.s).toBe(100);
-		expect(Color.hsl(0, 50, 50).saturate(10).hsl.s).toBe(100); // clamps
+		expect(Color.hsl(0, 50, 50).saturate(10).hsl.s).toBe(550); // held out of range…
+		expect(Color.hsl(0, 50, 50).saturate(10).asHex()).toBe('#FF0000'); // …and clamped on output
 		expect(red.setHue(240).asHex()).toBe('#0000FF');
 	});
 });
@@ -274,5 +275,34 @@ describe('v5 bugs, fixed', () => {
 		// 4/255 per channel; here the colour is written from sRGB whatever space it was computed in
 		const start = Color.parse('#17F715');
 		expect(start.rotateHue(0.0001).round().asHex()).toBe('#17F715');
+	});
+});
+
+describe('out-of-range values', () => {
+	const beyond = Color.srgb(-10, 300, 128);
+
+	it('are clamped on output, in every format', () => {
+		expect(beyond.asString()).toBe('rgb(0,255,128)');
+		expect(beyond.asHex()).toBe('#00FF80');
+		expect(beyond.toCSS()).toBe('rgb(0 255 128)');
+		expect(Color.hsl(0, 150, 50).toCSS()).toBe('hsl(0 100% 50%)');
+	});
+
+	it('are measured as displayed', () => {
+		expect(Color.srgb(500, 500, 500).luminance()).toBe(1);
+		expect(Color.srgb(500, 500, 500).contrastRatio(Color.srgb(0, 0, 0))).toBe(21);
+		expect(beyond.inGamut()).toBe(false);
+	});
+
+	it('survive a chain of transforms and are clamped only at the end', () => {
+		// contrast pushes 224 to 416.5 and brightness −1 brings it back to 161.5; clamping in between gave 0
+		expect(Color.srgb(224, 224, 224).contrast(3).brightness(-1).asString()).toBe('rgb(162,162,162)');
+		expect(Color.srgb(255, 0, 0).brightness(0.5).brightness(-0.5).asHex()).toBe('#FF0000');
+	});
+
+	it('stay finite through gamma and HSL', () => {
+		expect(Color.srgb(-51, 0, 0).gamma(2).srgb.r).toBeCloseTo(-10.2, 6);
+		const { h, s, l } = Color.srgb(-10, 10, 0).hsl;
+		expect([h, s, l].every(Number.isFinite)).toBe(true);
 	});
 });

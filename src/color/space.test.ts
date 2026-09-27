@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SPACES, SPACE_NAMES, channelIndex, channelNames, isSpace, normalize } from './space.js';
+import { SPACES, SPACE_NAMES, channelIndex, channelNames, clampToRange, isSpace, normalize } from './space.js';
 import type { Space } from './space.js';
 
 describe('SPACES', () => {
@@ -61,13 +61,11 @@ describe('channelIndex()', () => {
 });
 
 describe('normalize()', () => {
-	it('clamps sRGB channels into 0–255', () => {
-		expect(normalize('srgb', [-10, 300, 128])).toStrictEqual([0, 255, 128]);
-	});
-
-	it('clamps percentage channels into 0–100', () => {
-		expect(normalize('hsl', [0, -5, 150])).toStrictEqual([0, 0, 100]);
-		expect(normalize('hwb', [0, 120, -1])).toStrictEqual([0, 100, 0]);
+	it('clamps nothing, so a chain of transforms loses nothing in between', () => {
+		expect(normalize('srgb', [-10, 300, 128])).toStrictEqual([-10, 300, 128]);
+		expect(normalize('hsl', [0, -5, 150])).toStrictEqual([0, -5, 150]);
+		expect(normalize('oklab', [2, -3, 4])).toStrictEqual([2, -3, 4]);
+		expect(normalize('oklch', [-1, -0.2, 30])).toStrictEqual([-1, -0.2, 30]);
 	});
 
 	it('wraps hues instead of clamping them', () => {
@@ -75,18 +73,6 @@ describe('normalize()', () => {
 		expect(normalize('hsl', [-90, 50, 50])[0]).toBe(270);
 		expect(normalize('hsl', [720, 50, 50])[0]).toBe(0);
 		expect(normalize('oklch', [0.5, 0.1, -30])[2]).toBe(330);
-	});
-
-	it('leaves OKLab opponent axes unbounded but clamps its lightness', () => {
-		// An out-of-gamut colour is a legitimate intermediate result; clamping a/b would bend its hue.
-		expect(normalize('oklab', [0.5, -3, 4])).toStrictEqual([0.5, -3, 4]);
-		expect(normalize('oklab', [2, 0.1, 0.1])[0]).toBe(1);
-		expect(normalize('oklab', [-1, 0.1, 0.1])[0]).toBe(0);
-	});
-
-	it('clamps OKLCh chroma at the bottom only', () => {
-		expect(normalize('oklch', [0.5, -0.2, 30])[1]).toBe(0);
-		expect(normalize('oklch', [0.5, 5, 30])[1]).toBe(5);
 	});
 
 	it('maps NaN to zero in every channel, including the unbounded ones', () => {
@@ -124,5 +110,32 @@ describe('normalize()', () => {
 
 	it('collapses negative zero', () => {
 		expect(Object.is(normalize('hsl', [-0, 0, 0])[0], 0)).toBe(true);
+	});
+});
+
+describe('clampToRange()', () => {
+	it('clamps sRGB channels into 0–255', () => {
+		expect(clampToRange('srgb', [-10, 300, 128])).toStrictEqual([0, 255, 128]);
+	});
+
+	it('clamps percentage channels into 0–100', () => {
+		expect(clampToRange('hsl', [0, -5, 150])).toStrictEqual([0, 0, 100]);
+		expect(clampToRange('hwb', [0, 120, -1])).toStrictEqual([0, 100, 0]);
+	});
+
+	it('wraps hues and maps NaN to zero, as normalize does', () => {
+		expect(clampToRange('hsl', [-90, NaN, 50])).toStrictEqual([270, 0, 50]);
+	});
+
+	it('leaves OKLab opponent axes unbounded but clamps its lightness', () => {
+		// An out-of-gamut colour is a legitimate result; clamping a/b would bend its hue.
+		expect(clampToRange('oklab', [0.5, -3, 4])).toStrictEqual([0.5, -3, 4]);
+		expect(clampToRange('oklab', [2, 0.1, 0.1])[0]).toBe(1);
+		expect(clampToRange('oklab', [-1, 0.1, 0.1])[0]).toBe(0);
+	});
+
+	it('clamps OKLCh chroma at the bottom only', () => {
+		expect(clampToRange('oklch', [0.5, -0.2, 30])[1]).toBe(0);
+		expect(clampToRange('oklch', [0.5, 5, 30])[1]).toBe(5);
 	});
 });

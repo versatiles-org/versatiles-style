@@ -22,7 +22,7 @@
  * components. `transparent` is supported — it is one keyword, not a table.
  */
 
-import { normalize } from './space.js';
+import { clampToRange } from './space.js';
 import type { ChannelSpec, Coords, Space } from './space.js';
 import { SPACES } from './space.js';
 
@@ -203,7 +203,7 @@ export function parseColor(input: string): ParsedColor {
 	const { channels } = SPACES[space];
 	return {
 		space,
-		coords: normalize(space, [
+		coords: clampToRange(space, [
 			channelValue(components[0], channels[0], input),
 			channelValue(components[1], channels[1], input),
 			channelValue(components[2], channels[2], input),

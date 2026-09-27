@@ -109,6 +109,18 @@ describe('applyRecolor()', () => {
 		expect(toRGB(tinted)[0]).toBeGreaterThan(toRGB(none)[0]);
 	});
 
+	// ── brightness and contrast ───────────────────────────────────────────────────
+
+	it('brightness adds value · 255 to every channel', () => {
+		expect(toRGB(recolored('#406080', { brightness: 0.25 }))).toEqual([128, 160, 192]);
+		expect(toRGB(recolored('#406080', { brightness: -0.25 }))).toEqual([0, 32, 64]);
+	});
+
+	it('clamps once after all steps, not after each one', () => {
+		// contrast pushes 224 to 416.5, brightness -1 brings it back to 161.5; clamping in between gave 0
+		expect(toRGB(recolored('#e0e0e0', { contrast: 3, brightness: -1 }))).toEqual([162, 162, 162]);
+	});
+
 	// ── blend ─────────────────────────────────────────────────────────────────────
 
 	it('blend with amount=1 replaces the color with the blend color', () => {

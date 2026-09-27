@@ -13,12 +13,14 @@
  * the screenshot scripts logs a warning nobody reads and draws the layer **fully transparent**. So a
  * colour may be authored in any of the six spaces, and is converted on its way out.
  *
- * Out-of-gamut colours are gamut-mapped rather than clipped (see `toGamut`), because clipping an
- * `oklch()` a screen cannot show would change its hue on the way into the style.
+ * A `Color` may hold values outside what a screen can show; this is where they are brought back (see
+ * `displayable`). The sRGB family is clipped per channel; OKLab and OKLCh are gamut-mapped rather than
+ * clipped (see `toGamut`), because clipping an `oklch()` a screen cannot show would change its hue on the
+ * way into the style.
  */
 
-import { toGamut } from './ops.js';
-import { SPACES } from './space.js';
+import { displayable } from './ops.js';
+import { SPACES, clampToRange } from './space.js';
 import type { Coords, Space } from './space.js';
 
 /** Digits kept per space when writing CSS: enough that the value re-reads to the same colour. */
@@ -51,11 +53,6 @@ function roundAlpha(alpha: number): number {
 	return Number(alpha.toFixed(ALPHA_PRECISION));
 }
 
-/** The colour as showable sRGB, 0–255, gamut-mapped if it is outside what a screen can display. */
-function showable(space: Space, coords: Coords): Coords {
-	return space === 'srgb' ? coords : toGamut(coords, space);
-}
-
 /**
  * `#RRGGBB`, or `#RRGGBBAA` when the colour is not opaque. Uppercase, as v5 wrote it — `minimize`
  * compares these strings, and `scripts/extract-palette.ts` writes them into palette files.
@@ -66,7 +63,7 @@ export function formatHex(space: Space, coords: Coords, alpha = 1): string {
 			.toString(16)
 			.padStart(2, '0')
 			.toUpperCase();
-	const [r, g, b] = showable(space, coords);
+	const [r, g, b] = displayable(space, coords);
 	const rounded = roundAlpha(alpha);
 	const suffix = rounded < 1 ? byte(rounded * 255) : '';
 	return `#${byte(r)}${byte(g)}${byte(b)}${suffix}`;
@@ -79,7 +76,7 @@ export function formatHex(space: Space, coords: Coords, alpha = 1): string {
  * shipped style.
  */
 export function formatStyleColor(space: Space, coords: Coords, alpha = 1): string {
-	const [r, g, b] = showable(space, coords);
+	const [r, g, b] = displayable(space, coords);
 	const channels = `${Math.round(r)},${Math.round(g)},${Math.round(b)}`;
 	const rounded = roundAlpha(alpha);
 	return rounded < 1 ? `rgba(${channels},${number(rounded, ALPHA_PRECISION)})` : `rgb(${channels})`;
@@ -97,7 +94,7 @@ export function formatStyleColor(space: Space, coords: Coords, alpha = 1): strin
  */
 export function formatCSS(space: Space, coords: Coords, alpha = 1, precision = CSS_PRECISION[space]): string {
 	const { channels } = SPACES[space];
-	const parts = coords.map((value, index) => {
+	const parts = clampToRange(space, coords).map((value, index) => {
 		const channel = channels[index];
 		// percentage channels are written as percentages, which is how CSS spells hsl(), hwb() and hsv()
 		const percentage = channel.percent === 100;

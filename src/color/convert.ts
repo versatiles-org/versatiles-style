@@ -7,8 +7,7 @@
  * theme generator works in.
  *
  * Nothing here clamps. A conversion returns what the maths gives, including sRGB channels outside 0–255
- * for a colour no monitor can show; deciding what to do about that is `normalize`'s job at construction,
- * or gamut mapping's at output. Keeping the raw value is what lets a colour make a round trip through a
+ * for a colour no monitor can show; deciding what to do about that is output's job (`displayable`). Keeping the raw value is what lets a colour make a round trip through a
  * wider space and come back unharmed.
  *
  * sRGB channels are 0–255 (as CSS `rgb()` writes them), hue channels are degrees, the percentage channels
@@ -123,7 +122,9 @@ function srgbToHsl([r, g, b]: Coords): Coords {
 	const max = Math.max(R, G, B);
 	const delta = max - min;
 	const l = (min + max) / 2;
-	const s = max === min ? 0 : l <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
+	const denominator = l <= 0.5 ? max + min : 2 - max - min;
+	// only a colour held outside 0–255 can reach a zero denominator with a non-zero delta
+	const s = max === min || denominator === 0 ? 0 : delta / denominator;
 	return [hueOf(R, G, B, max, delta), s * 100, l * 100];
 }
 
@@ -239,11 +240,12 @@ export function isPowerlessHue(space: Space, coords: Coords): boolean {
 	switch (space) {
 		case 'hsl':
 		case 'hsv':
-			return coords[1] <= POWERLESS_SATURATION;
+			// saturation turns negative for a colour held beyond white or black; its size still counts
+			return Math.abs(coords[1]) <= POWERLESS_SATURATION;
 		case 'hwb':
 			return coords[1] + coords[2] >= POWERLESS_WHITENESS;
 		case 'oklch':
-			return coords[1] <= POWERLESS_CHROMA;
+			return Math.abs(coords[1]) <= POWERLESS_CHROMA;
 		default:
 			return false;
 	}

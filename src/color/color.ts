@@ -3,6 +3,10 @@
  *
  * Immutable — every method returns a new instance, and every field is `readonly`.
  *
+ * Values are held as the maths gives them, including sRGB channels outside 0–255 or an HSL saturation
+ * above 100%, so a chain of transforms loses nothing in between. They are clamped where a colour enters
+ * (parsing) and where it leaves (`asString`, `asHex`, `toCSS`, `luminance`); see `space.ts`.
+ *
  * One class rather than v5's three. There, `RGB`, `HSL` and `HSV` each carried their own storage, and
  * the thirteen transforms lived on `RGB` with the other two inheriting and converting, which had two
  * consequences worth naming because they are the reason this exists:
@@ -336,11 +340,16 @@ export class Color implements ColorValue {
 		return Color.srgb(channel(base.r, tinted.r), channel(base.g, tinted.g), channel(base.b, tinted.b), this.alpha);
 	}
 
-	/** Per-channel gamma: `c → 255 · (c/255)^value`. Below 1 brightens midtones, above 1 darkens them. */
+	/**
+	 * Per-channel gamma: `c → 255 · (c/255)^value`. Below 1 brightens midtones, above 1 darkens them.
+	 *
+	 * Mirrored for a channel below 0, which a colour held out of range can have, and which would
+	 * otherwise become `NaN`.
+	 */
 	gamma(value: number): Color {
 		const exponent = clamp(value, 1e-3, 1e3);
 		const { r, g, b } = this.srgb;
-		const channel = (c: number) => (c / 255) ** exponent * 255;
+		const channel = (c: number) => Math.sign(c) * Math.abs(c / 255) ** exponent * 255;
 		return Color.srgb(channel(r), channel(g), channel(b), this.alpha);
 	}
 

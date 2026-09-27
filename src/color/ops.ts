@@ -4,7 +4,7 @@
  */
 
 import { convert, srgbToLinear } from './convert.js';
-import { SPACES, normalize } from './space.js';
+import { SPACES, clampToRange, normalize } from './space.js';
 import type { Coords, Space } from './space.js';
 
 /**
@@ -157,11 +157,24 @@ export function mix(from: ColorValue, to: ColorValue, t = 0.5, options: MixOptio
 	return { space, coords: normalize(space, coords), alpha };
 }
 
+/**
+ * The colour as it will be shown: sRGB, 0–255 — the one place a colour held out of range is brought back.
+ *
+ * The sRGB family (sRGB, HSL, HSV, HWB) is clamped in its own space and then converted, which clips each
+ * sRGB channel independently, as MapLibre's raster shader does, and caps HSL saturation at 100% rather
+ * than clipping the extrapolated channels. OKLab and OKLCh are gamut-mapped instead (see `toGamut`),
+ * because clipping a wide OKLCh colour would swing its hue.
+ */
+export function displayable(space: Space, coords: Coords): Coords {
+	if (space === 'oklab' || space === 'oklch') return toGamut(coords, space);
+	return convert(clampToRange(space, coords), space, 'srgb');
+}
+
 // ── contrast ──────────────────────────────────────────────────────────────────
 
-/** WCAG 2.1 relative luminance, 0 for black and 1 for white. */
+/** WCAG 2.1 relative luminance of the colour as displayed, 0 for black and 1 for white. */
 export function luminance(coords: Coords, space: Space): number {
-	const [r, g, b] = convert(coords, space, 'srgb');
+	const [r, g, b] = displayable(space, coords);
 	return 0.2126 * srgbToLinear(r / 255) + 0.7152 * srgbToLinear(g / 255) + 0.0722 * srgbToLinear(b / 255);
 }
 

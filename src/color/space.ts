@@ -3,14 +3,18 @@
  * reads off them.
  *
  * One table, six spaces, three channels each. Parsing (what `100%` means in this channel), serialising
- * (which channels are angles) and construction (what to clamp) all consult this table instead of
- * repeating the rules per space — which is what makes a sixth space cost a table row rather than a class.
+ * (which channels are angles) and output (what to clamp) all consult this table instead of repeating the
+ * rules per space — which is what makes a sixth space cost a table row rather than a class.
  *
  * Ranges follow CSS Color 4 where it has an opinion (§4.2 alpha, §7 HSL, §9.4 OKLab/OKLCh): the sRGB and
- * percentage channels clamp, hues wrap instead of clamping, and OKLab's `a`/`b` stay open at both ends
- * while OKLCh's chroma is only closed at the bottom. That asymmetry is deliberate — an out-of-gamut
- * colour is a legitimate intermediate result, and clamping its opponent axes would bend its hue. Bringing
- * such a colour back into sRGB is gamut mapping's job, not the constructor's.
+ * percentage channels are bounded, hues wrap, and OKLab's `a`/`b` stay open at both ends while OKLCh's
+ * chroma is only closed at the bottom.
+ *
+ * The ranges describe what can be shown, not what a `Color` may hold. Construction only wraps hues and
+ * removes `NaN` (`normalize`); the ranges are applied where a colour enters or leaves — parsing and output
+ * (`clampToRange`). In between, an out-of-range value is a legitimate intermediate result: a contrast
+ * that pushes a light grey past white and a brightness that brings it back must end at a light grey, not
+ * at a grey that was clipped on the way. MapLibre's raster shader works the same way.
  *
  * `hsv` is not a CSS space. It stays because `randomColor` is built on it and it was public API in v6;
  * it parses and serialises as `hsv()`, which is ours, not CSS.
@@ -90,16 +94,20 @@ function normalizeChannel(value: number, channel: ChannelSpec): number {
 		if (wrapped < 0) return wrapped + 360;
 		return wrapped === 0 ? 0 : wrapped; // collapse -0
 	}
+	return value;
+}
+
+function clampChannel(value: number, channel: ChannelSpec): number {
+	value = normalizeChannel(value, channel);
 	return value < channel.min ? channel.min : value > channel.max ? channel.max : value;
 }
 
 /**
- * Brings coordinates into their space's ranges: clamping what clamps, wrapping hues, and mapping `NaN`
- * to 0 — every channel's range contains it, where a floor would not (see `normalizeChannel`) — so a bad
- * number can never travel further as a silent `NaN`.
+ * What every `Color` holds: hues wrapped into [0,360) and `NaN` mapped to 0 — every channel's range
+ * contains it, where a floor would not (see `normalizeChannel`) — so a bad number can never travel
+ * further as a silent `NaN`. Nothing is clamped; see `clampToRange` for that.
  *
- * Idempotent, and a no-op for any colour already inside its ranges — which is why a conversion may be
- * followed by it without moving an in-gamut colour.
+ * Idempotent, and a no-op for any colour already inside its ranges.
  */
 export function normalize(space: Space, coords: Coords): Coords {
 	const { channels } = SPACES[space];
@@ -107,5 +115,18 @@ export function normalize(space: Space, coords: Coords): Coords {
 		normalizeChannel(coords[0], channels[0]),
 		normalizeChannel(coords[1], channels[1]),
 		normalizeChannel(coords[2], channels[2]),
+	];
+}
+
+/**
+ * `normalize`, plus every channel clamped into its space's range — for a colour entering the library
+ * (parsing) or leaving it (output). Idempotent, and a no-op for any colour already inside its ranges.
+ */
+export function clampToRange(space: Space, coords: Coords): Coords {
+	const { channels } = SPACES[space];
+	return [
+		clampChannel(coords[0], channels[0]),
+		clampChannel(coords[1], channels[1]),
+		clampChannel(coords[2], channels[2]),
 	];
 }
