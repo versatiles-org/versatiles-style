@@ -2,10 +2,9 @@
 <title>Dependency graph</title>
 <style>
 	.background { fill: #ffffff; }
-	.directory { stroke: #c5ccc9; stroke-width: 1; }
-	.depth1 { fill: #f2f4f3; }
-	.depth2 { fill: #e8ecea; }
-	.depth3 { fill: #dfe4e2; }
+	.directory { stroke: #c5ccc9; stroke-width: 1; fill-opacity: 0.05; }
+	.directory, .shade { fill: #000000; }
+	.label-background { fill: #ffffff; }
 	.file { fill: #ffffff; stroke: #9aa6a1; stroke-width: 1; }
 	text { font-family: Helvetica, Arial, 'Liberation Sans', sans-serif; font-size: 12px; }
 	.label { fill: #1b2220; text-anchor: middle; }
@@ -24,9 +23,8 @@
 		.arrowhead-dim { fill: #8b949e; }
 		.background { fill: #0d1117; }
 		.directory { stroke: #39424d; }
-		.depth1 { fill: #161b22; }
-		.depth2 { fill: #1c232c; }
-		.depth3 { fill: #232b35; }
+		.directory, .shade { fill: #ffffff; }
+		.label-background { fill: #0d1117; }
 		.file { fill: #0d1117; stroke: #5c6773; }
 		.label { fill: #e6edf3; }
 		.directory-label { fill: #8b949e; }
@@ -48,8 +46,8 @@
 <marker id="arrow-incoming" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path class="arrowhead-incoming" d="M0,0 L8,4 L0,8 z"/></marker>
 </defs>
 <rect class="background" width="1568" height="2932"/>
-<rect class="directory depth1 node n87" x="12" y="12" width="1544" height="2908" rx="6"/>
-<rect class="directory depth2 node n88" x="617" y="580" width="417.7" height="254" rx="6"/>
+<rect class="directory node n87" x="12" y="12" width="1544" height="2908" rx="6"/>
+<rect class="directory node n88" x="617" y="580" width="417.7" height="254" rx="6"/>
 <g class="node n0">
 <rect class="file" x="789" y="668" width="54.69" height="24" rx="4"/>
 <text class="label" x="816.34" y="684" textLength="38.69" lengthAdjust="spacingAndGlyphs">code.ts</text>
@@ -82,8 +80,8 @@
 <rect class="file" x="627" y="608" width="110.69" height="24" rx="4"/>
 <text class="label" x="682.35" y="624" textLength="94.69" lengthAdjust="spacingAndGlyphs">schema-builder.ts</text>
 </g>
-<rect class="directory depth2 node n89" x="587" y="2060" width="281.01" height="384" rx="6"/>
-<rect class="directory depth3 node n91" x="673" y="2368" width="90.01" height="62" rx="6"/>
+<rect class="directory node n89" x="587" y="2060" width="281.01" height="384" rx="6"/>
+<rect class="directory node n91" x="673" y="2368" width="90.01" height="62" rx="6"/>
 <g class="node n13">
 <rect class="file" x="683" y="2396" width="70.01" height="24" rx="4"/>
 <text class="label" x="718.01" y="2412" textLength="54.01" lengthAdjust="spacingAndGlyphs">* (21 files)</text>
@@ -112,7 +110,7 @@
 <rect class="file" x="597" y="2304" width="70.02" height="24" rx="4"/>
 <text class="label" x="632.01" y="2320" textLength="54.02" lengthAdjust="spacingAndGlyphs">validate.ts</text>
 </g>
-<rect class="directory depth2 node n90" x="392" y="2544" width="219.68" height="366" rx="6"/>
+<rect class="directory node n90" x="392" y="2544" width="219.68" height="366" rx="6"/>
 <g class="node n3">
 <rect class="file" x="530" y="2608" width="57.35" height="24" rx="4"/>
 <text class="label" x="558.68" y="2624" textLength="41.35" lengthAdjust="spacingAndGlyphs">index.ts</text>
@@ -149,7 +147,7 @@
 <rect class="file" x="402" y="2660" width="65.34" height="24" rx="4"/>
 <text class="label" x="434.67" y="2676" textLength="49.34" lengthAdjust="spacingAndGlyphs">recolor.ts</text>
 </g>
-<rect class="directory depth2 node n92" x="628" y="2544" width="264.34" height="150" rx="6"/>
+<rect class="directory node n92" x="628" y="2544" width="264.34" height="150" rx="6"/>
 <g class="node n14">
 <rect class="file" x="799" y="2660" width="83.34" height="24" rx="4"/>
 <text class="label" x="840.67" y="2676" textLength="67.34" lengthAdjust="spacingAndGlyphs">color-keys.ts</text>
@@ -166,7 +164,7 @@
 <rect class="file" x="722" y="2660" width="60.69" height="24" rx="4"/>
 <text class="label" x="752.34" y="2676" textLength="44.69" lengthAdjust="spacingAndGlyphs">tables.ts</text>
 </g>
-<rect class="directory depth2 node n93" x="614" y="1698" width="812.7" height="262" rx="6"/>
+<rect class="directory node n93" x="614" y="1698" width="812.7" height="262" rx="6"/>
 <g class="node n22">
 <rect class="file" x="1011" y="1746" width="57.35" height="24" rx="4"/>
 <text class="label" x="1039.68" y="1762" textLength="41.35" lengthAdjust="spacingAndGlyphs">index.ts</text>
@@ -223,7 +221,7 @@
 <rect class="file" x="1316" y="1746" width="100.7" height="24" rx="4"/>
 <text class="label" x="1366.35" y="1762" textLength="84.7" lengthAdjust="spacingAndGlyphs">schema-audit.ts</text>
 </g>
-<rect class="directory depth2 node n94" x="1183" y="2060" width="279.02" height="114" rx="6"/>
+<rect class="directory node n94" x="1183" y="2060" width="279.02" height="114" rx="6"/>
 <g class="node n26">
 <rect class="file" x="1284" y="2088" width="57.35" height="24" rx="4"/>
 <text class="label" x="1312.68" y="2104" textLength="41.35" lengthAdjust="spacingAndGlyphs">index.ts</text>
@@ -240,13 +238,13 @@
 <rect class="file" x="1193" y="2088" width="74.68" height="24" rx="4"/>
 <text class="label" x="1230.34" y="2104" textLength="58.68" lengthAdjust="spacingAndGlyphs">maplibre.ts</text>
 </g>
-<rect class="directory depth2 node n95" x="909" y="1226" width="90.01" height="62" rx="6"/>
+<rect class="directory node n95" x="909" y="1226" width="90.01" height="62" rx="6"/>
 <g class="node n39">
 <rect class="file" x="919" y="1254" width="70.01" height="24" rx="4"/>
 <text class="label" x="954.01" y="1270" textLength="54.01" lengthAdjust="spacingAndGlyphs">* (10 files)</text>
 </g>
-<rect class="directory depth2 node n96" x="1151" y="878" width="302.69" height="272" rx="6"/>
-<rect class="directory depth3 node n98" x="1202" y="1022" width="90.01" height="62" rx="6"/>
+<rect class="directory node n96" x="1151" y="878" width="302.69" height="272" rx="6"/>
+<rect class="directory node n98" x="1202" y="1022" width="90.01" height="62" rx="6"/>
 <g class="node n50">
 <rect class="file" x="1212" y="1050" width="70.01" height="24" rx="4"/>
 <text class="label" x="1247.01" y="1066" textLength="54.01" lengthAdjust="spacingAndGlyphs">* (13 files)</text>
@@ -271,7 +269,7 @@
 <rect class="file" x="1321" y="958" width="122.69" height="24" rx="4"/>
 <text class="label" x="1382.35" y="974" textLength="106.69" lengthAdjust="spacingAndGlyphs">layer-groups-map.ts</text>
 </g>
-<rect class="directory depth2 node n97" x="569" y="1356" width="318.36" height="226" rx="6"/>
+<rect class="directory node n97" x="569" y="1356" width="318.36" height="226" rx="6"/>
 <g class="node n42">
 <rect class="file" x="755" y="1384" width="57.35" height="24" rx="4"/>
 <text class="label" x="783.68" y="1400" textLength="41.35" lengthAdjust="spacingAndGlyphs">index.ts</text>
@@ -300,12 +298,12 @@
 <rect class="file" x="590" y="1444" width="92.69" height="24" rx="4"/>
 <text class="label" x="636.35" y="1460" textLength="76.69" lengthAdjust="spacingAndGlyphs">group-maps.ts</text>
 </g>
-<rect class="directory depth2 node n99" x="587" y="1226" width="89.35" height="62" rx="6"/>
+<rect class="directory node n99" x="587" y="1226" width="89.35" height="62" rx="6"/>
 <g class="node n52">
 <rect class="file" x="597" y="1254" width="63.34" height="24" rx="4"/>
 <text class="label" x="628.67" y="1270" textLength="47.34" lengthAdjust="spacingAndGlyphs">* (6 files)</text>
 </g>
-<rect class="directory depth2 node n100" x="1076" y="126" width="413.7" height="322" rx="6"/>
+<rect class="directory node n100" x="1076" y="126" width="413.7" height="322" rx="6"/>
 <g class="node n63">
 <rect class="file" x="1222" y="334" width="74.02" height="24" rx="4"/>
 <text class="label" x="1259.01" y="350" textLength="58.02" lengthAdjust="spacingAndGlyphs">calibrate.ts</text>
@@ -342,8 +340,8 @@
 <rect class="file" x="1237" y="206" width="91.37" height="24" rx="4"/>
 <text class="label" x="1282.69" y="222" textLength="75.37" lengthAdjust="spacingAndGlyphs">provenance.ts</text>
 </g>
-<rect class="directory depth2 node n101" x="149" y="92" width="389" height="356" rx="6"/>
-<rect class="directory depth3 node n102" x="376" y="320" width="90.01" height="62" rx="6"/>
+<rect class="directory node n101" x="149" y="92" width="389" height="356" rx="6"/>
+<rect class="directory node n102" x="376" y="320" width="90.01" height="62" rx="6"/>
 <g class="node n76">
 <rect class="file" x="386" y="348" width="70.01" height="24" rx="4"/>
 <text class="label" x="421.01" y="364" textLength="54.01" lengthAdjust="spacingAndGlyphs">* (13 files)</text>
@@ -372,8 +370,8 @@
 <rect class="file" x="159" y="120" width="57.35" height="24" rx="4"/>
 <text class="label" x="187.68" y="136" textLength="41.35" lengthAdjust="spacingAndGlyphs">index.ts</text>
 </g>
-<rect class="directory depth2 node n103" x="554" y="92" width="389" height="356" rx="6"/>
-<rect class="directory depth3 node n104" x="781" y="320" width="90.01" height="62" rx="6"/>
+<rect class="directory node n103" x="554" y="92" width="389" height="356" rx="6"/>
+<rect class="directory node n104" x="781" y="320" width="90.01" height="62" rx="6"/>
 <g class="node n83">
 <rect class="file" x="791" y="348" width="70.01" height="24" rx="4"/>
 <text class="label" x="826.01" y="364" textLength="54.01" lengthAdjust="spacingAndGlyphs">* (13 files)</text>
@@ -594,75 +592,93 @@
 <path class="edge from-n85 to-n79 inner-n87 inner-n103" d="M598,144 L598,154 L832,154 L832,172" marker-end="url(#arrow)"/>
 <path class="edge from-n85 to-n81 inner-n87 inner-n103" d="M588,144 L588,396 L676,396 L676,414" marker-end="url(#arrow)"/>
 <g class="node n87">
-<rect class="depth1" x="19" y="16" width="24.01" height="16" rx="2"/>
+<rect class="label-background" x="19" y="16" width="24.01" height="16" rx="2"/>
+<rect class="shade" x="19" y="16" width="24.01" height="16" rx="2" fill-opacity="0.05"/>
 <text class="directory-label" x="22" y="28" textLength="18.01" lengthAdjust="spacingAndGlyphs">src</text>
 </g>
 <g class="node n88">
-<rect class="depth2" x="624" y="584" width="23.34" height="16" rx="2"/>
+<rect class="label-background" x="624" y="584" width="23.34" height="16" rx="2"/>
+<rect class="shade" x="624" y="584" width="23.34" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="627" y="596" textLength="17.34" lengthAdjust="spacingAndGlyphs">api</text>
 </g>
 <g class="node n89">
-<rect class="depth2" x="594" y="2064" width="49.33" height="16" rx="2"/>
+<rect class="label-background" x="594" y="2064" width="49.33" height="16" rx="2"/>
+<rect class="shade" x="594" y="2064" width="49.33" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="597" y="2076" textLength="43.33" lengthAdjust="spacingAndGlyphs">options</text>
 </g>
 <g class="node n91">
-<rect class="depth3" x="680" y="2372" width="35.34" height="16" rx="2"/>
+<rect class="label-background" x="680" y="2372" width="35.34" height="16" rx="2"/>
+<rect class="shade" x="680" y="2372" width="35.34" height="16" rx="2" fill-opacity="0.1426"/>
 <text class="directory-label" x="683" y="2384" textLength="29.34" lengthAdjust="spacingAndGlyphs">parts</text>
 </g>
 <g class="node n90">
-<rect class="depth2" x="399" y="2548" width="35.34" height="16" rx="2"/>
+<rect class="label-background" x="399" y="2548" width="35.34" height="16" rx="2"/>
+<rect class="shade" x="399" y="2548" width="35.34" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="402" y="2560" textLength="29.34" lengthAdjust="spacingAndGlyphs">color</text>
 </g>
 <g class="node n92">
-<rect class="depth2" x="635" y="2548" width="48.01" height="16" rx="2"/>
+<rect class="label-background" x="635" y="2548" width="48.01" height="16" rx="2"/>
+<rect class="shade" x="635" y="2548" width="48.01" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="638" y="2560" textLength="42.01" lengthAdjust="spacingAndGlyphs">themes</text>
 </g>
 <g class="node n93">
-<rect class="depth2" x="621" y="1702" width="20" height="16" rx="2"/>
+<rect class="label-background" x="621" y="1702" width="20" height="16" rx="2"/>
+<rect class="shade" x="621" y="1702" width="20" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="624" y="1714" textLength="14" lengthAdjust="spacingAndGlyphs">lib</text>
 </g>
 <g class="node n94">
-<rect class="depth2" x="1190" y="2064" width="37.34" height="16" rx="2"/>
+<rect class="label-background" x="1190" y="2064" width="37.34" height="16" rx="2"/>
+<rect class="shade" x="1190" y="2064" width="37.34" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="1193" y="2076" textLength="31.34" lengthAdjust="spacingAndGlyphs">types</text>
 </g>
 <g class="node n95">
-<rect class="depth2" x="916" y="1230" width="52.68" height="16" rx="2"/>
+<rect class="label-background" x="916" y="1230" width="52.68" height="16" rx="2"/>
+<rect class="shade" x="916" y="1230" width="52.68" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="919" y="1242" textLength="46.68" lengthAdjust="spacingAndGlyphs">features</text>
 </g>
 <g class="node n96">
-<rect class="depth2" x="1158" y="882" width="68.68" height="16" rx="2"/>
+<rect class="label-background" x="1158" y="882" width="68.68" height="16" rx="2"/>
+<rect class="shade" x="1158" y="882" width="68.68" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="1161" y="894" textLength="62.68" lengthAdjust="spacingAndGlyphs">shortbread</text>
 </g>
 <g class="node n98">
-<rect class="depth3" x="1209" y="1026" width="40.69" height="16" rx="2"/>
+<rect class="label-background" x="1209" y="1026" width="40.69" height="16" rx="2"/>
+<rect class="shade" x="1209" y="1026" width="40.69" height="16" rx="2" fill-opacity="0.1426"/>
 <text class="directory-label" x="1212" y="1038" textLength="34.69" lengthAdjust="spacingAndGlyphs">layers</text>
 </g>
 <g class="node n97">
-<rect class="depth2" x="576" y="1360" width="23.34" height="16" rx="2"/>
+<rect class="label-background" x="576" y="1360" width="23.34" height="16" rx="2"/>
+<rect class="shade" x="576" y="1360" width="23.34" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="579" y="1372" textLength="17.34" lengthAdjust="spacingAndGlyphs">dsl</text>
 </g>
 <g class="node n99">
-<rect class="depth2" x="594" y="1230" width="75.35" height="16" rx="2"/>
+<rect class="label-background" x="594" y="1230" width="75.35" height="16" rx="2"/>
+<rect class="shade" x="594" y="1230" width="75.35" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="597" y="1242" textLength="69.35" lengthAdjust="spacingAndGlyphs">cartography</text>
 </g>
 <g class="node n100">
-<rect class="depth2" x="1083" y="130" width="49.34" height="16" rx="2"/>
+<rect class="label-background" x="1083" y="130" width="49.34" height="16" rx="2"/>
+<rect class="shade" x="1083" y="130" width="49.34" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="1086" y="142" textLength="43.34" lengthAdjust="spacingAndGlyphs">migrate</text>
 </g>
 <g class="node n101">
-<rect class="depth2" x="156" y="96" width="28" height="16" rx="2"/>
+<rect class="label-background" x="156" y="96" width="28" height="16" rx="2"/>
+<rect class="shade" x="156" y="96" width="28" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="159" y="108" textLength="22" lengthAdjust="spacingAndGlyphs">omt</text>
 </g>
 <g class="node n102">
-<rect class="depth3" x="383" y="324" width="40.69" height="16" rx="2"/>
+<rect class="label-background" x="383" y="324" width="40.69" height="16" rx="2"/>
+<rect class="shade" x="383" y="324" width="40.69" height="16" rx="2" fill-opacity="0.1426"/>
 <text class="directory-label" x="386" y="336" textLength="34.69" lengthAdjust="spacingAndGlyphs">layers</text>
 </g>
 <g class="node n103">
-<rect class="depth2" x="561" y="96" width="68" height="16" rx="2"/>
+<rect class="label-background" x="561" y="96" width="68" height="16" rx="2"/>
+<rect class="shade" x="561" y="96" width="68" height="16" rx="2" fill-opacity="0.0975"/>
 <text class="directory-label" x="564" y="108" textLength="62" lengthAdjust="spacingAndGlyphs">protomaps</text>
 </g>
 <g class="node n104">
-<rect class="depth3" x="788" y="324" width="40.69" height="16" rx="2"/>
+<rect class="label-background" x="788" y="324" width="40.69" height="16" rx="2"/>
+<rect class="shade" x="788" y="324" width="40.69" height="16" rx="2" fill-opacity="0.1426"/>
 <text class="directory-label" x="791" y="336" textLength="34.69" lengthAdjust="spacingAndGlyphs">layers</text>
 </g>
 </svg>
