@@ -358,13 +358,11 @@ export class Color implements ColorValue {
 		return Color.srgb(channel(r), channel(g), channel(b), this.alpha);
 	}
 
-	/** Shifts toward black (negative) or white (positive), by up to one whole channel range. */
+	/** Adds `value · 255` to every channel: negative darkens, positive brightens, ±1 reaches black or white. */
 	brightness(value: number): Color {
-		const shift = clamp(value, -1, 1);
-		const keep = 1 - Math.abs(shift);
-		const add = shift < 0 ? 0 : 255 * shift;
+		const offset = clamp(value, -1, 1) * 255;
 		const { r, g, b } = this.srgb;
-		return Color.srgb(r * keep + add, g * keep + add, b * keep + add, this.alpha);
+		return Color.srgb(r + offset, g + offset, b + offset, this.alpha);
 	}
 
 	/** Toward white. Theme-absolute: use `blend(ratio, bg)` for something that follows the palette. */

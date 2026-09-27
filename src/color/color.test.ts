@@ -215,7 +215,7 @@ describe('the cartographic vocabulary', () => {
 		expect(colorized.hsl.l).toBeCloseTo(grey.hsl.l, 3);
 	});
 
-	it('inverts, gammas, contrasts and brightens as v5 did', () => {
+	it('inverts, gammas, contrasts and brightens', () => {
 		expect(red.invert().asHex()).toBe('#00FFFF');
 		expect(grey.gamma(2).asString()).toBe('rgb(64,64,64)');
 		expect(grey.contrast(0).asString()).toBe('rgb(128,128,128)');
