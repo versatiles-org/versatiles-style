@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.2] - 2026-09-27
+
+### Features
+
+- implement clampToRange function for channel clamping and update related tests ([4a82fee](https://github.com/versatiles-org/versatiles-style/commit/4a82feec56cefb8f9b1b85b5b18f4f05dca7a268))
+
+### Bug Fixes
+
+- update dependencies to latest versions for improved stability and performance ([162eb12](https://github.com/versatiles-org/versatiles-style/commit/162eb1293f53bbe25a144edc0a5009312b572e34))
+- update @versatiles/release-tool to version 2.16.0 ([ea513ab](https://github.com/versatiles-org/versatiles-style/commit/ea513abae4258ed6750fe39960adab1b68536e11))
+- update brightness method to clarify functionality and improve implementation ([87a5b37](https://github.com/versatiles-org/versatiles-style/commit/87a5b37e0a57268ed048aac553e5fe62091349c3))
+
+### Code Refactoring
+
+- update doc-bundle script to use vrt directly and remove bundle-treemap.ts ([2bebcd3](https://github.com/versatiles-org/versatiles-style/commit/2bebcd33f2bb86415d9c3f24c65aec82e4792442))
+
+### Documentation
+
+- update readme ([ef3a474](https://github.com/versatiles-org/versatiles-style/commit/ef3a47412bea4059a8612656cabb034e5e50285c))
+
+### Tests
+
+- fix tilejson files with additional metadata and vector layers ([50ed854](https://github.com/versatiles-org/versatiles-style/commit/50ed854b0ba9f97477643b7656c6afdef04657bb))
+
+### Chores
+
+- update dependencies in package.json ([74651fa](https://github.com/versatiles-org/versatiles-style/commit/74651faa09f947b4c192cbdcd3dcfbfd92362c15))
+
 ## [6.0.1] - 2026-09-20
 
 ### Bug Fixes
