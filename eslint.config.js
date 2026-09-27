@@ -2,8 +2,6 @@ import { existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
-import parser from '@typescript-eslint/parser';
-import eslint_plugin from '@typescript-eslint/eslint-plugin';
 
 /**
  * Rules that exist only for this repository. Defining the plugin inline is what flat config is for:
@@ -85,7 +83,7 @@ export default [
 				es6: true,
 				node: true,
 			},
-			parser,
+			parser: ts.parser,
 			parserOptions: {
 				sourceType: 'module',
 				project: './tsconfig.json',
@@ -93,7 +91,7 @@ export default [
 			},
 		},
 		plugins: {
-			'@typescript-eslint': eslint_plugin,
+			'@typescript-eslint': ts.plugin,
 		},
 		linterOptions: {
 			reportUnusedDisableDirectives: true,
