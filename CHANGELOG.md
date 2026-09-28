@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.3] - 2026-09-28
+
+### Bug Fixes
+
+- **recolor:** integrate recolorColor function for consistent color transformations in satellite layers ([aca4628](https://github.com/versatiles-org/versatiles-style/commit/aca4628b1257b96e5f3245cc9e929e0f6af506d5))
+
+### Documentation
+
+- update readme and charts ([4400640](https://github.com/versatiles-org/versatiles-style/commit/44006404040cc460e03489d6fdc7d22373d70403))
+
+### Tests
+
+- add recolor coverage tests for style color reach ([9a69910](https://github.com/versatiles-org/versatiles-style/commit/9a69910a4f5d436e9e4c06bef5ca276910a785ad))
+
 ## [6.0.2] - 2026-09-27
 
 ### Features
