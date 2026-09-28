@@ -37,13 +37,18 @@ export function calculateDarkModeColors(colors: ResolvedColors): ResolvedColors 
 	) as ResolvedColors;
 }
 
+/** One colour string through the same transforms `applyRecolor` applies to a style. */
+export function recolorColor(input: string, opt: ResolvedRecolor): string {
+	return transformColor(Color.parse(input), opt).asString();
+}
+
 export function applyRecolor(style: StyleSpecification, opt: ResolvedRecolor) {
 	const cache = new Map<string, string>();
 
 	const recolorString = (input: string): string => {
 		let result = cache.get(input);
 		if (result === undefined) {
-			result = transformColor(Color.parse(input), opt).asString();
+			result = recolorColor(input, opt);
 			cache.set(input, result);
 		}
 		return result;

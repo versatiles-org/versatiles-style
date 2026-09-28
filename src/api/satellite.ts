@@ -17,6 +17,7 @@ import {
 } from '../features/index.js';
 import { buildSourceDescriptor, STYLE_METADATA } from '../lib/index.js';
 import { osm } from './osm.js';
+import { recolorColor } from '../color/index.js';
 
 // Stable slot IDs for satellite styles
 const SAT_SLOT_BELOW_RASTER = 'slot-below-raster';
@@ -63,7 +64,9 @@ function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecif
 	// Slot anchors are background-type layers and must survive; the opaque base background and the
 	// below-fills slot must not.
 	const candidates = overlayStyle.layers.filter((layer) => layer.id !== 'background' && layer.id !== SLOT_BELOW_FILLS);
-	return toOverlayLayers(candidates, overlayResolved.colors.labelHalo);
+	// The halo is forced onto the layers after `osm()` has recoloured them, so it needs the same recolor,
+	// or `osmOverlay.recolor` would leave every label halo untouched.
+	return toOverlayLayers(candidates, recolorColor(overlayResolved.colors.labelHalo, overlayResolved.recolor));
 }
 
 // ── Main satellite() function ─────────────────────────────────────────────────

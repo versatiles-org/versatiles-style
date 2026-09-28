@@ -5,4 +5,4 @@ export type { Coords, Space } from './space.js';
 export type { HueMethod, MixOptions } from './ops.js';
 export { default as randomColor } from './random.js';
 export type { RandomColorOptions } from './random.js';
-export { applyRecolor, calculateDarkModeColors } from './recolor.js';
+export { applyRecolor, calculateDarkModeColors, recolorColor } from './recolor.js';
