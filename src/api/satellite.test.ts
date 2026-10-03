@@ -259,7 +259,8 @@ describe('satellite()', () => {
 				const after = opacity(style.layers.find((l) => l.id === id));
 				return typeof before === 'number' && typeof after === 'number' ? after / before : undefined;
 			};
-			expect(factor('boundary-country')).toBeCloseTo(0.9, 10);
+			expect(factor('boundary-country')).toBeCloseTo(0.4, 10);
+			expect(factor('boundary-country-maritime')).toBeUndefined(); // a fade-in, checked below
 			expect(factor('way-footway')).toBeCloseTo(0.4, 10);
 			expect(factor('aerialway:outline')).toBeCloseTo(0.4, 10);
 			expect(factor('transport-rail-service:outline')).toBeCloseTo(0.2, 10);
@@ -290,17 +291,46 @@ describe('satellite()', () => {
 		});
 
 		it('scales the basemap opacity rather than replacing it', () => {
-			// the basemap's own opacity times the overlay's boundary factor, 0.9
+			// the basemap's own opacity times the overlay's boundary factor, 0.4
 			const base = new Map(boundaries(osm()).map((l) => [l.id, paintOf(l)['line-opacity'] ?? 1]));
 			for (const layer of boundaries(satellite({ osmOverlay: {} }))) {
 				const before = base.get(layer.id);
 				if (typeof before !== 'number') continue;
-				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.9, 10);
+				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.4, 10);
 			}
 		});
 
+		it('draws the borders that had a casing in the casing colour', () => {
+			// the casing was the light background colour; the line keeps the border light without it
+			const casing = paintOf(osm({ theme: 'gray' }).layers.find((l) => l.id === 'boundary-country:outline')!)[
+				'line-color'
+			];
+			const overlay = new Map(boundaries(satellite({ osmOverlay: {} })).map((l) => [l.id, paintOf(l)]));
+			for (const id of ['boundary-country', 'boundary-country-disputed', 'boundary-state']) {
+				expect(overlay.get(id)?.['line-color']).toBe(casing);
+			}
+		});
+
+		it('leaves the maritime border, which never had a casing, as it was', () => {
+			const base = paintOf(osm({ theme: 'gray' }).layers.find((l) => l.id === 'boundary-country-maritime')!);
+			const overlay = paintOf(
+				boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-country-maritime')!
+			);
+			expect(overlay['line-color']).toBe(base['line-color']);
+			expect(overlay['line-opacity']).toEqual(['interpolate', ['linear'], ['zoom'], 4, 0, 5, expect.closeTo(0.2, 10)]);
+		});
+
+		it('follows a recoloured theme', () => {
+			const recolor = { invertBrightness: true };
+			const casing = paintOf(osm({ theme: 'gray', recolor }).layers.find((l) => l.id === 'boundary-country:outline')!)[
+				'line-color'
+			];
+			const border = boundaries(satellite({ osmOverlay: { recolor } })).find((l) => l.id === 'boundary-country')!;
+			expect(paintOf(border)['line-color']).toBe(casing);
+		});
+
 		it('carries an appear fade across rather than flattening it to a constant', () => {
-			// `boundary-state` ramps 0 → 0.9 over z7→8; that has to survive
+			// `boundary-state` ramps 0 → 0.4 over z7→8; that has to survive
 			const state = boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-state');
 			expect(state).toBeDefined();
 			expect(paintOf(state!)['line-opacity']).toEqual([
@@ -310,7 +340,7 @@ describe('satellite()', () => {
 				7,
 				0,
 				8,
-				expect.closeTo(0.9, 10),
+				expect.closeTo(0.4, 10),
 			]);
 		});
 	});
@@ -335,13 +365,34 @@ describe('satellite()', () => {
 			for (const id of LISTED) expect(paintOf(layers.get(id))).not.toHaveProperty('line-opacity');
 		});
 
-		it('carries the borders over with the opacity, fade included, that line-opacity had', () => {
-			const before = byId(off);
-			const after = byId(on);
-			for (const id of ['boundary-country', 'boundary-state']) {
-				expect(paintOf(after.get(id))['line-layer-opacity']).toEqual(paintOf(before.get(id))['line-opacity']);
-			}
-			expect(paintOf(after.get('boundary-country'))['line-layer-opacity']).toBeCloseTo(0.9, 10);
+		it('carries the state border over with the opacity, fade included, that line-opacity had', () => {
+			const id = 'boundary-state';
+			expect(paintOf(byId(on).get(id))['line-layer-opacity']).toEqual(paintOf(byId(off).get(id))['line-opacity']);
+		});
+
+		it('raises the country border where it no longer adds up over itself', () => {
+			// the overlap measured in GL JS: ×1.13 at low zoom, ×1.02 by z12
+			expect(paintOf(byId(on).get('boundary-country'))['line-layer-opacity']).toEqual([
+				'interpolate',
+				['linear'],
+				['zoom'],
+				0,
+				0.452,
+				4,
+				0.452,
+				7,
+				0.452,
+				8,
+				0.444,
+				9,
+				0.44,
+				10,
+				0.436,
+				11,
+				0.42,
+				12,
+				0.408,
+			]);
 		});
 
 		it('raises the motorway where its carriageways no longer add up, and keeps its fade-in', () => {

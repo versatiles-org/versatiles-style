@@ -37,6 +37,17 @@ const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 const CASING = /:(outline|bridge)$/;
 
 /**
+ * The borders that had a casing, and the casing itself.
+ *
+ * Unlike a road's casing, which is darker than its road, a border's casing is the light background
+ * colour, twice the line's width — and over imagery it was what made a border visible: a light band
+ * with a faint grey line in it. With the casing gone, the line takes the casing's colour, so a border
+ * stays the light line it read as. The maritime border never had a casing and keeps its own colour.
+ */
+const CASED_BOUNDARY = /^boundary-(country|country-disputed|state)$/;
+const CASED_BOUNDARY_CASING = /^boundary-(country|country-disputed|state):outline$/;
+
+/**
  * Rail, light rail, subway and aerialways, whose two layers are the other way round.
  *
  * Their `:outline` is not a casing but the line itself — a solid base — and the layer on top is a
@@ -57,20 +68,25 @@ const BASE_LINE = /^(bridge-)?(transport-(rail|lightrail|subway)(-service)?|aeri
  * imagery compared before and after the casings went, over eight to fourteen views per class. With
  * 0.2 kept, the old overlay changed the imagery this much more than the new one:
  *
- * - boundary — ×3.6–4.3 at z4–z11. A border was mostly its casing: twice the line's width, in the light
- *   background colour. (The one outlier, ×1.4–1.5 over the Alps, is the imagery: a light casing has
- *   little to contrast with on snow and rock, so there the border now weighs about three times what it
- *   did.)
- * - road — ×1.8–2.1 at z9–z15, in cities and at a motorway interchange.
+ * - boundary — ×3.6–4.3 at z4–z11, in its own grey. A border was mostly its casing: twice the line's
+ *   width, in the light background colour. Raising the grey line to match (0.9) made it near opaque and
+ *   a different colour from what the border had looked like, so instead the line takes the casing's
+ *   colour ({@link CASED_BOUNDARY}) at 0.4. Against v6.0.3 that lands at ×0.94–1.07 over sixteen views at
+ *   z4–z11, and keeps the light-on-light behaviour of the old casing: over the bright Alps, ×1.07 and
+ *   1.35, where the grey line at 0.9 had come out three times heavier.
+ * - maritime border — never had a casing, so it keeps 0.2.
+ * - road — ×1.8–2.1 at z9–z15, in cities and at a motorway interchange. A road's casing was darker than
+ *   the road, so the road keeps its own colour.
  * - aerialway — ×2: the dashed cable ticks that went were as heavy as the base line that stayed.
  * - rail — ×1: its ties start at z14, are drawn at most 1 px wide and dashed, and weighed nothing measurable.
  *
- * Overlap makes the response sub-linear, so the values sit a little above 0.2 × that ratio; with them,
- * every view but the Alps lands within 0.82–1.08 of the old weight.
+ * Overlap makes the response sub-linear, so the road values sit a little above 0.2 × that ratio; with
+ * them, every road view lands within 0.94–1.08 of the old weight.
  */
-const LINE_OPACITY = { boundary: 0.9, road: 0.4, aerialway: 0.4, rail: 0.2 };
+const LINE_OPACITY = { boundary: 0.4, maritime: 0.2, road: 0.4, aerialway: 0.4, rail: 0.2 };
 
 function lineOpacity(id: string): number {
+	if (id === 'boundary-country-maritime') return LINE_OPACITY.maritime;
 	if (id.startsWith('boundary-')) return LINE_OPACITY.boundary;
 	if (id.startsWith('aerialway')) return LINE_OPACITY.aerialway;
 	if (BASE_LINE.test(id)) return LINE_OPACITY.rail;
@@ -114,11 +130,14 @@ function lineOpacity(id: string): number {
  *
  * Composited once, a layer loses the weight its overlaps used to add, so the factor that matched the
  * old overlay with `line-opacity` is not the one that matches it here. Measured in MapLibre GL JS
- * 6.11.2, each layer alone, white on black, over five German cities and interchanges: summed
+ * 6.11.2 with `npm run overlay-compare`, each layer alone, white on black, over five places: summed
  * brightness with `line-opacity` divided by summed brightness with `line-layer-opacity`, both at the
  * {@link LINE_OPACITY} factor —
  *
- * - borders ×1.03 at z5–z9: they overlap on a tenth of their pixels at most, so they keep their factor.
+ * - country borders ×1.13–1.14 at z4–z7, 1.11 at z8, 1.10 at z9, 1.09 at z10, 1.05 at z11 and 1.02 at
+ *   z12: about a tenth of a border's pixels are drawn twice at low zoom, and at 0.4 a second pass adds
+ *   most of a first one. So its factor follows that curve.
+ * - state borders ×1.00–1.03: they hardly cross themselves, so they keep their factor.
  * - motorways ×1.13 at z6, 1.34 at z7, 1.51 at z8, 1.58–1.59 at z9–z10, 1.36 at z11, 1.26 at z12,
  *   1.10 at z13, 1.01 at z14 and 1.00 at z15. The carriageways merge into one line up to about z10,
  *   and separate as the zoom goes up. (z6 is low only because the line is still fading in, 1 px wide.)
@@ -127,14 +146,14 @@ function lineOpacity(id: string): number {
  * `npm run overlay-compare` repeats the measurement for the current list and factors; with them, every
  * `off / on` it reports should sit near 1.
  */
+const COUNTRY_OVERLAP: ZoomCurve = { 4: 1.13, 7: 1.13, 8: 1.11, 9: 1.1, 10: 1.09, 11: 1.05, 12: 1.02 };
 const MOTORWAY_OVERLAP: ZoomCurve = { 6: 1.15, 7: 1.35, 8: 1.5, 10: 1.6, 11: 1.35, 12: 1.25, 13: 1.1, 14: 1 };
+const scaled = (curve: ZoomCurve, factor: number): ZoomCurve =>
+	Object.fromEntries(Object.entries(curve).map(([zoom, f]) => [zoom, f * factor]));
 const LAYER_OPACITY_IDS: ReadonlyMap<string, number | ZoomCurve> = new Map<string, number | ZoomCurve>([
-	['boundary-country', LINE_OPACITY.boundary],
+	['boundary-country', scaled(COUNTRY_OVERLAP, LINE_OPACITY.boundary)],
 	['boundary-state', LINE_OPACITY.boundary],
-	[
-		'street-motorway',
-		Object.fromEntries(Object.entries(MOTORWAY_OVERLAP).map(([zoom, f]) => [zoom, f * LINE_OPACITY.road])),
-	],
+	['street-motorway', scaled(MOTORWAY_OVERLAP, LINE_OPACITY.road)],
 ]);
 
 /**
@@ -202,8 +221,16 @@ export function keepInOverlay(layer: { id: string; type: string }): boolean {
  * the motorway shield uses the road colour. Left alone, those become white halos behind the now-
  * white label text — invisible labels.
  */
-export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string, layerOpacity = false): void {
+export function applyImageryTreatment(
+	layer: MaplibreLayer,
+	haloColor: string,
+	layerOpacity = false,
+	boundaryColor?: unknown
+): void {
 	if (layer.type === 'line') {
+		if (boundaryColor !== undefined && CASED_BOUNDARY.test(layer.id)) {
+			((layer as { paint?: Record<string, unknown> }).paint ??= {})['line-color'] = boundaryColor;
+		}
 		// Composited once, the layer no longer overlaps itself, so it keeps the cartography's round caps
 		// and joins.
 		const factor = layerOpacity ? LAYER_OPACITY_IDS.get(layer.id) : undefined;
@@ -230,7 +257,11 @@ export function toOverlayLayers(
 	haloColor: string,
 	layerOpacity = false
 ): StyleSpecification['layers'] {
+	// Read before the casings are dropped: it is already the theme's colour, recoloured.
+	const casing = layers.find((l) => CASED_BOUNDARY_CASING.test(l.id)) as
+		{ paint?: Record<string, unknown> } | undefined;
+	const boundaryColor = casing?.paint?.['line-color'];
 	const kept = layers.filter((l) => keepInOverlay(l as { id: string; type: string }));
-	for (const layer of kept) applyImageryTreatment(layer as MaplibreLayer, haloColor, layerOpacity);
+	for (const layer of kept) applyImageryTreatment(layer as MaplibreLayer, haloColor, layerOpacity, boundaryColor);
 	return kept;
 }
