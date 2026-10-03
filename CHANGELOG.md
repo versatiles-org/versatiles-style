@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0] - 2026-10-03
+
+### Features
+
+- **satellite-overlay:** improve line opacity handling and drop unnecessary layers for improved visibility ([41ca99d](https://github.com/versatiles-org/versatiles-style/commit/41ca99d2c3f87f38ad6c37329bf732f46550a500))
+- add osmOverlay.layerOpacity option for improved line rendering ([17fcca1](https://github.com/versatiles-org/versatiles-style/commit/17fcca1c834a827f6801c78a88aa31fc2adf3103))
+- enhance line-layer opacity handling with zoom curves ([7fe08bf](https://github.com/versatiles-org/versatiles-style/commit/7fe08bf8088bd2dba9a9a627c53097e62ad880fd))
+- add layer opacity toggle for overlay in controls ([025c79b](https://github.com/versatiles-org/versatiles-style/commit/025c79b41d2386d2aa42b64db89991e58cac7695))
+- add overlay comparison tool for satellite layer opacity ([ba9b1ce](https://github.com/versatiles-org/versatiles-style/commit/ba9b1ce3f663651e6f3ed521d035f103d21aaa13))
+- **satellite-overlay:** draw borders in their casing colour at 0.4 ([ba0086d](https://github.com/versatiles-org/versatiles-style/commit/ba0086d6f836707473c0846d4973794645b7c50c))
+- add barrel configuration for dependency graph ([38921a7](https://github.com/versatiles-org/versatiles-style/commit/38921a70174e1b97058bac38355b47799fd475ef))
+
+### Bug Fixes
+
+- **dependabot:** add ignore rule for typescript dependency updates ([33c5e1d](https://github.com/versatiles-org/versatiles-style/commit/33c5e1d769a258a03cda03b1d3315291b595c320))
+
+### Code Refactoring
+
+- improve documentation and logic for deep import handling ([664c56c](https://github.com/versatiles-org/versatiles-style/commit/664c56c96206fac7cd2cd8fd7fdd53a4c64c0c1d))
+- consolidate color options imports and update module exports ([8363ed1](https://github.com/versatiles-org/versatiles-style/commit/8363ed1babcd6574b62d005ea3cbbcd5ec5303e3))
+- add font directory ([4bdb533](https://github.com/versatiles-org/versatiles-style/commit/4bdb533e9d480dfc66ea0e3e4e0a7dff2aa80f84))
+- update avoidableDeepImports to accept a root parameter and clean up exemptions ([9915f62](https://github.com/versatiles-org/versatiles-style/commit/9915f6228674e1d86bb4b9a1566bff24b1a41d1e))
+- use kebab-case for all file names and enforce it ([41564e5](https://github.com/versatiles-org/versatiles-style/commit/41564e5ab3534caec831c882d005852fc7573de7))
+- **shortbread:** merge rail and light rail layers ([163c5ca](https://github.com/versatiles-org/versatiles-style/commit/163c5caf506289875639adfae581ef90bfc46a18))
+- **dsl:** merge single-kind filters into one `in` test ([5c5e4df](https://github.com/versatiles-org/versatiles-style/commit/5c5e4dfc65248f3827fb31668960c31969e219f3))
+- **shortbread:** generate merged site layers directly ([1ab2044](https://github.com/versatiles-org/versatiles-style/commit/1ab204448917c3c942967f2b85edad5d47c9bd00))
+- **shortbread:** generate aerialway and path-bridge layers directly ([073e907](https://github.com/versatiles-org/versatiles-style/commit/073e907db25cfa0537146df40a9db08bf452e7d0))
+- **cartography:** draw one casing under country and disputed borders ([243dce6](https://github.com/versatiles-org/versatiles-style/commit/243dce6c8706ab16ebf2dea24680a805e78dec03))
+- **shortbread:** generate merged rail layers directly ([9d5c1c7](https://github.com/versatiles-org/versatiles-style/commit/9d5c1c75561cae4b692908502fbd17d94a363736))
+- **shortbread:** generate merged street layers directly ([1e1ee1f](https://github.com/versatiles-org/versatiles-style/commit/1e1ee1f577cb16c8280f9fcde083366c96fe9a9f))
+- **dsl:** remove the post-processing layer merge ([71e4945](https://github.com/versatiles-org/versatiles-style/commit/71e49450e50cf60bbe98282f2eda1f3a8563fe2c))
+
+### Documentation
+
+- regenerate dependency graph ([daff684](https://github.com/versatiles-org/versatiles-style/commit/daff684090f2db1695599a44af0ca75250a1c3f4))
+
+### Chores
+
+- **deps:** update dependencies to latest versions ([651986b](https://github.com/versatiles-org/versatiles-style/commit/651986b9b84c0d89e60e0e272b5bfa4a8e2ffe75))
+- **package:** update brace-expansion and serialize-javascript versions ([448eeb9](https://github.com/versatiles-org/versatiles-style/commit/448eeb94cf33918a8f7127eb2a05d87770606af9))
+
 ## [6.0.3] - 2026-09-28
 
 ### Bug Fixes
