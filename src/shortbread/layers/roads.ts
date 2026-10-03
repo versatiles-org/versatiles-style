@@ -54,6 +54,23 @@ function buildStructures(): MaplibreLayerDefinition[] {
 				});
 
 			for (const t of ['footway', 'steps', 'path', 'cycleway']) {
+				// One deck serves both kinds of `roads.paths`: path and cycleway differ in colour on top,
+				// not in the bridge beneath them. Footway and steps draw the same deck too, but each has a
+				// layer group of its own, so their decks stay separate layers.
+				if (suffix === ':bridge' && t === 'cycleway') continue;
+				if (suffix === ':bridge' && t === 'path') {
+					results.push({
+						id: prefix + 'way-paths' + suffix,
+						type: 'line',
+						'source-layer': 'streets',
+						filter: [
+							'all',
+							...filter,
+							['in', ['get', 'kind'], ['literal', ['path', 'cycleway']]],
+						] as FilterSpecification,
+					});
+					continue;
+				}
 				results.push({
 					id: prefix + 'way-' + t.replace(/_/g, '') + suffix,
 					type: 'line',
@@ -148,26 +165,22 @@ function buildStructures(): MaplibreLayerDefinition[] {
 			}
 
 			if (c === 'street') {
-				for (const t of [
-					'rope-tow',
-					'platter',
-					'j-bar',
-					't-bar',
-					'drag_lift',
-					'chair_lift',
-					'goods',
-					'gondola',
-					'cable_car',
-				].reverse()) {
-					results.push({
-						id: 'aerialway-' + t.replace(/[_-]+/g, '') + suffix,
-						type: 'line',
-						'source-layer': 'aerialways',
-						// No `...filter` here: the shared road filter tests `bridge`/`tunnel`, and the
-						// `aerialways` layer carries only `kind`, so those clauses were always true.
-						filter: ['==', ['get', 'kind'], t] as FilterSpecification,
-					});
-				}
+				// Every aerialway kind draws alike, so one layer serves them all.
+				results.push({
+					id: 'aerialway' + suffix,
+					type: 'line',
+					'source-layer': 'aerialways',
+					// No `...filter` here: the shared road filter tests `bridge`/`tunnel`, and the
+					// `aerialways` layer carries only `kind`, so those clauses were always true.
+					filter: [
+						'in',
+						['get', 'kind'],
+						[
+							'literal',
+							['cable_car', 'gondola', 'goods', 'chair_lift', 'drag_lift', 't-bar', 'j-bar', 'platter', 'rope-tow'],
+						],
+					] as FilterSpecification,
+				});
 				results.push({ id: 'transport-ferry' + suffix, type: 'line', 'source-layer': 'ferries' });
 			}
 		}

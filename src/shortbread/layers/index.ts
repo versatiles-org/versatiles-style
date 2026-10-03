@@ -189,32 +189,6 @@ const MERGES: MergeTable = {
 		'bridge-transport-funicular',
 		'bridge-transport-monorail',
 	],
-	// all nine aerialway kinds are drawn identically
-	'aerialway:outline': [
-		'aerialway-cablecar:outline',
-		'aerialway-gondola:outline',
-		'aerialway-goods:outline',
-		'aerialway-chairlift:outline',
-		'aerialway-draglift:outline',
-		'aerialway-tbar:outline',
-		'aerialway-jbar:outline',
-		'aerialway-platter:outline',
-		'aerialway-ropetow:outline',
-	],
-	aerialway: [
-		'aerialway-cablecar',
-		'aerialway-gondola',
-		'aerialway-goods',
-		'aerialway-chairlift',
-		'aerialway-draglift',
-		'aerialway-tbar',
-		'aerialway-jbar',
-		'aerialway-platter',
-		'aerialway-ropetow',
-	],
-	// path + cycleway — the two kinds of the `roads.paths` group (footway and steps have their own
-	// groups, so they stay separate even though the bridge deck draws them the same).
-	'bridge-way-paths:bridge': ['bridge-way-path:bridge', 'bridge-way-cycleway:bridge'],
 	// the disputed-country casing is identical to the country casing
 	'boundary-country:outline': ['boundary-country:outline', 'boundary-country-disputed:outline'],
 };
