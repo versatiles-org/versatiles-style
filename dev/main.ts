@@ -41,6 +41,9 @@ const buildingsToggle = $<HTMLInputElement>('buildings-toggle');
 const terrainToggle = $<HTMLInputElement>('terrain-toggle');
 const hillshadeToggle = $<HTMLInputElement>('hillshade-toggle');
 const landcoverToggle = $<HTMLInputElement>('landcover-toggle');
+// `satellite({ osmOverlay: { layerOpacity } })`: borders and motorways through `line-layer-opacity`.
+// MapLibre GL JS only, which is what this page runs — so this is the place to see it.
+const layerOpacityToggle = $<HTMLInputElement>('layer-opacity-toggle');
 const status = $<HTMLDivElement>('status');
 
 // Populate the theme dropdown from the library's palette list. The palettes are schema-neutral, so
@@ -64,6 +67,7 @@ buildingsToggle.checked = getBool('buildings3d');
 terrainToggle.checked = getBool('terrain');
 hillshadeToggle.checked = getBool('hillshade');
 landcoverToggle.checked = getBool('landcover');
+layerOpacityToggle.checked = getBool('layerOpacity');
 
 let map: maplibregl.Map | undefined;
 let inspect: Inspect | undefined;
@@ -122,6 +126,7 @@ function applyControlAvailability(base: Base): void {
 	// coarse `landcover` layer); OpenMapTiles has no such data and rejects the option outright.
 	landcoverToggle.disabled = base !== 'osm' && base !== 'protomaps';
 	buildingsToggle.disabled = isSatellite;
+	layerOpacityToggle.disabled = !isSatellite;
 }
 
 // Build a style from the current control values.
@@ -132,6 +137,7 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 	const terrain = terrainToggle.checked;
 	const hillshade = hillshadeToggle.checked;
 	const landcover = landcoverToggle.checked;
+	const layerOpacity = layerOpacityToggle.checked;
 
 	applyControlAvailability(base);
 
@@ -140,11 +146,11 @@ async function buildStyle(): Promise<{ style: StyleSpecification; sources: Recor
 	switch (base) {
 		case 'satellite':
 			style = satellite({
-				osmOverlay: { theme },
+				osmOverlay: { theme, layerOpacity },
 				features: { terrain, hillshade },
 				urls: { osm: TILE_SOURCE.shortbread },
 			});
-			note = 'satellite + Shortbread overlay';
+			note = `satellite + Shortbread overlay${layerOpacity ? ', layer opacity' : ''}`;
 			break;
 		case 'omt':
 			style = omt({ theme, features: { terrain, hillshade, buildings }, urls: { omt: TILE_SOURCE.omt } });
@@ -185,6 +191,7 @@ function persistState(): void {
 	p.set('terrain', terrainToggle.checked ? '1' : '0');
 	p.set('hillshade', hillshadeToggle.checked ? '1' : '0');
 	p.set('landcover', landcoverToggle.checked ? '1' : '0');
+	p.set('layerOpacity', layerOpacityToggle.checked ? '1' : '0');
 	history.replaceState(null, '', url);
 }
 
@@ -284,7 +291,15 @@ async function render(): Promise<void> {
 	persistState();
 }
 
-for (const control of [baseSelect, themeSelect, buildingsToggle, terrainToggle, hillshadeToggle, landcoverToggle]) {
+for (const control of [
+	baseSelect,
+	themeSelect,
+	buildingsToggle,
+	terrainToggle,
+	hillshadeToggle,
+	landcoverToggle,
+	layerOpacityToggle,
+]) {
 	control.addEventListener('change', () => void render());
 }
 
