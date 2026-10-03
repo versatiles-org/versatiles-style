@@ -70,7 +70,12 @@ function listen(): void {
 	);
 }
 
-async function resolveResource(url: string, options: CacheOptions): Promise<Uint8Array | undefined> {
+/**
+ * The bytes behind any URL a style built for the cache asks for: tiles from the tile cache, sprites from
+ * `release/sprites/`, everything else through `readAsset`. Shared with `gljs-render.ts`, so both
+ * engines draw from exactly the same resources.
+ */
+export async function resolveResource(url: string, options: CacheOptions): Promise<Uint8Array | undefined> {
 	const parsed = new URL(url);
 	if (parsed.host === TILE_HOST) {
 		const [, schema, z, x, y] = parsed.pathname.split('/');

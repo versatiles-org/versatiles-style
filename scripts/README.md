@@ -68,15 +68,22 @@ Protomaps). These tools are how a schema's record gets written and kept honest.
 
 ## Comparing renders
 
-Three separate questions, three tools — the names are close, the jobs are not.
+Four separate questions, four tools — the names are close, the jobs are not.
 
-| Script                      | Alias             | Answers                                                                                                                                 |
-| --------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `compare/compare.ts`        | `compare`         | Did a change alter a style's **properties**? Diffs the working tree against published v5, or against a saved baseline. No rendering.    |
-| `schema-compare/compare.ts` | `schema-compare`  | Do the three **schemas** draw the same place the same way? Renders and scores them side by side against `schema-compare/baseline.json`. |
-| `migrate-compare.ts`        | `migrate-compare` | How close does `guessOptions` get on a **foreign** style? Renders each style next to its migration.                                     |
+| Script                       | Alias             | Answers                                                                                                                                                |
+| ---------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `compare/compare.ts`         | `compare`         | Did a change alter a style's **properties**? Diffs the working tree against published v5, or against a saved baseline. No rendering.                   |
+| `schema-compare/compare.ts`  | `schema-compare`  | Do the three **schemas** draw the same place the same way? Renders and scores them side by side against `schema-compare/baseline.json`.                |
+| `migrate-compare.ts`         | `migrate-compare` | How close does `guessOptions` get on a **foreign** style? Renders each style next to its migration.                                                    |
+| `overlay-compare/compare.ts` | `overlay-compare` | What does the satellite overlay's **`layerOpacity`** change? Renders it off and on in MapLibre GL JS and measures each listed layer's weight per zoom. |
 
 `compare` is the one to reach for around a styling change:
+
+`overlay-compare` is the only one that renders in MapLibre GL JS rather than MapLibre Native
+(`lib/gljs-render.ts`, headless Chromium via Playwright): `line-layer-opacity` is a GL JS-only property,
+and Native drops the layers that carry it. Chromium is a separate download —
+`npx playwright install chromium` — and the renderer's e2e test skips itself where it is missing, which
+includes CI.
 
 ```sh
 npm run compare -- --save-baseline   # before
@@ -108,9 +115,9 @@ Which icons end up on which sheet is configured in [`config/sprites.ts`](./confi
 
 ## Directories
 
-| Directory                     | Holds                                                                                                                                               |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/`                        | Shared modules — tile cache, native rendering, sprite packing, PMTiles and MVT readers, theme generation, output paths. Imported, never run.        |
-| `config/`                     | Data tables the scripts read: icon sets, sprite sheets, schema mappings, theme settings.                                                            |
-| `compare/`, `schema-compare/` | The two comparison tools, one module per concern. `schema-compare/baseline.json` is tracked — it is the accepted result each run is judged against. |
-| `ci/`                         | Plain ESM run by bare `node` in CI, outside the TypeScript project.                                                                                 |
+| Directory                                         | Holds                                                                                                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `lib/`                                            | Shared modules — tile cache, native and GL JS rendering, sprite packing, PMTiles and MVT readers, theme generation, output paths. Imported, never run. |
+| `config/`                                         | Data tables the scripts read: icon sets, sprite sheets, schema mappings, theme settings.                                                               |
+| `compare/`, `schema-compare/`, `overlay-compare/` | The comparison tools, one module per concern. `schema-compare/baseline.json` is tracked — it is the accepted result each run is judged against.        |
+| `ci/`                                             | Plain ESM run by bare `node` in CI, outside the TypeScript project.                                                                                    |

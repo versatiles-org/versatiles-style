@@ -123,6 +123,9 @@ function lineOpacity(id: string): number {
  *   1.10 at z13, 1.01 at z14 and 1.00 at z15. The carriageways merge into one line up to about z10,
  *   and separate as the zoom goes up. (z6 is low only because the line is still fading in, 1 px wide.)
  *   So the motorway's factor follows that curve, 0.4 × up to 1.6.
+ *
+ * `npm run overlay-compare` repeats the measurement for the current list and factors; with them, every
+ * `off / on` it reports should sit near 1.
  */
 const MOTORWAY_OVERLAP: ZoomCurve = { 6: 1.15, 7: 1.35, 8: 1.5, 10: 1.6, 11: 1.35, 12: 1.25, 13: 1.1, 14: 1 };
 const LAYER_OPACITY_IDS: ReadonlyMap<string, number | ZoomCurve> = new Map<string, number | ZoomCurve>([
