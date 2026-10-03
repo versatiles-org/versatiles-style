@@ -81,15 +81,20 @@ function renderKey(layer: MaplibreLayer): string {
  * Combine the filters of a merged run.
  *
  * `['any', …]` is always correct, but the run is nearly always a set of layers selecting one `kind`
- * each out of an otherwise identical clause list, so that case collapses to a single `in` test and
- * keeps the emitted filter readable (and small — halving the style's filter text was part of the
- * point of #51). Anything else falls back to `any`.
+ * each — on its own, or out of an otherwise identical clause list — so both cases collapse to a single
+ * `in` test and keep the emitted filter readable (and small — halving the style's filter text was part
+ * of the point of #51). Anything else falls back to `any`.
  */
 function mergeFilters(filters: unknown[]): unknown {
 	// a layer with no filter draws every feature, so the union is "everything"
 	if (filters.some((f) => f === undefined)) return undefined;
 
 	const all = filters as [string, ...unknown[]][];
+	// the bare form of the same thing: each member is just `['==', getter, value]`
+	const getter = JSON.stringify(all[0]?.[1]);
+	if (all.every((f) => f[0] === '==' && f.length === 3 && JSON.stringify(f[1]) === getter)) {
+		return ['in', all[0][1], ['literal', all.map((f) => f[2])]];
+	}
 	if (all.every((f) => f[0] === 'all' && f.length === all[0].length)) {
 		const differing: number[] = [];
 		for (let i = 1; i < all[0].length; i++) {
