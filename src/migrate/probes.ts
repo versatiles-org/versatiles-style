@@ -1,4 +1,4 @@
-import type { SchemaName } from '../lib/index.js';
+import type { SchemaName } from '../api/index.js';
 
 /**
  * Probes: the schema-neutral vocabulary `deriveOptions` reads a foreign style in.

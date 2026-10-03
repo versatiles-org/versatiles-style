@@ -10,7 +10,7 @@ import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
 import { guessSchema, qualifies } from './guessSchema.js';
 import { inspectorStyle, isVectorTileJSON } from './inspectorStyle.js';
-import { SCHEMA_NAMES } from '../lib/index.js';
+import { SCHEMA_NAMES } from './schema-signatures.js';
 
 /**
  * Options for {@link guessStyle}.

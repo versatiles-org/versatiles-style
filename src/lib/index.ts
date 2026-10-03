@@ -29,9 +29,6 @@ export { inlineSources } from './inlineSources.js';
 export { moveToLineLayerOpacity, scaleLayerOpacity, type ZoomCurve } from './opacity.js';
 export { padForSpacing, scaleSymbolSpacing, scaleValue, PADDING_PER_SPACING } from './symbol-layout.js';
 export { getLanguages } from './languages.js';
-export { SCHEMA_NAMES, SCHEMA_SIGNATURES, type SchemaName } from './schema-signatures.js';
 
-// Font discovery is deliberately absent from this barrel. `fontCovers.ts` builds a frozen table at
-// module level — `Object.freeze` mutates, so no bundler may drop it — and naming it here would pull
-// that into every bundle that imports anything from `lib`, including the CDN one, which has no font
-// picker to serve. The npm entry imports those modules directly instead.
+// Font discovery is not here but in `src/fonts/`, behind a barrel of its own, so that importing anything
+// from `lib` — which the CDN bundle does — cannot pull in its frozen script table. See `fonts/index.ts`.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveLayerGroups } from '../options/index.js';
 import { resolveProtomaps } from './options.js';
-import { auditSchema } from '../lib/schema-audit.js';
+import { auditSchema } from '../../scripts/lib/schema-audit.js';
 import { PROTOMAPS_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import { buildStyleLayers, protomapsLayers } from './layers/index.js';

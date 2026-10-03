@@ -1,5 +1,5 @@
 import { osm, satellite, guessSchema, type SchemaGuess } from '../api/index.js';
-import type { SchemaName } from '../lib/index.js';
+import type { SchemaName } from '../api/index.js';
 import { EXTRUSION_OPACITY } from '../cartography/index.js';
 import {
 	getLayerGroupMap,

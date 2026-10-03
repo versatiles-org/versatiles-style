@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveLayerGroups } from '../options/index.js';
 import { resolveOmt } from './options.js';
-import { auditSchema } from '../lib/schema-audit.js';
+import { auditSchema } from '../../scripts/lib/schema-audit.js';
 import { OMT_SCHEMA } from './schema.js';
 import { buildContext } from './context.js';
 import { buildStyleLayers, omtLayers } from './layers/index.js';

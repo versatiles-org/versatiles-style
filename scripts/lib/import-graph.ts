@@ -240,22 +240,14 @@ export function avoidableDeepImports(exemptions: Readonly<Record<string, string>
  *
  * The bar is that routing the import through its barrel would change what *runs*, not how it reads — so
  * a type-only deep import never belongs here, being erased before anything runs. (Where a file takes a
- * value and a type from the same module, as `index.ts` does from `fetchFontFaces.js`, the one entry
- * covers both specifiers, which are the same string.)
+ * value and a type from the same module, the one entry covers both specifiers, which are the same
+ * string.) The font modules used to need three entries here, while they sat in `lib/` outside its
+ * barrel; in `src/fonts/` they have a barrel of their own and need none.
  */
 export const DEEP_IMPORT_EXEMPTIONS: Readonly<Record<string, string>> = {
 	'index.ts -> ./shortbread/layer-groups-map.js':
 		'The npm entry takes one function from the module. Through `shortbread/index.ts` it would pull the ' +
 		'whole schema into the published bundle behind it.',
-	'index.ts -> ./lib/fetchFontFaces.js':
-		'Font discovery is kept out of `lib/index.ts` on purpose (see the note there): the CDN bundle imports ' +
-		'the barrel and has no font picker to serve. The npm entry names the module directly.',
-	'index.ts -> ./lib/fontCovers.js':
-		'As above, and the weightier half: `fontCovers.ts` freezes a table at module level, which no bundler ' +
-		'may drop, so through the barrel it would land in every bundle that imports anything from `lib`.',
-	'migrate/guess.ts -> ../lib/fetchFontFaces.js':
-		'The same module the npm entry names directly, for the same reason; `migrate` is its own entry and ' +
-		'needs the font list to fit a foreign style.',
 };
 
 /** The same graph one level up: `options/parts/urls.ts` counts as `options`. Self-edges are dropped. */

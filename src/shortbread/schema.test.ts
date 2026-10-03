@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHORTBREAD_SCHEMA } from './schema.js';
 import { osm } from '../api/index.js';
-import { auditSchema } from '../lib/schema-audit.js';
+import { auditSchema } from '../../scripts/lib/schema-audit.js';
 import type { StyleSpecification } from '../types/index.js';
 
 // ── Shortbread schema conformance ─────────────────────────────────────────────────
@@ -17,7 +17,7 @@ import type { StyleSpecification } from '../types/index.js';
 // `undefined` and the layer renders everything, or nothing, with no warning. That is how
 // `symbol-transit-subway` came to filter on a non-existent `station` field and never render.
 //
-// The audit itself lives in `src/lib/schema-audit.ts` and is generic over (style, record), so a
+// The audit itself lives in `scripts/lib/schema-audit.ts` and is generic over (style, record), so a
 // second schema gets the same guard by restating only these three lines.
 //
 // See https://shortbread-tiles.org/schema/1.1/ for the prose specification.

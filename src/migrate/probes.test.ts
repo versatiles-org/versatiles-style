@@ -5,7 +5,7 @@ import { protomaps } from '../protomaps/api.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { OMT_SCHEMA } from '../omt/schema.js';
 import { PROTOMAPS_SCHEMA } from '../protomaps/schema.js';
-import type { SchemaName } from '../lib/schema-signatures.js';
+import type { SchemaName } from '../api/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { readProbe } from './evaluate.js';
 import { PROBES } from './probes.js';

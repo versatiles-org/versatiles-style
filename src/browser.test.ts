@@ -35,8 +35,9 @@ const SRC = dirname(new URL(import.meta.url).pathname);
  * the built bundle in `scripts/browser-bundle.e2e.test.ts`, which is the only place it can be seen.
  */
 const FORBIDDEN = [
-	['lib/fontCovers.ts', 'fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS'],
-	['lib/fetchFontFaces.ts', 'fetchFontFaces'],
+	['fonts/index.ts', 'fetchFontFaces and the font-coverage helpers'],
+	['fonts/fontCovers.ts', 'fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS'],
+	['fonts/fetchFontFaces.ts', 'fetchFontFaces'],
 ] as const;
 
 /** Exports that exist on the npm entry and must not exist here. */

@@ -184,6 +184,5 @@ export {
 
 export { randomColor } from './color/index.js';
 
-export { fetchFontFaces } from './lib/fetchFontFaces.js';
-export type { FontFaceInfo } from './lib/fetchFontFaces.js';
-export { fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './lib/fontCovers.js';
+export { fetchFontFaces, fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './fonts/index.js';
+export type { FontFaceInfo } from './fonts/index.js';

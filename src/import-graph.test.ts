@@ -84,13 +84,9 @@ describe('the import graph', () => {
 
 	it('finds the deep imports it exempts, and says when an exemption is stale', () => {
 		// The positive control for the rule above: exempt nothing and every entry has to come back, or an
-		// empty list up there would mean the check matches nothing rather than that the tree is clean. The
-		// font modules are the ones `lib/index.ts` leaves out, so they also exercise that half of the rule.
+		// empty list up there would mean the check matches nothing rather than that the tree is clean.
 		expect(avoidableDeepImports({})).toStrictEqual([
-			'index.ts -> ./lib/fetchFontFaces.js (re-export it from lib/index.ts, then use that)',
-			'index.ts -> ./lib/fontCovers.js (re-export it from lib/index.ts, then use that)',
 			'index.ts -> ./shortbread/layer-groups-map.js (use shortbread/index.ts)',
-			'migrate/guess.ts -> ../lib/fetchFontFaces.js (re-export it from lib/index.ts, then use that)',
 		]);
 		// and an exemption for an import that no longer exists is a finding of its own
 		expect(avoidableDeepImports({ 'gone.ts -> ./nowhere.js': 'stale' })).toContain(

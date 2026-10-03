@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { auditSchema, auditGroupBinding, fieldsIn, schemaUsage, type SchemaRecord } from './schema-audit.js';
-import type { StyleSpecification } from '../types/index.js';
+import type { StyleSpecification } from '../../src/types/index.js';
 
 // The audit is what every schema's conformance test is built on, so its own failure modes have to be
 // pinned down: a silent mis-classification here would make a dirty style look clean.

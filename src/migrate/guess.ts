@@ -1,6 +1,6 @@
 import { loadTileSource } from '../lib/index.js';
 import { resolveUrl } from '../options/index.js';
-import { fetchFontFaces } from '../lib/fetchFontFaces.js';
+import { fetchFontFaces } from '../fonts/index.js';
 import { checkKeys, type FetchLike } from '../options/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { deriveOptions, type OptionsGuess } from './derive.js';

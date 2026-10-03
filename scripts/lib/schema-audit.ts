@@ -17,10 +17,10 @@
  *    concept that has to be re-bound, and every group that cannot bind at all is a concept the other
  *    schema does not express.
  *
- * It is deliberately not re-exported from `src/lib/index.ts` or the public entry: it is tooling, and
- * keeping it unreachable from `src/index.ts` is what keeps it out of the published bundle.
+ * It is tooling, so it lives in `scripts/lib/` rather than `src/`: nothing that ships may reach it, and
+ * outside `src/` nothing can. The conformance tests in `src/` import it from here.
  */
-import type { StyleSpecification } from '../types/index.js';
+import type { StyleSpecification } from '../../src/types/index.js';
 
 /** One source-layer of a tileset: the zooms it spans and the fields it carries. */
 export type SchemaLayer = { minzoom: number; maxzoom: number; fields: readonly string[] };
