@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
-import { slot, buildLayers, mergeIdenticalLayers, type TaggedLayer, type MergeTable } from '../../dsl/index.js';
+import { slot, buildLayers, type TaggedLayer } from '../../dsl/index.js';
 import { airport } from './airport.js';
 import { background } from './background.js';
 import { boundaries } from './boundaries.js';
@@ -18,9 +18,8 @@ import { OMT_SCHEMA } from '../schema.js';
 /**
  * The OpenMapTiles layer assembler, reached through `omt()` on `@versatiles/style/omt`.
  *
- * Note the shape of the seam: compared with `src/shortbread/layers/index.ts` the only
- * things restated are the render order below and the merge table — the slot anchors, the gating, the data
- * floor and the merge machinery all come from `src/dsl/`.
+ * Note the shape of the seam: compared with `src/shortbread/layers/index.ts` the only thing restated is
+ * the render order below — the slot anchors, the gating and the data floor all come from `src/dsl/`.
  */
 
 // Slot anchor layers. The ids are deliberately the same strings Shortbread uses: every
@@ -33,13 +32,13 @@ export const SLOT_BELOW_LABELS = 'slot-below-labels';
 
 /**
  * Every group's decorated layers in render order (bottom → top), with slot anchors at the four stable
- * positions — the OpenMapTiles counterpart of Shortbread's `assembleLayers`.
+ * positions — the OpenMapTiles counterpart of Shortbread's `shortbreadLayers`.
  *
  * The commented entries are the modules still to be ported, kept in Shortbread's render order so the
  * two lists can be read side by side and so the order is decided once, here, rather than rediscovered
  * per module. `water` sits where it does for the same reason it does there: above the land fills.
  */
-export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
+export function* omtLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
 	yield* landcover(ctx);
@@ -67,19 +66,6 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* placeLabels(ctx);
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);
-}
-
-/**
- * Layers OpenMapTiles draws identically, by merged id (issue #51).
- *
- * Empty while only `water` exists: its layers differ in colour or width, so no run is identical. This
- * table is per-schema by necessity — it is keyed by layer id, and ids are a schema's own dialect — and
- * it is one of the few genuinely schema-specific parts, alongside the cartography.
- */
-const MERGES: MergeTable = {};
-
-export function* omtLayers(ctx: LayerContext): Generator<TaggedLayer> {
-	yield* mergeIdenticalLayers(MERGES, assembleLayers(ctx));
 }
 
 /** The built OpenMapTiles layer list. See `buildStyleLayers` in the Shortbread assembler. */

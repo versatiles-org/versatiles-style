@@ -307,8 +307,7 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	const layer = { id, type } as MaplibreLayer;
 	if (sourceLayer != null) (layer as Record<string, unknown>)['source-layer'] = sourceLayer;
 	// Filters are the bulk of what a style shares by reference with the modules that declare them, and
-	// nothing ever writes through one — `assemble.ts` replaces a merged layer's filter wholesale rather
-	// than editing it. Freezing here covers every schema at once, so a new filter constant cannot
+	// nothing ever writes through one. Freezing here covers every schema at once, so a new filter constant cannot
 	// reintroduce the hazard (see `freeze.ts`).
 	if (filter != null) (layer as Record<string, unknown>).filter = deepFreeze(filter);
 	if (layout != null) (layer as Record<string, unknown>).layout = { ...layout };

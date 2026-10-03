@@ -46,7 +46,7 @@ describe('assembled layers', () => {
 
 	it('should render busway and bus_guideway as streets', () => {
 		const ids = new Set(layersFor('local').map((l) => l.id));
-		// both kinds are drawn by one merged `street-bus` layer per band (see MERGES)
+		// both kinds are drawn by one `street-bus` layer per band (see STREET_CLASSES in roads.ts)
 		expect(ids.has('street-bus')).toBe(true);
 		expect(ids.has('bridge-street-bus')).toBe(true);
 		expect(ids.has('tunnel-street-bus')).toBe(true);
@@ -148,7 +148,7 @@ describe('underground treatment', () => {
 	// exactly as they do on the surface. Listed exactly rather than skipped: if the treatment stops
 	// reaching another road this list grows and the test fails, and if one of these gains a cue the
 	// list shrinks and the test fails too, so the gap has to stay a deliberate decision.
-	// Merged layers appear once under their merged ID (see MERGES in layers/index.ts): the two
+	// Class layers appear once under their class ID (see the class tables in roads.ts): the two
 	// bus kinds as `tunnel-street-bus`, and livingstreet/residential/unclassified bicycle overlays
 	// as `tunnel-street-minor-bicycle`.
 	// `tunnel-street-track-bicycle` and `tunnel-street-service-bicycle` used to sit here too. They were
@@ -198,11 +198,11 @@ describe('underground treatment', () => {
 	});
 });
 
-// ── Layer merging (issue #51) ─────────────────────────────────────────────────────
-// `mergeIdenticalLayers` collapses adjacent runs that MapLibre would draw identically. These lock
-// the invariant in both directions: the merge is COMPLETE (nothing mergeable is left behind, so the
-// count cannot creep back up) and it is SOUND (it never merges what must stay separate).
-describe('identically-drawn layers are merged', () => {
+// ── Kinds that draw alike share a layer (issue #51) ──────────────────────────────────
+// The generators emit one layer per style class. These lock that in both directions: no two adjacent
+// layers draw identically (so a class was not split by accident, and the count cannot creep back up —
+// a pair reported here belongs in one class), and symbol layers stay apart where their order matters.
+describe('kinds that draw alike share a layer', () => {
 	const renderKey = (l: Record<string, unknown>): string => {
 		const { id, filter, ...rest } = l;
 		void id;
@@ -234,7 +234,7 @@ describe('identically-drawn layers are merged', () => {
 		expect(leftover).toStrictEqual([]);
 	});
 
-	it('never merges symbol layers, whose order decides label collisions', () => {
+	it('keeps symbol layers apart, whose order decides label collisions', () => {
 		const ids = new Set(layersFor('local').map((l) => l.id));
 		// these draw identically and sit adjacent, but merging them would change which street name
 		// survives a collision, so each keeps its own layer

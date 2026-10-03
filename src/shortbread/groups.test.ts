@@ -46,8 +46,8 @@ describe('layer visibility gating', () => {
 
 	it('drops a nested sub-group while keeping its siblings', () => {
 		const full = idsFor();
-		// residential + unclassified are one merged layer (see MERGES in layers/index.ts); the
-		// `residential` sub-group owns both kinds, so gating it off drops the merged layer.
+		// residential + unclassified are one class layer (see STREET_CLASSES in layers/roads.ts); the
+		// `residential` sub-group owns both kinds, so gating it off drops that layer.
 		expect(full.has('street-minor')).toBe(true);
 
 		const ids = idsFor({ roads: { streets: { residential: false } } });

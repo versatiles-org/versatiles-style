@@ -32,10 +32,9 @@ import * as b from '../../dsl/index.js';
 //  5. **`oneway` is `1` / `-1`, not two booleans.** Shortbread carries `oneway` and `oneway_reverse`;
 //     `-1` was observed, so the reverse case is expressible after all.
 //  6. **`link` is `ramp: 1`**, and `tunnel`/`bridge` are the one `brunnel` enum.
-//  7. **Aerialways need no per-kind layers.** Shortbread emits nine (cable_car, gondola, goods,
-//     chair_lift, drag_lift, t-bar, j-bar, platter, rope-tow) and then merges all nine into one, because
-//     they draw identically. `class: aerialway` is a single filter that does the same job, so the
-//     `MERGES` entry that collapsed eighteen ids has no counterpart here.
+//  7. **Aerialways need no per-kind filter.** Shortbread names nine kinds (cable_car, gondola, goods,
+//     chair_lift, drag_lift, t-bar, j-bar, platter, rope-tow) and draws them with one layer over an `in`
+//     test of all nine. `class: aerialway` does the same job with a single comparison.
 //
 // ── Layer structures (tunnel / surface / bridge levels + rail/aerialway/ferry) ──
 

@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
-import { slot, type TaggedLayer, buildLayers, mergeIdenticalLayers, type MergeTable } from '../../dsl/index.js';
+import { slot, type TaggedLayer, buildLayers } from '../../dsl/index.js';
 import { background } from './background.js';
 import { landcover } from './landcover.js';
 import { water } from './water.js';
@@ -23,13 +23,13 @@ export const SLOT_BELOW_LABELS = 'slot-below-labels';
 
 /**
  * Every group's decorated layers in render order (bottom → top), with slot anchors at the four
- * stable positions. Each group module owns both the structure and style of its layers.
+ * stable positions. Each group module owns both the structure and style of its layers, and emits one
+ * layer per style class — kinds that draw alike share it (`STREET_CLASSES` in `roads.ts`, `SITES`).
  *
- * Wrapped by `shortbreadLayers` below, which is what callers use: runs that draw identically are
- * collapsed there rather than here, because which kinds share a style is decided by the style
- * functions, not by the structure list that names them.
+ * Every caller goes through this — the style build and `getLayerGroupMap()` alike — so the IDs a
+ * consumer sees in the style are the IDs `osm.layerGroups` reports.
  */
-export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
+export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
 	yield* landcover(ctx);
@@ -63,37 +63,12 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 }
 
 /**
- * The assembled layers, with identically-drawn runs merged (see `mergeIdenticalLayers`).
- *
- * Every caller goes through this — the style build and `getLayerGroupMap()` alike — so the IDs a
- * consumer sees in the style are the IDs `osm.layerGroups` reports.
- */
-export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
-	yield* mergeIdenticalLayers(MERGES, assembleLayers(ctx));
-}
-
-/**
- * The built Shortbread layer list: merged, gated on the resolved `layers:` option, floored at each
- * source-layer's data zoom, and sourced. The machinery is `src/dsl/assemble.ts`; what this adds is the
- * two Shortbread-specific inputs — the render order above and `MERGES` below.
+ * The built Shortbread layer list: gated on the resolved `layers:` option, floored at each source-layer's
+ * data zoom, and sourced. The machinery is `src/dsl/assemble.ts`; what this adds is the Shortbread
+ * render order above.
  */
 export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
 	return buildLayers(ctx, SHORTBREAD_SCHEMA, shortbreadLayers(ctx));
 }
-
-// ── Merges: which layers Shortbread draws identically (issue #51) ────────────
-
-/**
- * Layers drawn as one, by merged ID, with their members in draw order.
- *
- * Merges are listed by member rather than detected from computed paint. Detecting them made layer IDs
- * depend on colour values: two neighbouring layers whose colours merely happened to match — a user
- * setting `transitCycle` equal to `transitFoot`, say — formed a run nobody had named, and `osm()`
- * threw; and a matching neighbour could be pulled into a named merge, silently losing its ID. Every
- * entry here is identical by construction, because its members share one style rule. The tests in
- * `assemble.test.ts` check both directions: a default build leaves no identical run unregistered, and
- * the IDs stay the same for every theme, arbitrary colours and recolor options.
- */
-const MERGES: MergeTable = {};
 
 export { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from './landcover.js';

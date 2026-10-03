@@ -1,6 +1,6 @@
 import type { LayerContext } from '../context.js';
 import type { MaplibreLayer } from '../../types/index.js';
-import { slot, buildLayers, mergeIdenticalLayers, type TaggedLayer, type MergeTable } from '../../dsl/index.js';
+import { slot, buildLayers, type TaggedLayer } from '../../dsl/index.js';
 import { airport } from './airport.js';
 import { background } from './background.js';
 import { boundaries } from './boundaries.js';
@@ -18,9 +18,9 @@ import { PROTOMAPS_SCHEMA } from '../schema.js';
 /**
  * The Protomaps layer assembler — the third and, by this point, the cheapest.
  *
- * Compared with `src/shortbread/layers/index.ts` the only things restated are the render order below and
- * the merge table: the slot anchors, the gating, the data floor and the merge machinery come from
- * `src/dsl/`, and five of the twelve modules are thin wrappers over `src/cartography/`.
+ * Compared with `src/shortbread/layers/index.ts` the only thing restated is the render order below: the
+ * slot anchors, the gating and the data floor come from `src/dsl/`, and five of the twelve modules are
+ * thin wrappers over `src/cartography/`.
  */
 
 // Slot anchor layers — the same four ids every schema emits.
@@ -30,7 +30,7 @@ export const SLOT_BELOW_SYMBOLS = 'slot-below-symbols';
 export const SLOT_BELOW_LABELS = 'slot-below-labels';
 
 /** Every group's decorated layers in render order (bottom → top), with the four slot anchors. */
-export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
+export function* protomapsLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* background(ctx);
 	yield slot(SLOT_BELOW_FILLS);
 	yield* landcover(ctx);
@@ -57,20 +57,6 @@ export function* assembleLayers(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* placeLabels(ctx);
 	// Extruded 3D buildings render last (above labels) so tall buildings are not occluded.
 	yield* buildings3d(ctx);
-}
-
-/**
- * Layers Protomaps draws identically, by merged id (issue #51).
- *
- * Left empty deliberately. Shortbread registers 40-odd merges because its `kind` vocabulary splits
- * classes the style draws the same way; this port emits the runs but has not been checked for which are
- * genuinely identical, and an unregistered run costs a layer, not a defect. Filling it in is a
- * measurement to make against a rendered style, not a guess.
- */
-const MERGES: MergeTable = {};
-
-export function* protomapsLayers(ctx: LayerContext): Generator<TaggedLayer> {
-	yield* mergeIdenticalLayers(MERGES, assembleLayers(ctx));
 }
 
 /** The built Protomaps layer list. See `buildStyleLayers` in the Shortbread assembler. */

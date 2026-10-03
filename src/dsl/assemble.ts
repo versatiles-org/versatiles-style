@@ -6,15 +6,18 @@ import { applyText } from './text.js';
 /**
  * Assembling a schema's tagged layer stream into a finished layer list — schema-neutral.
  *
- * Everything here was lifted out of `src/shortbread/layers/index.ts`, where it sat next to the two
- * things that really are per-schema: the render-order list (`assembleLayers`) and the `MERGES` table,
- * which is keyed by layer id and so speaks a schema's own dialect. The machinery around them is not:
- * raising a layer to its data floor, collapsing registered identical runs, and materializing the
- * stream are the same operations whichever tileset is underneath.
+ * Everything here was lifted out of `src/shortbread/layers/index.ts`, where it sat next to what really
+ * is per-schema: the render-order list. The machinery around it is not: raising a layer to its data
+ * floor and materializing the stream are the same operations whichever tileset is underneath.
  *
- * Both entry points take their per-schema data as an argument, so a second schema composes this rather
- * than copying it — which is the difference between duplicating cartography (option A's accepted cost)
- * and duplicating plumbing (not).
+ * Kinds that draw alike are not merged here after the fact: each schema's generators emit one layer per
+ * style class in the first place (`STREET_CLASSES` in `src/shortbread/layers/roads.ts`, say). A
+ * post-processing merge used to do it, keyed by a table of member ids in each schema's dialect; the
+ * classes made the table and its second vocabulary of ids unnecessary.
+ *
+ * `buildLayers` takes its per-schema data as an argument, so a second schema composes this rather than
+ * copying it — which is the difference between duplicating cartography (option A's accepted cost) and
+ * duplicating plumbing (not).
  */
 
 /**
@@ -23,9 +26,6 @@ import { applyText } from './text.js';
  * as generated, so neither has to be adapted.
  */
 export type DataFloors = Readonly<Record<string, { minzoom: number }>>;
-
-/** Layers drawn as one, by merged ID, with their members in draw order. */
-export type MergeTable = Readonly<Record<string, readonly string[]>>;
 
 // Materialize the assembled layers, adding the source to every non-background layer (background +
 // slot anchors carry no source), ready to drop into a style. Per-group visibility/opacity from the
@@ -60,102 +60,4 @@ function applyDataFloor(layer: MaplibreLayer, floors: DataFloors): void {
 	if (dataFrom === undefined) return;
 	const l = layer as { minzoom?: number };
 	if ((l.minzoom ?? 0) < dataFrom) l.minzoom = dataFrom;
-}
-
-// ── Merging layers that render identically (issue #51) ───────────────────────
-
-/** Index a merge table by each run's first member, which is where a run is recognised. */
-function mergeIndex(merges: MergeTable) {
-	return new Map(Object.entries(merges).map(([id, members]) => [members[0], { id, members }]));
-}
-
-/** Everything that decides how a layer draws — its identity and its filter aside. */
-function renderKey(layer: MaplibreLayer): string {
-	const { id, filter, ...rest } = layer as MaplibreLayer & { filter?: unknown };
-	void id;
-	void filter;
-	return JSON.stringify(rest);
-}
-
-/**
- * Combine the filters of a merged run.
- *
- * `['any', …]` is always correct, but the run is nearly always a set of layers selecting one `kind`
- * each — on its own, or out of an otherwise identical clause list — so both cases collapse to a single
- * `in` test and keep the emitted filter readable (and small — halving the style's filter text was part
- * of the point of #51). Anything else falls back to `any`.
- */
-function mergeFilters(filters: unknown[]): unknown {
-	// a layer with no filter draws every feature, so the union is "everything"
-	if (filters.some((f) => f === undefined)) return undefined;
-
-	const all = filters as [string, ...unknown[]][];
-	// the bare form of the same thing: each member is just `['==', getter, value]`
-	const getter = JSON.stringify(all[0]?.[1]);
-	if (all.every((f) => f[0] === '==' && f.length === 3 && JSON.stringify(f[1]) === getter)) {
-		return ['in', all[0][1], ['literal', all.map((f) => f[2])]];
-	}
-	if (all.every((f) => f[0] === 'all' && f.length === all[0].length)) {
-		const differing: number[] = [];
-		for (let i = 1; i < all[0].length; i++) {
-			const first = JSON.stringify(all[0][i]);
-			if (!all.every((f) => JSON.stringify(f[i]) === first)) differing.push(i);
-		}
-		if (differing.length === 1) {
-			const i = differing[0];
-			const clauses = all.map((f) => f[i]) as [string, unknown, unknown][];
-			const getter = JSON.stringify(clauses[0]?.[1]);
-			if (clauses.every((c) => c[0] === '==' && JSON.stringify(c[1]) === getter)) {
-				const merged = [...all[0]];
-				merged[i] = ['in', clauses[0][1], ['literal', clauses.map((c) => c[2])]];
-				return merged;
-			}
-		}
-	}
-	return ['any', ...filters];
-}
-
-/**
- * Collapse a schema's registered merges into single layers (issue #51: v6 emitted 355 layers
- * against v5's 324).
- *
- * A registered merge is applied when its members arrive **adjacent**, in the **same group**, and
- * identical in every property **except their filter** — so the merged layer paints exactly the pixels
- * they did, and `osm.layerGroups` keeps controlling the same features. Feature order within the
- * merged layer differs from the old layer-by-layer order, which cannot matter: the paint is the same
- * for all of them. Layers that are not registered are never merged, however they are drawn.
- *
- * Symbol layers are never registered: MapLibre resolves label collisions in layer order, so folding
- * `label-street-*` together would change which street name survives a collision.
- *
- * This runs over the assembled generator rather than over the built style so that
- * `getLayerGroupMap()` — which walks the same generator — reports the merged IDs. Merging before
- * `gate()` is safe because a merge is single-group: whatever `gate` does to one member it does to all.
- */
-export function* mergeIdenticalLayers(merges: MergeTable, source: Iterable<TaggedLayer>): Generator<TaggedLayer> {
-	const byFirstMember = mergeIndex(merges);
-	const layers = [...source];
-	for (let i = 0; i < layers.length; i++) {
-		const merge = byFirstMember.get(layers[i].layer.id);
-		const run = merge ? layers.slice(i, i + merge.members.length) : [];
-		const applies =
-			merge !== undefined &&
-			run.length === merge.members.length &&
-			run.every(
-				(tagged, k) =>
-					tagged.layer.id === merge.members[k] &&
-					tagged.group === run[0].group &&
-					renderKey(tagged.layer) === renderKey(run[0].layer)
-			);
-		if (!applies) {
-			yield layers[i];
-			continue;
-		}
-		const filter = mergeFilters(run.map((t) => (t.layer as { filter?: unknown }).filter));
-		const merged = { ...run[0].layer, id: merge.id } as MaplibreLayer & { filter?: unknown };
-		if (filter === undefined) delete merged.filter;
-		else merged.filter = filter;
-		yield { layer: merged, group: run[0].group };
-		i += merge.members.length - 1;
-	}
 }

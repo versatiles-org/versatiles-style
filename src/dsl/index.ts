@@ -13,9 +13,9 @@
  * `build.test.ts` travels with it.
  */
 export * from './build.js';
-export { buildLayers, mergeIdenticalLayers } from './assemble.js';
+export { buildLayers } from './assemble.js';
 export { textTopic } from './text.js';
-export type { DataFloors, MergeTable } from './assemble.js';
+export type { DataFloors } from './assemble.js';
 export { buildLayerContext } from './context.js';
 export type { LayerContext, ColorSet, ContextSeam } from './context.js';
 export { deepFreeze } from './freeze.js';
