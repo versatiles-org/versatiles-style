@@ -19,6 +19,7 @@ export * from './features-hillshade.js';
 export * from './features-terrain.js';
 export * from './features.js';
 export * from './icon.js';
+export * from './issues.js';
 export * from './keys.js';
 export * from './layer-groups.js';
 export * from './projection.js';

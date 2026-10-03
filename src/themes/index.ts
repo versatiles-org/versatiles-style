@@ -5,6 +5,9 @@ import type { Palette, ResolvedColors } from '../options/index.js';
 // that surfaces as `TypeError: mapTopics is not a function` from a module initialiser in
 // `options/osm-overlay.ts`, nowhere near here.
 import { colorOptionsKeys } from './color-keys.js';
+
+// The key list is a leaf of its own (see `color-keys.ts`); this is its front door for the rest of the tree.
+export { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
 import { COLORFUL } from './colorful.js';
 import { TABLES } from './tables.js';
 

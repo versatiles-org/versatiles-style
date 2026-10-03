@@ -1,5 +1,7 @@
 import {
 	checkKeys,
+	describeValue,
+	reportIssue,
 	resolveProjection,
 	resolveSatelliteFeatures,
 	resolveSatelliteRaster,
@@ -19,7 +21,6 @@ import {
 	type SkyOptions,
 	type SunOptions,
 } from './parts/index.js';
-import { describeValue, reportIssue } from './parts/issues.js';
 import {
 	resolveOsmOverlay,
 	OVERLAY_LABEL_STYLES,
