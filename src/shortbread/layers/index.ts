@@ -94,48 +94,6 @@ export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
  * `assemble.test.ts` check both directions: a default build leaves no identical run unregistered, and
  * the IDs stay the same for every theme, arbitrary colours and recolor options.
  */
-const MERGES: MergeTable = {
-	// residential + unclassified (+ living street on bicycle overlays and bridge decks) are one visual
-	// class ("minor"), as are the two bus-only kinds, across all three structure bands.
-	'tunnel-street-minor:outline': ['tunnel-street-residential:outline', 'tunnel-street-unclassified:outline'],
-	'tunnel-street-bus:outline': ['tunnel-street-busway:outline', 'tunnel-street-busguideway:outline'],
-	'tunnel-street-minor': ['tunnel-street-residential', 'tunnel-street-unclassified'],
-	'tunnel-street-bus': ['tunnel-street-busway', 'tunnel-street-busguideway'],
-	'tunnel-street-minor-bicycle': [
-		'tunnel-street-livingstreet-bicycle',
-		'tunnel-street-residential-bicycle',
-		'tunnel-street-unclassified-bicycle',
-	],
-	'street-minor:outline': ['street-residential:outline', 'street-unclassified:outline'],
-	'street-bus:outline': ['street-busway:outline', 'street-busguideway:outline'],
-	'street-minor': ['street-residential', 'street-unclassified'],
-	'street-bus': ['street-busway', 'street-busguideway'],
-	'street-minor-bicycle': ['street-livingstreet-bicycle', 'street-residential-bicycle', 'street-unclassified-bicycle'],
-	'bridge-street-minor:bridge': [
-		'bridge-street-livingstreet:bridge',
-		'bridge-street-residential:bridge',
-		'bridge-street-unclassified:bridge',
-	],
-	'bridge-street-bus:bridge': ['bridge-street-busway:bridge', 'bridge-street-busguideway:bridge'],
-	'bridge-street-minor:outline': ['bridge-street-residential:outline', 'bridge-street-unclassified:outline'],
-	'bridge-street-bus:outline': ['bridge-street-busway:outline', 'bridge-street-busguideway:outline'],
-	'bridge-street-minor': ['bridge-street-residential', 'bridge-street-unclassified'],
-	'bridge-street-bus': ['bridge-street-busway', 'bridge-street-busguideway'],
-	'bridge-street-minor-bicycle': [
-		'bridge-street-livingstreet-bicycle',
-		'bridge-street-residential-bicycle',
-		'bridge-street-unclassified-bicycle',
-	],
-	// primary + secondary links. `roads.ts` reserves "arterial" for exactly the yellow/orange
-	// classes and explicitly excludes tertiary, which is why this is not named after its
-	// `roads.highways` group — `street-tertiary-link` sits in that group too, styled differently.
-	'tunnel-street-arterial-link:outline': ['tunnel-street-secondary-link:outline', 'tunnel-street-primary-link:outline'],
-	'tunnel-street-arterial-link': ['tunnel-street-secondary-link', 'tunnel-street-primary-link'],
-	'street-arterial-link:outline': ['street-secondary-link:outline', 'street-primary-link:outline'],
-	'street-arterial-link': ['street-secondary-link', 'street-primary-link'],
-	'bridge-street-arterial-link:bridge': ['bridge-street-secondary-link:bridge', 'bridge-street-primary-link:bridge'],
-	'bridge-street-arterial-link:outline': ['bridge-street-secondary-link:outline', 'bridge-street-primary-link:outline'],
-	'bridge-street-arterial-link': ['bridge-street-secondary-link', 'bridge-street-primary-link'],
-};
+const MERGES: MergeTable = {};
 
 export { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from './landcover.js';

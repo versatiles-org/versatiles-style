@@ -13,6 +13,42 @@ import * as b from '../../dsl/index.js';
 
 // ── Layer structures (tunnel / surface / bridge levels + rail/aerialway/ferry) ──
 
+/** A street layer: the id after `street-`, and the Shortbread kinds it draws. */
+type StreetClass = { id: string; kinds: string[] };
+
+const kindFilter = (kinds: string[]): FilterSpecification =>
+	kinds.length === 1 ? ['==', ['get', 'kind'], kinds[0]] : ['in', ['get', 'kind'], ['literal', kinds]];
+
+/** One class per kind, its id the kind without underscores. */
+const single = (...kinds: string[]): StreetClass[] => kinds.map((k) => ({ id: k.replace(/_/g, ''), kinds: [k] }));
+
+/**
+ * Street lines and casings. `minor` and `bus` are the `minorBases` and `serviceBases` classes of `VOCAB`
+ * below, which is how the shared cartography styles them like the kinds they draw.
+ */
+const STREET_CLASSES: StreetClass[] = [
+	...single('track', 'pedestrian', 'service', 'living_street'),
+	{ id: 'minor', kinds: ['residential', 'unclassified'] },
+	{ id: 'bus', kinds: ['busway', 'bus_guideway'] },
+];
+/** Bridge decks: as above, with living streets drawn on the minor deck. */
+const DECK_CLASSES: StreetClass[] = [
+	...single('track', 'pedestrian', 'service'),
+	{ id: 'minor', kinds: ['living_street', 'residential', 'unclassified'] },
+	{ id: 'bus', kinds: ['busway', 'bus_guideway'] },
+];
+/** Bicycle overlays, with living streets in the minor overlay. */
+const BICYCLE_CLASSES: StreetClass[] = [
+	...single('track', 'pedestrian', 'service'),
+	{ id: 'minor', kinds: ['living_street', 'residential', 'unclassified'] },
+];
+/** Ramps (`link: true`). `arterial` is the cartography's name for the secondary and primary class. */
+const LINK_CLASSES: StreetClass[] = [
+	...single('tertiary'),
+	{ id: 'arterial', kinds: ['secondary', 'primary'] },
+	...single('trunk', 'motorway'),
+];
+
 function buildStructures(): MaplibreLayerDefinition[] {
 	return (['tunnel', 'street', 'bridge'] as const).flatMap((c): MaplibreLayerDefinition[] => {
 		let filter: FilterSpecification[];
@@ -79,45 +115,43 @@ function buildStructures(): MaplibreLayerDefinition[] {
 				});
 			}
 
-			for (const t of [
-				'track',
-				'pedestrian',
-				'service',
-				'living_street',
-				'residential',
-				'unclassified',
-				'busway',
-				'bus_guideway',
-			]) {
+			// The street classes this pass draws: kinds drawn alike share one layer. The road line and its
+			// casing keep living streets apart, because they fade in a zoom later than the other minor
+			// streets; the bridge deck does not fade by kind, so there they join `minor`.
+			const classes = suffix === ':bridge' ? DECK_CLASSES : STREET_CLASSES;
+			for (const { id, kinds } of classes) {
 				results.push({
-					id: prefix + 'street-' + t.replace(/_/g, '') + suffix,
+					id: prefix + 'street-' + id + suffix,
 					type: 'line',
 					'source-layer': 'streets',
-					filter: ['all', ['==', ['get', 'kind'], t], ...filter] as FilterSpecification,
+					filter: ['all', kindFilter(kinds), ...filter] as FilterSpecification,
 				});
 			}
 
+			// The bicycle overlay draws minor streets with one fixed fade, so living streets join `minor`
+			// here too. Track and service get no overlay; their definitions are skipped by the style.
 			if (suffix === '')
-				for (const t of ['track', 'pedestrian', 'service', 'living_street', 'residential', 'unclassified']) {
+				for (const { id, kinds } of BICYCLE_CLASSES) {
 					results.push({
-						id: prefix + 'street-' + t.replace(/_/g, '') + '-bicycle',
+						id: prefix + 'street-' + id + '-bicycle',
 						type: 'line',
 						'source-layer': 'streets',
 						filter: [
 							'all',
-							['==', ['get', 'kind'], t],
+							kindFilter(kinds),
 							['==', ['get', 'bicycle'], 'designated'],
 							...filter,
 						] as FilterSpecification,
 					});
 				}
 
-			for (const t of ['tertiary', 'secondary', 'primary', 'trunk', 'motorway']) {
+			// Secondary and primary ramps draw alike — the arterial link — and so share a layer.
+			for (const { id, kinds } of LINK_CLASSES) {
 				results.push({
-					id: prefix + 'street-' + t.replace(/_/g, '') + '-link' + suffix,
+					id: prefix + 'street-' + id + '-link' + suffix,
 					type: 'line',
 					'source-layer': 'streets',
-					filter: ['all', ...filter, ['==', ['get', 'kind'], t], ['==', ['get', 'link'], true]] as FilterSpecification,
+					filter: ['all', ...filter, kindFilter(kinds), ['==', ['get', 'link'], true]] as FilterSpecification,
 				});
 			}
 
@@ -197,8 +231,9 @@ function buildStructures(): MaplibreLayerDefinition[] {
  * tileset rather than the prose spec, which understates when rivers and canals arrive.
  */
 const VOCAB: RoadVocabulary = {
-	minorBases: ['residential', 'unclassified', 'livingstreet'],
-	serviceBases: ['service', 'busway', 'busguideway'],
+	// `minor` and `bus` are the classes the merged street layers are named after (`STREET_CLASSES`).
+	minorBases: ['minor', 'residential', 'unclassified', 'livingstreet'],
+	serviceBases: ['service', 'bus', 'busway', 'busguideway'],
 	appear: {
 		motorway: 5,
 		trunk: 6,
@@ -207,6 +242,8 @@ const VOCAB: RoadVocabulary = {
 		tertiary: 10,
 		residential: 12,
 		unclassified: 12,
+		minor: 12,
+		bus: 12,
 		busway: 12,
 		busguideway: 12,
 		livingstreet: 13,

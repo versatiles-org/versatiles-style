@@ -64,8 +64,9 @@ const MINOR_WIDTH = {
 };
 
 // The arterial classes drawn in the yellow/orange palette. In the old VersaTiles style tertiary is
-// NOT arterial — it's a white minor road — so it is deliberately absent here.
-const YELLOW = new Set(['motorway', 'trunk', 'primary', 'secondary']);
+// NOT arterial — it's a white minor road — so it is deliberately absent here. `arterial` itself is the
+// secondary and primary class, drawn as one layer where a schema merges them (Shortbread's ramps).
+const YELLOW = new Set(['motorway', 'trunk', 'primary', 'secondary', 'arterial']);
 const isServiceLike = (base: string, vocab: RoadVocabulary): boolean => vocab.serviceBases.includes(base);
 
 function streetAppear(base: string, isLink: boolean, vocab: RoadVocabulary): number {
@@ -324,7 +325,7 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 
 	if (isLink) {
 		if (bt === 'motorway') return { ...base, minzoom: 12, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
-		if (bt === 'trunk' || bt === 'primary' || bt === 'secondary')
+		if (bt === 'trunk' || bt === 'primary' || bt === 'secondary' || bt === 'arterial')
 			return { ...base, minzoom: 13, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
 		// tertiary-link → minor deck
 		return { ...base, size: { 12: 3, 14: 4, 16: 8, 18: 36, 19: 90, 20: 179 }, opacity: { 12: 0, 13: 1 } };
@@ -428,6 +429,7 @@ function roadGroup(id: string, vocab: RoadVocabulary): string | undefined {
 			case 'motorway':
 			case 'trunk':
 				return 'roads.motorways';
+			case 'arterial':
 			case 'primary':
 			case 'secondary':
 			case 'tertiary':
