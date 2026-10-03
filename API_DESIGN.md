@@ -699,7 +699,8 @@ by its own factor to make up for the weight its casing carried.
 `osmOverlay.layerOpacity: true` dims `boundary-country`, `boundary-state` and `street-motorway` with
 `line-layer-opacity` in place of `line-opacity`, so a line that crosses itself (a border winding along
 a river, a motorway's two carriageways) is composited once and reads evenly instead of brightening
-where it overlaps. It is off by default and only for **MapLibre GL JS 6.0 or newer**: MapLibre Native
+where it overlaps. The motorway's opacity is raised where its two carriageways used to overlap (up
+to ×1.6 around z10), so it keeps the weight it has without the option. It is off by default and only for **MapLibre GL JS 6.0 or newer**: MapLibre Native
 (Android, iOS) does not implement the property and drops every layer that carries it
 ([maplibre-native#4298](https://github.com/maplibre/maplibre-native/issues/4298)). It is an overlay
 option only — `osm()` rejects it.

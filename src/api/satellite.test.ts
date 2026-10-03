@@ -335,13 +335,40 @@ describe('satellite()', () => {
 			for (const id of LISTED) expect(paintOf(layers.get(id))).not.toHaveProperty('line-opacity');
 		});
 
-		it('carries the same opacity, fade included, that line-opacity had', () => {
+		it('carries the borders over with the opacity, fade included, that line-opacity had', () => {
 			const before = byId(off);
 			const after = byId(on);
-			for (const id of LISTED) {
+			for (const id of ['boundary-country', 'boundary-state']) {
 				expect(paintOf(after.get(id))['line-layer-opacity']).toEqual(paintOf(before.get(id))['line-opacity']);
 			}
 			expect(paintOf(after.get('boundary-country'))['line-layer-opacity']).toBeCloseTo(0.9, 10);
+		});
+
+		it('raises the motorway where its carriageways no longer add up, and keeps its fade-in', () => {
+			// the overlap measured in GL JS: up to ×1.6 around z10, none from z14
+			expect(paintOf(byId(on).get('street-motorway'))['line-layer-opacity']).toEqual([
+				'interpolate',
+				['linear'],
+				['zoom'],
+				5,
+				0,
+				6,
+				0.46,
+				7,
+				0.54,
+				8,
+				0.6,
+				10,
+				0.64,
+				11,
+				0.54,
+				12,
+				0.5,
+				13,
+				0.44,
+				14,
+				0.4,
+			]);
 		});
 
 		it('keeps the round caps and joins of the listed layers, which no longer overlap themselves', () => {

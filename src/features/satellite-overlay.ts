@@ -1,5 +1,5 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
-import { moveToLineLayerOpacity, scaleLayerOpacity } from '../lib/index.js';
+import { moveToLineLayerOpacity, scaleLayerOpacity, type ZoomCurve } from '../lib/index.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -111,8 +111,28 @@ function lineOpacity(id: string): number {
  * two carriageways are mapped as separate ways that run closer together than the line is wide at low
  * zoom, and fold over each other at every interchange. Trunk roads are deliberately left out, as are the
  * disputed and maritime borders, links and bridges.
+ *
+ * Composited once, a layer loses the weight its overlaps used to add, so the factor that matched the
+ * old overlay with `line-opacity` is not the one that matches it here. Measured in MapLibre GL JS
+ * 6.11.2, each layer alone, white on black, over five German cities and interchanges: summed
+ * brightness with `line-opacity` divided by summed brightness with `line-layer-opacity`, both at the
+ * {@link LINE_OPACITY} factor —
+ *
+ * - borders ×1.03 at z5–z9: they overlap on a tenth of their pixels at most, so they keep their factor.
+ * - motorways ×1.13 at z6, 1.34 at z7, 1.51 at z8, 1.58–1.59 at z9–z10, 1.36 at z11, 1.26 at z12,
+ *   1.10 at z13, 1.01 at z14 and 1.00 at z15. The carriageways merge into one line up to about z10,
+ *   and separate as the zoom goes up. (z6 is low only because the line is still fading in, 1 px wide.)
+ *   So the motorway's factor follows that curve, 0.4 × up to 1.6.
  */
-const LAYER_OPACITY_IDS = new Set(['boundary-country', 'boundary-state', 'street-motorway']);
+const MOTORWAY_OVERLAP: ZoomCurve = { 6: 1.15, 7: 1.35, 8: 1.5, 10: 1.6, 11: 1.35, 12: 1.25, 13: 1.1, 14: 1 };
+const LAYER_OPACITY_IDS: ReadonlyMap<string, number | ZoomCurve> = new Map<string, number | ZoomCurve>([
+	['boundary-country', LINE_OPACITY.boundary],
+	['boundary-state', LINE_OPACITY.boundary],
+	[
+		'street-motorway',
+		Object.fromEntries(Object.entries(MOTORWAY_OVERLAP).map(([zoom, f]) => [zoom, f * LINE_OPACITY.road])),
+	],
+]);
 
 /**
  * Round caps and joins, which a translucent line cannot afford.
@@ -183,9 +203,8 @@ export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string, l
 	if (layer.type === 'line') {
 		// Composited once, the layer no longer overlaps itself, so it keeps the cartography's round caps
 		// and joins.
-		if (layerOpacity && LAYER_OPACITY_IDS.has(layer.id) && moveToLineLayerOpacity(layer, lineOpacity(layer.id))) {
-			return;
-		}
+		const factor = layerOpacity ? LAYER_OPACITY_IDS.get(layer.id) : undefined;
+		if (factor !== undefined && moveToLineLayerOpacity(layer, factor)) return;
 		scaleLayerOpacity(layer, lineOpacity(layer.id));
 		unroundJoins(layer);
 		return;
