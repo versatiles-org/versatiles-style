@@ -13,7 +13,7 @@ import * as browser from './browser.js';
  * here: a module outside `src` cannot be reached by anything in it.)
  *
  * Deleting an export is not enough to keep them out, which is why this test walks the import graph as
- * well as checking the exports. Both `minimize.ts` and `fontCovers.ts` kept contributing bytes after
+ * well as checking the exports. Both `minimize.ts` and `font-covers.ts` kept contributing bytes after
  * their exports moved, because both do work when the module is evaluated — a constant built by calling
  * three resolvers, a script table built with `Object.freeze` — and a bundler must assume module-level
  * work matters. So a stray import from anywhere the browser entry can reach puts them back, silently
@@ -36,8 +36,8 @@ const SRC = dirname(new URL(import.meta.url).pathname);
  */
 const FORBIDDEN = [
 	['fonts/index.ts', 'fetchFontFaces and the font-coverage helpers'],
-	['fonts/fontCovers.ts', 'fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS'],
-	['fonts/fetchFontFaces.ts', 'fetchFontFaces'],
+	['fonts/font-covers.ts', 'fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS'],
+	['fonts/fetch-font-faces.ts', 'fetchFontFaces'],
 ] as const;
 
 /** Exports that exist on the npm entry and must not exist here. */

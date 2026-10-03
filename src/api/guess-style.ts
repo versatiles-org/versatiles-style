@@ -8,8 +8,8 @@ import { osm } from './osm.js';
 import { checkKeys } from '../options/index.js';
 import { satellite } from './satellite.js';
 import type { SchemaBuilder } from './schema-builder.js';
-import { guessSchema, qualifies } from './guessSchema.js';
-import { inspectorStyle, isVectorTileJSON } from './inspectorStyle.js';
+import { guessSchema, qualifies } from './guess-schema.js';
+import { inspectorStyle, isVectorTileJSON } from './inspector-style.js';
 import { SCHEMA_NAMES } from './schema-signatures.js';
 
 /**

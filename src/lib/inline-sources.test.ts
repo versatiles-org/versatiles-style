@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { inlineSources } from './inlineSources.js';
+import { inlineSources } from './inline-sources.js';
 import type { StyleSpecification } from '../types/index.js';
 
 const json = (body: unknown) =>

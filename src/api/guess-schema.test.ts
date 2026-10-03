@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { guessSchema, type SchemaGuess } from './guessSchema.js';
+import { guessSchema, type SchemaGuess } from './guess-schema.js';
 import type { TileJSONSpecification } from '../types/index.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { OMT_SCHEMA } from '../omt/schema.js';

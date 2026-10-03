@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { FONT_SCRIPTS, LANGUAGE_SAMPLES, fontCovers, fontScripts, languageScript, textScripts } from './fontCovers.js';
+import { FONT_SCRIPTS, LANGUAGE_SAMPLES, fontCovers, fontScripts, languageScript, textScripts } from './font-covers.js';
 import * as lib from '../index.js';
 
 // `codeblocks` as tiles.versatiles.org published them on 2026-09-14. Merged faces publish only their first

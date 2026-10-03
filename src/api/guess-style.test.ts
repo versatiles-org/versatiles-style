@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { guessStyle } from './guessStyle.js';
+import { guessStyle } from './guess-style.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import { jsonResponse } from '../lib/loadTileSource.test.js';
+import { jsonResponse } from '../lib/load-tile-source.test.js';
 
 function layerTypes(style: StyleSpecification): string[] {
 	return style.layers.map((l) => l.type);

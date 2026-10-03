@@ -1,4 +1,4 @@
-import type { FontFaceInfo } from './fetchFontFaces.js';
+import type { FontFaceInfo } from './fetch-font-faces.js';
 import { labelLanguage } from '../options/index.js';
 
 /**

@@ -8,7 +8,7 @@ import {
 	STYLE_LICENSE,
 	styleMetadata,
 	styleName,
-} from './styleMeta.js';
+} from './style-meta.js';
 
 // v5 published a distinct `name` per style and the CC0 `metadata.license` on every one of them.
 // v6 dropped both from satellite() and collapsed osm() to a single generic name (B2).

@@ -20,12 +20,12 @@ export {
 	METADATA_OPTIONS_KEY,
 	METADATA_VERSION_KEY,
 	METADATA_VERSION,
-} from './styleMeta.js';
-export type { StyleBuilder, StyleOptionsRecord } from './styleMeta.js';
-export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
-export { buildSourceDescriptor, inlinedFields } from './tileSource.js';
-export { fetchTileJSON } from './fetchTileJSON.js';
-export { inlineSources } from './inlineSources.js';
+} from './style-meta.js';
+export type { StyleBuilder, StyleOptionsRecord } from './style-meta.js';
+export { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './load-tile-source.js';
+export { buildSourceDescriptor, inlinedFields } from './tile-source.js';
+export { fetchTileJSON } from './fetch-tilejson.js';
+export { inlineSources } from './inline-sources.js';
 export { moveToLineLayerOpacity, scaleLayerOpacity, type ZoomCurve } from './opacity.js';
 export { padForSpacing, scaleSymbolSpacing, scaleValue, PADDING_PER_SPACING } from './symbol-layout.js';
 export { getLanguages } from './languages.js';

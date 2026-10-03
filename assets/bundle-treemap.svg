@@ -194,9 +194,9 @@
 <text class="leaf-label" x="521.28" y="288.84" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
 <text class="leaf-size" x="521.28" y="302.84" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.1 KB</text>
 </g>
-<g class="leaf c5"><title>api/guessStyle.ts: 1.7 KB (1.6%)</title>
+<g class="leaf c5"><title>api/guess-style.ts: 1.7 KB (1.6%)</title>
 <rect class="leaf-box" x="559.73" y="224.03" width="57.52" height="92.17" rx="2"/>
-<text class="leaf-label" x="588.5" y="268.12" textLength="45.86" lengthAdjust="spacingAndGlyphs">guessSt…</text>
+<text class="leaf-label" x="588.5" y="268.12" textLength="47.69" lengthAdjust="spacingAndGlyphs">guess-st…</text>
 <text class="leaf-size" x="588.5" y="282.12" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
 </g>
 <g class="leaf c5"><title>api/satellite.ts: 1.7 KB (1.6%)</title>
@@ -204,9 +204,9 @@
 <text class="leaf-label" x="647.25" y="268.12" textLength="46.46" lengthAdjust="spacingAndGlyphs">satellite.…</text>
 <text class="leaf-size" x="647.25" y="282.12" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
 </g>
-<g class="leaf c5"><title>api/inspectorStyle.ts: 1.5 KB (1.4%)</title>
+<g class="leaf c5"><title>api/inspector-style.ts: 1.5 KB (1.4%)</title>
 <rect class="leaf-box" x="559.73" y="318.2" width="115.5" height="39.45" rx="2"/>
-<text class="leaf-label" x="617.49" y="335.93" textLength="80.7" lengthAdjust="spacingAndGlyphs">inspectorStyle.ts</text>
+<text class="leaf-label" x="617.49" y="335.93" textLength="82.52" lengthAdjust="spacingAndGlyphs">inspector-style.ts</text>
 <text class="leaf-size" x="617.49" y="349.93" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="group c6"><title>lib: 5.8 KB (5.6%)</title>

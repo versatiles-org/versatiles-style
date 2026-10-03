@@ -1,7 +1,7 @@
 import { checkKeys } from '../options/index.js';
 import type { FetchLike } from '../options/index.js';
 import type { TileJSONSpecification } from '../types/index.js';
-import { loadTileSource } from './loadTileSource.js';
+import { loadTileSource } from './load-tile-source.js';
 
 /**
  * Download a TileJSON document and make its relative `tiles[]` entries absolute.

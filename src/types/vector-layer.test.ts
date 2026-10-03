@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { VectorLayer } from './vector_layer.js';
-import { assertVectorLayer, assertVectorLayers, isVectorLayer, isVectorLayers } from './vector_layer.js';
+import type { VectorLayer } from './vector-layer.js';
+import { assertVectorLayer, assertVectorLayers, isVectorLayer, isVectorLayers } from './vector-layer.js';
 
 describe('assertVectorLayer', () => {
 	it('should validate a correct VectorLayer object', () => {

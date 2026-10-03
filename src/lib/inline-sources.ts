@@ -2,8 +2,8 @@ import { checkKeys } from '../options/index.js';
 import type { FetchLike } from '../options/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import { loadTileSource } from './loadTileSource.js';
-import { inlinedFields } from './tileSource.js';
+import { loadTileSource } from './load-tile-source.js';
+import { inlinedFields } from './tile-source.js';
 
 /**
  * Resolve every `url`-referencing source in a style into an inlined, self-contained one.

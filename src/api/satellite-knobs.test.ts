@@ -3,7 +3,7 @@ import { satellite } from './satellite.js';
 import type { SatelliteOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
-import { tileJSONFetch } from '../lib/loadTileSource.test.js';
+import { tileJSONFetch } from '../lib/load-tile-source.test.js';
 import { osm } from './osm.js';
 import { Color } from '../color/index.js';
 import { PALETTES } from '../themes/index.js';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { inspectorStyle } from './inspectorStyle.js';
-import { guessStyle } from './guessStyle.js';
+import { inspectorStyle } from './inspector-style.js';
+import { guessStyle } from './guess-style.js';
 import type { StyleSpecification } from '../types/index.js';
 
 const vectorTJ = {

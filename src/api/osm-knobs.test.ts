@@ -3,7 +3,7 @@ import { osm } from '../index.js';
 import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
-import { tileJSONFetch } from '../lib/loadTileSource.test.js';
+import { tileJSONFetch } from '../lib/load-tile-source.test.js';
 import { Color } from '../color/index.js';
 
 // Exhaustive behavioural coverage of every osm() option ("knob"). Where a resolve-level

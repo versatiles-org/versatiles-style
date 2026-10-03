@@ -1,11 +1,11 @@
 export { osm } from './osm.js';
 export { satellite } from './satellite.js';
-export { guessStyle } from './guessStyle.js';
-export { guessSchema } from './guessSchema.js';
-export { inspectorStyle } from './inspectorStyle.js';
-export type { GuessStyleOptions } from './guessStyle.js';
-export type { SchemaGuess, SchemaName, SchemaScore } from './guessSchema.js';
-export type { InspectorStyleOptions } from './inspectorStyle.js';
+export { guessStyle } from './guess-style.js';
+export { guessSchema } from './guess-schema.js';
+export { inspectorStyle } from './inspector-style.js';
+export type { GuessStyleOptions } from './guess-style.js';
+export type { SchemaGuess, SchemaName, SchemaScore } from './guess-schema.js';
+export type { InspectorStyleOptions } from './inspector-style.js';
 export type { SchemaBuilder, SchemaDescriptor, SchemaUrls } from './schema-builder.js';
 export { styleCode, BROWSER_BUNDLE_URL } from './code.js';
 export type { CodeOptions, CodeTarget } from './code.js';

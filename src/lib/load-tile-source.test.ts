@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
-import { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './loadTileSource.js';
+import { cachingFetch, clearTileSourceCache, loadTileSource, resolveTileJSONTiles } from './load-tile-source.js';
 import type { TileJSONSpecification } from '../types/index.js';
 import type { FetchLike } from '../options/index.js';
 

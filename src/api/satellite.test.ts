@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { satellite } from './satellite.js';
 import { osm } from './osm.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import { tileJSONFetch } from '../lib/loadTileSource.test.js';
+import { tileJSONFetch } from '../lib/load-tile-source.test.js';
 import { inlineSources } from '../lib/index.js';
 
 function layerIds(style: StyleSpecification): string[] {
