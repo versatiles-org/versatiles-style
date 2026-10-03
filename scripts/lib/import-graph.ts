@@ -180,16 +180,21 @@ export function redundantDeepImports(): string[] {
 }
 
 /**
- * A deep import into another directory that the barrel beside it already re-exports — the import that
- * *could* have read `from '../color/index.js'` and instead names a file inside `color/`.
+ * A deep import into another directory — one that names a file inside `color/` instead of reading
+ * `from '../color/index.js'`.
  *
  * This is the broader cousin of `redundantDeepImports`, which only reports the case where the barrel is
  * imported by the same file anyway. Here the barrel need not be imported at all: the rule is that
  * crossing a directory boundary goes through that directory's front door, so a module's internal layout
  * stays its own business.
  *
- * Sibling imports are untouched — inside a directory, naming the file *is* the front door — and so is a
- * target no barrel re-exports, which has no door to use.
+ * It holds whether or not the barrel re-exports the module. A module the barrel leaves out is not one
+ * without a door — it is one whose door is missing, and the finding says so: re-export it from the
+ * barrel, or exempt the import with the reason it cannot go there. (The rule used to skip such modules,
+ * which let `options/parts/colors.ts` reach `themes/color-keys.ts` directly for as long as
+ * `themes/index.ts` happened not to re-export it.) A directory without a barrel is reported the same way.
+ *
+ * Sibling imports are untouched — inside a directory, naming the file *is* the front door.
  *
  * Two shapes are out of scope rather than exempted, because for them the barrel is not an option a
  * person is declining to take:
@@ -206,14 +211,13 @@ export function redundantDeepImports(): string[] {
  * so the list cannot quietly rot.
  */
 export function avoidableDeepImports(exemptions: Readonly<Record<string, string>> = DEEP_IMPORT_EXEMPTIONS): string[] {
-	const findings: string[] = [];
+	const findings = new Set<string>();
 	const unused = new Set(Object.keys(exemptions));
 	for (const file of sourceFiles()) {
 		if (file.endsWith('.test.ts')) continue;
 		for (const { specifier, target } of allImports(file)) {
 			if (target.endsWith('/index.ts') || dirname(target) === dirname(file)) continue;
 			const barrel = resolve(dirname(target), 'index.ts');
-			if (!existsSync(barrel) || !reExports(barrel, target)) continue;
 			// The barrel sits above the importing file: see "a child reaching up into its own parent".
 			if (!relative(dirname(barrel), file).startsWith('..')) continue;
 			const key = `${relative(SRC, file)} -> ${specifier}`;
@@ -221,25 +225,37 @@ export function avoidableDeepImports(exemptions: Readonly<Record<string, string>
 				unused.delete(key);
 				continue;
 			}
-			findings.push(`${key} (use ${relative(SRC, barrel)})`);
+			const door = relative(SRC, barrel);
+			if (!existsSync(barrel)) findings.add(`${key} (${relative(SRC, dirname(target))}/ has no barrel)`);
+			else if (!reExports(barrel, target)) findings.add(`${key} (re-export it from ${door}, then use that)`);
+			else findings.add(`${key} (use ${door})`);
 		}
 	}
-	for (const key of unused) findings.push(`exemption no longer applies: ${key}`);
-	return findings.sort();
+	for (const key of unused) findings.add(`exemption no longer applies: ${key}`);
+	return [...findings].sort();
 }
 
 /**
  * The deep imports `avoidableDeepImports` allows, each with why it is not a style choice.
  *
  * The bar is that routing the import through its barrel would change what *runs*, not how it reads — so
- * a type-only deep import never belongs here, being erased before anything runs. That is why the list
- * holds one entry and not three: `options/minimize.ts` and `options/parts/urls.ts` reached past their
- * barrels for types alone and now go through them.
+ * a type-only deep import never belongs here, being erased before anything runs. (Where a file takes a
+ * value and a type from the same module, as `index.ts` does from `fetchFontFaces.js`, the one entry
+ * covers both specifiers, which are the same string.)
  */
 export const DEEP_IMPORT_EXEMPTIONS: Readonly<Record<string, string>> = {
 	'index.ts -> ./shortbread/layer-groups-map.js':
 		'The npm entry takes one function from the module. Through `shortbread/index.ts` it would pull the ' +
 		'whole schema into the published bundle behind it.',
+	'index.ts -> ./lib/fetchFontFaces.js':
+		'Font discovery is kept out of `lib/index.ts` on purpose (see the note there): the CDN bundle imports ' +
+		'the barrel and has no font picker to serve. The npm entry names the module directly.',
+	'index.ts -> ./lib/fontCovers.js':
+		'As above, and the weightier half: `fontCovers.ts` freezes a table at module level, which no bundler ' +
+		'may drop, so through the barrel it would land in every bundle that imports anything from `lib`.',
+	'migrate/guess.ts -> ../lib/fetchFontFaces.js':
+		'The same module the npm entry names directly, for the same reason; `migrate` is its own entry and ' +
+		'needs the font list to fit a foreign style.',
 };
 
 /** The same graph one level up: `options/parts/urls.ts` counts as `options`. Self-edges are dropped. */

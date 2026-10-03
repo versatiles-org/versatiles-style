@@ -70,19 +70,27 @@ describe('the import graph', () => {
 		// The stronger rule, and the one that keeps a directory's internal layout its own business: where a
 		// barrel re-exports the module, reach it by the barrel rather than by naming a file inside.
 		//
+		// That holds whether or not the barrel re-exports the module: one it leaves out is reported too, so
+		// the fix is to re-export it there — the rule used to skip such modules, which is how
+		// `options/parts/colors.ts` reached `themes/color-keys.ts` directly.
+		//
 		// Two shapes are out of scope, not exempted, because the barrel is genuinely unavailable there: a
 		// child reaching up into its own parent (`shortbread/layers/roads.ts` → `../context.js`, which
 		// through `shortbread/index.ts` would be a cycle), and test files, which name the module under test
-		// on purpose. What is left is `DEEP_IMPORT_EXEMPTIONS` — deep imports that change what *runs*, of
-		// which there is exactly one. A stale entry there fails this test too.
+		// on purpose. What is left is `DEEP_IMPORT_EXEMPTIONS` — deep imports that change what *runs*, each
+		// with its reason. A stale entry there fails this test too.
 		expect(avoidableDeepImports()).toStrictEqual([]);
 	});
 
 	it('finds the deep imports it exempts, and says when an exemption is stale', () => {
-		// The positive control for the rule above: exempt nothing and the one entry has to come back, or
-		// an empty list up there would mean the check matches nothing rather than that the tree is clean.
+		// The positive control for the rule above: exempt nothing and every entry has to come back, or an
+		// empty list up there would mean the check matches nothing rather than that the tree is clean. The
+		// font modules are the ones `lib/index.ts` leaves out, so they also exercise that half of the rule.
 		expect(avoidableDeepImports({})).toStrictEqual([
+			'index.ts -> ./lib/fetchFontFaces.js (re-export it from lib/index.ts, then use that)',
+			'index.ts -> ./lib/fontCovers.js (re-export it from lib/index.ts, then use that)',
 			'index.ts -> ./shortbread/layer-groups-map.js (use shortbread/index.ts)',
+			'migrate/guess.ts -> ../lib/fetchFontFaces.js (re-export it from lib/index.ts, then use that)',
 		]);
 		// and an exemption for an import that no longer exists is a finding of its own
 		expect(avoidableDeepImports({ 'gone.ts -> ./nowhere.js': 'stale' })).toContain(
