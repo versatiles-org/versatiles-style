@@ -95,10 +95,6 @@ export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
  * the IDs stay the same for every theme, arbitrary colours and recolor options.
  */
 const MERGES: MergeTable = {
-	// sites: the three education kinds share the `siteEducation` colour, and both parking kinds
-	// share `siteParking`.
-	'site-education': ['site-university', 'site-college', 'site-school'],
-	'site-parking': ['site-parking', 'site-bicycleparking'],
 	// residential + unclassified (+ living street on bicycle overlays and bridge decks) are one visual
 	// class ("minor"), as are the two bus-only kinds, across all three structure bands.
 	'tunnel-street-minor:outline': ['tunnel-street-residential:outline', 'tunnel-street-unclassified:outline'],

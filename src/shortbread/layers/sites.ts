@@ -8,11 +8,15 @@ import * as b from '../../dsl/index.js';
 
 const APPEAR = 14;
 
-type SiteDef = { kind: string; style: (c: ColorSet) => b.ColoredStyleProps };
+/**
+ * One layer per entry. Kinds drawn alike share an entry, and with it one layer: `id` names it, and
+ * `kinds` lists what it draws. A single-kind entry is named after its kind.
+ */
+type SiteDef = { id?: string; kinds: string[]; style: (c: ColorSet) => b.ColoredStyleProps };
 
 const SITES: SiteDef[] = [
 	{
-		kind: 'danger_area',
+		kinds: ['danger_area'],
 		style: (c) => ({
 			color: c.siteDanger.opaque(),
 			fillOutlineColor: c.siteDanger.opaque(),
@@ -20,19 +24,16 @@ const SITES: SiteDef[] = [
 			image: 'base:pattern-hatched',
 		}),
 	},
-	{ kind: 'sports_centre', style: (c) => ({ color: c.siteSports }) },
-	{ kind: 'university', style: (c) => ({ color: c.siteEducation }) },
-	{ kind: 'college', style: (c) => ({ color: c.siteEducation }) },
-	{ kind: 'school', style: (c) => ({ color: c.siteEducation }) },
-	{ kind: 'hospital', style: (c) => ({ color: c.siteHospital }) },
+	{ kinds: ['sports_centre'], style: (c) => ({ color: c.siteSports }) },
+	{ id: 'education', kinds: ['university', 'college', 'school'], style: (c) => ({ color: c.siteEducation }) },
+	{ kinds: ['hospital'], style: (c) => ({ color: c.siteHospital }) },
 	{
-		kind: 'prison',
+		kinds: ['prison'],
 		style: (c) => ({ color: c.sitePrison.opaque(), image: 'base:pattern-striped', opacity: c.sitePrison.alpha }),
 	},
-	{ kind: 'parking', style: (c) => ({ color: c.siteParking }) },
-	{ kind: 'bicycle_parking', style: (c) => ({ color: c.siteParking }) },
+	{ id: 'parking', kinds: ['parking', 'bicycle_parking'], style: (c) => ({ color: c.siteParking }) },
 	{
-		kind: 'construction',
+		kinds: ['construction'],
 		style: (c) => ({
 			color: c.siteConstruction.opaque(),
 			image: 'base:pattern-hatched_thin',
@@ -42,10 +43,10 @@ const SITES: SiteDef[] = [
 ];
 
 export function* sites(ctx: LayerContext): Generator<b.TaggedLayer> {
-	for (const { kind, style } of SITES) {
-		yield b.fill('site-' + kind.replace(/_/g, ''), {
+	for (const { id, kinds, style } of SITES) {
+		yield b.fill('site-' + (id ?? kinds[0].replace(/_/g, '')), {
 			sourceLayer: 'sites',
-			filter: ['==', ['get', 'kind'], kind],
+			filter: kinds.length === 1 ? ['==', ['get', 'kind'], kinds[0]] : ['in', ['get', 'kind'], ['literal', kinds]],
 			...style(ctx.c),
 			appear: APPEAR,
 			group: 'sites',

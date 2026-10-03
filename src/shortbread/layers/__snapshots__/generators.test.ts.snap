@@ -381,13 +381,10 @@ exports[`generator: sites > yielded layer ids are stable 1`] = `
 [
   "fill:site-dangerarea",
   "fill:site-sportscentre",
-  "fill:site-university",
-  "fill:site-college",
-  "fill:site-school",
+  "fill:site-education",
   "fill:site-hospital",
   "fill:site-prison",
   "fill:site-parking",
-  "fill:site-bicycleparking",
   "fill:site-construction",
 ]
 `;
