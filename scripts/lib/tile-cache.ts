@@ -333,12 +333,16 @@ const ASSET_ORIGINS: readonly string[] = ['https://tiles.versatiles.org', 'https
  * `assets/<host>/<path>`; a 404 is remembered as a zero-byte file and read back as `undefined`.
  */
 export async function readAsset(url: string, options: CacheOptions = {}): Promise<Uint8Array | undefined> {
-	const { origin: requested, host, pathname, search } = new URL(url);
+	const { origin: requested, host, pathname } = new URL(url);
 	// The URL can come from outside the process — `gljs-render.ts` takes it from a query parameter — so
 	// the origin that is fetched is the list's own string, never the caller's.
 	const origin = ASSET_ORIGINS.find((allowed) => allowed === requested);
 	if (!origin) throw new Error(`tile-cache: refusing asset origin ${url}`);
-	const target = new URL(pathname + search, origin).href;
+	// Nor is the path the caller's: each segment is decoded and encoded again, so what is fetched is
+	// built from escaped names and nothing in it can act as URL syntax. The query is dropped — the
+	// file below is keyed by path alone, so it never told two assets apart anyway.
+	const segments = pathname.split('/').map((segment) => encodeURIComponent(decodeURIComponent(segment)));
+	const target = `${origin}${segments.join('/')}`;
 	const file = resolve(CACHE_DIR, 'assets', host, decodeURIComponent(pathname).replace(/^\/+/, ''));
 	if (!file.startsWith(resolve(CACHE_DIR, 'assets'))) throw new Error(`tile-cache: refusing asset path ${url}`);
 	if (existsSync(file)) {

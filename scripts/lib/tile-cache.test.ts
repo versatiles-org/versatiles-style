@@ -280,6 +280,13 @@ describe('readAsset', () => {
 		expect(fetchFn).not.toHaveBeenCalled();
 	});
 
+	it('fetches a URL rebuilt from the allowed origin and the escaped path, without the query', async () => {
+		const fetchFn = vi.fn((_url: string, _init?: RequestInit) => new Response(bytes(body), { status: 200 }));
+		vi.stubGlobal('fetch', fetchFn);
+		await readAsset('https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf?x=1#y');
+		expect(fetchFn.mock.calls[0][0]).toBe('https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf');
+	});
+
 	it('fetches once when several callers ask for the same URL at once', async () => {
 		const fetchFn = vi.fn(() => new Response(bytes(body), { status: 200 }));
 		vi.stubGlobal('fetch', fetchFn);
