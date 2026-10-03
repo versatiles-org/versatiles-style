@@ -115,19 +115,28 @@ function buildStructures(): MaplibreLayerDefinition[] {
 		}
 
 		for (const suffix of [':outline', ''] as const) {
-			for (const t of ['tram', 'narrow_gauge', 'subway', 'light_rail', 'rail'].reverse()) {
+			const main = (t: string) =>
 				results.push({
 					id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
 					type: 'line',
 					'source-layer': 'streets',
 					filter: ['all', ['==', ['get', 'kind'], t], ['!', ['has', 'service']], ...filter] as FilterSpecification,
 				});
+			const service = (t: string) =>
 				results.push({
 					id: prefix + 'transport-' + t.replace(/_/g, '') + '-service' + suffix,
 					type: 'line',
 					'source-layer': 'streets',
 					filter: ['all', ['==', ['get', 'kind'], t], ['has', 'service'], ...filter] as FilterSpecification,
 				});
+			// Rail and light rail share one style, so both main lines come first and both service tracks
+			// after them: adjacent, each pair collapses into one layer (`MERGES` in `index.ts`). The order
+			// changes only which of two identically drawn lines lies on top where tracks cross.
+			for (const t of ['rail', 'light_rail']) main(t);
+			for (const t of ['rail', 'light_rail']) service(t);
+			for (const t of ['subway', 'narrow_gauge', 'tram']) {
+				main(t);
+				service(t);
 			}
 			for (const t of ['monorail', 'funicular'].reverse()) {
 				results.push({

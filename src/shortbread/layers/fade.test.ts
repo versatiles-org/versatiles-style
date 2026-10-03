@@ -169,8 +169,6 @@ describe('boundaries fade in at their appearance zoom', () => {
 const RAIL_FADES: { id: string; z: number }[] = [
 	{ id: 'transport-rail:outline', z: 11 },
 	{ id: 'transport-rail', z: 14 },
-	{ id: 'transport-lightrail:outline', z: 11 },
-	{ id: 'transport-lightrail', z: 14 },
 	{ id: 'transport-subway:outline', z: 11 },
 	{ id: 'transport-subway', z: 14 },
 ];
@@ -199,8 +197,6 @@ const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
 	{ id: 'transport-minorrail:outline', z: 15 },
 	{ id: 'transport-rail-service:outline', z: 14 },
 	{ id: 'transport-rail-service', z: 15 },
-	{ id: 'transport-lightrail-service:outline', z: 14 },
-	{ id: 'transport-lightrail-service', z: 15 },
 ];
 
 describe('tram-family and service tracks appear by growing from 0 width (no opacity fade)', () => {

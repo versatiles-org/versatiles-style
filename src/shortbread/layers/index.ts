@@ -140,6 +140,26 @@ const MERGES: MergeTable = {
 	'bridge-street-arterial-link:bridge': ['bridge-street-secondary-link:bridge', 'bridge-street-primary-link:bridge'],
 	'bridge-street-arterial-link:outline': ['bridge-street-secondary-link:outline', 'bridge-street-primary-link:outline'],
 	'bridge-street-arterial-link': ['bridge-street-secondary-link', 'bridge-street-primary-link'],
+	// rail + light rail share one style — `transportStyle` handles both in one branch — for the main
+	// line and the service tracks alike. The merged layers keep rail's IDs.
+	'tunnel-transport-rail:outline': ['tunnel-transport-rail:outline', 'tunnel-transport-lightrail:outline'],
+	'tunnel-transport-rail-service:outline': [
+		'tunnel-transport-rail-service:outline',
+		'tunnel-transport-lightrail-service:outline',
+	],
+	'tunnel-transport-rail': ['tunnel-transport-rail', 'tunnel-transport-lightrail'],
+	'tunnel-transport-rail-service': ['tunnel-transport-rail-service', 'tunnel-transport-lightrail-service'],
+	'transport-rail:outline': ['transport-rail:outline', 'transport-lightrail:outline'],
+	'transport-rail-service:outline': ['transport-rail-service:outline', 'transport-lightrail-service:outline'],
+	'transport-rail': ['transport-rail', 'transport-lightrail'],
+	'transport-rail-service': ['transport-rail-service', 'transport-lightrail-service'],
+	'bridge-transport-rail:outline': ['bridge-transport-rail:outline', 'bridge-transport-lightrail:outline'],
+	'bridge-transport-rail-service:outline': [
+		'bridge-transport-rail-service:outline',
+		'bridge-transport-lightrail-service:outline',
+	],
+	'bridge-transport-rail': ['bridge-transport-rail', 'bridge-transport-lightrail'],
+	'bridge-transport-rail-service': ['bridge-transport-rail-service', 'bridge-transport-lightrail-service'],
 	// tram / narrowgauge / funicular / monorail share one style — `transportStyle` handles all four in
 	// its final branch.
 	'tunnel-transport-minorrail:outline': [
