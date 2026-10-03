@@ -25,8 +25,57 @@ import { scaleLayerOpacity } from '../lib/index.js';
  */
 const DROPPED_GROUPS = /^(land|water|site|airport|tunnel)-/;
 
-/** Multiplier applied to every line's opacity, so roads read as an overlay rather than a basemap. */
-const LINE_OPACITY = 0.2;
+/**
+ * Casings and bridge decks, dropped from the overlay.
+ *
+ * On the basemap a casing separates a line from the fills beneath it, and a deck lifts a bridge off
+ * the road it crosses. The overlay has neither fills nor an opaque road to lift off, so over a photo
+ * both are only a second translucent line under the first: the line's middle is blended twice and its
+ * edges once, and no `line-layer-opacity` could undo that, because the two passes are separate layers.
+ * Dropping them also halves the overlay's line layers (129 → 60).
+ */
+const CASING = /:(outline|bridge)$/;
+
+/**
+ * Rail, light rail, subway and aerialways, whose two layers are the other way round.
+ *
+ * Their `:outline` is not a casing but the line itself — a solid base — and the layer on top is a
+ * dashed decoration over it: the alternating tie bands of a railway, the cable ticks of a lift. The
+ * rail base also starts three zooms before its ties (z11 against z14). So for these the base stays and
+ * the decoration goes, which leaves one solid line per track, as everywhere else in the overlay.
+ * (Trams and the other minor railways are not listed: their `:outline` is a genuine dotted casing.)
+ */
+const BASE_LINE = /^(bridge-)?(transport-(rail|lightrail|subway)(-service)?|aerialway(-.*)?)(?=:outline$|$)/;
+
+/**
+ * Multiplier applied to each line's opacity, so it reads as an overlay rather than a basemap — per line
+ * class, because dropping the casings and decorations took a different share of each class's weight
+ * with it.
+ *
+ * Measured against the overlay as it was with casings, when every line was dimmed by 0.2: each class
+ * rendered alone over imagery with MapLibre Native, and its mean per-pixel change against the bare
+ * imagery compared before and after the casings went, over eight to fourteen views per class. With
+ * 0.2 kept, the old overlay changed the imagery this much more than the new one:
+ *
+ * - boundary — ×3.6–4.3 at z4–z11. A border was mostly its casing: twice the line's width, in the light
+ *   background colour. (The one outlier, ×1.4–1.5 over the Alps, is the imagery: a light casing has
+ *   little to contrast with on snow and rock, so there the border now weighs about three times what it
+ *   did.)
+ * - road — ×1.8–2.1 at z9–z15, in cities and at a motorway interchange.
+ * - aerialway — ×2: the dashed cable ticks that went were as heavy as the base line that stayed.
+ * - rail — ×1: its ties start at z14, are drawn at most 1 px wide and dashed, and weighed nothing measurable.
+ *
+ * Overlap makes the response sub-linear, so the values sit a little above 0.2 × that ratio; with them,
+ * every view but the Alps lands within 0.82–1.08 of the old weight.
+ */
+const LINE_OPACITY = { boundary: 0.9, road: 0.4, aerialway: 0.4, rail: 0.2 };
+
+function lineOpacity(id: string): number {
+	if (id.startsWith('boundary-')) return LINE_OPACITY.boundary;
+	if (id.startsWith('aerialway')) return LINE_OPACITY.aerialway;
+	if (BASE_LINE.test(id)) return LINE_OPACITY.rail;
+	return LINE_OPACITY.road;
+}
 
 /**
  * Why every line here is dimmed per feature, including the ones that overlap themselves.
@@ -59,10 +108,11 @@ const LINE_OPACITY = 0.2;
  * A round cap puts a semicircle *past* the end of a segment and a round join a fan at every vertex, so
  * both cover pixels the adjoining geometry already covers. Drawn opaque that is free — the same colour
  * lands on the same colour — and it is why the basemap asks for them: they keep a boundary or a road
- * smooth round its corners. Drawn at {@link LINE_OPACITY} it is not free: MapLibre blends each
- * overlapping triangle in turn, so those pixels composite twice and come out at 1 − 0.8² = 0.36 against
- * 0.2 everywhere else. Since boundary and road geometry is split per way and per tile, that is a bright
- * bead at every vertex and every seam between features — the whole overlay reads as noisy.
+ * smooth round its corners. Drawn translucent ({@link LINE_OPACITY}) it is not free: MapLibre blends
+ * each overlapping triangle in turn, so those pixels composite twice — at 0.2 they come out at
+ * 1 − 0.8² = 0.36 against 0.2 everywhere else. Since boundary and road geometry is split per way and
+ * per tile, that is a bright bead at every vertex and every seam between features — the whole overlay
+ * reads as noisy.
  *
  * So the overlay drops them and takes MapLibre's own `butt` and `miter`. Only `round` is removed — a
  * layer that asked for `butt` meant it.
@@ -101,7 +151,10 @@ function unroundJoins(layer: MaplibreLayer): void {
 export function keepInOverlay(layer: { id: string; type: string }): boolean {
 	// Fills would hide the imagery outright.
 	if (layer.type === 'fill' || layer.type === 'fill-extrusion') return false;
-	return !DROPPED_GROUPS.test(layer.id);
+	if (DROPPED_GROUPS.test(layer.id)) return false;
+	if (layer.type !== 'line') return true;
+	if (BASE_LINE.test(layer.id)) return layer.id.endsWith(':outline');
+	return !CASING.test(layer.id);
 }
 
 /**
@@ -116,7 +169,7 @@ export function keepInOverlay(layer: { id: string; type: string }): boolean {
  */
 export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): void {
 	if (layer.type === 'line') {
-		scaleLayerOpacity(layer, LINE_OPACITY);
+		scaleLayerOpacity(layer, lineOpacity(layer.id));
 		unroundJoins(layer);
 		return;
 	}

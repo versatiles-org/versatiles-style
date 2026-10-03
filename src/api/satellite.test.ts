@@ -173,7 +173,7 @@ describe('satellite()', () => {
 		it('leaves no round cap or join on any overlay line', () => {
 			// every line is dimmed per feature, so every round cap or join would blend twice
 			const overlay = lines(satellite({ osmOverlay: {} }));
-			expect(overlay.length).toBeGreaterThan(100);
+			expect(overlay.length).toBeGreaterThan(50);
 			expect(overlay.filter(rounded).map((l) => l.id)).toEqual([]);
 		});
 
@@ -212,6 +212,60 @@ describe('satellite()', () => {
 		});
 	});
 
+	// Over a photo a casing is only a second translucent line under the first, and a bridge deck has no
+	// opaque road to lift off; rail and aerialways are the other way round — their `:outline` is the line
+	// and the layer on top a dashed decoration. See `CASING` and `BASE_LINE` in `features/satellite-overlay.ts`.
+	describe('overlay lines are drawn once', () => {
+		const ids = (style: StyleSpecification) => style.layers.filter((l) => l.type === 'line').map((l) => l.id);
+		const overlay = ids(satellite({ osmOverlay: {} }));
+		const basemap = ids(osm());
+		const isBase = (id: string) => /^(bridge-)?(transport-(rail|lightrail|subway)|aerialway)/.test(id);
+
+		it('drops every casing and bridge deck', () => {
+			const casings = overlay.filter((id) => /:(outline|bridge)$/.test(id) && !isBase(id));
+			expect(casings).toEqual([]);
+			expect(overlay).not.toContain('boundary-country:outline');
+			expect(overlay).not.toContain('street-motorway:outline');
+			expect(overlay).not.toContain('bridge-street-motorway:bridge');
+		});
+
+		it('keeps the line each casing belonged to', () => {
+			for (const id of ['boundary-country', 'boundary-state', 'street-motorway', 'bridge-street-motorway']) {
+				expect(overlay).toContain(id);
+			}
+		});
+
+		it('keeps the rail and aerialway base lines and drops their dashed decoration', () => {
+			const bases = basemap.filter((id) => isBase(id) && !/^tunnel-/.test(id));
+			expect(bases.length).toBeGreaterThan(0);
+			for (const id of bases) {
+				if (id.endsWith(':outline')) expect(overlay).toContain(id);
+				else expect(overlay).not.toContain(id);
+			}
+		});
+
+		it('keeps a minor railway, whose `:outline` is a casing, as its line', () => {
+			expect(overlay).toContain('transport-minorrail');
+			expect(overlay).not.toContain('transport-minorrail:outline');
+		});
+
+		it('weights each line class to make up for what it lost', () => {
+			const style = satellite({ osmOverlay: {} });
+			const base = new Map(osm().layers.map((l) => [l.id, l]));
+			const factor = (id: string) => {
+				const opacity = (layer: StyleSpecification['layers'][number] | undefined) =>
+					((layer as { paint?: Record<string, unknown> } | undefined)?.paint ?? {})['line-opacity'] ?? 1;
+				const before = opacity(base.get(id));
+				const after = opacity(style.layers.find((l) => l.id === id));
+				return typeof before === 'number' && typeof after === 'number' ? after / before : undefined;
+			};
+			expect(factor('boundary-country')).toBeCloseTo(0.9, 10);
+			expect(factor('way-footway')).toBeCloseTo(0.4, 10);
+			expect(factor('aerialway:outline')).toBeCloseTo(0.4, 10);
+			expect(factor('transport-rail-service:outline')).toBeCloseTo(0.2, 10);
+		});
+	});
+
 	// `line-layer-opacity` would composite a self-overlapping layer once and remove the noise a border
 	// drawn over itself produces — but MapLibre Native does not implement it (maplibre-native#4298) and
 	// drops any layer carrying it, so boundaries vanished on Android and iOS. Until a style can be
@@ -236,17 +290,17 @@ describe('satellite()', () => {
 		});
 
 		it('scales the basemap opacity rather than replacing it', () => {
-			// the basemap's own opacity times the overlay's 0.2 — the halo casing stays a halo
+			// the basemap's own opacity times the overlay's boundary factor, 0.9
 			const base = new Map(boundaries(osm()).map((l) => [l.id, paintOf(l)['line-opacity'] ?? 1]));
 			for (const layer of boundaries(satellite({ osmOverlay: {} }))) {
 				const before = base.get(layer.id);
 				if (typeof before !== 'number') continue;
-				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.2, 10);
+				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.9, 10);
 			}
 		});
 
 		it('carries an appear fade across rather than flattening it to a constant', () => {
-			// `boundary-state` ramps 0 → 0.2 over z7→8; that has to survive
+			// `boundary-state` ramps 0 → 0.9 over z7→8; that has to survive
 			const state = boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-state');
 			expect(state).toBeDefined();
 			expect(paintOf(state!)['line-opacity']).toEqual([
@@ -256,7 +310,7 @@ describe('satellite()', () => {
 				7,
 				0,
 				8,
-				expect.closeTo(0.2, 10),
+				expect.closeTo(0.9, 10),
 			]);
 		});
 	});
