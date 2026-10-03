@@ -322,12 +322,23 @@ export async function readTile(
 const assetInFlight = new Map<string, Promise<Uint8Array | undefined>>();
 
 /**
+ * The only origins `readAsset` fetches from: the two the styles load glyphs from. Anything else is
+ * refused, so the cache cannot be made to request an arbitrary address on a caller's behalf.
+ */
+const ASSET_ORIGINS: readonly string[] = ['https://tiles.versatiles.org', 'https://tiles.openfreemap.org'];
+
+/**
  * Any other static resource by URL — in practice glyph ranges, which every schema's style loads alike
  * and which are otherwise the slowest thing left once tiles are cached. Stored under
  * `assets/<host>/<path>`; a 404 is remembered as a zero-byte file and read back as `undefined`.
  */
 export async function readAsset(url: string, options: CacheOptions = {}): Promise<Uint8Array | undefined> {
-	const { host, pathname } = new URL(url);
+	const { origin: requested, host, pathname, search } = new URL(url);
+	// The URL can come from outside the process — `gljs-render.ts` takes it from a query parameter — so
+	// the origin that is fetched is the list's own string, never the caller's.
+	const origin = ASSET_ORIGINS.find((allowed) => allowed === requested);
+	if (!origin) throw new Error(`tile-cache: refusing asset origin ${url}`);
+	const target = new URL(pathname + search, origin).href;
 	const file = resolve(CACHE_DIR, 'assets', host, decodeURIComponent(pathname).replace(/^\/+/, ''));
 	if (!file.startsWith(resolve(CACHE_DIR, 'assets'))) throw new Error(`tile-cache: refusing asset path ${url}`);
 	if (existsSync(file)) {
@@ -342,7 +353,7 @@ export async function readAsset(url: string, options: CacheOptions = {}): Promis
 			let lastError: unknown;
 			for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
 				try {
-					const res = await fetch(url, { signal: AbortSignal.timeout(TILE_TIMEOUT_MS) });
+					const res = await fetch(target, { signal: AbortSignal.timeout(TILE_TIMEOUT_MS) });
 					if (res.status === 404) {
 						mkdirSync(dirname(file), { recursive: true });
 						writeFileSync(file, new Uint8Array(0));

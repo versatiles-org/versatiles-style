@@ -109,7 +109,7 @@ describe('offline', () => {
 
 	it('turns a metadata miss and an asset miss into CacheMiss too', async () => {
 		await expect(sourceMetadata('protomaps', { offline: true })).rejects.toBeInstanceOf(CacheMiss);
-		await expect(readAsset('https://fonts.invalid/x.pbf', { offline: true })).rejects.toBeInstanceOf(CacheMiss);
+		await expect(readAsset('https://tiles.versatiles.org/x.pbf', { offline: true })).rejects.toBeInstanceOf(CacheMiss);
 	});
 });
 
@@ -231,11 +231,13 @@ describe('readAsset', () => {
 		const fetchFn = vi.fn(() => new Response(bytes(body), { status: 200 }));
 		vi.stubGlobal('fetch', fetchFn);
 
-		const first = await readAsset('https://fonts.invalid/noto/0-255.pbf');
+		const first = await readAsset('https://tiles.versatiles.org/noto/0-255.pbf');
 		expect(Uint8Array.from(first ?? [])).toStrictEqual(body);
-		expect(Uint8Array.from(readFileSync(resolve(CACHE, 'assets/fonts.invalid/noto/0-255.pbf')))).toStrictEqual(body);
+		expect(Uint8Array.from(readFileSync(resolve(CACHE, 'assets/tiles.versatiles.org/noto/0-255.pbf')))).toStrictEqual(
+			body
+		);
 
-		const second = await readAsset('https://fonts.invalid/noto/0-255.pbf');
+		const second = await readAsset('https://tiles.versatiles.org/noto/0-255.pbf');
 		expect(Uint8Array.from(second ?? [])).toStrictEqual(body);
 		expect(fetchFn).toHaveBeenCalledTimes(1);
 	});
@@ -244,15 +246,15 @@ describe('readAsset', () => {
 		const fetchFn = vi.fn(() => new Response(null, { status: 404 }));
 		vi.stubGlobal('fetch', fetchFn);
 
-		await expect(readAsset('https://fonts.invalid/missing.pbf')).resolves.toBeUndefined();
-		await expect(readAsset('https://fonts.invalid/missing.pbf')).resolves.toBeUndefined();
+		await expect(readAsset('https://tiles.versatiles.org/missing.pbf')).resolves.toBeUndefined();
+		await expect(readAsset('https://tiles.versatiles.org/missing.pbf')).resolves.toBeUndefined();
 		expect(fetchFn).toHaveBeenCalledTimes(1);
 	});
 
 	it('retries, then reports the URL and the cause', async () => {
 		const fetchFn = vi.fn(() => new Response(null, { status: 500 }));
 		vi.stubGlobal('fetch', fetchFn);
-		await expect(readAsset('https://fonts.invalid/broken.pbf')).rejects.toThrow(/broken\.pbf.*HTTP 500/);
+		await expect(readAsset('https://tiles.versatiles.org/broken.pbf')).rejects.toThrow(/broken\.pbf.*HTTP 500/);
 		expect(fetchFn).toHaveBeenCalledTimes(2);
 	});
 
@@ -263,16 +265,25 @@ describe('readAsset', () => {
 		// so a literal `..` never survives to reach the guard — but `%2f` is left encoded in `pathname`
 		// and only `decodeURIComponent` turns it back into a separator, after parsing is done. This one
 		// lands on `/etc/passwd`, outside the cache entirely.
-		await expect(readAsset('https://fonts.invalid/a%2f..%2f..%2f..%2fetc/passwd')).rejects.toThrow(
+		await expect(readAsset('https://tiles.versatiles.org/a%2f..%2f..%2f..%2fetc/passwd')).rejects.toThrow(
 			/refusing asset path/
 		);
+		expect(fetchFn).not.toHaveBeenCalled();
+	});
+
+	it('refuses an origin the styles do not load from', async () => {
+		const fetchFn = vi.fn();
+		vi.stubGlobal('fetch', fetchFn);
+		await expect(readAsset('http://169.254.169.254/latest/meta-data/')).rejects.toThrow(/refusing asset origin/);
+		await expect(readAsset('http://tiles.versatiles.org/x.pbf')).rejects.toThrow(/refusing asset origin/);
+		await expect(readAsset('https://tiles.versatiles.org.evil.example/x.pbf')).rejects.toThrow(/refusing asset origin/);
 		expect(fetchFn).not.toHaveBeenCalled();
 	});
 
 	it('fetches once when several callers ask for the same URL at once', async () => {
 		const fetchFn = vi.fn(() => new Response(bytes(body), { status: 200 }));
 		vi.stubGlobal('fetch', fetchFn);
-		const url = 'https://fonts.invalid/shared.pbf';
+		const url = 'https://tiles.versatiles.org/shared.pbf';
 		await Promise.all([readAsset(url), readAsset(url), readAsset(url)]);
 		expect(fetchFn).toHaveBeenCalledTimes(1);
 	});
