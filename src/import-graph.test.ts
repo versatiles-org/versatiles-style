@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import {
 	ENTRIES,
 	avoidableDeepImports,
@@ -59,10 +62,9 @@ describe('the import graph', () => {
 		// that re-exports it. The module is loaded either way, so the deep specifier adds an edge and saves
 		// nothing — and the edges it adds are what make the directory graph hard to read.
 		//
-		// Deep imports as such are fine: `src/index.ts` names `shortbread/layer-groups-map.js` so the npm
-		// entry does not pull in the whole schema, and `shortbread/layers/*.ts` must name `../context.js`
-		// because the barrel above them imports `layers/`. Neither also imports the barrel, so neither is
-		// reported. See `redundantDeepImports`.
+		// This is the narrow check; the next one forbids crossing into another directory past its barrel at
+		// all. What survives both is structural: `shortbread/layers/*.ts` must name `../context.js` because
+		// the barrel above them imports `layers/`. See `redundantDeepImports`.
 		expect(redundantDeepImports()).toStrictEqual([]);
 	});
 
@@ -78,20 +80,53 @@ describe('the import graph', () => {
 		// child reaching up into its own parent (`shortbread/layers/roads.ts` → `../context.js`, which
 		// through `shortbread/index.ts` would be a cycle), and test files, which name the module under test
 		// on purpose. What is left is `DEEP_IMPORT_EXEMPTIONS` — deep imports that change what *runs*, each
-		// with its reason. A stale entry there fails this test too.
+		// with its reason; there are none. A stale entry there fails this test too.
 		expect(avoidableDeepImports()).toStrictEqual([]);
 	});
 
-	it('finds the deep imports it exempts, and says when an exemption is stale', () => {
-		// The positive control for the rule above: exempt nothing and every entry has to come back, or an
-		// empty list up there would mean the check matches nothing rather than that the tree is clean.
-		expect(avoidableDeepImports({})).toStrictEqual([
-			'index.ts -> ./shortbread/layer-groups-map.js (use shortbread/index.ts)',
-		]);
-		// and an exemption for an import that no longer exists is a finding of its own
-		expect(avoidableDeepImports({ 'gone.ts -> ./nowhere.js': 'stale' })).toContain(
-			'exemption no longer applies: gone.ts -> ./nowhere.js'
-		);
+	describe('the barrel rule on a fixture tree', () => {
+		// The positive control for the rule above. The real tree has nothing left for it to find, so an empty
+		// result there could also mean it matches nothing; this tree has one case of every shape.
+		const root = mkdtempSync(join(tmpdir(), 'import-graph-'));
+		const files: Record<string, string> = {
+			'a/index.ts': "export * from './listed.js';",
+			'a/listed.ts': 'export const listed = 1;',
+			'a/unlisted.ts': 'export const unlisted = 1;',
+			'a/child/up.ts': "import { listed } from '../listed.js';", // child → parent: out of scope
+			'nobarrel/leaf.ts': 'export const leaf = 1;',
+			'b/sibling.ts': 'export const sibling = 1;',
+			'b/user.ts': [
+				"import { listed } from '../a/listed.js';",
+				"import { unlisted } from '../a/unlisted.js';",
+				"import { leaf } from '../nobarrel/leaf.js';",
+				"import { sibling } from './sibling.js';", // sibling: fine
+				"import { listed as viaBarrel } from '../a/index.js';", // the front door: fine
+			].join('\n'),
+			'b/user.test.ts': "import { unlisted } from '../a/unlisted.js';", // tests: out of scope
+		};
+		for (const [path, source] of Object.entries(files)) {
+			mkdirSync(dirname(join(root, path)), { recursive: true });
+			writeFileSync(join(root, path), source);
+		}
+		afterAll(() => rmSync(root, { recursive: true, force: true }));
+
+		it('reports a deep import whether the barrel re-exports the module, leaves it out, or is missing', () => {
+			expect(avoidableDeepImports({}, root)).toStrictEqual([
+				'b/user.ts -> ../a/listed.js (use a/index.ts)',
+				'b/user.ts -> ../a/unlisted.js (re-export it from a/index.ts, then use that)',
+				'b/user.ts -> ../nobarrel/leaf.js (nobarrel/ has no barrel)',
+			]);
+		});
+
+		it('honours an exemption, and reports one that no longer applies', () => {
+			expect(
+				avoidableDeepImports({ 'b/user.ts -> ../a/listed.js': 'why', 'gone.ts -> ./nowhere.js': 'stale' }, root)
+			).toStrictEqual([
+				'b/user.ts -> ../a/unlisted.js (re-export it from a/index.ts, then use that)',
+				'b/user.ts -> ../nobarrel/leaf.js (nobarrel/ has no barrel)',
+				'exemption no longer applies: gone.ts -> ./nowhere.js',
+			]);
+		});
 	});
 
 	it('has no directory cycles', () => {

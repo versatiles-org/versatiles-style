@@ -153,8 +153,7 @@ function sourceFiles(directory: string = SRC): string[] {
  *
  * Only that exact shape is reported, and every half of it matters. A barrel that does not re-export the
  * module cannot replace the deep import; and where the importing file does *not* already pull the barrel
- * in, the deep import is a real choice — `src/index.ts` names `shortbread/layer-groups-map.js` precisely
- * so that the npm entry does not drag the whole schema in behind it.
+ * in, whether the deep import is allowed is `avoidableDeepImports`' question, not this one's.
  *
  * The last half is that a *value* deep import is only redundant when the barrel is already imported at
  * runtime too. Where the file takes nothing but types from the barrel, that edge is erased and the deep
@@ -209,24 +208,30 @@ export function redundantDeepImports(): string[] {
  * `exemptions` are what is left: deep imports that exist for a reason the rule cannot see; each is the
  * exact `<file> -> <specifier>` pair, and an entry that no longer matches anything is itself reported,
  * so the list cannot quietly rot.
+ *
+ * `root` is the tree to check, `src/` unless a test points it at a fixture — which is how the rule is
+ * shown to find anything at all, now that the real tree has nothing left for it to find.
  */
-export function avoidableDeepImports(exemptions: Readonly<Record<string, string>> = DEEP_IMPORT_EXEMPTIONS): string[] {
+export function avoidableDeepImports(
+	exemptions: Readonly<Record<string, string>> = DEEP_IMPORT_EXEMPTIONS,
+	root: string = SRC
+): string[] {
 	const findings = new Set<string>();
 	const unused = new Set(Object.keys(exemptions));
-	for (const file of sourceFiles()) {
+	for (const file of sourceFiles(root)) {
 		if (file.endsWith('.test.ts')) continue;
 		for (const { specifier, target } of allImports(file)) {
 			if (target.endsWith('/index.ts') || dirname(target) === dirname(file)) continue;
 			const barrel = resolve(dirname(target), 'index.ts');
 			// The barrel sits above the importing file: see "a child reaching up into its own parent".
 			if (!relative(dirname(barrel), file).startsWith('..')) continue;
-			const key = `${relative(SRC, file)} -> ${specifier}`;
+			const key = `${relative(root, file)} -> ${specifier}`;
 			if (key in exemptions) {
 				unused.delete(key);
 				continue;
 			}
-			const door = relative(SRC, barrel);
-			if (!existsSync(barrel)) findings.add(`${key} (${relative(SRC, dirname(target))}/ has no barrel)`);
+			const door = relative(root, barrel);
+			if (!existsSync(barrel)) findings.add(`${key} (${relative(root, dirname(target))}/ has no barrel)`);
 			else if (!reExports(barrel, target)) findings.add(`${key} (re-export it from ${door}, then use that)`);
 			else findings.add(`${key} (use ${door})`);
 		}
@@ -236,19 +241,18 @@ export function avoidableDeepImports(exemptions: Readonly<Record<string, string>
 }
 
 /**
- * The deep imports `avoidableDeepImports` allows, each with why it is not a style choice.
+ * The deep imports `avoidableDeepImports` allows, each with why it is not a style choice. Empty, and
+ * meant to stay so.
  *
  * The bar is that routing the import through its barrel would change what *runs*, not how it reads — so
- * a type-only deep import never belongs here, being erased before anything runs. (Where a file takes a
- * value and a type from the same module, the one entry covers both specifiers, which are the same
- * string.) The font modules used to need three entries here, while they sat in `lib/` outside its
- * barrel; in `src/fonts/` they have a barrel of their own and need none.
+ * a type-only deep import never belongs here, being erased before anything runs. And the bar is checked
+ * against the build, not argued: the last entry, `index.ts -> ./shortbread/layer-groups-map.js`, said
+ * the barrel "would pull the whole schema into the published bundle", but `osm()` and `satellite()`
+ * already import that barrel, and switching the import left every published bundle byte-identical. The
+ * font modules needed three entries while they sat in `lib/` outside its barrel; in `src/fonts/` they
+ * have one of their own. Before adding an entry, build both ways and compare.
  */
-export const DEEP_IMPORT_EXEMPTIONS: Readonly<Record<string, string>> = {
-	'index.ts -> ./shortbread/layer-groups-map.js':
-		'The npm entry takes one function from the module. Through `shortbread/index.ts` it would pull the ' +
-		'whole schema into the published bundle behind it.',
-};
+export const DEEP_IMPORT_EXEMPTIONS: Readonly<Record<string, string>> = {};
 
 /** The same graph one level up: `options/parts/urls.ts` counts as `options`. Self-edges are dropped. */
 export function directoryGraph(graph: ReadonlyMap<string, ReadonlySet<string>>): Map<string, Set<string>> {
