@@ -108,7 +108,7 @@
     "@types/bin-pack": "^1.0.3",
     "@types/node": "^26.6.4",
     "@types/tar-stream": "^3.1.5",
-    "@versatiles/release-tool": "^2.19.0",
+    "@versatiles/release-tool": "^2.19.1",
     "@vitest/coverage-v8": "^5.0.3",
     "bin-pack": "^1.0.2",
     "eslint": "^10.12.0",
