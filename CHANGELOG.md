@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.1] - 2026-10-03
+
+### Code Refactoring
+
+- **tile-cache:** update asset origin handling and adjust test cases ([2cbf2b1](https://github.com/versatiles-org/versatiles-style/commit/2cbf2b1f3e70c0965a4275207d41910fe13b12a1))
+- **tile-cache:** update readAsset to drop query parameters and encode path segments ([70a8d56](https://github.com/versatiles-org/versatiles-style/commit/70a8d5653c36089f23b04b94ac12bcbcc6fc8fd8))
+
+### Chores
+
+- **package:** update @versatiles/release-tool to version 2.19.1 ([9dc0120](https://github.com/versatiles-org/versatiles-style/commit/9dc012080d0da8035b404df992e536f9ad090b10))
+
 ## [6.1.0] - 2026-10-03
 
 ### Features
