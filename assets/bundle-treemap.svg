@@ -55,213 +55,204 @@
 	}
 </style>
 <rect class="background" width="880" height="480"/>
-<g class="group c0"><title>shortbread: 28.9 KB (27.7%)</title>
-<rect class="group-box" x="1" y="1" width="241.53" height="478" rx="2"/>
+<g class="group c0"><title>shortbread: 28.9 KB (27.6%)</title>
+<rect class="group-box" x="1" y="1" width="241.14" height="478" rx="2"/>
 <text class="group-label" x="5" y="15" textLength="108.71" lengthAdjust="spacingAndGlyphs">shortbread 28.9 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/pois.ts: 5.2 KB (5%)</title>
-<rect class="leaf-box" x="5" y="22" width="121.38" height="154.74" rx="2"/>
-<text class="leaf-label" x="65.69" y="97.37" textLength="64.19" lengthAdjust="spacingAndGlyphs">layers/pois.ts</text>
-<text class="leaf-size" x="65.69" y="111.37" textLength="33.02" lengthAdjust="spacingAndGlyphs">5.2 KB</text>
+<rect class="leaf-box" x="5" y="22" width="122.3" height="153.81" rx="2"/>
+<text class="leaf-label" x="66.15" y="96.91" textLength="64.19" lengthAdjust="spacingAndGlyphs">layers/pois.ts</text>
+<text class="leaf-size" x="66.15" y="110.91" textLength="33.02" lengthAdjust="spacingAndGlyphs">5.2 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/index.ts: 4.7 KB (4.5%)</title>
-<rect class="leaf-box" x="128.38" y="22" width="110.15" height="154.74" rx="2"/>
-<text class="leaf-label" x="183.46" y="97.37" textLength="70.3" lengthAdjust="spacingAndGlyphs">layers/index.ts</text>
-<text class="leaf-size" x="183.46" y="111.37" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.7 KB</text>
+<rect class="leaf-box" x="129.3" y="22" width="108.84" height="153.81" rx="2"/>
+<text class="leaf-label" x="183.72" y="96.91" textLength="70.3" lengthAdjust="spacingAndGlyphs">layers/index.ts</text>
+<text class="leaf-size" x="183.72" y="110.91" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.7 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/labels.ts: 4.5 KB (4.3%)</title>
-<rect class="leaf-box" x="5" y="178.74" width="118.85" height="136.24" rx="2"/>
-<text class="leaf-label" x="64.43" y="244.86" textLength="72.74" lengthAdjust="spacingAndGlyphs">layers/labels.ts</text>
-<text class="leaf-size" x="64.43" y="258.86" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.5 KB</text>
+<rect class="leaf-box" x="5" y="177.81" width="118.65" height="136.67" rx="2"/>
+<text class="leaf-label" x="64.33" y="244.15" textLength="72.74" lengthAdjust="spacingAndGlyphs">layers/labels.ts</text>
+<text class="leaf-size" x="64.33" y="258.15" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.5 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/other (10 files): 4.3 KB (4.1%)</title>
-<rect class="leaf-box" x="125.85" y="178.74" width="112.68" height="136.24" rx="2"/>
-<text class="leaf-label" x="182.19" y="244.86" textLength="70.3" lengthAdjust="spacingAndGlyphs">other (10 files)</text>
-<text class="leaf-size" x="182.19" y="258.86" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.3 KB</text>
+<rect class="leaf-box" x="125.65" y="177.81" width="112.49" height="136.67" rx="2"/>
+<text class="leaf-label" x="181.9" y="244.15" textLength="70.3" lengthAdjust="spacingAndGlyphs">other (10 files)</text>
+<text class="leaf-size" x="181.9" y="258.15" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.3 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/schema.ts: 3.2 KB (3.1%)</title>
-<rect class="leaf-box" x="5" y="316.99" width="145.26" height="79.53" rx="2"/>
-<text class="leaf-label" x="77.63" y="354.75" textLength="50.13" lengthAdjust="spacingAndGlyphs">schema.ts</text>
-<text class="leaf-size" x="77.63" y="368.75" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.2 KB</text>
+<rect class="leaf-box" x="5" y="316.49" width="145.02" height="79.78" rx="2"/>
+<text class="leaf-label" x="77.51" y="354.38" textLength="50.13" lengthAdjust="spacingAndGlyphs">schema.ts</text>
+<text class="leaf-size" x="77.51" y="368.38" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.2 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/roads.ts: 3.1 KB (3%)</title>
-<rect class="leaf-box" x="5" y="398.52" width="145.26" height="76.48" rx="2"/>
-<text class="leaf-label" x="77.63" y="434.76" textLength="71.52" lengthAdjust="spacingAndGlyphs">layers/roads.ts</text>
-<text class="leaf-size" x="77.63" y="448.76" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.1 KB</text>
+<rect class="leaf-box" x="5" y="398.27" width="145.02" height="76.73" rx="2"/>
+<text class="leaf-label" x="77.51" y="434.64" textLength="71.52" lengthAdjust="spacingAndGlyphs">layers/roads.ts</text>
+<text class="leaf-size" x="77.51" y="448.64" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.1 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/landcover.ts: 2.2 KB (2.1%)</title>
-<rect class="leaf-box" x="152.26" y="316.99" width="86.27" height="91.61" rx="2"/>
-<text class="leaf-label" x="195.4" y="360.79" textLength="76.42" lengthAdjust="spacingAndGlyphs">layers/landcov…</text>
-<text class="leaf-size" x="195.4" y="374.79" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.2 KB</text>
+<rect class="leaf-box" x="152.02" y="316.49" width="86.13" height="91.9" rx="2"/>
+<text class="leaf-label" x="195.08" y="360.44" textLength="76.42" lengthAdjust="spacingAndGlyphs">layers/landcov…</text>
+<text class="leaf-size" x="195.08" y="374.44" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.2 KB</text>
 </g>
 <g class="leaf c0"><title>shortbread/layers/water.ts: 1.6 KB (1.5%)</title>
-<rect class="leaf-box" x="152.26" y="410.59" width="86.27" height="64.41" rx="2"/>
-<text class="leaf-label" x="195.4" y="440.8" textLength="70.91" lengthAdjust="spacingAndGlyphs">layers/water.ts</text>
-<text class="leaf-size" x="195.4" y="454.8" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.6 KB</text>
+<rect class="leaf-box" x="152.02" y="410.39" width="86.13" height="64.61" rx="2"/>
+<text class="leaf-label" x="195.08" y="440.69" textLength="70.91" lengthAdjust="spacingAndGlyphs">layers/water.ts</text>
+<text class="leaf-size" x="195.08" y="454.69" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.6 KB</text>
 </g>
 <g class="group c1"><title>color: 14.3 KB (13.7%)</title>
-<rect class="group-box" x="244.53" y="1" width="236.3" height="241.23" rx="2"/>
-<text class="group-label" x="248.53" y="15" textLength="75.37" lengthAdjust="spacingAndGlyphs">color 14.3 KB</text>
+<rect class="group-box" x="244.14" y="1" width="236.66" height="241.23" rx="2"/>
+<text class="group-label" x="248.14" y="15" textLength="75.37" lengthAdjust="spacingAndGlyphs">color 14.3 KB</text>
 </g>
-<g class="leaf c1"><title>color/color.ts: 4 KB (3.8%)</title>
-<rect class="leaf-box" x="248.53" y="22" width="121.44" height="112.13" rx="2"/>
-<text class="leaf-label" x="309.25" y="76.06" textLength="35.45" lengthAdjust="spacingAndGlyphs">color.ts</text>
-<text class="leaf-size" x="309.25" y="90.06" textLength="23.85" lengthAdjust="spacingAndGlyphs">4 KB</text>
+<g class="leaf c1"><title>color/color.ts: 4 KB (3.9%)</title>
+<rect class="leaf-box" x="248.14" y="22" width="121.63" height="112.13" rx="2"/>
+<text class="leaf-label" x="308.96" y="76.06" textLength="35.45" lengthAdjust="spacingAndGlyphs">color.ts</text>
+<text class="leaf-size" x="308.96" y="90.06" textLength="23.85" lengthAdjust="spacingAndGlyphs">4 KB</text>
 </g>
 <g class="leaf c1"><title>color/parser.ts: 3.7 KB (3.5%)</title>
-<rect class="leaf-box" x="248.53" y="136.13" width="121.44" height="102.1" rx="2"/>
-<text class="leaf-label" x="309.25" y="185.18" textLength="42.79" lengthAdjust="spacingAndGlyphs">parser.ts</text>
-<text class="leaf-size" x="309.25" y="199.18" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.7 KB</text>
+<rect class="leaf-box" x="248.14" y="136.13" width="121.63" height="102.1" rx="2"/>
+<text class="leaf-label" x="308.96" y="185.18" textLength="42.79" lengthAdjust="spacingAndGlyphs">parser.ts</text>
+<text class="leaf-size" x="308.96" y="199.18" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.7 KB</text>
 </g>
 <g class="leaf c1"><title>color/convert.ts: 2.7 KB (2.6%)</title>
-<rect class="leaf-box" x="371.97" y="22" width="104.86" height="86.95" rx="2"/>
-<text class="leaf-label" x="424.4" y="63.47" textLength="47.69" lengthAdjust="spacingAndGlyphs">convert.ts</text>
-<text class="leaf-size" x="424.4" y="77.47" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.7 KB</text>
+<rect class="leaf-box" x="371.78" y="22" width="105.02" height="86.95" rx="2"/>
+<text class="leaf-label" x="424.29" y="63.47" textLength="47.69" lengthAdjust="spacingAndGlyphs">convert.ts</text>
+<text class="leaf-size" x="424.29" y="77.47" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.7 KB</text>
 </g>
 <g class="leaf c1"><title>color/other (3 files): 2.5 KB (2.4%)</title>
-<rect class="leaf-box" x="371.97" y="110.95" width="104.86" height="80.2" rx="2"/>
-<text class="leaf-label" x="424.4" y="149.05" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
-<text class="leaf-size" x="424.4" y="163.05" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.5 KB</text>
+<rect class="leaf-box" x="371.78" y="110.95" width="105.02" height="80.2" rx="2"/>
+<text class="leaf-label" x="424.29" y="149.05" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
+<text class="leaf-size" x="424.29" y="163.05" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.5 KB</text>
 </g>
 <g class="leaf c1"><title>color/ops.ts: 1.4 KB (1.4%)</title>
-<rect class="leaf-box" x="371.97" y="193.14" width="104.86" height="45.08" rx="2"/>
-<text class="leaf-label" x="424.4" y="213.69" textLength="29.35" lengthAdjust="spacingAndGlyphs">ops.ts</text>
-<text class="leaf-size" x="424.4" y="227.69" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.4 KB</text>
+<rect class="leaf-box" x="371.78" y="193.14" width="105.02" height="45.08" rx="2"/>
+<text class="leaf-label" x="424.29" y="213.69" textLength="29.35" lengthAdjust="spacingAndGlyphs">ops.ts</text>
+<text class="leaf-size" x="424.29" y="227.69" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.4 KB</text>
 </g>
 <g class="group c2"><title>options: 14 KB (13.4%)</title>
-<rect class="group-box" x="244.53" y="244.23" width="236.3" height="234.77" rx="2"/>
-<text class="group-label" x="248.53" y="258.23" textLength="79.36" lengthAdjust="spacingAndGlyphs">options 14 KB</text>
+<rect class="group-box" x="244.14" y="244.23" width="236.66" height="234.77" rx="2"/>
+<text class="group-label" x="248.14" y="258.23" textLength="79.36" lengthAdjust="spacingAndGlyphs">options 14 KB</text>
 </g>
 <g class="leaf c2"><title>options/other (20 files): 8.9 KB (8.5%)</title>
-<rect class="leaf-box" x="248.53" y="265.23" width="145.11" height="209.77" rx="2"/>
-<text class="leaf-label" x="321.09" y="368.11" textLength="70.3" lengthAdjust="spacingAndGlyphs">other (20 files)</text>
-<text class="leaf-size" x="321.09" y="382.11" textLength="33.02" lengthAdjust="spacingAndGlyphs">8.9 KB</text>
+<rect class="leaf-box" x="248.14" y="265.23" width="145.34" height="209.77" rx="2"/>
+<text class="leaf-label" x="320.81" y="368.11" textLength="70.3" lengthAdjust="spacingAndGlyphs">other (20 files)</text>
+<text class="leaf-size" x="320.81" y="382.11" textLength="33.02" lengthAdjust="spacingAndGlyphs">8.9 KB</text>
 </g>
 <g class="leaf c2"><title>options/parts/text.ts: 2.6 KB (2.5%)</title>
-<rect class="leaf-box" x="395.64" y="265.23" width="81.19" height="107.55" rx="2"/>
-<text class="leaf-label" x="436.24" y="317" textLength="56.86" lengthAdjust="spacingAndGlyphs">parts/text.ts</text>
-<text class="leaf-size" x="436.24" y="331" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.6 KB</text>
+<rect class="leaf-box" x="395.48" y="265.23" width="81.32" height="107.55" rx="2"/>
+<text class="leaf-label" x="436.14" y="317" textLength="56.86" lengthAdjust="spacingAndGlyphs">parts/text.ts</text>
+<text class="leaf-size" x="436.14" y="331" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.6 KB</text>
 </g>
 <g class="leaf c2"><title>options/parts/layer-groups.ts: 2.4 KB (2.3%)</title>
-<rect class="leaf-box" x="395.64" y="374.78" width="81.19" height="100.22" rx="2"/>
-<text class="leaf-label" x="436.24" y="422.89" textLength="70.91" lengthAdjust="spacingAndGlyphs">parts/layer-gr…</text>
-<text class="leaf-size" x="436.24" y="436.89" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.4 KB</text>
+<rect class="leaf-box" x="395.48" y="374.78" width="81.32" height="100.22" rx="2"/>
+<text class="leaf-label" x="436.14" y="422.89" textLength="70.91" lengthAdjust="spacingAndGlyphs">parts/layer-gr…</text>
+<text class="leaf-size" x="436.14" y="436.89" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.4 KB</text>
 </g>
-<g class="group c3"><title>cartography: 10.1 KB (9.6%)</title>
-<rect class="group-box" x="482.83" y="1" width="198.19" height="200.85" rx="2"/>
-<text class="group-label" x="486.83" y="15" textLength="115.38" lengthAdjust="spacingAndGlyphs">cartography 10.1 KB</text>
+<g class="group c3"><title>cartography: 10 KB (9.6%)</title>
+<rect class="group-box" x="482.8" y="1" width="197.7" height="200.62" rx="2"/>
+<text class="group-label" x="486.8" y="15" textLength="105.37" lengthAdjust="spacingAndGlyphs">cartography 10 KB</text>
 </g>
 <g class="leaf c3"><title>cartography/roads.ts: 6.7 KB (6.4%)</title>
-<rect class="leaf-box" x="486.83" y="22" width="125.84" height="175.85" rx="2"/>
-<text class="leaf-label" x="549.75" y="107.92" textLength="39.13" lengthAdjust="spacingAndGlyphs">roads.ts</text>
-<text class="leaf-size" x="549.75" y="121.92" textLength="33.02" lengthAdjust="spacingAndGlyphs">6.7 KB</text>
+<rect class="leaf-box" x="486.8" y="22" width="126.16" height="175.62" rx="2"/>
+<text class="leaf-label" x="549.88" y="107.81" textLength="39.13" lengthAdjust="spacingAndGlyphs">roads.ts</text>
+<text class="leaf-size" x="549.88" y="121.81" textLength="33.02" lengthAdjust="spacingAndGlyphs">6.7 KB</text>
 </g>
 <g class="leaf c3"><title>cartography/other (3 files): 1.8 KB (1.7%)</title>
-<rect class="leaf-box" x="614.67" y="22" width="62.35" height="94.54" rx="2"/>
-<text class="leaf-label" x="645.85" y="67.27" textLength="52.58" lengthAdjust="spacingAndGlyphs">other (3 fi…</text>
-<text class="leaf-size" x="645.85" y="81.27" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.8 KB</text>
+<rect class="leaf-box" x="614.97" y="22" width="61.54" height="95.89" rx="2"/>
+<text class="leaf-label" x="645.74" y="67.94" textLength="52.58" lengthAdjust="spacingAndGlyphs">other (3 fi…</text>
+<text class="leaf-size" x="645.74" y="81.94" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.8 KB</text>
 </g>
-<g class="leaf c3"><title>cartography/boundaries.ts: 1.5 KB (1.5%)</title>
-<rect class="leaf-box" x="614.67" y="118.54" width="62.35" height="79.31" rx="2"/>
-<text class="leaf-label" x="645.85" y="156.19" textLength="48.92" lengthAdjust="spacingAndGlyphs">boundari…</text>
-<text class="leaf-size" x="645.85" y="170.19" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
+<g class="leaf c3"><title>cartography/boundaries.ts: 1.5 KB (1.4%)</title>
+<rect class="leaf-box" x="614.97" y="119.89" width="61.54" height="77.73" rx="2"/>
+<text class="leaf-label" x="645.74" y="156.76" textLength="48.92" lengthAdjust="spacingAndGlyphs">boundari…</text>
+<text class="leaf-size" x="645.74" y="170.76" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="group c4"><title>dsl: 9.9 KB (9.5%)</title>
-<rect class="group-box" x="683.02" y="1" width="195.98" height="200.85" rx="2"/>
-<text class="group-label" x="687.02" y="15" textLength="56.7" lengthAdjust="spacingAndGlyphs">dsl 9.9 KB</text>
+<rect class="group-box" x="682.5" y="1" width="196.5" height="200.62" rx="2"/>
+<text class="group-label" x="686.5" y="15" textLength="56.7" lengthAdjust="spacingAndGlyphs">dsl 9.9 KB</text>
 </g>
 <g class="leaf c4"><title>dsl/build.ts: 6 KB (5.7%)</title>
-<rect class="leaf-box" x="687.02" y="22" width="111.9" height="175.85" rx="2"/>
-<text class="leaf-label" x="742.97" y="107.92" textLength="34.85" lengthAdjust="spacingAndGlyphs">build.ts</text>
-<text class="leaf-size" x="742.97" y="121.92" textLength="23.85" lengthAdjust="spacingAndGlyphs">6 KB</text>
+<rect class="leaf-box" x="686.5" y="22" width="112.21" height="175.62" rx="2"/>
+<text class="leaf-label" x="742.61" y="107.81" textLength="34.85" lengthAdjust="spacingAndGlyphs">build.ts</text>
+<text class="leaf-size" x="742.61" y="121.81" textLength="23.85" lengthAdjust="spacingAndGlyphs">6 KB</text>
 </g>
 <g class="leaf c4"><title>dsl/text.ts: 1.5 KB (1.4%)</title>
-<rect class="leaf-box" x="800.92" y="22" width="74.08" height="64.35" rx="2"/>
-<text class="leaf-label" x="837.96" y="52.18" textLength="29.35" lengthAdjust="spacingAndGlyphs">text.ts</text>
-<text class="leaf-size" x="837.96" y="66.18" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
+<rect class="leaf-box" x="800.72" y="22" width="74.28" height="64.27" rx="2"/>
+<text class="leaf-label" x="837.86" y="52.13" textLength="29.35" lengthAdjust="spacingAndGlyphs">text.ts</text>
+<text class="leaf-size" x="837.86" y="66.13" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="leaf c4"><title>dsl/assemble.ts: 1.5 KB (1.4%)</title>
-<rect class="leaf-box" x="800.92" y="88.35" width="74.08" height="62.95" rx="2"/>
-<text class="leaf-label" x="837.96" y="117.83" textLength="58.69" lengthAdjust="spacingAndGlyphs">assemble.ts</text>
-<text class="leaf-size" x="837.96" y="131.83" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
+<rect class="leaf-box" x="800.72" y="88.27" width="74.28" height="62.87" rx="2"/>
+<text class="leaf-label" x="837.86" y="117.7" textLength="58.69" lengthAdjust="spacingAndGlyphs">assemble.ts</text>
+<text class="leaf-size" x="837.86" y="131.7" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="leaf c4"><title>dsl/other (3 files): 1 KB (1%)</title>
-<rect class="leaf-box" x="800.92" y="153.3" width="74.08" height="44.55" rx="2"/>
-<text class="leaf-label" x="837.96" y="173.58" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
-<text class="leaf-size" x="837.96" y="187.58" textLength="23.85" lengthAdjust="spacingAndGlyphs">1 KB</text>
+<rect class="leaf-box" x="800.72" y="153.14" width="74.28" height="44.49" rx="2"/>
+<text class="leaf-label" x="837.86" y="173.38" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
+<text class="leaf-size" x="837.86" y="187.38" textLength="23.85" lengthAdjust="spacingAndGlyphs">1 KB</text>
 </g>
 <g class="group c5"><title>api: 7.9 KB (7.6%)</title>
-<rect class="group-box" x="482.83" y="203.85" width="197.41" height="158.15" rx="2"/>
-<text class="group-label" x="486.83" y="217.85" textLength="56.7" lengthAdjust="spacingAndGlyphs">api 7.9 KB</text>
+<rect class="group-box" x="482.8" y="203.62" width="197.55" height="158.28" rx="2"/>
+<text class="group-label" x="486.8" y="217.62" textLength="56.7" lengthAdjust="spacingAndGlyphs">api 7.9 KB</text>
 </g>
 <g class="leaf c5"><title>api/other (3 files): 3.1 KB (2.9%)</title>
-<rect class="leaf-box" x="486.83" y="224.85" width="72.52" height="133.15" rx="2"/>
-<text class="leaf-label" x="523.09" y="289.42" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
-<text class="leaf-size" x="523.09" y="303.42" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.1 KB</text>
+<rect class="leaf-box" x="486.8" y="224.62" width="72.58" height="133.28" rx="2"/>
+<text class="leaf-label" x="523.09" y="289.26" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (3 files)</text>
+<text class="leaf-size" x="523.09" y="303.26" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.1 KB</text>
 </g>
 <g class="leaf c5"><title>api/guess-style.ts: 1.7 KB (1.6%)</title>
-<rect class="leaf-box" x="561.35" y="224.85" width="57.21" height="91.84" rx="2"/>
-<text class="leaf-label" x="589.96" y="268.77" textLength="47.69" lengthAdjust="spacingAndGlyphs">guess-st…</text>
-<text class="leaf-size" x="589.96" y="282.77" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
+<rect class="leaf-box" x="561.38" y="224.62" width="57.25" height="91.93" rx="2"/>
+<text class="leaf-label" x="590" y="268.59" textLength="47.69" lengthAdjust="spacingAndGlyphs">guess-st…</text>
+<text class="leaf-size" x="590" y="282.59" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
 </g>
 <g class="leaf c5"><title>api/satellite.ts: 1.7 KB (1.6%)</title>
-<rect class="leaf-box" x="620.57" y="224.85" width="55.68" height="91.84" rx="2"/>
-<text class="leaf-label" x="648.4" y="268.77" textLength="46.46" lengthAdjust="spacingAndGlyphs">satellite.…</text>
-<text class="leaf-size" x="648.4" y="282.77" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
+<rect class="leaf-box" x="620.63" y="224.62" width="55.72" height="91.93" rx="2"/>
+<text class="leaf-label" x="648.49" y="268.59" textLength="46.46" lengthAdjust="spacingAndGlyphs">satellite.…</text>
+<text class="leaf-size" x="648.49" y="282.59" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.7 KB</text>
 </g>
 <g class="leaf c5"><title>api/inspector-style.ts: 1.5 KB (1.4%)</title>
-<rect class="leaf-box" x="561.35" y="318.69" width="114.89" height="39.3" rx="2"/>
-<text class="leaf-label" x="618.8" y="336.34" textLength="82.52" lengthAdjust="spacingAndGlyphs">inspector-style.ts</text>
-<text class="leaf-size" x="618.8" y="350.34" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
+<rect class="leaf-box" x="561.38" y="318.56" width="114.97" height="39.34" rx="2"/>
+<text class="leaf-label" x="618.86" y="336.23" textLength="82.52" lengthAdjust="spacingAndGlyphs">inspector-style.ts</text>
+<text class="leaf-size" x="618.86" y="350.23" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="group c6"><title>lib: 5.8 KB (5.5%)</title>
-<rect class="group-box" x="482.83" y="364" width="197.41" height="115" rx="2"/>
-<text class="group-label" x="486.83" y="378" textLength="53.36" lengthAdjust="spacingAndGlyphs">lib 5.8 KB</text>
+<rect class="group-box" x="482.8" y="363.9" width="197.55" height="115.1" rx="2"/>
+<text class="group-label" x="486.8" y="377.9" textLength="53.36" lengthAdjust="spacingAndGlyphs">lib 5.8 KB</text>
 </g>
-<g class="leaf c6"><title>lib/other (8 files): 4.2 KB (4%)</title>
-<rect class="leaf-box" x="486.83" y="385" width="138.15" height="90" rx="2"/>
-<text class="leaf-label" x="555.91" y="428" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (8 files)</text>
-<text class="leaf-size" x="555.91" y="442" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.2 KB</text>
+<g class="leaf c6"><title>lib/other (8 files): 4.2 KB (4.1%)</title>
+<rect class="leaf-box" x="486.8" y="384.9" width="138.25" height="90.1" rx="2"/>
+<text class="leaf-label" x="555.93" y="427.95" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (8 files)</text>
+<text class="leaf-size" x="555.93" y="441.95" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.2 KB</text>
 </g>
 <g class="leaf c6"><title>lib/opacity.ts: 1.5 KB (1.5%)</title>
-<rect class="leaf-box" x="626.98" y="385" width="49.26" height="90" rx="2"/>
-<text class="leaf-label" x="651.61" y="428" textLength="40.96" lengthAdjust="spacingAndGlyphs">opacity…</text>
-<text class="leaf-size" x="651.61" y="442" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
+<rect class="leaf-box" x="627.05" y="384.9" width="49.3" height="90.1" rx="2"/>
+<text class="leaf-label" x="651.7" y="427.95" textLength="40.96" lengthAdjust="spacingAndGlyphs">opacity…</text>
+<text class="leaf-size" x="651.7" y="441.95" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.5 KB</text>
 </g>
 <g class="group c7"><title>themes: 5 KB (4.7%)</title>
-<rect class="group-box" x="682.24" y="203.85" width="196.76" height="98.62" rx="2"/>
-<text class="group-label" x="686.24" y="217.85" textLength="71.36" lengthAdjust="spacingAndGlyphs">themes 5 KB</text>
+<rect class="group-box" x="682.35" y="203.62" width="196.65" height="98.82" rx="2"/>
+<text class="group-label" x="686.35" y="217.62" textLength="71.36" lengthAdjust="spacingAndGlyphs">themes 5 KB</text>
 </g>
 <g class="leaf c7"><title>themes/tables.ts: 3 KB (2.9%)</title>
-<rect class="leaf-box" x="686.24" y="224.85" width="115.16" height="73.62" rx="2"/>
-<text class="leaf-label" x="743.83" y="259.66" textLength="40.96" lengthAdjust="spacingAndGlyphs">tables.ts</text>
-<text class="leaf-size" x="743.83" y="273.66" textLength="23.85" lengthAdjust="spacingAndGlyphs">3 KB</text>
+<rect class="leaf-box" x="686.35" y="224.62" width="115.1" height="73.82" rx="2"/>
+<text class="leaf-label" x="743.9" y="259.54" textLength="40.96" lengthAdjust="spacingAndGlyphs">tables.ts</text>
+<text class="leaf-size" x="743.9" y="273.54" textLength="23.85" lengthAdjust="spacingAndGlyphs">3 KB</text>
 </g>
 <g class="leaf c7"><title>themes/other (3 files): 1.9 KB (1.8%)</title>
-<rect class="leaf-box" x="803.41" y="224.85" width="71.59" height="73.62" rx="2"/>
-<text class="leaf-label" x="839.2" y="259.66" textLength="61.14" lengthAdjust="spacingAndGlyphs">other (3 file…</text>
-<text class="leaf-size" x="839.2" y="273.66" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.9 KB</text>
+<rect class="leaf-box" x="803.45" y="224.62" width="71.55" height="73.82" rx="2"/>
+<text class="leaf-label" x="839.22" y="259.54" textLength="61.14" lengthAdjust="spacingAndGlyphs">other (3 file…</text>
+<text class="leaf-size" x="839.22" y="273.54" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.9 KB</text>
 </g>
 <g class="leaf c8"><title>types/tilejson.ts: 4.5 KB (4.3%)</title>
-<rect class="leaf-box" x="682.24" y="304.47" width="100.92" height="174.53" rx="2"/>
-<text class="leaf-label" x="732.7" y="389.73" textLength="75.2" lengthAdjust="spacingAndGlyphs">types/tilejson.ts</text>
-<text class="leaf-size" x="732.7" y="403.73" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.5 KB</text>
+<rect class="leaf-box" x="682.35" y="304.45" width="101.06" height="174.55" rx="2"/>
+<text class="leaf-label" x="732.88" y="389.72" textLength="75.2" lengthAdjust="spacingAndGlyphs">types/tilejson.ts</text>
+<text class="leaf-size" x="732.88" y="403.72" textLength="33.02" lengthAdjust="spacingAndGlyphs">4.5 KB</text>
 </g>
-<g class="group c9"><title>features: 3.9 KB (3.7%)</title>
-<rect class="group-box" x="785.16" y="304.47" width="93.84" height="162.51" rx="2"/>
-<text class="group-label" x="789.16" y="318.47" textLength="46.68" lengthAdjust="spacingAndGlyphs">features</text>
-</g>
-<g class="leaf c9"><title>features/other (8 files): 2.5 KB (2.4%)</title>
-<rect class="leaf-box" x="789.16" y="325.47" width="85.84" height="88.37" rx="2"/>
-<text class="leaf-label" x="832.08" y="367.65" textLength="64.19" lengthAdjust="spacingAndGlyphs">other (8 files)</text>
-<text class="leaf-size" x="832.08" y="381.65" textLength="33.02" lengthAdjust="spacingAndGlyphs">2.5 KB</text>
-</g>
-<g class="leaf c9"><title>features/satellite-overlay.ts: 1.4 KB (1.3%)</title>
-<rect class="leaf-box" x="789.16" y="415.84" width="85.84" height="47.15" rx="2"/>
-<text class="leaf-label" x="832.08" y="437.41" textLength="77.02" lengthAdjust="spacingAndGlyphs">satellite-overla…</text>
-<text class="leaf-size" x="832.08" y="451.41" textLength="33.02" lengthAdjust="spacingAndGlyphs">1.4 KB</text>
+<g class="leaf c9"><title>features/other (9 files): 3.9 KB (3.7%)</title>
+<rect class="leaf-box" x="785.41" y="304.45" width="93.59" height="162.48" rx="2"/>
+<text class="leaf-label" x="832.21" y="383.69" textLength="80.71" lengthAdjust="spacingAndGlyphs">features/other (…</text>
+<text class="leaf-size" x="832.21" y="397.69" textLength="33.02" lengthAdjust="spacingAndGlyphs">3.9 KB</text>
 </g>
 <g class="leaf c0"><title>(unmapped): 292 B (0.3%)</title>
-<rect class="leaf-box" x="785.16" y="468.98" width="93.84" height="10.02" rx="2"/>
+<rect class="leaf-box" x="785.41" y="468.93" width="93.59" height="10.07" rx="2"/>
 </g>
 </svg>

@@ -189,8 +189,6 @@ const MERGES: MergeTable = {
 		'bridge-transport-funicular',
 		'bridge-transport-monorail',
 	],
-	// the disputed-country casing is identical to the country casing
-	'boundary-country:outline': ['boundary-country:outline', 'boundary-country-disputed:outline'],
 };
 
 export { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from './landcover.js';

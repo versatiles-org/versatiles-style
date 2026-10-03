@@ -47,6 +47,8 @@ function filters(vocab: BoundaryVocabulary) {
 	// Where there is no `maritime` field there is nothing to exclude either.
 	const notMaritime: FilterSpecification[] = vocab.hasMaritime === false ? [] : [['!=', ['get', 'maritime'], yes]];
 	return {
+		// every country border, disputed or not — what the shared casing is drawn under
+		ADMIN2: ['all', ['==', ['get', level], 2], ...notMaritime] as FilterSpecification,
 		COUNTRY: [
 			'all',
 			['==', ['get', level], 2],
@@ -71,7 +73,7 @@ function filters(vocab: BoundaryVocabulary) {
 
 export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Generator<b.TaggedLayer> {
 	const { c, fg } = ctx;
-	const { COUNTRY, DISPUTED, STATE, MARITIME } = filters(vocab);
+	const { ADMIN2, COUNTRY, DISPUTED, STATE, MARITIME } = filters(vocab);
 
 	// Casing (halo) and line widths, per the old style. Country/disputed share the wide curves; state
 	// is narrower. All grow from 0 at their appear zoom.
@@ -84,15 +86,10 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 	const casing = { sourceLayer: vocab.sourceLayer, color: c.background, opacity: 0.75, lineCap, lineJoin };
 
 	// ── casings (drawn beneath all the coloured lines) ──
+	// Solid and disputed country borders share one casing, so one layer draws it under both.
 	yield b.line('boundary-country:outline', {
 		...casing,
-		filter: COUNTRY,
-		size: countryCasingSize,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-country-disputed:outline', {
-		...casing,
-		filter: DISPUTED,
+		filter: ADMIN2,
 		size: countryCasingSize,
 		group: 'boundaries.country',
 	});
