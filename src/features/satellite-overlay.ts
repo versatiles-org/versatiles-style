@@ -56,7 +56,7 @@ const CASED_BOUNDARY_CASING = /^boundary-(country|state):outline$/;
  * the decoration goes, which leaves one solid line per track, as everywhere else in the overlay.
  * (Trams and the other minor railways are not listed: their `:outline` is a genuine dotted casing.)
  */
-const BASE_LINE = /^(bridge-)?(transport-(rail|lightrail|subway)(-service)?|aerialway(-.*)?)(?=:outline$|$)/;
+const BASE_LINE = /^(bridge-)?(transport-(rail|subway)(-service)?|aerialway(-.*)?)(?=:outline$|$)/;
 
 /**
  * Multiplier applied to each line's opacity, so it reads as an overlay rather than a basemap — per line

@@ -219,7 +219,7 @@ describe('satellite()', () => {
 		const ids = (style: StyleSpecification) => style.layers.filter((l) => l.type === 'line').map((l) => l.id);
 		const overlay = ids(satellite({ osmOverlay: {} }));
 		const basemap = ids(osm());
-		const isBase = (id: string) => /^(bridge-)?(transport-(rail|lightrail|subway)|aerialway)/.test(id);
+		const isBase = (id: string) => /^(bridge-)?(transport-(rail|subway)|aerialway)/.test(id);
 
 		it('drops every casing and bridge deck', () => {
 			const casings = overlay.filter((id) => /:(outline|bridge)$/.test(id) && !isBase(id));

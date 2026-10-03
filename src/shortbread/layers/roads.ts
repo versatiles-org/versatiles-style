@@ -132,37 +132,39 @@ function buildStructures(): MaplibreLayerDefinition[] {
 		}
 
 		for (const suffix of [':outline', ''] as const) {
-			const main = (t: string) =>
+			const track = (id: string, kind: FilterSpecification, service: FilterSpecification) =>
 				results.push({
-					id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
+					id: prefix + 'transport-' + id + suffix,
 					type: 'line',
 					'source-layer': 'streets',
-					filter: ['all', ['==', ['get', 'kind'], t], ['!', ['has', 'service']], ...filter] as FilterSpecification,
+					filter: ['all', kind, service, ...filter] as FilterSpecification,
 				});
-			const service = (t: string) =>
-				results.push({
-					id: prefix + 'transport-' + t.replace(/_/g, '') + '-service' + suffix,
-					type: 'line',
-					'source-layer': 'streets',
-					filter: ['all', ['==', ['get', 'kind'], t], ['has', 'service'], ...filter] as FilterSpecification,
-				});
-			// Rail and light rail share one style, so both main lines come first and both service tracks
-			// after them: adjacent, each pair collapses into one layer (`MERGES` in `index.ts`). The order
-			// changes only which of two identically drawn lines lies on top where tracks cross.
-			for (const t of ['rail', 'light_rail']) main(t);
-			for (const t of ['rail', 'light_rail']) service(t);
-			for (const t of ['subway', 'narrow_gauge', 'tram']) {
-				main(t);
-				service(t);
-			}
-			for (const t of ['monorail', 'funicular'].reverse()) {
-				results.push({
-					id: prefix + 'transport-' + t.replace(/_/g, '') + suffix,
-					type: 'line',
-					'source-layer': 'streets',
-					filter: ['all', ['==', ['get', 'kind'], t], ...filter] as FilterSpecification,
-				});
-			}
+			const kindIs = (t: string): FilterSpecification => ['==', ['get', 'kind'], t];
+			const NOT_SERVICE: FilterSpecification = ['!', ['has', 'service']];
+			const SERVICE: FilterSpecification = ['has', 'service'];
+			// Rail and light rail share one style (`transportStyle` handles both in one branch), so one
+			// layer draws the main lines of both and one the service tracks.
+			const RAIL: FilterSpecification = ['in', ['get', 'kind'], ['literal', ['rail', 'light_rail']]];
+			track('rail', RAIL, NOT_SERVICE);
+			track('rail-service', RAIL, SERVICE);
+			track('subway', kindIs('subway'), NOT_SERVICE);
+			// Drawn by nothing — `transportStyle` has no subway service track — and so skipped.
+			track('subway-service', kindIs('subway'), SERVICE);
+			// The minor railways share one style too. Narrow gauge and tram draw their main lines only;
+			// funicular and monorail have no service distinction at all, so their clause lists differ and
+			// the union stays an `any`.
+			results.push({
+				id: prefix + 'transport-minorrail' + suffix,
+				type: 'line',
+				'source-layer': 'streets',
+				filter: [
+					'any',
+					['all', kindIs('narrow_gauge'), NOT_SERVICE, ...filter],
+					['all', kindIs('tram'), NOT_SERVICE, ...filter],
+					['all', kindIs('funicular'), ...filter],
+					['all', kindIs('monorail'), ...filter],
+				] as FilterSpecification,
+			});
 
 			if (c === 'street') {
 				// Every aerialway kind draws alike, so one layer serves them all.
