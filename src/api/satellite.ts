@@ -1,5 +1,5 @@
 import type { StyleSpecification } from '../types/index.js';
-import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedOsmOverlay } from '../options/index.js';
+import type { SatelliteOptions, ResolvedSatellite, TileSource, ResolvedSatelliteOverlay } from '../options/index.js';
 import { colorOptionsKeys, resolveSatellite } from '../options/index.js';
 import {
 	SLOT_BELOW_FILLS,
@@ -52,12 +52,14 @@ function buildRasterPaint(raster: ResolvedSatellite['raster']): Record<string, n
 // Build OSM vector overlay layers for satellite context.
 // Filters out background and all fill layers (they would obscure satellite imagery).
 // Keeps slot anchors, roads, boundaries, and labels/symbols.
-function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecification['layers'] {
-	// Run the full OSM pipeline on the overlay's already-resolved options. `ResolvedOsmOverlay` carries
-	// only the cartographic half — theme, layers, text, icon, colors, recolor — so `osm()` fills in its
-	// own URL defaults here. The style built from them is used for its layers alone; `satelliteFn`
-	// attaches the real vector source afterwards, from the satellite options' own `urls.osm`.
-	const overlayStyle = osm(overlayResolved);
+function buildOsmOverlayLayers(overlayResolved: ResolvedSatelliteOverlay): StyleSpecification['layers'] {
+	// Run the full OSM pipeline on the overlay's already-resolved options. Only the cartographic half —
+	// theme, layers, text, icon, colors, recolor — goes to `osm()`, which fills in its own URL defaults
+	// here; `layerOpacity` is the overlay's own and `osm()` would reject it. The style built from them is
+	// used for its layers alone; `satelliteFn` attaches the real vector source afterwards, from the
+	// satellite options' own `urls.osm`.
+	const { layerOpacity, ...cartography } = overlayResolved;
+	const overlayStyle = osm(cartography);
 
 	// Filter: remove the opaque background layer and all fill layers.
 	// Slot anchors (background type with opacity 0) are kept — they provide stable beforeId targets.
@@ -66,7 +68,11 @@ function buildOsmOverlayLayers(overlayResolved: ResolvedOsmOverlay): StyleSpecif
 	const candidates = overlayStyle.layers.filter((layer) => layer.id !== 'background' && layer.id !== SLOT_BELOW_FILLS);
 	// The halo is forced onto the layers after `osm()` has recoloured them, so it needs the same recolor,
 	// or `osmOverlay.recolor` would leave every label halo untouched.
-	return toOverlayLayers(candidates, recolorColor(overlayResolved.colors.labelHalo, overlayResolved.recolor));
+	return toOverlayLayers(
+		candidates,
+		recolorColor(overlayResolved.colors.labelHalo, overlayResolved.recolor),
+		layerOpacity
+	);
 }
 
 // ── Main satellite() function ─────────────────────────────────────────────────

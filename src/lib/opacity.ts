@@ -41,3 +41,27 @@ export function scaleLayerOpacity(layer: MaplibreLayer, factor: number): void {
 	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
 	for (const prop of props) paint[prop] = scaleOpacity(paint[prop], factor);
 }
+
+/**
+ * Move a line layer's dimming from `line-opacity` to `line-layer-opacity`: the layer's own opacity,
+ * scaled by `factor`, becomes its layer opacity, and the per-feature `line-opacity` is removed.
+ *
+ * `line-layer-opacity` takes zoom expressions but no data expressions, so a layer whose opacity reads
+ * feature properties is left untouched and `false` returned; it then needs `scaleLayerOpacity`.
+ */
+export function moveToLineLayerOpacity(layer: MaplibreLayer, factor: number): boolean {
+	if (layer.type !== 'line') return false;
+	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+	const value = paint['line-opacity'];
+	const zoomOnly =
+		value == null ||
+		typeof value === 'number' ||
+		(Array.isArray(value) &&
+			value[0] === 'interpolate' &&
+			JSON.stringify(value[2]) === '["zoom"]' &&
+			value.slice(3).every((entry) => typeof entry === 'number'));
+	if (!zoomOnly) return false;
+	paint['line-layer-opacity'] = scaleOpacity(value, factor);
+	delete paint['line-opacity'];
+	return true;
+}

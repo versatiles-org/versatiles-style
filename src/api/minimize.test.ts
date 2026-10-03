@@ -299,6 +299,13 @@ describe('satellite.minimizeOptions', () => {
 		});
 	});
 
+	it('keeps an explicit osmOverlay.layerOpacity and drops a false one', () => {
+		const options: SatelliteOptions = { osmOverlay: { layerOpacity: true } };
+		expect(satellite.minimizeOptions(options)).toEqual(options);
+		same(satellite(satellite.minimizeOptions(options)), satellite(options));
+		expect(satellite.minimizeOptions({ osmOverlay: { layerOpacity: false } })).toEqual({});
+	});
+
 	it('drops overlay layer groups the overlay draws nothing of', () => {
 		expect(
 			satellite.minimizeOptions({ osmOverlay: { layers: { land: false, water: { ocean: 0.5 }, buildings: false } } })

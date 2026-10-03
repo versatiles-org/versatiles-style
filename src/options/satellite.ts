@@ -19,12 +19,36 @@ import {
 	type SkyOptions,
 	type SunOptions,
 } from './parts/index.js';
+import { describeValue, reportIssue } from './parts/issues.js';
 import {
 	resolveOsmOverlay,
 	OVERLAY_LABEL_STYLES,
 	type OsmOverlayOptions,
 	type ResolvedOsmOverlay,
 } from './osm-overlay.js';
+
+/**
+ * The overlay's options: everything `osm()` takes for its cartography, plus what only makes sense over
+ * imagery.
+ */
+export type SatelliteOverlayOptions = OsmOverlayOptions & {
+	/**
+	 * Dim borders and motorways with `line-layer-opacity` instead of `line-opacity`. Default `false`.
+	 *
+	 * `line-opacity` applies to every feature on its own, so where a line crosses itself — a border
+	 * winding along a river at low zoom, a motorway's two carriageways — the overlap is blended twice
+	 * and shows as a brighter spot. `line-layer-opacity` composites the finished layer once, so the
+	 * line reads evenly. It costs an extra offscreen pass per layer, so it is applied to the three
+	 * layers that overlap themselves most: `boundary-country`, `boundary-state` and `street-motorway`.
+	 *
+	 * **Only for MapLibre GL JS 6.0 or newer.** MapLibre Native (Android, iOS) does not implement the
+	 * property and drops every layer that carries it — the map then has no borders or motorways
+	 * (maplibre-native#4298). Leave it off for any style a native app may load.
+	 */
+	layerOpacity?: boolean;
+};
+
+export type ResolvedSatelliteOverlay = ResolvedOsmOverlay & { layerOpacity: boolean };
 
 export type SatelliteOptions = {
 	urls?: SatelliteUrlsOptions;
@@ -33,7 +57,7 @@ export type SatelliteOptions = {
 	 * defaults, `false` disables it, an object configures it — the same shape as `features.terrain`
 	 * and `features.hillshade`.
 	 */
-	osmOverlay?: boolean | OsmOverlayOptions;
+	osmOverlay?: boolean | SatelliteOverlayOptions;
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
 	sun?: SunOptions;
@@ -47,7 +71,7 @@ export type ResolvedSatellite = {
 	sun: ResolvedSun;
 	sky: ResolvedSky;
 	projection: ResolvedProjection;
-	osmOverlay: false | ResolvedOsmOverlay;
+	osmOverlay: false | ResolvedSatelliteOverlay;
 	raster: ResolvedSatelliteRaster;
 };
 
@@ -69,16 +93,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	// colours are derived from the palette by `overlayLabelColors` and its label styles are passed as
 	// the defaults of `text` (`OVERLAY_LABEL_STYLES`), so a caller who sets one topic keeps the
 	// overlay's others. See `features/satellite-overlay.ts`.
-	const osmOverlay =
-		overlay === false
-			? false
-			: resolveOsmOverlay(
-					typeof overlay === 'object' ? overlay : {},
-					'gray',
-					'satellite.osmOverlay',
-					OVERLAY_LABEL_STYLES
-				);
-
+	const osmOverlay = overlay === false ? false : resolveSatelliteOverlay(typeof overlay === 'object' ? overlay : {});
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),
 		features: resolveSatelliteFeatures(options?.features, 'satellite.features'),
@@ -87,5 +102,24 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 		projection: resolveProjection(options?.projection),
 		raster: resolveSatelliteRaster(options?.raster, 'satellite.raster'),
 		osmOverlay,
+	};
+}
+
+function resolveSatelliteOverlay(content: SatelliteOverlayOptions): ResolvedSatelliteOverlay {
+	const path = 'satellite.osmOverlay';
+	// Checked here rather than left to `resolveOsmOverlay`, so an unknown key is reported once and the
+	// list of known keys it prints includes `layerOpacity`. Only the cartography keys are passed on.
+	checkKeys(
+		content,
+		{ theme: true, layers: true, text: true, icon: true, colors: true, recolor: true, layerOpacity: true },
+		path
+	);
+	const { theme, layers, text, icon, colors, recolor, layerOpacity } = content;
+	if (layerOpacity !== undefined && typeof layerOpacity !== 'boolean') {
+		reportIssue({ path: `${path}.layerOpacity`, message: `expected a boolean, got ${describeValue(layerOpacity)}` });
+	}
+	return {
+		...resolveOsmOverlay({ theme, layers, text, icon, colors, recolor }, 'gray', path, OVERLAY_LABEL_STYLES),
+		layerOpacity: layerOpacity === true,
 	};
 }

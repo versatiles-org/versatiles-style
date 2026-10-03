@@ -1,5 +1,5 @@
 import type { StyleSpecification, MaplibreLayer } from '../types/index.js';
-import { scaleLayerOpacity } from '../lib/index.js';
+import { moveToLineLayerOpacity, scaleLayerOpacity } from '../lib/index.js';
 
 /**
  * Turning the OSM style into an overlay for satellite imagery.
@@ -98,9 +98,21 @@ function lineOpacity(id: string): number {
  * property and `255,204,204` at `line-opacity` 0.2, but `255,255,255` — nothing at all — at
  * `line-layer-opacity` 0.2, with or without a `line-opacity` beside it.
  *
- * So the self-overlap noise is accepted as the lesser artefact. Restoring the property means first
- * being able to emit a different style per renderer; until then it must not be set on any layer.
+ * So by default the self-overlap noise is accepted as the lesser artefact, and no layer carries the
+ * property. A caller who knows the style only goes to MapLibre GL JS can opt in with
+ * `osmOverlay.layerOpacity` — see {@link LAYER_OPACITY_IDS}.
  */
+
+/**
+ * The layers that get `line-layer-opacity` when `osmOverlay.layerOpacity` is on.
+ *
+ * Each such layer costs MapLibre GL JS an extra offscreen pass per frame, so the list is kept to the
+ * layers whose own features overlap most: country and state borders (see above), and motorways, whose
+ * two carriageways are mapped as separate ways that run closer together than the line is wide at low
+ * zoom, and fold over each other at every interchange. Trunk roads are deliberately left out, as are the
+ * disputed and maritime borders, links and bridges.
+ */
+const LAYER_OPACITY_IDS = new Set(['boundary-country', 'boundary-state', 'street-motorway']);
 
 /**
  * Round caps and joins, which a translucent line cannot afford.
@@ -167,8 +179,13 @@ export function keepInOverlay(layer: { id: string; type: string }): boolean {
  * the motorway shield uses the road colour. Left alone, those become white halos behind the now-
  * white label text — invisible labels.
  */
-export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): void {
+export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string, layerOpacity = false): void {
 	if (layer.type === 'line') {
+		// Composited once, the layer no longer overlaps itself, so it keeps the cartography's round caps
+		// and joins.
+		if (layerOpacity && LAYER_OPACITY_IDS.has(layer.id) && moveToLineLayerOpacity(layer, lineOpacity(layer.id))) {
+			return;
+		}
 		scaleLayerOpacity(layer, lineOpacity(layer.id));
 		unroundJoins(layer);
 		return;
@@ -182,9 +199,16 @@ export function applyImageryTreatment(layer: MaplibreLayer, haloColor: string): 
 	}
 }
 
-/** Filter and adjust a built OSM style's layers for use over imagery. */
-export function toOverlayLayers(layers: StyleSpecification['layers'], haloColor: string): StyleSpecification['layers'] {
+/**
+ * Filter and adjust a built OSM style's layers for use over imagery. `layerOpacity` is the overlay's
+ * `osmOverlay.layerOpacity` — see {@link LAYER_OPACITY_IDS}.
+ */
+export function toOverlayLayers(
+	layers: StyleSpecification['layers'],
+	haloColor: string,
+	layerOpacity = false
+): StyleSpecification['layers'] {
 	const kept = layers.filter((l) => keepInOverlay(l as { id: string; type: string }));
-	for (const layer of kept) applyImageryTreatment(layer as MaplibreLayer, haloColor);
+	for (const layer of kept) applyImageryTreatment(layer as MaplibreLayer, haloColor, layerOpacity);
 	return kept;
 }

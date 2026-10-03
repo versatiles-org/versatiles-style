@@ -268,8 +268,8 @@ describe('satellite()', () => {
 
 	// `line-layer-opacity` would composite a self-overlapping layer once and remove the noise a border
 	// drawn over itself produces — but MapLibre Native does not implement it (maplibre-native#4298) and
-	// drops any layer carrying it, so boundaries vanished on Android and iOS. Until a style can be
-	// emitted per renderer, no layer may set it. See the note in `features/satellite-overlay.ts`.
+	// drops any layer carrying it, so boundaries vanished on Android and iOS. So by default no layer sets
+	// it; `osmOverlay.layerOpacity` opts in. See the note in `features/satellite-overlay.ts`.
 	describe('every overlay line is dimmed per feature', () => {
 		const boundaries = (style: StyleSpecification) =>
 			style.layers.filter((l) => l.type === 'line' && l.id.startsWith('boundary-'));
@@ -312,6 +312,81 @@ describe('satellite()', () => {
 				8,
 				expect.closeTo(0.9, 10),
 			]);
+		});
+	});
+
+	describe('osmOverlay.layerOpacity', () => {
+		const LISTED = ['boundary-country', 'boundary-state', 'street-motorway'];
+		const paintOf = (layer: StyleSpecification['layers'][number] | undefined) =>
+			(layer as { paint?: Record<string, unknown> } | undefined)?.paint ?? {};
+		const layoutOf = (layer: StyleSpecification['layers'][number] | undefined) =>
+			(layer as { layout?: Record<string, unknown> } | undefined)?.layout ?? {};
+		const on = satellite({ osmOverlay: { layerOpacity: true } });
+		const off = satellite({ osmOverlay: {} });
+		const byId = (style: StyleSpecification) => new Map(style.layers.map((l) => [l.id, l]));
+
+		it('sets line-layer-opacity on exactly the listed layers', () => {
+			const carrying = on.layers.filter((l) => Object.keys(paintOf(l)).some((k) => k.endsWith('-layer-opacity')));
+			expect(carrying.map((l) => l.id).sort()).toEqual([...LISTED].sort());
+		});
+
+		it('replaces line-opacity on them rather than adding to it', () => {
+			const layers = byId(on);
+			for (const id of LISTED) expect(paintOf(layers.get(id))).not.toHaveProperty('line-opacity');
+		});
+
+		it('carries the same opacity, fade included, that line-opacity had', () => {
+			const before = byId(off);
+			const after = byId(on);
+			for (const id of LISTED) {
+				expect(paintOf(after.get(id))['line-layer-opacity']).toEqual(paintOf(before.get(id))['line-opacity']);
+			}
+			expect(paintOf(after.get('boundary-country'))['line-layer-opacity']).toBeCloseTo(0.9, 10);
+		});
+
+		it('keeps the round caps and joins of the listed layers, which no longer overlap themselves', () => {
+			const layers = byId(on);
+			for (const id of LISTED) {
+				expect(layoutOf(layers.get(id))['line-join']).toBe('round');
+				expect(layoutOf(layers.get(id))['line-cap']).toBe('round');
+			}
+		});
+
+		it('leaves every other layer as it is without the option', () => {
+			const before = byId(off);
+			expect(on.layers.map((l) => l.id)).toEqual(off.layers.map((l) => l.id));
+			for (const layer of on.layers) {
+				if (!LISTED.includes(layer.id)) expect(layer).toEqual(before.get(layer.id));
+			}
+			// trunk roads in particular are not listed
+			expect(paintOf(byId(on).get('street-trunk'))).toHaveProperty('line-opacity');
+		});
+
+		it('is off by default and when false', () => {
+			for (const style of [satellite(), satellite({ osmOverlay: { layerOpacity: false } })]) {
+				expect(style).toEqual(off);
+			}
+		});
+
+		it('resolves to a boolean and rejects anything else', () => {
+			expect(satellite.resolveOptions({}).osmOverlay).toHaveProperty('layerOpacity', false);
+			expect(satellite.resolveOptions({ osmOverlay: { layerOpacity: true } }).osmOverlay).toHaveProperty(
+				'layerOpacity',
+				true
+			);
+			expect(() => satellite({ osmOverlay: { layerOpacity: 'yes' as unknown as boolean } })).toThrow(
+				'satellite.osmOverlay.layerOpacity: expected a boolean, got "yes"'
+			);
+		});
+
+		it('lists layerOpacity among the overlay keys an unknown key is told about', () => {
+			expect(() => satellite({ osmOverlay: { layerOpasity: true } as never })).toThrow(
+				/known keys here: .*layerOpacity/
+			);
+		});
+
+		it('is not an osm() option', () => {
+			expect(() => osm({ layerOpacity: true } as never)).toThrow(/unknown option/);
 		});
 	});
 

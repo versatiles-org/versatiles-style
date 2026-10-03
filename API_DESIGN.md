@@ -455,7 +455,7 @@ type SatelliteOptions = {
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
-  osmOverlay?: boolean | OsmOverlayOptions; // default: true (palette 'gray'); false for bare imagery
+  osmOverlay?: boolean | (OsmOverlayOptions & { layerOpacity?: boolean }); // default: true (palette 'gray'); false for bare imagery
   raster?: {
     // keys mirror MapLibre's raster-* paint properties
     opacity?: number;
@@ -691,6 +691,18 @@ The overlay defaults to the `gray` palette rather than `osm()`'s `colorful`: it 
 imagery, so the least saturated palette keeps roads and labels from competing with the photo.
 Pass `osmOverlay: { theme: … }` to choose another. Slot anchors are emitted either way,
 so `satellite.slots` references stay valid.
+
+Over imagery the overlay draws each line once: casings and bridge decks are dropped (for rail and
+aerialways the solid base line stays and the dashed decoration goes), and each line class is dimmed
+by its own factor to make up for the weight its casing carried.
+
+`osmOverlay.layerOpacity: true` dims `boundary-country`, `boundary-state` and `street-motorway` with
+`line-layer-opacity` in place of `line-opacity`, so a line that crosses itself (a border winding along
+a river, a motorway's two carriageways) is composited once and reads evenly instead of brightening
+where it overlaps. It is off by default and only for **MapLibre GL JS 6.0 or newer**: MapLibre Native
+(Android, iOS) does not implement the property and drops every layer that carries it
+([maplibre-native#4298](https://github.com/maplibre/maplibre-native/issues/4298)). It is an overlay
+option only — `osm()` rejects it.
 
 ---
 
