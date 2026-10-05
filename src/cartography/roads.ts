@@ -125,6 +125,10 @@ function classColors(
 	vocab: RoadVocabulary
 ): { main: Color; casing: Color } {
 	if (base === 'motorway') return { main: c.roadMotorway, casing: c.roadMotorwayBg };
+	// Secondary roads have keys of their own, which every built-in palette sets to the trunk colours;
+	// they exist for the themes that tell the two apart. `arterial`, the merged primary and secondary
+	// ramp, stays with the trunk colours.
+	if (base === 'secondary') return { main: c.roadSecondary, casing: c.roadSecondaryBg };
 	if (YELLOW.has(base)) return { main: c.roadTrunk, casing: c.roadTrunkBg };
 	// Pedestrian streets are drawn in the lavender foot color; service/bus in a faint off-white with a
 	// slightly lighter casing. Everything else (tertiary/residential/unclassified/livingstreet/track)

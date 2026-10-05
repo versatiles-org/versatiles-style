@@ -641,9 +641,9 @@ describe('osm() static properties', () => {
 		]);
 	});
 
-	it('osm.colorKeys has 45 unique keys', () => {
-		expect(osm.colorKeys).toHaveLength(45);
-		expect(new Set(osm.colorKeys).size).toBe(45);
+	it('osm.colorKeys has 47 unique keys', () => {
+		expect(osm.colorKeys).toHaveLength(47);
+		expect(new Set(osm.colorKeys).size).toBe(47);
 	});
 
 	it('osm.slots exposes the four stable beforeId anchors', () => {

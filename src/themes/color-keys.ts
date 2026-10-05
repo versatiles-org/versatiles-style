@@ -57,6 +57,8 @@ export type ColorsOptions = {
 	roadMotorwayBg?: string;
 	roadTrunk?: string;
 	roadTrunkBg?: string;
+	roadSecondary?: string;
+	roadSecondaryBg?: string;
 
 	// transit
 	transitRail?: string;
@@ -114,6 +116,8 @@ export const colorOptionsKeys: ReadonlyArray<keyof ColorsOptions> = Object.freez
 	'roadMotorwayBg',
 	'roadTrunk',
 	'roadTrunkBg',
+	'roadSecondary',
+	'roadSecondaryBg',
 	'transitRail',
 	'transitSubway',
 	'transitCycle',

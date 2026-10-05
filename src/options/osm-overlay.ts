@@ -130,7 +130,7 @@ function atLightness(color: string, lightness: number, clamp: 'floor' | 'ceiling
  * those dark; light reads better over imagery, so it is a deliberate departure.
  *
  * Only lightness and alpha are the overlay's business; hue and chroma stay the theme's. That is what
- * keeps `gray` — whose 45 colours are all exactly chroma 0 — from growing a coloured label, which a
+ * keeps `gray` — whose 47 colours are all exactly chroma 0 — from growing a coloured label, which a
  * hardcoded `#8FC1ED` water blue did.
  *
  * `labelWater` derives from `water`, the polygon colour, not from `labelWater`: on the basemap the

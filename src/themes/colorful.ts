@@ -49,6 +49,8 @@ export const COLORFUL: ResolvedColors = Object.freeze({
 	roadMotorwayBg: '#E9AC77',
 	roadTrunk: '#FFEEAA',
 	roadTrunkBg: '#E9AC77',
+	roadSecondary: '#FFEEAA',
+	roadSecondaryBg: '#E9AC77',
 	transitRail: '#B1BBC4',
 	transitSubway: '#A6B8C7',
 	transitCycle: '#EFF9FF',

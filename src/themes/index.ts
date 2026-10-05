@@ -42,9 +42,9 @@ export const PALETTES: ReadonlyArray<Palette> = Object.freeze([
  * The colour table of a palette.
  *
  * `colorful` is the hand-written reference (`colorful.ts`); the other nine are derived from it and
- * stored in `tables.ts` as one string each — the 45 colours of `colorOptionsKeys`, in that order,
+ * stored in `tables.ts` as one string each — the 47 colours of `colorOptionsKeys`, in that order,
  * comma-separated and without their `#`. Writing them as objects cost 5.4 KB in the browser bundle for
- * nothing but the same 45 identifiers repeated nine times; this form is a tenth of that.
+ * nothing but the same 47 identifiers repeated nine times; this form is a tenth of that.
  *
  * Decoding is cheap and the result is not cached: every caller here — `resolveColors`, the palette
  * search in `deriveOptions` — copies or reshapes the table anyway, so a shared frozen object would buy

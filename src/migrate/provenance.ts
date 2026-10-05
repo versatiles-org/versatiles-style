@@ -4,7 +4,7 @@
  * Two structures rather than one because two different things are being reported. A diagnostic is an
  * event: something happened that a person should read. Provenance is a property of every setting,
  * always present and mostly unremarkable, which a UI reads to mark a control rather than to write a
- * line. Folding one into the other would either flood the list — a palette is 45 colours, each with an
+ * line. Folding one into the other would either flood the list — a palette is 47 colours, each with an
  * outcome — or lose the annotation on the settings nothing was said about.
  *
  * It answers a question the options object structurally cannot. `minimizeOptions` deletes every

@@ -58,7 +58,7 @@ if (changes > 0 && !args.includes('--dry-run')) {
 if (args.includes('--report')) report();
 
 /**
- * `src/themes/tables.ts`: one line per derived palette, holding its 45 colours in `colorOptionsKeys`
+ * `src/themes/tables.ts`: one line per derived palette, holding its 47 colours in `colorOptionsKeys`
  * order, comma-separated and without the `#`.
  *
  * Encoded rather than spelled out because these nine tables are machine-written and machine-checked —

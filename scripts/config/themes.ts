@@ -94,6 +94,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			label: '#212121',
 			labelHalo: '#FFFFFFF5',
 			labelWater: '#A8A8A8',
+			roadSecondary: '#FFFFFF',
+			roadSecondaryBg: '#D5D5D5',
 		},
 	},
 	'positrino-dark': {
@@ -121,6 +123,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			boundaryDisputed: '#3B3B3B',
 			label: '#616060',
 			labelHalo: '#000000C4',
+			roadSecondary: '#121212',
+			roadSecondaryBg: '#3C3C3CCC',
 		},
 	},
 	fnord: {
@@ -147,6 +151,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			boundaryDisputed: '#9BBDE88F',
 			label: '#86A5B9',
 			labelHalo: '#1C2751C4',
+			roadSecondary: '#3C4357',
+			roadSecondaryBg: '#59678C',
 		},
 	},
 	// The Protomaps flavours draw their casings in the land's colour, so the three casing keys are
@@ -188,6 +194,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#E0E0E0',
 			boundary: '#ADADAD',
 			boundaryDisputed: '#ADADAD',
+			roadSecondary: '#FFFFFF',
+			roadSecondaryBg: '#E0E0E0',
 		},
 	},
 	'protocol-dark': {
@@ -226,6 +234,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadMotorwayBg: '#1F1F1F',
 			roadTrunk: '#474747',
 			roadTrunkBg: '#1F1F1F',
+			roadSecondary: '#474747',
+			roadSecondaryBg: '#1F1F1F',
 		},
 	},
 	protostar: {
@@ -264,6 +274,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#FFFFFF',
 			transitCycle: '#F5F5F5',
 			boundaryDisputed: '#ADADAD',
+			roadSecondary: '#EBEBEB',
+			roadSecondaryBg: '#FFFFFF',
 		},
 	},
 	'protostar-dark': {
@@ -299,6 +311,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadStreetBg: '#141414',
 			roadMotorwayBg: '#141414',
 			roadTrunkBg: '#141414',
+			roadSecondary: '#292929',
+			roadSecondaryBg: '#141414',
 		},
 	},
 	protozoa: {
@@ -337,13 +351,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadStreetBg: '#CCCCCC',
 			roadMotorwayBg: '#CCCCCC',
 			roadTrunkBg: '#CCCCCC',
+			roadSecondary: '#EBEBEB',
+			roadSecondaryBg: '#CCCCCC',
 		},
 	},
 	// Not read by the importer: OpenStreetMap Carto is a CartoCSS style, so these are the colours its
 	// style sheets define, assigned to our keys by hand. Where the two do not line up:
-	//  - it colours five road classes and we have three keys. `roadTrunk` also paints primary and
-	//    secondary roads, which are most of what it paints, so it takes Carto's primary orange rather
-	//    than its trunk red; tertiary roads are white in both.
+	//  - it colours trunk roads red and primary roads orange, and `roadTrunk` paints both. It takes
+	//    the primary orange, which is most of what it paints.
 	//  - its foot and cycle paths are thin dashed lines in salmon and blue. Ours are filled, where those
 	//    colours flood a city centre, so `transitFoot` takes its pedestrian-area fill and `transitCycle`
 	//    is derived.
@@ -390,13 +405,13 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelSymbol: '#0092DA',
 			labelPoi: '#734A08',
 			labelWater: '#4D80B3',
+			roadSecondary: '#F7FABF',
+			roadSecondaryBg: '#707D05',
 		},
 	},
 	// Not read by the importer either: there is no style to read. These are the most frequent pixel
 	// colours of each feature in screenshots of the map at eight places, taken on 2026-10-05. Where the
 	// two do not line up:
-	//  - that map colours primary roads darker than secondary ones, and `roadTrunk` paints both. It
-	//    takes the secondary colour, so primary roads come out lighter than on that map.
 	//  - its minor roads have no casing, so `roadStreetBg` takes the road's own colour.
 	//  - its footpaths are thin dashed lines; ours are filled, so `transitFoot` stays close to the land.
 	googol: {
@@ -421,14 +436,16 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadStreetBg: '#D8E0E7',
 			roadMotorway: '#8BA5C1',
 			roadMotorwayBg: '#7090B2',
-			roadTrunk: '#B3C2D4',
-			roadTrunkBg: '#7E9BBA',
+			roadTrunk: '#8BA5C1',
+			roadTrunkBg: '#7090B2',
 			transitRail: '#D0D3D7',
 			transitSubway: '#D0D3D7',
 			transitFoot: '#F8F7F7',
 			label: '#303034',
 			labelHalo: '#FFFFFF',
 			labelWater: '#088797',
+			roadSecondary: '#B3C2D4',
+			roadSecondaryBg: '#7E9BBA',
 		},
 	},
 };
@@ -471,6 +488,8 @@ export const FIXES: readonly Fix[] = [
 			'roadMotorwayBg',
 			'roadTrunk',
 			'roadTrunkBg',
+			'roadSecondary',
+			'roadSecondaryBg',
 			'transitRail',
 			'transitSubway',
 		],

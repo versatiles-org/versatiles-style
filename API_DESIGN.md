@@ -318,8 +318,10 @@ type ColorsOptions = {
   roadStreetBg?: string; // local street casing
   roadMotorway?: string; // motorway fill
   roadMotorwayBg?: string; // motorway casing
-  roadTrunk?: string; // trunk, primary, secondary fill
-  roadTrunkBg?: string; // trunk, primary, secondary casing
+  roadTrunk?: string; // trunk, primary fill
+  roadTrunkBg?: string; // trunk, primary casing
+  roadSecondary?: string; // secondary fill — the trunk colour in every built-in palette
+  roadSecondaryBg?: string; // secondary casing
 
   // transit  (transit*)
   transitRail?: string; // railways (main, light rail, tram)
@@ -1487,7 +1489,7 @@ an error naming its v6 theme.
 
 **Colour keys were renamed.** v5's 41 `colors` keys became 45: 7 kept their name
 (`boundary`, `building`, `glacier`, `label`, `labelHalo`, `land`, `water`), 34 gained a group prefix, and 4 are new
-(`background`, `siteSports`, `labelHousenumber`, `labelWater`). A v5 colour key that is not renamed is rejected with an error naming its v6 key.
+(`background`, `siteSports`, `labelHousenumber`, `labelWater`). Two more have been added since, `roadSecondary` and `roadSecondaryBg`, for 47 in all. A v5 colour key that is not renamed is rejected with an error naming its v6 key.
 
 | v5             | v6                  |
 | -------------- | ------------------- |

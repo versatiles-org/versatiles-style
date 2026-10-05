@@ -8,7 +8,7 @@ import { reportIssue } from './issues.js';
  * siblings copy the string through and the first `Color.parse` happens deep in layer building, so
  * `osm({ colors: { water: 'bananas' } })` threw a `ColorParseError` naming only the string, while
  * `osm.validateOptions` of the same object answered `{ ok: true, issues: [] }` — the whole colour
- * surface (45 `colors.*` keys, `sun.color`, `sky.*Color`, `hillshade.*Color`, `recolor.tint/blend`)
+ * surface (47 `colors.*` keys, `sun.color`, `sky.*Color`, `hillshade.*Color`, `recolor.tint/blend`)
  * was invisible to the one call whose job is to report what is wrong.
  *
  * Parsing here fixes both halves at once: the problem is now reported as data with the option path a

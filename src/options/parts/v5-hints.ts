@@ -14,7 +14,15 @@ import { colorOptionsKeys } from '../../themes/index.js';
 type Hints = Readonly<Record<string, string | null>>;
 
 /** Colour keys the rule in `v5ColorKeys` must skip: they kept their v5 name, or are new in v6. */
-const NOT_RENAMED = new Set(['background', 'labelHalo', 'labelHousenumber', 'labelWater', 'siteSports']);
+const NOT_RENAMED = new Set([
+	'background',
+	'labelHalo',
+	'labelHousenumber',
+	'labelWater',
+	'siteSports',
+	'roadSecondary',
+	'roadSecondaryBg',
+]);
 const GROUPS = ['nature', 'area', 'site', 'road', 'transit', 'boundary', 'label'];
 
 let colorKeys: Readonly<Record<string, string>> | undefined;

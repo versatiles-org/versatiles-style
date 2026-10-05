@@ -143,7 +143,7 @@ describe('satellite() knob: osmOverlay', () => {
 	});
 
 	it('keeps an achromatic palette achromatic', () => {
-		// `gray` is chroma 0 across all 45 of its colours. A label the theme cannot account for — the
+		// `gray` is chroma 0 across all 47 of its colours. A label the theme cannot account for — the
 		// hardcoded `#8FC1ED` water blue this replaced — makes the overlay the only coloured thing on
 		// an explicitly colourless map.
 		for (const theme of ['gray', 'gray-dark'] as const) {
@@ -309,7 +309,7 @@ describe('satellite() knob: urls', () => {
 
 describe('satellite() static properties', () => {
 	it('satellite.colorKeys mirrors the osm color keys', () => {
-		expect(satellite.colorKeys).toHaveLength(45);
+		expect(satellite.colorKeys).toHaveLength(47);
 	});
 
 	it('satellite.slots exposes the raster/symbol/label anchors', () => {

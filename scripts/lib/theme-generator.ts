@@ -156,6 +156,7 @@ const CASINGS: Record<string, string> = {
 	roadStreet: 'roadStreetBg',
 	roadMotorway: 'roadMotorwayBg',
 	roadTrunk: 'roadTrunkBg',
+	roadSecondary: 'roadSecondaryBg',
 };
 
 // ── colour math ───────────────────────────────────────────────────────────────
