@@ -254,6 +254,11 @@ describe('osm()', () => {
 			'positrino',
 			'positrino-dark',
 			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
 		]);
 	});
 

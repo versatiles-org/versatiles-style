@@ -53,8 +53,8 @@
  * ```
  *
  * Available palettes: `'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`, each also as a dark
- * theme with a `-dark` suffix (`'colorful-dark'`, …). The lookalike themes `'positrino'`,
- * `'positrino-dark'` and `'fnord'` resemble other projects' maps.
+ * theme with a `-dark` suffix (`'colorful-dark'`, …). The lookalike themes (`'positrino'`,
+ * `'protocol'`, `'fnord'`, …) resemble other projects' maps.
  *
  * ---
  *

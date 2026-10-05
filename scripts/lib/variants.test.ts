@@ -63,13 +63,23 @@ describe('getStyleVariants()', () => {
 
 	it('returns the expected set of variant names', () => {
 		const names = getStyleVariants().map((v) => v.name);
-		// 13 themes (5 palettes, light and dark, and 3 lookalikes) × 7 osm variants + 8 satellite variants
+		// 18 themes (5 palettes, light and dark, and 8 lookalikes) × 7 osm variants + 8 satellite variants
 		// + 4 legacy v5 palettes × 7 + `empty/style` (see the deprecation block below)
-		expect(names).toHaveLength(13 * 7 + 8 + 4 * 7 + 1);
+		expect(names).toHaveLength(18 * 7 + 8 + 4 * 7 + 1);
 		expect(new Set(names).size).toBe(names.length); // all unique
 
 		const paired = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
-		for (const palette of [...paired, 'positrino', 'positrino-dark', 'fnord']) {
+		for (const palette of [
+			...paired,
+			'positrino',
+			'positrino-dark',
+			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
+		]) {
 			expect(names).toContain(`${palette}/style`);
 			expect(names).toContain(`${palette}/en`);
 			expect(names).toContain(`${palette}/de`);

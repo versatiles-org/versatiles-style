@@ -40,10 +40,13 @@ Further themes have a colour scheme that resembles another project's map. They a
 styles — the same layers, labels and icons as every other theme, in different colours — which is why
 they carry names of their own. A lookalike has a dark theme only where the map it resembles has one.
 
-| Theme         | Resembles             | Light                                                                                                 | Dark                                                                                                            |
-| ------------- | --------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **positrino** | Positron, Dark Matter | <img width="384" src="https://versatiles.org/versatiles-style/positrino.png" alt="positrino style" /> | <img width="384" src="https://versatiles.org/versatiles-style/positrino-dark.png" alt="positrino-dark style" /> |
-| **fnord**     | Fiord Color           | —                                                                                                     | <img width="384" src="https://versatiles.org/versatiles-style/fnord.png" alt="fnord style" />                   |
+| Theme         | Resembles              | Light                                                                                                 | Dark                                                                                                            |
+| ------------- | ---------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **positrino** | Positron, Dark Matter  | <img width="384" src="https://versatiles.org/versatiles-style/positrino.png" alt="positrino style" /> | <img width="384" src="https://versatiles.org/versatiles-style/positrino-dark.png" alt="positrino-dark style" /> |
+| **protocol**  | Protomaps Light, Dark  | <img width="384" src="https://versatiles.org/versatiles-style/protocol.png" alt="protocol style" />   | <img width="384" src="https://versatiles.org/versatiles-style/protocol-dark.png" alt="protocol-dark style" />   |
+| **protostar** | Protomaps White, Black | <img width="384" src="https://versatiles.org/versatiles-style/protostar.png" alt="protostar style" /> | <img width="384" src="https://versatiles.org/versatiles-style/protostar-dark.png" alt="protostar-dark style" /> |
+| **protozoa**  | Protomaps Grayscale    | <img width="384" src="https://versatiles.org/versatiles-style/protozoa.png" alt="protozoa style" />   | —                                                                                                               |
+| **fnord**     | Fiord Color            | —                                                                                                     | <img width="384" src="https://versatiles.org/versatiles-style/fnord.png" alt="fnord style" />                   |
 
 ---
 
@@ -172,7 +175,7 @@ because it has to read the TileJSON before it can decide what to build. All thre
 `StyleSpecification` — pass it through `inlineSources` before handing it to MapLibre, as above:
 
 - `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/variables/_versatiles_style.osm.html)
-  - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`), its dark theme with a `-dark` suffix (`'colorful-dark'`, …), or a [lookalike theme](#lookalike-themes) (`'positrino'`, `'positrino-dark'`, `'fnord'`).
+  - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`), its dark theme with a `-dark` suffix (`'colorful-dark'`, …), or a [lookalike theme](#lookalike-themes) (`'positrino'`, `'protocol'`, `'fnord'`, …).
   - `text`: label language, scale and font — per label topic where wanted (`{ language: 'de', font: 'noto_sans_regular', pois: { general: { scale: 1.2 } } }`).
   - `icon`, `sky`, `sun`, `projection`: icon sizing, the sky block, the 3D light, and the map projection.
   - `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/types/_versatiles_style.OsmOptions.html).
@@ -277,7 +280,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **100.4 KB** raw, **31.4 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **102.2 KB** raw, **32.1 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 

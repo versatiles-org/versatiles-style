@@ -26,10 +26,11 @@ const bgColor = (s: StyleSpecification): unknown => paint(s, 'background')['back
 // ── theme ──────────────────────────────────────────────────────────────────────
 
 describe('osm() knob: theme', () => {
-	it('every palette produces a distinct background color', () => {
-		const styles = osm.palettes.map((p) => build({ theme: p }));
-		const backgrounds = styles.map(bgColor);
-		expect(new Set(backgrounds).size).toBe(osm.palettes.length);
+	// Not by background alone: a lookalike's land is that of the map it resembles, and `protostar`
+	// sits on the same white as `toner`.
+	it('every palette produces a distinct set of layers', () => {
+		const layers = osm.palettes.map((p) => JSON.stringify(build({ theme: p }).layers));
+		expect(new Set(layers).size).toBe(osm.palettes.length);
 	});
 
 	it('a -dark theme flips the background between light and dark', () => {
@@ -630,6 +631,11 @@ describe('osm() static properties', () => {
 			'positrino',
 			'positrino-dark',
 			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
 		]);
 	});
 

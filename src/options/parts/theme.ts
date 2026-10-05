@@ -6,8 +6,8 @@ import { reportIssue } from './issues.js';
  * with a `-dark` suffix.
  *
  * The names after those are lookalikes: themes whose colour scheme resembles another project's map.
- * A lookalike has a dark theme only where that map has one — `positrino` does, `fnord` is itself dark
- * and has no light partner — so ask `isDarkPalette`, not the suffix, whether a theme is dark.
+ * A lookalike has a dark theme only where that map has one — `positrino` does, `protozoa` does not, `fnord` is itself
+ * dark and has no light partner — so ask `isDarkPalette`, not the suffix, whether a theme is dark.
  */
 export type Palette =
 	| 'colorful'
@@ -22,7 +22,12 @@ export type Palette =
 	| 'toner-dark'
 	| 'positrino'
 	| 'positrino-dark'
-	| 'fnord';
+	| 'fnord'
+	| 'protocol'
+	| 'protocol-dark'
+	| 'protostar'
+	| 'protostar-dark'
+	| 'protozoa';
 
 export type ThemeOptions = Palette;
 

@@ -70,6 +70,11 @@ describe('exports', () => {
 			'positrino',
 			'positrino-dark',
 			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
 		]);
 		expect(typeof lib.osm.colors).toBe('function');
 		expect(typeof lib.osm.layerGroups).toBe('object');

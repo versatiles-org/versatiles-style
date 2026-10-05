@@ -26,15 +26,22 @@ describe('PALETTES', () => {
 			'positrino',
 			'positrino-dark',
 			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
 		]);
 	});
 
 	it('marks the -dark themes as dark, and the dark themes that have no light partner', () => {
-		expect(LIGHT).toEqual([...PAIRED, 'positrino']);
+		expect(LIGHT).toEqual([...PAIRED, 'positrino', 'protocol', 'protostar', 'protozoa']);
 		expect(PALETTES.filter((palette) => isDarkPalette(palette))).toEqual([
 			...PAIRED.map((palette) => `${palette}-dark`),
 			'positrino-dark',
 			'fnord',
+			'protocol-dark',
+			'protostar-dark',
 		]);
 	});
 
@@ -93,9 +100,12 @@ describe('getPaletteColors()', () => {
 		}
 	});
 
-	it('gives every theme a distinct background color', () => {
-		const bgs = PALETTES.map((p) => getPaletteColors(p).background);
-		expect(new Set(bgs).size).toBe(PALETTES.length);
+	// Only the ten: a lookalike's land is the land of the map it resembles, and a map on a white ground
+	// has the same white as `toner`.
+	it('gives each of the ten derived themes a distinct background color', () => {
+		const themes = PAIRED.flatMap((p) => [p, `${p}-dark`] as Palette[]);
+		const bgs = themes.map((p) => getPaletteColors(p).background);
+		expect(new Set(bgs).size).toBe(themes.length);
 	});
 
 	// `colorful` used to return the `COLORFUL` constant itself while the other nine decoded a fresh

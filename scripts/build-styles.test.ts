@@ -42,7 +42,17 @@ describe('build-styles', () => {
 		// v6 themes, light and dark, the lookalikes, plus the v5 names kept alive so their published URLs
 		// do not 404 (B1).
 		const paired = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
-		const palettes = [...paired, 'positrino', 'positrino-dark', 'fnord'];
+		const palettes = [
+			...paired,
+			'positrino',
+			'positrino-dark',
+			'fnord',
+			'protocol',
+			'protocol-dark',
+			'protostar',
+			'protostar-dark',
+			'protozoa',
+		];
 		const legacy = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
 		const expectedFiles = [...palettes, ...legacy].flatMap((style) => [
 			`${style}/style.json`,
