@@ -63,6 +63,14 @@ const MINOR_WIDTH = {
 	main: { 12: 1, 14: 2, 16: 5, 18: 24, 19: 60, 20: 120 },
 };
 
+// Pedestrian streets: about half a minor street. A street closed to cars is not a path, so it stays a
+// solid, cased line — but at the minor curve it grew to a full carriageway (24px at z18), where Mapbox
+// Streets draws 12 and OSM Carto 13, and the OpenMapTiles styles draw it as a path of 3–6.
+const PEDESTRIAN_WIDTH = {
+	outline: { 14: 2, 16: 4, 18: 14, 19: 22, 20: 33 },
+	main: { 14: 1, 16: 3, 18: 12, 19: 20, 20: 30 },
+};
+
 // The arterial classes drawn in the yellow/orange palette. In the old VersaTiles style tertiary is
 // NOT arterial — it's a white minor road — so it is deliberately absent here. `arterial` itself is the
 // secondary and primary class, drawn as one layer where a schema merges them (Shortbread's ramps).
@@ -112,7 +120,9 @@ function streetWidth(base: string, isLink: boolean, isOutline: boolean, vocab: R
 			return isOutline
 				? { size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 } }
 				: { size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 } };
-		default: // tertiary / residential / unclassified / livingstreet / pedestrian — the minor curve
+		case 'pedestrian':
+			return { size: isOutline ? PEDESTRIAN_WIDTH.outline : PEDESTRIAN_WIDTH.main };
+		default: // tertiary / residential / unclassified / livingstreet — the minor curve
 			return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main };
 	}
 }
@@ -197,7 +207,8 @@ function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b
 		lineJoin,
 		lineCap: 'round',
 		color: c.transitCycle,
-		size: MINOR_WIDTH.main,
+		// the overlay covers the street it marks, so it takes that street's own width
+		size: base === 'pedestrian' ? PEDESTRIAN_WIDTH.main : MINOR_WIDTH.main,
 		opacity: { 12: 0, 13: 1 },
 	};
 }
@@ -209,8 +220,8 @@ const WAY_CONTRAST = 0.15;
 
 // Path-class ways (footway/steps/path/cycleway): a thin dashed line with no casing, as nearly every
 // other map draws them — a path is not a road, and drawn as a filled, cased line it read as one.
-// Starts at 1px and grows to 10px at z20, where a path is wide enough to be a surface. Steps take a
-// shorter dash, the rungs. footway/steps/path use the foot colour; cycleway the cycle colour.
+// 1px until z15, 4px at z18 and 6px at z20 — Mapbox Streets' curve, and about half a pedestrian
+// street's width at every zoom, so the two stay apart. Steps take a shorter dash, the rungs. footway/steps/path use the foot colour; cycleway the cycle colour.
 //
 // The caps are butt, on every prefix: a round cap extends each dash by half a line width at both
 // ends, which closes these gaps and renders the line solid (see the note on `underground`).
@@ -224,7 +235,7 @@ function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProp
 		lineJoin,
 		lineCap: 'butt',
 		lineDasharray: t === 'steps' ? [0.5, 0.25] : [1.5, 0.75],
-		size: { base: 1.2, stops: { 13: 0, 14: 1, 20: 10 } },
+		size: { 13: 0, 14: 1, 15: 1, 18: 4, 20: 6 },
 	};
 }
 
@@ -322,7 +333,7 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 		fillAntialias: true,
 		opacity: 0.5,
 	};
-	if (s.startsWith('way-')) return { ...base, size: { 15: 0, 16: 7, 18: 10, 19: 17, 20: 31 }, minzoom: 15 };
+	if (s.startsWith('way-')) return { ...base, size: { 15: 0, 16: 4, 18: 8, 20: 11 }, minzoom: 15 };
 
 	const t = s.slice('street-'.length);
 	const isLink = t.endsWith('-link');
@@ -347,8 +358,9 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 		case 'secondary':
 			return { ...base, size: { 11: 3, 14: 7, 16: 11, 18: 42, 19: 95, 20: 193 }, opacity: { 11: 0, 12: 1 } };
 		case 'tertiary':
-		case 'pedestrian':
 			return { ...base, size: { 12: 3, 14: 4, 16: 8, 18: 36, 19: 90, 20: 179 }, opacity: { 12: 0, 13: 1 } };
+		case 'pedestrian':
+			return { ...base, size: { 12: 3, 14: 3, 16: 6, 18: 19, 19: 30, 20: 45 }, opacity: { 12: 0, 13: 1 } };
 		case 'service':
 		case 'track':
 			return { ...base, size: { 14: 3, 16: 6, 18: 25, 19: 67, 20: 134 }, opacity: { 14: 0, 15: 1 } };
