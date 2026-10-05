@@ -466,14 +466,19 @@ function roadGroup(id: string, vocab: RoadVocabulary): string | undefined {
 // `underground` by the assembler, so a road or path type added later cannot quietly miss it, and
 // there is a single place to look when the treatment needs debugging or tuning.
 const UNDERGROUND = {
-	// How far a tunnel's colour is faded toward `bg` (white in light mode, black in dark). 0.45 is
-	// where the arterials gain the most — ΔE 16 from their surface colour — while still staying ~17
-	// clear of every other colour on the map; past ~0.5 the casings start to merge into the ground.
+	// How far a tunnel's colour is faded toward the land. 0.45 was tuned for the arterials; past ~0.5
+	// the casings start to merge into the ground.
 	//
-	// KNOWN GAP: `roadStreet` IS `bg`, so a fade cannot move the white minor roads at all and they
-	// read the same underground as on the surface. Only a cue that is not a colour can mark those —
-	// a dashed fill does it, and is what the test below records as missing. See the exception list
-	// there before assuming a road was simply forgotten.
+	// Toward the land, not toward `bg`: `bg` is pure white or black, which mutes a road only where the
+	// land is nearly that itself. On a dark land the fade overshot it — colorful-dark's street casing
+	// came out darker than the ground, as black bars along every tunnel — and on a tinted land (a mid
+	// blue, say) it pushed every tunnel far away from the map's own colours. Fading toward the land is
+	// what "sinks into the ground" means, in any theme.
+	//
+	// KNOWN GAP: a road whose colour is already close to the land has nowhere to fade to — the white
+	// minor roads of a light theme move by a hair — and reads the same underground as on the surface.
+	// Only a cue that is not a colour can mark those; a dashed casing does it, and is what the test
+	// records as missing. See the exception list there before assuming a road was simply forgotten.
 	fade: 0.45,
 	// Rail is the exception (see `underground`): it keeps the translucency the old style gave it.
 	translucency: 0.5,
@@ -496,7 +501,7 @@ function scaleOpacity(opacity: b.StyleProps['opacity'], factor: number): b.Style
  * why the `[0.5, 0.25]` and `[1, 0.2]` tunnel dashes this style used to carry all rendered solid.
  */
 function underground(ctx: LayerContext, id: string, s: b.StyleProps): b.StyleProps {
-	const color = typeof s.color === 'object' ? s.color.blend(UNDERGROUND.fade, ctx.bg) : s.color;
+	const color = typeof s.color === 'object' ? s.color.blend(UNDERGROUND.fade, ctx.c.land) : s.color;
 
 	// Rail keeps the translucency it has always had; its casing and its ties dim together.
 	if (id.startsWith('tunnel-transport-'))
