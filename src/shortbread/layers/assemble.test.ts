@@ -154,8 +154,9 @@ describe('underground treatment', () => {
 	// `tunnel-street-track-bicycle` and `tunnel-street-service-bicycle` used to sit here too. They were
 	// not roads the treatment failed to reach but width-less 1px hairlines that had no opacity to fade
 	// in the first place; `bicycleStyle` now returns null for those bases, so they are not emitted at all.
+	// `tunnel-way-cycleway` used to sit here as well: its fill was the near-white cycle colour. Paths
+	// are now drawn in that colour darkened (`WAY_CONTRAST`), which leaves the fade room to show.
 	const NO_COLOUR_HEADROOM = [
-		'tunnel-way-cycleway',
 		'tunnel-street-service',
 		'tunnel-street-bus',
 		'tunnel-street-pedestrian-bicycle',

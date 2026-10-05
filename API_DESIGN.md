@@ -327,7 +327,7 @@ type ColorsOptions = {
   transitRail?: string; // railways (main, light rail, tram)
   transitSubway?: string; // subways
   transitCycle?: string; // cycleways
-  transitFoot?: string; // footways, paths, steps, pedestrian streets
+  transitFoot?: string; // pedestrian streets and plazas; footways, paths and steps as a slightly darker dashed line
 
   // boundaries  (boundary*)
   boundary?: string; // country and state boundaries

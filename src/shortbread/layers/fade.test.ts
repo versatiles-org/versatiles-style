@@ -125,19 +125,24 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 });
 
 // Path-class ways appear by width growth (0 at z13), not opacity — so they carry no opacity fade,
-// and their fill + casing widths start at 0 at z13.
+// and their width starts at 0 at z13. They are a single dashed line: no casing layer is emitted.
 describe('path-class ways appear by growing from 0 width at z13 (no opacity fade)', () => {
-	for (const id of ['way-footway', 'way-steps', 'way-path', 'way-cycleway']) {
-		for (const layerId of [id, `${id}:outline`]) {
-			it(`${layerId} has no opacity fade and starts at 0 width at z13`, () => {
-				expect(opacityFade(style, layerId), `${layerId} must not opacity-fade`).toBeNull();
-				const width = paintOf(style, layerId)?.['line-width'];
-				expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
-				const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
-				expect(stops[0], `${layerId} width ramp must start at z13`).toBe(13);
-				expect(stops[1], `${layerId} must start at 0 width`).toBe(0);
-			});
-		}
+	for (const layerId of ['way-footway', 'way-steps', 'way-path', 'way-cycleway']) {
+		it(`${layerId} has no opacity fade and starts at 0 width at z13`, () => {
+			expect(opacityFade(style, layerId), `${layerId} must not opacity-fade`).toBeNull();
+			const width = paintOf(style, layerId)?.['line-width'];
+			expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
+			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
+			expect(stops[0], `${layerId} width ramp must start at z13`).toBe(13);
+			expect(stops[1], `${layerId} must start at 0 width`).toBe(0);
+		});
+
+		it(`${layerId} is dashed, with butt caps so the dash renders, and has no casing`, () => {
+			const layer = style.layers.find((l) => l.id === layerId) as { paint?: object; layout?: object } | undefined;
+			expect((layer?.paint as Record<string, unknown>)['line-dasharray']).toBeDefined();
+			expect((layer?.layout as Record<string, unknown>)?.['line-cap'] ?? 'butt').toBe('butt');
+			expect(style.layers.some((l) => l.id === `${layerId}:outline`)).toBe(false);
+		});
 	}
 });
 

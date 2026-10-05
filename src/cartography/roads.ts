@@ -202,28 +202,29 @@ function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b
 	};
 }
 
-// Path-class ways (footway/steps/path/cycleway), old VersaTiles style: a solid line with a matching
-// casing, growing in from 0 width at z13. footway/steps/path use the lavender foot color; cycleway
-// the light-blue cycle color. Tunnels are dimmed by `underground` (no dash — see the note there);
-// bridges also get a deck (see bridgeDeckStyle).
+// How far a path's line is darkened from its colour key. The key is the walkable-surface colour — it
+// also fills pedestrian streets and tints plazas, so it is light — and a thin line in a light colour
+// on a light land would not show.
+const WAY_CONTRAST = 0.15;
+
+// Path-class ways (footway/steps/path/cycleway): a thin dashed line with no casing, as nearly every
+// other map draws them — a path is not a road, and drawn as a filled, cased line it read as one.
+// Starts at 1px and grows to 10px at z20, where a path is wide enough to be a surface. Steps take a
+// shorter dash, the rungs. footway/steps/path use the foot colour; cycleway the cycle colour.
+//
+// The caps are butt, on every prefix: a round cap extends each dash by half a line width at both
+// ends, which closes these gaps and renders the line solid (see the note on `underground`).
+// Tunnels are faded by `underground`; bridges also get a deck (see bridgeDeckStyle).
 function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
+	if (isOutline) return null;
 	const { c, fg } = ctx;
 	const fill = t === 'cycleway' ? c.transitCycle : c.transitFoot;
-
-	if (isOutline) {
-		// Casing: the fill darkened ~10% (matches the old style's outline tint), solid in every prefix.
-		return {
-			color: fill.blend(0.1, fg),
-			lineJoin,
-			lineCap,
-			size: { 13: 0, 16: 5, 18: 7, 19: 12, 20: 22 },
-		};
-	}
 	return {
-		color: fill,
+		color: fill.blend(WAY_CONTRAST, fg),
 		lineJoin,
-		lineCap,
-		size: { 13: 0, 16: 4, 18: 6, 19: 10, 20: 20 },
+		lineCap: 'butt',
+		lineDasharray: t === 'steps' ? [0.5, 0.25] : [1.5, 0.75],
+		size: { base: 1.2, stops: { 13: 0, 14: 1, 20: 10 } },
 	};
 }
 
