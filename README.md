@@ -40,6 +40,8 @@ Further themes have a colour scheme that resembles another project's map. They a
 styles — the same layers, labels and icons as every other theme, in different colours — which is why
 they carry names of their own. A lookalike has a dark theme only where the map it resembles has one.
 
+Lookalike themes are not part of the prebuilt `styles.tar.gz`; generate them with `osm({ theme })`.
+
 | Theme         | Resembles              | Light                                                                                                 | Dark                                                                                                            |
 | ------------- | ---------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | **positrino** | Positron, Dark Matter  | <img width="384" src="https://versatiles.org/versatiles-style/positrino.png" alt="positrino style" /> | <img width="384" src="https://versatiles.org/versatiles-style/positrino-dark.png" alt="positrino-dark style" /> |
@@ -58,7 +60,7 @@ they carry names of their own. A lookalike has a dark theme only where the map i
 
 Download the assets from the [latest release](https://github.com/versatiles-org/versatiles-style/releases/latest/):
 
-- **[styles.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz):** Contains all styles in multiple languages.
+- **[styles.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/styles.tar.gz):** Contains the styles above in multiple languages (the lookalike themes are generated on demand).
   - **Note:** These styles use `tiles.versatiles.org` as the source for tiles, fonts (glyphs), and icons (sprites).
 - **[sprites.tar.gz](https://github.com/versatiles-org/versatiles-style/releases/latest/download/sprites.tar.gz):** Includes map icons and other sprites.
 - **[Sprite overview](https://versatiles.org/versatiles-style/sprites.html):** every icon in all three sheets, with its sprite ID, title and aliases.

@@ -63,30 +63,22 @@ describe('getStyleVariants()', () => {
 
 	it('returns the expected set of variant names', () => {
 		const names = getStyleVariants().map((v) => v.name);
-		// 20 themes (5 palettes, light and dark, and 10 lookalikes) × 7 osm variants + 8 satellite variants
+		// 10 themes (5 palettes, light and dark) × 7 osm variants + 8 satellite variants
 		// + 4 legacy v5 palettes × 7 + `empty/style` (see the deprecation block below)
-		expect(names).toHaveLength(20 * 7 + 8 + 4 * 7 + 1);
+		expect(names).toHaveLength(10 * 7 + 8 + 4 * 7 + 1);
 		expect(new Set(names).size).toBe(names.length); // all unique
 
 		const paired = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
-		for (const palette of [
-			...paired,
-			'positrino',
-			'positrino-dark',
-			'fnord',
-			'protocol',
-			'protocol-dark',
-			'protostar',
-			'protostar-dark',
-			'protozoa',
-			'classic',
-			'googol',
-		]) {
+		for (const palette of paired) {
 			expect(names).toContain(`${palette}/style`);
 			expect(names).toContain(`${palette}/en`);
 			expect(names).toContain(`${palette}/de`);
 			expect(names).toContain(`${palette}/nolabel`);
 			expect(names).toContain(`${palette}-terrain/style`);
+		}
+		// the lookalike themes are built on demand, not published
+		for (const palette of ['positrino', 'fnord', 'classic', 'googol']) {
+			expect(names).not.toContain(`${palette}/style`);
 		}
 		expect(names).toContain('satellite/style');
 		expect(names).toContain('satellite/overlay');

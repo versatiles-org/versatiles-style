@@ -39,22 +39,9 @@ describe('build-styles', () => {
 
 		const generatedFiles = captured.calls[0].entries.map((entry) => entry.name).sort();
 
-		// v6 themes, light and dark, the lookalikes, plus the v5 names kept alive so their published URLs
-		// do not 404 (B1).
-		const paired = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
-		const palettes = [
-			...paired,
-			'positrino',
-			'positrino-dark',
-			'fnord',
-			'protocol',
-			'protocol-dark',
-			'protostar',
-			'protostar-dark',
-			'protozoa',
-			'classic',
-			'googol',
-		];
+		// v6 themes, light and dark, plus the v5 names kept alive so their published URLs do not 404 (B1).
+		// The lookalike themes are not among them: they are built on demand.
+		const palettes = ['colorful', 'natural', 'muted', 'gray', 'toner'].flatMap((p) => [p, `${p}-dark`]);
 		const legacy = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
 		const expectedFiles = [...palettes, ...legacy].flatMap((style) => [
 			`${style}/style.json`,

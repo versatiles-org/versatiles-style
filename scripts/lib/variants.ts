@@ -8,6 +8,7 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite as satelliteFn } from '../../src/api/index.js';
 import { V5_STYLE_THEMES, type OsmFeaturesOptions } from '../../src/options/index.js';
+import { LOOKALIKES } from '../config/themes.js';
 
 export interface StyleVariant {
 	name: string;
@@ -20,8 +21,9 @@ const LEGACY_ALIASES = Object.entries(V5_STYLE_THEMES).map(([name, theme]) => ({
 export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 
-	// every theme, light and dark
-	const palettes = osm.palettes;
+	// The five palettes, light and dark. The lookalike themes are not published as prebuilt styles:
+	// each theme costs seven files here, and `osm({ theme })` builds any of them on demand.
+	const palettes = osm.palettes.filter((palette) => !(palette in LOOKALIKES));
 
 	// Terrain variants enable terrain + hillshade, but let the caller's `features`
 	// override those defaults (and add landcover / buildings on top).
