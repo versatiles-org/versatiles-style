@@ -636,6 +636,7 @@ describe('osm() static properties', () => {
 			'protostar',
 			'protostar-dark',
 			'protozoa',
+			'classic',
 		]);
 	});
 

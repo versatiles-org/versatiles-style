@@ -52,6 +52,7 @@ describe('build-styles', () => {
 			'protostar',
 			'protostar-dark',
 			'protozoa',
+			'classic',
 		];
 		const legacy = ['eclipse', 'graybeard', 'neutrino', 'shadow'];
 		const expectedFiles = [...palettes, ...legacy].flatMap((style) => [

@@ -259,6 +259,7 @@ describe('osm()', () => {
 			'protostar',
 			'protostar-dark',
 			'protozoa',
+			'classic',
 		]);
 	});
 

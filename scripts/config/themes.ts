@@ -339,6 +339,59 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#CCCCCC',
 		},
 	},
+	// Not read by the importer: OpenStreetMap Carto is a CartoCSS style, so these are the colours its
+	// style sheets define, assigned to our keys by hand. Where the two do not line up:
+	//  - it colours five road classes and we have three keys. `roadTrunk` also paints primary and
+	//    secondary roads, which are most of what it paints, so it takes Carto's primary orange rather
+	//    than its trunk red; tertiary roads are white in both.
+	//  - its foot and cycle paths are thin dashed lines in salmon and blue. Ours are filled, where those
+	//    colours flood a city centre, so `transitFoot` takes its pedestrian-area fill and `transitCycle`
+	//    is derived.
+	classic: {
+		resembles: 'OpenStreetMap Carto',
+		dark: false,
+		land: '#F2EFE9',
+		colors: {
+			water: '#AAD3DF',
+			glacier: '#DDECEC',
+			natureWood: '#ADD19E',
+			natureGrass: '#CDEBB0',
+			naturePark: '#C8FACC',
+			natureAgriculture: '#EEF0D5',
+			natureSand: '#F5E9C6',
+			natureRock: '#EEE5DC',
+			natureLeisure: '#DFFCE2',
+			areaResidential: '#E0DFDF',
+			areaCommercial: '#F2DAD9',
+			areaIndustrial: '#EBDBE8',
+			areaBurial: '#AACBAF',
+			siteConstruction: '#C7C7B4',
+			siteEducation: '#FFFFE5',
+			siteHospital: '#FFFFE5',
+			siteDanger: '#FF55551A',
+			sitePrison: '#8E8E8E24',
+			siteParking: '#EEEEEE',
+			siteSports: '#88E0BE',
+			building: '#D9D0C9',
+			buildingBg: '#C4B6AB',
+			roadStreet: '#FFFFFF',
+			roadStreetBg: '#BBBBBB',
+			roadMotorway: '#E892A2',
+			roadMotorwayBg: '#DC2A67',
+			roadTrunk: '#FCD6A4',
+			roadTrunkBg: '#A06B00',
+			transitRail: '#707070',
+			transitSubway: '#999999',
+			transitFoot: '#DDDDE8',
+			boundary: '#8D618B',
+			boundaryDisputed: '#A37DA1',
+			label: '#222222',
+			labelHalo: '#FFFFFF99',
+			labelSymbol: '#0092DA',
+			labelPoi: '#734A08',
+			labelWater: '#4D80B3',
+		},
+	},
 };
 
 /**

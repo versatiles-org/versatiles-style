@@ -405,7 +405,7 @@ type HillshadeOptions =
 
 Each palette is a light theme and has a dark theme of its own, named with a `-dark` suffix (`colorful-dark`, …). To follow the system setting, pick between them with [`isDarkMode()`](#isdarkmode-boolean).
 
-The names after those ten are lookalikes: themes whose colour scheme resembles another project's map — `positrino` and `positrino-dark` resemble Positron and Dark Matter, `fnord` resembles Fiord Color, and `protocol`, `protostar` and `protozoa` resemble the Protomaps flavours (Light and Dark, White and Black, Grayscale). A lookalike has a dark theme only where that map has one, so `fnord` is a dark theme with no light partner and no `-dark` suffix.
+The names after those ten are lookalikes: themes whose colour scheme resembles another project's map — `positrino` and `positrino-dark` resemble Positron and Dark Matter, `fnord` resembles Fiord Color, and `protocol`, `protostar` and `protozoa` resemble the Protomaps flavours (Light and Dark, White and Black, Grayscale), and `classic` resembles OpenStreetMap Carto. A lookalike has a dark theme only where that map has one, so `fnord` is a dark theme with no light partner and no `-dark` suffix.
 
 ```ts
 type Palette =
@@ -426,7 +426,8 @@ type Palette =
   | 'protocol-dark'
   | 'protostar'
   | 'protostar-dark'
-  | 'protozoa';
+  | 'protozoa'
+  | 'classic';
 
 type OsmOverlayOptions = {
   theme?: ThemeOptions; // = Palette, the name this option is declared with; default: 'colorful'

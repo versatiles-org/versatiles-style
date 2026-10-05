@@ -993,6 +993,13 @@ exports[`generated style shape snapshots > satellite with toner overlay 1`] = `
 
 exports[`generated style shape snapshots > variant layer counts 1`] = `
 {
+  "classic-terrain/de": 269,
+  "classic-terrain/en": 269,
+  "classic-terrain/style": 269,
+  "classic/de": 268,
+  "classic/en": 268,
+  "classic/nolabel": 236,
+  "classic/style": 268,
   "colorful-dark-terrain/de": 269,
   "colorful-dark-terrain/en": 269,
   "colorful-dark-terrain/style": 269,

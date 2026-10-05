@@ -27,7 +27,8 @@ export type Palette =
 	| 'protocol-dark'
 	| 'protostar'
 	| 'protostar-dark'
-	| 'protozoa';
+	| 'protozoa'
+	| 'classic';
 
 export type ThemeOptions = Palette;
 

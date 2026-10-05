@@ -62,7 +62,15 @@ export interface ThemeSettings {
 
 /** The lookalike themes. A pair shares a name, the dark one with the usual `-dark` suffix. */
 export type LookalikeTheme =
-	'positrino' | 'positrino-dark' | 'fnord' | 'protocol' | 'protocol-dark' | 'protostar' | 'protostar-dark' | 'protozoa';
+	| 'positrino'
+	| 'positrino-dark'
+	| 'fnord'
+	| 'protocol'
+	| 'protocol-dark'
+	| 'protostar'
+	| 'protostar-dark'
+	| 'protozoa'
+	| 'classic';
 
 export interface Lookalike {
 	/** The map it resembles. For the documentation only — never part of the theme's name. */
