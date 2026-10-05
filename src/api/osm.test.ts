@@ -260,6 +260,7 @@ describe('osm()', () => {
 			'protostar-dark',
 			'protozoa',
 			'classic',
+			'googol',
 		]);
 	});
 

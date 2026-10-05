@@ -32,11 +32,12 @@ describe('PALETTES', () => {
 			'protostar-dark',
 			'protozoa',
 			'classic',
+			'googol',
 		]);
 	});
 
 	it('marks the -dark themes as dark, and the dark themes that have no light partner', () => {
-		expect(LIGHT).toEqual([...PAIRED, 'positrino', 'protocol', 'protostar', 'protozoa', 'classic']);
+		expect(LIGHT).toEqual([...PAIRED, 'positrino', 'protocol', 'protostar', 'protozoa', 'classic', 'googol']);
 		expect(PALETTES.filter((palette) => isDarkPalette(palette))).toEqual([
 			...PAIRED.map((palette) => `${palette}-dark`),
 			'positrino-dark',

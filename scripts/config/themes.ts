@@ -392,6 +392,45 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelWater: '#4D80B3',
 		},
 	},
+	// Not read by the importer either: there is no style to read. These are the most frequent pixel
+	// colours of each feature in screenshots of the map at eight places, taken on 2026-10-05. Where the
+	// two do not line up:
+	//  - that map colours primary roads darker than secondary ones, and `roadTrunk` paints both. It
+	//    takes the secondary colour, so primary roads come out lighter than on that map.
+	//  - its minor roads have no casing, so `roadStreetBg` takes the road's own colour.
+	//  - its footpaths are thin dashed lines; ours are filled, so `transitFoot` stays close to the land.
+	googol: {
+		resembles: 'Google Maps',
+		dark: false,
+		land: '#F5F3F3',
+		contrast: { fill: 0.5, line: 1, label: 1 },
+		colors: {
+			water: '#90DAEE',
+			glacier: '#FFFFFF',
+			natureWood: '#BEF0D2',
+			natureGrass: '#D3F8E2',
+			naturePark: '#C3F1D5',
+			natureSand: '#F5F0E5',
+			natureRock: '#EDEDED',
+			natureLeisure: '#C3F1D5',
+			areaResidential: '#F5F3F3',
+			areaCommercial: '#F8F0DE',
+			siteHospital: '#FCE8E6',
+			building: '#E8E9ED',
+			roadStreet: '#D8E0E7',
+			roadStreetBg: '#D8E0E7',
+			roadMotorway: '#8BA5C1',
+			roadMotorwayBg: '#7090B2',
+			roadTrunk: '#B3C2D4',
+			roadTrunkBg: '#7E9BBA',
+			transitRail: '#D0D3D7',
+			transitSubway: '#D0D3D7',
+			transitFoot: '#F8F7F7',
+			label: '#303034',
+			labelHalo: '#FFFFFF',
+			labelWater: '#088797',
+		},
+	},
 };
 
 /**

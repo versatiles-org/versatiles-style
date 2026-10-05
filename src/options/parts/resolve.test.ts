@@ -147,7 +147,7 @@ describe('resolveOsm', () => {
 describe('resolveTheme', () => {
 	it('rejects an unknown palette with an error naming the valid ones', () => {
 		expect(() => resolveTheme('purple' as never)).toThrow(
-			'theme: unknown palette "purple". Valid palettes: colorful, colorful-dark, natural, natural-dark, muted, muted-dark, gray, gray-dark, toner, toner-dark, positrino, positrino-dark, fnord, protocol, protocol-dark, protostar, protostar-dark, protozoa, classic.'
+			'theme: unknown palette "purple". Valid palettes: colorful, colorful-dark, natural, natural-dark, muted, muted-dark, gray, gray-dark, toner, toner-dark, positrino, positrino-dark, fnord, protocol, protocol-dark, protostar, protostar-dark, protozoa, classic, googol.'
 		);
 	});
 

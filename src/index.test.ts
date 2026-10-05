@@ -76,6 +76,7 @@ describe('exports', () => {
 			'protostar-dark',
 			'protozoa',
 			'classic',
+			'googol',
 		]);
 		expect(typeof lib.osm.colors).toBe('function');
 		expect(typeof lib.osm.layerGroups).toBe('object');
