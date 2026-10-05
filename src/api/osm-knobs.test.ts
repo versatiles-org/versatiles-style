@@ -638,6 +638,10 @@ describe('osm() static properties', () => {
 			'protozoa',
 			'classic',
 			'googol',
+			'freedom',
+			'crate',
+			'mosaic',
+			'ping',
 		]);
 	});
 

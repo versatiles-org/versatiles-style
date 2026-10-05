@@ -261,6 +261,10 @@ describe('osm()', () => {
 			'protozoa',
 			'classic',
 			'googol',
+			'freedom',
+			'crate',
+			'mosaic',
+			'ping',
 		]);
 	});
 

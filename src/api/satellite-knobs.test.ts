@@ -27,10 +27,12 @@ const HALO_LIGHTNESS = 0.15;
 const WATER_LIGHTNESS = 0.85;
 /**
  * The derivation sets lightness in OKLCh but emits 8-bit hex, so a value comes back a hair under the
- * threshold it was set to (`colorful`'s label lands on 0.9194). The rule is the threshold; this is the
- * width of the rounding, not slack for a colour that genuinely misses.
+ * threshold it was set to (`colorful`'s label lands on 0.9194). A saturated colour loses a little more
+ * when it is brought into gamut: `freedom`'s periwinkle water label lands on 0.8476 for 0.85. The rule
+ * is the threshold; this is the width of those two effects, not slack for a colour that genuinely
+ * misses.
  */
-const QUANTISATION = 0.002;
+const QUANTISATION = 0.003;
 const oklch = (v: unknown) => Color.parse(v as string).to('oklch').coords;
 const lightness = (v: unknown): number => oklch(v)[0];
 /** 0 for a grey; a hue with no chroma reports `NaN`, which no comparison here should see. */

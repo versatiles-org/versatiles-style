@@ -29,7 +29,11 @@ export type Palette =
 	| 'protostar-dark'
 	| 'protozoa'
 	| 'classic'
-	| 'googol';
+	| 'googol'
+	| 'freedom'
+	| 'crate'
+	| 'mosaic'
+	| 'ping';
 
 export type ThemeOptions = Palette;
 

@@ -71,7 +71,11 @@ export type LookalikeTheme =
 	| 'protostar-dark'
 	| 'protozoa'
 	| 'classic'
-	| 'googol';
+	| 'googol'
+	| 'freedom'
+	| 'crate'
+	| 'mosaic'
+	| 'ping';
 
 export interface Lookalike {
 	/** The map it resembles. For the documentation only — never part of the theme's name. */

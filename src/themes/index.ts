@@ -36,6 +36,10 @@ export const PALETTES: ReadonlyArray<Palette> = Object.freeze([
 	'protozoa',
 	'classic',
 	'googol',
+	'freedom',
+	'crate',
+	'mosaic',
+	'ping',
 ] as const);
 
 /**

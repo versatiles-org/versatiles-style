@@ -51,6 +51,10 @@ Lookalike themes are not part of the prebuilt `styles.tar.gz`; generate them wit
 | **fnord**     | Fiord Color            | —                                                                                                     | <img width="384" src="https://versatiles.org/versatiles-style/fnord.png" alt="fnord style" />                   |
 | **classic**   | OpenStreetMap Carto    | <img width="384" src="https://versatiles.org/versatiles-style/classic.png" alt="classic style" />     | —                                                                                                               |
 | **googol**    | Google Maps            | <img width="384" src="https://versatiles.org/versatiles-style/googol.png" alt="googol style" />       | —                                                                                                               |
+| **freedom**   | OSM Liberty            | <img width="384" src="https://versatiles.org/versatiles-style/freedom.png" alt="freedom style" />     | —                                                                                                               |
+| **crate**     | Mapbox Streets         | <img width="384" src="https://versatiles.org/versatiles-style/crate.png" alt="crate style" />         | —                                                                                                               |
+| **mosaic**    | MapTiler Streets       | <img width="384" src="https://versatiles.org/versatiles-style/mosaic.png" alt="mosaic style" />       | —                                                                                                               |
+| **ping**      | Bing Maps              | <img width="384" src="https://versatiles.org/versatiles-style/ping.png" alt="ping style" />           | —                                                                                                               |
 
 ---
 
@@ -284,7 +288,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **103.5 KB** raw, **32.6 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **104.9 KB** raw, **33.3 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 
