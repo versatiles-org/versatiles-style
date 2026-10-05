@@ -567,6 +567,8 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	//    the same orange and take `roadTrunk`; controlled-access highways take `roadMotorway`.
 	//  - its trails are dashed lines in a green of their own (#98B38F). `transitFoot` also fills
 	//    pedestrian streets and plazas, which it draws near-white, so that key is derived.
+	//  - it has no farmland of its own: its grass land cover covers farmland too, so `natureAgriculture`
+	//    takes the grass colour.
 	//  - `buildingBg` has no counterpart in the style and is the outline measured from a screenshot.
 	ping: {
 		resembles: 'Bing Maps',
@@ -578,6 +580,7 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			glacier: '#FFFFFF',
 			natureWood: '#B0E5BD',
 			natureGrass: '#CBEFD4',
+			natureAgriculture: '#CBEFD4',
 			naturePark: '#B0E5BD',
 			natureLeisure: '#CEE9CE',
 			areaResidential: '#F9FAF7',
