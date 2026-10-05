@@ -615,7 +615,7 @@ describe('osm() knob: layers (group gating)', () => {
 // ── static helpers on the osm() function object ──────────────────────────────────
 
 describe('osm() static properties', () => {
-	it('osm.palettes lists all ten themes', () => {
+	it('osm.palettes lists every theme', () => {
 		expect(osm.palettes).toEqual([
 			'colorful',
 			'colorful-dark',
@@ -627,6 +627,9 @@ describe('osm() static properties', () => {
 			'gray-dark',
 			'toner',
 			'toner-dark',
+			'positrino',
+			'positrino-dark',
+			'fnord',
 		]);
 	});
 

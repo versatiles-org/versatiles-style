@@ -47,6 +47,46 @@ export interface ThemeSettings {
 	darkLand: number;
 }
 
+// ── lookalikes ────────────────────────────────────────────────────────────────
+//
+// A lookalike is a theme whose colour scheme resembles another project's map. It is still this
+// package's style — its layers, its zoom ramps, its icons — so it carries a name of its own and never
+// the other map's. Unlike the five palettes it is a single table: a light one, a dark one, or a pair
+// where the other map itself comes as a pair, and never a dark theme made up to fill the gap.
+//
+// It goes through the same derivation, with two differences. Its land is given exactly, in either
+// mode, rather than solved for a luminance. And the colours read off the other map are pinned: they
+// are written out as they are, and what is solved against one — `labelWater` over the water, a road
+// over its casing — is solved against the pinned colour. Everything that map does not draw is derived
+// from colorful against the lookalike's land, as for any other theme.
+
+/** The lookalike themes. A pair shares a name, the dark one with the usual `-dark` suffix. */
+export type LookalikeTheme = 'positrino' | 'positrino-dark' | 'fnord';
+
+export interface Lookalike {
+	/** The map it resembles. For the documentation only — never part of the theme's name. */
+	resembles: string;
+	/** Whether this is a dark theme. Not read from the name: `fnord` is dark and has no light partner. */
+	dark: boolean;
+	/** Land and background, exactly. */
+	land: string;
+	/** As in `ThemeSettings`, for the colours that are not pinned. */
+	contrast?: Scale;
+	/** As in `ThemeSettings`, for the colours that are not pinned. */
+	chroma?: Scale;
+	/** As in `ThemeSettings`, for the colours that are not pinned. */
+	decolorize?: number;
+	/**
+	 * Give every derived colour the land's hue and chroma instead of colorful's.
+	 *
+	 * For a map drawn in one hue throughout: colorful's green woods and beige buildings would be the
+	 * only other hues on it, on exactly the features that map does not single out.
+	 */
+	landHue?: boolean;
+	/** The colours read off the other map, written out as they are. */
+	colors: Partial<ResolvedColors>;
+}
+
 // ── fixes ─────────────────────────────────────────────────────────────────────
 //
 // `ThemeSettings` tunes a whole theme, and only by group: colorful's relationships, scaled. A fix is

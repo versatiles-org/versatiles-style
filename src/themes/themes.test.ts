@@ -5,11 +5,13 @@ import type { Palette } from '../options/index.js';
 
 const ALL_KEYS = colorOptionsKeys as ReadonlyArray<string>;
 const LIGHT = PALETTES.filter((palette) => !isDarkPalette(palette));
+/** The palettes derived as a pair. Lookalikes are not: one has a dark theme only if the map it resembles does. */
+const PAIRED = ['colorful', 'natural', 'muted', 'gray', 'toner'] as const;
 
 // ── Palette registry ──────────────────────────────────────────────────────────
 
 describe('PALETTES', () => {
-	it('lists the five palettes, each followed by its dark theme', () => {
+	it('lists the five palettes, each followed by its dark theme, then the lookalikes', () => {
 		expect([...PALETTES]).toEqual([
 			'colorful',
 			'colorful-dark',
@@ -21,12 +23,25 @@ describe('PALETTES', () => {
 			'gray-dark',
 			'toner',
 			'toner-dark',
+			'positrino',
+			'positrino-dark',
+			'fnord',
 		]);
 	});
 
-	it('marks exactly the -dark themes as dark', () => {
-		expect(LIGHT).toEqual(['colorful', 'natural', 'muted', 'gray', 'toner']);
-		expect(PALETTES.filter((palette) => isDarkPalette(palette))).toEqual(LIGHT.map((palette) => `${palette}-dark`));
+	it('marks the -dark themes as dark, and the dark themes that have no light partner', () => {
+		expect(LIGHT).toEqual([...PAIRED, 'positrino']);
+		expect(PALETTES.filter((palette) => isDarkPalette(palette))).toEqual([
+			...PAIRED.map((palette) => `${palette}-dark`),
+			'positrino-dark',
+			'fnord',
+		]);
+	});
+
+	it('gives every -dark theme a light theme of the same name', () => {
+		for (const palette of PALETTES.filter((p) => p.endsWith('-dark'))) {
+			expect(LIGHT, palette).toContain(palette.slice(0, -'-dark'.length));
+		}
 	});
 });
 
@@ -72,8 +87,8 @@ describe('the encoded tables in tables.ts', () => {
 
 describe('getPaletteColors()', () => {
 	it('gives each dark theme a different background from its light theme', () => {
-		for (const light of LIGHT) {
-			const dark = `${light}-dark` as Palette;
+		for (const dark of PALETTES.filter((p) => p.endsWith('-dark'))) {
+			const light = dark.slice(0, -'-dark'.length) as Palette;
 			expect(getPaletteColors(light).background, light).not.toBe(getPaletteColors(dark).background);
 		}
 	});

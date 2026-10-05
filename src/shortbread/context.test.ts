@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildContext } from './context.js';
 import { resolveOsm } from '../options/index.js';
-import { PALETTES } from '../themes/index.js';
+import { PALETTES, isDarkPalette } from '../themes/index.js';
 import type { Color } from '../color/index.js';
 
 function channels(color: Color): [number, number, number] {
@@ -21,7 +21,7 @@ function isWhite(color: Color): boolean {
 // blend-based darken/lighten in the layer builders works under both light and dark palettes.
 describe('LayerContext background reference (bg / fg)', () => {
 	describe.each(PALETTES)('palette "%s"', (palette) => {
-		const dark = palette.endsWith('-dark');
+		const dark = isDarkPalette(palette);
 
 		it(`bg is pure ${dark ? 'black' : 'white'} and fg pure ${dark ? 'white' : 'black'}`, () => {
 			const ctx = buildContext(resolveOsm({ theme: palette }));

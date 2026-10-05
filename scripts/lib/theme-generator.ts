@@ -25,6 +25,9 @@
  *   `FIXES`     a named handful of colours that should deviate, per mode.
  *   `OVERRIDES` one literal colour in one theme, bypassing the derivation entirely. A last resort.
  *
+ * The lookalike themes (`LOOKALIKES`) go through the same derivation with their land given exactly and
+ * the colours read off the map they resemble pinned — see `Lookalike` in `./theme-types.ts`.
+ *
  * None of them can move `colorful` light, which is hand-written in `src/themes/colorful.ts`. Change a
  * colour there and every derived theme follows, since their targets are measured from it.
  *
@@ -37,8 +40,8 @@
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
 import type { Palette, ResolvedColors } from '../../src/options/index.js';
-import { FIXES, OVERRIDES, THEMES } from '../config/themes.js';
-import type { Adjustment, Fix, Group, LightTheme } from './theme-types.js';
+import { FIXES, LOOKALIKES, OVERRIDES, THEMES } from '../config/themes.js';
+import type { Adjustment, Fix, Group, LightTheme, Lookalike, LookalikeTheme, ThemeSettings } from './theme-types.js';
 
 /**
  * Keys no fix can reach, because they are not derived through a contrast target.
@@ -287,29 +290,63 @@ function blendReference(ref: Record<string, string>, blendOf: (key: string) => n
 	return out;
 }
 
+/** One of the five palettes, in one mode. */
 function build(
 	theme: LightTheme,
 	dark: boolean,
 	fixes: Map<string, Required<Adjustment>>,
 	diagnostics: Diagnostic[]
 ): Record<string, string> {
-	const settings = THEMES[theme];
 	// keyed by this theme and mode, so what follows is colorful as *this* theme should derive it — the
 	// shared reference is never touched, or one theme's fix would move all of them
 	const fixOf = (key: string) => fixes.get(`${theme}|${dark}|${key}`) ?? NEUTRAL;
+	const name = (dark ? `${theme}-dark` : theme) as Palette;
+	return derive(name, THEMES[theme], dark, fixOf, diagnostics);
+}
+
+/** A lookalike: derived against its own land, with the colours read off the other map pinned. */
+function buildLookalike(name: LookalikeTheme, diagnostics: Diagnostic[]): Record<string, string> {
+	const lookalike = LOOKALIKES[name];
+	const land = parse(lookalike.land);
+	const colors = lookalike.colors as Record<string, string>;
+	for (const key of ['land', 'background']) {
+		if (key in colors) throw new Error(`lookalike "${name}": ${key} is its \`land\`, not one of its colours`);
+	}
+	const pinned = Object.fromEntries(Object.entries(colors).map(([key, value]) => [key, parse(value).asHex()]));
+	const settings = { ...lookalike, darkLand: land.luminance() };
+	return derive(name, settings, lookalike.dark, () => NEUTRAL, diagnostics, { land, pinned });
+}
+
+/** What a lookalike fixes in advance: its land exactly, and the colours that are written out as given. */
+interface Pins {
+	land: Color;
+	pinned: Record<string, string>;
+}
+
+function derive(
+	name: Palette,
+	settings: ThemeSettings & Pick<Lookalike, 'landHue'>,
+	dark: boolean,
+	fixOf: (key: string) => Required<Adjustment>,
+	diagnostics: Diagnostic[],
+	pins?: Pins
+): Record<string, string> {
 	const ref = blendReference(
 		decolorized(osm.colors('colorful') as Record<string, string>, settings.decolorize ?? 0),
 		(key) => fixOf(key).blend
 	);
 	const refLand = parse(ref.land);
+	const ownLand = pins?.land.oklch;
 	const tint = (key: string, group: Group) => {
-		const { c, h } = parse(ref[key]).oklch;
 		const v = settings.chroma?.[group] ?? 1;
+		// the land's own hue and chroma, already this mode's, so no `DARK_CHROMA` on top
+		if (settings.landHue && ownLand) return { h: ownLand.h, C: ownLand.c * v };
+		const { c, h } = parse(ref[key]).oklch;
 		return { h, C: c * v * (dark ? DARK_CHROMA : 1) * fixOf(key).chroma };
 	};
 
-	let land = parse(settings.land ?? ref.land);
-	if (dark) {
+	let land = pins?.land ?? parse(settings.land ?? ref.land);
+	if (dark && !pins) {
 		const own = land.oklch;
 		const { h, C } = tint('land', 'fill');
 		land = solveLightness(own.c > 0.02 ? own.h : h, C * 0.5, 1, settings.darkLand, (c) => c.luminance());
@@ -323,6 +360,10 @@ function build(
 	for (const key of keys) {
 		const group = groupOf(key);
 		const alpha = parse(ref[key]).alpha;
+		if (pins && key in pins.pinned) {
+			out[key] = pins.pinned[key];
+			continue;
+		}
 		if (key === 'labelHalo') {
 			out[key] = (dark ? Color.srgb(0, 0, 0, alpha) : Color.srgb(255, 255, 255, alpha)).asHex();
 			continue;
@@ -370,7 +411,6 @@ function build(
 		// is otherwise a silent no-op, and a fix that quietly does nothing still reads as a change.
 		if (fix !== NEUTRAL) {
 			const achieved = measure(color);
-			const name = (dark ? `${theme}-dark` : theme) as Palette;
 			if (inverted) {
 				diagnostics.push({
 					theme: name,
@@ -413,6 +453,9 @@ export function generate(fixes: readonly Fix[] = FIXES): {
 		for (const [name, dark] of variants) {
 			tables[name] = { ...build(theme, dark, resolved, diagnostics), ...OVERRIDES[name] } as ResolvedColors;
 		}
+	}
+	for (const name of Object.keys(LOOKALIKES) as LookalikeTheme[]) {
+		tables[name] = { ...buildLookalike(name, diagnostics), ...OVERRIDES[name] } as ResolvedColors;
 	}
 	return { tables, diagnostics };
 }

@@ -67,6 +67,9 @@ describe('exports', () => {
 			'gray-dark',
 			'toner',
 			'toner-dark',
+			'positrino',
+			'positrino-dark',
+			'fnord',
 		]);
 		expect(typeof lib.osm.colors).toBe('function');
 		expect(typeof lib.osm.layerGroups).toBe('object');

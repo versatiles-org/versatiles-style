@@ -26,6 +26,9 @@ export const PALETTES: ReadonlyArray<Palette> = Object.freeze([
 	'gray-dark',
 	'toner',
 	'toner-dark',
+	'positrino',
+	'positrino-dark',
+	'fnord',
 ] as const);
 
 /**
@@ -53,5 +56,8 @@ export function getPaletteColors(palette: Palette): ResolvedColors {
 
 /** Whether a palette is a dark theme, whose derived colours blend toward black instead of white. */
 export function isDarkPalette(palette: Palette): boolean {
-	return palette.endsWith('-dark');
+	return palette.endsWith('-dark') || DARK_ONLY.has(palette);
 }
+
+/** Dark themes with no light partner, which the `-dark` suffix therefore does not mark. */
+const DARK_ONLY: ReadonlySet<Palette> = new Set(['fnord']);

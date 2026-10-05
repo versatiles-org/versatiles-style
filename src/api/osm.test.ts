@@ -251,6 +251,9 @@ describe('osm()', () => {
 			'gray-dark',
 			'toner',
 			'toner-dark',
+			'positrino',
+			'positrino-dark',
+			'fnord',
 		]);
 	});
 

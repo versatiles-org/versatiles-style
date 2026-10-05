@@ -405,6 +405,8 @@ type HillshadeOptions =
 
 Each palette is a light theme and has a dark theme of its own, named with a `-dark` suffix (`colorful-dark`, …). To follow the system setting, pick between them with [`isDarkMode()`](#isdarkmode-boolean).
 
+The names after those ten are lookalikes: themes whose colour scheme resembles another project's map — `positrino` and `positrino-dark` resemble Positron and Dark Matter, `fnord` resembles Fiord Color. A lookalike has a dark theme only where that map has one, so `fnord` is a dark theme with no light partner and no `-dark` suffix.
+
 ```ts
 type Palette =
   | 'colorful'
@@ -416,7 +418,10 @@ type Palette =
   | 'gray'
   | 'gray-dark'
   | 'toner'
-  | 'toner-dark';
+  | 'toner-dark'
+  | 'positrino'
+  | 'positrino-dark'
+  | 'fnord';
 
 type OsmOverlayOptions = {
   theme?: ThemeOptions; // = Palette, the name this option is declared with; default: 'colorful'
@@ -486,7 +491,7 @@ osm(options?: OsmOptions)
 Static properties for introspection:
 
 ```ts
-osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural', …, 'toner-dark']
+osm.palettes:     Palette[]           // ['colorful', 'colorful-dark', 'natural', …, 'toner-dark', 'positrino', …]
 osm.colorKeys:    (keyof ColorsOptions)[]  // all color key names
 osm.layerGroups:  LayerGroupMap       // maps each LayerGroupOptions key to the layer IDs it controls
 osm.textGroups:   TextGroupMap        // maps each text topic to the text layer IDs its label style sets

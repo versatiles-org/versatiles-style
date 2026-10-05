@@ -1,5 +1,6 @@
 /**
- * Regenerate the nine derived themes in src/themes from `colorful` — see scripts/lib/theme-generator.ts.
+ * Regenerate the themes in src/themes from `colorful` — the nine derived ones and the lookalikes; see
+ * scripts/lib/theme-generator.ts.
  *
  *   npm run generate-themes               # write the tables, listing what changed
  *   npm run generate-themes -- --dry-run  # only list what would change
@@ -16,7 +17,8 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { colorOptionsKeys, type Palette, type ResolvedColors } from '../src/options/index.js';
 import { getPaletteColors, PALETTES } from '../src/themes/index.js';
-import { REPORT_PAIRS, THEMES } from './config/themes.js';
+import { TABLES } from '../src/themes/tables.js';
+import { LOOKALIKES, REPORT_PAIRS, THEMES } from './config/themes.js';
 import { contrast, generate, oklabDistance, over, parse } from './lib/theme-generator.js';
 
 const FILE = resolve(fileURLToPath(import.meta.url), '../../src/themes/tables.ts');
@@ -33,6 +35,12 @@ if (diagnostics.length > 0) {
 
 let changes = 0;
 for (const [name, colors] of Object.entries(generated)) {
+	// a theme new to the configuration has no table yet, so everything about it is a change
+	if (!(name in TABLES)) {
+		changes += Object.keys(colors).length;
+		console.log(`${name}: new`);
+		continue;
+	}
 	const current = getPaletteColors(name as Palette) as Record<string, string>;
 	const changed = Object.entries(colors).filter(([key, value]) => current[key] !== value);
 	if (changed.length === 0) continue;
@@ -78,7 +86,7 @@ ${rows.join('\n')}
 }
 
 function report(): void {
-	const themes = Object.keys(THEMES).flatMap((p) => [p, `${p}-dark`]) as Palette[];
+	const themes = [...Object.keys(THEMES).flatMap((p) => [p, `${p}-dark`]), ...Object.keys(LOOKALIKES)] as Palette[];
 	console.log('\nSigned contrast: above 1 lighter than the background, below 1 darker.\n');
 	console.log('pair'.padEnd(18) + themes.map((t) => t.padEnd(15)).join(''));
 	for (const { label, fg, bg } of REPORT_PAIRS) {
