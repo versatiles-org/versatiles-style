@@ -23,7 +23,10 @@ describe('TEXT_TOPICS', () => {
 		expect(TEXT_TOPICS).toStrictEqual([
 			'boundaries.countries',
 			'boundaries.states',
+			'places.capitals',
+			'places.statecapitals',
 			'places.cities',
+			'places.towns',
 			'places.villages',
 			'places.hamlets',
 			'places.districts',

@@ -136,7 +136,10 @@ export type LayerGroupOptions = {
 					| boolean
 					| number
 					| {
+							capitals?: boolean | number;
+							statecapitals?: boolean | number;
 							cities?: boolean | number;
+							towns?: boolean | number;
 							villages?: boolean | number;
 							hamlets?: boolean | number;
 							districts?: boolean | number;
@@ -198,7 +201,10 @@ export type ResolvedLayerGroups = {
 	labels: {
 		boundaries: { countries: boolean | number; states: boolean | number };
 		places: {
+			capitals: boolean | number;
+			statecapitals: boolean | number;
 			cities: boolean | number;
+			towns: boolean | number;
 			villages: boolean | number;
 			hamlets: boolean | number;
 			districts: boolean | number;
@@ -462,7 +468,15 @@ export function resolveLayerGroups(
 			),
 			places: resolveFlat(
 				labels?.places,
-				{ cities: true, villages: true, hamlets: true, districts: true },
+				{
+					capitals: true,
+					statecapitals: true,
+					cities: true,
+					towns: true,
+					villages: true,
+					hamlets: true,
+					districts: true,
+				},
 				`${path}.labels.places`,
 				labelsInherited
 			),

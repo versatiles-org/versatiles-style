@@ -85,7 +85,10 @@ describe('layerGroups', () => {
 				states: ['label-boundary-state'],
 			},
 			places: {
-				cities: ['label-place-capital', 'label-place-city', 'label-place-statecapital', 'label-place-town'],
+				capitals: ['label-place-capital'],
+				statecapitals: ['label-place-statecapital'],
+				cities: ['label-place-city'],
+				towns: ['label-place-town'],
 				villages: ['label-place-village'],
 				hamlets: ['label-place-hamlet'],
 				districts: ['label-place-neighbourhood', 'label-place-quarter', 'label-place-suburb'],

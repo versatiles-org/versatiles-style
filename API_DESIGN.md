@@ -154,7 +154,10 @@ type LayerGroupOptions = {
           | boolean
           | number
           | {
-              cities?: boolean | number; // label-place-capital, -statecapital, -city, -town
+              capitals?: boolean | number; // label-place-capital
+              statecapitals?: boolean | number; // label-place-statecapital
+              cities?: boolean | number; // label-place-city
+              towns?: boolean | number; // label-place-town
               villages?: boolean | number; // label-place-village
               hamlets?: boolean | number; // label-place-hamlet
               districts?: boolean | number; // label-place-suburb, -quarter, -neighbourhood
@@ -180,9 +183,10 @@ type LayerGroupOptions = {
 };
 ```
 
-`labels.places.hamlets` is a group of its own: `labels.places.villages: false` leaves hamlet names
-visible, so hiding both takes `villages: false, hamlets: false`, or `places: false` for every settlement
-name. The same split applies to their label style in `text.places`.
+Every kind of settlement is a group of its own: `labels.places.cities: false` leaves the names of
+capitals, state capitals and towns visible, and `labels.places.villages: false` leaves hamlet names
+visible. Hiding several takes each of them, or `places: false` for every settlement name. The same split
+applies to their label style in `text.places`.
 
 `boundaries.disputed` is a group of its own as well: disputed country borders, with their casing, stay
 when `boundaries.country` is hidden.
@@ -271,7 +275,15 @@ type TextOptions = LabelStyle & {
   languageStrict?: boolean; // omit labels with no translation; default: false   — root only
   pitchAlignment?: 'map' | 'viewport'; // line labels in a tilted map; default: 'map' — root only
   boundaries?: LabelStyle & { countries?: LabelStyle; states?: LabelStyle };
-  places?: LabelStyle & { cities?: LabelStyle; villages?: LabelStyle; hamlets?: LabelStyle; districts?: LabelStyle };
+  places?: LabelStyle & {
+    capitals?: LabelStyle;
+    statecapitals?: LabelStyle;
+    cities?: LabelStyle;
+    towns?: LabelStyle;
+    villages?: LabelStyle;
+    hamlets?: LabelStyle;
+    districts?: LabelStyle;
+  };
   streets?: LabelStyle & { names?: LabelStyle; refs?: LabelStyle; exits?: LabelStyle };
   water?: LabelStyle & { lakes?: LabelStyle; rivers?: LabelStyle };
   pois?: LabelStyle & { general?: LabelStyle; transit?: LabelStyle }; // POI names, transit stop names

@@ -61,7 +61,15 @@ export type TextOptions = LabelStyle & {
 	/** Line labels in a tilted map. Default `'map'`. */
 	pitchAlignment?: PitchAlignment;
 	boundaries?: LabelStyle & { countries?: LabelStyle; states?: LabelStyle };
-	places?: LabelStyle & { cities?: LabelStyle; villages?: LabelStyle; hamlets?: LabelStyle; districts?: LabelStyle };
+	places?: LabelStyle & {
+		capitals?: LabelStyle;
+		statecapitals?: LabelStyle;
+		cities?: LabelStyle;
+		towns?: LabelStyle;
+		villages?: LabelStyle;
+		hamlets?: LabelStyle;
+		districts?: LabelStyle;
+	};
 	streets?: LabelStyle & { names?: LabelStyle; refs?: LabelStyle; exits?: LabelStyle };
 	water?: LabelStyle & { lakes?: LabelStyle; rivers?: LabelStyle };
 	/** Names drawn with POI icons (`general`) and transit stop icons (`transit`). */
@@ -76,7 +84,10 @@ export type ResolvedText = {
 	pitchAlignment: PitchAlignment;
 	boundaries: { countries: ResolvedLabelStyle; states: ResolvedLabelStyle };
 	places: {
+		capitals: ResolvedLabelStyle;
+		statecapitals: ResolvedLabelStyle;
 		cities: ResolvedLabelStyle;
+		towns: ResolvedLabelStyle;
 		villages: ResolvedLabelStyle;
 		hamlets: ResolvedLabelStyle;
 		districts: ResolvedLabelStyle;
@@ -95,7 +106,7 @@ export type ResolvedText = {
  */
 export const TEXT_GROUPS = {
 	boundaries: ['countries', 'states'],
-	places: ['cities', 'villages', 'hamlets', 'districts'],
+	places: ['capitals', 'statecapitals', 'cities', 'towns', 'villages', 'hamlets', 'districts'],
 	streets: ['names', 'refs', 'exits'],
 	water: ['lakes', 'rivers'],
 	pois: ['general', 'transit'],

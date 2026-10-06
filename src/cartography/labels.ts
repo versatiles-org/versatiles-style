@@ -69,10 +69,10 @@ export function placeSecondary(ctx: LayerContext): Color {
 
 /** Which `layers.labels.places` group each settlement label belongs to. */
 const PLACE_GROUPS = {
-	capital: 'cities',
-	statecapital: 'cities',
+	capital: 'capitals',
+	statecapital: 'statecapitals',
 	city: 'cities',
-	town: 'cities',
+	town: 'towns',
 	village: 'villages',
 	hamlet: 'hamlets',
 	suburb: 'districts',
