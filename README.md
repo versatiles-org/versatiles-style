@@ -25,14 +25,14 @@ The `osm()` function renders OpenStreetMap vector tiles using one of five built-
 each available as a light theme and a dark one (`colorful-dark`, …). `satellite()` renders raster/satellite tiles with an optional
 vector overlay.
 
-| Palette       | Light                                                                                                 | Dark                                                                                                          |
-| ------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **colorful**  | <img width="384" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />   | <img width="384" src="https://versatiles.org/versatiles-style/colorful-dark.png" alt="colorful-dark style" /> |
-| **natural**   | <img width="384" src="https://versatiles.org/versatiles-style/natural.png" alt="natural style" />     | <img width="384" src="https://versatiles.org/versatiles-style/natural-dark.png" alt="natural-dark style" />   |
-| **muted**     | <img width="384" src="https://versatiles.org/versatiles-style/muted.png" alt="muted style" />         | <img width="384" src="https://versatiles.org/versatiles-style/muted-dark.png" alt="muted-dark style" />       |
-| **gray**      | <img width="384" src="https://versatiles.org/versatiles-style/gray.png" alt="gray style" />           | <img width="384" src="https://versatiles.org/versatiles-style/gray-dark.png" alt="gray-dark style" />         |
-| **toner**     | <img width="384" src="https://versatiles.org/versatiles-style/toner.png" alt="toner style" />         | <img width="384" src="https://versatiles.org/versatiles-style/toner-dark.png" alt="toner-dark style" />       |
-| **satellite** | <img width="384" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> | —                                                                                                             |
+| Palette       |                                                 Light                                                 |                                                     Dark                                                      |
+| ------------- | :---------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
+| **colorful**  |  <img width="256" src="https://versatiles.org/versatiles-style/colorful.png" alt="colorful style" />  | <img width="256" src="https://versatiles.org/versatiles-style/colorful-dark.png" alt="colorful-dark style" /> |
+| **natural**   |   <img width="256" src="https://versatiles.org/versatiles-style/natural.png" alt="natural style" />   |  <img width="256" src="https://versatiles.org/versatiles-style/natural-dark.png" alt="natural-dark style" />  |
+| **muted**     |     <img width="256" src="https://versatiles.org/versatiles-style/muted.png" alt="muted style" />     |    <img width="256" src="https://versatiles.org/versatiles-style/muted-dark.png" alt="muted-dark style" />    |
+| **gray**      |      <img width="256" src="https://versatiles.org/versatiles-style/gray.png" alt="gray style" />      |     <img width="256" src="https://versatiles.org/versatiles-style/gray-dark.png" alt="gray-dark style" />     |
+| **toner**     |     <img width="256" src="https://versatiles.org/versatiles-style/toner.png" alt="toner style" />     |    <img width="256" src="https://versatiles.org/versatiles-style/toner-dark.png" alt="toner-dark style" />    |
+| **satellite** | <img width="256" src="https://versatiles.org/versatiles-style/satellite.png" alt="satellite style" /> |                                                       —                                                       |
 
 ### Lookalike themes
 
@@ -43,19 +43,19 @@ draw its borders and paths the way that map does — solid where VersaTiles dash
 
 Lookalike themes are not part of the prebuilt `styles.tar.gz`; generate them with `osm({ theme })`.
 
-| Theme         | Resembles              | Light                                                                                                 | Dark                                                                                                            |
-| ------------- | ---------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **positrino** | Positron, Dark Matter  | <img width="384" src="https://versatiles.org/versatiles-style/positrino.png" alt="positrino style" /> | <img width="384" src="https://versatiles.org/versatiles-style/positrino-dark.png" alt="positrino-dark style" /> |
-| **protocol**  | Protomaps Light, Dark  | <img width="384" src="https://versatiles.org/versatiles-style/protocol.png" alt="protocol style" />   | <img width="384" src="https://versatiles.org/versatiles-style/protocol-dark.png" alt="protocol-dark style" />   |
-| **protostar** | Protomaps White, Black | <img width="384" src="https://versatiles.org/versatiles-style/protostar.png" alt="protostar style" /> | <img width="384" src="https://versatiles.org/versatiles-style/protostar-dark.png" alt="protostar-dark style" /> |
-| **protozoa**  | Protomaps Grayscale    | <img width="384" src="https://versatiles.org/versatiles-style/protozoa.png" alt="protozoa style" />   | —                                                                                                               |
-| **fnord**     | Fiord Color            | —                                                                                                     | <img width="384" src="https://versatiles.org/versatiles-style/fnord.png" alt="fnord style" />                   |
-| **classic**   | OpenStreetMap Carto    | <img width="384" src="https://versatiles.org/versatiles-style/classic.png" alt="classic style" />     | —                                                                                                               |
-| **googol**    | Google Maps            | <img width="384" src="https://versatiles.org/versatiles-style/googol.png" alt="googol style" />       | —                                                                                                               |
-| **freedom**   | OSM Liberty            | <img width="384" src="https://versatiles.org/versatiles-style/freedom.png" alt="freedom style" />     | —                                                                                                               |
-| **macbob**    | Mapbox Streets         | <img width="384" src="https://versatiles.org/versatiles-style/macbob.png" alt="macbob style" />       | —                                                                                                               |
-| **mactaylor** | MapTiler Streets       | <img width="384" src="https://versatiles.org/versatiles-style/mactaylor.png" alt="mactaylor style" /> | —                                                                                                               |
-| **bingo**     | Bing Maps              | <img width="384" src="https://versatiles.org/versatiles-style/bingo.png" alt="bingo style" />         | —                                                                                                               |
+| Theme         | Resembles              |                                                 Light                                                 |                                                      Dark                                                       |
+| ------------- | ---------------------- | :---------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: |
+| **positrino** | Positron, Dark Matter  | <img width="256" src="https://versatiles.org/versatiles-style/positrino.png" alt="positrino style" /> | <img width="256" src="https://versatiles.org/versatiles-style/positrino-dark.png" alt="positrino-dark style" /> |
+| **protocol**  | Protomaps Light, Dark  |  <img width="256" src="https://versatiles.org/versatiles-style/protocol.png" alt="protocol style" />  |  <img width="256" src="https://versatiles.org/versatiles-style/protocol-dark.png" alt="protocol-dark style" />  |
+| **protostar** | Protomaps White, Black | <img width="256" src="https://versatiles.org/versatiles-style/protostar.png" alt="protostar style" /> | <img width="256" src="https://versatiles.org/versatiles-style/protostar-dark.png" alt="protostar-dark style" /> |
+| **protozoa**  | Protomaps Grayscale    |  <img width="256" src="https://versatiles.org/versatiles-style/protozoa.png" alt="protozoa style" />  |                                                        —                                                        |
+| **fnord**     | Fiord Color            |                                                   —                                                   |          <img width="256" src="https://versatiles.org/versatiles-style/fnord.png" alt="fnord style" />          |
+| **classic**   | OpenStreetMap Carto    |   <img width="256" src="https://versatiles.org/versatiles-style/classic.png" alt="classic style" />   |                                                        —                                                        |
+| **googol**    | Google Maps            |    <img width="256" src="https://versatiles.org/versatiles-style/googol.png" alt="googol style" />    |                                                        —                                                        |
+| **freedom**   | OSM Liberty            |   <img width="256" src="https://versatiles.org/versatiles-style/freedom.png" alt="freedom style" />   |                                                        —                                                        |
+| **macbob**    | Mapbox Streets         |    <img width="256" src="https://versatiles.org/versatiles-style/macbob.png" alt="macbob style" />    |                                                        —                                                        |
+| **mactaylor** | MapTiler Streets       | <img width="256" src="https://versatiles.org/versatiles-style/mactaylor.png" alt="mactaylor style" /> |                                                        —                                                        |
+| **bingo**     | Bing Maps              |     <img width="256" src="https://versatiles.org/versatiles-style/bingo.png" alt="bingo style" />     |                                                        —                                                        |
 
 ---
 
