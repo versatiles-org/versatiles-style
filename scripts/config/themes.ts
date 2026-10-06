@@ -722,10 +722,15 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelHousenumber: '#5F5F70',
 			labelWater: '#1F4980',
 		},
-		// Bing Maps' trails, at the zoom they are widest read.
+		// Bing Maps, in pixels made multiples of our line widths. A state border there is a 1–1.5px line
+		// in 6px dashes and 3px gaps at every zoom (`admin_division1_boundary_europe_line`, the variant
+		// its tiles give Berlin's border); ours is 2px wide, so `[3, 1.5]`. A disputed border is even
+		// dashes of about 10px on a 1.8px line; its trails are read at the zoom they are widest.
 		lines: {
 			'roads.paths': [2, 1.5],
 			'roads.footway': [2, 1.5],
+			'boundaries.state': [3, 1.5],
+			'boundaries.disputed': [3, 3],
 		},
 	},
 };

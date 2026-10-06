@@ -107,5 +107,10 @@ export const LINE_PRESETS: Partial<Record<Palette, Readonly<Record<string, boole
 		'boundaries.state': [2, 2, 6, 2],
 		'boundaries.disputed': [2, 1.5],
 	},
-	ping: { 'roads.paths': [2, 1.5], 'roads.footway': [2, 1.5] },
+	ping: {
+		'roads.paths': [2, 1.5],
+		'roads.footway': [2, 1.5],
+		'boundaries.state': [3, 1.5],
+		'boundaries.disputed': [3, 3],
+	},
 };
