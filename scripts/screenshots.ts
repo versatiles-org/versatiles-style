@@ -66,7 +66,7 @@ const request = (
 // rejection with no indication of which style failed — and this runs in the release workflow's docs
 // job, where a silent-looking crash mid-way would publish a page missing a preview image.
 Promise.all([
-	...osm.palettes.map((theme) => draw(theme, osm({ theme }))),
+	...osm.palettes.map((theme) => draw(theme, osm({ theme, features: { landcover: true } }))),
 	// No dark counterpart: the imagery is the background, and only the overlay could be themed.
 	draw('satellite', satellite()),
 ]).catch((error: unknown) => {
@@ -90,14 +90,14 @@ async function draw(name: string, style: StyleSpecification): Promise<void> {
 
 	// Define the dimensions of the rendered image
 	const width = 1024;
-	const height = 768;
+	const height = 512;
 
 	return new Promise<void>((resolve) => {
 		// Render the map to an image buffer
 		map.render(
 			{
-				center: [13.408333, 52.518611],
-				zoom: 9.2,
+				center: [4.8801, 52.3736],
+				zoom: 10.0,
 				width,
 				height,
 			},
