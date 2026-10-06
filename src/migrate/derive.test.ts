@@ -870,28 +870,120 @@ describe('deriveOptions — foreign styles', () => {
 	});
 });
 
-// Mapbox tiles are recognised (`guessSchema`), which is not yet the same as readable: a schema is read
-// through the probes, and until they name Mapbox features such a style must come back as unread rather
-// than as one that draws nothing.
-describe('a schema that is recognised but not readable', () => {
-	it('is reported, and its layers are not read', () => {
-		const ids = ['road', 'admin', 'place_label', 'poi_label', 'landuse', 'water', 'building', 'waterway'];
-		const guess = deriveOptions({
-			version: 8,
-			sources: { composite: { type: 'vector', url: 'mapbox://mapbox.mapbox-streets-v8' } },
-			layers: ids.map((id) => ({
-				id,
+// A Mapbox style reads Mapbox's own tiles — Streets v8, through a `mapbox://` source with no TileJSON to
+// fetch. Mapbox Streets itself is proprietary and cannot be a fixture, so this is a small style written
+// for the test in that schema, with the constructs Mapbox's styles use: one `road` layer split by
+// `class`, `admin` with levels 0 and 1 and string flags, labels filtered on `filterrank`.
+describe('a style on Mapbox tiles', () => {
+	const road = (id: string, classes: string[], paint: object, extra: object = {}) => ({
+		id,
+		type: 'line',
+		source: 'composite',
+		'source-layer': 'road',
+		filter: ['all', ['match', ['get', 'class'], classes, true, false], ['==', ['get', 'structure'], 'none']],
+		paint,
+		...extra,
+	});
+	const style = {
+		version: 8,
+		sources: { composite: { type: 'vector', url: 'mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2' } },
+		layers: [
+			{ id: 'land', type: 'background', paint: { 'background-color': '#EEEEEE' } },
+			{
+				id: 'landuse',
+				type: 'fill',
+				source: 'composite',
+				'source-layer': 'landuse',
+				filter: ['match', ['get', 'class'], ['park', 'wood'], true, false],
+				paint: { 'fill-color': ['match', ['get', 'class'], 'wood', '#88BB88', '#AADDAA'] },
+			},
+			{ id: 'water', type: 'fill', source: 'composite', 'source-layer': 'water', paint: { 'fill-color': '#3366CC' } },
+			{
+				id: 'building',
+				type: 'fill',
+				source: 'composite',
+				'source-layer': 'building',
+				paint: { 'fill-color': '#CCBBAA' },
+			},
+			road('road-case', ['street', 'primary', 'motorway'], { 'line-color': '#999999', 'line-width': 8 }),
+			road('road-street', ['street'], { 'line-color': '#FFFFFF', 'line-width': 5 }),
+			road('road-primary', ['primary'], { 'line-color': '#FFEE99', 'line-width': 6 }),
+			road('road-motorway', ['motorway'], { 'line-color': '#FF8844', 'line-width': 6 }),
+			{
+				...road('road-path', ['path'], { 'line-color': '#AA9988', 'line-width': 2, 'line-dasharray': [3, 1] }),
+				filter: ['all', ['==', ['get', 'class'], 'path'], ['!=', ['get', 'type'], 'steps']],
+			},
+			{
+				id: 'admin-1',
 				type: 'line',
 				source: 'composite',
-				'source-layer': id,
-				paint: { 'line-color': '#000' },
-			})),
-		} as StyleSpecification);
-		expect(guess.kind).toBe('unknown');
+				'source-layer': 'admin',
+				filter: ['all', ['==', ['get', 'admin_level'], 1], ['==', ['get', 'maritime'], 'false']],
+				paint: { 'line-color': '#8888AA', 'line-width': 1, 'line-dasharray': [2, 2] },
+			},
+			{
+				id: 'admin-0',
+				type: 'line',
+				source: 'composite',
+				'source-layer': 'admin',
+				filter: ['all', ['==', ['get', 'admin_level'], 0], ['==', ['get', 'disputed'], 'false']],
+				paint: { 'line-color': '#666688', 'line-width': 2 },
+			},
+			{
+				id: 'settlement-label',
+				type: 'symbol',
+				source: 'composite',
+				'source-layer': 'place_label',
+				filter: ['all', ['<=', ['get', 'filterrank'], 3], ['==', ['get', 'class'], 'settlement']],
+				layout: { 'text-field': ['get', 'name'], 'text-size': 14 },
+				paint: { 'text-color': '#112233', 'text-halo-color': '#FFFFFF', 'text-halo-width': 1 },
+			},
+		],
+	} as unknown as StyleSpecification;
+	const guess = deriveOptions(style);
+	const options = (guess.kind === 'osm' ? guess.options : {}) as OsmOptions;
+
+	it('is recognised and read', () => {
+		expect(guess.kind).toBe('osm');
 		expect(guess.report.sources[0].guess).toMatchObject({ type: 'vector', schema: 'mapbox' });
-		const said = guess.report.diagnostics.find((d) => d.code === 'source.schemaUnknown');
-		expect(said?.message).toBe(
-			'source "composite" carries mapbox tiles, which cannot be read yet; its layers are not read'
-		);
+		expect(codes(guess.report)).not.toContain('source.schemaUnknown');
+		const read = guess.report.evidence.map((e) => e.probe);
+		for (const probe of ['water-ocean', 'land-forest', 'land-park', 'building', 'street-motorway', 'street-primary']) {
+			expect(read, probe).toContain(probe);
+		}
+		for (const probe of ['street-minor', 'way-footway', 'boundary-country', 'boundary-state', 'label-place-city']) {
+			expect(read, probe).toContain(probe);
+		}
+	});
+
+	it('reads each feature off the layer that draws it', () => {
+		const from = (probe: string) => guess.report.evidence.find((e) => e.probe === probe)?.layers;
+		expect(from('street-motorway')).toStrictEqual(['road-motorway', 'road-case']);
+		expect(from('street-minor')).toStrictEqual(['road-street', 'road-case']);
+		expect(from('way-footway')).toStrictEqual(['road-path']);
+		expect(from('boundary-state')).toStrictEqual(['admin-1']);
+		expect(from('boundary-country')).toStrictEqual(['admin-0']);
+		// steps are a path the path layer leaves out, and a disputed border is one `admin-0` does not take
+		expect(from('way-steps')).toBeUndefined();
+		expect(from('boundary-country-disputed')).toBeUndefined();
+	});
+
+	it('carries its colours over', () => {
+		const near = (key: keyof ColorsOptions, expected: string) =>
+			expect(
+				colorDistance(parseRGBA(String(options.colors?.[key])), parseRGBA(expected)),
+				`${key} ${options.colors?.[key]}`
+			).toBeLessThan(8);
+		near('water', '#3366CC');
+		near('roadMotorway', '#FF8844');
+		near('roadTrunk', '#FFEE99');
+		near('boundary', '#666688');
+		near('label', '#112233');
+	});
+
+	it('carries its line styles over, and hides what it does not draw', () => {
+		const layers = options.layers as { boundaries?: object; roads?: object };
+		expect(layers.boundaries).toMatchObject({ state: { dashed: [2, 2] }, disputed: false });
+		expect(layers.roads).toMatchObject({ footway: { dashed: [3, 1] }, steps: false });
 	});
 });

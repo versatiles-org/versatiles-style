@@ -5,6 +5,7 @@ import { protomaps } from '../protomaps/api.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { OMT_SCHEMA } from '../omt/schema.js';
 import { PROTOMAPS_SCHEMA } from '../protomaps/schema.js';
+import { MAPBOX_LAYERS } from './mapbox-layers.js';
 import type { SchemaName } from '../api/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { readProbe } from './evaluate.js';
@@ -23,24 +24,26 @@ const BUILDERS: Record<BuiltSchema, { style: StyleSpecification; source: string 
 	protomaps: { style: protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } }), source: 'protomaps' },
 };
 
-const RECORDS: Record<BuiltSchema, Readonly<Record<string, { fields: readonly string[] }>>> = {
+const RECORDS: Record<SchemaName, Readonly<Record<string, { fields: readonly string[] }>>> = {
 	shortbread: SHORTBREAD_SCHEMA,
 	openmaptiles: OMT_SCHEMA,
 	protomaps: PROTOMAPS_SCHEMA,
+	// kept by hand, not vendored — see its header
+	mapbox: MAPBOX_LAYERS,
 };
 
 const cases = PROBES.flatMap((probe) =>
-	(Object.keys(probe.features) as SchemaName[])
-		.filter((schema): schema is BuiltSchema => schema !== 'mapbox')
-		.map((schema) => [probe.id, schema, probe] as const)
+	(Object.keys(probe.features) as SchemaName[]).map((schema) => [probe.id, schema, probe] as const)
 );
+/** The cases a builder of the package can be asked about. */
+const built = cases.filter((c): c is readonly [string, BuiltSchema, (typeof PROBES)[number]] => c[1] !== 'mapbox');
 
 describe('probe features', () => {
 	it('probe ids are unique', () => {
 		expect(new Set(PROBES.map((p) => p.id)).size).toBe(PROBES.length);
 	});
 
-	it.each(cases)('%s (%s) is drawn by the layer of that id in the package style', (_, schema, probe) => {
+	it.each(built)('%s (%s) is drawn by the layer of that id in the package style', (_, schema, probe) => {
 		const { style, source } = BUILDERS[schema];
 		const reading = readProbe(style, new Map([[source, schema]]), probe);
 		expect(reading, 'the builder draws nothing for this feature').toBeDefined();
@@ -54,6 +57,17 @@ describe('probe features', () => {
 			expect(layer, `unknown source-layer "${feature.sourceLayer}"`).toBeDefined();
 			const unknown = Object.keys(feature.props).filter((field) => !layer.fields.includes(field) && field !== 'name');
 			expect(unknown, 'fields the tiles do not carry').toEqual([]);
+		}
+	});
+
+	it('names a Mapbox feature for nearly every probe, and variants in the tiles too', () => {
+		const without = PROBES.filter((p) => !p.features.mapbox).map((p) => p.id);
+		// Mapbox's tiles have no landfill, military area, prison or construction site of their own
+		expect(without).toEqual(['background', 'land-waste', 'site-dangerarea', 'site-prison', 'site-construction']);
+		for (const probe of PROBES) {
+			for (const feature of probe.variants?.mapbox ?? []) {
+				expect(MAPBOX_LAYERS[feature.sourceLayer], `${probe.id}: ${feature.sourceLayer}`).toBeDefined();
+			}
 		}
 	});
 
