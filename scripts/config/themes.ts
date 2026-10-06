@@ -565,43 +565,68 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			'boundaries.state': [5, 1],
 		},
 	},
-	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map
-	// at eight places, taken on 2026-10-05. Colours that could not be told apart that way are derived.
+	// Read from the Mapbox Streets v12 style definition (2026-10-06): the fills, borders and labels are
+	// what the importer derives from it, which is the palette value our own layers need to come out as
+	// Mapbox draws them. Where the importer has to settle several Mapbox colours on one of our keys, the
+	// key takes the one that covers most of what it paints, read off the style directly:
+	//  - `roadTrunk` paints trunk and primary roads. Mapbox draws trunks yellow (#F7E06E) and primary
+	//    roads white; the importer's fit lands between them. It takes the white.
+	//  - `roadStreet` also paints runways, and `transitRail` aerialways, each in a colour of its own on
+	//    that map; the fit is a blend no road or rail there has. They take the street's and the rail's.
+	//  - `labelPoi`: Mapbox colours its POI labels by category. One key cannot, so it is derived.
+	// `natureRock` and `areaResidential` are not drawn by that style at these zooms; they are the bare
+	// ground of a screenshot and the land.
 	crate: {
 		resembles: 'Mapbox Streets',
 		dark: false,
 		land: '#ECE7E4',
 		contrast: { fill: 0.6, line: 1, label: 1 },
 		colors: {
-			water: '#99DDFF',
-			glacier: '#D4EBF7',
-			natureWood: '#D6E8D0',
-			natureGrass: '#DDE7D7',
+			water: '#9CDEFF',
+			glacier: '#D3ECF766',
+			natureWood: '#9AE199BC',
+			natureGrass: '#D5F1D099',
 			naturePark: '#B8EBAD',
+			natureAgriculture: '#D5F1D099',
+			natureSand: '#E8ECC5D9',
 			natureRock: '#D9D2CC',
 			natureLeisure: '#B8EBAD',
 			areaResidential: '#ECE7E4',
 			areaCommercial: '#F7F2E3',
 			areaIndustrial: '#E0E2EB',
-			siteHospital: '#F5E0E0',
-			siteSports: '#A3E39C',
-			building: '#DED7D3',
+			areaBurial: '#CDEBC6',
+			siteEducation: '#F0E6D1',
+			siteHospital: '#F5E0E1',
+			siteSports: '#D0F3BE',
+			building: '#DFD7D3',
 			buildingBg: '#CFC8C4',
 			roadStreet: '#FFFFFF',
-			roadStreetBg: '#D9D2CC',
+			roadStreetBg: '#D1D6E0',
 			roadMotorway: '#FFB366',
+			roadMotorwayBg: '#F6F7F9',
 			roadTrunk: '#FFFFFF',
-			roadTrunkBg: '#D9D2CC',
+			roadTrunkBg: '#D1D6E0',
 			roadSecondary: '#FFFFFF',
-			roadSecondaryBg: '#D9D2CC',
-			transitRail: '#DADCE1',
-			transitSubway: '#DADCE1',
-			label: '#525252',
-			labelHalo: '#FFFFFF',
+			roadSecondaryBg: '#D1D6E0',
+			transitRail: '#B2B4B8',
+			transitSubway: '#B2B4B8',
+			transitCycle: '#FFFFFF',
+			transitFoot: '#FFFFFF',
+			boundary: '#7070CF',
+			boundaryDisputed: '#6666CC',
+			label: '#07090EF2',
+			labelHalo: '#FFFFFFEA',
+			labelHousenumber: '#8E817B',
+			labelWater: '#47AADC',
 		},
-		// Mapbox Streets draws state borders long dash, short dash.
+		// Mapbox Streets, at the zooms the importer reads them: a tight dash for paths, short rungs for
+		// steps, long dash short dash for state borders.
 		lines: {
+			'roads.paths': [1, 0.25],
+			'roads.footway': [1, 0.25],
+			'roads.steps': [0.3, 0.3],
 			'boundaries.state': [2, 2, 6, 2],
+			'boundaries.disputed': [2, 1.5],
 		},
 	},
 	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map
