@@ -100,8 +100,9 @@ function scoreSchema(schema: SchemaName, layers: Layer[]): SchemaScore {
  * `name`, `attribution` and the like are not used — they describe who built a tileset, not what is in
  * it. Synchronous and free of I/O; for a URL, download the document with `fetchTileJSON()` first.
  *
- * Knows Shortbread, OpenMapTiles and Protomaps without importing any of their styles, so it costs the
- * root bundle a small table rather than two schemas. Build the style from the matching subpath:
+ * Knows Shortbread, OpenMapTiles, Protomaps and Mapbox Streets without importing any of their styles,
+ * so it costs the root bundle a small table rather than two schemas. Mapbox tiles are recognised only:
+ * the package has no builder for them. For the others, build the style from the matching subpath:
  *
  * ```ts
  * import { guessSchema, osm } from '@versatiles/style';

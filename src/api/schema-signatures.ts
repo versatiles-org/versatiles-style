@@ -12,18 +12,28 @@
  *
  * ── Why fields, for shared ids ────────────────────────────────────────────────
  *
- * Six ids are used by two schemas with different data behind them: `boundaries`, `buildings` and
- * `pois` (Shortbread and Protomaps), and `landcover`, `landuse` and `water` (OpenMapTiles and
- * Protomaps). By name alone they are evidence for both. The fields listed here are structural ones —
- * `class` against `kind`, `admin_level` against `kind_detail` — rather than language fields, which
- * vary with how a tileset was built.
+ * Several ids are used by more than one schema with different data behind them: `boundaries`,
+ * `buildings` and `pois` (Shortbread and Protomaps), `landcover`, `landuse` and `water` (OpenMapTiles,
+ * Protomaps and Mapbox), and `aeroway`, `building` and `waterway` (OpenMapTiles and Mapbox). By name
+ * alone they are evidence for all of them. The fields listed here are structural ones — `class` against
+ * `kind`, `admin_level` against `kind_detail` — rather than language fields, which vary with how a
+ * tileset was built. A field need not rule out every other schema: OpenMapTiles and Mapbox both put a
+ * `class` on `landuse`, which tells either from Protomaps and neither from the other.
+ *
+ * ── Mapbox ────────────────────────────────────────────────────────────────────
+ *
+ * Mapbox Streets v8, with the two tilesets its styles load beside it (Terrain v2: `landcover`,
+ * `hillshade`, `contour`; Bathymetry v2: `depth`) — a Mapbox style reads all three through one
+ * composite source. There is no vendored record behind this one: Mapbox publishes its schema as a
+ * documentation page, not as data, so the list is kept by hand. It is here to *recognise* such tiles,
+ * which is all reading a Mapbox style needs; there is no builder for them (issue #137).
  */
 
 /** The schemas `guessSchema` recognises. */
-export type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps';
+export type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox';
 
 /** In the order `guessSchema` reports candidates. */
-export const SCHEMA_NAMES: readonly SchemaName[] = ['shortbread', 'openmaptiles', 'protomaps'];
+export const SCHEMA_NAMES: readonly SchemaName[] = ['shortbread', 'openmaptiles', 'protomaps', 'mapbox'];
 
 /** Per schema: every source-layer id → the fields that set it apart, empty for an id no other schema uses. */
 export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<string, readonly string[]>>>> = {
@@ -57,9 +67,9 @@ export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<stri
 	},
 	openmaptiles: {
 		aerodrome_label: [],
-		aeroway: [],
+		aeroway: ['class'],
 		boundary: [],
-		building: [],
+		building: ['hide_3d', 'render_height'],
 		housenumber: [],
 		landcover: ['class', 'subclass'],
 		landuse: ['class'],
@@ -71,7 +81,7 @@ export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<stri
 		transportation_name: [],
 		water: ['brunnel', 'class', 'intermittent'],
 		water_name: [],
-		waterway: [],
+		waterway: ['brunnel', 'intermittent'],
 	},
 	protomaps: {
 		boundaries: ['kind', 'kind_detail', 'sort_rank'],
@@ -83,5 +93,28 @@ export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<stri
 		pois: ['kind', 'kind_detail'],
 		roads: [],
 		water: ['kind', 'kind_detail', 'sort_rank'],
+	},
+	mapbox: {
+		admin: [],
+		aeroway: ['type'],
+		airport_label: [],
+		building: ['extrude', 'underground'],
+		contour: [],
+		depth: [],
+		hillshade: [],
+		housenum_label: [],
+		landcover: ['class'],
+		landuse: ['class', 'type'],
+		landuse_overlay: [],
+		motorway_junction: [],
+		natural_label: [],
+		place_label: [],
+		poi_label: [],
+		road: [],
+		structure: [],
+		transit_stop_label: [],
+		// carries no fields at all, so nothing here can speak for it; the ids around it decide
+		water: [],
+		waterway: ['type'],
 	},
 };

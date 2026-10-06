@@ -85,6 +85,7 @@ const DEFAULT_PROPS: Record<SchemaName, Record<string, ProbeFeature['props']>> =
 		roads: { min_zoom: 0, sort_rank: 1 },
 		water: { min_zoom: 0, sort_rank: 1 },
 	},
+	mapbox: {},
 };
 
 const f = (sourceLayer: string, props: ProbeFeature['props'] = {}, extra?: Partial<ProbeFeature>): ProbeFeature => ({

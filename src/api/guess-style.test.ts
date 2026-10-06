@@ -311,6 +311,20 @@ describe('guessStyle() — TileJSON object', () => {
 		expect(sourcesOf(style)[0].tiles).toStrictEqual([`${BASE}/v/{z}/{x}/{y}`]);
 	});
 
+	// Mapbox tiles are recognised, but the package has no builder for them (issue #137): like any other
+	// vector tiles it cannot style, they get the inspector.
+	it('builds the inspector style for Mapbox tiles, which it recognises but cannot style', async () => {
+		const ids = ['road', 'admin', 'place_label', 'poi_label', 'landuse', 'water', 'building', 'waterway'];
+		const input = {
+			tilejson: '3.0.0',
+			tiles: ['/v/{z}/{x}/{y}'],
+			vector_layers: ids.map((id) => ({ id, fields: {} })),
+		};
+		const style = await guessStyle(input as TileJSONSpecification, { urls: { base: BASE }, fetch: noFetch() });
+		expect(layerTypes(style)).toStrictEqual(expect.arrayContaining(['fill', 'line', 'symbol']));
+		expect(style.layers.some((layer) => 'source-layer' in layer && layer['source-layer'] === 'road')).toBe(true);
+	});
+
 	it('builds a raster style for a raster object', async () => {
 		const input = { tilejson: '3.0.0', tiles: ['/r/{z}/{x}/{y}.png'] };
 		const style = await guessStyle(input as TileJSONSpecification, { urls: { base: BASE }, fetch: noFetch() });

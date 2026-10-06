@@ -252,12 +252,17 @@ function derive(
 		report.sources.push({ id, type: source.type, guess });
 		if (guess.type === 'vector') {
 			vectorSources++;
-			if (guess.schema) schemas.set(id, guess.schema);
+			if (guess.schema && READABLE.has(guess.schema)) schemas.set(id, guess.schema);
 			else {
+				// Recognised is not readable: a schema is read through the probes, and one no probe names a
+				// feature for would be read as a style that draws nothing at all — every group hidden.
+				const what = guess.schema
+					? `${guess.schema} tiles, which cannot be read yet`
+					: 'vector tiles of no known schema';
 				report.say(
 					diagnostic(
 						'source.schemaUnknown',
-						`source "${id}" carries vector tiles of no known schema; its layers are not read`,
+						`source "${id}" carries ${what}; its layers are not read`,
 						{ sourceId: id },
 						{ origin: { sourceId: id } }
 					)
@@ -451,6 +456,11 @@ type Target = {
 };
 
 const SHORTBREAD_SOURCES: ReadonlyMap<string, SchemaName> = new Map([['versatiles-shortbread', 'shortbread']]);
+
+/** The schemas some probe names a feature for — the ones a style can be read in. */
+const READABLE: ReadonlySet<SchemaName> = new Set(
+	PROBES.flatMap((probe) => Object.keys(probe.features) as SchemaName[])
+);
 
 function osmTarget(): Target {
 	return {

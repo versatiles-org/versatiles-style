@@ -869,3 +869,29 @@ describe('deriveOptions — foreign styles', () => {
 		});
 	});
 });
+
+// Mapbox tiles are recognised (`guessSchema`), which is not yet the same as readable: a schema is read
+// through the probes, and until they name Mapbox features such a style must come back as unread rather
+// than as one that draws nothing.
+describe('a schema that is recognised but not readable', () => {
+	it('is reported, and its layers are not read', () => {
+		const ids = ['road', 'admin', 'place_label', 'poi_label', 'landuse', 'water', 'building', 'waterway'];
+		const guess = deriveOptions({
+			version: 8,
+			sources: { composite: { type: 'vector', url: 'mapbox://mapbox.mapbox-streets-v8' } },
+			layers: ids.map((id) => ({
+				id,
+				type: 'line',
+				source: 'composite',
+				'source-layer': id,
+				paint: { 'line-color': '#000' },
+			})),
+		} as StyleSpecification);
+		expect(guess.kind).toBe('unknown');
+		expect(guess.report.sources[0].guess).toMatchObject({ type: 'vector', schema: 'mapbox' });
+		const said = guess.report.diagnostics.find((d) => d.code === 'source.schemaUnknown');
+		expect(said?.message).toBe(
+			'source "composite" carries mapbox tiles, which cannot be read yet; its layers are not read'
+		);
+	});
+});

@@ -14,20 +14,25 @@ import { PROBES } from './probes.js';
 // own builders, which were written against real tiles: a probe feature the package's `omt()` does not
 // draw is a mistake in the table, not a difference of cartography.
 
-const BUILDERS: Record<SchemaName, { style: StyleSpecification; source: string }> = {
+/** The schemas the package has a builder for. Mapbox tiles are recognised, not built (issue #137). */
+type BuiltSchema = Exclude<SchemaName, 'mapbox'>;
+
+const BUILDERS: Record<BuiltSchema, { style: StyleSpecification; source: string }> = {
 	shortbread: { style: osm(), source: 'versatiles-shortbread' },
 	openmaptiles: { style: omt(), source: 'openmaptiles' },
 	protomaps: { style: protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } }), source: 'protomaps' },
 };
 
-const RECORDS: Record<SchemaName, Readonly<Record<string, { fields: readonly string[] }>>> = {
+const RECORDS: Record<BuiltSchema, Readonly<Record<string, { fields: readonly string[] }>>> = {
 	shortbread: SHORTBREAD_SCHEMA,
 	openmaptiles: OMT_SCHEMA,
 	protomaps: PROTOMAPS_SCHEMA,
 };
 
 const cases = PROBES.flatMap((probe) =>
-	(Object.keys(probe.features) as SchemaName[]).map((schema) => [probe.id, schema, probe] as const)
+	(Object.keys(probe.features) as SchemaName[])
+		.filter((schema): schema is BuiltSchema => schema !== 'mapbox')
+		.map((schema) => [probe.id, schema, probe] as const)
 );
 
 describe('probe features', () => {

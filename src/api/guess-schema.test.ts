@@ -4,6 +4,7 @@ import type { TileJSONSpecification } from '../types/index.js';
 import { SHORTBREAD_SCHEMA } from '../shortbread/schema.js';
 import { OMT_SCHEMA } from '../omt/schema.js';
 import { PROTOMAPS_SCHEMA } from '../protomaps/schema.js';
+import { MAPBOX_LAYERS } from '../migrate/mapbox-layers.js';
 
 type SchemaRecord = Readonly<Record<string, { fields: readonly string[] }>>;
 type LayerInput = string | { id: string; fields: string[] };
@@ -35,6 +36,7 @@ describe('guessSchema() — complete tilesets', () => {
 		['shortbread', SHORTBREAD_SCHEMA],
 		['openmaptiles', OMT_SCHEMA],
 		['protomaps', PROTOMAPS_SCHEMA],
+		['mapbox', MAPBOX_LAYERS],
 	] as const)('recognises %s, with and without fields', (schema, record) => {
 		expect(schemaOf(published(record))).toBe(schema);
 		expect(schemaOf(published(record, false))).toBe(schema);
@@ -42,7 +44,7 @@ describe('guessSchema() — complete tilesets', () => {
 
 	it('scores every schema, best first, and explains the winner', () => {
 		const guess = guessSchema(published(PROTOMAPS_SCHEMA)) as Extract<SchemaGuess, { type: 'vector' }>;
-		expect(guess.candidates.map((c) => c.schema)).toEqual(['protomaps', 'shortbread', 'openmaptiles']);
+		expect(guess.candidates.map((c) => c.schema)).toEqual(['protomaps', 'shortbread', 'openmaptiles', 'mapbox']);
 		const [protomaps, shortbread] = guess.candidates;
 		expect(protomaps).toMatchObject({ score: 1, missing: [], extra: [] });
 		// With fields, `boundaries`, `buildings` and `pois` are recognisably not Shortbread's.
@@ -87,6 +89,59 @@ describe('guessSchema() — ids two schemas share', () => {
 	it('lets the unshared ids around a shared one decide, when fields do not', () => {
 		expect(schemaOf(vector(['streets', 'water_polygons', 'buildings', 'land']))).toBe('shortbread');
 		expect(schemaOf(vector(['roads', 'earth', 'buildings', 'water']))).toBe('protomaps');
+	});
+});
+
+// Mapbox's tiles are recognised so that a Mapbox style can be read (`guessOptions`); the package has
+// no builder for them. Six of their ids are OpenMapTiles' too, three of those Protomaps' as well.
+describe('guessSchema() — Mapbox', () => {
+	/** The source-layers Mapbox Streets v12 reads, which is all a `mapbox://` source has to go by. */
+	const READ_BY_A_STYLE = [
+		...['landcover', 'landuse_overlay', 'landuse', 'waterway', 'water', 'depth', 'hillshade', 'structure', 'aeroway'],
+		...['building', 'road', 'admin', 'housenum_label', 'place_label', 'motorway_junction', 'natural_label'],
+		...['poi_label', 'transit_stop_label', 'airport_label'],
+	];
+
+	it('recognises the layers a Mapbox style reads, with no fields to go by', () => {
+		const guess = guessSchema(vector(READ_BY_A_STYLE)) as Extract<SchemaGuess, { type: 'vector' }>;
+		expect(guess.schema).toBe('mapbox');
+		expect(guess.candidates[0]).toMatchObject({ schema: 'mapbox', score: 1, extra: [] });
+		// the six shared ids count for OpenMapTiles as well, and are nowhere near enough
+		expect(guess.candidates[1]).toMatchObject({ schema: 'openmaptiles' });
+		expect(guess.candidates[1].matched.sort()).toEqual([
+			'aeroway',
+			'building',
+			'landcover',
+			'landuse',
+			'water',
+			'waterway',
+		]);
+	});
+
+	it('recognises Streets v8 alone, without the terrain and bathymetry tilesets', () => {
+		const streets = READ_BY_A_STYLE.filter((id) => !['landcover', 'hillshade', 'depth'].includes(id));
+		expect(schemaOf(vector(streets))).toBe('mapbox');
+	});
+
+	it('tells the shared ids from OpenMapTiles by their fields', () => {
+		const shared = (fields: Record<string, string[]>) =>
+			vector(Object.entries(fields).map(([id, list]) => ({ id, fields: list })));
+		expect(
+			schemaOf(shared({ aeroway: ['type', 'ref'], building: ['extrude', 'height'], waterway: ['class', 'type'] }))
+		).toBe('mapbox');
+		expect(
+			schemaOf(shared({ aeroway: ['class', 'ref'], building: ['render_height'], waterway: ['class', 'brunnel'] }))
+		).toBe('openmaptiles');
+	});
+
+	it('does not take an OpenMapTiles or a Protomaps tileset for it', () => {
+		expect(schemaOf(published(OMT_SCHEMA))).toBe('openmaptiles');
+		expect(schemaOf(published(OMT_SCHEMA, false))).toBe('openmaptiles');
+		expect(schemaOf(published(PROTOMAPS_SCHEMA, false))).toBe('protomaps');
+	});
+
+	it('leaves the six shared ids alone undecided', () => {
+		expect(schemaOf(vector(['landcover', 'landuse', 'water', 'waterway', 'aeroway', 'building']))).toBeUndefined();
 	});
 });
 
