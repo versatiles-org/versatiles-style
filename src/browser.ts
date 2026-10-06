@@ -6,7 +6,7 @@
  * `<script>` tag and call it — no build step, no import. The full npm package is documented separately
  * under {@link "@versatiles/style"}; this is that surface minus `osm.minimizeOptions`, `osm.toCode`,
  * `osm.validateOptions` and their `satellite` counterparts, the font-discovery helpers, `randomColor`,
- * and the four TileJSON validators.
+ * `isDarkPalette` and the four TileJSON validators.
  * Those exist to store options compactly, print a code snippet, or report everything wrong with an
  * options object someone typed — jobs for a style *editor*, which is
  * an npm consumer with its own bundler. A page that loads this file wants to build a style and hand it

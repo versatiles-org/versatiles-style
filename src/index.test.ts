@@ -21,6 +21,12 @@ describe('exports', () => {
 		expect(typeof lib.randomColor).toBe('function');
 	});
 
+	it('isDarkPalette tells a dark theme by more than its suffix', () => {
+		expect(lib.isDarkPalette('colorful')).toBe(false);
+		expect(lib.isDarkPalette('colorful-dark')).toBe(true);
+		expect(lib.isDarkPalette('fnord')).toBe(true);
+	});
+
 	it('randomColor returns a Color and is seedable', () => {
 		expect(lib.randomColor({ seed: 42 })).toBeInstanceOf(lib.Color);
 		expect(lib.randomColor({ seed: 42 }).asString()).toBe(lib.randomColor({ seed: 42 }).asString());

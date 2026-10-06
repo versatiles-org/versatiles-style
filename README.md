@@ -123,7 +123,7 @@ Everything the bundle provides is listed under
 that page is generated from the bundle's own entry point, so it is the definitive answer to "is this
 available in the browser?". The surface is smaller than the npm one on purpose: the authoring helpers
 (`osm.minimizeOptions`, `osm.toCode`, `osm.validateOptions`), the font-discovery functions,
-`randomColor` and the TileJSON
+`randomColor`, `isDarkPalette` and the TileJSON
 validators are npm-only, because a page that builds a style and hands it to MapLibre never calls them
 and would otherwise download them. The shipped `versatiles-style.d.ts` carries the same list as types.
 
@@ -159,7 +159,7 @@ writeFileSync('style.json', JSON.stringify(await inlineSources(style)));
 ```
 
 The CDN bundle exposes `osm()`, `satellite()`, `guessStyle()`, `guessSchema()`, `inlineSources()`,
-`fetchTileJSON()`, `Color` and the rest of the documented API. Four things ship in the npm package
+`fetchTileJSON()`, `Color` and the rest of the documented API. Five things ship in the npm package
 only, because they serve tooling rather than pages:
 
 - `minimizeOptions()`, `toCode()` and `validateOptions()` on `osm`/`satellite` — storing options,
@@ -167,6 +167,7 @@ only, because they serve tooling rather than pages:
 - the font-discovery helpers (`fetchFontFaces()`, `fontCovers()`, `fontScripts()`, `languageScript()`,
   `textScripts()`, `FONT_SCRIPTS`) — they serve a font picker, not a map.
 - `randomColor()` — picking a colour is authoring work, and its hue dictionary costs \~1.2 KB gzipped.
+- `isDarkPalette()` — whether a theme name is a dark theme, for a tool that lists or groups themes.
 - the TileJSON validators (`assertTileJSONSpecification()`, `isTileJSONSpecification()` and their
   raster counterparts) — for a tool that ingests tilesets; `guessStyle()` already validates what it
   fetches.

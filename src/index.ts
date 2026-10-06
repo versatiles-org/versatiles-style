@@ -24,8 +24,8 @@
  * That bundle carries **less than this page lists**, and it is documented on its own page: see the
  * {@link "versatiles-style.js"} module. Everything you build a style with — `osm`, `satellite`,
  * `guessStyle`, `inlineSources`, `Color` — is in both. What only npm has is editor and tooling work:
- * `osm.minimizeOptions` and `osm.toCode`, the font-discovery helpers, `randomColor`, and the TileJSON
- * validators.
+ * `osm.minimizeOptions` and `osm.toCode`, the font-discovery helpers, `randomColor`, `isDarkPalette`,
+ * and the TileJSON validators.
  * Each of those is marked **npm only** on its own page. They are left out so that a page which merely
  * builds a style and hands it to MapLibre does not download them.
  *
@@ -184,6 +184,14 @@ export {
 // cost every page ~1.2 KB gzipped for its hue dictionary — measured, not guessed.
 
 export { randomColor } from './color/index.js';
+
+// ── Themes ────────────────────────────────────────────────────────────────────
+//
+// npm only. Whether a theme name is a dark one is a question for a tool that lists the themes — a
+// picker that groups them, or pairs a map with a matching page — and the name does not always say:
+// `fnord` is dark without the `-dark` suffix.
+
+export { isDarkPalette } from './themes/index.js';
 
 export { fetchFontFaces, fontCovers, fontScripts, languageScript, textScripts, FONT_SCRIPTS } from './fonts/index.js';
 export type { FontFaceInfo } from './fonts/index.js';

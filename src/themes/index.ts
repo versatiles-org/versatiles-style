@@ -65,7 +65,13 @@ export function getPaletteColors(palette: Palette): ResolvedColors {
 	return Object.fromEntries(colorOptionsKeys.map((key, index) => [key, `#${values[index]}`])) as ResolvedColors;
 }
 
-/** Whether a palette is a dark theme, whose derived colours blend toward black instead of white. */
+/**
+ * Whether a palette is a dark theme, whose derived colours blend toward black instead of white.
+ *
+ * Not the same as a `-dark` suffix: `'fnord'` is dark and has no light partner.
+ *
+ * **npm only** — not in the browser bundle.
+ */
 export function isDarkPalette(palette: Palette): boolean {
 	return palette.endsWith('-dark') || DARK_ONLY.has(palette);
 }
