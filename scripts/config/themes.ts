@@ -65,6 +65,9 @@ export const THEMES: Record<LightTheme, ThemeSettings> = {
  * values with which `osm()` comes closest to it. Colours that map does not draw are left out and
  * derived. To add one, run `guessOptions` on the style, paste its `colors` here, and name the theme
  * in `LookalikeTheme` and in `Palette`.
+ *
+ * A `width` in `lines` is what the importer reads too: how wide that map draws the line, as a multiple of
+ * how wide this style does, compared at three zooms.
  */
 export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	positrino: {
@@ -101,9 +104,10 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// Positron draws paths as a solid line and state borders in an even dash.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.6 },
+			'roads.footway': { dashed: false, width: 1.6 },
+			'roads.steps': { dashed: false, width: 1.6 },
+			'boundaries.country': { width: 0.65 },
 			'boundaries.state': [2, 2],
 		},
 	},
@@ -137,9 +141,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// Dark Matter dashes its paths and state borders evenly.
 		lines: {
-			'roads.paths': [1.5, 1.5],
-			'roads.footway': [1.5, 1.5],
-			'roads.steps': [1.5, 1.5],
+			'roads.paths': { dashed: [1.5, 1.5], width: 1.6 },
+			'roads.footway': { dashed: [1.5, 1.5], width: 1.6 },
+			'roads.steps': { dashed: [1.5, 1.5], width: 1.6 },
 			'boundaries.state': [2, 2],
 		},
 	},
@@ -172,9 +176,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// Fiord Color dashes its paths and state borders evenly.
 		lines: {
-			'roads.paths': [2, 2],
-			'roads.footway': [2, 2],
-			'roads.steps': [2, 2],
+			'roads.paths': { dashed: [2, 2], width: 0.7 },
+			'roads.footway': { dashed: [2, 2], width: 0.7 },
+			'roads.steps': { dashed: [2, 2], width: 0.7 },
 			'boundaries.state': [2, 2],
 		},
 	},
@@ -221,10 +225,12 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadSecondaryBg: '#E0E0E0',
 		},
 		// Protomaps draws paths solid and dashes every border, the country's too.
+		// Its borders are a fifth as wide as ours, by the importer's reading — under a pixel, and rendered
+		// that way they are gone from the map. So the borders keep our width and take only its dash.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.5 },
+			'roads.footway': { dashed: false, width: 1.5 },
+			'roads.steps': { dashed: false, width: 1.5 },
 			'boundaries.country': [2, 1],
 			'boundaries.state': [2, 1],
 		},
@@ -270,9 +276,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// As `protocol`.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.5 },
+			'roads.footway': { dashed: false, width: 1.5 },
+			'roads.steps': { dashed: false, width: 1.5 },
 			'boundaries.country': [2, 1],
 			'boundaries.state': [2, 1],
 		},
@@ -318,9 +324,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// As `protocol`.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.5 },
+			'roads.footway': { dashed: false, width: 1.5 },
+			'roads.steps': { dashed: false, width: 1.5 },
 			'boundaries.country': [2, 1],
 			'boundaries.state': [2, 1],
 		},
@@ -363,9 +369,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// As `protocol`.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.5 },
+			'roads.footway': { dashed: false, width: 1.5 },
+			'roads.steps': { dashed: false, width: 1.5 },
 			'boundaries.country': [2, 1],
 			'boundaries.state': [2, 1],
 		},
@@ -411,9 +417,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// As `protocol`.
 		lines: {
-			'roads.paths': false,
-			'roads.footway': false,
-			'roads.steps': false,
+			'roads.paths': { dashed: false, width: 1.5 },
+			'roads.footway': { dashed: false, width: 1.5 },
+			'roads.steps': { dashed: false, width: 1.5 },
 			'boundaries.country': [2, 1],
 			'boundaries.state': [2, 1],
 		},
@@ -559,9 +565,10 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 		},
 		// OSM Liberty: a tight dash for paths, a long one for state borders.
 		lines: {
-			'roads.paths': [1, 0.7],
-			'roads.footway': [1, 0.7],
-			'roads.steps': [1, 0.7],
+			'roads.paths': { dashed: [1, 0.7], width: 1.55 },
+			'roads.footway': { dashed: [1, 0.7], width: 1.55 },
+			'roads.steps': { dashed: [1, 0.7], width: 1.55 },
+			'boundaries.country': { width: 0.65 },
 			'boundaries.state': [5, 1],
 		},
 	},
@@ -625,8 +632,9 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			'roads.paths': [1, 0.25],
 			'roads.footway': [1, 0.25],
 			'roads.steps': [0.3, 0.3],
-			'boundaries.state': [2, 2, 6, 2],
-			'boundaries.disputed': [2, 1.5],
+			'boundaries.country': { width: 0.4 },
+			'boundaries.state': { dashed: [2, 2, 6, 2], width: 0.75 },
+			'boundaries.disputed': { dashed: [2, 1.5], width: 0.4 },
 		},
 	},
 	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map

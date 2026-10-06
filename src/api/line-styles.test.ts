@@ -349,7 +349,8 @@ describe('line presets of the themes', () => {
 		).toStrictEqual({
 			opacity: true,
 			dashed: true,
-			width: 1,
+			// the theme's own width for a path, which the caller did not touch
+			width: 1.6,
 		});
 		expect(
 			dashOf(osm({ theme: 'positrino', layers: { roads: { footway: { dashed: true } } } }), 'way-footway')
@@ -474,6 +475,43 @@ describe('line styles: the importer', () => {
 			theme: 'protocol',
 			layers: { boundaries: { country: { dashed: false } } },
 		});
+	});
+
+	it('reads a width back as the multiple of our own it comes to, in every schema', () => {
+		const layers: LayerGroupOptions = {
+			roads: { footway: { dashed: false, width: 1.5 } },
+			boundaries: { country: { width: 2 }, state: { width: 0.5 } },
+		};
+		expect(derived(osm({ layers })).options).toStrictEqual({ layers });
+		expect(derived(omt({ layers })).options?.layers).toStrictEqual(layers);
+		expect(derived(protomaps({ layers, urls: PM })).options?.layers).toStrictEqual(layers);
+	});
+
+	it('does not write a width that is nearly ours', () => {
+		// two maps rarely share a width ramp to the pixel; a tenth more is not a setting
+		expect(derived(osm({ layers: { boundaries: { state: { width: 1.1 } } } })).options).toStrictEqual({});
+		expect(derived(osm({ layers: { boundaries: { state: { width: 1.3 } } } })).options).toStrictEqual({
+			layers: { boundaries: { state: { width: 1.3 } } },
+		});
+	});
+
+	it("judges a width against the chosen theme's own, and writes it as a multiple of the default", () => {
+		// ping draws its state border at half width: that is the theme, not a difference…
+		expect(derived(osm({ theme: 'ping' })).options).toStrictEqual({ theme: 'ping' });
+		// …and the default width, on that theme, is one — written as 1, not as the 2 it is to the theme
+		expect(derived(osm({ theme: 'ping', layers: { boundaries: { state: { width: 1 } } } })).options).toStrictEqual({
+			theme: 'ping',
+			layers: { boundaries: { state: { width: 1 } } },
+		});
+	});
+
+	// A width is a ramp, and the probe is read at one zoom. Ours and this style's state border are
+	// both 1px at z8 and differ from z10 on; read at z8 alone they would be the same line.
+	it('compares widths at several zooms, not only where the probe is read', () => {
+		const ours = (layerOf(osm(), 'boundary-state')?.paint?.['line-width'] as unknown[]).slice(3);
+		expect(ours).toStrictEqual([7, 0, 8, 1, 10, 2]);
+		const flat = patched('boundary-state', { 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0, 8, 1, 10, 1] });
+		expect(derived(flat).options?.layers).toStrictEqual({ boundaries: { state: { width: 0.5 } } });
 	});
 
 	it('leaves a hidden line hidden, and says nothing of its dash', () => {
