@@ -8,7 +8,7 @@
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite as satelliteFn } from '../../src/api/index.js';
 import { V5_STYLE_THEMES, type OsmFeaturesOptions } from '../../src/options/index.js';
-import { LOOKALIKES } from '../config/themes.js';
+import { LOOKALIKES } from '../config/lookalikes.js';
 
 export interface StyleVariant {
 	name: string;

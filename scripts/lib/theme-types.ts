@@ -1,9 +1,9 @@
 /**
  * The vocabulary the theme configuration is written in.
  *
- * A leaf module, imported by both sides: `scripts/config/themes.ts` writes values in these shapes and
- * `scripts/lib/theme-generator.ts` derives themes from them. Keeping the types here rather than in
- * either one is what lets the dependency run one way — config never imports the engine, the engine
+ * A leaf module, imported by both sides: `scripts/config/themes.ts` and `scripts/config/lookalikes.ts`
+ * write values in these shapes and `scripts/lib/theme-generator.ts` derives themes from them. Keeping
+ * the types here rather than on either side is what lets the dependency run one way — config never imports the engine, the engine
  * never imports config, and `scripts/generate-themes.ts` puts the two together.
  *
  * The prose lives here too, because what a setting *means* is a fact about the derivation, not about

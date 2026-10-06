@@ -92,14 +92,16 @@ npm run compare -- --baseline        # after — every altered property, listed
 
 ## Theming
 
-| Script               | Alias             | Does                                                                                                                  |
-| -------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `generate-themes.ts` | `generate-themes` | Regenerates the nine derived themes from `colorful` into `src/themes/tables.ts`. `--dry-run` lists what would change. |
-| `extract-palette.ts` | `extract-palette` | Pulls an area-colour palette out of an existing OpenMapTiles style, as a paste-ready object.                          |
+| Script               | Alias             | Does                                                                                                                                     |
+| -------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `generate-themes.ts` | `generate-themes` | Regenerates the nine derived themes and the lookalikes from `colorful` into `src/themes/tables.ts`. `--dry-run` lists what would change. |
+| `extract-palette.ts` | `extract-palette` | Pulls an area-colour palette out of an existing OpenMapTiles style, as a paste-ready object.                                             |
 
-Three files, split by what changes for what reason:
-[`config/themes.ts`](./config/themes.ts) is what the themes should look like — settings, fixes and
-overrides, the only file to edit when tuning; [`lib/theme-types.ts`](./lib/theme-types.ts) is what
+Four files, split by what changes for what reason:
+[`config/themes.ts`](./config/themes.ts) is what the nine derived themes should look like — settings,
+fixes and overrides, the only file to edit when tuning them;
+[`config/lookalikes.ts`](./config/lookalikes.ts) is the same for the themes that resemble another
+project's map, their colours and line presets; [`lib/theme-types.ts`](./lib/theme-types.ts) is what
 each of those settings means; [`lib/theme-generator.ts`](./lib/theme-generator.ts) is the derivation
 that turns one into the other. `colorful` itself is hand-written in `src/themes/colorful.ts` and is
 never generated — change a colour there and all nine derived themes follow.

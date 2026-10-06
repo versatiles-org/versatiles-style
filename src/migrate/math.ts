@@ -80,7 +80,7 @@ export function luminance([r, g, b]: RGBA): number {
  * rewritten, and it stays deliberately. The obvious replacement is `Color.deltaEOK`, but the two
  * metrics are not a rescale of each other: across the palette colours, 81% of the pairs that sit near
  * the threshold are classified differently, all in the same direction — ΔE-OK at 0.02 calls "the same"
- * a great many pairs that ΔE76 at 2 calls different. Since `OVERRIDE_DISTANCE` in `derive.ts` decides
+ * a great many pairs that ΔE76 at 2 calls different. Since `OVERRIDE_DISTANCE` in `derive-content.ts` decides
  * from this number whether an option needs a colour override at all, swapping metrics would quietly
  * change what `deriveOptions()` returns. If that is ever wanted, retune the thresholds against real
  * styles rather than by dividing by 100.

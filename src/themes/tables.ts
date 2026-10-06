@@ -55,7 +55,7 @@ export const TABLES: Record<Exclude<Palette, 'colorful'>, string> = {
 
 // How a theme draws its borders and paths where that differs from the style's defaults, per line group:
 // what it sets of `dashed` and `width`. See `getLinePreset` in ./index.ts, and `lines` in
-// scripts/config/themes.ts.
+// scripts/config/lookalikes.ts.
 export const LINE_PRESETS: Partial<
 	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number }>>>
 > = {

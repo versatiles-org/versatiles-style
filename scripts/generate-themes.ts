@@ -18,7 +18,8 @@ import { fileURLToPath } from 'node:url';
 import { colorOptionsKeys, type Palette, type ResolvedColors } from '../src/options/index.js';
 import { getPaletteColors, PALETTES } from '../src/themes/index.js';
 import { LINE_PRESETS, TABLES } from '../src/themes/tables.js';
-import { LOOKALIKES, REPORT_PAIRS, THEMES } from './config/themes.js';
+import { LOOKALIKES } from './config/lookalikes.js';
+import { REPORT_PAIRS, THEMES } from './config/themes.js';
 import { contrast, generate, linePresets, oklabDistance, over, parse } from './lib/theme-generator.js';
 
 const FILE = resolve(fileURLToPath(import.meta.url), '../../src/themes/tables.ts');
@@ -90,7 +91,7 @@ ${rows.join('\n')}
 
 // How a theme draws its borders and paths where that differs from the style's defaults, per line group:
 // what it sets of \`dashed\` and \`width\`. See \`getLinePreset\` in ./index.ts, and \`lines\` in
-// scripts/config/themes.ts.
+// scripts/config/lookalikes.ts.
 export const LINE_PRESETS: Partial<
 	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number }>>>
 > = ${presetsSource(presets)};

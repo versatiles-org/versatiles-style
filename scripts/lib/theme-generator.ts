@@ -17,7 +17,8 @@
  * the generator twice gives the same result. `npm run generate-themes` writes those tables, and a unit
  * test fails when they and the generator disagree.
  *
- * This file is the derivation. What the themes should look like is `scripts/config/themes.ts`, and
+ * This file is the derivation. What the themes should look like is `scripts/config/themes.ts` (and
+ * `scripts/config/lookalikes.ts` for the lookalikes), and
  * what each of its settings means is documented on the types in `./theme-types.ts`. Three places to
  * tune a derived theme there, in order of how much they move:
  *
@@ -40,7 +41,8 @@
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
 import { isDashPattern, lineDefaults, type Palette, type ResolvedColors } from '../../src/options/index.js';
-import { FIXES, LOOKALIKES, OVERRIDES, THEMES } from '../config/themes.js';
+import { LOOKALIKES } from '../config/lookalikes.js';
+import { FIXES, OVERRIDES, THEMES } from '../config/themes.js';
 import type { Adjustment, Fix, Group, LightTheme, Lookalike, LookalikeTheme, ThemeSettings } from './theme-types.js';
 
 /**
