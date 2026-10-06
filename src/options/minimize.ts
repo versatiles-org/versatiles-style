@@ -16,7 +16,9 @@ import {
 	TEXT_GROUPS,
 	TEXT_TOPICS,
 	topicOf,
+	LINE_STYLE_DEFAULTS,
 	type LayerGroupOptions,
+	type ResolvedLineStyle,
 	type Palette,
 	type RecolorOptions,
 	type ResolvedText,
@@ -259,10 +261,97 @@ type GroupTree = { [key: string]: GroupScalar | GroupTree };
  */
 function minimizeLayers(layers: unknown, drawn?: LayerGroupMap): unknown {
 	if (layers === undefined) return undefined;
-	const { icons: _alias, ...resolved } = resolveLayerGroups(layers as LayerGroupOptions) as unknown as GroupTree;
-	const collapsed = collapseGroups(resolved, drawn);
-	if (typeof collapsed !== 'object') return collapsed === true ? undefined : collapsed;
-	return withoutVisible(collapsed);
+	const { icons: _alias, ...resolved } = resolveLayerGroups(layers as LayerGroupOptions) as unknown as ResolvedTree;
+	const { groups, dashes } = splitLineStyles(resolved, drawn);
+	const collapsed = collapseGroups(groups, drawn);
+	const minimal =
+		typeof collapsed !== 'object' ? (collapsed === true ? undefined : collapsed) : withoutVisible(collapsed);
+	return dashes.length === 0 ? minimal : withDashes(minimal, groups, dashes, drawn);
+}
+
+type ResolvedTree = { [key: string]: GroupScalar | ResolvedLineStyle | ResolvedTree };
+type Dash = { path: string[]; dashed: boolean | number[] };
+const isLineStyle = (node: unknown): node is ResolvedLineStyle =>
+	typeof node === 'object' && node !== null && 'dashed' in node && 'opacity' in node;
+const sameDash = (a: boolean | number[], b: boolean | number[]): boolean =>
+	Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((v, i) => v === b[i]) : a === b;
+
+/**
+ * The resolved tree as the two things it holds. `groups` is what it was before a line group could be
+ * styled — every leaf its visibility — so the collapsing below works on it unchanged, and `layers`
+ * without a dash setting minimises to exactly what it always did. `dashes` lists the line groups whose
+ * `dashed` is not their default; one that is hidden, or that the overlay does not draw, has nothing to
+ * say about how it is drawn.
+ */
+function splitLineStyles(
+	node: ResolvedTree,
+	drawn: LayerGroupMap | undefined,
+	path: string[] = []
+): { groups: GroupTree; dashes: Dash[] } {
+	const groups: GroupTree = {};
+	const dashes: Dash[] = [];
+	for (const [key, child] of Object.entries(node)) {
+		const here = [...path, key];
+		const drawnHere = drawn === undefined ? undefined : drawn[key];
+		if (isLineStyle(child)) {
+			groups[key] = child.opacity;
+			const isDrawn = drawn === undefined || drawnHere !== undefined;
+			if (isDrawn && child.opacity !== false && !sameDash(child.dashed, LINE_STYLE_DEFAULTS[here.join('.')])) {
+				dashes.push({ path: here, dashed: child.dashed });
+			}
+		} else if (typeof child === 'object') {
+			const below = splitLineStyles(child, Array.isArray(drawnHere) ? undefined : drawnHere, here);
+			groups[key] = below.groups;
+			dashes.push(...below.dashes);
+		} else groups[key] = child;
+	}
+	return { groups, dashes };
+}
+
+/**
+ * `minimal` with the dash settings written back in.
+ *
+ * A dash is set on one group, so the branch above it can no longer be a single value: where the
+ * collapse had folded it — `boundaries: 0.5`, or the whole of `layers` — it is spelled out again, each
+ * group with the value the fold stood for, and only that far. Every line group sits one level below a
+ * top-level group, which is all this has to reach.
+ */
+function withDashes(
+	minimal: GroupScalar | GroupTree | undefined,
+	groups: GroupTree,
+	dashes: Dash[],
+	drawn?: LayerGroupMap
+): GroupTree {
+	const out: { [key: string]: unknown } = {};
+	for (const [key, group] of Object.entries(groups)) {
+		const drawnHere = drawn?.[key];
+		if (drawn !== undefined && drawnHere === undefined) continue;
+		const below = Array.isArray(drawnHere) ? undefined : drawnHere;
+		const own = dashes.filter((dash) => dash.path[0] === key);
+		if (own.length === 0 || typeof group !== 'object') {
+			// untouched: whatever the plain minimisation made of this group
+			const kept = typeof minimal === 'object' ? minimal[key] : minimal === true ? undefined : minimal;
+			if (kept !== undefined) out[key] = kept;
+			continue;
+		}
+		const branch: { [key: string]: unknown } = {};
+		for (const [child, value] of Object.entries(group)) {
+			if (below !== undefined && below[child] === undefined) continue;
+			const dash = own.find((candidate) => candidate.path[1] === child);
+			if (dash) branch[child] = value === true ? { dashed: dash.dashed } : { opacity: value, dashed: dash.dashed };
+			else if (typeof value === 'object') {
+				const collapsed = collapseGroups(
+					value,
+					Array.isArray(below?.[child]) ? undefined : (below?.[child] as LayerGroupMap)
+				);
+				const rest =
+					typeof collapsed === 'object' ? withoutVisible(collapsed) : collapsed === true ? undefined : collapsed;
+				if (rest !== undefined) branch[child] = rest;
+			} else if (value !== true) branch[child] = value;
+		}
+		out[key] = branch;
+	}
+	return out as GroupTree;
 }
 
 function collapseGroups(node: GroupTree, drawn?: LayerGroupMap): GroupScalar | GroupTree {

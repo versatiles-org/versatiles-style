@@ -218,23 +218,34 @@ function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b
 // on a light land would not show.
 const WAY_CONTRAST = 0.15;
 
-// Path-class ways (footway/steps/path/cycleway): a thin dashed line with no casing, as nearly every
-// other map draws them — a path is not a road, and drawn as a filled, cased line it read as one.
-// 1px until z15, 4px at z18 and 6px at z20 — Mapbox Streets' curve, and about half a pedestrian
-// street's width at every zoom, so the two stay apart. Steps take a shorter dash, the rungs. footway/steps/path use the foot colour; cycleway the cycle colour.
+// Path-class ways (footway/steps/path/cycleway): a thin line with no casing, dashed unless
+// `layers.roads.*.dashed` says otherwise — as nearly every other map draws them; a path is not a road,
+// and drawn as a filled, cased line it read as one. 1px until z15, 4px at z18 and 6px at z20 — Mapbox
+// Streets' curve, and about half a pedestrian street's width at every zoom, so the two stay apart.
+// Steps take a shorter dash, the rungs. footway/steps/path use the foot colour; cycleway the cycle
+// colour.
 //
-// The caps are butt, on every prefix: a round cap extends each dash by half a line width at both
-// ends, which closes these gaps and renders the line solid (see the note on `underground`).
+// A dashed way has butt caps, on every prefix: a round cap extends each dash by half a line width at
+// both ends, which closes these gaps and renders the line solid (see the note on `underground`). A
+// solid one keeps round caps, so its segments join without notches.
 // Tunnels are faded by `underground`; bridges also get a deck (see bridgeDeckStyle).
+const WAY_DASHES = { footway: [1.5, 0.75], paths: [1.5, 0.75], steps: [0.5, 0.25] } as const;
+
 function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
 	if (isOutline) return null;
 	const { c, fg } = ctx;
 	const fill = t === 'cycleway' ? c.transitCycle : c.transitFoot;
+	// path and cycleway are one group, `roads.paths`
+	const group = t === 'footway' || t === 'steps' ? t : 'paths';
+	const { dashed } = ctx.layers.roads[group];
+	const line: b.StyleProps =
+		dashed === false
+			? { lineCap }
+			: { lineCap: 'butt', lineDasharray: [...(dashed === true ? WAY_DASHES[group] : dashed)] };
 	return {
 		color: fill.blend(WAY_CONTRAST, fg),
 		lineJoin,
-		lineCap: 'butt',
-		lineDasharray: t === 'steps' ? [0.5, 0.25] : [1.5, 0.75],
+		...line,
 		size: { 13: 0, 14: 1, 15: 1, 18: 4, 20: 6 },
 	};
 }

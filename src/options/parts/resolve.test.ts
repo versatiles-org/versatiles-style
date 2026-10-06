@@ -25,7 +25,7 @@ describe('resolveOsm', () => {
 		expect(r.features.buildings).toBe('flat');
 		// layers are fully resolved: every group visible by default.
 		expect(r.layers.buildings).toBe(true);
-		expect(r.layers.roads.steps).toBe(true);
+		expect(r.layers.roads.steps).toStrictEqual({ opacity: true, dashed: true });
 		expect(r.layers.roads.motorways).toBe(true);
 		expect(r.recolor).toEqual({
 			blend: {

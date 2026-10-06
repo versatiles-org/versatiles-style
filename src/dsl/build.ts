@@ -363,7 +363,8 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	// silently, which is how the disputed border kept a `[2, 1]` that never showed. Butt caps are what
 	// a dash needs, so a dashed line gets them here, for every schema at once. A round cap survives
 	// only where every gap is wide enough to outlast it (the aerialway's `[2, 3]`).
-	if (type === 'line' && style.lineCap === 'round' && capClosesDash(style.lineDasharray)) style.lineCap = 'butt';
+	// Dropped rather than set: butt is MapLibre's default, and a style says nothing it does not have to.
+	if (type === 'line' && style.lineCap === 'round' && capClosesDash(style.lineDasharray)) delete style.lineCap;
 
 	applyProps(layer, style as StyleProps);
 	return { layer, group };
@@ -419,6 +420,9 @@ function layerOpt(layers: ResolvedLayerGroups, path: string | undefined): boolea
 		if (node && typeof node === 'object') node = (node as Record<string, unknown>)[segment];
 		else return true;
 	}
+	// A line group resolves to `{ opacity, dashed }`; its `opacity` is what a plain group's value is.
+	// How it is dashed is the layer module's business, not this pass's.
+	if (node && typeof node === 'object') node = (node as { opacity?: unknown }).opacity;
 	return typeof node === 'boolean' || typeof node === 'number' ? node : true;
 }
 

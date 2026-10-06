@@ -45,7 +45,7 @@ const CASING = /:(outline|bridge)$/;
  * stays the light line it read as. The maritime border never had a casing and keeps its own colour.
  */
 const CASED_BOUNDARY = /^boundary-(country|country-disputed|state)$/;
-const CASED_BOUNDARY_CASING = /^boundary-(country|state):outline$/;
+const CASED_BOUNDARY_CASING = /^boundary-(country|country-disputed|state):outline$/;
 
 /**
  * Rail, light rail, subway and aerialways, whose two layers are the other way round.

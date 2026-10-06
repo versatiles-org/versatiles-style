@@ -25,6 +25,7 @@ exports[`generator: background > yielded layer ids are stable 1`] = `
 exports[`generator: boundaries > yielded layer ids are stable 1`] = `
 [
   "line:boundary-country:outline",
+  "line:boundary-country-disputed:outline",
   "line:boundary-state:outline",
   "line:boundary-country",
   "line:boundary-country-disputed",

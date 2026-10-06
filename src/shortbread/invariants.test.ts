@@ -34,7 +34,7 @@ describe('layer-generation invariants', () => {
 		expect(used).toMatchSnapshot();
 	});
 
-	it('every group tag resolves to a boolean/number leaf in the resolved layer groups', () => {
+	it('every group tag resolves to a leaf in the resolved layer groups: a boolean/number, or a line style', () => {
 		const resolved = resolveLayerGroups() as unknown as Record<string, unknown>;
 		const resolvePath = (path: string): unknown => {
 			let node: unknown = resolved;
@@ -47,7 +47,10 @@ describe('layer-generation invariants', () => {
 		const offenders = tagged
 			.filter((t) => t.group != null)
 			.filter((t) => {
-				const v = resolvePath(t.group as string);
+				// a line group — a border, a path — resolves to `{ opacity, dashed }`, and its opacity is the leaf
+				const node = resolvePath(t.group as string);
+				const v =
+					node && typeof node === 'object' && 'dashed' in node ? (node as Record<string, unknown>).opacity : node;
 				return typeof v !== 'boolean' && typeof v !== 'number';
 			})
 			.map((t) => `${t.layer.id} → ${t.group}`);

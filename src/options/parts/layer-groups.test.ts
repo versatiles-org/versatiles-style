@@ -18,16 +18,20 @@ const DEFAULTS = {
 		motorways: true,
 		highways: true,
 		streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
-		paths: true,
-		footway: true,
-		steps: true,
+		paths: { opacity: true, dashed: true },
+		footway: { opacity: true, dashed: true },
+		steps: { opacity: true, dashed: true },
 	},
 	transit: { rail: true, aerialways: true, ferries: true, stops: true },
 	buildings: true,
 	sites: true,
 	airport: true,
 	pois: true,
-	boundaries: { country: true, state: true },
+	boundaries: {
+		country: { opacity: true, dashed: false },
+		state: { opacity: true, dashed: true },
+		disputed: { opacity: true, dashed: true },
+	},
 	markings: true,
 	labels: {
 		boundaries: { countries: true, states: true },
@@ -51,26 +55,26 @@ describe('resolveLayerGroups', () => {
 	// ── footway / steps default ────────────────────────────────────────────────────
 
 	it('shows footway and steps by default', () => {
-		expect(resolveLayerGroups().roads.footway).toBe(true);
-		expect(resolveLayerGroups().roads.steps).toBe(true);
+		expect(resolveLayerGroups().roads.footway.opacity).toBe(true);
+		expect(resolveLayerGroups().roads.steps.opacity).toBe(true);
 	});
 
 	it('hides footway when explicitly disabled, leaving siblings at their defaults', () => {
 		const r = resolveLayerGroups({ roads: { footway: false } });
-		expect(r.roads.footway).toBe(false);
-		expect(r.roads.steps).toBe(true); // sibling stays at its (visible) default
-		expect(r.roads.paths).toBe(true);
+		expect(r.roads.footway.opacity).toBe(false);
+		expect(r.roads.steps.opacity).toBe(true); // sibling stays at its (visible) default
+		expect(r.roads.paths.opacity).toBe(true);
 	});
 
 	it('shows steps when explicitly enabled, leaving siblings at their defaults', () => {
 		const r = resolveLayerGroups({ roads: { steps: true } });
-		expect(r.roads.steps).toBe(true);
-		expect(r.roads.paths).toBe(true);
+		expect(r.roads.steps.opacity).toBe(true);
+		expect(r.roads.paths.opacity).toBe(true);
 		expect(r.roads.motorways).toBe(true);
 	});
 
 	it('accepts an opacity for steps', () => {
-		expect(resolveLayerGroups({ roads: { steps: 0.4 } }).roads.steps).toBe(0.4);
+		expect(resolveLayerGroups({ roads: { steps: 0.4 } }).roads.steps.opacity).toBe(0.4);
 	});
 
 	// ── scalar cascade ─────────────────────────────────────────────────────────────
@@ -80,9 +84,9 @@ describe('resolveLayerGroups', () => {
 			motorways: true,
 			highways: true,
 			streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
-			paths: true,
-			footway: true,
-			steps: true,
+			paths: { opacity: true, dashed: true },
+			footway: { opacity: true, dashed: true },
+			steps: { opacity: true, dashed: true },
 		});
 	});
 
@@ -91,9 +95,9 @@ describe('resolveLayerGroups', () => {
 			motorways: 0.5,
 			highways: 0.5,
 			streets: { residential: 0.5, service: 0.5, pedestrian: 0.5, track: 0.5, bus: 0.5 },
-			paths: 0.5,
-			footway: 0.5,
-			steps: 0.5,
+			paths: { opacity: 0.5, dashed: true },
+			footway: { opacity: 0.5, dashed: true },
+			steps: { opacity: 0.5, dashed: true },
 		});
 	});
 
@@ -101,8 +105,8 @@ describe('resolveLayerGroups', () => {
 		const r = resolveLayerGroups({ roads: false }).roads;
 		expect(r.motorways).toBe(false);
 		expect(r.streets.residential).toBe(false);
-		expect(r.paths).toBe(false);
-		expect(r.steps).toBe(false);
+		expect(r.paths.opacity).toBe(false);
+		expect(r.steps.opacity).toBe(false);
 	});
 
 	it('cascades a scalar on streets to its children only', () => {
@@ -116,16 +120,16 @@ describe('resolveLayerGroups', () => {
 		});
 		// siblings of `streets` stay at their defaults
 		expect(r.motorways).toBe(true);
-		expect(r.paths).toBe(true);
-		expect(r.steps).toBe(true);
+		expect(r.paths.opacity).toBe(true);
+		expect(r.steps.opacity).toBe(true);
 	});
 
 	// ── object overrides ─────────────────────────────────────────────────────────
 
 	it('applies per-child roads overrides, leaving unset children at defaults', () => {
 		const r = resolveLayerGroups({ roads: { paths: false } }).roads;
-		expect(r.paths).toBe(false);
-		expect(r.steps).toBe(true); // unchanged default
+		expect(r.paths.opacity).toBe(false);
+		expect(r.steps.opacity).toBe(true); // unchanged default
 		expect(r.motorways).toBe(true);
 	});
 
@@ -139,8 +143,8 @@ describe('resolveLayerGroups', () => {
 	it('lets an explicit child override an inherited scalar', () => {
 		const r = resolveLayerGroups({ roads: { streets: 0.3, paths: false, steps: true } }).roads;
 		expect(r.streets.residential).toBe(0.3);
-		expect(r.paths).toBe(false);
-		expect(r.steps).toBe(true);
+		expect(r.paths.opacity).toBe(false);
+		expect(r.steps.opacity).toBe(true);
 		expect(r.motorways).toBe(true);
 	});
 
@@ -176,7 +180,11 @@ describe('resolveLayerGroups', () => {
 		expect(r.water.ocean).toBe(false);
 		expect(r.water.rivers).toBe(true);
 		expect(r.transit).toStrictEqual({ rail: 0.5, aerialways: 0.5, ferries: 0.5, stops: 0.5 });
-		expect(r.boundaries).toStrictEqual({ country: true, state: false });
+		expect(r.boundaries).toStrictEqual({
+			country: { opacity: true, dashed: false },
+			state: { opacity: false, dashed: true },
+			disputed: { opacity: true, dashed: true },
+		});
 		expect(r.labels).toStrictEqual({
 			boundaries: { countries: false, states: false },
 			places: { cities: false, villages: false, hamlets: false, districts: false },
@@ -247,8 +255,8 @@ describe('resolveLayerGroups', () => {
 		});
 		expect(r.roads.motorways).toBe(false); // 0 → hidden
 		expect(r.roads.highways).toBe(1); // 1 stays a number — see below
-		expect(r.roads.paths).toBe(0.5); // fractional stays a number
-		expect(r.roads.steps).toBe(true); // 2 → clamped to fully visible
+		expect(r.roads.paths.opacity).toBe(0.5); // fractional stays a number
+		expect(r.roads.steps.opacity).toBe(true); // 2 → clamped to fully visible
 		expect(r.buildings).toBe(false); // negative → hidden
 	});
 
@@ -264,5 +272,88 @@ describe('resolveLayerGroups', () => {
 	it('normalizes a cascaded scalar too', () => {
 		expect(resolveLayerGroups({ roads: 0 }).roads.motorways).toBe(false);
 		expect(resolveLayerGroups({ land: 5 }).land.forest).toBe(true);
+	});
+});
+
+// ── line styles ────────────────────────────────────────────────────────────────
+
+describe('line groups: borders and paths', () => {
+	const boundaries = (layers: Parameters<typeof resolveLayerGroups>[0]) => resolveLayerGroups(layers).boundaries;
+
+	it('dashes every line group but the country border by default', () => {
+		const r = resolveLayerGroups();
+		expect(r.boundaries.country.dashed).toBe(false);
+		expect(
+			[r.boundaries.state, r.boundaries.disputed, r.roads.paths, r.roads.footway, r.roads.steps].map((l) => l.dashed)
+		).toStrictEqual([true, true, true, true, true]);
+	});
+
+	it('takes a plain value as the opacity, and an object as both', () => {
+		expect(boundaries({ boundaries: { state: 0.5 } }).state).toStrictEqual({ opacity: 0.5, dashed: true });
+		expect(boundaries({ boundaries: { state: { opacity: 0.5 } } }).state).toStrictEqual({ opacity: 0.5, dashed: true });
+		expect(boundaries({ boundaries: { state: { dashed: false } } }).state).toStrictEqual({
+			opacity: true,
+			dashed: false,
+		});
+		expect(boundaries({ boundaries: { country: { opacity: 0.3, dashed: true } } }).country).toStrictEqual({
+			opacity: 0.3,
+			dashed: true,
+		});
+	});
+
+	it('takes a dash pattern of the caller, as a copy', () => {
+		const pattern = [4, 2, 1, 2];
+		const r = resolveLayerGroups({ roads: { footway: { dashed: pattern } } }).roads.footway;
+		expect(r.dashed).toStrictEqual([4, 2, 1, 2]);
+		expect(r.dashed).not.toBe(pattern);
+	});
+
+	it('inherits the opacity from a scalar above, and never the dash', () => {
+		expect(boundaries({ boundaries: 0.5 })).toStrictEqual({
+			country: { opacity: 0.5, dashed: false },
+			state: { opacity: 0.5, dashed: true },
+			disputed: { opacity: 0.5, dashed: true },
+		});
+		expect(boundaries(false).state).toStrictEqual({ opacity: false, dashed: true });
+		// an object that sets only the dash still takes the opacity cascading down to it
+		expect(resolveLayerGroups({ roads: 0.5 }).roads.steps.opacity).toBe(0.5);
+	});
+
+	it('normalises the opacity of a line style as it does a plain value', () => {
+		expect(boundaries({ boundaries: { state: { opacity: 0 } } }).state.opacity).toBe(false);
+		expect(boundaries({ boundaries: { state: { opacity: 2 } } }).state.opacity).toBe(true);
+		expect(boundaries({ boundaries: { state: { opacity: 1 } } }).state.opacity).toBe(1);
+	});
+
+	it('accepts what it resolved to', () => {
+		const once = resolveLayerGroups({
+			boundaries: { state: { opacity: 0.4, dashed: [1, 2] } },
+			roads: { footway: false },
+		});
+		expect(resolveLayerGroups(once)).toStrictEqual(once);
+	});
+
+	it('rejects an unknown key and a dash that is not a pattern', () => {
+		expect(() => resolveLayerGroups({ boundaries: { state: { dash: true } as never } })).toThrow(
+			'unknown option "boundaries.state.dash"'
+		);
+		for (const dashed of [[1], [1, 2, 3], [0, 0], [1, -1], [1, NaN], 'dotted', 2]) {
+			expect(
+				() => resolveLayerGroups({ boundaries: { state: { dashed: dashed as never } } }),
+				JSON.stringify(dashed)
+			).toThrow('layers.boundaries.state.dashed: expected true, false or a dash pattern');
+		}
+	});
+
+	it('rejects a line style on a group that is not a line', () => {
+		expect(() => resolveLayerGroups({ buildings: { dashed: true } as never })).toThrow(
+			'layers.buildings: expected a boolean or a number'
+		);
+		expect(() => resolveLayerGroups({ roads: { motorways: { opacity: 0.5 } as never } })).toThrow(
+			'layers.roads.motorways: expected a boolean or a number'
+		);
+		expect(() => resolveLayerGroups({ land: { forest: { opacity: 0.5 } as never } })).toThrow(
+			'layers.land.forest: expected a boolean or a number'
+		);
 	});
 });

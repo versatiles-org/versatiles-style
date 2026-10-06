@@ -174,6 +174,7 @@ describe('group tagging', () => {
 		expect([...new Set(tagged.map((t) => t.group).filter(Boolean) as string[])].sort()).toEqual([
 			'airport',
 			'boundaries.country',
+			'boundaries.disputed',
 			'boundaries.state',
 			'buildings',
 			'labels.addresses',

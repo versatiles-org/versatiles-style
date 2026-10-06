@@ -1,4 +1,38 @@
 import { checkKeys, checkFinite, type KnownKeys } from './keys.js';
+import { describeValue, reportIssue } from './issues.js';
+
+/**
+ * How a line is drawn, for the groups that are one: borders and paths. Takes the place of the plain
+ * `boolean | number` those groups also accept — `state: 0.5` and `state: { opacity: 0.5 }` say the
+ * same thing.
+ */
+export type LineStyle = {
+	/** As the plain value: `false` hides the line, a number in (0, 1] is its opacity. Default `true`. */
+	opacity?: boolean | number;
+	/**
+	 * `true` draws the line in the style's own dash pattern for it, `false` draws it solid, and a list
+	 * is a dash pattern of your own — the lengths of dashes and gaps in turn, in multiples of the line
+	 * width, as MapLibre's `line-dasharray` takes them. The default depends on the line: a country
+	 * border is solid, the other five are dashed.
+	 */
+	dashed?: boolean | number[];
+};
+
+export type ResolvedLineStyle = Required<LineStyle>;
+
+/**
+ * The groups that take a `LineStyle`, by their path in `layers`, and whether each is dashed unless
+ * told otherwise. The one list of them: the option type and the resolved type name the same six.
+ */
+export const LINE_STYLE_DEFAULTS: Readonly<Record<string, boolean>> = Object.freeze({
+	'roads.paths': true,
+	'roads.footway': true,
+	'roads.steps': true,
+	'boundaries.country': false,
+	'boundaries.state': true,
+	'boundaries.disputed': true,
+});
+
 export type LayerGroupOptions = {
 	land?:
 		| boolean
@@ -38,9 +72,9 @@ export type LayerGroupOptions = {
 							track?: boolean | number;
 							bus?: boolean | number;
 					  };
-				paths?: boolean | number;
-				footway?: boolean | number;
-				steps?: boolean | number;
+				paths?: boolean | number | LineStyle;
+				footway?: boolean | number | LineStyle;
+				steps?: boolean | number | LineStyle;
 		  };
 	transit?:
 		| boolean
@@ -59,8 +93,9 @@ export type LayerGroupOptions = {
 		| boolean
 		| number
 		| {
-				country?: boolean | number;
-				state?: boolean | number;
+				country?: boolean | number | LineStyle;
+				state?: boolean | number | LineStyle;
+				disputed?: boolean | number | LineStyle;
 		  };
 	markings?: boolean | number;
 	labels?:
@@ -111,9 +146,9 @@ export type ResolvedLayerGroups = {
 			track: boolean | number;
 			bus: boolean | number;
 		};
-		paths: boolean | number;
-		footway: boolean | number;
-		steps: boolean | number;
+		paths: ResolvedLineStyle;
+		footway: ResolvedLineStyle;
+		steps: ResolvedLineStyle;
 	};
 	transit: {
 		rail: boolean | number;
@@ -126,8 +161,9 @@ export type ResolvedLayerGroups = {
 	airport: boolean | number;
 	pois: boolean | number;
 	boundaries: {
-		country: boolean | number;
-		state: boolean | number;
+		country: ResolvedLineStyle;
+		state: ResolvedLineStyle;
+		disputed: ResolvedLineStyle;
 	};
 	markings: boolean | number;
 	labels: {
@@ -174,8 +210,50 @@ const normalize = (v: Scalar): Scalar => {
 };
 
 // Resolve a leaf: an explicit value wins, else a scalar inherited from an ancestor, else the default.
-const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar): Scalar =>
-	normalize(scalarOf(opt) ?? inherited ?? def);
+// Anything but a boolean or a number is reported: an object here used to be ignored without a word,
+// which reads, to whoever wrote it, as a setting that was applied.
+const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar, path: string): Scalar => {
+	if (opt != null && scalarOf(opt) === undefined) {
+		reportIssue({ path, message: `expected a boolean or a number, got ${describeValue(opt)}` });
+	}
+	return normalize(scalarOf(opt) ?? inherited ?? def);
+};
+
+/** A dash pattern MapLibre can draw: dashes and gaps in turn, none negative, not all of them zero. */
+const isDashPattern = (value: unknown): value is number[] =>
+	Array.isArray(value) &&
+	value.length >= 2 &&
+	value.length % 2 === 0 &&
+	value.every((length) => typeof length === 'number' && Number.isFinite(length) && length >= 0) &&
+	value.some((length) => length > 0);
+
+// Resolve a line leaf: the plain value or a `LineStyle`. The opacity follows the same rule as every
+// other leaf — explicit, else inherited, else visible. `dashed` is the leaf's own and never inherited:
+// a scalar on an ancestor says how visible its lines are, not how they are drawn.
+function lineLeaf(
+	opt: unknown,
+	inherited: Scalar | undefined,
+	path: string,
+	dashedByDefault: boolean
+): ResolvedLineStyle {
+	if (opt === null || typeof opt !== 'object' || Array.isArray(opt)) {
+		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault };
+	}
+	const style = opt as LineStyle;
+	checkKeys(style, { opacity: true, dashed: true }, path);
+	let dashed: boolean | number[] = dashedByDefault;
+	if (typeof style.dashed === 'boolean') dashed = style.dashed;
+	else if (isDashPattern(style.dashed)) dashed = [...style.dashed];
+	else if (style.dashed != null) {
+		reportIssue({
+			path: `${path}.dashed`,
+			message:
+				`expected true, false or a dash pattern — an even number of dash and gap lengths, none ` +
+				`negative and not all zero — got ${describeValue(style.dashed)}`,
+		});
+	}
+	return { opacity: leaf(style.opacity, inherited, true, `${path}.opacity`), dashed };
+}
 
 // Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
 // every child; an object `opt` sets them individually (unset children fall back to a scalar inherited
@@ -191,7 +269,9 @@ function resolveFlat<T>(
 	const inherited = scalarOf(opt) ?? parentInherited;
 	const obj = opt && typeof opt === 'object' ? (opt as Record<string, unknown>) : undefined;
 	const out = {} as Record<keyof KnownKeys<T>, Scalar>;
-	for (const key of Object.keys(known) as (keyof KnownKeys<T> & string)[]) out[key] = leaf(obj?.[key], inherited, true);
+	for (const key of Object.keys(known) as (keyof KnownKeys<T> & string)[]) {
+		out[key] = leaf(obj?.[key], inherited, true, `${path}.${key}`);
+	}
 	return out;
 }
 
@@ -274,6 +354,17 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 		`${path}.labels`
 	);
 
+	const boundariesInherited = scalarOf(o.boundaries);
+	const boundaries = o.boundaries && typeof o.boundaries === 'object' ? o.boundaries : undefined;
+	checkKeys(o.boundaries, { country: true, state: true, disputed: true }, `${path}.boundaries`);
+	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedLineStyle =>
+		lineLeaf(
+			boundaries?.[key],
+			boundariesInherited,
+			`${path}.boundaries.${key}`,
+			LINE_STYLE_DEFAULTS[`boundaries.${key}`]
+		);
+
 	return {
 		land: resolveFlat(
 			o.land,
@@ -291,32 +382,36 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 		),
 		water: resolveFlat(o.water, { ocean: true, rivers: true, lakes: true, piers: true }, `${path}.water`),
 		roads: {
-			motorways: leaf(roads?.motorways, roadsInherited, true),
-			highways: leaf(roads?.highways, roadsInherited, true),
+			motorways: leaf(roads?.motorways, roadsInherited, true, `${path}.roads.motorways`),
+			highways: leaf(roads?.highways, roadsInherited, true, `${path}.roads.highways`),
 			streets: {
-				residential: leaf(streets?.residential, streetsInherited, true),
-				service: leaf(streets?.service, streetsInherited, true),
-				pedestrian: leaf(streets?.pedestrian, streetsInherited, true),
-				track: leaf(streets?.track, streetsInherited, true),
-				bus: leaf(streets?.bus, streetsInherited, true),
+				residential: leaf(streets?.residential, streetsInherited, true, `${path}.roads.streets.residential`),
+				service: leaf(streets?.service, streetsInherited, true, `${path}.roads.streets.service`),
+				pedestrian: leaf(streets?.pedestrian, streetsInherited, true, `${path}.roads.streets.pedestrian`),
+				track: leaf(streets?.track, streetsInherited, true, `${path}.roads.streets.track`),
+				bus: leaf(streets?.bus, streetsInherited, true, `${path}.roads.streets.bus`),
 			},
-			paths: leaf(roads?.paths, roadsInherited, true),
-			footway: leaf(roads?.footway, roadsInherited, true),
-			steps: leaf(roads?.steps, roadsInherited, true),
+			paths: lineLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, LINE_STYLE_DEFAULTS['roads.paths']),
+			footway: lineLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, LINE_STYLE_DEFAULTS['roads.footway']),
+			steps: lineLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, LINE_STYLE_DEFAULTS['roads.steps']),
 		},
 		transit: {
-			rail: leaf(transit?.rail, transitInherited, true),
-			aerialways: leaf(transit?.aerialways, transitInherited, true),
-			ferries: leaf(transit?.ferries, transitInherited, true),
+			rail: leaf(transit?.rail, transitInherited, true, `${path}.transit.rail`),
+			aerialways: leaf(transit?.aerialways, transitInherited, true, `${path}.transit.aerialways`),
+			ferries: leaf(transit?.ferries, transitInherited, true, `${path}.transit.ferries`),
 			// stops are icons: an explicit setting wins, else the `transit` scalar, else the `icons` alias.
-			stops: leaf(transit?.stops, transitInherited ?? icons, true),
+			stops: leaf(transit?.stops, transitInherited ?? icons, true, `${path}.transit.stops`),
 		},
-		buildings: leaf(o.buildings, undefined, true),
-		sites: leaf(o.sites, undefined, true),
-		airport: leaf(o.airport, undefined, true),
-		pois: leaf(o.pois, icons, true),
-		boundaries: resolveFlat(o.boundaries, { country: true, state: true }, `${path}.boundaries`),
-		markings: leaf(o.markings, icons, true),
+		buildings: leaf(o.buildings, undefined, true, `${path}.buildings`),
+		sites: leaf(o.sites, undefined, true, `${path}.sites`),
+		airport: leaf(o.airport, undefined, true, `${path}.airport`),
+		pois: leaf(o.pois, icons, true, `${path}.pois`),
+		boundaries: {
+			country: boundary('country'),
+			state: boundary('state'),
+			disputed: boundary('disputed'),
+		},
+		markings: leaf(o.markings, icons, true, `${path}.markings`),
 		labels: {
 			boundaries: resolveFlat(
 				labels?.boundaries,
@@ -337,8 +432,8 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 				labelsInherited
 			),
 			water: resolveFlat(labels?.water, { lakes: true, rivers: true }, `${path}.labels.water`, labelsInherited),
-			addresses: leaf(labels?.addresses, labelsInherited, true),
+			addresses: leaf(labels?.addresses, labelsInherited, true, `${path}.labels.addresses`),
 		},
-		icons: leaf(o.icons, undefined, true),
+		icons: leaf(o.icons, undefined, true, `${path}.icons`),
 	};
 }
