@@ -48,16 +48,35 @@ export const LINE_STYLE_DEFAULTS: Readonly<Record<string, boolean>> = Object.fre
 	'boundaries.disputed': true,
 });
 
-/**
- * How a theme draws its lines where that differs from {@link LINE_STYLE_DEFAULTS}: `dashed` per line
- * group, by the same paths. A theme's preset sits between the defaults and the caller — it replaces a
- * default, and an explicit `dashed` in `layers` replaces it.
- */
-export type LinePreset = Readonly<Record<string, boolean | readonly number[]>>;
+/** How one line group is drawn where a theme, or the style, says: what a `LineStyle` sets beyond its opacity. */
+export type LineDefault = {
+	readonly dashed?: boolean | readonly number[];
+	readonly width?: number;
+	/** Borders only. */
+	readonly halo?: boolean;
+};
 
-/** `dashed` of every line group under a preset: the defaults, with the preset's own on top. */
-export function lineDefaults(preset?: LinePreset): LinePreset {
-	return { ...LINE_STYLE_DEFAULTS, ...preset };
+/**
+ * How a theme draws its lines where that differs from the style's defaults, per line group by the
+ * same paths as {@link LINE_STYLE_DEFAULTS}. A theme's preset sits between the defaults and the
+ * caller, field by field: it replaces a default, and an explicit value in `layers` replaces it.
+ */
+export type LinePreset = Readonly<Record<string, LineDefault>>;
+
+/**
+ * How every line group is drawn under a preset unless the caller says: dashed or not as
+ * {@link LINE_STYLE_DEFAULTS} has it, at its own width, a border on its halo — with the preset's own
+ * values on top.
+ */
+export function lineDefaults(
+	preset?: LinePreset
+): Readonly<Record<string, Required<Omit<LineDefault, 'halo'>> & LineDefault>> {
+	return Object.fromEntries(
+		Object.entries(LINE_STYLE_DEFAULTS).map(([group, dashed]) => [
+			group,
+			{ dashed, width: 1, ...(group.startsWith('boundaries.') && { halo: true }), ...preset?.[group] },
+		])
+	);
 }
 
 export type LayerGroupOptions = {
@@ -261,12 +280,12 @@ function lineLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
 	path: string,
-	byDefault: boolean | readonly number[]
+	byDefault: Required<Omit<LineDefault, 'halo'>>
 ): ResolvedLineStyle {
 	// copied: a theme's pattern is shared by every style of that theme, and a resolved option is the caller's
-	const dashedByDefault = typeof byDefault === 'boolean' ? byDefault : [...byDefault];
+	const dashedByDefault = typeof byDefault.dashed === 'boolean' ? byDefault.dashed : [...byDefault.dashed];
 	if (opt === null || typeof opt !== 'object' || Array.isArray(opt)) {
-		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault, width: 1 };
+		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault, width: byDefault.width };
 	}
 	const style = opt as BorderStyle;
 	let dashed: boolean | number[] = dashedByDefault;
@@ -280,7 +299,7 @@ function lineLeaf(
 				`negative and not all zero — got ${describeValue(style.dashed)}`,
 		});
 	}
-	let width = 1;
+	let width = byDefault.width;
 	if (typeof style.width === 'number' && Number.isFinite(style.width) && style.width > 0) width = style.width;
 	else if (style.width != null) {
 		reportIssue({
@@ -296,7 +315,7 @@ function pathLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
 	path: string,
-	byDefault: boolean | readonly number[]
+	byDefault: Required<Omit<LineDefault, 'halo'>>
 ): ResolvedLineStyle {
 	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
 		checkKeys(opt as LineStyle, { opacity: true, dashed: true, width: true }, path);
@@ -309,9 +328,9 @@ function borderLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
 	path: string,
-	byDefault: boolean | readonly number[]
+	byDefault: Required<Omit<LineDefault, 'halo'>> & LineDefault
 ): ResolvedBorderStyle {
-	let halo = true;
+	let halo = byDefault.halo ?? true;
 	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
 		const style = opt as BorderStyle;
 		checkKeys(style, { opacity: true, dashed: true, width: true, halo: true }, path);
@@ -355,9 +374,9 @@ export function resolveLayerGroups(
 	path = 'layers',
 	preset?: LinePreset
 ): ResolvedLayerGroups {
-	// what each line group is dashed in unless the caller says: the theme's own way (`getLinePreset`),
-	// else the style's default
-	const dashedIn = lineDefaults(preset);
+	// how each line group is drawn unless the caller says: the theme's own way (`getLinePreset`), else
+	// the style's default
+	const drawnAs = lineDefaults(preset);
 	checkFinite(opts, path);
 	checkKeys(
 		opts,
@@ -433,7 +452,7 @@ export function resolveLayerGroups(
 	const boundaries = o.boundaries && typeof o.boundaries === 'object' ? o.boundaries : undefined;
 	checkKeys(o.boundaries, { country: true, state: true, disputed: true }, `${path}.boundaries`);
 	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedBorderStyle =>
-		borderLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, dashedIn[`boundaries.${key}`]);
+		borderLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, drawnAs[`boundaries.${key}`]);
 
 	return {
 		land: resolveFlat(
@@ -461,9 +480,9 @@ export function resolveLayerGroups(
 				track: leaf(streets?.track, streetsInherited, true, `${path}.roads.streets.track`),
 				bus: leaf(streets?.bus, streetsInherited, true, `${path}.roads.streets.bus`),
 			},
-			paths: pathLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, dashedIn['roads.paths']),
-			footway: pathLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, dashedIn['roads.footway']),
-			steps: pathLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, dashedIn['roads.steps']),
+			paths: pathLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, drawnAs['roads.paths']),
+			footway: pathLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, drawnAs['roads.footway']),
+			steps: pathLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, drawnAs['roads.steps']),
 		},
 		transit: {
 			rail: leaf(transit?.rail, transitInherited, true, `${path}.transit.rail`),

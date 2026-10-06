@@ -18,7 +18,6 @@ import {
 	TEXT_TOPICS,
 	topicOf,
 	lineDefaults,
-	type LinePreset,
 	type LayerGroupOptions,
 	type ResolvedLineStyle,
 	type Palette,
@@ -297,7 +296,7 @@ const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]
  */
 function splitLineStyles(
 	node: ResolvedTree,
-	defaults: LinePreset,
+	defaults: ReturnType<typeof lineDefaults>,
 	drawn: LayerGroupMap | undefined,
 	path: string[] = []
 ): { groups: GroupTree; styled: Styled[] } {
@@ -311,9 +310,10 @@ function splitLineStyles(
 			const isDrawn = drawn === undefined || drawnHere !== undefined;
 			if (!isDrawn || child.opacity === false) continue;
 			const diff: LineDiff = {};
-			if (!sameDash(child.dashed, defaults[here.join('.')])) diff.dashed = child.dashed;
-			if (child.width !== 1) diff.width = child.width;
-			if (child.halo === false) diff.halo = false;
+			const usual = defaults[here.join('.')];
+			if (!sameDash(child.dashed, usual.dashed)) diff.dashed = child.dashed;
+			if (child.width !== usual.width) diff.width = child.width;
+			if (child.halo !== undefined && child.halo !== usual.halo) diff.halo = child.halo;
 			if (Object.keys(diff).length > 0) styled.push({ path: here, diff });
 		} else if (typeof child === 'object') {
 			const below = splitLineStyles(

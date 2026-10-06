@@ -39,7 +39,7 @@
 
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
-import { isDashPattern, LINE_STYLE_DEFAULTS, type Palette, type ResolvedColors } from '../../src/options/index.js';
+import { isDashPattern, lineDefaults, type Palette, type ResolvedColors } from '../../src/options/index.js';
 import { FIXES, LOOKALIKES, OVERRIDES, THEMES } from '../config/themes.js';
 import type { Adjustment, Fix, Group, LightTheme, Lookalike, LookalikeTheme, ThemeSettings } from './theme-types.js';
 
@@ -466,27 +466,46 @@ export function generateThemes(): Partial<Record<Palette, ResolvedColors>> {
 	return generate().tables;
 }
 
+type PresetEntry = { dashed?: boolean | number[]; width?: number; halo?: boolean };
+
 /**
  * The line preset of every theme that has one, as `src/themes/tables.ts` ships it.
  *
  * Checked here rather than trusted: a preset is a few hand-written values, and one naming a group that
- * is not a line, or a pattern MapLibre cannot draw, would otherwise surface as a wrong map. A value
- * that only repeats the style's default is refused too — it would read, in review, as a setting.
+ * is not a line, a pattern MapLibre cannot draw or a halo on a path would otherwise surface as a wrong
+ * map. A value that only repeats the style's default is refused too — it would read, in review, as a
+ * setting.
  */
-export function linePresets(): Partial<Record<Palette, Record<string, boolean | number[]>>> {
-	const out: Partial<Record<Palette, Record<string, boolean | number[]>>> = {};
+export function linePresets(): Partial<Record<Palette, Record<string, PresetEntry>>> {
+	const out: Partial<Record<Palette, Record<string, PresetEntry>>> = {};
+	const usual = lineDefaults();
 	for (const [name, { lines }] of Object.entries(LOOKALIKES)) {
 		if (!lines) continue;
-		const preset: Record<string, boolean | number[]> = {};
-		for (const [group, dashed] of Object.entries(lines)) {
-			if (!(group in LINE_STYLE_DEFAULTS)) throw new Error(`lookalike "${name}": ${group} is not a line group`);
-			if (typeof dashed !== 'boolean' && !isDashPattern(dashed)) {
-				throw new Error(`lookalike "${name}": ${group} is neither true, false nor a dash pattern`);
+		const preset: Record<string, PresetEntry> = {};
+		for (const [group, value] of Object.entries(lines)) {
+			const fail = (what: string): never => {
+				throw new Error(`lookalike "${name}": ${group} ${what}`);
+			};
+			if (!(group in usual)) fail('is not a line group');
+			// a bare value is the dash alone
+			const entry: PresetEntry = typeof value === 'boolean' || Array.isArray(value) ? { dashed: value } : { ...value };
+			const { dashed, width, halo, ...unknown } = entry;
+			if (Object.keys(unknown).length > 0) fail(`sets ${Object.keys(unknown).join(', ')}, which a line preset has not`);
+			if (dashed !== undefined) {
+				if (typeof dashed !== 'boolean' && !isDashPattern(dashed))
+					fail('is dashed in neither true, false nor a dash pattern');
+				if (dashed === usual[group].dashed) fail(`is dashed: ${String(dashed)} by default — drop it`);
 			}
-			if (dashed === LINE_STYLE_DEFAULTS[group]) {
-				throw new Error(`lookalike "${name}": ${group} is ${String(dashed)} by default — drop it`);
+			if (width !== undefined) {
+				if (!Number.isFinite(width) || width <= 0) fail('has a width that is not a number above 0');
+				if (width === 1) fail('has a width of 1 by default — drop it');
 			}
-			preset[group] = dashed;
+			if (halo !== undefined) {
+				if (usual[group].halo === undefined) fail('is a path, which has no halo');
+				if (halo === usual[group].halo) fail(`has halo: ${String(halo)} by default — drop it`);
+			}
+			if (Object.keys(entry).length === 0) fail('sets nothing');
+			preset[group] = entry;
 		}
 		if (Object.keys(preset).length > 0) out[name as Palette] = preset;
 	}

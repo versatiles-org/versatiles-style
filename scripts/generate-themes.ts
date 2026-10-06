@@ -88,9 +88,12 @@ export const TABLES: Record<Exclude<Palette, 'colorful'>, string> = {
 ${rows.join('\n')}
 };
 
-// How a theme draws its borders and paths where that differs from the style's defaults: \`dashed\` per
-// line group. See \`getLinePreset\` in ./index.ts, and \`lines\` in scripts/config/themes.ts.
-export const LINE_PRESETS: Partial<Record<Palette, Readonly<Record<string, boolean | readonly number[]>>>> = ${presetsSource(presets)};
+// How a theme draws its borders and paths where that differs from the style's defaults, per line group:
+// what it sets of \`dashed\`, \`width\` and \`halo\`. See \`getLinePreset\` in ./index.ts, and \`lines\` in
+// scripts/config/themes.ts.
+export const LINE_PRESETS: Partial<
+	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number; halo?: boolean }>>>
+> = ${presetsSource(presets)};
 `;
 }
 
@@ -110,10 +113,13 @@ function report(): void {
 }
 
 /** The presets as source: one theme a line, in the order of the configuration. */
-function presetsSource(all: Partial<Record<Palette, Record<string, boolean | number[]>>>): string {
+function presetsSource(all: ReturnType<typeof linePresets>): string {
 	const rows = Object.entries(all).map(([theme, preset]) => {
-		const fields = Object.entries(preset).map(([group, dashed]) => `'${group}': ${JSON.stringify(dashed)}`);
-		return `\t'${theme}': { ${fields.join(', ')} },`;
+		const groups = Object.entries(preset).map(([group, entry]) => {
+			const fields = Object.entries(entry).map(([field, value]) => `${field}: ${JSON.stringify(value)}`);
+			return `'${group}': { ${fields.join(', ')} }`;
+		});
+		return `\t'${theme}': { ${groups.join(', ')} },`;
 	});
 	return rows.length === 0 ? '{}' : `{\n${rows.join('\n')}\n}`;
 }

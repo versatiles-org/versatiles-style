@@ -74,13 +74,13 @@ export function isDarkPalette(palette: Palette): boolean {
 const DARK_ONLY: ReadonlySet<Palette> = new Set(['fnord']);
 
 /**
- * How a theme draws its borders and paths where that differs from the style's defaults: `dashed` per
- * line group, by its path in `layers` (`'boundaries.state'`, `'roads.footway'`, …). Only lookalike
- * themes have one — the map each resembles draws these lines its own way, and a colour table cannot
- * say so. `undefined` for every other theme.
+ * How a theme draws its borders and paths where that differs from the style's defaults: per line group,
+ * by its path in `layers` (`'boundaries.state'`, `'roads.footway'`, …), what it sets of `dashed`,
+ * `width` and — for a border — `halo`. Only lookalike themes have one — the map each resembles draws
+ * these lines its own way, and a colour table cannot say so. `undefined` for every other theme.
  *
  * Shared, not copied: the options that read it copy what they keep.
  */
-export function getLinePreset(palette: Palette): Readonly<Record<string, boolean | readonly number[]>> | undefined {
+export function getLinePreset(palette: Palette): (typeof LINE_PRESETS)[Palette] {
 	return LINE_PRESETS[palette];
 }

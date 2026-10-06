@@ -4,7 +4,13 @@ import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite } from '../index.js';
 import { omt } from '../omt/index.js';
 import { protomaps } from '../protomaps/index.js';
-import { LINE_STYLE_DEFAULTS, isDashPattern, type LayerGroupOptions, type OsmOptions } from '../options/index.js';
+import {
+	LINE_STYLE_DEFAULTS,
+	isDashPattern,
+	lineDefaults,
+	type LayerGroupOptions,
+	type OsmOptions,
+} from '../options/index.js';
 import { PALETTES, getLinePreset } from '../themes/index.js';
 import { deriveOptions } from '../migrate/index.js';
 
@@ -294,10 +300,19 @@ describe('line presets of the themes', () => {
 		for (const theme of PALETTES) {
 			const preset = getLinePreset(theme);
 			if (BUILT_IN.test(theme)) expect(preset, theme).toBeUndefined();
-			for (const [group, dashed] of Object.entries(preset ?? {})) {
+			const usual = lineDefaults();
+			for (const [group, entry] of Object.entries(preset ?? {})) {
 				expect(Object.keys(LINE_STYLE_DEFAULTS), `${theme} ${group}`).toContain(group);
-				expect(typeof dashed === 'boolean' || isDashPattern(dashed), `${theme} ${group}`).toBe(true);
-				expect(dashed, `${theme} ${group}`).not.toBe(LINE_STYLE_DEFAULTS[group]);
+				expect(Object.keys(entry).length, `${theme} ${group}`).toBeGreaterThan(0);
+				const { dashed, width, halo } = entry;
+				if (dashed !== undefined) {
+					expect(typeof dashed === 'boolean' || isDashPattern(dashed), `${theme} ${group}`).toBe(true);
+					expect(dashed, `${theme} ${group}`).not.toBe(usual[group].dashed);
+				}
+				if (width !== undefined) expect(width > 0 && width !== 1, `${theme} ${group} width`).toBe(true);
+				// a halo is a border's: a path has none to set, and a border has one unless told otherwise
+				if (halo !== undefined)
+					expect([group.startsWith('boundaries.'), halo], `${theme} ${group}`).toStrictEqual([true, false]);
 			}
 		}
 		expect(getLinePreset('positrino')).toBeDefined();
@@ -338,11 +353,39 @@ describe('line presets of the themes', () => {
 		).toStrictEqual([1.5, 0.75]);
 	});
 
+	it('carries a width and a missing halo too, merged with the caller field by field', () => {
+		const state = (layers?: LayerGroupOptions) => osm.resolveOptions({ theme: 'ping', layers }).layers.boundaries.state;
+		expect(state()).toStrictEqual({ opacity: true, dashed: [6, 3], width: 0.5, halo: false });
+		// each field the caller sets replaces the theme's; the others stay the theme's
+		expect(state({ boundaries: { state: { width: 1 } } })).toStrictEqual({
+			opacity: true,
+			dashed: [6, 3],
+			width: 1,
+			halo: false,
+		});
+		expect(state({ boundaries: { state: { halo: true } } })).toStrictEqual({
+			opacity: true,
+			dashed: [6, 3],
+			width: 0.5,
+			halo: true,
+		});
+		expect(state({ boundaries: { state: 0.4 } })).toStrictEqual({
+			opacity: 0.4,
+			dashed: [6, 3],
+			width: 0.5,
+			halo: false,
+		});
+		const style = osm({ theme: 'ping' });
+		expect(ids(style, 'boundary-state')).toStrictEqual(['boundary-state']);
+		expect(ids(style, 'boundary-country')).toContain('boundary-country:outline');
+		expect(ids(style, 'boundary-country')).not.toContain('boundary-country-disputed:outline');
+	});
+
 	it('hands every caller a pattern of its own', () => {
 		const a = osm.resolveOptions({ theme: 'positrino' }).layers.boundaries.state.dashed as number[];
 		a.push(9);
 		expect(osm.resolveOptions({ theme: 'positrino' }).layers.boundaries.state.dashed).toStrictEqual([2, 2]);
-		expect(getLinePreset('positrino')?.['boundaries.state']).toStrictEqual([2, 2]);
+		expect(getLinePreset('positrino')?.['boundaries.state']).toStrictEqual({ dashed: [2, 2] });
 	});
 
 	it('reaches the satellite overlay through its theme', () => {
@@ -356,6 +399,18 @@ describe('line presets of the themes', () => {
 
 		it.each(PALETTES)('writes nothing but the theme for %s', (theme) => {
 			expect(minimal({ theme })).toStrictEqual(theme === 'colorful' ? {} : { theme });
+		});
+
+		it("writes a width and a halo that differ from the theme's", () => {
+			// half width and no halo are ping's own way with a state border
+			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 0.5, halo: false } } } })).toStrictEqual({
+				theme: 'ping',
+			});
+			// the style's defaults are not, on this theme
+			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 1, halo: true } } } })).toStrictEqual({
+				theme: 'ping',
+				layers: { boundaries: { state: { width: 1, halo: true } } },
+			});
 		});
 
 		it("writes a dash that differs from the theme's, not from the style's default", () => {
@@ -384,7 +439,7 @@ describe('line presets of the themes', () => {
 	});
 
 	it('comes back from the importer as the theme alone', () => {
-		for (const theme of ['positrino', 'protocol', 'freedom'] as const) {
+		for (const theme of ['positrino', 'protocol', 'freedom', 'ping'] as const) {
 			const guess = deriveOptions(osm({ theme }));
 			expect(guess.kind).toBe('osm');
 			expect('options' in guess && guess.options).toStrictEqual({ theme });
