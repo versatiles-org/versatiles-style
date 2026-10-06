@@ -47,7 +47,8 @@ const SCRIPT_SAMPLES: Readonly<Record<string, readonly number[]>> = {
  * Checked on 2026-09-15 against the 187 faces on tiles.versatiles.org: Open Sans and PT Sans lack Ə, Ɓ, Ɗ
  * and Ƙ, so they cover neither Azerbaijani nor Hausa; Open Sans, PT Sans and Roboto lack ẹ, ọ and ṣ
  * (Yoruba); PT Sans lacks the Vietnamese letters. Every face had the letters of the other languages.
- * Persian and Urdu could not be checked: no face lists Arabic yet.
+ * Persian and Urdu were checked on 2026-10-06, once the merged Noto Sans faces listed their Arabic blocks
+ * (issue #132): all four of them — the only faces with Arabic — have the letters of both.
  */
 export const LANGUAGE_SAMPLES: Readonly<Record<string, string>> = {
 	// Latin

@@ -2,12 +2,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { FONT_SCRIPTS, LANGUAGE_SAMPLES, fontCovers, fontScripts, languageScript, textScripts } from './font-covers.js';
 import * as lib from '../index.js';
 
-// `codeblocks` as tiles.versatiles.org published them on 2026-09-14. Merged faces publish only their first
-// source file's blocks, so Noto Sans lists no Arabic although it is served with it — Arabic is tested
-// once that is fixed (issue #132).
+// `codeblocks` as tiles.versatiles.org published them on 2026-10-06. Noto Sans is a face merged from
+// several source files — Noto Sans, Noto Sans Arabic, the CJK faces, … — and lists the blocks of all of
+// them. Until the glyphs were republished it listed only its first file's (issue #132), which is why the
+// other faces below, single files each, still carry their earlier dates.
 const NOTO_SANS = {
 	codeblocks:
-		'0,2-7,A-52,90-97,10F,1AB-1AC,1C8,1D0-20C,20F-215,218,221,25C,2C6-2C7,2DE-2E5,A64-A69,A70-A7D,A7F,A8F,A92,AB3-AB6,FB0,FE0,FE2,FEF,FFF,1078-107B,1DF0-1DF1',
+		'0-7,A-6F,75-77,87-BF,C8-CF,D8-E5,E8-ED,100-139,178-17F,19E-19F,1AB-1AC,1B0-1B7,1C8-1CB,1CD-20D,20F-219,21B-224,226-22B,22D-22E,230-232,23B-23D,242,246-25E,260-262,264,266-267,26A-26B,270-271,273-275,277-27A,293,29B,29F,2B0-2B1,2B9,2C6-2C7,2D0-2D2,2D8-2E5,2E8-2FD,2FF-4DB,4E0-9FE,A64-A69,A70-A7D,A7F,A83,A8E-A8F,A92,A96-A9F,AA6-AA7,AB0-AB6,AC0-D7F,F90-FA6,FB0-FDC,FDF-FFF',
 };
 // PT Sans draws Latin, Cyrillic and Greek, but not the Vietnamese letters of Latin Extended-B and Latin
 // Extended Additional — the one gap among the Latin languages on tiles.versatiles.org (2026-09-15).
@@ -44,6 +45,14 @@ describe('fontCovers', () => {
 		}
 	});
 
+	it('tells a face with Arabic from one without', () => {
+		// Persian and Urdu need letters beyond the basic Arabic alphabet (`LANGUAGE_SAMPLES`)
+		for (const language of ['ar', 'fa', 'ur']) {
+			expect(fontCovers(NOTO_SANS, language), language).toBe(true);
+			expect(fontCovers(LIBRE_BASKERVILLE, language), language).toBe(false);
+		}
+	});
+
 	it('reads the script from the whole locale, not only the language', () => {
 		expect(fontCovers(LIBRE_BASKERVILLE, 'sr')).toBe(false); // Serbian defaults to Cyrillic
 		expect(fontCovers(LIBRE_BASKERVILLE, 'sr-Latn')).toBe(true);
@@ -55,7 +64,11 @@ describe('fontCovers', () => {
 		expect(fontCovers(cjk, 'zh-TW')).toBe(true);
 		expect(fontCovers(cjk, 'ja')).toBe(true);
 		expect(fontCovers(cjk, 'ko')).toBe(false);
-		expect(fontCovers(NOTO_SANS, 'ja')).toBe(false);
+		// Noto Sans is served with the CJK faces merged in, and says so; a Latin face is not
+		for (const language of ['zh', 'ja', 'ko']) {
+			expect(fontCovers(NOTO_SANS, language), language).toBe(true);
+			expect(fontCovers(LIBRE_BASKERVILLE, language), language).toBe(false);
+		}
 	});
 
 	it('is undefined when there is nothing to check', () => {
@@ -145,7 +158,7 @@ describe('fontScripts', () => {
 		expect(fontScripts(PT_SANS)).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
 		const noto = fontScripts(NOTO_SANS);
 		expect(noto.slice(0, 3)).toStrictEqual(['Latn', 'Cyrl', 'Grek']);
-		expect(noto).not.toContain('Arab'); // see the note on NOTO_SANS
+		for (const script of ['Arab', 'Hani', 'Jpan', 'Hang']) expect(noto, script).toContain(script);
 		expect(noto).toStrictEqual(FONT_SCRIPTS.filter((script) => noto.includes(script)));
 	});
 
