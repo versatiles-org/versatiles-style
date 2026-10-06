@@ -670,8 +670,15 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	//    the same orange and take `roadTrunk`; controlled-access highways take `roadMotorway`.
 	//  - its trails are dashed lines in a green of their own (#98B38F). `transitFoot` also fills
 	//    pedestrian streets and plazas, which it draws near-white, so that key is derived.
-	//  - it has no farmland of its own: its grass land cover covers farmland too, so `natureAgriculture`
-	//    takes the grass colour.
+	//  - it has no farmland of its own. Rendered from its own tiles over rural Brandenburg (four places,
+	//    z9, z11 and z13), it draws its grass land cover on 43–67% of what OpenStreetMap has as farmland
+	//    and plain land on 23–46%. `natureAgriculture` is the two mixed in that proportion — about two
+	//    parts grass to one part land — so farmland reads as the paler green it averages to there.
+	//  - a building there is `#DFDFD8` at 82% over the land, which shows as `#E4E4DE`. Ours is drawn over
+	//    its own outline layer, where the same translucent colour comes out darker, so `building` is
+	//    the colour as it shows.
+	//  - controlled-access highways are `#FFB47F` in some regions and the highway orange in the rest;
+	//    rendered from its own tiles around Berlin they are the latter, which `roadMotorway` takes.
 	//  - `buildingBg` has no counterpart in the style and is the outline measured from a screenshot.
 	ping: {
 		resembles: 'Bing Maps',
@@ -683,7 +690,7 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			glacier: '#FFFFFF',
 			natureWood: '#B0E5BD',
 			natureGrass: '#CBEFD4',
-			natureAgriculture: '#CBEFD4',
+			natureAgriculture: '#DCF3E1',
 			naturePark: '#B0E5BD',
 			natureLeisure: '#CEE9CE',
 			areaResidential: '#F9FAF7',
@@ -695,11 +702,11 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			siteDanger: '#90373712',
 			siteParking: '#E0E0E0',
 			siteSports: '#89A98E54',
-			building: '#DFDFD8D1',
+			building: '#E4E4DE',
 			buildingBg: '#C9C9C8',
 			roadStreet: '#FFFFFF',
 			roadStreetBg: '#AFAFAF',
-			roadMotorway: '#FFB47F',
+			roadMotorway: '#FFC7A3',
 			roadMotorwayBg: '#FF8C3A',
 			roadTrunk: '#FFC7A3',
 			roadTrunkBg: '#FFA05D',
