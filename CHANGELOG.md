@@ -5,6 +5,66 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.0] - 2026-10-06
+
+### Features
+
+- add lookalike themes 'positrino', 'positrino-dark', and 'fnord' ([60a70a4](https://github.com/versatiles-org/versatiles-style/commit/60a70a4fbf3c07cba515fe8d53b12636559b21d1))
+- add new themes and update related tests ([a928b0a](https://github.com/versatiles-org/versatiles-style/commit/a928b0acad3801ed773244ab498fbcf1ab478fde))
+- add classic theme to styling options ([d8e9ffd](https://github.com/versatiles-org/versatiles-style/commit/d8e9ffd2d9ade408ad8ad00da00d584c98b222ec))
+- update theme palettes and colors ([dcf8d41](https://github.com/versatiles-org/versatiles-style/commit/dcf8d413ce5b05b653becb9e47768b01d078bc9f))
+- draw state borders dash-dot and make dashed lines use butt caps ([41a3751](https://github.com/versatiles-org/versatiles-style/commit/41a37519d992ef189a5ca1832bcdf0a86b72bff2))
+- accept line styles on border and path layer groups, add boundaries.disputed ([27e2778](https://github.com/versatiles-org/versatiles-style/commit/27e27781259da86b639edeee99c2feb00384b76c))
+- keep dashed borders and paths at their solid weight in the satellite overlay ([22e29e7](https://github.com/versatiles-org/versatiles-style/commit/22e29e76b9569d837b496864ccebd7b8a4c59706))
+- let lookalike themes carry line presets for borders and paths ([68ba520](https://github.com/versatiles-org/versatiles-style/commit/68ba520d35f525da82591744e6b89cf16a67a22b))
+- read dashed borders and paths from foreign styles in guessOptions ([1e0de72](https://github.com/versatiles-org/versatiles-style/commit/1e0de7271aa90ed97c202e436ae32c120228673c))
+- recognise Mapbox Streets tiles in guessSchema (#136) ([aecd5e5](https://github.com/versatiles-org/versatiles-style/commit/aecd5e5a0121d0ae630082f940b5e135c028e667))
+- read styles on Mapbox Streets tiles in guessOptions (#136) ([aa6a19e](https://github.com/versatiles-org/versatiles-style/commit/aa6a19eb3999dd2b2ca5011129a453e5d1faec48))
+- rebuild the crate theme from the Mapbox Streets v12 style definition (#136) ([ec6d780](https://github.com/versatiles-org/versatiles-style/commit/ec6d780d11346aa52e47ab3ddaa178b4b4ba132c))
+- add width to line styles and an optional halo to borders ([f2b41c9](https://github.com/versatiles-org/versatiles-style/commit/f2b41c91de7031809538794ca0d16f89034eefff))
+- let theme line presets set width and halo; give ping Bing's border styles ([491c736](https://github.com/versatiles-org/versatiles-style/commit/491c736e7bc2d25fc8c28b5f367e60879f6893de))
+- read line widths from foreign styles in guessOptions; set width presets for lookalike themes ([760c4c3](https://github.com/versatiles-org/versatiles-style/commit/760c4c3aa758a4e794dfb364ae7fdf0e4ac601df))
+- update map rendering parameters for improved imagery and add landcover feature ([80a057c](https://github.com/versatiles-org/versatiles-style/commit/80a057cb2f953842b75a9d8843391cbeece2bc5c))
+- export isDarkPalette from the npm package ([c1c872a](https://github.com/versatiles-org/versatiles-style/commit/c1c872a83cbfcb0198d6cf23407860f4d8f06f8a))
+- enhance documentation script to include screenshots and formatting ([6a568d9](https://github.com/versatiles-org/versatiles-style/commit/6a568d922fff36c417fa941067c564fc807f0ada))
+
+### Bug Fixes
+
+- update underground color fading logic to target land instead of background ([77dc5b0](https://github.com/versatiles-org/versatiles-style/commit/77dc5b0624ed15d027e3dff027dbba64484cb97c))
+- filter palettes to exclude lookalike themes in getStyleVariants function ([1b5cf4f](https://github.com/versatiles-org/versatiles-style/commit/1b5cf4f863b41accd25f998de2c59caeee3e8d27))
+- update lookalike theme colors and adjust ping table styling ([1dc448f](https://github.com/versatiles-org/versatiles-style/commit/1dc448f4a128fa27e8aecce3a5053b87fbc3735d))
+- update color values for lookalike themes and adjust ping table colors ([9680c82](https://github.com/versatiles-org/versatiles-style/commit/9680c8253131c0f8d5e40dffdfb127579846b32b))
+- match ping's building, motorway, farmland and border dashes to the rendered Bing style ([4b22835](https://github.com/versatiles-org/versatiles-style/commit/4b22835ce534095167dc059e584f5418bd6d571c))
+
+### Code Refactoring
+
+- road styling and update snapshots ([a478b86](https://github.com/versatiles-org/versatiles-style/commit/a478b86d7afd38a272b04371d2b761f5fb390f15))
+- drop the halo option from line styles; borders always keep their casing ([70ecb6b](https://github.com/versatiles-org/versatiles-style/commit/70ecb6b9295dfbe428366b78056fad50b82f4584))
+- rename lookalike themes crate, mosaic and ping to macbob, mactaylor and bingo ([138a47d](https://github.com/versatiles-org/versatiles-style/commit/138a47d865d5d99937e136ddc2375454dcd44f21))
+- split the theme config, probes and derive modules ([4c00d54](https://github.com/versatiles-org/versatiles-style/commit/4c00d54c8e0c5a297de6b59b61e4fdd45f4dfa63))
+
+### Documentation
+
+- describe line styles, theme line presets and dash reading; update bundle size and graphs ([e94fd93](https://github.com/versatiles-org/versatiles-style/commit/e94fd935ff26261f1c405fefdb5ca3643eb8c4b2))
+- describe reading Mapbox styles and the mapbox schema; update bundle size and graphs (#136) ([8102824](https://github.com/versatiles-org/versatiles-style/commit/8102824d45a63976f77c09e196de47ff488eabb7))
+- describe the width option of line styles; update bundle size and graphs ([ec658f4](https://github.com/versatiles-org/versatiles-style/commit/ec658f48be6a7656adbbee558a15ca8f05060b4f))
+- improve table formatting for light and dark theme styles in README ([231f869](https://github.com/versatiles-org/versatiles-style/commit/231f869444cf4e0babf37a8a8ca54564032cdc14))
+
+### Tests
+
+- cover Arabic and CJK in fontCovers now that merged glyph faces publish all codeblocks, close #132 ([334e3ef](https://github.com/versatiles-org/versatiles-style/commit/334e3ef2d303f0165884ed529f57c9db2fee60db))
+
+### Chores
+
+- update dependencies for maplibre-gl, typescript-eslint, and vite ([5f31325](https://github.com/versatiles-org/versatiles-style/commit/5f313258376aa02052862821dbb7701e4d8b542e))
+- update source-map-js to version 1.2.2 ([d28b891](https://github.com/versatiles-org/versatiles-style/commit/d28b89100264f745bb3aa4c4ca1a4b8172273a02))
+
+### Other Changes
+
+- feat; Add 'googol' theme to styles and update related tests and configurations ([1db713a](https://github.com/versatiles-org/versatiles-style/commit/1db713a0268b490593578306f2e75db433099903))
+- Update color palette to include secondary road colors and adjust related tests ([dd8c047](https://github.com/versatiles-org/versatiles-style/commit/dd8c047ba68a4c4c88bde3cc2ad3846237ad3373))
+- Add pedestrian street styling and adjust road widths ([03945a0](https://github.com/versatiles-org/versatiles-style/commit/03945a0c09080fc1d6c0b76e6ae280e0da3d535d))
+
 ## [6.1.1] - 2026-10-03
 
 ### Code Refactoring
