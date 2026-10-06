@@ -212,7 +212,7 @@ import { omt } from '@versatiles/style/omt';
 const omtStyle = await guessStyle(tileJSON, { schemas: [omt] });
 ```
 
-- `guessSchema(tileJSON)` - recognise a vector tileset's schema (`'shortbread' | 'openmaptiles' | 'protomaps'`) from its TileJSON object, synchronously and without I/O. It reads only `vector_layers`, and scores every schema so a caller can see why. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.guessSchema.html)
+- `guessSchema(tileJSON)` - recognise a vector tileset's schema (`'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox'`) from its TileJSON object, synchronously and without I/O. It reads only `vector_layers`, and scores every schema so a caller can see why. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.guessSchema.html)
 
 ```javascript
 import { guessSchema } from '@versatiles/style';
@@ -228,7 +228,7 @@ const style = inspectorStyle(tileJSON);
 
 This is also what `guessStyle()` falls back to when it cannot build a tileset's schema — so if an OpenMapTiles map renders as flat translucent blobs, the `schemas` option is missing.
 
-- `guessOptions(style)` - from `@versatiles/style/migrate`: read a MapLibre style built for OpenMapTiles, Protomaps or Shortbread tiles, and return the `osm()` or `satellite()` options whose style looks most like it — for moving a map onto VersaTiles. `deriveOptions(style, tileJSONs?, fontNames?)` is its synchronous, I/O-free core.
+- `guessOptions(style)` - from `@versatiles/style/migrate`: read a MapLibre or Mapbox style built for OpenMapTiles, Protomaps, Shortbread or Mapbox Streets tiles, and return the `osm()` or `satellite()` options whose style looks most like it — for moving a map onto VersaTiles. `deriveOptions(style, tileJSONs?, fontNames?)` is its synchronous, I/O-free core.
 
 ```javascript
 import { osm } from '@versatiles/style';
@@ -289,7 +289,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **108.7 KB** raw, **34.3 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **109.2 KB** raw, **34.5 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 

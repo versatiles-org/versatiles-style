@@ -854,8 +854,8 @@ Picks an appropriate style for a tileset: Shortbread vector tiles get a full `os
 vector tiles get an auto-colored inspector style (one color per source-layer); raster tiles get a basic
 raster layer, or a `satellite()` style when the TileJSON's `name` suggests imagery.
 
-**OpenMapTiles and Protomaps tilesets need their schema passed in.** `guessSchema()` recognises all
-three schemas without importing any of them, but building a style means importing the builder — and
+**OpenMapTiles and Protomaps tilesets need their schema passed in.** `guessSchema()` recognises every
+schema without importing any of them, but building a style means importing the builder — and
 `guessStyle` lives in the root entry, so importing every schema here would put all of them in the CDN
 bundle. Inject instead, and pay only for what you import:
 
@@ -891,7 +891,7 @@ Shortbread, satellite and inspector styles alike.
 ```ts
 guessSchema(tileJSON: TileJSONSpecification): SchemaGuess
 
-type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps'
+type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox'
 
 type SchemaGuess =
   | { type: 'vector'; schema: SchemaName | undefined; candidates: SchemaScore[] }
@@ -912,16 +912,24 @@ object — download one with [`fetchTileJSON()`](#fetchtilejsonurl-options-promi
 first. It never throws.
 
 It reads `vector_layers` and nothing else; `name` and `attribution` describe who built a tileset, not
-what is in it. A source-layer id only one schema uses counts for that schema. The six ids two schemas
-share (`boundaries`, `buildings`, `pois`, `landcover`, `landuse`, `water`) are decided by their
-`fields` — `class` against `kind`, `admin_level` against `kind_detail` — and count for every schema that
-uses them when the fields tell nothing. A schema is recognised when at least half the tileset's
-source-layers are its, or at least eight are, and it scores strictly higher than every other schema;
-otherwise `schema` is `undefined`. `candidates` lists all three, best first.
+what is in it. A source-layer id only one schema uses counts for that schema. The ids several schemas
+share — `boundaries`, `buildings` and `pois` (Shortbread and Protomaps), `landcover`, `landuse` and
+`water` (OpenMapTiles, Protomaps and Mapbox), `aeroway`, `building` and `waterway` (OpenMapTiles and
+Mapbox) — are decided by their `fields`: `class` against `kind`, `admin_level` against `kind_detail`,
+`render_height` against `extrude`. Where the fields tell nothing they count for every schema that uses
+them. A schema is recognised when at least half the tileset's source-layers are its, or at least eight
+are, and it scores strictly higher than every other schema; otherwise `schema` is `undefined`.
+`candidates` lists all four, best first.
 
-It knows all three schemas without importing their styles, so it adds a small table to the root entry
-rather than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that
-schema's function is passed in `schemas`.
+It knows the schemas without importing their styles, so it adds a small table to the root entry rather
+than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that schema's
+function is passed in `schemas`.
+
+**`'mapbox'` is recognised, not built.** It stands for Mapbox Streets v8 with the two tilesets Mapbox's
+styles load beside it (Terrain v2 and Bathymetry v2). The package has no function that styles such
+tiles, so `guessStyle()` answers them with the inspector style, like any vector tiles it cannot style.
+What the recognition is for is reading: [`guessOptions`](#guessoptionsstyle-options-promiseoptionsguess)
+takes a style built on Mapbox tiles.
 
 ---
 
@@ -1008,10 +1016,18 @@ type GuessReport = {
 }
 ```
 
-For moving a map onto VersaTiles: reads a MapLibre style built for **OpenMapTiles, Protomaps or
-Shortbread** tiles and returns the options for `osm()` — or `satellite()`, when the style draws imagery
-that its vector fills do not cover — whose style looks most like it. The options are minimised, so they
-can go straight into `osm.toCode()`. Mapbox styles are not supported.
+For moving a map onto VersaTiles: reads a MapLibre or Mapbox style built for **OpenMapTiles, Protomaps,
+Shortbread or Mapbox Streets** tiles and returns the options for `osm()` — or `satellite()`, when the
+style draws imagery that its vector fills do not cover — whose style looks most like it. The options
+are minimised, so they can go straight into `osm.toCode()`.
+
+**Mapbox styles.** A style on Mapbox Streets v8 tiles is read like any other. Its `mapbox://` sources
+have no TileJSON to fetch, so the schema is recognised from the source-layers the style reads, and
+nothing has to be downloaded from Mapbox but the style itself. Checked against Mapbox Streets v12, whose
+every filter and every property read here evaluates with MapLibre's expression engine. Two limits:
+Mapbox's tiles have no feature for landfill, military areas, prisons or construction sites, so those
+settings stay the theme's own; and a property written with an expression MapLibre does not have cannot
+be evaluated, and is read as not set.
 
 It lives in its own subpath because it carries the style spec's expression engine, which a caller who
 only builds styles should not download. `guessOptions` downloads the style when given a URL, the
