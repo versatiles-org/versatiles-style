@@ -38,7 +38,8 @@ vector overlay.
 
 Further themes have a colour scheme that resembles another project's map. They are still VersaTiles
 styles — the same layers, labels and icons as every other theme, in different colours — which is why
-they carry names of their own. A lookalike has a dark theme only where the map it resembles has one.
+they carry names of their own. A lookalike has a dark theme only where the map it resembles has one. It may also
+draw its borders and paths the way that map does — solid where VersaTiles dashes them, or in another dash.
 
 Lookalike themes are not part of the prebuilt `styles.tar.gz`; generate them with `osm({ theme })`.
 
@@ -288,7 +289,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **104.9 KB** raw, **33.3 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **108.7 KB** raw, **34.3 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 

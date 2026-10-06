@@ -113,9 +113,9 @@ type LayerGroupOptions = {
               track?: boolean | number; // street-track
               bus?: boolean | number; // street-bus (busway + bus_guideway)
             };
-        paths?: boolean | number; // path, cycleway
-        footway?: boolean | number; // footways and pedestrian paths
-        steps?: boolean | number; // stairs
+        paths?: boolean | number | LineStyle; // path, cycleway
+        footway?: boolean | number | LineStyle; // footways and pedestrian paths
+        steps?: boolean | number | LineStyle; // stairs
       };
   transit?:
     | boolean
@@ -134,8 +134,9 @@ type LayerGroupOptions = {
     | boolean
     | number
     | {
-        country?: boolean | number; // boundary-country, -disputed, -maritime (admin_level=2)
-        state?: boolean | number; // boundary-state (admin_level=4)
+        country?: boolean | number | LineStyle; // boundary-country, -maritime (admin_level=2)
+        state?: boolean | number | LineStyle; // boundary-state (admin_level=4)
+        disputed?: boolean | number | LineStyle; // boundary-country-disputed (admin_level=2, disputed)
       };
   markings?: boolean | number; // oneway arrows
   labels?:
@@ -182,6 +183,59 @@ type LayerGroupOptions = {
 `labels.places.hamlets` is a group of its own: `labels.places.villages: false` leaves hamlet names
 visible, so hiding both takes `villages: false, hamlets: false`, or `places: false` for every settlement
 name. The same split applies to their label style in `text.places`.
+
+`boundaries.disputed` is a group of its own as well: disputed country borders, with their casing, stay
+when `boundaries.country` is hidden.
+
+#### Line styles
+
+Six groups are a line — the three borders and the three kinds of path — and take a `LineStyle` in place
+of the plain value:
+
+```ts
+type LineStyle = {
+  opacity?: boolean | number; // as the plain value: false hides, a number in (0, 1] is the opacity
+  dashed?: boolean | number[]; // true: the style's own dash; false: solid; or a pattern of your own
+};
+```
+
+```ts
+osm({ layers: { boundaries: { state: { dashed: false } } } }); // solid state borders
+osm({ layers: { roads: { footway: { opacity: 0.5, dashed: [4, 2] } } } }); // your own dash, half as strong
+osm({ layers: { boundaries: { state: 0.5 } } }); // the plain value still works: opacity only
+```
+
+A pattern is the lengths of dashes and gaps in turn, in multiples of the line width, as MapLibre's
+`line-dasharray` takes them: an even number of them, none negative, not all zero. `dashed: true` draws
+the pattern the style has for that line:
+
+| Group                                         | Default | Pattern for `true` |
+| --------------------------------------------- | ------- | ------------------ |
+| `boundaries.country`                          | solid   | `[4, 2]`           |
+| `boundaries.state`                            | dashed  | `[3, 1, 1, 1]`     |
+| `boundaries.disputed`                         | dashed  | `[2, 1]`           |
+| `roads.footway`, `roads.paths` (and cycleway) | dashed  | `[1.5, 0.75]`      |
+| `roads.steps`                                 | dashed  | `[0.5, 0.25]`      |
+
+A scalar on a group above — `boundaries: 0.5`, `roads: false` — cascades to these as their opacity, as
+to every other group. `dashed` does not cascade; it is set on the line it belongs to. A solid line has
+round caps and a dashed one butt caps, whatever its pattern: a round cap extends every dash by half a
+line width at both ends and would close the gaps. A `LineStyle` on any other group is an error.
+
+`osm.resolveOptions()` writes these six out as `{ opacity, dashed }`, where every other group resolves
+to a `boolean | number`. A UI that reads the resolved tree to show a switch or a slider per group reads
+`.opacity` for these.
+
+A lookalike theme may draw its lines its own way — `positrino` has solid paths, `protocol` dashes its
+country borders — because the map it resembles does. That is the theme's default for `dashed`, between
+the style's default above and your own `layers`, and it is merged per field: on `positrino`,
+`boundaries: { state: 0.5 }` keeps the theme's dash and `roads: { footway: { dashed: true } }` replaces
+it. `resolveOptions({ theme })` shows what a theme draws; `minimizeOptions` writes a `dashed` only where
+it differs from the theme's own.
+
+Over imagery, `satellite()` gives a dashed border or path back in opacity what its dash leaves out, so it
+weighs what the solid line would: a pattern that is two thirds dash is drawn at 0.6 where a solid line
+is drawn at 0.4.
 
 ### Text & icons
 
@@ -980,7 +1034,9 @@ through that model in one least-squares solve. The nearest palette becomes `them
 becomes a `colors` override only where it clearly differs from the palette. The calibration takes
 about half a second the first time, once per target and light or dark mode.
 
-**What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), the label
+**What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), how the
+borders and paths are dashed (`dashed` on the six [line groups](#line-styles), where the style differs
+from what the chosen theme draws: its pattern at the zoom read, or `false` for a solid line), the label
 language (`text.language`, `text.languageStrict`), the label size (`text.scale`), whether
 street and river names stand up in a tilted map (`text.pitchAlignment`), the fonts
 labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
@@ -1030,6 +1086,10 @@ incidental in another. Anything that fires on every import is `info` however unf
 is true of every style with a sprite, and as a warning it would only teach people to stop reading the
 list. `sortDiagnostics` orders them most severe first, then by code, then by option; `worst()` gives the
 level to act on.
+
+`line.dashByZoom` (info) says that a border's or a path's dash is an expression: `dashed` then holds the
+pattern at the zoom the probe read (`data.zoom`), and what the style draws at other zooms is not carried
+over.
 
 Two kinds of loss are named separately because they are different: **`color.conflict`** is several layers
 drawing the _same_ feature, where z-order picked a winner, and **`color.collapsed`** is the source telling
