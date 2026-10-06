@@ -106,6 +106,43 @@ describe('line styles: the satellite overlay', () => {
 		expect(dashOf(satellite(), 'boundary-state')).toStrictEqual([3, 1, 1, 1]);
 	});
 
+	// Rendered alone, a dashed line weighs two thirds of the solid one its factor was measured for
+	// (`dashCompensation` in `features/satellite-overlay.ts`), so the factor is divided by that share.
+	it('gives a dashed line back in opacity what its dash leaves out', () => {
+		const opacity = (style: StyleSpecification, id: string) => layerOf(style, id)?.paint?.['line-opacity'];
+		const solid = satellite({
+			osmOverlay: { layers: { boundaries: { disputed: { dashed: false } }, roads: { footway: { dashed: false } } } },
+		});
+		expect(opacity(solid, 'boundary-country-disputed')).toBe(0.4);
+		expect(opacity(solid, 'way-footway')).toBe(0.4);
+		expect(opacity(satellite(), 'boundary-country-disputed')).toBe(0.6);
+		expect(opacity(satellite(), 'way-footway')).toBe(0.6);
+		// by the share of the pattern that is dash, whatever the pattern: [1, 3] draws a quarter
+		const sparse = satellite({ osmOverlay: { layers: { boundaries: { disputed: { dashed: [1, 3] } } } } });
+		expect(opacity(sparse, 'boundary-country-disputed')).toBe(1);
+		const half = satellite({ osmOverlay: { layers: { boundaries: { disputed: { dashed: [2, 2] } } } } });
+		expect(opacity(half, 'boundary-country-disputed')).toBe(0.8);
+	});
+
+	it('leaves the lines alone that were dashed all along', () => {
+		const opacity = (id: string) => layerOf(satellite(), id)?.paint?.['line-opacity'];
+		expect(dashOf(satellite(), 'transport-ferry')).toBeDefined();
+		expect(opacity('transport-ferry')).toStrictEqual(['interpolate', ['linear'], ['zoom'], 10, 0, 11, 0.4]);
+	});
+
+	it('compensates under `layerOpacity` too', () => {
+		const on = satellite({ osmOverlay: { layerOpacity: true } });
+		expect(layerOf(on, 'boundary-state')?.paint?.['line-layer-opacity']).toStrictEqual([
+			'interpolate',
+			['linear'],
+			['zoom'],
+			7,
+			0,
+			8,
+			0.6,
+		]);
+	});
+
 	it('drops the casing of the disputed border with the others', () => {
 		expect(ids(satellite(), 'boundary')).not.toContain('boundary-country-disputed:outline');
 	});

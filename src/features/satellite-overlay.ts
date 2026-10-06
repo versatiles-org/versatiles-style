@@ -85,6 +85,41 @@ const BASE_LINE = /^(bridge-)?(transport-(rail|subway)(-service)?|aerialway(-.*)
  */
 const LINE_OPACITY = { boundary: 0.4, maritime: 0.2, road: 0.4, aerialway: 0.4, rail: 0.2 };
 
+/**
+ * The lines whose dash is a setting, not part of what they are: the borders and paths that take a
+ * `LineStyle` in `layers`. A rail's ties or a ferry's dashes were there when the factors above were
+ * measured; these were solid.
+ */
+const STYLED_LINE = /^boundary-(country|country-disputed|state)$|^(bridge-)?way-/;
+
+/**
+ * What a dash takes away, to be given back in opacity.
+ *
+ * A dashed line draws only its dashes, so over imagery it weighs that much less than the solid line
+ * its factor was measured for. Rendered alone with MapLibre Native, white on black, dashed against
+ * solid: the state border ×0.67 at z8–z12, the disputed border ×0.67–0.69 at z4–z8, footways, paths
+ * and cycleways ×0.63 at z15 and ×0.67 at z16–z17, over three places each — the share of the pattern
+ * that is dash, two thirds in all four built-in patterns. So the factor is divided by that share, for
+ * a caller's own pattern as for ours, and a line reads as heavy dashed as it did solid.
+ */
+function dashCompensation(layer: MaplibreLayer): number {
+	if (!STYLED_LINE.test(layer.id)) return 1;
+	const dash = (layer as { paint?: Record<string, unknown> }).paint?.['line-dasharray'];
+	if (!Array.isArray(dash) || !dash.every((length) => typeof length === 'number')) return 1;
+	const total = (dash as number[]).reduce((sum, length) => sum + length, 0);
+	const drawn = (dash as number[]).reduce((sum, length, index) => (index % 2 === 0 ? sum + length : sum), 0);
+	return drawn > 0 && total > 0 ? total / drawn : 1;
+}
+
+/** A factor or a zoom curve of factors, scaled and kept from passing fully opaque. */
+function compensated(factor: number | ZoomCurve, by: number): number | ZoomCurve {
+	if (by === 1) return factor;
+	// rounded, so 0.4 × 1.5 is written as 0.6 and not as 0.6000000000000001
+	const scale = (f: number) => Math.min(1, Math.round(f * by * 1e4) / 1e4);
+	if (typeof factor === 'number') return scale(factor);
+	return Object.fromEntries(Object.entries(factor).map(([zoom, f]) => [zoom, scale(f)]));
+}
+
 function lineOpacity(id: string): number {
 	if (id === 'boundary-country-maritime') return LINE_OPACITY.maritime;
 	if (id.startsWith('boundary-')) return LINE_OPACITY.boundary;
@@ -233,9 +268,10 @@ export function applyImageryTreatment(
 		}
 		// Composited once, the layer no longer overlaps itself, so it keeps the cartography's round caps
 		// and joins.
+		const dash = dashCompensation(layer);
 		const factor = layerOpacity ? LAYER_OPACITY_IDS.get(layer.id) : undefined;
-		if (factor !== undefined && moveToLineLayerOpacity(layer, factor)) return;
-		scaleLayerOpacity(layer, lineOpacity(layer.id));
+		if (factor !== undefined && moveToLineLayerOpacity(layer, compensated(factor, dash))) return;
+		scaleLayerOpacity(layer, compensated(lineOpacity(layer.id), dash) as number);
 		unroundJoins(layer);
 		return;
 	}

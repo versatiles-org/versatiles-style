@@ -261,7 +261,9 @@ describe('satellite()', () => {
 			};
 			expect(factor('boundary-country')).toBeCloseTo(0.4, 10);
 			expect(factor('boundary-country-maritime')).toBeUndefined(); // a fade-in, checked below
-			expect(factor('way-footway')).toBeCloseTo(0.4, 10);
+			// a dashed line draws two thirds of itself, and is given the rest back: 0.4 × 3/2
+			expect(factor('way-footway')).toBeCloseTo(0.6, 10);
+			expect(factor('boundary-country-disputed')).toBeCloseTo(0.6, 10);
 			expect(factor('aerialway:outline')).toBeCloseTo(0.4, 10);
 			expect(factor('transport-rail-service:outline')).toBeCloseTo(0.2, 10);
 		});
@@ -291,12 +293,14 @@ describe('satellite()', () => {
 		});
 
 		it('scales the basemap opacity rather than replacing it', () => {
-			// the basemap's own opacity times the overlay's boundary factor, 0.4
+			// the basemap's own opacity times the overlay's boundary factor: 0.4, and 0.6 for a dashed
+			// border, which gets back the third of itself its dash leaves out
 			const base = new Map(boundaries(osm()).map((l) => [l.id, paintOf(l)['line-opacity'] ?? 1]));
 			for (const layer of boundaries(satellite({ osmOverlay: {} }))) {
 				const before = base.get(layer.id);
 				if (typeof before !== 'number') continue;
-				expect(paintOf(layer)['line-opacity']).toBeCloseTo(before * 0.4, 10);
+				const factor = paintOf(layer)['line-dasharray'] === undefined ? 0.4 : 0.6;
+				expect(paintOf(layer)['line-opacity'], layer.id).toBeCloseTo(before * factor, 10);
 			}
 		});
 
@@ -330,7 +334,8 @@ describe('satellite()', () => {
 		});
 
 		it('carries an appear fade across rather than flattening it to a constant', () => {
-			// `boundary-state` ramps 0 → 0.4 over z7→8; that has to survive
+			// `boundary-state` ramps 0 → 0.6 over z7→8 (0.4, and half as much again for its dash); that
+			// has to survive
 			const state = boundaries(satellite({ osmOverlay: {} })).find((l) => l.id === 'boundary-state');
 			expect(state).toBeDefined();
 			expect(paintOf(state!)['line-opacity']).toEqual([
@@ -340,7 +345,7 @@ describe('satellite()', () => {
 				7,
 				0,
 				8,
-				expect.closeTo(0.4, 10),
+				expect.closeTo(0.6, 10),
 			]);
 		});
 	});
