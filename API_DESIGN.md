@@ -196,12 +196,14 @@ of the plain value:
 type LineStyle = {
   opacity?: boolean | number; // as the plain value: false hides, a number in (0, 1] is the opacity
   dashed?: boolean | number[]; // true: the style's own dash; false: solid; or a pattern of your own
+  width?: number; // multiplies the line's width at every zoom; default 1
 };
 ```
 
 ```ts
 osm({ layers: { boundaries: { state: { dashed: false } } } }); // solid state borders
 osm({ layers: { roads: { footway: { opacity: 0.5, dashed: [4, 2] } } } }); // your own dash, half as strong
+osm({ layers: { boundaries: { state: { width: 0.5 } } } }); // state borders half as wide
 osm({ layers: { boundaries: { state: 0.5 } } }); // the plain value still works: opacity only
 ```
 
@@ -217,25 +219,33 @@ the pattern the style has for that line:
 | `roads.footway`, `roads.paths` (and cycleway) | dashed  | `[1.5, 0.75]`      |
 | `roads.steps`                                 | dashed  | `[0.5, 0.25]`      |
 
+`width` is a multiplier, any number above 0, not a width in pixels: a line's width is a ramp over the
+zooms, and the whole ramp is scaled. Everything drawn for the group grows together — the line, the
+casing under a border, the deck under a path on a bridge, the same line in a tunnel — and the dash
+follows, since a pattern is in multiples of the width. A width ramp that starts at 0 still does, so the
+line appears at the zoom it always did.
+
 A scalar on a group above — `boundaries: 0.5`, `roads: false` — cascades to these as their opacity, as
-to every other group. `dashed` does not cascade; it is set on the line it belongs to. A solid line has
-round caps and a dashed one butt caps, whatever its pattern: a round cap extends every dash by half a
-line width at both ends and would close the gaps. A `LineStyle` on any other group is an error.
+to every other group. `dashed` and `width` do not cascade; they are set on the line they belong to. A
+solid line has round caps and a dashed one butt caps, whatever its pattern: a round cap extends every
+dash by half a line width at both ends and would close the gaps. A `LineStyle` on any other group is an
+error, and so is a key it does not have — a border's casing is not a setting.
 
-`osm.resolveOptions()` writes these six out as `{ opacity, dashed }`, where every other group resolves
-to a `boolean | number`. A UI that reads the resolved tree to show a switch or a slider per group reads
-`.opacity` for these.
+`osm.resolveOptions()` writes these six out as `{ opacity, dashed, width }`, where every other group
+resolves to a `boolean | number`. A UI that reads the resolved tree to show a switch or a slider per
+group reads `.opacity` for these.
 
-A lookalike theme may draw its lines its own way — `positrino` has solid paths, `protocol` dashes its
-country borders — because the map it resembles does. That is the theme's default for `dashed`, between
-the style's default above and your own `layers`, and it is merged per field: on `positrino`,
-`boundaries: { state: 0.5 }` keeps the theme's dash and `roads: { footway: { dashed: true } }` replaces
-it. `resolveOptions({ theme })` shows what a theme draws; `minimizeOptions` writes a `dashed` only where
-it differs from the theme's own.
+A lookalike theme may draw its lines its own way — `positrino` has solid, wider paths, `protocol` dashes
+its country borders, `ping` draws its state borders half as wide — because the map it resembles does.
+That is the theme's default for `dashed` and `width`, between the style's default above and your own
+`layers`, and it is merged per field: on `ping`, `boundaries: { state: 0.5 }` keeps the theme's dash and
+width, and `boundaries: { state: { width: 1 } }` replaces the width and keeps the dash.
+`resolveOptions({ theme })` shows what a theme draws; `minimizeOptions` writes a `dashed` or a `width`
+only where it differs from the theme's own.
 
 Over imagery, `satellite()` gives a dashed border or path back in opacity what its dash leaves out, so it
 weighs what the solid line would: a pattern that is two thirds dash is drawn at 0.6 where a solid line
-is drawn at 0.4.
+is drawn at 0.4. A `width` is not made up for: a thinner line is meant to weigh less.
 
 ### Text & icons
 
@@ -1051,8 +1061,10 @@ becomes a `colors` override only where it clearly differs from the palette. The 
 about half a second the first time, once per target and light or dark mode.
 
 **What else it reads:** layer groups the style does not draw (`layers: { pois: false }`), how the
-borders and paths are dashed (`dashed` on the six [line groups](#line-styles), where the style differs
-from what the chosen theme draws: its pattern at the zoom read, or `false` for a solid line), the label
+borders and paths are dashed and how wide they are (`dashed` and `width` on the six
+[line groups](#line-styles), where the style differs from what the chosen theme draws: its pattern at
+the zoom read, or `false` for a solid line; its width as a multiple of this style's, compared at three
+zooms and written only where it differs by more than a fifth), the label
 language (`text.language`, `text.languageStrict`), the label size (`text.scale`), whether
 street and river names stand up in a tilted map (`text.pitchAlignment`), the fonts
 labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
