@@ -358,8 +358,22 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	// must be allowed to say so.
 	if (disappear != null) style.maxzoom = disappear;
 
+	// A dash under a round cap does not render as a dash: the cap extends every dash by half a line
+	// width at both ends, so it closes any gap of one line width or less and the line draws solid —
+	// silently, which is how the disputed border kept a `[2, 1]` that never showed. Butt caps are what
+	// a dash needs, so a dashed line gets them here, for every schema at once. A round cap survives
+	// only where every gap is wide enough to outlast it (the aerialway's `[2, 3]`).
+	if (type === 'line' && style.lineCap === 'round' && capClosesDash(style.lineDasharray)) style.lineCap = 'butt';
+
 	applyProps(layer, style as StyleProps);
 	return { layer, group };
+}
+
+/** Whether a round cap would close a gap of this dash pattern — the gaps are its odd entries. */
+function capClosesDash(dash: unknown): boolean {
+	return (
+		Array.isArray(dash) && dash.some((length, index) => index % 2 === 1 && typeof length === 'number' && length <= 1)
+	);
 }
 
 // `color` is mandatory wherever a missing color would render solid black in MapLibre

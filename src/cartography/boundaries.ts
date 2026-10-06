@@ -16,6 +16,10 @@ import * as b from '../dsl/index.js';
  * border stays legible over any background. Country/disputed share one (wider) casing + line width;
  * state is narrower. Widths grow from 0 at their appear zoom. `maritime` is a single blue line over the
  * water, no casing.
+ *
+ * Only the country border is solid. A state border is dash-dot and a disputed one dashed — as nearly
+ * every other map draws them, and in two patterns, so the two cannot be mistaken for each other where
+ * colour and width alone would have to tell them apart.
  */
 export type BoundaryVocabulary = {
 	/** The source-layer carrying administrative boundaries. */
@@ -38,6 +42,10 @@ export type BoundaryVocabulary = {
 
 const lineCap = 'round';
 const lineJoin = 'round';
+
+/** Dash patterns, in multiples of the line width. Copied where used: a style shares nothing mutable. */
+const DISPUTED_DASH: readonly number[] = [2, 1];
+const STATE_DASH: readonly number[] = [3, 1, 1, 1];
 
 // Neither schema's boundary layer carries a `coastline` field, so the clause that used to test it was
 // always true and has been removed.
@@ -117,19 +125,18 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 		filter: DISPUTED,
 		color: c.boundaryDisputed,
 		size: countryLineSize,
-		lineDasharray: [2, 1],
-		lineCap,
+		lineDasharray: [...DISPUTED_DASH],
 		lineJoin,
 		group: 'boundaries.country',
 	});
-	// state: solid, fades in over z7→8 (Shortbread serves admin-4 from z7)
+	// state: dash-dot, fades in over z7→8 (Shortbread serves admin-4 from z7)
 	yield b.line('boundary-state', {
 		sourceLayer: vocab.sourceLayer,
 		filter: STATE,
 		color: c.boundary,
 		size: stateLineSize,
 		appear: 7,
-		lineCap,
+		lineDasharray: [...STATE_DASH],
 		lineJoin,
 		group: 'boundaries.state',
 	});

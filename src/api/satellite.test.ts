@@ -426,7 +426,10 @@ describe('satellite()', () => {
 			const layers = byId(on);
 			for (const id of LISTED) {
 				expect(layoutOf(layers.get(id))['line-join']).toBe('round');
-				expect(layoutOf(layers.get(id))['line-cap']).toBe('round');
+				// a dashed line — the state border — has butt caps on the basemap already, or its dash
+				// would not render; there was no round cap to keep
+				const dashed = paintOf(layers.get(id))['line-dasharray'] !== undefined;
+				expect(layoutOf(layers.get(id))['line-cap']).toBe(dashed ? undefined : 'round');
 			}
 		});
 
