@@ -135,6 +135,9 @@ export type DiagnosticData = {
 	};
 	/** Colours nothing in the style spoke for, which kept the chosen palette's values. */
 	'color.unobserved': { keys: string[]; count: number; total: number };
+	// ── lines ──
+	/** A line's dash changes with zoom; `dashed` is what it is at `zoom`, and is all that was kept. */
+	'line.dashByZoom': { zoom: number; dashed: number[] };
 	// ── coverage ──
 	/** Layers of the input that no probe read. Not necessarily lost — see the code's note. */
 	'layer.unread': { count: number };
@@ -171,6 +174,7 @@ const SEVERITY: Record<DiagnosticCode, Severity> = {
 	'theme.ambiguous': 'info',
 	'color.lowConfidence': 'info',
 	'color.unobserved': 'info',
+	'line.dashByZoom': 'info',
 	'layer.unread': 'info',
 };
 

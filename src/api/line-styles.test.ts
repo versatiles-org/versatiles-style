@@ -314,3 +314,98 @@ describe('line presets of the themes', () => {
 		}
 	});
 });
+
+// ── the importer ───────────────────────────────────────────────────────────────
+//
+// `deriveOptions` reads the dash of the same six lines off a foreign style and writes `dashed` where
+// that differs from what the chosen theme draws — judged against the target built with that theme, the
+// way the colours are.
+
+describe('line styles: the importer', () => {
+	const derived = (style: StyleSpecification) => {
+		const guess = deriveOptions(style);
+		// every style here but one is an `osm` one; the satellite test reads `osmOverlay` off the same value
+		const options = 'options' in guess ? (guess.options as OsmOptions) : undefined;
+		return { options, diagnostics: guess.report.diagnostics };
+	};
+	const PM = { protomaps: 'pmtiles://https://example.org/x.pmtiles' };
+
+	it('writes nothing for a style drawn in the defaults', () => {
+		expect(derived(osm()).options).toStrictEqual({});
+	});
+
+	it('reads a solid line and a pattern of its own back, in every schema', () => {
+		const layers: LayerGroupOptions = {
+			roads: { footway: { dashed: [4, 2] } },
+			boundaries: { state: { dashed: false }, country: { dashed: [6, 3] } },
+		};
+		expect(derived(osm({ layers })).options).toStrictEqual({ layers });
+		expect(derived(omt({ layers })).options?.layers).toStrictEqual(layers);
+		expect(derived(protomaps({ layers, urls: PM })).options?.layers).toStrictEqual(layers);
+	});
+
+	it("judges a dash against the chosen theme's own, not the style's default", () => {
+		// protocol dashes its country borders; a solid one is the difference worth writing
+		expect(
+			derived(osm({ theme: 'protocol', layers: { boundaries: { country: { dashed: false } } } })).options
+		).toStrictEqual({
+			theme: 'protocol',
+			layers: { boundaries: { country: { dashed: false } } },
+		});
+	});
+
+	it('leaves a hidden line hidden, and says nothing of its dash', () => {
+		expect(
+			derived(osm({ layers: { boundaries: { state: false }, roads: { paths: { dashed: false } } } })).options
+		).toStrictEqual({
+			layers: { roads: { paths: { dashed: false } }, boundaries: { state: false } },
+		});
+	});
+
+	it('reads the overlay of a satellite style too', () => {
+		const style = satellite({ osmOverlay: { layers: { boundaries: { state: { dashed: false } } } } });
+		const overlay = (derived(style).options as unknown as { osmOverlay?: { layers?: unknown } }).osmOverlay;
+		expect(overlay?.layers).toStrictEqual({ boundaries: { state: { dashed: false } } });
+	});
+
+	/** `osm()` with one layer's paint and layout replaced, as a foreign style would have them. */
+	const patched = (id: string, paint: object, layout: object = {}): StyleSpecification => {
+		const style = structuredClone(osm()) as StyleSpecification;
+		const layer = style.layers.find((candidate) => candidate.id === id) as { paint: object; layout?: object };
+		layer.paint = { ...layer.paint, ...paint };
+		layer.layout = { ...layer.layout, ...layout };
+		return style;
+	};
+
+	it('takes a dash that changes with zoom as it is at the zoom it reads, and says so', () => {
+		const dash = ['step', ['zoom'], ['literal', [2, 0]], 7, ['literal', [2, 2, 6, 2]]];
+		const { options, diagnostics } = derived(patched('boundary-state', { 'line-dasharray': dash }));
+		expect(options?.layers).toStrictEqual({ boundaries: { state: { dashed: [2, 2, 6, 2] } } });
+		const said = diagnostics.filter((d) => d.code === 'line.dashByZoom');
+		expect(said).toHaveLength(1);
+		expect(said[0]).toMatchObject({
+			severity: 'info',
+			optionPath: 'layers.boundaries.state.dashed',
+			data: { zoom: 8, dashed: [2, 2, 6, 2] },
+			origin: { probe: 'boundary-state' },
+		});
+	});
+
+	it('reads a dash that does not show as a solid line', () => {
+		// a round cap closes a gap of one line width; a pattern with no gap has nothing to close
+		expect(
+			derived(patched('way-footway', { 'line-dasharray': [2, 1] }, { 'line-cap': 'round' })).options?.layers
+		).toStrictEqual({
+			roads: { footway: { dashed: false } },
+		});
+		expect(derived(patched('boundary-state', { 'line-dasharray': [2, 0] })).options?.layers).toStrictEqual({
+			boundaries: { state: { dashed: false } },
+		});
+	});
+
+	it('doubles an odd pattern, as MapLibre repeats it', () => {
+		expect(derived(patched('boundary-state', { 'line-dasharray': [3, 2, 1] })).options?.layers).toStrictEqual({
+			boundaries: { state: { dashed: [3, 2, 1, 3, 2, 1] } },
+		});
+	});
+});

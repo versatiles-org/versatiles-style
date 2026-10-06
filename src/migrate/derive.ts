@@ -314,7 +314,8 @@ function derive(
 		if (hasOverlay) {
 			const target = satelliteTarget();
 			const fitted = fitContent(target, readings, schemas, report, 'light');
-			options.osmOverlay = { theme: fitted.theme, colors: fitted.colors, layers: fitted.layers, ...common.content };
+			const layers = withLineStyles(fitted.layers, target, fitted.theme, readings, report, 'osmOverlay.layers');
+			options.osmOverlay = { theme: fitted.theme, colors: fitted.colors, layers, ...common.content };
 		}
 		const sky = deriveSky(style.sky, satellite(options).sky);
 		if (sky) options.sky = sky;
@@ -328,7 +329,14 @@ function derive(
 		const options: OsmOptions = {
 			theme: fitted.theme,
 			colors: fitted.colors,
-			layers: withExtrusionOpacity(fitted.layers, readings, common.features),
+			layers: withLineStyles(
+				withExtrusionOpacity(fitted.layers, readings, common.features),
+				target,
+				fitted.theme,
+				readings,
+				report,
+				'layers'
+			),
 			...common.content,
 			features: common.features,
 			...common.globals,
@@ -716,6 +724,79 @@ function withExtrusionOpacity(
 	const rounded = Math.round(opacity * 20) / 20;
 	if (rounded <= 0 || rounded > 1 || rounded === EXTRUSION_OPACITY) return layers;
 	return { ...layers, buildings: rounded };
+}
+
+/** The line groups of `layers`, each with the probes that read its line — the first one drawn speaks. */
+const LINE_GROUPS: readonly (readonly [group: string, leaf: string, probes: readonly string[]])[] = [
+	['boundaries', 'country', ['boundary-country']],
+	['boundaries', 'state', ['boundary-state']],
+	['boundaries', 'disputed', ['boundary-country-disputed']],
+	['roads', 'footway', ['way-footway']],
+	['roads', 'steps', ['way-steps']],
+	['roads', 'paths', ['way-path', 'way-cycleway']],
+];
+
+/** How far two dash lengths may differ, in line widths, and still be the same pattern. */
+const DASH_TOLERANCE = 0.05;
+
+const sameDash = (a: readonly number[] | undefined, b: readonly number[] | undefined): boolean =>
+	a === undefined || b === undefined
+		? a === b
+		: a.length === b.length && a.every((length, index) => Math.abs(length - b[index]) <= DASH_TOLERANCE);
+
+/**
+ * `layers` with `dashed` set on the borders and paths the style draws differently from the target.
+ *
+ * "Differently from the target" is judged the way the colours are: the same probes are read off the
+ * target built with the chosen theme, so a theme that already draws its paths solid, or its state
+ * borders in the style's own dash, has nothing written — and a style built by these very builders
+ * comes back as its theme alone. Where the two differ, the style's pattern is written out, or `false`
+ * for a solid line; the target's own pattern for `true` is not something a foreign style can ask for.
+ *
+ * A group the style does not draw is left as `hiddenGroups` made it: how a hidden line is dashed is
+ * not a setting.
+ */
+function withLineStyles(
+	layers: LayerGroupOptions,
+	target: Target,
+	theme: Palette,
+	readings: ReadonlyMap<string, ProbeReading>,
+	report: ReportBuilder,
+	optionPath: string
+): LayerGroupOptions {
+	const out = structuredClone(layers) as Record<string, unknown>;
+	let own: StyleSpecification | undefined;
+	for (const [group, leaf, probes] of LINE_GROUPS) {
+		const reading = probes.map((id) => readings.get(id)).find((r) => r !== undefined);
+		if (!reading) continue;
+		const branch = out[group];
+		if (
+			branch === false ||
+			(branch && typeof branch === 'object' && (branch as Record<string, unknown>)[leaf] === false)
+		) {
+			continue;
+		}
+		own ??= target.build(theme, target.colorsFor(theme));
+		const drawn = readProbe(own, SHORTBREAD_SOURCES, reading.probe, reading.zoom);
+		if (!drawn) continue; // the target does not draw this line here, so there is nothing to set
+		const dashed = reading.lineDash?.map((length) => Math.round(length * 100) / 100);
+		if (sameDash(dashed, drawn.lineDash)) continue;
+		setPath(out, [group, leaf], { dashed: dashed ?? false });
+		if (reading.lineDashByZoom && dashed) {
+			report.say(
+				diagnostic(
+					'line.dashByZoom',
+					`the dash of ${group}.${leaf} changes with zoom; the pattern at z${reading.zoom} was taken`,
+					{ zoom: reading.zoom, dashed },
+					{
+						optionPath: `${optionPath}.${group}.${leaf}.dashed`,
+						origin: { probe: reading.probe.id, layers: reading.layers },
+					}
+				)
+			);
+		}
+	}
+	return out as LayerGroupOptions;
 }
 
 /**

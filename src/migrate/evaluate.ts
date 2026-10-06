@@ -85,6 +85,13 @@ export type ProbeReading = {
 	/** Line probes: the line width in px. */
 	readonly lineWidth?: number;
 	/**
+	 * Line probes: the dash the line is drawn in at the probe's zoom, in multiples of its width — absent
+	 * for a solid line, and for a dash that does not show (see `dashOf`).
+	 */
+	readonly lineDash?: number[];
+	/** Line probes: the dash is an expression, so `lineDash` is what it gives at the probe's zoom only. */
+	readonly lineDashByZoom?: boolean;
+	/**
 	 * Per channel, the colours that other layers drew for this probe and that the reading passed over.
 	 *
 	 * The readers keep the topmost layer (and, for fills and lines, the one beneath it), because that is
@@ -483,8 +490,32 @@ function readLine(probe: Probe, zoom: number, matches: Match[]): ProbeReading | 
 		layers: layerIds,
 		colors,
 		lineWidth: top.width,
+		...dashOf(top, zoom),
 		...(passedOver.length > 0 && { discarded: { color: passedOver } }),
 	};
+}
+
+/**
+ * The dash a line shows at `zoom`, as dashes and gaps in turn.
+ *
+ * What it *shows*, not what the layer says: a pattern with no gap in it, or one under a round cap that
+ * closes its every gap (the cap extends each dash by half a line width at both ends), draws a solid
+ * line, and is read as one. An odd-length pattern is doubled, which is how MapLibre repeats it.
+ */
+function dashOf({ layer, feature }: Drawn, zoom: number): Pick<ProbeReading, 'lineDash' | 'lineDashByZoom'> {
+	const raw = layer.paint?.['line-dasharray'];
+	if (raw === undefined) return {};
+	const value = evaluateProperty(layer, 'paint', 'line-dasharray', zoom, feature);
+	if (!Array.isArray(value) || value.length === 0) return {};
+	if (!value.every((length) => typeof length === 'number' && Number.isFinite(length) && length >= 0)) return {};
+	const dash = (value.length % 2 === 1 ? [...value, ...value] : [...value]) as number[];
+	const gaps = dash.filter((_, index) => index % 2 === 1);
+	const dashes = dash.filter((_, index) => index % 2 === 0);
+	if (!dashes.some((length) => length > 0) || !gaps.some((length) => length > 0)) return {};
+	const cap = evaluateProperty(layer, 'layout', 'line-cap', zoom, feature);
+	if (cap === 'round' && gaps.every((length) => length <= 1)) return {};
+	const byZoom = !(Array.isArray(raw) && raw.every((length) => typeof length === 'number'));
+	return { lineDash: dash, ...(byZoom && { lineDashByZoom: true }) };
 }
 
 function readSymbol(probe: Probe, zoom: number, matches: Match[]): ProbeReading | undefined {
