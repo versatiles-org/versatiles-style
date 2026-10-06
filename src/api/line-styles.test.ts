@@ -101,6 +101,60 @@ describe.each(BUILDERS)('line styles in %s', (_name, build) => {
 	});
 });
 
+// `width` multiplies a line's width at every zoom, and `halo` says whether a border has its casing.
+// The width is applied by group in the shared layer pass (`applyLineWidth`), so every layer of the
+// group — the line, a halo, a bridge deck, the tunnel variants — grows together, in every schema.
+describe.each(BUILDERS)('line widths and halos in %s', (_name, build) => {
+	const widthOf = (style: StyleSpecification, id: string) => layerOf(style, id)?.paint?.['line-width'];
+	/** The stop values of a width ramp, without their zooms. */
+	const stops = (width: unknown) => (width as unknown[]).slice(3).filter((_, index) => index % 2 === 1) as number[];
+
+	it('builds the style it always did where no width is set', () => {
+		expect(JSON.stringify(build({ boundaries: { state: { width: 1 } }, roads: { footway: { width: 1 } } }))).toBe(
+			JSON.stringify(build())
+		);
+	});
+
+	it('scales a border with its halo, and leaves the others alone', () => {
+		const [plain, half] = [build(), build({ boundaries: { state: { width: 0.5 } } })];
+		for (const id of ['boundary-state', 'boundary-state:outline']) {
+			expect(stops(widthOf(half, id)), id).toStrictEqual(stops(widthOf(plain, id)).map((w) => w * 0.5));
+		}
+		for (const id of ['boundary-country', 'boundary-country:outline', 'boundary-country-disputed', 'way-footway']) {
+			expect(widthOf(half, id), id).toStrictEqual(widthOf(plain, id));
+		}
+	});
+
+	it('scales a path above ground, in a tunnel and on a bridge, with its deck', () => {
+		const [plain, wide] = [build(), build({ roads: { footway: { width: 2 } } })];
+		for (const id of ['way-footway', 'tunnel-way-footway', 'bridge-way-footway', 'bridge-way-footway:bridge']) {
+			expect(stops(widthOf(wide, id)), id).toStrictEqual(stops(widthOf(plain, id)).map((w) => w * 2));
+		}
+		expect(widthOf(wide, 'way-steps')).toStrictEqual(widthOf(plain, 'way-steps'));
+	});
+
+	it('keeps a width ramp starting from nothing where it started, so the line appears at the same zoom', () => {
+		const half = build({ boundaries: { state: { width: 0.5 } } });
+		expect(stops(widthOf(half, 'boundary-state'))[0]).toBe(0);
+		expect(layerOf(half, 'boundary-state')).toMatchObject({
+			minzoom: (layerOf(build(), 'boundary-state') as { minzoom?: number }).minzoom,
+		});
+	});
+
+	it('leaves the dash pattern alone, which is in multiples of the width', () => {
+		expect(dashOf(build({ boundaries: { state: { width: 0.5 } } }), 'boundary-state')).toStrictEqual([3, 1, 1, 1]);
+	});
+
+	it('draws a border without its halo when asked, and the others with theirs', () => {
+		const style = build({ boundaries: { state: { halo: false } } });
+		expect(ids(style, 'boundary-state')).toStrictEqual(['boundary-state']);
+		expect(ids(style, 'boundary-country')).toContain('boundary-country:outline');
+		expect(ids(style, 'boundary-country')).toContain('boundary-country-disputed:outline');
+		const none = build({ boundaries: { country: { halo: false }, disputed: { halo: false }, state: { halo: false } } });
+		expect(ids(none, 'boundary').filter((id) => id.endsWith(':outline'))).toStrictEqual([]);
+	});
+});
+
 describe('line styles: the satellite overlay', () => {
 	it('takes them on its own borders and paths', () => {
 		const style = satellite({ osmOverlay: { layers: { boundaries: { state: { dashed: false } } } } });
@@ -189,8 +243,25 @@ describe('line styles: minimizeOptions', () => {
 		).toStrictEqual({ layers: { roads: { streets: { service: false }, footway: { dashed: [3, 1] } }, labels: false } });
 	});
 
+	it('writes a width and a missing halo, and neither where they are the defaults', () => {
+		expect(minimal({ layers: { boundaries: { state: { width: 0.5, halo: false } } } })).toStrictEqual({
+			layers: { boundaries: { state: { width: 0.5, halo: false } } },
+		});
+		expect(
+			minimal({ layers: { boundaries: { state: { width: 1, halo: true } }, roads: { footway: { width: 1 } } } })
+		).toStrictEqual({});
+		expect(minimal({ layers: { roads: 0.5 } })).toStrictEqual({ layers: { roads: 0.5 } });
+		expect(
+			minimal({ layers: { boundaries: { country: 0.5, disputed: 0.5, state: { opacity: 0.5, width: 2 } } } })
+		).toStrictEqual({
+			layers: { boundaries: { country: 0.5, state: { opacity: 0.5, width: 2 }, disputed: 0.5 } },
+		});
+	});
+
 	it('says nothing about the dash of a hidden line', () => {
-		expect(minimal({ layers: { boundaries: { state: { opacity: false, dashed: false } } } })).toStrictEqual({
+		expect(
+			minimal({ layers: { boundaries: { state: { opacity: false, dashed: false, width: 1, halo: true } } } })
+		).toStrictEqual({
 			layers: { boundaries: { state: false } },
 		});
 	});
@@ -201,6 +272,9 @@ describe('line styles: minimizeOptions', () => {
 		{ layers: { boundaries: 0.5, roads: { footway: { dashed: [3, 1] } } } },
 		{ layers: { roads: { steps: { opacity: 0.2, dashed: false } }, boundaries: { country: { dashed: [1, 1] } } } },
 		{ layers: { roads: 0.3, boundaries: { disputed: { opacity: 0.7, dashed: false } } } },
+		{
+			layers: { boundaries: { state: { width: 0.5, halo: false, dashed: [6, 3] } }, roads: { paths: { width: 1.5 } } },
+		},
 	])('resolves to the same thing after minimising: %j', (options) => {
 		const resolved = osm.resolveOptions(options);
 		expect(osm.resolveOptions(osm.minimizeOptions(resolved)).layers).toStrictEqual(resolved.layers);
@@ -248,6 +322,8 @@ describe('line presets of the themes', () => {
 		expect(layers({ theme: 'positrino', layers: { boundaries: { state: 0.5 } } }).boundaries.state).toStrictEqual({
 			opacity: 0.5,
 			dashed: [2, 2],
+			width: 1,
+			halo: true,
 		});
 		// …and gives way to an explicit one
 		expect(
@@ -255,6 +331,7 @@ describe('line presets of the themes', () => {
 		).toStrictEqual({
 			opacity: true,
 			dashed: true,
+			width: 1,
 		});
 		expect(
 			dashOf(osm({ theme: 'positrino', layers: { roads: { footway: { dashed: true } } } }), 'way-footway')

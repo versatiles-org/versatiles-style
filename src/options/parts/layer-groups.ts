@@ -16,9 +16,24 @@ export type LineStyle = {
 	 * border is solid, the other five are dashed.
 	 */
 	dashed?: boolean | number[];
+	/**
+	 * Multiplies the line's width, at every zoom: `0.5` draws it half as wide, `2` twice. The dash
+	 * follows, since a pattern is in multiples of the width, and so does a border's halo. Default `1`.
+	 */
+	width?: number;
+};
+
+/** A {@link LineStyle} for a border, which has a halo: `boundaries.country`, `.state` and `.disputed`. */
+export type BorderStyle = LineStyle & {
+	/**
+	 * Whether the border is drawn on a halo — a wider line in the background colour beneath it, which
+	 * keeps it legible over whatever it crosses. Default `true`.
+	 */
+	halo?: boolean;
 };
 
 export type ResolvedLineStyle = Required<LineStyle>;
+export type ResolvedBorderStyle = Required<BorderStyle>;
 
 /**
  * The groups that take a `LineStyle`, by their path in `layers`, and whether each is dashed unless
@@ -105,9 +120,9 @@ export type LayerGroupOptions = {
 		| boolean
 		| number
 		| {
-				country?: boolean | number | LineStyle;
-				state?: boolean | number | LineStyle;
-				disputed?: boolean | number | LineStyle;
+				country?: boolean | number | BorderStyle;
+				state?: boolean | number | BorderStyle;
+				disputed?: boolean | number | BorderStyle;
 		  };
 	markings?: boolean | number;
 	labels?:
@@ -173,9 +188,9 @@ export type ResolvedLayerGroups = {
 	airport: boolean | number;
 	pois: boolean | number;
 	boundaries: {
-		country: ResolvedLineStyle;
-		state: ResolvedLineStyle;
-		disputed: ResolvedLineStyle;
+		country: ResolvedBorderStyle;
+		state: ResolvedBorderStyle;
+		disputed: ResolvedBorderStyle;
 	};
 	markings: boolean | number;
 	labels: {
@@ -240,8 +255,8 @@ export const isDashPattern = (value: unknown): value is number[] =>
 	value.some((length) => length > 0);
 
 // Resolve a line leaf: the plain value or a `LineStyle`. The opacity follows the same rule as every
-// other leaf — explicit, else inherited, else visible. `dashed` is the leaf's own and never inherited:
-// a scalar on an ancestor says how visible its lines are, not how they are drawn.
+// other leaf — explicit, else inherited, else visible. Everything else is the leaf's own and never
+// inherited: a scalar on an ancestor says how visible its lines are, not how they are drawn.
 function lineLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
@@ -251,10 +266,9 @@ function lineLeaf(
 	// copied: a theme's pattern is shared by every style of that theme, and a resolved option is the caller's
 	const dashedByDefault = typeof byDefault === 'boolean' ? byDefault : [...byDefault];
 	if (opt === null || typeof opt !== 'object' || Array.isArray(opt)) {
-		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault };
+		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault, width: 1 };
 	}
-	const style = opt as LineStyle;
-	checkKeys(style, { opacity: true, dashed: true }, path);
+	const style = opt as BorderStyle;
 	let dashed: boolean | number[] = dashedByDefault;
 	if (typeof style.dashed === 'boolean') dashed = style.dashed;
 	else if (isDashPattern(style.dashed)) dashed = [...style.dashed];
@@ -266,7 +280,47 @@ function lineLeaf(
 				`negative and not all zero — got ${describeValue(style.dashed)}`,
 		});
 	}
-	return { opacity: leaf(style.opacity, inherited, true, `${path}.opacity`), dashed };
+	let width = 1;
+	if (typeof style.width === 'number' && Number.isFinite(style.width) && style.width > 0) width = style.width;
+	else if (style.width != null) {
+		reportIssue({
+			path: `${path}.width`,
+			message: `expected a number above 0, which the line's width is multiplied by, got ${describeValue(style.width)}`,
+		});
+	}
+	return { opacity: leaf(style.opacity, inherited, true, `${path}.opacity`), dashed, width };
+}
+
+/** A path: a line style with no halo to set. */
+function pathLeaf(
+	opt: unknown,
+	inherited: Scalar | undefined,
+	path: string,
+	byDefault: boolean | readonly number[]
+): ResolvedLineStyle {
+	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
+		checkKeys(opt as LineStyle, { opacity: true, dashed: true, width: true }, path);
+	}
+	return lineLeaf(opt, inherited, path, byDefault);
+}
+
+/** A border: a line style, and whether it has its halo. */
+function borderLeaf(
+	opt: unknown,
+	inherited: Scalar | undefined,
+	path: string,
+	byDefault: boolean | readonly number[]
+): ResolvedBorderStyle {
+	let halo = true;
+	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
+		const style = opt as BorderStyle;
+		checkKeys(style, { opacity: true, dashed: true, width: true, halo: true }, path);
+		if (typeof style.halo === 'boolean') halo = style.halo;
+		else if (style.halo != null) {
+			reportIssue({ path: `${path}.halo`, message: `expected true or false, got ${describeValue(style.halo)}` });
+		}
+	}
+	return { ...lineLeaf(opt, inherited, path, byDefault), halo };
 }
 
 // Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
@@ -378,8 +432,8 @@ export function resolveLayerGroups(
 	const boundariesInherited = scalarOf(o.boundaries);
 	const boundaries = o.boundaries && typeof o.boundaries === 'object' ? o.boundaries : undefined;
 	checkKeys(o.boundaries, { country: true, state: true, disputed: true }, `${path}.boundaries`);
-	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedLineStyle =>
-		lineLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, dashedIn[`boundaries.${key}`]);
+	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedBorderStyle =>
+		borderLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, dashedIn[`boundaries.${key}`]);
 
 	return {
 		land: resolveFlat(
@@ -407,9 +461,9 @@ export function resolveLayerGroups(
 				track: leaf(streets?.track, streetsInherited, true, `${path}.roads.streets.track`),
 				bus: leaf(streets?.bus, streetsInherited, true, `${path}.roads.streets.bus`),
 			},
-			paths: lineLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, dashedIn['roads.paths']),
-			footway: lineLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, dashedIn['roads.footway']),
-			steps: lineLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, dashedIn['roads.steps']),
+			paths: pathLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, dashedIn['roads.paths']),
+			footway: pathLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, dashedIn['roads.footway']),
+			steps: pathLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, dashedIn['roads.steps']),
 		},
 		transit: {
 			rail: leaf(transit?.rail, transitInherited, true, `${path}.transit.rail`),

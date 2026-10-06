@@ -111,24 +111,28 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 	// Solid and disputed country borders have a casing each, though the two are drawn alike: they
 	// belong to different groups, and a disputed border left visible while the country borders are
 	// hidden must not lose its halo with them.
-	yield b.line('boundary-country:outline', {
-		...casing,
-		filter: COUNTRY,
-		size: countryCasingSize,
-		group: 'boundaries.country',
-	});
-	yield b.line('boundary-country-disputed:outline', {
-		...casing,
-		filter: DISPUTED,
-		size: countryCasingSize,
-		group: 'boundaries.disputed',
-	});
-	yield b.line('boundary-state:outline', {
-		...casing,
-		filter: STATE,
-		size: stateCasingSize,
-		group: 'boundaries.state',
-	});
+	// A border asked for without its halo (`layers.boundaries.*.halo`) simply has no casing layer.
+	if (ctx.layers.boundaries.country.halo)
+		yield b.line('boundary-country:outline', {
+			...casing,
+			filter: COUNTRY,
+			size: countryCasingSize,
+			group: 'boundaries.country',
+		});
+	if (ctx.layers.boundaries.disputed.halo)
+		yield b.line('boundary-country-disputed:outline', {
+			...casing,
+			filter: DISPUTED,
+			size: countryCasingSize,
+			group: 'boundaries.disputed',
+		});
+	if (ctx.layers.boundaries.state.halo)
+		yield b.line('boundary-state:outline', {
+			...casing,
+			filter: STATE,
+			size: stateCasingSize,
+			group: 'boundaries.state',
+		});
 
 	// ── coloured lines ──
 	yield b.line('boundary-country', {

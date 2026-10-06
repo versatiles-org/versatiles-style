@@ -18,9 +18,9 @@ const DEFAULTS = {
 		motorways: true,
 		highways: true,
 		streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
-		paths: { opacity: true, dashed: true },
-		footway: { opacity: true, dashed: true },
-		steps: { opacity: true, dashed: true },
+		paths: { opacity: true, dashed: true, width: 1 },
+		footway: { opacity: true, dashed: true, width: 1 },
+		steps: { opacity: true, dashed: true, width: 1 },
 	},
 	transit: { rail: true, aerialways: true, ferries: true, stops: true },
 	buildings: true,
@@ -28,9 +28,9 @@ const DEFAULTS = {
 	airport: true,
 	pois: true,
 	boundaries: {
-		country: { opacity: true, dashed: false },
-		state: { opacity: true, dashed: true },
-		disputed: { opacity: true, dashed: true },
+		country: { opacity: true, dashed: false, width: 1, halo: true },
+		state: { opacity: true, dashed: true, width: 1, halo: true },
+		disputed: { opacity: true, dashed: true, width: 1, halo: true },
 	},
 	markings: true,
 	labels: {
@@ -84,9 +84,9 @@ describe('resolveLayerGroups', () => {
 			motorways: true,
 			highways: true,
 			streets: { residential: true, service: true, pedestrian: true, track: true, bus: true },
-			paths: { opacity: true, dashed: true },
-			footway: { opacity: true, dashed: true },
-			steps: { opacity: true, dashed: true },
+			paths: { opacity: true, dashed: true, width: 1 },
+			footway: { opacity: true, dashed: true, width: 1 },
+			steps: { opacity: true, dashed: true, width: 1 },
 		});
 	});
 
@@ -95,9 +95,9 @@ describe('resolveLayerGroups', () => {
 			motorways: 0.5,
 			highways: 0.5,
 			streets: { residential: 0.5, service: 0.5, pedestrian: 0.5, track: 0.5, bus: 0.5 },
-			paths: { opacity: 0.5, dashed: true },
-			footway: { opacity: 0.5, dashed: true },
-			steps: { opacity: 0.5, dashed: true },
+			paths: { opacity: 0.5, dashed: true, width: 1 },
+			footway: { opacity: 0.5, dashed: true, width: 1 },
+			steps: { opacity: 0.5, dashed: true, width: 1 },
 		});
 	});
 
@@ -181,9 +181,9 @@ describe('resolveLayerGroups', () => {
 		expect(r.water.rivers).toBe(true);
 		expect(r.transit).toStrictEqual({ rail: 0.5, aerialways: 0.5, ferries: 0.5, stops: 0.5 });
 		expect(r.boundaries).toStrictEqual({
-			country: { opacity: true, dashed: false },
-			state: { opacity: false, dashed: true },
-			disputed: { opacity: true, dashed: true },
+			country: { opacity: true, dashed: false, width: 1, halo: true },
+			state: { opacity: false, dashed: true, width: 1, halo: true },
+			disputed: { opacity: true, dashed: true, width: 1, halo: true },
 		});
 		expect(r.labels).toStrictEqual({
 			boundaries: { countries: false, states: false },
@@ -289,15 +289,31 @@ describe('line groups: borders and paths', () => {
 	});
 
 	it('takes a plain value as the opacity, and an object as both', () => {
-		expect(boundaries({ boundaries: { state: 0.5 } }).state).toStrictEqual({ opacity: 0.5, dashed: true });
-		expect(boundaries({ boundaries: { state: { opacity: 0.5 } } }).state).toStrictEqual({ opacity: 0.5, dashed: true });
+		expect(boundaries({ boundaries: { state: 0.5 } }).state).toStrictEqual({
+			opacity: 0.5,
+			dashed: true,
+			width: 1,
+			halo: true,
+		});
+		expect(boundaries({ boundaries: { state: { opacity: 0.5 } } }).state).toStrictEqual({
+			opacity: 0.5,
+			dashed: true,
+			width: 1,
+			halo: true,
+		});
 		expect(boundaries({ boundaries: { state: { dashed: false } } }).state).toStrictEqual({
 			opacity: true,
 			dashed: false,
+			width: 1,
+			halo: true,
 		});
-		expect(boundaries({ boundaries: { country: { opacity: 0.3, dashed: true } } }).country).toStrictEqual({
+		expect(
+			boundaries({ boundaries: { country: { opacity: 0.3, dashed: true, width: 1, halo: true } } }).country
+		).toStrictEqual({
 			opacity: 0.3,
 			dashed: true,
+			width: 1,
+			halo: true,
 		});
 	});
 
@@ -310,11 +326,11 @@ describe('line groups: borders and paths', () => {
 
 	it('inherits the opacity from a scalar above, and never the dash', () => {
 		expect(boundaries({ boundaries: 0.5 })).toStrictEqual({
-			country: { opacity: 0.5, dashed: false },
-			state: { opacity: 0.5, dashed: true },
-			disputed: { opacity: 0.5, dashed: true },
+			country: { opacity: 0.5, dashed: false, width: 1, halo: true },
+			state: { opacity: 0.5, dashed: true, width: 1, halo: true },
+			disputed: { opacity: 0.5, dashed: true, width: 1, halo: true },
 		});
-		expect(boundaries(false).state).toStrictEqual({ opacity: false, dashed: true });
+		expect(boundaries(false).state).toStrictEqual({ opacity: false, dashed: true, width: 1, halo: true });
 		// an object that sets only the dash still takes the opacity cascading down to it
 		expect(resolveLayerGroups({ roads: 0.5 }).roads.steps.opacity).toBe(0.5);
 	});
@@ -354,6 +370,50 @@ describe('line groups: borders and paths', () => {
 		);
 		expect(() => resolveLayerGroups({ land: { forest: { opacity: 0.5 } as never } })).toThrow(
 			'layers.land.forest: expected a boolean or a number'
+		);
+	});
+
+	it('takes a width on every line group and a halo on the borders, with defaults of 1 and true', () => {
+		const r = resolveLayerGroups();
+		for (const line of [r.roads.paths, r.roads.footway, r.roads.steps]) {
+			expect(line.width).toBe(1);
+			expect('halo' in line).toBe(false);
+		}
+		for (const border of [r.boundaries.country, r.boundaries.state, r.boundaries.disputed]) {
+			expect(border.width).toBe(1);
+			expect(border.halo).toBe(true);
+		}
+		expect(boundaries({ boundaries: { state: { width: 0.5, halo: false } } }).state).toStrictEqual({
+			opacity: true,
+			dashed: true,
+			width: 0.5,
+			halo: false,
+		});
+		expect(resolveLayerGroups({ roads: { footway: { width: 2 } } }).roads.footway).toStrictEqual({
+			opacity: true,
+			dashed: true,
+			width: 2,
+		});
+	});
+
+	it('never inherits a width or a halo from a scalar above', () => {
+		expect(boundaries({ boundaries: 0.5 }).state).toMatchObject({ opacity: 0.5, width: 1, halo: true });
+	});
+
+	it('rejects a width that is not a number above 0, and a halo that is not a boolean', () => {
+		for (const width of [0, -1, NaN, Infinity, '2']) {
+			expect(() => resolveLayerGroups({ boundaries: { state: { width: width as never } } }), String(width)).toThrow(
+				/layers\.boundaries\.state\.width: expected a (finite number|number above 0)/
+			);
+		}
+		expect(() => resolveLayerGroups({ boundaries: { state: { halo: 1 as never } } })).toThrow(
+			'layers.boundaries.state.halo: expected true or false'
+		);
+	});
+
+	it('rejects a halo on a path, which has none', () => {
+		expect(() => resolveLayerGroups({ roads: { footway: { halo: false } as never } })).toThrow(
+			'unknown option "roads.footway.halo"'
 		);
 	});
 });

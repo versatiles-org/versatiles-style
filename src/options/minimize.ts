@@ -271,16 +271,18 @@ function minimizeLayers(layers: unknown, theme: ResolvedTheme, drawn?: LayerGrou
 		undefined,
 		preset
 	) as unknown as ResolvedTree;
-	const { groups, dashes } = splitLineStyles(resolved, lineDefaults(preset), drawn);
+	const { groups, styled } = splitLineStyles(resolved, lineDefaults(preset), drawn);
 	const collapsed = collapseGroups(groups, drawn);
 	const minimal =
 		typeof collapsed !== 'object' ? (collapsed === true ? undefined : collapsed) : withoutVisible(collapsed);
-	return dashes.length === 0 ? minimal : withDashes(minimal, groups, dashes, drawn);
+	return styled.length === 0 ? minimal : withLineStyles(minimal, groups, styled, drawn);
 }
 
 type ResolvedTree = { [key: string]: GroupScalar | ResolvedLineStyle | ResolvedTree };
-type Dash = { path: string[]; dashed: boolean | number[] };
-const isLineStyle = (node: unknown): node is ResolvedLineStyle =>
+/** What a line group sets beyond its visibility, where that is not what it would be anyway. */
+type LineDiff = { dashed?: boolean | number[]; width?: number; halo?: boolean };
+type Styled = { path: string[]; diff: LineDiff };
+const isLineStyle = (node: unknown): node is ResolvedLineStyle & { halo?: boolean } =>
 	typeof node === 'object' && node !== null && 'dashed' in node && 'opacity' in node;
 const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]): boolean =>
 	Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((v, i) => v === b[i]) : a === b;
@@ -288,48 +290,57 @@ const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]
 /**
  * The resolved tree as the two things it holds. `groups` is what it was before a line group could be
  * styled — every leaf its visibility — so the collapsing below works on it unchanged, and `layers`
- * without a dash setting minimises to exactly what it always did. `dashes` lists the line groups whose
- * `dashed` is not their default; one that is hidden, or that the overlay does not draw, has nothing to
- * say about how it is drawn.
+ * without a line style minimises to exactly what it always did. `styled` lists the line groups that
+ * are drawn differently from their default — another dash, another width, no halo — each with only
+ * what differs; one that is hidden, or that the overlay does not draw, has nothing to say about how it
+ * is drawn.
  */
 function splitLineStyles(
 	node: ResolvedTree,
 	defaults: LinePreset,
 	drawn: LayerGroupMap | undefined,
 	path: string[] = []
-): { groups: GroupTree; dashes: Dash[] } {
+): { groups: GroupTree; styled: Styled[] } {
 	const groups: GroupTree = {};
-	const dashes: Dash[] = [];
+	const styled: Styled[] = [];
 	for (const [key, child] of Object.entries(node)) {
 		const here = [...path, key];
 		const drawnHere = drawn === undefined ? undefined : drawn[key];
 		if (isLineStyle(child)) {
 			groups[key] = child.opacity;
 			const isDrawn = drawn === undefined || drawnHere !== undefined;
-			if (isDrawn && child.opacity !== false && !sameDash(child.dashed, defaults[here.join('.')])) {
-				dashes.push({ path: here, dashed: child.dashed });
-			}
+			if (!isDrawn || child.opacity === false) continue;
+			const diff: LineDiff = {};
+			if (!sameDash(child.dashed, defaults[here.join('.')])) diff.dashed = child.dashed;
+			if (child.width !== 1) diff.width = child.width;
+			if (child.halo === false) diff.halo = false;
+			if (Object.keys(diff).length > 0) styled.push({ path: here, diff });
 		} else if (typeof child === 'object') {
-			const below = splitLineStyles(child, defaults, Array.isArray(drawnHere) ? undefined : drawnHere, here);
+			const below = splitLineStyles(
+				child as ResolvedTree,
+				defaults,
+				Array.isArray(drawnHere) ? undefined : drawnHere,
+				here
+			);
 			groups[key] = below.groups;
-			dashes.push(...below.dashes);
+			styled.push(...below.styled);
 		} else groups[key] = child;
 	}
-	return { groups, dashes };
+	return { groups, styled };
 }
 
 /**
- * `minimal` with the dash settings written back in.
+ * `minimal` with the line styles written back in.
  *
- * A dash is set on one group, so the branch above it can no longer be a single value: where the
+ * A line style is set on one group, so the branch above it can no longer be a single value: where the
  * collapse had folded it — `boundaries: 0.5`, or the whole of `layers` — it is spelled out again, each
  * group with the value the fold stood for, and only that far. Every line group sits one level below a
  * top-level group, which is all this has to reach.
  */
-function withDashes(
+function withLineStyles(
 	minimal: GroupScalar | GroupTree | undefined,
 	groups: GroupTree,
-	dashes: Dash[],
+	styled: Styled[],
 	drawn?: LayerGroupMap
 ): GroupTree {
 	const out: { [key: string]: unknown } = {};
@@ -337,7 +348,7 @@ function withDashes(
 		const drawnHere = drawn?.[key];
 		if (drawn !== undefined && drawnHere === undefined) continue;
 		const below = Array.isArray(drawnHere) ? undefined : drawnHere;
-		const own = dashes.filter((dash) => dash.path[0] === key);
+		const own = styled.filter((line) => line.path[0] === key);
 		if (own.length === 0 || typeof group !== 'object') {
 			// untouched: whatever the plain minimisation made of this group
 			const kept = typeof minimal === 'object' ? minimal[key] : minimal === true ? undefined : minimal;
@@ -347,8 +358,8 @@ function withDashes(
 		const branch: { [key: string]: unknown } = {};
 		for (const [child, value] of Object.entries(group)) {
 			if (below !== undefined && below[child] === undefined) continue;
-			const dash = own.find((candidate) => candidate.path[1] === child);
-			if (dash) branch[child] = value === true ? { dashed: dash.dashed } : { opacity: value, dashed: dash.dashed };
+			const line = own.find((candidate) => candidate.path[1] === child);
+			if (line) branch[child] = value === true ? line.diff : { opacity: value, ...line.diff };
 			else if (typeof value === 'object') {
 				const collapsed = collapseGroups(
 					value,

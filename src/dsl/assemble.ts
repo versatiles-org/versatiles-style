@@ -2,6 +2,7 @@ import type { MaplibreLayer } from '../types/index.js';
 import { gate, type TaggedLayer } from './build.js';
 import type { LayerContext } from './context.js';
 import { applyText } from './text.js';
+import { scaleValue } from '../lib/index.js';
 
 /**
  * Assembling a schema's tagged layer stream into a finished layer list — schema-neutral.
@@ -36,6 +37,7 @@ export function buildLayers(ctx: LayerContext, floors: DataFloors, tagged: Itera
 	const layers: MaplibreLayer[] = [];
 	for (const { layer, group } of gate(ctx.layers, tagged)) {
 		applyText(layer, group, ctx.text);
+		applyLineWidth(layer, group, ctx.layers);
 		if (layer.type !== 'background') applyDataFloor(layer, floors);
 		layers.push(layer.type === 'background' ? layer : ({ ...layer, source: ctx.source } as MaplibreLayer));
 	}
@@ -60,4 +62,27 @@ function applyDataFloor(layer: MaplibreLayer, floors: DataFloors): void {
 	if (dataFrom === undefined) return;
 	const l = layer as { minzoom?: number };
 	if ((l.minzoom ?? 0) < dataFrom) l.minzoom = dataFrom;
+}
+
+/**
+ * Scale the width of a line by its group's `width` — the multiplier a border or a path takes in
+ * `layers` (`LineStyle`).
+ *
+ * Here, by group tag, rather than in the module that draws the line: a group is several layers — the
+ * line, a border's halo, a path's bridge deck, the same again in a tunnel — and they have to grow
+ * together, in every schema. A dash needs nothing: its pattern is in multiples of the width. Nor does
+ * `minzoom`, which follows where a width ramp leaves 0, and scaling leaves a 0 where it is.
+ *
+ * A width of 1, which is every line's unless asked otherwise, touches nothing, so a style built without
+ * the option is the style it always was.
+ */
+function applyLineWidth(layer: MaplibreLayer, group: string | undefined, layers: LayerContext['layers']): void {
+	if (layer.type !== 'line' || !group) return;
+	let node: unknown = layers;
+	for (const segment of group.split('.')) node = (node as Record<string, unknown> | undefined)?.[segment];
+	const width = (node as { width?: unknown } | undefined)?.width;
+	if (typeof width !== 'number' || width === 1) return;
+	const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
+	// an unset `line-width` is MapLibre's default of 1
+	paint['line-width'] = scaleValue(paint['line-width'] ?? 1, width);
 }
