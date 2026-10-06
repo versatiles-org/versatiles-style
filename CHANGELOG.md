@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0] - 2026-10-06
+
+### Features
+
+- split labels.places.cities into capitals, statecapitals, cities and towns, close #138 ([cf325b1](https://github.com/versatiles-org/versatiles-style/commit/cf325b1070b12d523d8cba52ba5e911eb14a6f61))
+
 ## [6.2.0] - 2026-10-06
 
 ### Features
