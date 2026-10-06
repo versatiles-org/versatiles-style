@@ -33,6 +33,18 @@ export const LINE_STYLE_DEFAULTS: Readonly<Record<string, boolean>> = Object.fre
 	'boundaries.disputed': true,
 });
 
+/**
+ * How a theme draws its lines where that differs from {@link LINE_STYLE_DEFAULTS}: `dashed` per line
+ * group, by the same paths. A theme's preset sits between the defaults and the caller — it replaces a
+ * default, and an explicit `dashed` in `layers` replaces it.
+ */
+export type LinePreset = Readonly<Record<string, boolean | readonly number[]>>;
+
+/** `dashed` of every line group under a preset: the defaults, with the preset's own on top. */
+export function lineDefaults(preset?: LinePreset): LinePreset {
+	return { ...LINE_STYLE_DEFAULTS, ...preset };
+}
+
 export type LayerGroupOptions = {
 	land?:
 		| boolean
@@ -220,7 +232,7 @@ const leaf = (opt: unknown, inherited: Scalar | undefined, def: Scalar, path: st
 };
 
 /** A dash pattern MapLibre can draw: dashes and gaps in turn, none negative, not all of them zero. */
-const isDashPattern = (value: unknown): value is number[] =>
+export const isDashPattern = (value: unknown): value is number[] =>
 	Array.isArray(value) &&
 	value.length >= 2 &&
 	value.length % 2 === 0 &&
@@ -234,8 +246,10 @@ function lineLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
 	path: string,
-	dashedByDefault: boolean
+	byDefault: boolean | readonly number[]
 ): ResolvedLineStyle {
+	// copied: a theme's pattern is shared by every style of that theme, and a resolved option is the caller's
+	const dashedByDefault = typeof byDefault === 'boolean' ? byDefault : [...byDefault];
 	if (opt === null || typeof opt !== 'object' || Array.isArray(opt)) {
 		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault };
 	}
@@ -282,7 +296,14 @@ function resolveFlat<T>(
  * applies at every level below it. `layers: false` is the v6 equivalent of the v5 `empty` style,
  * and `layers: 0.5` dims the entire map.
  */
-export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, path = 'layers'): ResolvedLayerGroups {
+export function resolveLayerGroups(
+	opts?: boolean | number | LayerGroupOptions,
+	path = 'layers',
+	preset?: LinePreset
+): ResolvedLayerGroups {
+	// what each line group is dashed in unless the caller says: the theme's own way (`getLinePreset`),
+	// else the style's default
+	const dashedIn = lineDefaults(preset);
 	checkFinite(opts, path);
 	checkKeys(
 		opts,
@@ -358,12 +379,7 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 	const boundaries = o.boundaries && typeof o.boundaries === 'object' ? o.boundaries : undefined;
 	checkKeys(o.boundaries, { country: true, state: true, disputed: true }, `${path}.boundaries`);
 	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedLineStyle =>
-		lineLeaf(
-			boundaries?.[key],
-			boundariesInherited,
-			`${path}.boundaries.${key}`,
-			LINE_STYLE_DEFAULTS[`boundaries.${key}`]
-		);
+		lineLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, dashedIn[`boundaries.${key}`]);
 
 	return {
 		land: resolveFlat(
@@ -391,9 +407,9 @@ export function resolveLayerGroups(opts?: boolean | number | LayerGroupOptions, 
 				track: leaf(streets?.track, streetsInherited, true, `${path}.roads.streets.track`),
 				bus: leaf(streets?.bus, streetsInherited, true, `${path}.roads.streets.bus`),
 			},
-			paths: lineLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, LINE_STYLE_DEFAULTS['roads.paths']),
-			footway: lineLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, LINE_STYLE_DEFAULTS['roads.footway']),
-			steps: lineLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, LINE_STYLE_DEFAULTS['roads.steps']),
+			paths: lineLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, dashedIn['roads.paths']),
+			footway: lineLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, dashedIn['roads.footway']),
+			steps: lineLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, dashedIn['roads.steps']),
 		},
 		transit: {
 			rail: leaf(transit?.rail, transitInherited, true, `${path}.transit.rail`),

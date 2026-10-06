@@ -4,7 +4,9 @@ import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm, satellite } from '../index.js';
 import { omt } from '../omt/index.js';
 import { protomaps } from '../protomaps/index.js';
-import type { LayerGroupOptions, OsmOptions } from '../options/index.js';
+import { LINE_STYLE_DEFAULTS, isDashPattern, type LayerGroupOptions, type OsmOptions } from '../options/index.js';
+import { PALETTES, getLinePreset } from '../themes/index.js';
+import { deriveOptions } from '../migrate/index.js';
 
 // `layers` takes a line style — `{ opacity, dashed }` — on the six groups that are a line: the three
 // borders and the three kinds of path. The option is resolved in `options/parts/layer-groups.ts` and
@@ -203,5 +205,112 @@ describe('line styles: minimizeOptions', () => {
 		const resolved = osm.resolveOptions(options);
 		expect(osm.resolveOptions(osm.minimizeOptions(resolved)).layers).toStrictEqual(resolved.layers);
 		expect(JSON.stringify(osm(osm.minimizeOptions(resolved)))).toBe(JSON.stringify(osm(options)));
+	});
+});
+
+// ── theme presets ──────────────────────────────────────────────────────────────
+//
+// A lookalike theme resembles a map that draws its borders and paths its own way, which a colour
+// table cannot say. So such a theme carries a line preset (`getLinePreset`): `dashed` per line group,
+// between the style's defaults and the caller's own `layers`.
+
+describe('line presets of the themes', () => {
+	it('exist for lookalike themes only, name line groups only, and hold nothing a default already says', () => {
+		const BUILT_IN = /^(colorful|natural|muted|gray|toner)(-dark)?$/;
+		for (const theme of PALETTES) {
+			const preset = getLinePreset(theme);
+			if (BUILT_IN.test(theme)) expect(preset, theme).toBeUndefined();
+			for (const [group, dashed] of Object.entries(preset ?? {})) {
+				expect(Object.keys(LINE_STYLE_DEFAULTS), `${theme} ${group}`).toContain(group);
+				expect(typeof dashed === 'boolean' || isDashPattern(dashed), `${theme} ${group}`).toBe(true);
+				expect(dashed, `${theme} ${group}`).not.toBe(LINE_STYLE_DEFAULTS[group]);
+			}
+		}
+		expect(getLinePreset('positrino')).toBeDefined();
+	});
+
+	it.each(BUILDERS.map(([name]) => name))('%s draws a theme in its preset', (name) => {
+		const urls = name === 'protomaps' ? { protomaps: 'pmtiles://https://example.org/x.pmtiles' } : undefined;
+		const build = { osm, omt, protomaps }[name as 'osm'] as (options: object) => StyleSpecification;
+		const positrino = build({ theme: 'positrino', urls });
+		expect(dashOf(positrino, 'way-footway')).toBeUndefined();
+		expect(capOf(positrino, 'way-footway')).toBe('round');
+		expect(dashOf(positrino, 'boundary-state')).toStrictEqual([2, 2]);
+		const protocol = build({ theme: 'protocol', urls });
+		expect(dashOf(protocol, 'boundary-country')).toStrictEqual([2, 1]);
+		// a theme without a preset keeps the defaults
+		expect(dashOf(build({ theme: 'googol', urls }), 'boundary-state')).toStrictEqual([3, 1, 1, 1]);
+	});
+
+	it("lets the caller's own setting win, field by field", () => {
+		const layers = (options: OsmOptions) => osm.resolveOptions(options).layers;
+		// the theme's dash stays under a plain opacity…
+		expect(layers({ theme: 'positrino', layers: { boundaries: { state: 0.5 } } }).boundaries.state).toStrictEqual({
+			opacity: 0.5,
+			dashed: [2, 2],
+		});
+		// …and gives way to an explicit one
+		expect(
+			layers({ theme: 'positrino', layers: { roads: { footway: { dashed: true } } } }).roads.footway
+		).toStrictEqual({
+			opacity: true,
+			dashed: true,
+		});
+		expect(
+			dashOf(osm({ theme: 'positrino', layers: { roads: { footway: { dashed: true } } } }), 'way-footway')
+		).toStrictEqual([1.5, 0.75]);
+	});
+
+	it('hands every caller a pattern of its own', () => {
+		const a = osm.resolveOptions({ theme: 'positrino' }).layers.boundaries.state.dashed as number[];
+		a.push(9);
+		expect(osm.resolveOptions({ theme: 'positrino' }).layers.boundaries.state.dashed).toStrictEqual([2, 2]);
+		expect(getLinePreset('positrino')?.['boundaries.state']).toStrictEqual([2, 2]);
+	});
+
+	it('reaches the satellite overlay through its theme', () => {
+		const style = satellite({ osmOverlay: { theme: 'positrino' } });
+		expect(dashOf(style, 'boundary-state')).toStrictEqual([2, 2]);
+		expect(dashOf(style, 'way-footway')).toBeUndefined();
+	});
+
+	describe('minimizeOptions', () => {
+		const minimal = (options: OsmOptions) => osm.minimizeOptions(osm.resolveOptions(options));
+
+		it.each(PALETTES)('writes nothing but the theme for %s', (theme) => {
+			expect(minimal({ theme })).toStrictEqual(theme === 'colorful' ? {} : { theme });
+		});
+
+		it("writes a dash that differs from the theme's, not from the style's default", () => {
+			// solid footways are positrino's own
+			expect(minimal({ theme: 'positrino', layers: { roads: { footway: { dashed: false } } } })).toStrictEqual({
+				theme: 'positrino',
+			});
+			// the style's default is not
+			expect(minimal({ theme: 'positrino', layers: { roads: { footway: { dashed: true } } } })).toStrictEqual({
+				theme: 'positrino',
+				layers: { roads: { footway: { dashed: true } } },
+			});
+		});
+
+		it.each<OsmOptions>([
+			{ theme: 'positrino' },
+			{ theme: 'protocol', layers: { boundaries: 0.5 } },
+			{
+				theme: 'freedom',
+				layers: { roads: { footway: { dashed: false } }, boundaries: { state: { dashed: [9, 9] } } },
+			},
+		])('resolves to the same thing after minimising: %j', (options) => {
+			const resolved = osm.resolveOptions(options);
+			expect(osm.resolveOptions(osm.minimizeOptions(resolved)).layers).toStrictEqual(resolved.layers);
+		});
+	});
+
+	it('comes back from the importer as the theme alone', () => {
+		for (const theme of ['positrino', 'protocol', 'freedom'] as const) {
+			const guess = deriveOptions(osm({ theme }));
+			expect(guess.kind).toBe('osm');
+			expect('options' in guess && guess.options).toStrictEqual({ theme });
+		}
 	});
 });

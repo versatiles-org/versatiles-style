@@ -23,6 +23,7 @@ import {
 	type SunOptions,
 } from './parts/index.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
+import { getLinePreset } from '../themes/index.js';
 
 export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;
@@ -68,7 +69,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 		sky: resolveSky(options?.sky, 'osm.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,
-		layers: resolveLayerGroups(options?.layers, 'osm.layers'),
+		layers: resolveLayerGroups(options?.layers, 'osm.layers', getLinePreset(theme)),
 		text: resolveText(options?.text, 'osm.text'),
 		icon: resolveIcon(options?.icon, 'osm.icon'),
 		colors,

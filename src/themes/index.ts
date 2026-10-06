@@ -9,7 +9,7 @@ import { colorOptionsKeys } from './color-keys.js';
 // The key list is a leaf of its own (see `color-keys.ts`); this is its front door for the rest of the tree.
 export { colorOptionsKeys, type ColorsOptions } from './color-keys.js';
 import { COLORFUL } from './colorful.js';
-import { TABLES } from './tables.js';
+import { LINE_PRESETS, TABLES } from './tables.js';
 
 // Frozen, not merely `ReadonlyArray`: this is handed out as `osm.palettes` (and `omt`'s, and
 // `protomaps`'), and `readonly` is a compile-time claim a JS caller never sees. It also backs the
@@ -72,3 +72,15 @@ export function isDarkPalette(palette: Palette): boolean {
 
 /** Dark themes with no light partner, which the `-dark` suffix therefore does not mark. */
 const DARK_ONLY: ReadonlySet<Palette> = new Set(['fnord']);
+
+/**
+ * How a theme draws its borders and paths where that differs from the style's defaults: `dashed` per
+ * line group, by its path in `layers` (`'boundaries.state'`, `'roads.footway'`, …). Only lookalike
+ * themes have one — the map each resembles draws these lines its own way, and a colour table cannot
+ * say so. `undefined` for every other theme.
+ *
+ * Shared, not copied: the options that read it copy what they keep.
+ */
+export function getLinePreset(palette: Palette): Readonly<Record<string, boolean | readonly number[]>> | undefined {
+	return LINE_PRESETS[palette];
+}

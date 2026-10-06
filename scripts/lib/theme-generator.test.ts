@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { Color } from '../../src/color/index.js';
 import type { Palette } from '../../src/options/index.js';
-import { PALETTES, getPaletteColors } from '../../src/themes/index.js';
+import { PALETTES, getLinePreset, getPaletteColors } from '../../src/themes/index.js';
 import { FIXES } from '../config/themes.js';
-import { contrast, generate, generateThemes, over, parse } from './theme-generator.js';
+import { contrast, generate, generateThemes, linePresets, over, parse } from './theme-generator.js';
 import type { Fix } from './theme-types.js';
 
 // src/themes holds the generator's output. A hand edit to a derived table, or a generator change that
@@ -21,6 +21,12 @@ describe('theme generator', () => {
 
 	it('is deterministic', () => {
 		expect(generateThemes()).toStrictEqual(generated);
+	});
+
+	it('the line presets in src/themes match the configuration (run `npm run generate-themes`)', () => {
+		const presets = linePresets();
+		for (const theme of PALETTES) expect(getLinePreset(theme), theme).toStrictEqual(presets[theme]);
+		expect(Object.keys(presets).length).toBeGreaterThan(0);
 	});
 
 	it('reports nothing unapplied for the fixes in force', () => {

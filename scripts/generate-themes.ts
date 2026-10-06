@@ -17,9 +17,9 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { colorOptionsKeys, type Palette, type ResolvedColors } from '../src/options/index.js';
 import { getPaletteColors, PALETTES } from '../src/themes/index.js';
-import { TABLES } from '../src/themes/tables.js';
+import { LINE_PRESETS, TABLES } from '../src/themes/tables.js';
 import { LOOKALIKES, REPORT_PAIRS, THEMES } from './config/themes.js';
-import { contrast, generate, oklabDistance, over, parse } from './lib/theme-generator.js';
+import { contrast, generate, linePresets, oklabDistance, over, parse } from './lib/theme-generator.js';
 
 const FILE = resolve(fileURLToPath(import.meta.url), '../../src/themes/tables.ts');
 const args = process.argv.slice(2);
@@ -47,6 +47,11 @@ for (const [name, colors] of Object.entries(generated)) {
 	changes += changed.length;
 	const largest = Math.max(...changed.map(([key, value]) => oklabDistance(current[key], value)));
 	console.log(`${name}: ${changed.length} colour(s) change, largest OKLab distance ${largest.toFixed(3)}`);
+}
+const presets = linePresets();
+if (JSON.stringify(presets) !== JSON.stringify(LINE_PRESETS)) {
+	changes++;
+	console.log('line presets change');
 }
 if (changes === 0) console.log('All derived themes are up to date.');
 
@@ -82,6 +87,10 @@ import type { Palette } from '../options/index.js';
 export const TABLES: Record<Exclude<Palette, 'colorful'>, string> = {
 ${rows.join('\n')}
 };
+
+// How a theme draws its borders and paths where that differs from the style's defaults: \`dashed\` per
+// line group. See \`getLinePreset\` in ./index.ts, and \`lines\` in scripts/config/themes.ts.
+export const LINE_PRESETS: Partial<Record<Palette, Readonly<Record<string, boolean | readonly number[]>>>> = ${presetsSource(presets)};
 `;
 }
 
@@ -98,4 +107,13 @@ function report(): void {
 		});
 		console.log(label.padEnd(18) + cells.join(''));
 	}
+}
+
+/** The presets as source: one theme a line, in the order of the configuration. */
+function presetsSource(all: Partial<Record<Palette, Record<string, boolean | number[]>>>): string {
+	const rows = Object.entries(all).map(([theme, preset]) => {
+		const fields = Object.entries(preset).map(([group, dashed]) => `'${group}': ${JSON.stringify(dashed)}`);
+		return `\t'${theme}': { ${fields.join(', ')} },`;
+	});
+	return rows.length === 0 ? '{}' : `{\n${rows.join('\n')}\n}`;
 }

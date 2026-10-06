@@ -1,3 +1,4 @@
+import { getLinePreset } from '../themes/index.js';
 import {
 	resolveColors,
 	resolveHillshade,
@@ -196,7 +197,7 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 		sky: resolveSky(options?.sky, 'protomaps.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,
-		layers: resolveLayerGroups(options?.layers, 'protomaps.layers'),
+		layers: resolveLayerGroups(options?.layers, 'protomaps.layers', getLinePreset(theme)),
 		text: resolveText(options?.text, 'protomaps.text'),
 		icon: resolveIcon(options?.icon, 'protomaps.icon'),
 		colors,

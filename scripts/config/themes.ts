@@ -99,6 +99,13 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			natureGrass: '#ECEDE9',
 			naturePark: '#E6E9E5',
 		},
+		// Positron draws paths as a solid line and state borders in an even dash.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.state': [2, 2],
+		},
 	},
 	'positrino-dark': {
 		resembles: 'Dark Matter (CARTO)',
@@ -128,6 +135,13 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadSecondary: '#2A2A2A',
 			roadSecondaryBg: '#2A2A2A',
 		},
+		// Dark Matter dashes its paths and state borders evenly.
+		lines: {
+			'roads.paths': [1.5, 1.5],
+			'roads.footway': [1.5, 1.5],
+			'roads.steps': [1.5, 1.5],
+			'boundaries.state': [2, 2],
+		},
 	},
 	fnord: {
 		resembles: 'Fiord Color (OpenMapTiles)',
@@ -155,6 +169,13 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelHalo: '#1C2751C4',
 			roadSecondary: '#3C4357',
 			roadSecondaryBg: '#59678C',
+		},
+		// Fiord Color dashes its paths and state borders evenly.
+		lines: {
+			'roads.paths': [2, 2],
+			'roads.footway': [2, 2],
+			'roads.steps': [2, 2],
+			'boundaries.state': [2, 2],
 		},
 	},
 	// The Protomaps flavours draw their casings in the land's colour, so the three casing keys are
@@ -199,6 +220,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadSecondary: '#FFFFFF',
 			roadSecondaryBg: '#E0E0E0',
 		},
+		// Protomaps draws paths solid and dashes every border, the country's too.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.country': [2, 1],
+			'boundaries.state': [2, 1],
+		},
 	},
 	'protocol-dark': {
 		resembles: 'Protomaps Dark',
@@ -238,6 +267,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#1F1F1F',
 			roadSecondary: '#3D3D3D',
 			roadSecondaryBg: '#1F1F1F',
+		},
+		// As `protocol`.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.country': [2, 1],
+			'boundaries.state': [2, 1],
 		},
 	},
 	protostar: {
@@ -279,6 +316,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadSecondary: '#EBEBEB',
 			roadSecondaryBg: '#FFFFFF',
 		},
+		// As `protocol`.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.country': [2, 1],
+			'boundaries.state': [2, 1],
+		},
 	},
 	'protostar-dark': {
 		resembles: 'Protomaps Black',
@@ -315,6 +360,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#141414',
 			roadSecondary: '#292929',
 			roadSecondaryBg: '#141414',
+		},
+		// As `protocol`.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.country': [2, 1],
+			'boundaries.state': [2, 1],
 		},
 	},
 	protozoa: {
@@ -355,6 +408,14 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			roadTrunkBg: '#CCCCCC',
 			roadSecondary: '#EBEBEB',
 			roadSecondaryBg: '#CCCCCC',
+		},
+		// As `protocol`.
+		lines: {
+			'roads.paths': false,
+			'roads.footway': false,
+			'roads.steps': false,
+			'boundaries.country': [2, 1],
+			'boundaries.state': [2, 1],
 		},
 	},
 	// Not read by the importer: OpenStreetMap Carto is a CartoCSS style, so these are the colours its
@@ -409,6 +470,12 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelWater: '#4D80B3',
 			roadSecondary: '#F7FABF',
 			roadSecondaryBg: '#707D05',
+		},
+		// OpenStreetMap Carto: sparse dashes for foot and cycle paths, a closer one for steps.
+		lines: {
+			'roads.paths': [1, 3],
+			'roads.footway': [1, 3],
+			'roads.steps': [2, 1],
 		},
 	},
 	// Not read by the importer either: there is no style to read. These are the most frequent pixel
@@ -490,6 +557,13 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelPoi: '#666666',
 			labelWater: '#74AEE9',
 		},
+		// OSM Liberty: a tight dash for paths, a long one for state borders.
+		lines: {
+			'roads.paths': [1, 0.7],
+			'roads.footway': [1, 0.7],
+			'roads.steps': [1, 0.7],
+			'boundaries.state': [5, 1],
+		},
 	},
 	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map
 	// at eight places, taken on 2026-10-05. Colours that could not be told apart that way are derived.
@@ -524,6 +598,10 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			transitSubway: '#DADCE1',
 			label: '#525252',
 			labelHalo: '#FFFFFF',
+		},
+		// Mapbox Streets draws state borders long dash, short dash.
+		lines: {
+			'boundaries.state': [2, 2, 6, 2],
 		},
 	},
 	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map
@@ -611,6 +689,11 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelSymbol: '#056FC0',
 			labelHousenumber: '#5F5F70',
 			labelWater: '#1F4980',
+		},
+		// Bing Maps' trails, at the zoom they are widest read.
+		lines: {
+			'roads.paths': [2, 1.5],
+			'roads.footway': [2, 1.5],
 		},
 	},
 };

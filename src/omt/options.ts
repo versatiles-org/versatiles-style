@@ -1,3 +1,4 @@
+import { getLinePreset } from '../themes/index.js';
 import {
 	resolveColors,
 	resolveHillshade,
@@ -166,7 +167,7 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 		sky: resolveSky(options?.sky, 'omt.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,
-		layers: resolveLayerGroups(options?.layers, 'omt.layers'),
+		layers: resolveLayerGroups(options?.layers, 'omt.layers', getLinePreset(theme)),
 		text: resolveText(options?.text, 'omt.text'),
 		icon: resolveIcon(options?.icon, 'omt.icon'),
 		colors,

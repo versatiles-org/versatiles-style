@@ -28,7 +28,7 @@ import {
 } from './parts/index.js';
 // Leaf modules, not the barrels: `getPaletteColors` is a value, and taking it from `./parts/index.js`
 // — which re-exports it — closes the same runtime loop the note below this import block describes.
-import { getPaletteColors } from '../themes/index.js';
+import { getLinePreset, getPaletteColors } from '../themes/index.js';
 import { Color } from '../color/index.js';
 
 export type OsmOverlayOptions = {
@@ -59,7 +59,7 @@ export function resolveOsmOverlay(
 	const theme = resolveTheme(content.theme, defaultPalette, `${path}.theme`);
 	return {
 		theme,
-		layers: resolveLayerGroups(content.layers, `${path}.layers`),
+		layers: resolveLayerGroups(content.layers, `${path}.layers`, getLinePreset(theme)),
 		text: resolveText(content.text, `${path}.text`, labelDefaults),
 		icon: resolveIcon(content.icon, `${path}.icon`),
 		// The derived colours go *under* the caller's, so an explicit `colors.label` still wins — and an

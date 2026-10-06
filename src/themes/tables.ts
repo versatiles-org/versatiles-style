@@ -51,3 +51,55 @@ export const TABLES: Record<Exclude<Palette, 'colorful'>, string> = {
 		'F6F1E4,F6F1E4,85CBFA,FDFBF7,DBEAC7,E5EDD7,D7E9C8,E8F1CD,F1F1CD,F0F0E4,D7EADF,DBEBD0,EEEAD8,F4EDD6,E4DECC,E4DFC6,E4E8E1,C4C4C41A,EAF2EE,F9ECE5,FF5D4C4D,F9EEF81A,ECE9E7,F3F0EB26,E8E4D5,CAC7B9,FFFFFF,CCCAC7,FFCC85,E6A974,FFEEA8,E6A974,FFEEA8,E6A974,B8B4AB,B8B4AB,ECF6FC,F8E8FC,B2B2B2,B2B2B2,333333,FFFFFF,FBFBFB,646068,64646466,0E0A064D,424F5B',
 	ping: 'F9FAF7,F9FAF7,A6D5FF,FFFFFF,B0E5BD,CBEFD4,B0E5BD,CBEFD4,F9F9D5,F8F8EC,DFF2E7,CEE9CE,F9FAF7,FFF5EB,F0F0F0,ECE7CD,CEE9CE,CBCBCB1A,DDEBEF,FFE8E8,90373712,FFF8FE1A,E0E0E0,89A98E54,DFDFD8D1,C9C9C8,FFFFFF,AFAFAF,FFB47F,FF8C3A,FFC7A3,FFA05D,FFFFFF,AFAFAF,BFB9BD,BFB9BD,FAFDFF,FCF2FF,704747,704747,1A1A1A,F9FAF7,FFFFFF,056FC0,69696966,5F5F70,1F4980',
 };
+
+// How a theme draws its borders and paths where that differs from the style's defaults: `dashed` per
+// line group. See `getLinePreset` in ./index.ts, and `lines` in scripts/config/themes.ts.
+export const LINE_PRESETS: Partial<Record<Palette, Readonly<Record<string, boolean | readonly number[]>>>> = {
+	positrino: { 'roads.paths': false, 'roads.footway': false, 'roads.steps': false, 'boundaries.state': [2, 2] },
+	'positrino-dark': {
+		'roads.paths': [1.5, 1.5],
+		'roads.footway': [1.5, 1.5],
+		'roads.steps': [1.5, 1.5],
+		'boundaries.state': [2, 2],
+	},
+	fnord: { 'roads.paths': [2, 2], 'roads.footway': [2, 2], 'roads.steps': [2, 2], 'boundaries.state': [2, 2] },
+	protocol: {
+		'roads.paths': false,
+		'roads.footway': false,
+		'roads.steps': false,
+		'boundaries.country': [2, 1],
+		'boundaries.state': [2, 1],
+	},
+	'protocol-dark': {
+		'roads.paths': false,
+		'roads.footway': false,
+		'roads.steps': false,
+		'boundaries.country': [2, 1],
+		'boundaries.state': [2, 1],
+	},
+	protostar: {
+		'roads.paths': false,
+		'roads.footway': false,
+		'roads.steps': false,
+		'boundaries.country': [2, 1],
+		'boundaries.state': [2, 1],
+	},
+	'protostar-dark': {
+		'roads.paths': false,
+		'roads.footway': false,
+		'roads.steps': false,
+		'boundaries.country': [2, 1],
+		'boundaries.state': [2, 1],
+	},
+	protozoa: {
+		'roads.paths': false,
+		'roads.footway': false,
+		'roads.steps': false,
+		'boundaries.country': [2, 1],
+		'boundaries.state': [2, 1],
+	},
+	classic: { 'roads.paths': [1, 3], 'roads.footway': [1, 3], 'roads.steps': [2, 1] },
+	freedom: { 'roads.paths': [1, 0.7], 'roads.footway': [1, 0.7], 'roads.steps': [1, 0.7], 'boundaries.state': [5, 1] },
+	crate: { 'boundaries.state': [2, 2, 6, 2] },
+	ping: { 'roads.paths': [2, 1.5], 'roads.footway': [2, 1.5] },
+};

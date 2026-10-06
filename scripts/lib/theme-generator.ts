@@ -39,7 +39,7 @@
 
 import { Color } from '../../src/color/index.js';
 import { osm } from '../../src/index.js';
-import type { Palette, ResolvedColors } from '../../src/options/index.js';
+import { isDashPattern, LINE_STYLE_DEFAULTS, type Palette, type ResolvedColors } from '../../src/options/index.js';
 import { FIXES, LOOKALIKES, OVERRIDES, THEMES } from '../config/themes.js';
 import type { Adjustment, Fix, Group, LightTheme, Lookalike, LookalikeTheme, ThemeSettings } from './theme-types.js';
 
@@ -464,4 +464,31 @@ export function generate(fixes: readonly Fix[] = FIXES): {
 /** The generated colour tables of the nine derived themes, keyed by theme name. */
 export function generateThemes(): Partial<Record<Palette, ResolvedColors>> {
 	return generate().tables;
+}
+
+/**
+ * The line preset of every theme that has one, as `src/themes/tables.ts` ships it.
+ *
+ * Checked here rather than trusted: a preset is a few hand-written values, and one naming a group that
+ * is not a line, or a pattern MapLibre cannot draw, would otherwise surface as a wrong map. A value
+ * that only repeats the style's default is refused too — it would read, in review, as a setting.
+ */
+export function linePresets(): Partial<Record<Palette, Record<string, boolean | number[]>>> {
+	const out: Partial<Record<Palette, Record<string, boolean | number[]>>> = {};
+	for (const [name, { lines }] of Object.entries(LOOKALIKES)) {
+		if (!lines) continue;
+		const preset: Record<string, boolean | number[]> = {};
+		for (const [group, dashed] of Object.entries(lines)) {
+			if (!(group in LINE_STYLE_DEFAULTS)) throw new Error(`lookalike "${name}": ${group} is not a line group`);
+			if (typeof dashed !== 'boolean' && !isDashPattern(dashed)) {
+				throw new Error(`lookalike "${name}": ${group} is neither true, false nor a dash pattern`);
+			}
+			if (dashed === LINE_STYLE_DEFAULTS[group]) {
+				throw new Error(`lookalike "${name}": ${group} is ${String(dashed)} by default — drop it`);
+			}
+			preset[group] = dashed;
+		}
+		if (Object.keys(preset).length > 0) out[name as Palette] = preset;
+	}
+	return out;
 }

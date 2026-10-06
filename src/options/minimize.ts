@@ -1,4 +1,5 @@
 import { resolveOsm, type OsmOptions } from './osm.js';
+import { getLinePreset } from '../themes/index.js';
 import type { OsmOverlayOptions } from './osm-overlay.js';
 import { resolveSatellite, type SatelliteOptions } from './satellite.js';
 import {
@@ -16,7 +17,8 @@ import {
 	TEXT_GROUPS,
 	TEXT_TOPICS,
 	topicOf,
-	LINE_STYLE_DEFAULTS,
+	lineDefaults,
+	type LinePreset,
 	type LayerGroupOptions,
 	type ResolvedLineStyle,
 	type Palette,
@@ -138,7 +140,7 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	const recolor = input.recolor;
 	const tint = minimizeMix(recolor, 'tint');
 	const blend = minimizeMix(recolor, 'blend');
-	const layers = minimizeLayers(input.layers, parts.layerGroups);
+	const layers = minimizeLayers(input.layers, theme, parts.layerGroups);
 	const urls = parts.resolveUrls ? minimizeUrls(input.urls, parts.resolveUrls) : undefined;
 
 	const remaining = {
@@ -259,10 +261,17 @@ type GroupTree = { [key: string]: GroupScalar | GroupTree };
  * `drawn` limits this to the groups that draw anything: a group the satellite overlay drops neither
  * blocks a collapse nor is written.
  */
-function minimizeLayers(layers: unknown, drawn?: LayerGroupMap): unknown {
+function minimizeLayers(layers: unknown, theme: ResolvedTheme, drawn?: LayerGroupMap): unknown {
 	if (layers === undefined) return undefined;
-	const { icons: _alias, ...resolved } = resolveLayerGroups(layers as LayerGroupOptions) as unknown as ResolvedTree;
-	const { groups, dashes } = splitLineStyles(resolved, drawn);
+	// under the theme's own way of drawing its lines: a dash is only worth writing where it differs
+	// from what the theme would draw anyway
+	const preset = getLinePreset(theme);
+	const { icons: _alias, ...resolved } = resolveLayerGroups(
+		layers as LayerGroupOptions,
+		undefined,
+		preset
+	) as unknown as ResolvedTree;
+	const { groups, dashes } = splitLineStyles(resolved, lineDefaults(preset), drawn);
 	const collapsed = collapseGroups(groups, drawn);
 	const minimal =
 		typeof collapsed !== 'object' ? (collapsed === true ? undefined : collapsed) : withoutVisible(collapsed);
@@ -273,7 +282,7 @@ type ResolvedTree = { [key: string]: GroupScalar | ResolvedLineStyle | ResolvedT
 type Dash = { path: string[]; dashed: boolean | number[] };
 const isLineStyle = (node: unknown): node is ResolvedLineStyle =>
 	typeof node === 'object' && node !== null && 'dashed' in node && 'opacity' in node;
-const sameDash = (a: boolean | number[], b: boolean | number[]): boolean =>
+const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]): boolean =>
 	Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((v, i) => v === b[i]) : a === b;
 
 /**
@@ -285,6 +294,7 @@ const sameDash = (a: boolean | number[], b: boolean | number[]): boolean =>
  */
 function splitLineStyles(
 	node: ResolvedTree,
+	defaults: LinePreset,
 	drawn: LayerGroupMap | undefined,
 	path: string[] = []
 ): { groups: GroupTree; dashes: Dash[] } {
@@ -296,11 +306,11 @@ function splitLineStyles(
 		if (isLineStyle(child)) {
 			groups[key] = child.opacity;
 			const isDrawn = drawn === undefined || drawnHere !== undefined;
-			if (isDrawn && child.opacity !== false && !sameDash(child.dashed, LINE_STYLE_DEFAULTS[here.join('.')])) {
+			if (isDrawn && child.opacity !== false && !sameDash(child.dashed, defaults[here.join('.')])) {
 				dashes.push({ path: here, dashed: child.dashed });
 			}
 		} else if (typeof child === 'object') {
-			const below = splitLineStyles(child, Array.isArray(drawnHere) ? undefined : drawnHere, here);
+			const below = splitLineStyles(child, defaults, Array.isArray(drawnHere) ? undefined : drawnHere, here);
 			groups[key] = below.groups;
 			dashes.push(...below.dashes);
 		} else groups[key] = child;

@@ -99,7 +99,18 @@ export interface Lookalike {
 	landHue?: boolean;
 	/** The colours read off the other map, written out as they are. */
 	colors: Partial<ResolvedColors>;
+	/**
+	 * How the other map draws its borders and paths, where that differs from this style's defaults:
+	 * `dashed` per line group — `true`, `false`, or its dash pattern in multiples of the line width.
+	 * Shipped with the theme as its line preset (`getLinePreset`), so a caller's own `layers` still
+	 * wins. Lines only: a preset is not a way to hide a group or to restyle anything else.
+	 */
+	lines?: Partial<Record<LineGroup, boolean | number[]>>;
 }
+
+/** The layer groups that are a line and take a `LineStyle`, by their path in `layers`. */
+export type LineGroup =
+	'roads.paths' | 'roads.footway' | 'roads.steps' | 'boundaries.country' | 'boundaries.state' | 'boundaries.disputed';
 
 // ── fixes ─────────────────────────────────────────────────────────────────────
 //
