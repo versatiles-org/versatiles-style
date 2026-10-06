@@ -89,10 +89,10 @@ ${rows.join('\n')}
 };
 
 // How a theme draws its borders and paths where that differs from the style's defaults, per line group:
-// what it sets of \`dashed\`, \`width\` and \`halo\`. See \`getLinePreset\` in ./index.ts, and \`lines\` in
+// what it sets of \`dashed\` and \`width\`. See \`getLinePreset\` in ./index.ts, and \`lines\` in
 // scripts/config/themes.ts.
 export const LINE_PRESETS: Partial<
-	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number; halo?: boolean }>>>
+	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number }>>>
 > = ${presetsSource(presets)};
 `;
 }

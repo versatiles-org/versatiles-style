@@ -101,14 +101,12 @@ export interface Lookalike {
 	colors: Partial<ResolvedColors>;
 	/**
 	 * How the other map draws its borders and paths, where that differs from this style's defaults, per
-	 * line group: `dashed` (`true`, `false`, or its dash pattern in multiples of the line width),
-	 * `width` (a multiple of ours) and, for a border, `halo`. A bare value is `dashed` alone.
+	 * line group: `dashed` (`true`, `false`, or its dash pattern in multiples of the line width) and
+	 * `width` (a multiple of ours). A bare value is `dashed` alone.
 	 * Shipped with the theme as its line preset (`getLinePreset`), so a caller's own `layers` still
 	 * wins. Lines only: a preset is not a way to hide a group or to restyle anything else.
 	 */
-	lines?: Partial<
-		Record<LineGroup, boolean | number[] | { dashed?: boolean | number[]; width?: number; halo?: boolean }>
-	>;
+	lines?: Partial<Record<LineGroup, boolean | number[] | { dashed?: boolean | number[]; width?: number }>>;
 }
 
 /** The layer groups that are a line and take a `LineStyle`, by their path in `layers`. */

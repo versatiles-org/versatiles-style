@@ -287,16 +287,7 @@ describe('layer IDs do not depend on colour values', () => {
 	});
 
 	it('keeps the same IDs in every shipped theme', () => {
-		// A theme is its colours and, for a lookalike, how it draws its borders and paths — which may
-		// leave a border without its halo, and so without that one layer. With every halo asked for,
-		// the IDs are the same whatever the theme.
-		const halos = { boundaries: { country: { halo: true }, state: { halo: true }, disputed: { halo: true } } };
-		for (const palette of osm.palettes) {
-			expect(idsOf(osm({ theme: palette, layers: halos })), palette).toStrictEqual(defaultIds);
-		}
-		expect(idsOf(osm({ theme: 'ping' }))).toStrictEqual(
-			defaultIds.filter((id) => id !== 'boundary-state:outline' && id !== 'boundary-country-disputed:outline')
-		);
+		for (const palette of osm.palettes) expect(idsOf(osm({ theme: palette })), palette).toStrictEqual(defaultIds);
 	});
 
 	it('keeps the same IDs for arbitrary user colours', () => {

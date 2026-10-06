@@ -107,10 +107,11 @@ describe.each(BUILDERS)('line styles in %s', (_name, build) => {
 	});
 });
 
-// `width` multiplies a line's width at every zoom, and `halo` says whether a border has its casing.
+// `width` multiplies a line's width at every zoom.
 // The width is applied by group in the shared layer pass (`applyLineWidth`), so every layer of the
-// group — the line, a halo, a bridge deck, the tunnel variants — grows together, in every schema.
-describe.each(BUILDERS)('line widths and halos in %s', (_name, build) => {
+// group — the line, a border's casing, a bridge deck, the tunnel variants — grows together, in every
+// schema.
+describe.each(BUILDERS)('line widths in %s', (_name, build) => {
 	const widthOf = (style: StyleSpecification, id: string) => layerOf(style, id)?.paint?.['line-width'];
 	/** The stop values of a width ramp, without their zooms. */
 	const stops = (width: unknown) => (width as unknown[]).slice(3).filter((_, index) => index % 2 === 1) as number[];
@@ -121,7 +122,7 @@ describe.each(BUILDERS)('line widths and halos in %s', (_name, build) => {
 		);
 	});
 
-	it('scales a border with its halo, and leaves the others alone', () => {
+	it('scales a border with its casing, and leaves the others alone', () => {
 		const [plain, half] = [build(), build({ boundaries: { state: { width: 0.5 } } })];
 		for (const id of ['boundary-state', 'boundary-state:outline']) {
 			expect(stops(widthOf(half, id)), id).toStrictEqual(stops(widthOf(plain, id)).map((w) => w * 0.5));
@@ -149,15 +150,6 @@ describe.each(BUILDERS)('line widths and halos in %s', (_name, build) => {
 
 	it('leaves the dash pattern alone, which is in multiples of the width', () => {
 		expect(dashOf(build({ boundaries: { state: { width: 0.5 } } }), 'boundary-state')).toStrictEqual([3, 1, 1, 1]);
-	});
-
-	it('draws a border without its halo when asked, and the others with theirs', () => {
-		const style = build({ boundaries: { state: { halo: false } } });
-		expect(ids(style, 'boundary-state')).toStrictEqual(['boundary-state']);
-		expect(ids(style, 'boundary-country')).toContain('boundary-country:outline');
-		expect(ids(style, 'boundary-country')).toContain('boundary-country-disputed:outline');
-		const none = build({ boundaries: { country: { halo: false }, disputed: { halo: false }, state: { halo: false } } });
-		expect(ids(none, 'boundary').filter((id) => id.endsWith(':outline'))).toStrictEqual([]);
 	});
 });
 
@@ -205,6 +197,23 @@ describe('line styles: the satellite overlay', () => {
 		]);
 	});
 
+	it('scales a width over imagery as on the basemap, and compensates a dash by its pattern alone', () => {
+		const opacity = (style: StyleSpecification, id: string) => layerOf(style, id)?.paint?.['line-opacity'];
+		const width = (style: StyleSpecification, id: string) => layerOf(style, id)?.paint?.['line-width'];
+		const plain = satellite();
+		const half = satellite({
+			osmOverlay: { layers: { boundaries: { disputed: { width: 0.5 } }, roads: { footway: { width: 0.5 } } } },
+		});
+		const stops = (value: unknown) => (value as unknown[]).slice(3).filter((_, index) => index % 2 === 1) as number[];
+		expect(stops(width(half, 'way-footway'))).toStrictEqual(stops(width(plain, 'way-footway')).map((w) => w * 0.5));
+		expect(stops(width(half, 'boundary-country-disputed'))).toStrictEqual(
+			stops(width(plain, 'boundary-country-disputed')).map((w) => w * 0.5)
+		);
+		// a thinner line is meant to weigh less; only what the dash leaves out is given back
+		expect(opacity(half, 'way-footway')).toStrictEqual(opacity(plain, 'way-footway'));
+		expect(opacity(half, 'boundary-country-disputed')).toStrictEqual(opacity(plain, 'boundary-country-disputed'));
+	});
+
 	it('drops the casing of the disputed border with the others', () => {
 		expect(ids(satellite(), 'boundary')).not.toContain('boundary-country-disputed:outline');
 	});
@@ -249,12 +258,12 @@ describe('line styles: minimizeOptions', () => {
 		).toStrictEqual({ layers: { roads: { streets: { service: false }, footway: { dashed: [3, 1] } }, labels: false } });
 	});
 
-	it('writes a width and a missing halo, and neither where they are the defaults', () => {
-		expect(minimal({ layers: { boundaries: { state: { width: 0.5, halo: false } } } })).toStrictEqual({
-			layers: { boundaries: { state: { width: 0.5, halo: false } } },
+	it('writes a width, and none where it is the default', () => {
+		expect(minimal({ layers: { boundaries: { state: { width: 0.5 } } } })).toStrictEqual({
+			layers: { boundaries: { state: { width: 0.5 } } },
 		});
 		expect(
-			minimal({ layers: { boundaries: { state: { width: 1, halo: true } }, roads: { footway: { width: 1 } } } })
+			minimal({ layers: { boundaries: { state: { width: 1 } }, roads: { footway: { width: 1 } } } })
 		).toStrictEqual({});
 		expect(minimal({ layers: { roads: 0.5 } })).toStrictEqual({ layers: { roads: 0.5 } });
 		expect(
@@ -265,9 +274,7 @@ describe('line styles: minimizeOptions', () => {
 	});
 
 	it('says nothing about the dash of a hidden line', () => {
-		expect(
-			minimal({ layers: { boundaries: { state: { opacity: false, dashed: false, width: 1, halo: true } } } })
-		).toStrictEqual({
+		expect(minimal({ layers: { boundaries: { state: { opacity: false, dashed: false, width: 1 } } } })).toStrictEqual({
 			layers: { boundaries: { state: false } },
 		});
 	});
@@ -279,7 +286,7 @@ describe('line styles: minimizeOptions', () => {
 		{ layers: { roads: { steps: { opacity: 0.2, dashed: false } }, boundaries: { country: { dashed: [1, 1] } } } },
 		{ layers: { roads: 0.3, boundaries: { disputed: { opacity: 0.7, dashed: false } } } },
 		{
-			layers: { boundaries: { state: { width: 0.5, halo: false, dashed: [6, 3] } }, roads: { paths: { width: 1.5 } } },
+			layers: { boundaries: { state: { width: 0.5, dashed: [6, 3] } }, roads: { paths: { width: 1.5 } } },
 		},
 	])('resolves to the same thing after minimising: %j', (options) => {
 		const resolved = osm.resolveOptions(options);
@@ -304,15 +311,12 @@ describe('line presets of the themes', () => {
 			for (const [group, entry] of Object.entries(preset ?? {})) {
 				expect(Object.keys(LINE_STYLE_DEFAULTS), `${theme} ${group}`).toContain(group);
 				expect(Object.keys(entry).length, `${theme} ${group}`).toBeGreaterThan(0);
-				const { dashed, width, halo } = entry;
+				const { dashed, width } = entry;
 				if (dashed !== undefined) {
 					expect(typeof dashed === 'boolean' || isDashPattern(dashed), `${theme} ${group}`).toBe(true);
 					expect(dashed, `${theme} ${group}`).not.toBe(usual[group].dashed);
 				}
 				if (width !== undefined) expect(width > 0 && width !== 1, `${theme} ${group} width`).toBe(true);
-				// a halo is a border's: a path has none to set, and a border has one unless told otherwise
-				if (halo !== undefined)
-					expect([group.startsWith('boundaries.'), halo], `${theme} ${group}`).toStrictEqual([true, false]);
 			}
 		}
 		expect(getLinePreset('positrino')).toBeDefined();
@@ -338,7 +342,6 @@ describe('line presets of the themes', () => {
 			opacity: 0.5,
 			dashed: [2, 2],
 			width: 1,
-			halo: true,
 		});
 		// …and gives way to an explicit one
 		expect(
@@ -353,32 +356,19 @@ describe('line presets of the themes', () => {
 		).toStrictEqual([1.5, 0.75]);
 	});
 
-	it('carries a width and a missing halo too, merged with the caller field by field', () => {
+	it('carries a width too, merged with the caller field by field', () => {
 		const state = (layers?: LayerGroupOptions) => osm.resolveOptions({ theme: 'ping', layers }).layers.boundaries.state;
-		expect(state()).toStrictEqual({ opacity: true, dashed: [6, 3], width: 0.5, halo: false });
+		expect(state()).toStrictEqual({ opacity: true, dashed: [6, 3], width: 0.5 });
 		// each field the caller sets replaces the theme's; the others stay the theme's
-		expect(state({ boundaries: { state: { width: 1 } } })).toStrictEqual({
+		expect(state({ boundaries: { state: { width: 1 } } })).toStrictEqual({ opacity: true, dashed: [6, 3], width: 1 });
+		expect(state({ boundaries: { state: { dashed: false } } })).toStrictEqual({
 			opacity: true,
-			dashed: [6, 3],
-			width: 1,
-			halo: false,
-		});
-		expect(state({ boundaries: { state: { halo: true } } })).toStrictEqual({
-			opacity: true,
-			dashed: [6, 3],
+			dashed: false,
 			width: 0.5,
-			halo: true,
 		});
-		expect(state({ boundaries: { state: 0.4 } })).toStrictEqual({
-			opacity: 0.4,
-			dashed: [6, 3],
-			width: 0.5,
-			halo: false,
-		});
-		const style = osm({ theme: 'ping' });
-		expect(ids(style, 'boundary-state')).toStrictEqual(['boundary-state']);
-		expect(ids(style, 'boundary-country')).toContain('boundary-country:outline');
-		expect(ids(style, 'boundary-country')).not.toContain('boundary-country-disputed:outline');
+		expect(state({ boundaries: { state: 0.4 } })).toStrictEqual({ opacity: 0.4, dashed: [6, 3], width: 0.5 });
+		// a border keeps its casing whatever the theme
+		expect(ids(osm({ theme: 'ping' }), 'boundary-state')).toStrictEqual(['boundary-state:outline', 'boundary-state']);
 	});
 
 	it('hands every caller a pattern of its own', () => {
@@ -401,15 +391,15 @@ describe('line presets of the themes', () => {
 			expect(minimal({ theme })).toStrictEqual(theme === 'colorful' ? {} : { theme });
 		});
 
-		it("writes a width and a halo that differ from the theme's", () => {
-			// half width and no halo are ping's own way with a state border
-			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 0.5, halo: false } } } })).toStrictEqual({
+		it("writes a width that differs from the theme's", () => {
+			// half width is ping's own way with a state border
+			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 0.5 } } } })).toStrictEqual({
 				theme: 'ping',
 			});
-			// the style's defaults are not, on this theme
-			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 1, halo: true } } } })).toStrictEqual({
+			// the style's default is not, on this theme
+			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 1 } } } })).toStrictEqual({
 				theme: 'ping',
-				layers: { boundaries: { state: { width: 1, halo: true } } },
+				layers: { boundaries: { state: { width: 1 } } },
 			});
 		});
 

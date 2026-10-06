@@ -723,17 +723,17 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 			labelWater: '#1F4980',
 		},
 		// Bing Maps' borders, as its tiles give them around Berlin and its style draws them at z10–z13.
-		// A state border is a 1–1.5px line in 6px dashes and 3px gaps, with nothing beneath it: half our
-		// width, on no halo, and — a pattern being in multiples of the width — its own `[6, 3]`. A
-		// country border is a 1–1.5px line too, on a pale band where we have a halo; a disputed one is
-		// an even dash of about 10px on a 1.8px line with no band. Its trails are read at the zoom they
-		// are widest.
+		// A state border is a 1–1.5px line in 6px dashes and 3px gaps: half our width, and — a pattern
+		// being in multiples of the width — its own `[6, 3]`. A country border is a 1–1.5px line too, and
+		// a disputed one an even dash of about 10px on a 1.8px line. Its state and disputed borders have
+		// nothing beneath them, where ours keep their casing. Its trails are read at the zoom they are
+		// widest.
 		lines: {
 			'roads.paths': [2, 1.5],
 			'roads.footway': [2, 1.5],
 			'boundaries.country': { width: 0.3 },
-			'boundaries.state': { dashed: [6, 3], width: 0.5, halo: false },
-			'boundaries.disputed': { dashed: [5.5, 5.5], width: 0.45, halo: false },
+			'boundaries.state': { dashed: [6, 3], width: 0.5 },
+			'boundaries.disputed': { dashed: [5.5, 5.5], width: 0.45 },
 		},
 	},
 };

@@ -279,9 +279,9 @@ function minimizeLayers(layers: unknown, theme: ResolvedTheme, drawn?: LayerGrou
 
 type ResolvedTree = { [key: string]: GroupScalar | ResolvedLineStyle | ResolvedTree };
 /** What a line group sets beyond its visibility, where that is not what it would be anyway. */
-type LineDiff = { dashed?: boolean | number[]; width?: number; halo?: boolean };
+type LineDiff = { dashed?: boolean | number[]; width?: number };
 type Styled = { path: string[]; diff: LineDiff };
-const isLineStyle = (node: unknown): node is ResolvedLineStyle & { halo?: boolean } =>
+const isLineStyle = (node: unknown): node is ResolvedLineStyle =>
 	typeof node === 'object' && node !== null && 'dashed' in node && 'opacity' in node;
 const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]): boolean =>
 	Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((v, i) => v === b[i]) : a === b;
@@ -290,7 +290,7 @@ const sameDash = (a: boolean | readonly number[], b: boolean | readonly number[]
  * The resolved tree as the two things it holds. `groups` is what it was before a line group could be
  * styled — every leaf its visibility — so the collapsing below works on it unchanged, and `layers`
  * without a line style minimises to exactly what it always did. `styled` lists the line groups that
- * are drawn differently from their default — another dash, another width, no halo — each with only
+ * are drawn differently from their default — another dash, another width — each with only
  * what differs; one that is hidden, or that the overlay does not draw, has nothing to say about how it
  * is drawn.
  */
@@ -313,7 +313,6 @@ function splitLineStyles(
 			const usual = defaults[here.join('.')];
 			if (!sameDash(child.dashed, usual.dashed)) diff.dashed = child.dashed;
 			if (child.width !== usual.width) diff.width = child.width;
-			if (child.halo !== undefined && child.halo !== usual.halo) diff.halo = child.halo;
 			if (Object.keys(diff).length > 0) styled.push({ path: here, diff });
 		} else if (typeof child === 'object') {
 			const below = splitLineStyles(

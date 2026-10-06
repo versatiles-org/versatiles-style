@@ -53,10 +53,10 @@ export const TABLES: Record<Exclude<Palette, 'colorful'>, string> = {
 };
 
 // How a theme draws its borders and paths where that differs from the style's defaults, per line group:
-// what it sets of `dashed`, `width` and `halo`. See `getLinePreset` in ./index.ts, and `lines` in
+// what it sets of `dashed` and `width`. See `getLinePreset` in ./index.ts, and `lines` in
 // scripts/config/themes.ts.
 export const LINE_PRESETS: Partial<
-	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number; halo?: boolean }>>>
+	Record<Palette, Readonly<Record<string, { dashed?: boolean | readonly number[]; width?: number }>>>
 > = {
 	positrino: {
 		'roads.paths': { dashed: false },
@@ -133,7 +133,7 @@ export const LINE_PRESETS: Partial<
 		'roads.paths': { dashed: [2, 1.5] },
 		'roads.footway': { dashed: [2, 1.5] },
 		'boundaries.country': { width: 0.3 },
-		'boundaries.state': { dashed: [6, 3], width: 0.5, halo: false },
-		'boundaries.disputed': { dashed: [5.5, 5.5], width: 0.45, halo: false },
+		'boundaries.state': { dashed: [6, 3], width: 0.5 },
+		'boundaries.disputed': { dashed: [5.5, 5.5], width: 0.45 },
 	},
 };

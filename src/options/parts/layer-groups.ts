@@ -18,22 +18,13 @@ export type LineStyle = {
 	dashed?: boolean | number[];
 	/**
 	 * Multiplies the line's width, at every zoom: `0.5` draws it half as wide, `2` twice. The dash
-	 * follows, since a pattern is in multiples of the width, and so does a border's halo. Default `1`.
+	 * follows, since a pattern is in multiples of the width, and so does the casing under a border.
+	 * Default `1`.
 	 */
 	width?: number;
 };
 
-/** A {@link LineStyle} for a border, which has a halo: `boundaries.country`, `.state` and `.disputed`. */
-export type BorderStyle = LineStyle & {
-	/**
-	 * Whether the border is drawn on a halo — a wider line in the background colour beneath it, which
-	 * keeps it legible over whatever it crosses. Default `true`.
-	 */
-	halo?: boolean;
-};
-
 export type ResolvedLineStyle = Required<LineStyle>;
-export type ResolvedBorderStyle = Required<BorderStyle>;
 
 /**
  * The groups that take a `LineStyle`, by their path in `layers`, and whether each is dashed unless
@@ -52,8 +43,6 @@ export const LINE_STYLE_DEFAULTS: Readonly<Record<string, boolean>> = Object.fre
 export type LineDefault = {
 	readonly dashed?: boolean | readonly number[];
 	readonly width?: number;
-	/** Borders only. */
-	readonly halo?: boolean;
 };
 
 /**
@@ -65,17 +54,11 @@ export type LinePreset = Readonly<Record<string, LineDefault>>;
 
 /**
  * How every line group is drawn under a preset unless the caller says: dashed or not as
- * {@link LINE_STYLE_DEFAULTS} has it, at its own width, a border on its halo — with the preset's own
- * values on top.
+ * {@link LINE_STYLE_DEFAULTS} has it, at its own width — with the preset's own values on top.
  */
-export function lineDefaults(
-	preset?: LinePreset
-): Readonly<Record<string, Required<Omit<LineDefault, 'halo'>> & LineDefault>> {
+export function lineDefaults(preset?: LinePreset): Readonly<Record<string, Required<LineDefault>>> {
 	return Object.fromEntries(
-		Object.entries(LINE_STYLE_DEFAULTS).map(([group, dashed]) => [
-			group,
-			{ dashed, width: 1, ...(group.startsWith('boundaries.') && { halo: true }), ...preset?.[group] },
-		])
+		Object.entries(LINE_STYLE_DEFAULTS).map(([group, dashed]) => [group, { dashed, width: 1, ...preset?.[group] }])
 	);
 }
 
@@ -139,9 +122,9 @@ export type LayerGroupOptions = {
 		| boolean
 		| number
 		| {
-				country?: boolean | number | BorderStyle;
-				state?: boolean | number | BorderStyle;
-				disputed?: boolean | number | BorderStyle;
+				country?: boolean | number | LineStyle;
+				state?: boolean | number | LineStyle;
+				disputed?: boolean | number | LineStyle;
 		  };
 	markings?: boolean | number;
 	labels?:
@@ -207,9 +190,9 @@ export type ResolvedLayerGroups = {
 	airport: boolean | number;
 	pois: boolean | number;
 	boundaries: {
-		country: ResolvedBorderStyle;
-		state: ResolvedBorderStyle;
-		disputed: ResolvedBorderStyle;
+		country: ResolvedLineStyle;
+		state: ResolvedLineStyle;
+		disputed: ResolvedLineStyle;
 	};
 	markings: boolean | number;
 	labels: {
@@ -280,14 +263,15 @@ function lineLeaf(
 	opt: unknown,
 	inherited: Scalar | undefined,
 	path: string,
-	byDefault: Required<Omit<LineDefault, 'halo'>>
+	byDefault: Required<LineDefault>
 ): ResolvedLineStyle {
 	// copied: a theme's pattern is shared by every style of that theme, and a resolved option is the caller's
 	const dashedByDefault = typeof byDefault.dashed === 'boolean' ? byDefault.dashed : [...byDefault.dashed];
 	if (opt === null || typeof opt !== 'object' || Array.isArray(opt)) {
 		return { opacity: leaf(opt, inherited, true, path), dashed: dashedByDefault, width: byDefault.width };
 	}
-	const style = opt as BorderStyle;
+	const style = opt as LineStyle;
+	checkKeys(style, { opacity: true, dashed: true, width: true }, path);
 	let dashed: boolean | number[] = dashedByDefault;
 	if (typeof style.dashed === 'boolean') dashed = style.dashed;
 	else if (isDashPattern(style.dashed)) dashed = [...style.dashed];
@@ -308,38 +292,6 @@ function lineLeaf(
 		});
 	}
 	return { opacity: leaf(style.opacity, inherited, true, `${path}.opacity`), dashed, width };
-}
-
-/** A path: a line style with no halo to set. */
-function pathLeaf(
-	opt: unknown,
-	inherited: Scalar | undefined,
-	path: string,
-	byDefault: Required<Omit<LineDefault, 'halo'>>
-): ResolvedLineStyle {
-	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
-		checkKeys(opt as LineStyle, { opacity: true, dashed: true, width: true }, path);
-	}
-	return lineLeaf(opt, inherited, path, byDefault);
-}
-
-/** A border: a line style, and whether it has its halo. */
-function borderLeaf(
-	opt: unknown,
-	inherited: Scalar | undefined,
-	path: string,
-	byDefault: Required<Omit<LineDefault, 'halo'>> & LineDefault
-): ResolvedBorderStyle {
-	let halo = byDefault.halo ?? true;
-	if (opt !== null && typeof opt === 'object' && !Array.isArray(opt)) {
-		const style = opt as BorderStyle;
-		checkKeys(style, { opacity: true, dashed: true, width: true, halo: true }, path);
-		if (typeof style.halo === 'boolean') halo = style.halo;
-		else if (style.halo != null) {
-			reportIssue({ path: `${path}.halo`, message: `expected true or false, got ${describeValue(style.halo)}` });
-		}
-	}
-	return { ...lineLeaf(opt, inherited, path, byDefault), halo };
 }
 
 // Resolve a single-level group whose children all default to visible. A scalar `opt` cascades to
@@ -451,8 +403,8 @@ export function resolveLayerGroups(
 	const boundariesInherited = scalarOf(o.boundaries);
 	const boundaries = o.boundaries && typeof o.boundaries === 'object' ? o.boundaries : undefined;
 	checkKeys(o.boundaries, { country: true, state: true, disputed: true }, `${path}.boundaries`);
-	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedBorderStyle =>
-		borderLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, drawnAs[`boundaries.${key}`]);
+	const boundary = (key: 'country' | 'state' | 'disputed'): ResolvedLineStyle =>
+		lineLeaf(boundaries?.[key], boundariesInherited, `${path}.boundaries.${key}`, drawnAs[`boundaries.${key}`]);
 
 	return {
 		land: resolveFlat(
@@ -480,9 +432,9 @@ export function resolveLayerGroups(
 				track: leaf(streets?.track, streetsInherited, true, `${path}.roads.streets.track`),
 				bus: leaf(streets?.bus, streetsInherited, true, `${path}.roads.streets.bus`),
 			},
-			paths: pathLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, drawnAs['roads.paths']),
-			footway: pathLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, drawnAs['roads.footway']),
-			steps: pathLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, drawnAs['roads.steps']),
+			paths: lineLeaf(roads?.paths, roadsInherited, `${path}.roads.paths`, drawnAs['roads.paths']),
+			footway: lineLeaf(roads?.footway, roadsInherited, `${path}.roads.footway`, drawnAs['roads.footway']),
+			steps: lineLeaf(roads?.steps, roadsInherited, `${path}.roads.steps`, drawnAs['roads.steps']),
 		},
 		transit: {
 			rail: leaf(transit?.rail, transitInherited, true, `${path}.transit.rail`),
