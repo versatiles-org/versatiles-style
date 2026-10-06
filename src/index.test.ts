@@ -78,9 +78,9 @@ describe('exports', () => {
 			'classic',
 			'googol',
 			'freedom',
-			'crate',
-			'mosaic',
-			'ping',
+			'macbob',
+			'mactaylor',
+			'bingo',
 		]);
 		expect(typeof lib.osm.colors).toBe('function');
 		expect(typeof lib.osm.layerGroups).toBe('object');

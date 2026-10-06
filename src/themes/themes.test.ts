@@ -34,9 +34,9 @@ describe('PALETTES', () => {
 			'classic',
 			'googol',
 			'freedom',
-			'crate',
-			'mosaic',
-			'ping',
+			'macbob',
+			'mactaylor',
+			'bingo',
 		]);
 	});
 
@@ -50,9 +50,9 @@ describe('PALETTES', () => {
 			'classic',
 			'googol',
 			'freedom',
-			'crate',
-			'mosaic',
-			'ping',
+			'macbob',
+			'mactaylor',
+			'bingo',
 		]);
 		expect(PALETTES.filter((palette) => isDarkPalette(palette))).toEqual([
 			...PAIRED.map((palette) => `${palette}-dark`),

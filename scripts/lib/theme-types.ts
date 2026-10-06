@@ -73,9 +73,9 @@ export type LookalikeTheme =
 	| 'classic'
 	| 'googol'
 	| 'freedom'
-	| 'crate'
-	| 'mosaic'
-	| 'ping';
+	| 'macbob'
+	| 'mactaylor'
+	| 'bingo';
 
 export interface Lookalike {
 	/** The map it resembles. For the documentation only — never part of the theme's name. */

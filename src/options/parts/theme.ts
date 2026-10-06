@@ -31,9 +31,9 @@ export type Palette =
 	| 'classic'
 	| 'googol'
 	| 'freedom'
-	| 'crate'
-	| 'mosaic'
-	| 'ping';
+	| 'macbob'
+	| 'mactaylor'
+	| 'bingo';
 
 export type ThemeOptions = Palette;
 

@@ -236,9 +236,9 @@ resolves to a `boolean | number`. A UI that reads the resolved tree to show a sw
 group reads `.opacity` for these.
 
 A lookalike theme may draw its lines its own way — `positrino` has solid, wider paths, `protocol` dashes
-its country borders, `ping` draws its state borders half as wide — because the map it resembles does.
+its country borders, `bingo` draws its state borders half as wide — because the map it resembles does.
 That is the theme's default for `dashed` and `width`, between the style's default above and your own
-`layers`, and it is merged per field: on `ping`, `boundaries: { state: 0.5 }` keeps the theme's dash and
+`layers`, and it is merged per field: on `bingo`, `boundaries: { state: 0.5 }` keeps the theme's dash and
 width, and `boundaries: { state: { width: 1 } }` replaces the width and keeps the dash.
 `resolveOptions({ theme })` shows what a theme draws; `minimizeOptions` writes a `dashed` or a `width`
 only where it differs from the theme's own.
@@ -471,7 +471,7 @@ type HillshadeOptions =
 
 Each palette is a light theme and has a dark theme of its own, named with a `-dark` suffix (`colorful-dark`, …). To follow the system setting, pick between them with [`isDarkMode()`](#isdarkmode-boolean).
 
-The names after those ten are lookalikes: themes whose colour scheme resembles another project's map — `positrino` and `positrino-dark` resemble Positron and Dark Matter, `fnord` resembles Fiord Color, and `protocol`, `protostar` and `protozoa` resemble the Protomaps flavours (Light and Dark, White and Black, Grayscale), `classic` resembles OpenStreetMap Carto, `googol` resembles Google Maps, `freedom` OSM Liberty, `crate` Mapbox Streets, `mosaic` MapTiler Streets and `ping` Bing Maps. A lookalike has a dark theme only where that map has one, so `fnord` is a dark theme with no light partner and no `-dark` suffix.
+The names after those ten are lookalikes: themes whose colour scheme resembles another project's map — `positrino` and `positrino-dark` resemble Positron and Dark Matter, `fnord` resembles Fiord Color, and `protocol`, `protostar` and `protozoa` resemble the Protomaps flavours (Light and Dark, White and Black, Grayscale), `classic` resembles OpenStreetMap Carto, `googol` resembles Google Maps, `freedom` OSM Liberty, `macbob` Mapbox Streets, `mactaylor` MapTiler Streets and `bingo` Bing Maps. A lookalike has a dark theme only where that map has one, so `fnord` is a dark theme with no light partner and no `-dark` suffix.
 
 ```ts
 type Palette =
@@ -496,9 +496,9 @@ type Palette =
   | 'classic'
   | 'googol'
   | 'freedom'
-  | 'crate'
-  | 'mosaic'
-  | 'ping';
+  | 'macbob'
+  | 'mactaylor'
+  | 'bingo';
 
 type OsmOverlayOptions = {
   theme?: ThemeOptions; // = Palette, the name this option is declared with; default: 'colorful'

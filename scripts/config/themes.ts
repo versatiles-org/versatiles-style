@@ -583,7 +583,7 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	//  - `labelPoi`: Mapbox colours its POI labels by category. One key cannot, so it is derived.
 	// `natureRock` and `areaResidential` are not drawn by that style at these zooms; they are the bare
 	// ground of a screenshot and the land.
-	crate: {
+	macbob: {
 		resembles: 'Mapbox Streets',
 		dark: false,
 		land: '#ECE7E4',
@@ -639,7 +639,7 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	},
 	// Measured like `googol`: the most frequent pixel colours of each feature in screenshots of the map
 	// at eight places, taken on 2026-10-05. Colours that could not be told apart that way are derived.
-	mosaic: {
+	mactaylor: {
 		resembles: 'MapTiler Streets',
 		dark: false,
 		land: '#F6F1E4',
@@ -688,7 +688,7 @@ export const LOOKALIKES: Record<LookalikeTheme, Lookalike> = {
 	//  - controlled-access highways are `#FFB47F` in some regions and the highway orange in the rest;
 	//    rendered from its own tiles around Berlin they are the latter, which `roadMotorway` takes.
 	//  - `buildingBg` has no counterpart in the style and is the outline measured from a screenshot.
-	ping: {
+	bingo: {
 		resembles: 'Bing Maps',
 		dark: false,
 		land: '#F9FAF7',

@@ -358,7 +358,8 @@ describe('line presets of the themes', () => {
 	});
 
 	it('carries a width too, merged with the caller field by field', () => {
-		const state = (layers?: LayerGroupOptions) => osm.resolveOptions({ theme: 'ping', layers }).layers.boundaries.state;
+		const state = (layers?: LayerGroupOptions) =>
+			osm.resolveOptions({ theme: 'bingo', layers }).layers.boundaries.state;
 		expect(state()).toStrictEqual({ opacity: true, dashed: [6, 3], width: 0.5 });
 		// each field the caller sets replaces the theme's; the others stay the theme's
 		expect(state({ boundaries: { state: { width: 1 } } })).toStrictEqual({ opacity: true, dashed: [6, 3], width: 1 });
@@ -369,7 +370,7 @@ describe('line presets of the themes', () => {
 		});
 		expect(state({ boundaries: { state: 0.4 } })).toStrictEqual({ opacity: 0.4, dashed: [6, 3], width: 0.5 });
 		// a border keeps its casing whatever the theme
-		expect(ids(osm({ theme: 'ping' }), 'boundary-state')).toStrictEqual(['boundary-state:outline', 'boundary-state']);
+		expect(ids(osm({ theme: 'bingo' }), 'boundary-state')).toStrictEqual(['boundary-state:outline', 'boundary-state']);
 	});
 
 	it('hands every caller a pattern of its own', () => {
@@ -393,13 +394,13 @@ describe('line presets of the themes', () => {
 		});
 
 		it("writes a width that differs from the theme's", () => {
-			// half width is ping's own way with a state border
-			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 0.5 } } } })).toStrictEqual({
-				theme: 'ping',
+			// half width is bingo's own way with a state border
+			expect(minimal({ theme: 'bingo', layers: { boundaries: { state: { width: 0.5 } } } })).toStrictEqual({
+				theme: 'bingo',
 			});
 			// the style's default is not, on this theme
-			expect(minimal({ theme: 'ping', layers: { boundaries: { state: { width: 1 } } } })).toStrictEqual({
-				theme: 'ping',
+			expect(minimal({ theme: 'bingo', layers: { boundaries: { state: { width: 1 } } } })).toStrictEqual({
+				theme: 'bingo',
 				layers: { boundaries: { state: { width: 1 } } },
 			});
 		});
@@ -430,7 +431,7 @@ describe('line presets of the themes', () => {
 	});
 
 	it('comes back from the importer as the theme alone', () => {
-		for (const theme of ['positrino', 'protocol', 'freedom', 'ping'] as const) {
+		for (const theme of ['positrino', 'protocol', 'freedom', 'bingo'] as const) {
 			const guess = deriveOptions(osm({ theme }));
 			expect(guess.kind).toBe('osm');
 			expect('options' in guess && guess.options).toStrictEqual({ theme });
@@ -496,11 +497,11 @@ describe('line styles: the importer', () => {
 	});
 
 	it("judges a width against the chosen theme's own, and writes it as a multiple of the default", () => {
-		// ping draws its state border at half width: that is the theme, not a difference…
-		expect(derived(osm({ theme: 'ping' })).options).toStrictEqual({ theme: 'ping' });
+		// bingo draws its state border at half width: that is the theme, not a difference…
+		expect(derived(osm({ theme: 'bingo' })).options).toStrictEqual({ theme: 'bingo' });
 		// …and the default width, on that theme, is one — written as 1, not as the 2 it is to the theme
-		expect(derived(osm({ theme: 'ping', layers: { boundaries: { state: { width: 1 } } } })).options).toStrictEqual({
-			theme: 'ping',
+		expect(derived(osm({ theme: 'bingo', layers: { boundaries: { state: { width: 1 } } } })).options).toStrictEqual({
+			theme: 'bingo',
 			layers: { boundaries: { state: { width: 1 } } },
 		});
 	});

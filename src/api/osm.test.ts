@@ -262,9 +262,9 @@ describe('osm()', () => {
 			'classic',
 			'googol',
 			'freedom',
-			'crate',
-			'mosaic',
-			'ping',
+			'macbob',
+			'mactaylor',
+			'bingo',
 		]);
 	});
 

@@ -53,9 +53,9 @@ Lookalike themes are not part of the prebuilt `styles.tar.gz`; generate them wit
 | **classic**   | OpenStreetMap Carto    | <img width="384" src="https://versatiles.org/versatiles-style/classic.png" alt="classic style" />     | —                                                                                                               |
 | **googol**    | Google Maps            | <img width="384" src="https://versatiles.org/versatiles-style/googol.png" alt="googol style" />       | —                                                                                                               |
 | **freedom**   | OSM Liberty            | <img width="384" src="https://versatiles.org/versatiles-style/freedom.png" alt="freedom style" />     | —                                                                                                               |
-| **crate**     | Mapbox Streets         | <img width="384" src="https://versatiles.org/versatiles-style/crate.png" alt="crate style" />         | —                                                                                                               |
-| **mosaic**    | MapTiler Streets       | <img width="384" src="https://versatiles.org/versatiles-style/mosaic.png" alt="mosaic style" />       | —                                                                                                               |
-| **ping**      | Bing Maps              | <img width="384" src="https://versatiles.org/versatiles-style/ping.png" alt="ping style" />           | —                                                                                                               |
+| **macbob**    | Mapbox Streets         | <img width="384" src="https://versatiles.org/versatiles-style/macbob.png" alt="macbob style" />       | —                                                                                                               |
+| **mactaylor** | MapTiler Streets       | <img width="384" src="https://versatiles.org/versatiles-style/mactaylor.png" alt="mactaylor style" /> | —                                                                                                               |
+| **bingo**     | Bing Maps              | <img width="384" src="https://versatiles.org/versatiles-style/bingo.png" alt="bingo style" />         | —                                                                                                               |
 
 ---
 
