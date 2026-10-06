@@ -80,6 +80,9 @@ jobs:
       - name: Test
         run: npm run test
 
+      # No `xvfb-run`: the build renders nothing. It did for one release — `npm run doc` included the
+      # screenshots, and v6.2.0 aborted here on `Failed to open X display`, after npm had already been
+      # published. They are `npm run doc-site` now, which only the docs job below runs.
       - name: Build
         run: npm run build
 
@@ -144,17 +147,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The build writes the API pages into `docs/` (typedoc, as part of `npm run doc`).
       - name: Build
         run: npm run build
 
-      - name: Generate Documentation
-        run: npm run doc-typescript
-
-      - name: Generate Screenshots
-        run: npm run doc-screenshots
-
-      - name: Generate Sprite Overview
-        run: npm run doc-sprites
+      # The screenshots and the sprite overview, which only this site shows. Kept out of `npm run build`
+      # on purpose: the screenshots render from live tiles, and the release job above runs the build
+      # after npm has been published — when they were part of it, v6.2.0 reached npm and then failed
+      # here, before its assets were uploaded.
+      - name: Generate screenshots and sprite overview
+        run: npm run doc-site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

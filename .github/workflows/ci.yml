@@ -43,7 +43,8 @@ jobs:
       # One script rather than a list of steps, so CI and `npm run check` cannot drift apart. The
       # difference between them is deliberate and is the whole reason for a second name: `check` runs
       # `format` (which rewrites files), `check-ci` runs `format:check` (which fails instead). CI must
-      # never be able to "pass" by editing the working tree.
+      # never be able to "pass" by editing the working tree. (The build does end with a `format`, to
+      # undo how `vrt doc-insert` pads the README's tables — but only after `format:check` has run.)
       #
       # This also adds typecheck and check-exports to CI, neither of which ran here before. They are
       # not redundant with the build: `tsc --noEmit` covers tests and scripts, which rollup never

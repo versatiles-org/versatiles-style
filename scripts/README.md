@@ -33,7 +33,7 @@ Run by `npm run build`, except `screenshots.ts` as noted below; you rarely invok
 | `build-styles.ts`  | `build-styles`                | Bundles every style variant into `release/styles.tar.gz`.                          |
 | `build-sprites.ts` | `build-sprites`               | Packs `icons/` into sprite sheets under `release/sprites/`.                        |
 | `icons-report.ts`  | `icons-report`, `doc-sprites` | Renders the icon overview; `--public` writes `docs/sprites.html`.                  |
-| `screenshots.ts`   | `doc-screenshots`             | Renders the style previews used in the README. Release workflow only, not `build`. |
+| `screenshots.ts`   | `doc-screenshots`, `doc-site` | Renders the style previews used in the README. Release workflow only, not `build`. |
 
 `doc-bundle` has no script of its own: `vrt bundle-treemap` attributes every byte of the browser
 bundle to a source file through the sourcemap, which is what `bundle-treemap.ts` used to do here. Its
