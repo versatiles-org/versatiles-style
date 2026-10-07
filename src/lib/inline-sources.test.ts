@@ -37,6 +37,23 @@ describe('inlineSources()', () => {
 		expect(fetchFn).not.toHaveBeenCalled();
 	});
 
+	// A `pmtiles://` url is not a TileJSON reference: MapLibre reads the archive through a registered
+	// protocol, and `fetch` rejects the scheme. It used to take the whole call down with it (#139).
+	it('leaves a `pmtiles://` source untouched and still inlines the others', async () => {
+		const fetchFn = vi.fn(() => Promise.resolve(json({ tiles: ['https://e/{z}/{x}/{y}'] })));
+		const archive = { type: 'vector', url: 'pmtiles://https://example.org/planet.pmtiles' };
+		const out = await inlineSources(
+			styleWith({ protomaps: archive, elevation: { type: 'raster-dem', url: 'https://e/tiles.json' } }),
+			{ fetch: fetchFn }
+		);
+		expect(out.sources['protomaps']).toStrictEqual(archive);
+		expect(fetchFn).toHaveBeenCalledTimes(1);
+		expect(fetchFn).toHaveBeenCalledWith('https://e/tiles.json');
+		const elevation = out.sources['elevation'] as Record<string, unknown>;
+		expect(elevation).not.toHaveProperty('url');
+		expect(elevation.tiles).toEqual(['https://e/{z}/{x}/{y}']);
+	});
+
 	it('does not mutate the input style', async () => {
 		const fetchFn = vi.fn(() => Promise.resolve(json(vectorTJ)));
 		const input = styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } });

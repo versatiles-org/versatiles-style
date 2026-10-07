@@ -23,7 +23,9 @@ import { inlinedFields } from './tile-source.js';
  * `vector_layers`, a raster or raster-dem source one without. A `url` pointing at the wrong tileset
  * fails here, naming the offending source, rather than turning into an empty map later.
  *
- * Returns a new style; the input is not mutated. Sources without a `url` are left alone.
+ * Returns a new style; the input is not mutated. Sources without a `url` are left alone, and so is a
+ * `url` with a scheme other than `http(s)`: `pmtiles://…` is not a TileJSON reference but an archive
+ * MapLibre reads through a registered protocol, so there is nothing for `fetch` to download.
  */
 export async function inlineSources(
 	style: StyleSpecification,
@@ -37,7 +39,7 @@ export async function inlineSources(
 			if (typeof value !== 'object' || value === null) return;
 			const source = value as Record<string, unknown>;
 			const url = source.url;
-			if (typeof url !== 'string') return;
+			if (typeof url !== 'string' || !isFetchable(url)) return;
 
 			const tj = await loadTileSource(url, options?.fetch);
 			assertUsableAs(tj, source.type, id, url);
@@ -56,6 +58,16 @@ export async function inlineSources(
 	);
 
 	return { ...style, sources: sources as StyleSpecification['sources'] };
+}
+
+/**
+ * Whether `fetch` can load a source `url`: anything `http(s)`, and anything without a scheme, which
+ * is a relative reference the caller's `fetch` resolves. A custom scheme such as `pmtiles://` belongs
+ * to a MapLibre protocol handler instead.
+ */
+function isFetchable(url: string): boolean {
+	const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1].toLowerCase();
+	return scheme === undefined || scheme === 'http' || scheme === 'https';
 }
 
 /** The MapLibre source types that carry a TileJSON `url`, and whether each one wants vector tiles. */

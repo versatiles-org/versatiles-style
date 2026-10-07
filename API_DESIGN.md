@@ -1401,6 +1401,10 @@ Resolves every `url`-referencing source in a style into a self-contained one: fe
 TileJSON, inlines `tiles`, `minzoom`, `maxzoom`, `bounds` and `attribution`, and removes the
 `url`. Returns a new style; the input is not mutated. Sources without a `url` are left alone.
 
+So is a `url` with a scheme other than `http(s)`. A `pmtiles://…` source is not a TileJSON
+reference: MapLibre reads the archive through a registered protocol, so it stays as it is while
+the style's other sources are inlined.
+
 This is the asynchronous half of the API. `osm()` and `satellite()` build a style with no I/O;
 this fetches whatever they left as a reference. It is orthogonal to style building, so it also
 works on `guessStyle()` output and on hand-written styles.
