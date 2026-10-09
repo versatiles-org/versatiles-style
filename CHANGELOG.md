@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.4.0] - 2026-10-09
+
+### Features
+
+- add --no-publish to release-npm, for packages that a CI workflow publishes ([ff5c566](https://github.com/versatiles-org/versatiles-style/commit/ff5c566e363c9d340767c2abdc0546bf0a894ea1))
+- **dev:** add an icon editor to adjust and preview icon positions ([8100f6a](https://github.com/versatiles-org/versatiles-style/commit/8100f6a48a583faeacb45375829cf16baac4b13b))
+
+### Bug Fixes
+
+- omit default hillshade-method so hillshade works on MapLibre 5.0–5.4, close #141 ([611bb93](https://github.com/versatiles-org/versatiles-style/commit/611bb93153662b125c1b7aaf1d7ac4a38197195f))
+- pin the MapLibre 5.0.0 style spec again and keep it out of dependency upgrades ([68c38bd](https://github.com/versatiles-org/versatiles-style/commit/68c38bdd1ba4f6a6e53576b38fcd92e36740e719))
+- adjust viewBox attribute for multiple SVG icons to ensure proper rendering ([56a2b34](https://github.com/versatiles-org/versatiles-style/commit/56a2b3438f32ccc05b169ec206ed0ecce0cafd9d))
+
+### Tests
+
+- validate built styles against the MapLibre 5.0.0 style spec, see #141 ([4c13979](https://github.com/versatiles-org/versatiles-style/commit/4c139797cf3b2385215fd233e305b775cf7c077b))
+
+### CI/CD
+
+- publish to npm from the release workflow instead of locally ([5bf90b4](https://github.com/versatiles-org/versatiles-style/commit/5bf90b4bf2fec85f9b95b0db6fe914c374cca2e3))
+
+### Chores
+
+- update dependencies to latest versions ([9d2da78](https://github.com/versatiles-org/versatiles-style/commit/9d2da78784fdc62da8057b2c47fd2157a28dcb21))
+
 ## [6.3.1] - 2026-10-07
 
 ### Bug Fixes
