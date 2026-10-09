@@ -61,7 +61,7 @@
     "migrate-compare": "tsx scripts/migrate-compare.ts",
     "overlay-compare": "tsx scripts/overlay-compare/compare.ts",
     "prepack": "npm run build-node",
-    "release": "vrt release-npm",
+    "release": "vrt release-npm --no-publish",
     "schema-gate": "tsx scripts/schema-gate.ts",
     "smoke": "node scripts/ci/smoke.mjs",
     "schema-compare": "tsx scripts/schema-compare/compare.ts",
