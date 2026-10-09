@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
+import { validateStyleMin as validateStyleMinOldest } from 'maplibre-gl-style-spec-min';
 import { osm } from './osm.js';
 import { satellite } from './satellite.js';
 import { getStyleVariants } from '../../scripts/lib/variants.js';
@@ -11,11 +12,23 @@ import type { StyleSpecification } from '../types/index.js';
 // style would pass CI and only fail at build time. These tests run validateStyleMin over a
 // broad option matrix for osm() and satellite(), plus every getStyleVariants() build.
 //
+// Every style is validated twice: against the installed spec, and against the spec of the lowest
+// supported MapLibre GL JS (`maplibre-gl-style-spec-min` is @maplibre/maplibre-gl-style-spec 22.0.1,
+// the one MapLibre 5.0.0 ships), so the declared `maplibre-gl >=5.0.0` range stays true.
+//
 // Uses the global fetch stub from vitest.setup.ts (canned Shortbread TileJSON).
+
+// The one documented exception to the 5.0.0 minimum: `sun` together with `features.hillshade`
+// writes this property, which needs MapLibre 5.5.0 (see README).
+const NEEDS_5_5 = /unknown property "hillshade-illumination-altitude"/;
 
 // validateStyleMin returns an array of errors; [] means the style is spec-compliant.
 function errorsFor(style: StyleSpecification): string[] {
-	return validateStyleMin(style).map((e) => e.message);
+	const oldest = validateStyleMinOldest(style as Parameters<typeof validateStyleMinOldest>[0])
+		.map((e) => e.message)
+		.filter((message) => !NEEDS_5_5.test(message))
+		.map((message) => `MapLibre 5.0.0: ${message}`);
+	return [...validateStyleMin(style).map((e) => e.message), ...oldest];
 }
 
 // ── osm() option matrix ──────────────────────────────────────────────────────────
@@ -75,11 +88,21 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 	['scale + spacing', { text: { scale: 1.5, spacing: 2 }, icon: { scale: 1.5, spacing: 2 } }],
 	['spacing below 1 + viewport pitch', { text: { spacing: 0.5, pitchAlignment: 'viewport' }, icon: { spacing: 0.5 } }],
 	['custom sun + sky', { sun: { direction: 120, altitude: 20 }, sky: { skyColor: '#010203', atmosphereBlend: 0.7 } }],
+	['sun + hillshade', { sun: true, features: { hillshade: true } }],
 ];
 
 describe('osm() styles are MapLibre-spec valid', () => {
 	it.each(OSM_CASES)('osm(%s)', (_name, options) => {
 		expect(errorsFor(osm(options))).toStrictEqual([]);
+	});
+});
+
+describe('the only property newer than MapLibre 5.0.0 is the documented one', () => {
+	it('osm(sun + hillshade) fails the 5.0.0 spec on hillshade-illumination-altitude alone', () => {
+		const style = osm({ sun: true, features: { hillshade: true } });
+		const errors = validateStyleMinOldest(style as Parameters<typeof validateStyleMinOldest>[0]);
+		expect(errors).toHaveLength(1);
+		expect(errors[0].message).toMatch(NEEDS_5_5);
 	});
 });
 
