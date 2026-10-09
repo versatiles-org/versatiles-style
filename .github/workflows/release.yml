@@ -127,6 +127,62 @@ jobs:
       - name: Update release
         run: gh release edit $RELEASE_TAG --draft=false --latest --prerelease=false
 
+  # Publishes the package to npm — the step `npm run release` used to do on the maintainer's machine,
+  # before anything here had run. It `needs` the job above, so a version reaches npm only after its
+  # build, the unit and e2e tests and the release assets went through; v6.2.0 was on npm before this
+  # workflow failed on it.
+  #
+  # A job of its own because it is the one with the right to publish: it gets no write access to the
+  # repository, and it does not restore a cache that other runs have written (cache poisoning).
+  publish:
+    name: Publish to npm
+
+    needs: release
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # npm trusted publishing and provenance: no npm token is stored in this repository. The package
+      # settings on npmjs.com name this workflow file as trusted publisher.
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # npm 11.5.1 or newer is needed for trusted publishing
+          node-version: 24
+          package-manager-cache: false
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The tag was checked against package.json by the job above, so the version is read from there.
+      # A version that is already on npm is skipped rather than failed on: npm refuses to publish a
+      # version twice, and without this a re-run of the workflow — for a docs job that failed, say —
+      # could never turn green. A release candidate ("6.4.0-rc.1") goes to the npm tag "next", so
+      # "latest" stays the last release.
+      #
+      # `prepack` builds `dist/` (`npm run build-node`), which is all the tarball ships.
+      - name: Publish
+        run: |
+          NAME="$(jq -r '.name' package.json)"
+          VERSION="$(jq -r '.version' package.json)"
+          if [ "$(npm view "$NAME@$VERSION" version 2>/dev/null)" = "$VERSION" ]; then
+            echo "$NAME@$VERSION is already on npm, nothing to publish."
+            exit 0
+          fi
+          case "$VERSION" in
+            *-*) TAG=next ;;
+            *) TAG=latest ;;
+          esac
+          npm publish --provenance --access public --tag "$TAG"
+
   docs:
     name: Build Documentation
     runs-on: macos-latest
