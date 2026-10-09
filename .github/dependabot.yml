@@ -16,6 +16,10 @@ updates:
       # TypeScript 7 bump breaks `npm ci` outright. Drop this once typescript-eslint accepts 7.
       - dependency-name: typescript
         update-types: ['version-update:semver-major']
+      # The style spec of the lowest supported MapLibre GL JS (22.0.1 for 5.0.0), under an alias.
+      # `src/api/spec-validation.test.ts` validates the built styles against it, so it follows the
+      # `maplibre-gl` peer range, not the latest release.
+      - dependency-name: maplibre-gl-style-spec-min
 
   - package-ecosystem: github-actions
     directory: /
