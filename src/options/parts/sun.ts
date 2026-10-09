@@ -6,7 +6,10 @@ export type SunOptions =
 	| {
 			/** The sun's azimuthal direction in degrees, measured clockwise from north. */
 			direction?: number;
-			/** The sun's altitude in degrees above the horizon. */
+			/**
+			 * The sun's altitude in degrees above the horizon. Together with `features.hillshade` this
+			 * writes `hillshade-illumination-altitude`, which needs MapLibre GL JS 5.5.0 or newer.
+			 */
 			altitude?: number;
 			/** The reference frame for the sun's position: 'map' anchors it to the map, 'viewport' to the screen. */
 			anchor?: 'map' | 'viewport';

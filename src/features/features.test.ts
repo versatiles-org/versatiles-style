@@ -113,6 +113,15 @@ describe('addHillshade', () => {
 		// hillshade should be after the last fill (water), before road
 		expect(hillshadeIdx).toBeGreaterThan(waterIdx);
 	});
+
+	// MapLibre knows both properties only since 5.5.0 and rejects the style on older versions.
+	it('writes no paint property newer than MapLibre 5.0 without a sun', () => {
+		const style = baseStyle();
+		addHillshade(style, hillshadeOptions, undefined, ELEVATION_URL);
+		const paint = style.layers.find((l) => l.id === 'hillshade')?.paint ?? {};
+		expect(paint).not.toHaveProperty('hillshade-method');
+		expect(paint).not.toHaveProperty('hillshade-illumination-altitude');
+	});
 });
 
 describe('sun', () => {

@@ -43,7 +43,8 @@ export function addHillshade(
 			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
 			'hillshade-accent-color': Color.parse(options.accentColor).asString(),
 			'hillshade-illumination-anchor': options.anchor,
-			'hillshade-method': 'standard',
+			// No 'hillshade-method': 'standard' is the default, and MapLibre below 5.5.0 rejects the property.
+			// 'hillshade-illumination-altitude' is 5.5.0+ as well, so `sun` + hillshade needs that version.
 			...(sun
 				? {
 						'hillshade-illumination-direction': sun.direction,
