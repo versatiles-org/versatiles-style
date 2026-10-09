@@ -17,6 +17,11 @@ in [`scripts/config/sprites.ts`](./scripts/config/sprites.ts), and that file is 
 The same overview without the maintenance details is published with each release as the
 [sprite overview](https://versatiles.org/versatiles-style/sprites.html).
 
+An icon is anchored on the map at the centre of its canvas, so its position is where the ink sits in
+the SVG. To adjust that, run `npm run dev` and open `http://localhost:8080/icons.html`: the page
+shows an icon against its canvas centre, lets you shift it, and saves the shift as the origin of the
+SVG's `viewBox`, leaving the path data untouched.
+
 | folder              | what it holds                                                             |
 | ------------------- | ------------------------------------------------------------------------- |
 | `icons/maki/`       | [Maki](https://github.com/mapbox/maki), CC0 — upstream filenames          |

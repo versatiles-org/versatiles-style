@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { tileCache } from './dev/tile-cache.js';
+import { iconEditor } from './dev/icon-editor.js';
 
 export default defineConfig({
 	root: 'dev',
@@ -21,6 +22,8 @@ export default defineConfig({
 	plugins: [
 		// Serves all three schemas as plain XYZ endpoints, cached on disk. See dev/tile-cache.ts.
 		tileCache(),
+		// The icon editor at /icons.html: lists the SVGs under icons/ and writes positions back. See dev/icon-editor.ts.
+		iconEditor(),
 		{
 			name: 'local-sprites',
 			configureServer(server) {

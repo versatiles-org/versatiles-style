@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1" />
+		<title>Icon editor</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font:
+					14px/1.4 system-ui,
+					sans-serif;
+				color: #334;
+				display: grid;
+				grid-template-columns: 260px 1fr;
+				height: 100vh;
+			}
+
+			#sidebar {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				padding: 10px;
+				border-right: 1px solid #ddd;
+				min-height: 0;
+			}
+
+			#sidebar input[type='search'] {
+				padding: 4px 6px;
+				font: inherit;
+			}
+
+			#list {
+				overflow-y: auto;
+				flex: 1;
+			}
+
+			#list button {
+				display: flex;
+				justify-content: space-between;
+				width: 100%;
+				padding: 2px 6px;
+				border: 0;
+				background: none;
+				font: inherit;
+				text-align: left;
+				cursor: pointer;
+			}
+
+			#list button:hover {
+				background: #eee;
+			}
+
+			#list button.selected {
+				background: #334;
+				color: #fff;
+			}
+
+			#list small {
+				color: #d33;
+			}
+
+			#list button.selected small {
+				color: #fbb;
+			}
+
+			main {
+				padding: 16px 20px;
+				overflow: auto;
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+			}
+
+			#stage {
+				position: relative;
+				height: 420px;
+				align-self: flex-start;
+				background: #fff;
+				outline: 1px solid #bbb;
+			}
+
+			#stage img,
+			#stage svg {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+			}
+
+			#sizes {
+				display: flex;
+				gap: 12px;
+				align-items: flex-end;
+			}
+
+			#sizes .swatch {
+				display: flex;
+				gap: 12px;
+				align-items: center;
+				padding: 12px;
+				background: #f8f4f0;
+			}
+
+			#sizes .swatch.dark {
+				background: #1c1c24;
+			}
+
+			#sizes .swatch.dark img {
+				filter: invert(1);
+			}
+
+			/* The red dot is the canvas centre: the point MapLibre puts on the coordinate. */
+			#sizes .icon {
+				position: relative;
+				display: block;
+			}
+
+			#sizes .icon img {
+				display: block;
+				height: 100%;
+			}
+
+			#sizes .icon::after {
+				content: '';
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				width: 3px;
+				height: 3px;
+				margin: -1.5px 0 0 -1.5px;
+				border-radius: 50%;
+				background: #e5484d;
+			}
+
+			#controls {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+
+			#controls button,
+			#controls select {
+				font: inherit;
+				padding: 3px 9px;
+			}
+
+			#controls .gap {
+				width: 12px;
+			}
+
+			table {
+				border-collapse: collapse;
+				align-self: flex-start;
+				font-variant-numeric: tabular-nums;
+			}
+
+			td {
+				padding: 1px 16px 1px 0;
+			}
+
+			.off {
+				color: #d33;
+				font-weight: 600;
+			}
+
+			code {
+				font:
+					13px ui-monospace,
+					monospace;
+			}
+
+			#status {
+				color: #667;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="sidebar">
+			<input id="filter" type="search" placeholder="filter icons" />
+			<label><input id="offOnly" type="checkbox" /> off-centre only</label>
+			<div id="list"></div>
+		</div>
+		<main>
+			<h2 id="title"></h2>
+			<div id="stage">
+				<img id="large" alt="" />
+				<svg id="overlay"></svg>
+			</div>
+			<div id="sizes"></div>
+			<div id="controls">
+				<button id="left" title="arrow left">←</button>
+				<button id="up" title="arrow up">↑</button>
+				<button id="down" title="arrow down">↓</button>
+				<button id="right" title="arrow right">→</button>
+				<label>
+					step
+					<select id="step">
+						<option>1</option>
+						<option selected>0.5</option>
+						<option>0.25</option>
+						<option>0.1</option>
+					</select>
+					units
+				</label>
+				<span class="gap"></span>
+				<button id="centre">Centre ink</button>
+				<button id="reset">Reset</button>
+				<button id="save">Save</button>
+				<span id="status"></span>
+			</div>
+			<table id="numbers"></table>
+		</main>
+		<script type="module" src="./icons.ts"></script>
+	</body>
+</html>
