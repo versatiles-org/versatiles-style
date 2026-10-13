@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.4.1] - 2026-10-13
+
+### Bug Fixes
+
+- update color values for siteConstruction and siteSports in classic theme ([ffba505](https://github.com/versatiles-org/versatiles-style/commit/ffba5059de915c9cef60a34644fc69d141e4e68f))
+
+### Documentation
+
+- update bundle-treemap.svg ([603b8f3](https://github.com/versatiles-org/versatiles-style/commit/603b8f3e985f2b21f99b24f04d13b7ef3a41d72b))
+
+### Chores
+
+- **deps:** update dependencies to latest versions ([cb81411](https://github.com/versatiles-org/versatiles-style/commit/cb81411b6836b6f3f48f040b1d7041839727c8e5))
+
 ## [6.4.0] - 2026-10-09
 
 ### Features
