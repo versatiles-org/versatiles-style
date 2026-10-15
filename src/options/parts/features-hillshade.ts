@@ -7,9 +7,19 @@ export type HillshadeOptions =
 			shadowColor?: string;
 			highlightColor?: string;
 			accentColor?: string;
+			/**
+			 * Whether the shading turns with the map ('map') or stays fixed to the screen ('viewport').
+			 * Unset, it follows `sun.anchor`, so terrain and 3D buildings are lit from the same side;
+			 * without a `sun`, it is 'map'.
+			 */
 			anchor?: 'map' | 'viewport';
 	  };
 
+/**
+ * `anchor` stays unset unless the caller set it, like `sky.skyColor`: an unset anchor follows
+ * `sun.anchor` when the style is built (`addHillshade`). Resolving it to 'map' here would pin it, and
+ * hillshade would turn with the map while buildings, lit by a viewport-anchored sun, did not.
+ */
 export type ResolvedHillshade =
 	| false
 	| {
@@ -17,7 +27,7 @@ export type ResolvedHillshade =
 			shadowColor: string;
 			highlightColor: string;
 			accentColor: string;
-			anchor: 'map' | 'viewport';
+			anchor?: 'map' | 'viewport';
 	  };
 
 export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade'): ResolvedHillshade {
@@ -35,6 +45,6 @@ export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade
 		shadowColor: h.shadowColor ?? '#000000',
 		highlightColor: h.highlightColor ?? '#ffffff',
 		accentColor: h.accentColor ?? '#000000',
-		anchor: h.anchor ?? 'map',
+		...(h.anchor !== undefined ? { anchor: h.anchor } : {}),
 	};
 }

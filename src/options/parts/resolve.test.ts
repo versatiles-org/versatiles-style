@@ -108,8 +108,8 @@ describe('resolveOsm', () => {
 			shadowColor: '#000000',
 			highlightColor: '#ffffff',
 			accentColor: '#000000',
-			anchor: 'map',
 		});
+		expect(r.features.hillshade).not.toHaveProperty('anchor');
 	});
 
 	it('resolves hillshade object with partial overrides', () => {

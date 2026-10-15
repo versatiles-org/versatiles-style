@@ -473,7 +473,7 @@ type HillshadeOptions =
       shadowColor?: string; // default: '#000000'
       highlightColor?: string; // default: '#ffffff'
       accentColor?: string; // default: '#000000'
-      anchor?: 'map' | 'viewport'; // default: 'map'
+      anchor?: 'map' | 'viewport'; // default: `sun.anchor`, or 'map' without a `sun`
     };
 ```
 

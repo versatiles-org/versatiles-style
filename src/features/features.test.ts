@@ -87,6 +87,30 @@ describe('addTerrain', () => {
 	});
 });
 
+describe('addHillshade anchor', () => {
+	const options = { exaggeration: 0.5, shadowColor: '#000', highlightColor: '#fff', accentColor: '#888' };
+	const anchorOf = (hillshadeAnchor?: 'map' | 'viewport', sunAnchor?: 'map' | 'viewport') => {
+		const style = baseStyle();
+		const sun = sunAnchor ? { ...MOCK_SUN!, anchor: sunAnchor } : undefined;
+		addHillshade(style, { ...options, anchor: hillshadeAnchor }, sun, ELEVATION_URL);
+		return style.layers.find((l) => l.id === 'hillshade')?.paint?.['hillshade-illumination-anchor' as never];
+	};
+
+	it('follows the sun when unset, so terrain and buildings are lit from the same side', () => {
+		expect(anchorOf(undefined, 'viewport')).toBe('viewport');
+		expect(anchorOf(undefined, 'map')).toBe('map');
+	});
+
+	it("is 'map' when unset and there is no sun", () => {
+		expect(anchorOf(undefined, undefined)).toBe('map');
+	});
+
+	it('keeps an anchor the caller set', () => {
+		expect(anchorOf('map', 'viewport')).toBe('map');
+		expect(anchorOf('viewport', 'map')).toBe('viewport');
+	});
+});
+
 describe('addHillshade', () => {
 	const hillshadeOptions = {
 		exaggeration: 0.5,

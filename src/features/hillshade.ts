@@ -15,9 +15,9 @@ function hillshadeInsertIndex(layers: StyleSpecification['layers']): number {
 	return index;
 }
 
-// Adds a raster-dem elevation source and a hillshade layer to the style.
-// Also syncs style.light to match the sun direction so fill-extrusion buildings
-// shade consistently with the hillshade.
+// Adds a raster-dem elevation source and a hillshade layer to the style. With a `sun`, the hillshade
+// takes its direction, altitude and — unless `options.anchor` is set — its anchor, so it is lit from
+// the same side as the fill-extrusion buildings, which `configure3DLighting` lights from `style.light`.
 export function addHillshade(
 	style: StyleSpecification,
 	options: {
@@ -25,7 +25,7 @@ export function addHillshade(
 		shadowColor: string;
 		highlightColor: string;
 		accentColor: string;
-		anchor: 'map' | 'viewport';
+		anchor?: 'map' | 'viewport';
 	},
 	sun: ResolvedSun,
 	elevation: string | TileJSONSpecification
@@ -42,7 +42,7 @@ export function addHillshade(
 			'hillshade-shadow-color': Color.parse(options.shadowColor).asString(),
 			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
 			'hillshade-accent-color': Color.parse(options.accentColor).asString(),
-			'hillshade-illumination-anchor': options.anchor,
+			'hillshade-illumination-anchor': options.anchor ?? sun?.anchor ?? 'map',
 			// No 'hillshade-method': 'standard' is the default, and MapLibre below 5.5.0 rejects the property.
 			// 'hillshade-illumination-altitude' is 5.5.0+ as well, so `sun` + hillshade needs that version.
 			...(sun

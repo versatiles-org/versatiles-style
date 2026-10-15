@@ -352,6 +352,12 @@ describe('osm() knob: sun', () => {
 		});
 	});
 
+	it('hillshade takes the sun anchor, so terrain and buildings are lit from the same side', () => {
+		const s = build({ features: { hillshade: true }, sun: { anchor: 'viewport' } });
+		expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe('viewport');
+		expect(s.light?.anchor).toBe('viewport');
+	});
+
 	it('sun writes a plain light position in Mercator', () => {
 		const s = build({ projection: 'mercator', sun: { direction: 100, altitude: 30 } });
 		expect(s.light?.position).toStrictEqual([1.15, 100, 60]);
