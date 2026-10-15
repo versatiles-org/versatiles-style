@@ -132,7 +132,7 @@ and would otherwise download them. The shipped `versatiles-style.d.ts` carries t
 > and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/). Older versions ignore both and
 > render a flat Mercator map with no sky — everything else works, so this degrades rather than breaks.
 >
-> One combination needs **5.5.0 or newer**: `sun` together with `features.hillshade` writes
+> One combination needs **5.5.0 or newer**: `light` together with `features.hillshade` writes
 > `hillshade-illumination-altitude`, which older versions reject, so the style fails to load.
 >
 > npm users have this checked automatically through an optional peer dependency. Loading MapLibre
@@ -190,7 +190,7 @@ because it has to read the TileJSON before it can decide what to build. All thre
 - `osm(options)` - OpenStreetMap vector style. [Documentation](https://versatiles.org/versatiles-style/variables/_versatiles_style.osm.html)
   - `theme`: a palette name (`'colorful' | 'natural' | 'muted' | 'gray' | 'toner'`), its dark theme with a `-dark` suffix (`'colorful-dark'`, …), or a [lookalike theme](#lookalike-themes) (`'positrino'`, `'protocol'`, `'fnord'`, …).
   - `text`: label language, scale and font — per label topic where wanted (`{ language: 'de', font: 'noto_sans_regular', pois: { general: { scale: 1.2 } } }`).
-  - `icon`, `sky`, `sun`, `projection`: icon sizing, the sky block, the 3D light, and the map projection.
+  - `icon`, `sky`, `light`, `projection`: icon sizing, the sky block, the one light that shades terrain, 3D buildings and the globe's atmosphere, and the map projection.
   - `colors`, `recolor`, `layers`, `features`, `urls`: see [OsmOptions](https://versatiles.org/versatiles-style/types/_versatiles_style.OsmOptions.html).
 - `satellite(options)` - raster/satellite style with an optional OSM overlay. [Documentation](https://versatiles.org/versatiles-style/variables/_versatiles_style.satellite.html) — see [SatelliteOptions](https://versatiles.org/versatiles-style/types/_versatiles_style.SatelliteOptions.html).
 - `omt(options)` and `protomaps(options)` - the same style for **OpenMapTiles** and **Protomaps Basemap** tiles, each on its own subpath. They take the same options and carry the same statics as `osm()`; only the tile source option differs (`urls.omt` / `urls.protomaps`). Kept off the root entry so a page that draws only Shortbread does not download them. [`omt`](https://versatiles.org/versatiles-style/variables/_versatiles_style_omt.omt.html) · [`protomaps`](https://versatiles.org/versatiles-style/variables/_versatiles_style_protomaps.protomaps.html) — see [Other tile schemas](API_DESIGN.md#other-tile-schemas-omt-and-protomaps).

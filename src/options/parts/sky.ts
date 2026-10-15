@@ -19,7 +19,10 @@ export type SkyOptions = {
 	/** Default: the palette's `colors.water` — see `resolveSky`. */
 	skyColor?: string;
 
-	/** Default `0`: no haze, so the globe's edge stays crisp. */
+	/**
+	 * Default `0`: no haze, so the globe's edge stays crisp. The haze is lit from `light`: on a globe it
+	 * glows on the side the light comes from, unless `light.rotateWithMap` is set.
+	 */
 	atmosphereBlend?: PropertyValueSpecification<number>;
 	/** Default `0.5`. */
 	fogGroundBlend?: PropertyValueSpecification<number>;

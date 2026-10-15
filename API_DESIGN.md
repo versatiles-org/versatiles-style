@@ -438,22 +438,46 @@ type RecolorOptions = {
 Used by both `osm()` and `satellite()`.
 
 `sky` is **on by default** and needs no terrain — MapLibre draws it whenever the map is pitched or in
-globe projection, which is the default. `sun` is **off by default**: unset, no `light` is written and
+globe projection, which is the default. `light` is **off by default**: unset, no `light` is written and
 MapLibre uses its own. `hillshade` needs an elevation source, and its effect is only visible where
 there is terrain to shade.
 
-```ts
-// `sun` accepts `true` (all defaults below) or an object. Unset, the style writes no `light` at all.
-type SunOptions =
-  | true
-  | {
-      direction?: number; // azimuth in degrees; 0 = north, 90 = east; default: 210
-      altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 60
-      anchor?: 'map' | 'viewport'; // whether the light turns with the map; default: 'viewport'
-      color?: string; // light color; default: '#ffffff'
-      intensity?: number; // 0–1; default: 0.5
-    };
+**One light for everything.** `light` is the single light of the map. It shades the terrain
+(`features.hillshade`), lights 3D buildings (`features.buildings: 'extruded'`) and, on a globe with a
+visible atmosphere (`sky.atmosphereBlend` > 0), decides which side of the atmosphere glows. Set once,
+all three are lit from the same side. Leave it unset and they fall back to MapLibre's own lights, which
+disagree: buildings lit from the south-south-west, terrain from the north-north-west.
 
+```ts
+// `light` accepts `true` (all defaults below), `false`, or an object. Unset or `false`, no `light` is written.
+type LightOptions =
+  | boolean
+  | {
+      direction?: number; // where the light comes from, clockwise; 0 = top, 90 = right; default: 315 (top left)
+      altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
+      rotateWithMap?: boolean; // whether the light turns with the map; default: false (fixed to the screen)
+      color?: string; // light color, 3D buildings only; default: '#ffffff'
+      intensity?: number; // 0–1, 3D buildings only; default: 0.5
+    };
+```
+
+By default the light is fixed to the screen: `direction: 315` comes from the top left however the map
+is rotated. That is the cartographic convention, under which relief never reads inverted. With
+`rotateWithMap: true`, `direction` is a compass bearing instead (0 = north) and the shading turns with
+the map.
+
+On a globe, the library writes `light.position` as a zoom `step`: MapLibre's atmosphere reads the light
+mirrored top to bottom and places the sun behind the globe, so below the zoom at which buildings appear
+(z14) the position is corrected for the atmosphere, and from there on it is the true one. A light that
+turns with the map cannot be corrected this way — the atmosphere then fixes the sun over one point on
+Earth — so `rotateWithMap: true` together with a visible atmosphere glows on a side unrelated to
+`direction`.
+
+`sun` is the **deprecated** name of `light`, read as `light` until v7: `anchor: 'map'` becomes
+`rotateWithMap: true`, and values it leaves unset take `light`'s defaults. Setting both is an error.
+`minimizeOptions` (and therefore `toCode` and `guessOptions`) writes `light`.
+
+```ts
 // `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
 // MapLibre only draws the sky when pitched or in globe projection.
 type SkyOptions = {
@@ -463,7 +487,7 @@ type SkyOptions = {
   skyHorizonBlend?: number; // 0–1; blend between sky and horizon; default: 0.8
   horizonFogBlend?: number; // 0–1; blend between horizon and fog; default: 0.8
   fogGroundBlend?: number; // 0–1; blend between fog and ground; default: 0.5
-  atmosphereBlend?: number; // 0–1; atmospheric haze intensity; default: 0
+  atmosphereBlend?: number; // 0–1; atmospheric haze intensity, lit from `light`; default: 0
 };
 
 type HillshadeOptions =
@@ -473,7 +497,7 @@ type HillshadeOptions =
       shadowColor?: string; // default: '#000000'
       highlightColor?: string; // default: '#ffffff'
       accentColor?: string; // default: '#000000'
-      anchor?: 'map' | 'viewport'; // default: `sun.anchor`, or 'map' without a `sun`
+      anchor?: 'map' | 'viewport'; // deprecated, use `light.rotateWithMap`; default: follows `light`, or 'map' without one
     };
 ```
 
@@ -535,7 +559,8 @@ type OsmOptions = OsmOverlayOptions & {
     landcover?: boolean; // ESA WorldCover at z0–z10; default: false
     buildings?: 'flat' | 'extruded'; // default: 'flat'; extrusion opacity comes from `layers.buildings`
   };
-  sun?: SunOptions; // default: unset — no `light` is written
+  light?: LightOptions; // default: unset — no `light` is written
+  sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -563,7 +588,8 @@ type SatelliteOptions = {
     terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
   };
-  sun?: SunOptions; // default: unset — no `light` is written
+  light?: LightOptions; // default: unset — no `light` is written
+  sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -653,7 +679,8 @@ file. A resolved object comes back as small as the options that made it:
 - `layers` collapses every group whose sub-groups all hold the same value: twelve `false` labels
   become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
   `transit.stops` itself, so the alias has no effect there.
-- `features.terrain`, `features.hillshade` and `sun` become `true` when they equal what `true` resolves to.
+- `features.terrain`, `features.hillshade` and `light` become `true` when they equal what `true` resolves to.
+- The deprecated `sun` is rewritten as `light`.
 - `urls` goes back to `urls.base` when the URLs are its default paths, and is left out on the default base.
 - Colours compare by value, so `#bfd9f2` from an `<input type="color">` equals the palette's `#BFD9F2`.
 - `recolor.tint` and `recolor.blend` are removed at an amount of 0, and otherwise always carry their amount.
@@ -821,7 +848,7 @@ a build flag — and nothing schema-neutral lives on these subpaths, so a caller
 imports `Color`, `inlineSources`, `guessStyle` and the palettes once, from the root.
 
 Each builder takes the **same option vocabulary** as `osm()` — `theme`, `colors`, `recolor`, `layers`,
-`text`, `icon`, `sun`, `sky`, `projection` — and carries the same statics (`palettes`, `colorKeys`,
+`text`, `icon`, `light`, `sky`, `projection` — and carries the same statics (`palettes`, `colorKeys`,
 `layerGroups`, `textGroups`, `defaults`, `colors`, `languages`, `slots`, `resolveOptions`,
 `minimizeOptions`, `toCode`, `validateOptions`, `tileset`). The option names describe concepts rather than layers, so they
 survive the change of tileset. What differs is only what the tiles themselves can express:
@@ -1082,7 +1109,7 @@ street and river names stand up in a tilted map (`text.pitchAlignment`), the fon
 labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
 `Open Sans Bold` → `open_sans_bold` — otherwise its weight on Noto Sans; topics no probe reads follow
 their group, then the style's family; without a font list, weights only), extruded
-buildings, terrain, hillshade, `light` as `sun`, `sky` where it differs from what `osm()` derives, and
+buildings, terrain, hillshade, the style's `light` as `light`, `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 
@@ -1251,6 +1278,9 @@ without forcing an install. Renderers without projection support ignore the prop
 Mercator, which is the pre-v6 behaviour: MapLibre GL JS 4.x, and the native/server renderers, which
 are Mercator-only. A style therefore renders as a globe in a current browser and flat server-side —
 worth knowing if you compare the two.
+
+On a globe, `light` also decides which side of the atmosphere glows; see
+[Atmosphere & lighting](#atmosphere--lighting) for how it stays in line with terrain and buildings.
 
 Note the style spec accepts _any_ string for `projection.type`, so an unsupported value (`equal-earth`,
 say) passes validation and then silently does nothing. The three values above are the ones MapLibre
