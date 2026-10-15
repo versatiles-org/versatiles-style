@@ -9,7 +9,8 @@ import { checkColor } from './color-check.js';
  *
  * On by default: unset or `true` uses the defaults below, an object overrides individual values.
  * `false` writes no `light`, and hillshade and buildings fall back to MapLibre's own lights, which
- * disagree.
+ * disagree. The style's root `light` is written only where 3D buildings or a visible atmosphere read
+ * it; the hillshade carries the light in its own paint properties.
  */
 export type LightOptions =
 	| boolean

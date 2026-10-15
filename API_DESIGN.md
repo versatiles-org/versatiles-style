@@ -449,6 +449,12 @@ visible atmosphere (`sky.atmosphereBlend` > 0), decides which side of the atmosp
 all three are lit from the same side. With `light: false` they fall back to MapLibre's own lights, which
 disagree: buildings lit from the south-south-west, terrain from the north-north-west.
 
+The hillshade carries the light in its own paint properties. The style's root `light` is read only by
+3D buildings and the atmosphere, so it is written only where one of them is in the style: with
+`features.buildings: 'extruded'`, or on a globe with `sky.atmosphereBlend` other than 0. A style
+without either gets no root `light`. If you turn the `building-3d` layer on at runtime in such a style,
+set the light too, or the buildings take MapLibre's.
+
 Terrain is shaded only by `features.hillshade`. MapLibre never lights the 3D surface of
 `features.terrain` itself, so terrain without hillshade looks the same whatever `light` says.
 
@@ -1115,7 +1121,7 @@ street and river names stand up in a tilted map (`text.pitchAlignment`), the fon
 labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
 `Open Sans Bold` → `open_sans_bold` — otherwise its weight on Noto Sans; topics no probe reads follow
 their group, then the style's family; without a font list, weights only), extruded
-buildings, terrain, hillshade, the style's `light` as `light` (`false` when it has none), `sky` where it differs from what `osm()` derives, and
+buildings, terrain, hillshade, the style's `light` as `light` (read from a lit hillshade where the style has no root `light`, and `false` where nothing is lit that a light would change), `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 
@@ -1599,9 +1605,10 @@ an error that names the replacement: `osm: unknown option "sun" was removed in v
 
 **What changes without any change to your code:**
 
-- **Every style has a `light`.** It lights 3D buildings and the globe's atmosphere from the top left
-  of the screen at 45° (`direction: 315`, `altitude: 45`). v6 wrote none unless `sun` was set, so
-  buildings took MapLibre's own light, from the south-south-west.
+- **3D buildings and the atmosphere are lit by default.** A style with `features.buildings: 'extruded'`
+  or a visible atmosphere gets a root `light`, from the top left of the screen at 45°
+  (`direction: 315`, `altitude: 45`). v6 wrote none unless `sun` was set, so buildings took MapLibre's
+  own light, from the south-south-west.
 - **Hillshade looks different.** Lit, it uses MapLibre's `combined` method, which takes the light's
   altitude and leaves flat ground clear; it no longer draws `hillshade.accentColor`. It is lit from the
   top left of the screen (v6: from the north-north-west, turning with the map), the same side as the
@@ -1613,8 +1620,8 @@ an error that names the replacement: `osm: unknown option "sun" was removed in v
   `hillshade.exaggeration` and the `sky` blends outside 0–1, and a negative `terrain.exaggeration` used
   to build a style that MapLibre rejected or rendered nonsense from; now they throw an error naming the
   option. `light.direction` takes any angle and wraps it.
-- **`guessOptions` writes `light: false`** for a style without a light, so the options rebuild the
-  style it read rather than adding a light to it.
+- **`guessOptions` writes `light: false`** for a style that has a hillshade, 3D buildings or a visible
+  atmosphere but no light, so the options rebuild the style it read rather than lighting it.
 
 ---
 

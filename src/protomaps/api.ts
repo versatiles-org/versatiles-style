@@ -103,7 +103,7 @@ function protomapsFn(options?: ProtomapsOptions): StyleSpecification {
 	// No `addLandcover`: Protomaps' coarse low-zoom band is its own `landcover` layer, emitted by the
 	// landcover module when `features.landcover` is on (see `layers/landcover.ts`).
 
-	configure3DLighting(style, resolved.light, resolved.projection);
+	configure3DLighting(style, resolved.light, resolved.projection, resolved.sky);
 
 	if (resolved.sky) {
 		applySky(style, { skyColor: resolved.colors.water, ...resolved.sky });

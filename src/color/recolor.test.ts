@@ -250,7 +250,11 @@ describe('applyRecolor beyond the layers', () => {
 	it('leaves the 3D light alone', () => {
 		// the light is an illuminant, not a surface: inverting white gives black, which is not
 		// "dark lighting" but "no light at all", and extruded buildings lose their shading
-		const style = osm({ light: { direction: 100 }, recolor: { invertBrightness: true } });
+		const style = osm({
+			light: { direction: 100 },
+			features: { buildings: 'extruded' },
+			recolor: { invertBrightness: true },
+		});
 		expect((style.light as { color: string }).color).toBe('rgb(255,255,255)');
 	});
 

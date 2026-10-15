@@ -259,16 +259,16 @@ describe('satellite() knob: features', () => {
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('light drives the hillshade illumination and style.light', () => {
+	it('light drives the hillshade illumination, and no style.light without an atmosphere', () => {
 		const s = build({ features: { hillshade: true }, light: { direction: 120, altitude: 20 } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(120);
 		expect(p['hillshade-illumination-altitude']).toBe(20);
-		expect(s.light?.position).toContainEqual(['literal', [1.15, 120, 70]]);
+		expect(s.light).toBeUndefined();
 	});
 
-	it('light configures style.light even without hillshade', () => {
-		expect(build({ light: { direction: 120 } }).light).toStrictEqual({
+	it('light configures style.light for a visible atmosphere', () => {
+		expect(build({ light: { direction: 120 }, sky: { atmosphereBlend: 0.5 } }).light).toStrictEqual({
 			anchor: 'viewport',
 			position: ['step', ['zoom'], ['literal', [1.15, 60, 135]], 14, ['literal', [1.15, 120, 45]]],
 			color: 'rgb(255,255,255)',

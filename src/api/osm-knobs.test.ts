@@ -346,9 +346,9 @@ describe('osm() knob: light', () => {
 		expect(p['hillshade-illumination-altitude']).toBe(27);
 	});
 
-	it('light configures style.light for hillshade (position, color, intensity)', () => {
+	it('light configures style.light for 3D buildings (position, color, intensity)', () => {
 		const s = build({
-			features: { hillshade: true },
+			features: { buildings: 'extruded' },
 			light: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
 		expect(s.light).toEqual({
@@ -361,7 +361,11 @@ describe('osm() knob: light', () => {
 
 	it('turns terrain and buildings with the map together, or neither', () => {
 		for (const rotateWithMap of [false, true]) {
-			const s = build({ projection: 'mercator', features: { hillshade: true }, light: { rotateWithMap } });
+			const s = build({
+				projection: 'mercator',
+				features: { hillshade: true, buildings: 'extruded' },
+				light: { rotateWithMap },
+			});
 			const anchor = rotateWithMap ? 'map' : 'viewport';
 			expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe(anchor);
 			expect(s.light?.anchor).toBe(anchor);
@@ -371,13 +375,13 @@ describe('osm() knob: light', () => {
 	// Below building zoom only the atmosphere reads `style.light`, and with a map anchor it fixes the sun
 	// over one point on Earth.
 	it('keeps a light that turns with the map fixed to the screen below building zoom, on a globe', () => {
-		const s = build({ features: { hillshade: true }, light: { rotateWithMap: true } });
+		const s = build({ features: { hillshade: true }, light: { rotateWithMap: true }, sky: { atmosphereBlend: 0.5 } });
 		expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe('map');
 		expect(s.light?.anchor).toStrictEqual(['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map']);
 	});
 
 	it('defaults to light from the top-left of the screen at 45°', () => {
-		const s = build({ features: { hillshade: true }, light: true });
+		const s = build({ features: { hillshade: true, buildings: 'extruded' }, light: true });
 		const p = paint(s, 'hillshade');
 		expect([p['hillshade-illumination-direction'], p['hillshade-illumination-altitude']]).toStrictEqual([315, 45]);
 		expect(p['hillshade-illumination-anchor']).toBe('viewport');
@@ -385,7 +389,11 @@ describe('osm() knob: light', () => {
 	});
 
 	it('light writes a plain light position in Mercator', () => {
-		const s = build({ projection: 'mercator', light: { direction: 100, altitude: 30 } });
+		const s = build({
+			projection: 'mercator',
+			features: { buildings: 'extruded' },
+			light: { direction: 100, altitude: 30 },
+		});
 		expect(s.light?.position).toStrictEqual([1.15, 100, 60]);
 	});
 
@@ -395,8 +403,18 @@ describe('osm() knob: light', () => {
 	});
 
 	it('writes style.light by default, and none with `light: false`', () => {
-		expect(build({}).light).toMatchObject({ anchor: 'viewport', intensity: 0.5 });
-		expect(build({ light: false }).light).toBeUndefined();
+		const extruded = { features: { buildings: 'extruded' } } as const;
+		expect(build(extruded).light).toMatchObject({ anchor: 'viewport', intensity: 0.5 });
+		expect(build({ ...extruded, light: false }).light).toBeUndefined();
+	});
+
+	// The hillshade carries the light in its own paint properties.
+	it('writes style.light only where 3D buildings or a visible atmosphere read it', () => {
+		expect(build({}).light).toBeUndefined();
+		expect(build({ features: { hillshade: true } }).light).toBeUndefined();
+		expect(build({ sky: { atmosphereBlend: 0.5 } }).light).toBeDefined();
+		expect(build({ sky: { atmosphereBlend: 0.5 }, projection: 'mercator' }).light).toBeUndefined();
+		expect(build({ features: { buildings: 'extruded' }, projection: 'mercator' }).light).toBeDefined();
 	});
 });
 

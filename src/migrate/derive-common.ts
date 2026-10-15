@@ -140,8 +140,10 @@ export function deriveCommon(
 		);
 	}
 
-	// `light` is on by default, so a style without one is rebuilt only with `light: false`.
-	globals.light = style.light ? deriveLight(style.light) : false;
+	const light = style.light
+		? deriveLight(style.light)
+		: (hillshadeLight(hillshade) ?? (readsLight(style) ? false : undefined));
+	if (light !== undefined) globals.light = light;
 
 	if (style.sprite) {
 		report.say(
@@ -757,6 +759,39 @@ function deriveLight(light: NonNullable<StyleSpecification['light']>): LightOpti
 	if (typeof light.color === 'string') out.color = light.color;
 	if (typeof light.intensity === 'number') out.intensity = light.intensity;
 	return out;
+}
+
+/**
+ * The light a hillshade was drawn with, where this library lit it: the builder writes `style.light` only
+ * where buildings or the atmosphere read it, so a lit hillshade is the one place the light shows. Only
+ * the `combined` method marks one — MapLibre's default method is what the builder draws without a light.
+ */
+function hillshadeLight(hillshade: HillshadeLayerSpecification | undefined): LightOptions | undefined {
+	const paint = hillshade?.paint;
+	if (paint?.['hillshade-method'] !== 'combined') return undefined;
+	const out: Exclude<LightOptions, boolean> = {};
+	const first = (value: unknown) => (Array.isArray(value) ? value[0] : value);
+	const direction = first(paint['hillshade-illumination-direction']);
+	const altitude = first(paint['hillshade-illumination-altitude']);
+	if (typeof direction === 'number') out.direction = direction;
+	if (typeof altitude === 'number') out.altitude = altitude;
+	if (paint['hillshade-illumination-anchor'] === 'map') out.rotateWithMap = true;
+	return out;
+}
+
+/**
+ * Whether anything in a style without a `light` would read one: a hillshade, visible 3D buildings, or
+ * a globe's atmosphere — which MapLibre draws with `atmosphere-blend` 0.8 when a `sky` leaves it unset.
+ * There `light` is on by default and would change the style, so the guess is `light: false`; elsewhere
+ * the default builds the same style, and the guess says nothing.
+ */
+function readsLight(style: StyleSpecification): boolean {
+	const drawn = (layer: StyleSpecification['layers'][number]) => layer.layout?.visibility !== 'none';
+	if (style.layers.some((layer) => (layer.type === 'hillshade' || layer.type === 'fill-extrusion') && drawn(layer))) {
+		return true;
+	}
+	const globe = style.projection?.type === 'globe' || style.projection?.type === 'vertical-perspective';
+	return globe && style.sky !== undefined && (style.sky['atmosphere-blend'] ?? 0.8) !== 0;
 }
 
 const SKY_KEYS = {

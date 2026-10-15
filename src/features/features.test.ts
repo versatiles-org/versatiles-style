@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedLight } from '../options/index.js';
+import { SKY_DEFAULTS, type ResolvedLight, type ResolvedSky } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
@@ -165,17 +165,25 @@ describe('configure3DLighting', () => {
 		rotateWithMap,
 	});
 	const positionOf = (style: StyleSpecification) => (style.light as { position: unknown }).position;
+	// A sky whose atmosphere shows on a globe, so these tests see the light whatever the buildings do.
+	const SKY = { ...SKY_DEFAULTS, atmosphereBlend: 1 };
+	/** `baseStyle()` with the extruded buildings visible, so a Mercator style reads the light too. */
+	const extruded = () => {
+		const style = baseStyle();
+		delete style.layers.find((l) => l.id === 'building-3d')!.layout;
+		return style;
+	};
 
 	it('writes the true position in Mercator', () => {
-		const style = baseStyle();
-		configure3DLighting(style, sun(315, 45), 'mercator');
+		const style = extruded();
+		configure3DLighting(style, sun(315, 45), 'mercator', SKY);
 		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
 	});
 
 	it('steps from the atmosphere position to the true one where buildings appear, on a globe', () => {
 		for (const projection of ['globe', 'vertical-perspective'] as const) {
 			const style = baseStyle();
-			configure3DLighting(style, sun(315, 45), projection);
+			configure3DLighting(style, sun(315, 45), projection, SKY);
 			expect(positionOf(style)).toStrictEqual([
 				'step',
 				['zoom'],
@@ -198,7 +206,7 @@ describe('configure3DLighting', () => {
 
 	it('steps a light that turns with the map from the screen to the map where buildings appear, on a globe', () => {
 		const style = baseStyle();
-		configure3DLighting(style, sun(315, 45, true), 'globe');
+		configure3DLighting(style, sun(315, 45, true), 'globe', SKY);
 		expect(positionOf(style)).toStrictEqual([
 			'step',
 			['zoom'],
@@ -210,8 +218,8 @@ describe('configure3DLighting', () => {
 	});
 
 	it('writes a light that turns with the map plainly in Mercator', () => {
-		const style = baseStyle();
-		configure3DLighting(style, sun(315, 45, true), 'mercator');
+		const style = extruded();
+		configure3DLighting(style, sun(315, 45, true), 'mercator', SKY);
 		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
 		expect(style.light?.anchor).toBe('map');
 	});
@@ -219,7 +227,25 @@ describe('configure3DLighting', () => {
 	it('removes style.light without a light', () => {
 		const style = baseStyle();
 		style.light = { anchor: 'map' };
-		configure3DLighting(style, false, 'globe');
+		configure3DLighting(style, false, 'globe', SKY);
 		expect(style.light).toBeUndefined();
+	});
+
+	// The hillshade carries the light in its own paint properties; only buildings and the atmosphere
+	// read `style.light`.
+	it('writes style.light only where 3D buildings or a visible atmosphere read it', () => {
+		const lit = (style: StyleSpecification, projection: 'globe' | 'mercator', sky: ResolvedSky) => {
+			configure3DLighting(style, sun(315, 45), projection, sky);
+			return style.light !== undefined;
+		};
+		const noHaze = { ...SKY_DEFAULTS, atmosphereBlend: 0 };
+		expect(lit(baseStyle(), 'globe', noHaze)).toBe(false);
+		expect(lit(baseStyle(), 'globe', false)).toBe(false);
+		expect(lit(baseStyle(), 'mercator', SKY)).toBe(false);
+		expect(lit(baseStyle(), 'globe', SKY)).toBe(true);
+		expect(
+			lit(baseStyle(), 'globe', { ...SKY_DEFAULTS, atmosphereBlend: ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 0] })
+		).toBe(true);
+		expect(lit(extruded(), 'mercator', noHaze)).toBe(true);
 	});
 });

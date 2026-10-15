@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { GlMap } from './lib/gljs-render.js';
 import { configure3DLighting } from '../src/features/light.js';
-import type { ResolvedLight } from '../src/options/index.js';
+import { SKY_DEFAULTS, type ResolvedLight } from '../src/options/index.js';
 
 /**
  * `configure3DLighting` corrects for how MapLibre GL JS draws the globe's atmosphere: mirrored
@@ -55,7 +55,7 @@ function globe(atmosphereBlend: number, light?: Exclude<ResolvedLight, false>): 
 		sources: {},
 		layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#404040' } }],
 	} as StyleSpecification;
-	if (light) configure3DLighting(style, light, 'globe');
+	if (light) configure3DLighting(style, light, 'globe', { ...SKY_DEFAULTS, atmosphereBlend });
 	return style;
 }
 
@@ -84,7 +84,7 @@ function tower(light: Exclude<ResolvedLight, false>): StyleSpecification {
 			},
 		],
 	} as StyleSpecification;
-	configure3DLighting(style, light, 'globe');
+	configure3DLighting(style, light, 'globe', false);
 	return style;
 }
 

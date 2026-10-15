@@ -492,13 +492,26 @@ describe('deriveOptions — foreign styles', () => {
 	});
 
 	it('reads the true light back out of the globe light this library writes', () => {
-		const options = osmOptions(deriveOptions(osm({ light: { direction: 100, altitude: 30 } })));
-		expect(options.light).toStrictEqual({ direction: 100, altitude: 30 });
+		const style = osm({ light: { direction: 100, altitude: 30 }, features: { buildings: 'extruded' } });
+		expect(osmOptions(deriveOptions(style)).light).toStrictEqual({ direction: 100, altitude: 30 });
+	});
+
+	// The builder writes no `style.light` for a hillshade alone, so the hillshade is where the light shows.
+	it('reads the light out of a lit hillshade where the style has no light', () => {
+		const style = osm({ light: { direction: 100, altitude: 30, rotateWithMap: true }, features: { hillshade: true } });
+		expect(style.light).toBeUndefined();
+		expect(osmOptions(deriveOptions(style)).light).toStrictEqual({ direction: 100, altitude: 30, rotateWithMap: true });
+	});
+
+	it('reads `light: false` only where a light would change the style', () => {
+		expect(osmOptions(deriveOptions(osm({ light: false, features: { hillshade: true } }))).light).toBe(false);
+		expect(osmOptions(deriveOptions(osm({ light: false, features: { buildings: 'extruded' } }))).light).toBe(false);
+		expect(osmOptions(deriveOptions(osm({ light: false }))).light).toBeUndefined();
 	});
 
 	it('reads a light that turns with the map out of the stepped anchor written for a globe', () => {
-		const options = osmOptions(deriveOptions(osm({ light: { rotateWithMap: true } })));
-		expect(options.light).toStrictEqual({ rotateWithMap: true });
+		const style = osm({ light: { rotateWithMap: true }, sky: { atmosphereBlend: 0.5 } });
+		expect(osmOptions(deriveOptions(style)).light).toStrictEqual({ rotateWithMap: true });
 	});
 
 	// MapLibre's `light.position` is `[radial, azimuthal, polar]`. A shorter array passed the old
