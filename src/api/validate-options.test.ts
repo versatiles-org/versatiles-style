@@ -250,6 +250,55 @@ describe('non-finite numbers are rejected', () => {
 	});
 });
 
+// Out of the spec's range, MapLibre rejects the style naming only the style property — or, where the
+// spec has no range to check (the light's altitude), renders a light from below the horizon.
+describe('out-of-range numbers are rejected', () => {
+	const cases: [string, () => unknown][] = [
+		['osm.light.altitude', () => osm({ light: { altitude: 100 } })],
+		['osm.light.altitude', () => osm({ light: { altitude: -10 } })],
+		['osm.light.intensity', () => osm({ light: { intensity: 1.5 } })],
+		['osm.sun.altitude', () => osm({ sun: { altitude: 91 } })],
+		['osm.features.hillshade.exaggeration', () => osm({ features: { hillshade: { exaggeration: 2 } } })],
+		['osm.features.terrain.exaggeration', () => osm({ features: { terrain: { exaggeration: -1 } } })],
+		['osm.sky.atmosphereBlend', () => osm({ sky: { atmosphereBlend: 2 } })],
+		['osm.sky.fogGroundBlend', () => osm({ sky: { fogGroundBlend: -0.1 } })],
+		['satellite.light.intensity', () => satellite({ light: { intensity: -1 } })],
+	];
+
+	for (const [path, build] of cases) {
+		it(`rejects ${path}`, () => {
+			expect(build).toThrow(path);
+		});
+	}
+
+	it('reports the range', () => {
+		expect(osm.validateOptions({ light: { altitude: 100 } }).issues).toStrictEqual([
+			{ path: 'light.altitude', message: 'expected a number from 0 to 90, got 100' },
+		]);
+	});
+
+	it('accepts the bounds, and expressions it cannot check', () => {
+		expect(() => osm({ light: { altitude: 90, intensity: 1 } })).not.toThrow();
+		expect(() => osm({ light: { altitude: 0, intensity: 0 } })).not.toThrow();
+		expect(() => osm({ features: { terrain: { exaggeration: 3 }, hillshade: { exaggeration: 1 } } })).not.toThrow();
+		expect(() => osm({ sky: { atmosphereBlend: ['interpolate', ['linear'], ['zoom'], 0, 1, 10, 0] } })).not.toThrow();
+	});
+
+	it('wraps any direction to 0–360, and writes whole degrees to the hillshade', () => {
+		const direction = (light: number) => {
+			const style = osm({ light: { direction: light }, features: { hillshade: true } });
+			const paint = style.layers.find((layer) => layer.id === 'hillshade')?.paint;
+			return [
+				osm.resolveOptions({ light: { direction: light } }).light,
+				paint?.['hillshade-illumination-direction' as never],
+			];
+		};
+		expect(direction(-45)).toMatchObject([{ direction: 315 }, 315]);
+		expect(direction(400)).toMatchObject([{ direction: 40 }, 40]);
+		expect(direction(359.6)).toMatchObject([{ direction: 359.6 }, 0]);
+	});
+});
+
 // Colour options were the one part of the surface no resolver looked at: the value was copied through
 // and the first `Color.parse` happened deep in layer building, so the builder threw an error naming only
 // the string while `validateOptions` of the same object answered `{ ok: true }`. See options/parts/color-check.ts.

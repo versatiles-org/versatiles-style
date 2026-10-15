@@ -70,3 +70,18 @@ export function checkFinite(value: unknown, path: string): void {
 		for (const [key, child] of Object.entries(value)) checkFinite(child, `${path}.${key}`);
 	}
 }
+
+/**
+ * Reject a number outside `min`–`max`, naming where it sits.
+ *
+ * MapLibre rejects a style whose paint value is out of the spec's range — `hillshade-exaggeration: 2`,
+ * `light.intensity: 1.5` — and its error names only the style property. Where the spec has no range to
+ * check, a value outside it still builds, but renders nonsense: an altitude of 100° puts the light
+ * below the horizon on the far side. Non-numbers, expressions included, are left alone, as are
+ * non-finite numbers, which `checkFinite` reports.
+ */
+export function checkRange(value: unknown, min: number, max: number, path: string): void {
+	if (typeof value !== 'number' || !Number.isFinite(value) || (value >= min && value <= max)) return;
+	const range = max === Infinity ? `${min} or more` : `from ${min} to ${max}`;
+	reportIssue({ path, message: `expected a number ${range}, got ${value}` });
+}

@@ -50,7 +50,8 @@ export function addHillshade(
 			...(light
 				? {
 						'hillshade-method': 'combined',
-						'hillshade-illumination-direction': light.direction,
+						// Whole degrees: the spec of MapLibre before 5.5 allows 0–359, so 359.6 must become 0.
+						'hillshade-illumination-direction': Math.round(light.direction) % 360,
 						'hillshade-illumination-altitude': light.altitude,
 					}
 				: { 'hillshade-accent-color': Color.parse(options.accentColor).asString() }),

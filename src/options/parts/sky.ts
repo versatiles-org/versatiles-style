@@ -1,4 +1,4 @@
-import { checkKeys, checkFinite } from './keys.js';
+import { checkKeys, checkFinite, checkRange } from './keys.js';
 import { checkColors } from './color-check.js';
 import type { PropertyValueSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -80,6 +80,9 @@ export function resolveSky(sky?: boolean | SkyOptions, path = 'sky'): ResolvedSk
 	// StyleJSON, since JSON has no NaN.
 	checkFinite(options, path);
 	checkColors(options, ['fogColor', 'horizonColor', 'skyColor'], path);
+	for (const key of ['atmosphereBlend', 'fogGroundBlend', 'horizonFogBlend', 'skyHorizonBlend'] as const) {
+		checkRange(options[key], 0, 1, `${path}.${key}`);
+	}
 	return {
 		fogColor: options.fogColor ?? SKY_DEFAULTS.fogColor,
 		horizonColor: options.horizonColor ?? SKY_DEFAULTS.horizonColor,
