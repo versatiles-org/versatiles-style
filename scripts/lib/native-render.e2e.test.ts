@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { NativeMap } from './native-render.js';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
@@ -27,6 +27,10 @@ async function render(color: string) {
 }
 
 describe('NativeMap colour warnings', () => {
+	// The first render starts the engine, which on a fresh CI runner has taken 6 s — longer than a test's
+	// 5 s timeout, though every render after it takes milliseconds. Paid here, it fails no test.
+	beforeAll(() => render('#000000'), 60_000);
+
 	it.each(['#ff0000', 'rgb(255,0,0)', 'rgba(255,0,0,1)', 'hsl(0,100%,50%)'])(
 		'renders %s and reports nothing',
 		async (color) => {
