@@ -6,7 +6,8 @@ import { sunToLight, type SunOptions } from './sun.js';
 /**
  * The one light of the map: it shades the terrain (`features.hillshade`), lights 3D buildings
  * (`features.buildings: 'extruded'`) and, on a globe, decides which side of the atmosphere glows
- * (`sky.atmosphereBlend`). Set once, all three are lit from the same side.
+ * (`sky.atmosphereBlend`). Set once, all three are lit from the same side. `features.terrain` alone
+ * is not shaded: MapLibre never lights the 3D terrain surface, so only the hillshade shows the light.
  *
  * `true` uses the defaults below, an object overrides individual values. Unset or `false`, no `light`
  * is written and hillshade and buildings fall back to MapLibre's own lights, which disagree.

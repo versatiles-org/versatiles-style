@@ -448,6 +448,9 @@ visible atmosphere (`sky.atmosphereBlend` > 0), decides which side of the atmosp
 all three are lit from the same side. Leave it unset and they fall back to MapLibre's own lights, which
 disagree: buildings lit from the south-south-west, terrain from the north-north-west.
 
+Terrain is shaded only by `features.hillshade`. MapLibre never lights the 3D surface of
+`features.terrain` itself, so terrain without hillshade looks the same whatever `light` says.
+
 ```ts
 // `light` accepts `true` (all defaults below), `false`, or an object. Unset or `false`, no `light` is written.
 type LightOptions =
