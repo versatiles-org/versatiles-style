@@ -31,6 +31,7 @@
     - [What it reads](#what-it-reads)
     - [What it writes](#what-it-writes)
   - [Other exports](#other-exports)
+  - [Migration from v6](#migration-from-v6)
   - [Migration from v5](#migration-from-v5)
     - [Removed types](#removed-types)
   - [Migration from v5: colours](#migration-from-v5-colours)
@@ -483,9 +484,7 @@ high one flattens the relief — and leaves flat ground clear. `combined` draws 
 `hillshade.accentColor` applies only with `light: false`. `combined` needs MapLibre GL JS 5.5.0, so
 `features.hillshade` does too unless `light` is `false`.
 
-In v6 this option was called `sun`. v7 renamed it to `light`: pass the same values, with
-`anchor: 'map'` as `rotateWithMap: true`. v7 also removed `features.hillshade.anchor`; the hillshade
-turns with the map when `light.rotateWithMap` is set.
+In v6 this option was called `sun`, and was off by default — see [Migration from v6](#migration-from-v6).
 
 ```ts
 // `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
@@ -1574,6 +1573,48 @@ The `assert…` functions throw an `Error` naming the offending field — `spec.
 "3.0.0", but got "2.2"` — which is what you want when validating input you expected to be valid.
 They were previously one function whose `spec is T` signature promised the first behaviour while
 delivering the second.
+
+---
+
+## Migration from v6
+
+v7 gives the map one light, on by default, and removes the two options it replaces. Everything not
+listed here is unchanged.
+
+| v6                                             | v7                                                                                 |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `osm({ sun: true })`                           | `osm({ light: { direction: 210, altitude: 60 } })`, or `osm()` for the new default |
+| `osm({ sun: { direction, altitude } })`        | `osm({ light: { direction, altitude } })`                                          |
+| `osm({ sun: { anchor: 'map' } })`              | `osm({ light: { rotateWithMap: true } })`                                          |
+| `osm({ sun: { color, intensity } })`           | `osm({ light: { color, intensity } })`                                             |
+| `osm({ features: { hillshade: { anchor } } })` | `osm({ light: { rotateWithMap: anchor === 'map' } })`                              |
+| `osm()` — no light                             | `osm({ light: false })`                                                            |
+| `SunOptions`, `ResolvedSun`                    | `LightOptions`, `ResolvedLight`                                                    |
+
+`light` defaults differ from `sun`'s: what `sun` left unset was 210° and 60°, what `light` leaves unset
+is 315° and 45°. To keep a v6 look, write the v6 values out.
+
+The same applies to `satellite()`, `omt()` and `protomaps()`. Passing `sun` or `hillshade.anchor` throws
+an error that names the replacement: `osm: unknown option "sun" was removed in v7 — use "light"`.
+
+**What changes without any change to your code:**
+
+- **Every style has a `light`.** It lights 3D buildings and the globe's atmosphere from the top left
+  of the screen at 45° (`direction: 315`, `altitude: 45`). v6 wrote none unless `sun` was set, so
+  buildings took MapLibre's own light, from the south-south-west.
+- **Hillshade looks different.** Lit, it uses MapLibre's `combined` method, which takes the light's
+  altitude and leaves flat ground clear; it no longer draws `hillshade.accentColor`. It is lit from the
+  top left of the screen (v6: from the north-north-west, turning with the map), the same side as the
+  buildings. `light: false` restores the v6 hillshade.
+- **Hillshade needs MapLibre GL JS 5.5.0.** `combined` and the light's altitude are newer than 5.0.0,
+  which rejects the style. Everything else still works from 5.0.0, and so does hillshade with
+  `light: false`.
+- **Out-of-range numbers throw.** `light.altitude` outside 0–90, `light.intensity`,
+  `hillshade.exaggeration` and the `sky` blends outside 0–1, and a negative `terrain.exaggeration` used
+  to build a style that MapLibre rejected or rendered nonsense from; now they throw an error naming the
+  option. `light.direction` takes any angle and wraps it.
+- **`guessOptions` writes `light: false`** for a style without a light, so the options rebuild the
+  style it read rather than adding a light to it.
 
 ---
 
