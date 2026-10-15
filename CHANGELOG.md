@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0] - 2026-10-15
+
+### Breaking Changes
+
+- turn light on by default ([f3d8c96](https://github.com/versatiles-org/versatiles-style/commit/f3d8c9641152922bc6a0e830d677040bb5f99465))
+- remove hillshade.anchor in favour of light.rotateWithMap ([ea19322](https://github.com/versatiles-org/versatiles-style/commit/ea19322d63822c3a52be8810f75a8898f57affd2))
+- remove the sun option in favour of light ([d23c75e](https://github.com/versatiles-org/versatiles-style/commit/d23c75ecaf4b00e00da22bcc884a79dad9f2ab3a))
+- require MapLibre GL JS 5.5 ([2d17a28](https://github.com/versatiles-org/versatiles-style/commit/2d17a288a385278d357f195ce1b75878bd136d0e))
+
+### Features
+
+- **light:** add light option, deprecate sun and hillshade.anchor ([5afd6ed](https://github.com/versatiles-org/versatiles-style/commit/5afd6ed94d8a0b86c268e1c53fcda39f6aaae9a3))
+- **hillshade:** use the combined method with light, so its altitude takes effect ([57670d1](https://github.com/versatiles-org/versatiles-style/commit/57670d10f35b4a1ef18723b31adf651206f17d55))
+- **light:** write style.light only where buildings or the atmosphere read it ([10a5263](https://github.com/versatiles-org/versatiles-style/commit/10a526354d3956166312c34c4573e475d5c70177))
+
+### Bug Fixes
+
+- **sun:** compensate MapLibre's atmosphere sun position on globe projections ([a3c5cef](https://github.com/versatiles-org/versatiles-style/commit/a3c5cef20e1ffbbebc0e8a0555fd530fa29baff3))
+- **hillshade:** follow sun.anchor unless hillshade.anchor is set ([14542d8](https://github.com/versatiles-org/versatiles-style/commit/14542d85db3ea9d87ad99ba0ee33351dcd27cc99))
+- **options:** reject out-of-range light, hillshade, terrain and sky values ([0e76ed8](https://github.com/versatiles-org/versatiles-style/commit/0e76ed81d75600918ee4e55d4d14ede331bc1e0b))
+- **light:** keep a map-rotating light fixed to the screen below building zoom on a globe ([b33f5f6](https://github.com/versatiles-org/versatiles-style/commit/b33f5f6febaed0ccc113ffb64619c712943af5d5))
+
+### Documentation
+
+- document the light option and the single-light model ([c1faa37](https://github.com/versatiles-org/versatiles-style/commit/c1faa378579c9c9cfe2ed745c9c3d3e9a349187f))
+- say that terrain is shaded only by hillshade ([a274adb](https://github.com/versatiles-org/versatiles-style/commit/a274adb699ed19ebfffb8b086042c5ae714f5278))
+- update bundle size, treemap and dependency graph ([652befd](https://github.com/versatiles-org/versatiles-style/commit/652befd50942d8a8d041ac90b341b370b606fd49))
+- add migration notes from v6 to v7 ([1f41752](https://github.com/versatiles-org/versatiles-style/commit/1f4175230006e462daed2b1819be845896aad935))
+
+### Chores
+
+- **deps:** update dependencies to latest versions ([4d4a980](https://github.com/versatiles-org/versatiles-style/commit/4d4a980fd74bdecd0e105bb7313db8298140fd7f))
+
 ## [6.4.1] - 2026-10-13
 
 ### Bug Fixes
