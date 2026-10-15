@@ -28,7 +28,6 @@ import {
 	type SkyOptions,
 	type SpriteEntries,
 	type LightOptions,
-	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
 } from '../options/index.js';
@@ -115,7 +114,7 @@ export function resolveOmtFeatures(features?: OmtFeaturesOptions, path = 'featur
  *
  * Per-schema group trees were expected to make `OmtOptions` and `OsmOptions` diverge and
  * multiply the work for downstream UI tools. In the event they differ in exactly two places, and the
- * shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `sun`, `sky`, `projection` —
+ * shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `light`, `sky`, `projection` —
  * is identical, because the option vocabulary names concepts rather than layers:
  *
  *  - `urls.omt` replaces `urls.osm`, and does not default relative to `base`;
@@ -127,8 +126,6 @@ export type OmtOptions = OsmOverlayOptions & {
 	urls?: OmtUrlsOptions;
 	features?: OmtFeaturesOptions;
 	light?: LightOptions;
-	/** @deprecated Use `light`; read as `light` until v7. */
-	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
 };
@@ -155,7 +152,6 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 			urls: true,
 			features: true,
 			light: true,
-			sun: true,
 			sky: true,
 			projection: true,
 		},
@@ -167,7 +163,7 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 	return {
 		urls: resolveOmtUrls(options?.urls, 'omt.urls'),
 		features: resolveOmtFeatures(options?.features, 'omt.features'),
-		light: resolveLight(options?.light, options?.sun, 'omt'),
+		light: resolveLight(options?.light, 'omt'),
 		sky: resolveSky(options?.sky, 'omt.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,

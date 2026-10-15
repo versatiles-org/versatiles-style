@@ -21,7 +21,6 @@ import {
 	type ResolvedLight,
 	type SkyOptions,
 	type LightOptions,
-	type SunOptions,
 } from './parts/index.js';
 import { OsmOverlayOptions, ResolvedOsmOverlay } from './osm-overlay.js';
 import { getLinePreset } from '../themes/index.js';
@@ -30,8 +29,6 @@ export type OsmOptions = OsmOverlayOptions & {
 	urls?: OsmUrlsOptions;
 	features?: OsmFeaturesOptions;
 	light?: LightOptions;
-	/** @deprecated Use `light`; read as `light` until v7. */
-	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
 };
@@ -57,7 +54,6 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 			urls: true,
 			features: true,
 			light: true,
-			sun: true,
 			sky: true,
 			projection: true,
 		},
@@ -69,7 +65,7 @@ export function resolveOsm(options?: OsmOptions): ResolvedOsm {
 	return {
 		urls: resolveOsmUrls(options?.urls, 'osm.urls'),
 		features: resolveOsmFeatures(options?.features, 'osm.features'),
-		light: resolveLight(options?.light, options?.sun, 'osm'),
+		light: resolveLight(options?.light, 'osm'),
 		sky: resolveSky(options?.sky, 'osm.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,

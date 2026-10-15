@@ -39,7 +39,6 @@ export type {
 	SatelliteUrlsOptions,
 	LightOptions,
 	SkyOptions,
-	SunOptions,
 	TerrainOptions,
 	TextOptions,
 	TextTopic,
@@ -69,7 +68,6 @@ export type {
 	// ── Validation (`validateOptions`) ──
 	OptionIssue,
 	ValidationResult,
-	ResolvedSun,
 	ResolvedTerrain,
 	ResolvedText,
 	ResolvedTheme,

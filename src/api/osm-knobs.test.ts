@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { osm } from '../index.js';
+import { osm, satellite } from '../index.js';
 import { TEXT_TOPICS, type LabelStyle, type OsmOptions } from '../options/index.js';
 import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
@@ -400,30 +400,17 @@ describe('osm() knob: light', () => {
 	});
 });
 
-describe('osm() knob: sun (deprecated alias of light)', () => {
-	it('builds the same style as the light it stands for', () => {
-		const pairs = [
-			[{ sun: true }, { light: true }],
-			[
-				{ sun: { direction: 100, altitude: 30, anchor: 'map', color: '#ff0000', intensity: 0.9 } },
-				{ light: { direction: 100, altitude: 30, rotateWithMap: true, color: '#ff0000', intensity: 0.9 } },
-			],
-			[{ sun: { anchor: 'viewport' } }, { light: true }],
-		] as const;
-		for (const [sun, light] of pairs) {
-			const options = { features: { hillshade: true, buildings: 'extruded' } } as const;
-			expect(build({ ...options, ...sun })).toStrictEqual(build({ ...options, ...light }));
+describe('osm() knob: sun (removed in v7)', () => {
+	it('rejects sun, naming light', () => {
+		expect(() => build({ sun: true } as never)).toThrow('"sun" was removed in v7 — use "light"');
+		for (const [label, validate] of [
+			['osm', osm.validateOptions],
+			['satellite', satellite.validateOptions],
+		] as const) {
+			expect(validate({ sun: { anchor: 'map' } } as never).issues, label).toMatchObject([
+				{ path: 'sun', suggestion: 'light' },
+			]);
 		}
-	});
-
-	it('cannot be combined with light', () => {
-		expect(() => build({ sun: true, light: true })).toThrow('"sun" is a deprecated alias of "light"');
-	});
-
-	it('resolves to light', () => {
-		const resolved = osm.resolveOptions({ sun: { direction: 10 } });
-		expect(resolved.light).toMatchObject({ direction: 10, altitude: 45 });
-		expect(resolved).not.toHaveProperty('sun');
 	});
 });
 

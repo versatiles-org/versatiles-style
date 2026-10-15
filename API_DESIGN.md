@@ -483,9 +483,9 @@ high one flattens the relief — and leaves flat ground clear. `combined` draws 
 `hillshade.accentColor` applies only with `light: false`. `combined` needs MapLibre GL JS 5.5.0, so
 `features.hillshade` does too unless `light` is `false`.
 
-`sun` is the **deprecated** name of `light`, read as `light` until v7: `anchor: 'map'` becomes
-`rotateWithMap: true`, and values it leaves unset take `light`'s defaults. Setting both is an error.
-`minimizeOptions` (and therefore `toCode` and `guessOptions`) writes `light`.
+In v6 this option was called `sun`. v7 renamed it to `light`: pass the same values, with
+`anchor: 'map'` as `rotateWithMap: true`. v7 also removed `features.hillshade.anchor`; the hillshade
+turns with the map when `light.rotateWithMap` is set.
 
 ```ts
 // `sky` accepts `true` (defaults), `false` (omit the sky block entirely), or an object.
@@ -569,7 +569,6 @@ type OsmOptions = OsmOverlayOptions & {
     buildings?: 'flat' | 'extruded'; // default: 'flat'; extrusion opacity comes from `layers.buildings`
   };
   light?: LightOptions; // default: on (`true`); `false` writes no `light`
-  sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -598,7 +597,6 @@ type SatelliteOptions = {
     hillshade?: HillshadeOptions;
   };
   light?: LightOptions; // default: on (`true`); `false` writes no `light`
-  sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
 };
@@ -688,8 +686,8 @@ file. A resolved object comes back as small as the options that made it:
 - `layers` collapses every group whose sub-groups all hold the same value: twelve `false` labels
   become `labels: false`. `icons` is never written — a resolved object sets `pois`, `markings` and
   `transit.stops` itself, so the alias has no effect there.
-- `features.terrain`, `features.hillshade` and `light` become `true` when they equal what `true` resolves to.
-- The deprecated `sun` is rewritten as `light`.
+- `features.terrain` and `features.hillshade` become `true` when they equal what `true` resolves to.
+- `light` is left out when it equals the default light; `light: false` is kept.
 - `urls` goes back to `urls.base` when the URLs are its default paths, and is left out on the default base.
 - Colours compare by value, so `#bfd9f2` from an `<input type="color">` equals the palette's `#BFD9F2`.
 - `recolor.tint` and `recolor.blend` are removed at an amount of 0, and otherwise always carry their amount.

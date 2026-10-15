@@ -1,7 +1,5 @@
 import { checkKeys, checkFinite, checkRange } from './keys.js';
 import { checkColor } from './color-check.js';
-import { reportIssue } from './issues.js';
-import { sunToLight, type SunOptions } from './sun.js';
 
 /**
  * The one light of the map: it shades the terrain (`features.hillshade`), lights 3D buildings
@@ -55,25 +53,13 @@ export const LIGHT_DEFAULTS = {
 } as const satisfies ResolvedLight;
 
 /**
- * Resolves `light`, or the deprecated `sun` in its place. `base` is the path of the options object
- * both sit in (`osm`, `satellite`), so an error names the key the caller wrote.
+ * Resolves `light`. `base` is the path of the options object it sits in (`osm`, `satellite`), so an
+ * error names the key the caller wrote.
  */
-export function resolveLight(
-	light: LightOptions | undefined,
-	sun: SunOptions | undefined,
-	base: string
-): ResolvedLight {
-	if (sun !== undefined) {
-		if (light !== undefined) {
-			const message = '"sun" is a deprecated alias of "light", and both are set';
-			reportIssue({ path: 'sun', message }, `${base}: ${message}`);
-		}
-		light = sunToLight(sun, `${base}.sun`);
-	}
+export function resolveLight(light: LightOptions | undefined, base: string): ResolvedLight {
 	if (light === false) return false;
 	const options = light === undefined || light === true ? {} : light;
-	// A value checked here came from `sun` when that is set, so the error names the key the caller wrote.
-	const path = sun !== undefined ? `${base}.sun` : `${base}.light`;
+	const path = `${base}.light`;
 	checkKeys(options, { direction: true, altitude: true, rotateWithMap: true, color: true, intensity: true }, path);
 	checkFinite(options, path);
 	checkColor(options.color, `${path}.color`);

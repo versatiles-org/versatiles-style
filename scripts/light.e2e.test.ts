@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { GlMap } from './lib/gljs-render.js';
-import { configure3DLighting } from '../src/features/sun.js';
+import { configure3DLighting } from '../src/features/light.js';
 import type { ResolvedLight } from '../src/options/index.js';
 
 /**

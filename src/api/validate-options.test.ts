@@ -256,7 +256,6 @@ describe('out-of-range numbers are rejected', () => {
 		['osm.light.altitude', () => osm({ light: { altitude: 100 } })],
 		['osm.light.altitude', () => osm({ light: { altitude: -10 } })],
 		['osm.light.intensity', () => osm({ light: { intensity: 1.5 } })],
-		['osm.sun.altitude', () => osm({ sun: { altitude: 91 } })],
 		['osm.features.hillshade.exaggeration', () => osm({ features: { hillshade: { exaggeration: 2 } } })],
 		['osm.features.terrain.exaggeration', () => osm({ features: { terrain: { exaggeration: -1 } } })],
 		['osm.sky.atmosphereBlend', () => osm({ sky: { atmosphereBlend: 2 } })],
@@ -305,7 +304,6 @@ describe('unparseable colours are rejected', () => {
 	const cases: [string, () => unknown][] = [
 		['osm.colors.water', () => osm({ colors: { water: 'bananas' } })],
 		['osm.light.color', () => osm({ light: { color: 'not-a-colour' } })],
-		['osm.sun.color', () => osm({ sun: { color: 'not-a-colour' } })],
 		['osm.sky.fogColor', () => osm({ sky: { fogColor: 'nope' } })],
 		['osm.sky.horizonColor', () => osm({ sky: { horizonColor: 'nope' } })],
 		['osm.sky.skyColor', () => osm({ sky: { skyColor: 'nope' } })],

@@ -29,7 +29,6 @@ export * from './resolve-url.js';
 export * from './satellite-raster.js';
 export * from './sky.js';
 export * from './sprite.js';
-export * from './sun.js';
 export * from './text.js';
 export * from './theme.js';
 export * from './urls.js';

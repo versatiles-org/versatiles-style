@@ -10,7 +10,6 @@ import {
 	resolveOsmUrls,
 	resolveRecolor,
 	resolveSatelliteUrls,
-	sunToLight,
 	resolveTerrain,
 	resolveText,
 	resolveTheme,
@@ -24,7 +23,6 @@ import {
 	type RecolorOptions,
 	type ResolvedText,
 	type ResolvedTheme,
-	type SunOptions,
 	type TextOptions,
 	type TextTopic,
 	type ThemeOptions,
@@ -99,15 +97,6 @@ function withoutDefaults(value: unknown, defaults: unknown, enabled?: unknown): 
 	return sameValue(value, defaults) ? undefined : value;
 }
 
-/**
- * `options` with the deprecated `sun` rewritten as `light`, so that minimising also migrates it. The
- * resolver has already rejected an object that sets both.
- */
-function withoutSun<T extends object>(options: T): T {
-	const { sun, ...rest } = options as { sun?: SunOptions };
-	return sun === undefined ? options : ({ ...rest, light: sunToLight(sun) } as T);
-}
-
 /** `out`'s keys in the order `source` has them, so a minimised object reads like its input. */
 function inOrderOf<T extends object>(source: object, out: Plain): T {
 	const keys = [...Object.keys(source), ...Object.keys(out)];
@@ -139,7 +128,6 @@ export function minimizeThemed<T extends { theme?: ThemeOptions }>(
 	defaultPalette: Palette,
 	parts: MinimizeParts = {}
 ): T {
-	options = withoutSun(options);
 	const { theme: raw, ...rest } = options;
 	const theme = resolveTheme(raw, defaultPalette);
 	const defaults = defaultsFor(theme) as { text?: ResolvedText };
@@ -478,7 +466,6 @@ export function minimizeSatelliteOptions(
 	overlayGroups: () => LayerGroupMap
 ): SatelliteOptions {
 	resolveSatellite(options); // rejects unknown keys; the resolved result is not needed
-	options = withoutSun(options);
 	const { osmOverlay, urls: rawUrls, ...rest } = options;
 	const out = (withoutDefaults(rest, resolveSatellite(), ENABLED) ?? {}) as Plain;
 	const urls = minimizeUrls(rawUrls, resolveSatelliteUrls);

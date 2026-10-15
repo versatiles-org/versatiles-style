@@ -20,7 +20,6 @@ import {
 	type SatelliteUrlsOptions,
 	type SkyOptions,
 	type LightOptions,
-	type SunOptions,
 } from './parts/index.js';
 import {
 	resolveOsmOverlay,
@@ -63,8 +62,6 @@ export type SatelliteOptions = {
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
 	light?: LightOptions;
-	/** @deprecated Use `light`; read as `light` until v7. */
-	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
 };
@@ -82,7 +79,7 @@ export type ResolvedSatellite = {
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
 	checkKeys(
 		options,
-		{ urls: true, osmOverlay: true, raster: true, features: true, light: true, sun: true, sky: true, projection: true },
+		{ urls: true, osmOverlay: true, raster: true, features: true, light: true, sky: true, projection: true },
 		'satellite'
 	);
 	// The overlay is on unless explicitly disabled: a bare `satellite()` gives a usable map rather
@@ -101,7 +98,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),
 		features: resolveSatelliteFeatures(options?.features, 'satellite.features'),
-		light: resolveLight(options?.light, options?.sun, 'satellite'),
+		light: resolveLight(options?.light, 'satellite'),
 		sky: resolveSky(options?.sky, 'satellite.sky'),
 		projection: resolveProjection(options?.projection),
 		raster: resolveSatelliteRaster(options?.raster, 'satellite.raster'),

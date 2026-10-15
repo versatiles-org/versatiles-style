@@ -28,7 +28,6 @@ import {
 	type SkyOptions,
 	type SpriteEntries,
 	type LightOptions,
-	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
 } from '../options/index.js';
@@ -141,7 +140,7 @@ export function resolveProtomapsFeatures(
  * Options for `protomaps()`.
  *
  * The third schema, and the same story as the second. They differ in exactly
- * one place, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `features`, `sun`, `sky`,
+ * one place, and the shared part — `theme`, `colors`, `recolor`, `layout`, `text`, `layers`, `features`, `light`, `sky`,
  * `projection` — is identical, because the option vocabulary names concepts rather than layers:
  *
  *  - `urls.protomaps` replaces `urls.osm`, and has no default (see `PROTOMAPS_PLACEHOLDER`).
@@ -152,8 +151,6 @@ export type ProtomapsOptions = OsmOverlayOptions & {
 	urls?: ProtomapsUrlsOptions;
 	features?: ProtomapsFeaturesOptions;
 	light?: LightOptions;
-	/** @deprecated Use `light`; read as `light` until v7. */
-	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
 };
@@ -180,7 +177,6 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 			urls: true,
 			features: true,
 			light: true,
-			sun: true,
 			sky: true,
 			projection: true,
 		},
@@ -197,7 +193,7 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 	return {
 		urls: resolveProtomapsUrls(options?.urls, 'protomaps.urls'),
 		features: resolveProtomapsFeatures(options?.features, 'protomaps.features'),
-		light: resolveLight(options?.light, options?.sun, 'protomaps'),
+		light: resolveLight(options?.light, 'protomaps'),
 		sky: resolveSky(options?.sky, 'protomaps.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,

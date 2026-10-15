@@ -4,7 +4,7 @@ import type { ResolvedLight } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
-import { configure3DLighting, globeLightPosition, lightPosition } from './sun.js';
+import { configure3DLighting, globeLightPosition, lightPosition } from './light.js';
 import { BUILDINGS_APPEAR_ZOOM } from '../cartography/index.js';
 
 const ELEVATION_URL = 'https://tiles.example.com/dem/{z}/{x}/{y}.png';

@@ -4,7 +4,6 @@ import { resolveSatellite } from '../satellite.js';
 import { resolveTheme } from './theme.js';
 import { PALETTES } from '../../themes/index.js';
 import { resolveColors } from './colors.js';
-import { sunToLight } from './sun.js';
 import { resolveLight } from './light.js';
 import { resolveSky, SKY_DEFAULTS } from './sky.js';
 import { resolveIcon } from './icon.js';
@@ -195,55 +194,21 @@ describe('resolveColors', () => {
 
 describe('resolveLight', () => {
 	it('is on by default, and off only with `false`', () => {
-		expect(resolveLight(undefined, undefined, 'osm')).toStrictEqual(resolveLight(true, undefined, 'osm'));
-		expect(resolveLight(false, undefined, 'osm')).toBe(false);
+		expect(resolveLight(undefined, 'osm')).toStrictEqual(resolveLight(true, 'osm'));
+		expect(resolveLight(false, 'osm')).toBe(false);
 	});
 
 	it('merges partial overrides', () => {
-		expect(resolveLight({ direction: 90 }, undefined, 'osm')).toMatchObject({ direction: 90, altitude: 45 });
+		expect(resolveLight({ direction: 90 }, 'osm')).toMatchObject({ direction: 90, altitude: 45 });
 	});
 
 	it("fills every value, colour and intensity with MapLibre's light defaults", () => {
-		expect(resolveLight(true, undefined, 'osm')).toStrictEqual({
+		expect(resolveLight(true, 'osm')).toStrictEqual({
 			direction: 315,
 			altitude: 45,
 			rotateWithMap: false,
 			color: '#ffffff',
 			intensity: 0.5,
-		});
-	});
-
-	it('reads the deprecated sun as light, with the light defaults', () => {
-		expect(resolveLight(undefined, true, 'osm')).toStrictEqual(resolveLight(true, undefined, 'osm'));
-		expect(resolveLight(undefined, { direction: 90, anchor: 'map' }, 'osm')).toStrictEqual({
-			direction: 90,
-			altitude: 45,
-			rotateWithMap: true,
-			color: '#ffffff',
-			intensity: 0.5,
-		});
-	});
-
-	it('rejects sun and light together', () => {
-		expect(() => resolveLight(true, true, 'osm')).toThrow('osm: "sun" is a deprecated alias of "light"');
-	});
-
-	it('names the sun key in an error about it', () => {
-		expect(() => resolveLight(undefined, { color: 'zzz' }, 'osm')).toThrow(/osm\.sun\.color/);
-		expect(() => resolveLight(undefined, { anchor: 'map', bogus: 1 } as never, 'osm')).toThrow(/osm.*bogus/);
-	});
-});
-
-describe('sunToLight', () => {
-	it('carries over only what was set, with the anchor as rotateWithMap', () => {
-		expect(sunToLight(true)).toBe(true);
-		expect(sunToLight({})).toStrictEqual({});
-		expect(sunToLight({ anchor: 'viewport', intensity: 0.8 })).toStrictEqual({ intensity: 0.8, rotateWithMap: false });
-		expect(sunToLight({ direction: 10, altitude: 20, color: '#f00', anchor: 'map' })).toStrictEqual({
-			direction: 10,
-			altitude: 20,
-			color: '#f00',
-			rotateWithMap: true,
 		});
 	});
 });

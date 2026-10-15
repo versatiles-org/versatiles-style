@@ -165,14 +165,6 @@ describe('osm.minimizeOptions', () => {
 			expect(osm.minimizeOptions({ light: false })).toEqual({ light: false });
 		});
 
-		it('rewrites the deprecated sun as light', () => {
-			expect(osm.minimizeOptions({ sun: true })).toEqual({});
-			expect(osm.minimizeOptions({ sun: { anchor: 'map', altitude: 45, intensity: 0.8 } })).toEqual({
-				light: { rotateWithMap: true, intensity: 0.8 },
-			});
-			expect(satellite.minimizeOptions({ sun: { direction: 315 } })).toEqual({});
-		});
-
 		it('collapses resolved URLs back to `urls.base`', () => {
 			expect(roundTrip({ urls: { base: 'https://tiles.example.org' } })).toEqual({
 				urls: { base: 'https://tiles.example.org' },
