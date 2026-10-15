@@ -726,9 +726,20 @@ function derivePitchAlignment(readings: ReadonlyMap<string, ProbeReading>): Pitc
 	return viewport > map ? 'viewport' : undefined;
 }
 
+/**
+ * The highest-zoom value of a `step` or `interpolate` over `zoom`, else the value itself. On a globe
+ * the builder writes `light.position` as a step whose low-zoom output is the atmosphere's sun and whose
+ * last output is the true one (`configure3DLighting`); a foreign style's ramp ends where its buildings are.
+ */
+function lastStop(value: unknown): unknown {
+	if (!Array.isArray(value) || (value[0] !== 'step' && value[0] !== 'interpolate')) return value;
+	const last: unknown = value[value.length - 1];
+	return Array.isArray(last) && last[0] === 'literal' ? last[1] : last;
+}
+
 function deriveSun(light: NonNullable<StyleSpecification['light']>): SunOptions {
 	const sun: Exclude<SunOptions, true> = {};
-	const position = light.position;
+	const position = lastStop(light.position);
 	// `length === 3` as well as the type check: `every` is vacuously true for a shorter array, so a
 	// two-element `position` passed and `90 - position[2]` came out `NaN`. `minimizeOsmOptions` cannot
 	// drop it either — `JSON.stringify(NaN)` is `"null"`, which never equals the default — so the NaN

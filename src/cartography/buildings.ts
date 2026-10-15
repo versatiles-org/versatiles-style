@@ -16,6 +16,12 @@ export type BuildingVocabulary = {
 	readonly minHeight: string;
 };
 
+/**
+ * The zoom at which buildings start to fade in, flat or extruded. `configure3DLighting` switches the
+ * light from its globe position to the true one at this zoom, so extrusions only ever see the true light.
+ */
+export const BUILDINGS_APPEAR_ZOOM = 14;
+
 // Flat building footprints (outline + fill), rendered in the `buildings` group beneath the road
 // network. In extruded mode these are replaced by `buildings3d`, which is emitted last (above labels)
 // so tall 3D buildings are not hidden behind later layers.
@@ -28,13 +34,13 @@ export function* buildings(ctx: LayerContext, vocab: BuildingVocabulary): Genera
 	yield b.fill('building:outline', {
 		sourceLayer: vocab.sourceLayer,
 		color: c.buildingBg,
-		appear: 14, // fade in over z14→15 (matches OSM Bright `building-top`)
+		appear: BUILDINGS_APPEAR_ZOOM, // fade in over z14→15 (matches OSM Bright `building-top`)
 		group: 'buildings',
 	});
 	yield b.fill('building', {
 		sourceLayer: vocab.sourceLayer,
 		color: c.building,
-		appear: 14,
+		appear: BUILDINGS_APPEAR_ZOOM,
 		fillTranslate: [-2, -2],
 		group: 'buildings',
 	});
@@ -69,7 +75,7 @@ export function* buildings3d(ctx: LayerContext, vocab: BuildingVocabulary): Gene
 		sourceLayer: vocab.sourceLayer,
 		filter: ['!=', ['get', 'hide_3d'], true],
 		color: c.building,
-		appear: 14,
+		appear: BUILDINGS_APPEAR_ZOOM,
 		opacity,
 		fillExtrusionHeight: ['coalesce', ['get', vocab.height], 5],
 		fillExtrusionBase: ['coalesce', ['get', vocab.minHeight], 0],

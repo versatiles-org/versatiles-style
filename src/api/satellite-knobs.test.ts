@@ -264,13 +264,13 @@ describe('satellite() knob: features', () => {
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(120);
 		expect(p['hillshade-illumination-altitude']).toBe(20);
-		expect((s.light?.position as number[])?.[1]).toBe(120);
+		expect(s.light?.position).toContainEqual(['literal', [1.15, 120, 70]]);
 	});
 
 	it('sun configures style.light even without hillshade', () => {
 		expect(build({ sun: { direction: 120 } }).light).toStrictEqual({
 			anchor: 'viewport',
-			position: [1.15, 120, 30],
+			position: ['step', ['zoom'], ['literal', [1.15, 60, 150]], 14, ['literal', [1.15, 120, 30]]],
 			color: 'rgb(255,255,255)',
 			intensity: 0.5,
 		});

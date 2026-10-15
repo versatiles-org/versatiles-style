@@ -92,7 +92,7 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 		addLandcover(style, LANDCOVER_LAYERS);
 	}
 
-	configure3DLighting(style, resolved.sun);
+	configure3DLighting(style, resolved.sun, resolved.projection);
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	// The sky colour follows the palette's `water` unless set; the other sky values are resolved.

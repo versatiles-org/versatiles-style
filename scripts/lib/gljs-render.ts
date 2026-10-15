@@ -122,8 +122,11 @@ export class GlMap {
 		return new GlMap(sink, browser, page, server, version);
 	}
 
-	/** Render one view. Calls are serialised: there is one page. */
-	render(style: StyleSpecification, view: RenderView): Promise<RenderResult> {
+	/**
+	 * Render one view. Calls are serialised: there is one page. `bearing` and `pitch` are GL JS only —
+	 * the native renderer's views are top-down.
+	 */
+	render(style: StyleSpecification, view: RenderView & { bearing?: number; pitch?: number }): Promise<RenderResult> {
 		const run = async (): Promise<RenderResult> => {
 			const failures: string[] = [];
 			this.sink.failures = failures;
@@ -180,6 +183,9 @@ const PAGE = `<!doctype html>
 			style,
 			center: view.center,
 			zoom: view.zoom,
+			bearing: view.bearing ?? 0,
+			pitch: view.pitch ?? 0,
+			maxPitch: 85,
 			interactive: false,
 			attributionControl: false,
 			fadeDuration: 0,

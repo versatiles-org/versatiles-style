@@ -144,7 +144,7 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
 	}
 
-	configure3DLighting(style, resolved.sun);
+	configure3DLighting(style, resolved.sun, resolved.projection);
 
 	if (resolved.sky) {
 		if (resolved.osmOverlay) {

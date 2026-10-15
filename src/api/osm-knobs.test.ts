@@ -344,12 +344,22 @@ describe('osm() knob: sun', () => {
 			features: { hillshade: true },
 			sun: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
-		expect(s.light).toEqual({ anchor: 'viewport', position: [1.15, 100, 60], color: 'rgb(255,0,0)', intensity: 0.9 });
+		expect(s.light).toEqual({
+			anchor: 'viewport',
+			position: ['step', ['zoom'], ['literal', [1.15, 80, 120]], 14, ['literal', [1.15, 100, 60]]],
+			color: 'rgb(255,0,0)',
+			intensity: 0.9,
+		});
+	});
+
+	it('sun writes a plain light position in Mercator', () => {
+		const s = build({ projection: 'mercator', sun: { direction: 100, altitude: 30 } });
+		expect(s.light?.position).toStrictEqual([1.15, 100, 60]);
 	});
 
 	it('extruded buildings sync style.light even without hillshade', () => {
 		const s = build({ features: { buildings: 'extruded', hillshade: false }, sun: { direction: 200 } });
-		expect((s.light?.position as number[])?.[1]).toBe(200);
+		expect(s.light?.position).toContainEqual(['literal', [1.15, 200, 30]]);
 	});
 
 	it('no style.light without hillshade or extruded buildings', () => {

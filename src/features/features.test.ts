@@ -4,7 +4,8 @@ import type { ResolvedSun } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
-import { configure3DLighting } from './sun.js';
+import { configure3DLighting, globeSunPosition, sunPosition } from './sun.js';
+import { BUILDINGS_APPEAR_ZOOM } from '../cartography/index.js';
 
 const ELEVATION_URL = 'https://tiles.example.com/dem/{z}/{x}/{y}.png';
 
@@ -125,10 +126,54 @@ describe('addHillshade', () => {
 });
 
 describe('sun', () => {
-	it('sets style.light from sun direction', () => {
+	const sun = (direction: number, altitude: number, anchor: 'map' | 'viewport' = 'viewport') => ({
+		...MOCK_SUN!,
+		direction,
+		altitude,
+		anchor,
+	});
+	const positionOf = (style: StyleSpecification) => (style.light as { position: unknown }).position;
+
+	it('writes the true position in Mercator', () => {
 		const style = baseStyle();
-		configure3DLighting(style, MOCK_SUN);
-		expect(style.light).toBeDefined();
-		expect((style.light as { position: unknown }).position).toBeDefined();
+		configure3DLighting(style, sun(315, 45), 'mercator');
+		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
+	});
+
+	it('steps from the atmosphere position to the true one where buildings appear, on a globe', () => {
+		for (const projection of ['globe', 'vertical-perspective'] as const) {
+			const style = baseStyle();
+			configure3DLighting(style, sun(315, 45), projection);
+			expect(positionOf(style)).toStrictEqual([
+				'step',
+				['zoom'],
+				['literal', [1.15, 225, 135]],
+				BUILDINGS_APPEAR_ZOOM,
+				['literal', [1.15, 315, 45]],
+			]);
+		}
+	});
+
+	it('mirrors the direction vertically and moves the sun in front of the globe', () => {
+		expect(globeSunPosition(sun(0, 45))).toStrictEqual([1.15, 180, 135]);
+		expect(globeSunPosition(sun(90, 0))).toStrictEqual([1.15, 90, 90]);
+		expect(globeSunPosition(sun(180, 90))).toStrictEqual([1.15, 0, 180]);
+		expect(globeSunPosition(sun(270, 30))).toStrictEqual([1.15, 270, 120]);
+		expect(globeSunPosition(sun(-45, 45))[1]).toBe(225);
+		expect(globeSunPosition(sun(540, 45))[1]).toBe(0);
+		expect(sunPosition(sun(270, 30))).toStrictEqual([1.15, 270, 60]);
+	});
+
+	it('keeps the true position for a map-anchored light, which the atmosphere cannot follow', () => {
+		const style = baseStyle();
+		configure3DLighting(style, sun(315, 45, 'map'), 'globe');
+		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
+	});
+
+	it('removes style.light without a sun', () => {
+		const style = baseStyle();
+		style.light = { anchor: 'map' };
+		configure3DLighting(style, undefined, 'globe');
+		expect(style.light).toBeUndefined();
 	});
 });

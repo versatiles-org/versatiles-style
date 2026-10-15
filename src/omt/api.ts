@@ -85,7 +85,7 @@ function omtFn(options?: OmtOptions): StyleSpecification {
 	// No `addLandcover`: the low-zoom landcover extension is a property of the VersaTiles Shortbread
 	// tileset, and `features.landcover` is therefore not an option this schema accepts.
 
-	configure3DLighting(style, resolved.sun);
+	configure3DLighting(style, resolved.sun, resolved.projection);
 
 	if (resolved.sky) {
 		applySky(style, { skyColor: resolved.colors.water, ...resolved.sky });
