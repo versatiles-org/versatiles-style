@@ -19,8 +19,8 @@ import type { StyleSpecification } from '../types/index.js';
 // Uses the global fetch stub from vitest.setup.ts (canned Shortbread TileJSON).
 
 // The one documented exception to the 5.0.0 minimum: `light` together with `features.hillshade`
-// writes this property, which needs MapLibre 5.5.0 (see README).
-const NEEDS_5_5 = /unknown property "hillshade-illumination-altitude"/;
+// writes these properties, which need MapLibre 5.5.0 (see README).
+const NEEDS_5_5 = /unknown property "hillshade-(method|illumination-altitude)"/;
 
 // validateStyleMin returns an array of errors; [] means the style is spec-compliant.
 function errorsFor(style: StyleSpecification): string[] {
@@ -100,12 +100,12 @@ describe('osm() styles are MapLibre-spec valid', () => {
 	});
 });
 
-describe('the only property newer than MapLibre 5.0.0 is the documented one', () => {
-	it('osm(light + hillshade) fails the 5.0.0 spec on hillshade-illumination-altitude alone', () => {
+describe('the only properties newer than MapLibre 5.0.0 are the documented ones', () => {
+	it('osm(light + hillshade) fails the 5.0.0 spec on hillshade-method and -illumination-altitude alone', () => {
 		const style = osm({ light: true, features: { hillshade: true } });
 		const errors = validateStyleMinOldest(style as Parameters<typeof validateStyleMinOldest>[0]);
-		expect(errors).toHaveLength(1);
-		expect(errors[0].message).toMatch(NEEDS_5_5);
+		expect(errors).toHaveLength(2);
+		for (const error of errors) expect(error.message).toMatch(NEEDS_5_5);
 	});
 });
 

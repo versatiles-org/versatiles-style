@@ -42,16 +42,18 @@ export function addHillshade(
 			'hillshade-exaggeration': options.exaggeration,
 			'hillshade-shadow-color': Color.parse(options.shadowColor).asString(),
 			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
-			'hillshade-accent-color': Color.parse(options.accentColor).asString(),
 			'hillshade-illumination-anchor': options.anchor ?? (light && !light.rotateWithMap ? 'viewport' : 'map'),
-			// No 'hillshade-method': 'standard' is the default, and MapLibre below 5.5.0 rejects the property.
-			// 'hillshade-illumination-altitude' is 5.5.0+ as well, so `light` + hillshade needs that version.
+			// With a light, 'combined' — the one method that takes the light's altitude and leaves flat ground
+			// clear. It and 'hillshade-illumination-altitude' are MapLibre 5.5.0+, so `light` + hillshade needs
+			// that version. Without a light, 'standard' (the default, not written) keeps the style valid on
+			// older versions; only it draws the accent colour.
 			...(light
 				? {
+						'hillshade-method': 'combined',
 						'hillshade-illumination-direction': light.direction,
 						'hillshade-illumination-altitude': light.altitude,
 					}
-				: {}),
+				: { 'hillshade-accent-color': Color.parse(options.accentColor).asString() }),
 		},
 	};
 

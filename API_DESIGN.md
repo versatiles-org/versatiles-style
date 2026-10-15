@@ -473,6 +473,11 @@ turns with the map cannot be corrected this way — the atmosphere then fixes th
 Earth — so `rotateWithMap: true` together with a visible atmosphere glows on a side unrelated to
 `direction`.
 
+With `light`, the hillshade uses MapLibre's `combined` method instead of its default, `standard`:
+`standard` ignores the light's altitude, `combined` takes it — a low light deepens the shadows and a
+high one flattens the relief — and leaves flat ground clear. `combined` draws no accent colour, so
+`hillshade.accentColor` applies only without a `light`.
+
 `sun` is the **deprecated** name of `light`, read as `light` until v7: `anchor: 'map'` becomes
 `rotateWithMap: true`, and values it leaves unset take `light`'s defaults. Setting both is an error.
 `minimizeOptions` (and therefore `toCode` and `guessOptions`) writes `light`.
@@ -496,7 +501,7 @@ type HillshadeOptions =
       exaggeration?: number; // default: 0.1
       shadowColor?: string; // default: '#000000'
       highlightColor?: string; // default: '#ffffff'
-      accentColor?: string; // default: '#000000'
+      accentColor?: string; // only without `light`, which switches to a method with no accent; default: '#000000'
       anchor?: 'map' | 'viewport'; // deprecated, use `light.rotateWithMap`; default: follows `light`, or 'map' without one
     };
 ```

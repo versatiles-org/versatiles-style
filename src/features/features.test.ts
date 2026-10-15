@@ -146,6 +146,20 @@ describe('addHillshade', () => {
 		const paint = style.layers.find((l) => l.id === 'hillshade')?.paint ?? {};
 		expect(paint).not.toHaveProperty('hillshade-method');
 		expect(paint).not.toHaveProperty('hillshade-illumination-altitude');
+		expect(paint).toHaveProperty('hillshade-accent-color', 'rgb(136,136,136)');
+	});
+
+	// 'standard' ignores the altitude; 'combined' takes it, and draws no accent colour.
+	it("switches to 'combined' with a light, so the light's altitude shades the terrain", () => {
+		const style = baseStyle();
+		addHillshade(style, hillshadeOptions, MOCK_LIGHT, ELEVATION_URL);
+		const paint = style.layers.find((l) => l.id === 'hillshade')?.paint ?? {};
+		expect(paint).toMatchObject({
+			'hillshade-method': 'combined',
+			'hillshade-illumination-direction': 220,
+			'hillshade-illumination-altitude': 35,
+		});
+		expect(paint).not.toHaveProperty('hillshade-accent-color');
 	});
 });
 

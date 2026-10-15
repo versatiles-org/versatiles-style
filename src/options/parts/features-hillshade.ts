@@ -6,6 +6,7 @@ export type HillshadeOptions =
 			exaggeration?: number;
 			shadowColor?: string;
 			highlightColor?: string;
+			/** Only without `light`: with one, the hillshade uses a method that draws no accent colour. */
 			accentColor?: string;
 			/**
 			 * @deprecated Set `light.rotateWithMap` instead, which turns terrain and 3D buildings together;

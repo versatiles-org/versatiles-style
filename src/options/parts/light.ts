@@ -20,9 +20,10 @@ export type LightOptions =
 			 */
 			direction?: number;
 			/**
-			 * The light's height above the horizon, in degrees. Default `45`. Together with
-			 * `features.hillshade` this writes `hillshade-illumination-altitude`, which needs MapLibre GL JS
-			 * 5.5.0 or newer.
+			 * The light's height above the horizon, in degrees. Default `45`. A low light deepens the
+			 * hillshade's shadows, a high one flattens the relief. With `features.hillshade`, `light` switches
+			 * the hillshade to MapLibre's `combined` method, the one that takes the altitude; that needs
+			 * MapLibre GL JS 5.5.0 or newer.
 			 */
 			altitude?: number;
 			/**
