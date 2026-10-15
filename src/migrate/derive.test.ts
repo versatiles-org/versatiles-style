@@ -496,6 +496,11 @@ describe('deriveOptions — foreign styles', () => {
 		expect(options.light).toStrictEqual({ direction: 100, altitude: 30 });
 	});
 
+	it('reads a light that turns with the map out of the stepped anchor written for a globe', () => {
+		const options = osmOptions(deriveOptions(osm({ light: { rotateWithMap: true } })));
+		expect(options.light).toStrictEqual({ rotateWithMap: true });
+	});
+
 	// MapLibre's `light.position` is `[radial, azimuthal, polar]`. A shorter array passed the old
 	// `every(isNumber)` check vacuously, so `90 - position[2]` was `NaN` — which `minimizeOptions`
 	// could not drop (`JSON.stringify(NaN)` is `"null"`) and which built an unusable style.

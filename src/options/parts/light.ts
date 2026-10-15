@@ -29,9 +29,9 @@ export type LightOptions =
 			altitude?: number;
 			/**
 			 * Whether the light turns with the map. Default `false`: it stays fixed to the screen, so
-			 * `direction` 0 is always the top of the screen. `true` makes 0 north instead. On a globe with
-			 * a visible atmosphere (`sky.atmosphereBlend` > 0) the atmosphere cannot follow a light that
-			 * turns with the map, and glows on a side unrelated to `direction`.
+			 * `direction` 0 is always the top of the screen. `true` makes 0 north instead. The globe's
+			 * atmosphere (`sky.atmosphereBlend` > 0) cannot turn with the map; it glows from `direction`
+			 * on screen, which matches the terrain while the map points north.
 			 */
 			rotateWithMap?: boolean;
 			/** The light's colour, on 3D buildings only. Default `#ffffff`. */

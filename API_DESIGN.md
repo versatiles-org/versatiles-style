@@ -469,9 +469,10 @@ the map.
 On a globe, the library writes `light.position` as a zoom `step`: MapLibre's atmosphere reads the light
 mirrored top to bottom and places the sun behind the globe, so below the zoom at which buildings appear
 (z14) the position is corrected for the atmosphere, and from there on it is the true one. A light that
-turns with the map cannot be corrected this way — the atmosphere then fixes the sun over one point on
-Earth — so `rotateWithMap: true` together with a visible atmosphere glows on a side unrelated to
-`direction`.
+turns with the map steps its anchor at the same zoom: turned with the map, the atmosphere would fix
+the sun over one point on Earth, unrelated to `direction`. So below z14 the light stays fixed to the
+screen, and the atmosphere glows from `direction` on screen. That matches the terrain while the map
+points north; as the map rotates, the terrain's light turns with it and the glow stays where it is.
 
 With `light`, the hillshade uses MapLibre's `combined` method instead of its default, `standard`:
 `standard` ignores the light's altitude, `combined` takes it — a low light deepens the shadows and a

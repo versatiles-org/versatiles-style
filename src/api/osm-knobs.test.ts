@@ -5,6 +5,7 @@ import type { StyleSpecification } from '../types/index.js';
 import { inlineSources } from '../lib/index.js';
 import { tileJSONFetch } from '../lib/load-tile-source.test.js';
 import { Color } from '../color/index.js';
+import { BUILDINGS_APPEAR_ZOOM } from '../cartography/index.js';
 
 // Exhaustive behavioural coverage of every osm() option ("knob"). Where a resolve-level
 // test already exists (options/resolve.test.ts, options/layer-groups.test.ts), this file
@@ -354,11 +355,19 @@ describe('osm() knob: light', () => {
 
 	it('turns terrain and buildings with the map together, or neither', () => {
 		for (const rotateWithMap of [false, true]) {
-			const s = build({ features: { hillshade: true }, light: { rotateWithMap } });
+			const s = build({ projection: 'mercator', features: { hillshade: true }, light: { rotateWithMap } });
 			const anchor = rotateWithMap ? 'map' : 'viewport';
 			expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe(anchor);
 			expect(s.light?.anchor).toBe(anchor);
 		}
+	});
+
+	// Below building zoom only the atmosphere reads `style.light`, and with a map anchor it fixes the sun
+	// over one point on Earth.
+	it('keeps a light that turns with the map fixed to the screen below building zoom, on a globe', () => {
+		const s = build({ features: { hillshade: true }, light: { rotateWithMap: true } });
+		expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe('map');
+		expect(s.light?.anchor).toStrictEqual(['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map']);
 	});
 
 	it('defaults to light from the top-left of the screen at 45°', () => {

@@ -32,18 +32,22 @@ export function globeLightPosition(light: Light): Position {
  * below ~100 km, and buildings only appear at `BUILDINGS_APPEAR_ZOOM`. So below that zoom the light
  * takes the atmosphere's position and from it on the true one.
  *
- * Not for a light that turns with the map (`rotateWithMap`, MapLibre's `anchor: 'map'`): there the atmosphere fixes the sun over a point on Earth, which no
- * position can align with the local light of hillshade. Mercator draws no atmosphere at all.
+ * A light that turns with the map (`rotateWithMap`, MapLibre's `anchor: 'map'`) steps its anchor at
+ * the same zoom: with a map anchor the atmosphere fixes the sun over one point on Earth, which no
+ * position can align with the light of hillshade. Fixed to the screen below that zoom, the atmosphere
+ * glows from `direction` while the map points north, and turns away from it only as far as the map is
+ * rotated. Mercator draws no atmosphere at all, so there both are written plainly.
  */
 export function configure3DLighting(style: StyleSpecification, light: ResolvedLight, projection: ResolvedProjection) {
 	if (light) {
 		const position = lightPosition(light);
+		const anchor = light.rotateWithMap ? 'map' : 'viewport';
+		const globe = projection !== 'mercator';
 		style.light = {
-			anchor: light.rotateWithMap ? 'map' : 'viewport',
-			position:
-				projection === 'mercator' || light.rotateWithMap
-					? position
-					: ['step', ['zoom'], ['literal', globeLightPosition(light)], BUILDINGS_APPEAR_ZOOM, ['literal', position]],
+			anchor: globe && anchor === 'map' ? ['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map'] : anchor,
+			position: globe
+				? ['step', ['zoom'], ['literal', globeLightPosition(light)], BUILDINGS_APPEAR_ZOOM, ['literal', position]]
+				: position,
 			color: Color.parse(light.color).asString(),
 			intensity: light.intensity,
 		};

@@ -202,9 +202,22 @@ describe('configure3DLighting', () => {
 		expect(lightPosition(sun(270, 30))).toStrictEqual([1.15, 270, 60]);
 	});
 
-	it('keeps the true position for a light that turns with the map, which the atmosphere cannot follow', () => {
+	it('steps a light that turns with the map from the screen to the map where buildings appear, on a globe', () => {
 		const style = baseStyle();
 		configure3DLighting(style, sun(315, 45, true), 'globe');
+		expect(positionOf(style)).toStrictEqual([
+			'step',
+			['zoom'],
+			['literal', [1.15, 225, 135]],
+			BUILDINGS_APPEAR_ZOOM,
+			['literal', [1.15, 315, 45]],
+		]);
+		expect(style.light?.anchor).toStrictEqual(['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map']);
+	});
+
+	it('writes a light that turns with the map plainly in Mercator', () => {
+		const style = baseStyle();
+		configure3DLighting(style, sun(315, 45, true), 'mercator');
 		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
 		expect(style.light?.anchor).toBe('map');
 	});

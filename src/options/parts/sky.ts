@@ -21,7 +21,8 @@ export type SkyOptions = {
 
 	/**
 	 * Default `0`: no haze, so the globe's edge stays crisp. The haze is lit from `light`: on a globe it
-	 * glows on the side the light comes from, unless `light.rotateWithMap` is set.
+	 * glows on the side of the screen the light comes from — with `light.rotateWithMap`, while the map
+	 * points north.
 	 */
 	atmosphereBlend?: PropertyValueSpecification<number>;
 	/** Default `0.5`. */

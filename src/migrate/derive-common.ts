@@ -751,7 +751,8 @@ function deriveLight(light: NonNullable<StyleSpecification['light']>): LightOpti
 		out.altitude = 90 - (position[2] as number);
 	}
 	// MapLibre's default anchor is 'viewport', which is `rotateWithMap: false`.
-	if (light.anchor === 'map') out.rotateWithMap = true;
+	// On a globe, a light that turns with the map is written with an anchor that steps to 'map'.
+	if (lastStop(light.anchor) === 'map') out.rotateWithMap = true;
 	if (typeof light.color === 'string') out.color = light.color;
 	if (typeof light.intensity === 'number') out.intensity = light.intensity;
 	return out;
