@@ -269,7 +269,7 @@ describe('satellite() knob: features', () => {
 
 	it('light configures style.light for a visible atmosphere', () => {
 		expect(build({ light: { direction: 120 }, sky: { atmosphereBlend: 0.5 } }).light).toStrictEqual({
-			anchor: 'viewport',
+			anchor: ['step', ['zoom'], 'viewport', 14, 'map'],
 			position: ['step', ['zoom'], ['literal', [1.15, 60, 135]], 14, ['literal', [1.15, 120, 45]]],
 			color: 'rgb(255,255,255)',
 			intensity: 0.5,

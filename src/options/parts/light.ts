@@ -16,8 +16,8 @@ export type LightOptions =
 	| boolean
 	| {
 			/**
-			 * Where the light comes from, in degrees clockwise: 0 = top, 90 = right. Default `315`, the top
-			 * left — the cartographic convention, under which relief never reads inverted. Any angle is
+			 * Where the light comes from, in degrees clockwise: 0 = north (or the top of the screen, with
+			 * `rotateWithMap: false`), 90 = east. Default `315`, the top left while the map points north — the cartographic convention, under which relief never reads inverted. Any angle is
 			 * accepted and wrapped: `-45` is `315`.
 			 */
 			direction?: number;
@@ -28,8 +28,9 @@ export type LightOptions =
 			 */
 			altitude?: number;
 			/**
-			 * Whether the light turns with the map. Default `false`: it stays fixed to the screen, so
-			 * `direction` 0 is always the top of the screen. `true` makes 0 north instead. The globe's
+			 * Whether the light turns with the map. Default `true`: `direction` is a compass bearing, 0 is
+			 * north, and the shading is not recomputed while the map rotates. `false` fixes the light to the
+			 * screen, so `direction` 0 is always the top of the screen, at the cost of slower rotation. The globe's
 			 * atmosphere (`sky.atmosphereBlend` > 0) cannot turn with the map; it glows from `direction`
 			 * on screen, which matches the terrain while the map points north.
 			 */
@@ -47,7 +48,7 @@ export type ResolvedLight = false | Required<Exclude<LightOptions, boolean>>;
 export const LIGHT_DEFAULTS = {
 	direction: 315,
 	altitude: 45,
-	rotateWithMap: false,
+	rotateWithMap: true,
 	color: '#ffffff',
 	intensity: 0.5,
 } as const satisfies ResolvedLight;

@@ -352,7 +352,7 @@ describe('osm() knob: light', () => {
 			light: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
 		expect(s.light).toEqual({
-			anchor: 'viewport',
+			anchor: ['step', ['zoom'], 'viewport', 14, 'map'],
 			position: ['step', ['zoom'], ['literal', [1.15, 80, 120]], 14, ['literal', [1.15, 100, 60]]],
 			color: 'rgb(255,0,0)',
 			intensity: 0.9,
@@ -380,11 +380,11 @@ describe('osm() knob: light', () => {
 		expect(s.light?.anchor).toStrictEqual(['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map']);
 	});
 
-	it('defaults to light from the top-left of the screen at 45°', () => {
+	it('defaults to light from the north-west at 45°, turning with the map', () => {
 		const s = build({ features: { hillshade: true, buildings: 'extruded' }, light: true });
 		const p = paint(s, 'hillshade');
 		expect([p['hillshade-illumination-direction'], p['hillshade-illumination-altitude']]).toStrictEqual([315, 45]);
-		expect(p['hillshade-illumination-anchor']).toBe('viewport');
+		expect(p['hillshade-illumination-anchor']).toBe('map');
 		expect(s.light?.position).toContainEqual(['literal', [1.15, 315, 45]]);
 	});
 
@@ -404,7 +404,7 @@ describe('osm() knob: light', () => {
 
 	it('writes style.light by default, and none with `light: false`', () => {
 		const extruded = { features: { buildings: 'extruded' } } as const;
-		expect(build(extruded).light).toMatchObject({ anchor: 'viewport', intensity: 0.5 });
+		expect(build(extruded).light).toMatchObject({ anchor: ['step', ['zoom'], 'viewport', 14, 'map'], intensity: 0.5 });
 		expect(build({ ...extruded, light: false }).light).toBeUndefined();
 	});
 

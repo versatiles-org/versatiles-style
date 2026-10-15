@@ -463,18 +463,20 @@ Terrain is shaded only by `features.hillshade`. MapLibre never lights the 3D sur
 type LightOptions =
   | boolean
   | {
-      direction?: number; // where the light comes from, clockwise; 0 = top, 90 = right; default: 315 (top left)
+      direction?: number; // where the light comes from, clockwise; 0 = north, 90 = east; default: 315 (north-west)
       altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
-      rotateWithMap?: boolean; // whether the light turns with the map; default: false (fixed to the screen)
+      rotateWithMap?: boolean; // whether the light turns with the map; default: true (false: fixed to the screen)
       color?: string; // light color, 3D buildings only; default: '#ffffff'
       intensity?: number; // 0–1, 3D buildings only; default: 0.5
     };
 ```
 
-By default the light is fixed to the screen: `direction: 315` comes from the top left however the map
-is rotated. That is the cartographic convention, under which relief never reads inverted. With
-`rotateWithMap: true`, `direction` is a compass bearing instead (0 = north) and the shading turns with
-the map.
+By default the light turns with the map: `direction` is a compass bearing (0 = north), and `315` comes
+from the north-west, the top left while the map points north. Rotating the map then leaves the
+shading as it is, which is much faster than relighting the hillshade on every frame. With
+`rotateWithMap: false` the light is fixed to the screen instead: `direction: 315` comes from the top
+left however the map is rotated — the cartographic convention, under which relief never reads
+inverted — but the hillshade is redrawn while the map rotates.
 
 On a globe, the library writes `light.position` as a zoom `step`: MapLibre's atmosphere reads the light
 mirrored top to bottom and places the sun behind the globe, so below the zoom at which buildings appear
