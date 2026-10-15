@@ -465,7 +465,7 @@ type LightOptions =
   | {
       direction?: number; // where the light comes from, clockwise; 0 = north, 90 = east; default: 315 (north-west)
       altitude?: number; // elevation in degrees; 0 = horizon, 90 = zenith; default: 45
-      rotateWithMap?: boolean; // whether the light turns with the map; default: true (false: fixed to the screen)
+      fixedToScreen?: boolean; // whether the light stays fixed to the screen; default: false (turns with the map)
       color?: string; // light color, 3D buildings only; default: '#ffffff'
       intensity?: number; // 0–1, 3D buildings only; default: 0.5
     };
@@ -474,7 +474,7 @@ type LightOptions =
 By default the light turns with the map: `direction` is a compass bearing (0 = north), and `315` comes
 from the north-west, the top left while the map points north. Rotating the map then leaves the
 shading as it is, which is much faster than relighting the hillshade on every frame. With
-`rotateWithMap: false` the light is fixed to the screen instead: `direction: 315` comes from the top
+`fixedToScreen: true` the light stays on screen instead: `direction: 315` comes from the top
 left however the map is rotated — the cartographic convention, under which relief never reads
 inverted — but the hillshade is redrawn while the map rotates.
 
@@ -1589,15 +1589,15 @@ delivering the second.
 v7 gives the map one light, on by default, and removes the two options it replaces. Everything not
 listed here is unchanged.
 
-| v6                                             | v7                                                                                 |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `osm({ sun: true })`                           | `osm({ light: { direction: 210, altitude: 60 } })`, or `osm()` for the new default |
-| `osm({ sun: { direction, altitude } })`        | `osm({ light: { direction, altitude } })`                                          |
-| `osm({ sun: { anchor: 'map' } })`              | `osm({ light: { rotateWithMap: true } })`                                          |
-| `osm({ sun: { color, intensity } })`           | `osm({ light: { color, intensity } })`                                             |
-| `osm({ features: { hillshade: { anchor } } })` | `osm({ light: { rotateWithMap: anchor === 'map' } })`                              |
-| `osm()` — no light                             | `osm({ light: false })`                                                            |
-| `SunOptions`, `ResolvedSun`                    | `LightOptions`, `ResolvedLight`                                                    |
+| v6                                             | v7                                                                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `osm({ sun: true })`                           | `osm({ light: { direction: 210, altitude: 60, fixedToScreen: true } })`, or `osm()` for the new default |
+| `osm({ sun: { direction, altitude } })`        | `osm({ light: { direction, altitude, fixedToScreen: true } })`                                          |
+| `osm({ sun: { anchor: 'map' } })`              | `osm({ light: true })`                                                                                  |
+| `osm({ sun: { color, intensity } })`           | `osm({ light: { color, intensity } })`                                                                  |
+| `osm({ features: { hillshade: { anchor } } })` | `osm({ light: { fixedToScreen: anchor === 'viewport' } })`                                              |
+| `osm()` — no light                             | `osm({ light: false })`                                                                                 |
+| `SunOptions`, `ResolvedSun`                    | `LightOptions`, `ResolvedLight`                                                                         |
 
 `light` defaults differ from `sun`'s: what `sun` left unset was 210° and 60°, what `light` leaves unset
 is 315° and 45°. To keep a v6 look, write the v6 values out.
@@ -1608,12 +1608,12 @@ an error that names the replacement: `osm: unknown option "sun" was removed in v
 **What changes without any change to your code:**
 
 - **3D buildings and the atmosphere are lit by default.** A style with `features.buildings: 'extruded'`
-  or a visible atmosphere gets a root `light`, from the top left of the screen at 45°
+  or a visible atmosphere gets a root `light`, from the north-west at 45°, turning with the map
   (`direction: 315`, `altitude: 45`). v6 wrote none unless `sun` was set, so buildings took MapLibre's
   own light, from the south-south-west.
 - **Hillshade looks different.** Lit, it uses MapLibre's `combined` method, which takes the light's
   altitude and leaves flat ground clear; it no longer draws `hillshade.accentColor`. It is lit from the
-  top left of the screen (v6: from the north-north-west, turning with the map), the same side as the
+  north-west (v6: from the north-north-west), turning with the map as in v6, from the same side as the
   buildings. `light: false` restores the v6 hillshade.
 - **MapLibre GL JS 5.5.0 or newer is required** (v6: 5.0.0), and declared as the peer range. The lit
   hillshade writes `hillshade-method` and `hillshade-illumination-altitude`, which older versions

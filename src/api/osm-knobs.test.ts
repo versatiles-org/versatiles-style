@@ -316,12 +316,21 @@ describe('osm() knob: features.hillshade', () => {
 		expect(paint(s, 'hillshade')['hillshade-exaggeration']).toBe(0.42);
 	});
 
-	it('rejects the removed hillshade.anchor, naming light.rotateWithMap', () => {
+	it('rejects the removed hillshade.anchor, naming light.fixedToScreen', () => {
 		expect(() => build({ features: { hillshade: { anchor: 'map' } as never } })).toThrow(
-			`"features.hillshade.anchor" was removed in v7 — use "light.rotateWithMap" ('map' is \`true\`)`
+			`"features.hillshade.anchor" was removed in v7 — use "light.fixedToScreen" ('viewport' is \`true\`)`
 		);
 		expect(osm.validateOptions({ features: { hillshade: { anchor: 'map' } as never } }).issues).toMatchObject([
-			{ path: 'features.hillshade.anchor', suggestion: 'light.rotateWithMap' },
+			{ path: 'features.hillshade.anchor', suggestion: 'light.fixedToScreen' },
+		]);
+	});
+
+	it('rejects light.rotateWithMap, naming light.fixedToScreen', () => {
+		expect(() => build({ light: { rotateWithMap: false } as never })).toThrow(
+			'"light.rotateWithMap" — this is now "light.fixedToScreen" (the opposite: `rotateWithMap: false` is `fixedToScreen: true`)'
+		);
+		expect(osm.validateOptions({ light: { rotateWithMap: true } as never }).issues).toMatchObject([
+			{ path: 'light.rotateWithMap', suggestion: 'light.fixedToScreen' },
 		]);
 	});
 
@@ -360,13 +369,13 @@ describe('osm() knob: light', () => {
 	});
 
 	it('turns terrain and buildings with the map together, or neither', () => {
-		for (const rotateWithMap of [false, true]) {
+		for (const fixedToScreen of [false, true]) {
 			const s = build({
 				projection: 'mercator',
 				features: { hillshade: true, buildings: 'extruded' },
-				light: { rotateWithMap },
+				light: { fixedToScreen },
 			});
-			const anchor = rotateWithMap ? 'map' : 'viewport';
+			const anchor = fixedToScreen ? 'viewport' : 'map';
 			expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe(anchor);
 			expect(s.light?.anchor).toBe(anchor);
 		}
@@ -375,7 +384,7 @@ describe('osm() knob: light', () => {
 	// Below building zoom only the atmosphere reads `style.light`, and with a map anchor it fixes the sun
 	// over one point on Earth.
 	it('keeps a light that turns with the map fixed to the screen below building zoom, on a globe', () => {
-		const s = build({ features: { hillshade: true }, light: { rotateWithMap: true }, sky: { atmosphereBlend: 0.5 } });
+		const s = build({ features: { hillshade: true }, light: true, sky: { atmosphereBlend: 0.5 } });
 		expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe('map');
 		expect(s.light?.anchor).toStrictEqual(['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map']);
 	});

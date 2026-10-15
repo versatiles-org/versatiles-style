@@ -16,7 +16,7 @@ function hillshadeInsertIndex(layers: StyleSpecification['layers']): number {
 }
 
 // Adds a raster-dem elevation source and a hillshade layer to the style. With a `light`, the hillshade
-// takes its direction, altitude and whether it turns with the map, so it is lit from the same side as
+// takes its direction, altitude and whether it is fixed to the screen, so it is lit from the same side as
 // the fill-extrusion buildings, which `configure3DLighting` lights from `style.light`.
 export function addHillshade(
 	style: StyleSpecification,
@@ -41,7 +41,7 @@ export function addHillshade(
 			'hillshade-shadow-color': Color.parse(options.shadowColor).asString(),
 			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
 			// Without a light, 'map', MapLibre's own light for hillshade.
-			'hillshade-illumination-anchor': light && !light.rotateWithMap ? 'viewport' : 'map',
+			'hillshade-illumination-anchor': light && light.fixedToScreen ? 'viewport' : 'map',
 			// With a light, 'combined' — the one method that takes the light's altitude and leaves flat ground
 			// clear. It and 'hillshade-illumination-altitude' are why this package needs MapLibre 5.5.0.
 			// Without a light, 'standard', the default and not written; only it draws the accent colour.

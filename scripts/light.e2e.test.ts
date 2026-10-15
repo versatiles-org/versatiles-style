@@ -19,8 +19,8 @@ import { SKY_DEFAULTS, type ResolvedLight } from '../src/options/index.js';
 
 const SIZE = 512;
 
-function sun(direction: number, altitude = 45, rotateWithMap = false): Exclude<ResolvedLight, false> {
-	return { direction, altitude, rotateWithMap, color: '#ffffff', intensity: 0.5 };
+function sun(direction: number, altitude = 45, fixedToScreen = true): Exclude<ResolvedLight, false> {
+	return { direction, altitude, fixedToScreen, color: '#ffffff', intensity: 0.5 };
 }
 
 function luminance(pixels: Uint8Array): Float64Array {
@@ -124,7 +124,7 @@ describe.skipIf(!GlMap.available())('light on a globe, in MapLibre GL JS', () =>
 		async (bearing) => {
 			const view = { zoom: 0.6, bearing };
 			const base = await render(globe(0), view);
-			const image = await render(globe(1, sun(315, 45, true)), view);
+			const image = await render(globe(1, sun(315, 45, false)), view);
 			expect(angleBetween(brightSide(image, base), 315)).toBeLessThan(20);
 		},
 		30_000
@@ -133,7 +133,7 @@ describe.skipIf(!GlMap.available())('light on a globe, in MapLibre GL JS', () =>
 	// …and turns with the map from building zoom on: light from the east, with the map turned upside
 	// down, comes from the left of the screen.
 	it('lights buildings from the map direction for a light that turns with the map', async () => {
-		const image = await render(tower(sun(90, 30, true)), { zoom: 16, pitch: 60, bearing: 180 });
+		const image = await render(tower(sun(90, 30, false)), { zoom: 16, pitch: 60, bearing: 180 });
 		let left = 0;
 		let right = 0;
 		for (let i = 0; i < image.length; i++) {

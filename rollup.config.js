@@ -52,6 +52,7 @@ const stubV5Hints = {
 			'export function v5Hint() { return undefined; }',
 			'export function preReleaseHint() { return undefined; }',
 			'export function v6Hint() { return undefined; }',
+			'export function v7Hint() { return undefined; }',
 			'',
 		].join('\n');
 	},

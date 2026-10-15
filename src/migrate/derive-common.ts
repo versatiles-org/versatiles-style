@@ -753,9 +753,9 @@ function deriveLight(light: NonNullable<StyleSpecification['light']>): LightOpti
 		out.direction = position[1] as number;
 		out.altitude = 90 - (position[2] as number);
 	}
-	// MapLibre's default anchor is 'viewport', which is `rotateWithMap: false`.
+	// MapLibre's default anchor is 'viewport', which is `fixedToScreen: true`.
 	// On a globe, a light that turns with the map is written with an anchor that steps to 'map'.
-	out.rotateWithMap = lastStop(light.anchor) === 'map';
+	out.fixedToScreen = lastStop(light.anchor) !== 'map';
 	if (typeof light.color === 'string') out.color = light.color;
 	if (typeof light.intensity === 'number') out.intensity = light.intensity;
 	return out;
@@ -776,7 +776,7 @@ function hillshadeLight(hillshade: HillshadeLayerSpecification | undefined): Lig
 	if (typeof direction === 'number') out.direction = direction;
 	if (typeof altitude === 'number') out.altitude = altitude;
 	// MapLibre's default `hillshade-illumination-anchor` is 'viewport' as well.
-	out.rotateWithMap = paint['hillshade-illumination-anchor'] === 'map';
+	out.fixedToScreen = paint['hillshade-illumination-anchor'] !== 'map';
 	return out;
 }
 

@@ -10,7 +10,7 @@
 
 > **Upgrading from v6?** v7 gives the map one light that shades terrain, 3D buildings and the globe's
 > atmosphere alike, and turns it on by default — so hillshade looks different. v7 requires MapLibre GL
-> JS 5.5. `sun` is now `light`, and `hillshade.anchor` is `light.rotateWithMap`. See **[Migration from v6](API_DESIGN.md#migration-from-v6)**.
+> JS 5.5. `sun` is now `light`, and `hillshade.anchor` is `light.fixedToScreen`. See **[Migration from v6](API_DESIGN.md#migration-from-v6)**.
 >
 > **Upgrading from v5?** v6 is a breaking release: the palette builders (`colorful`, `shadow`, …) are
 > replaced by `osm({ theme })`, options are grouped (`textScale` → `text.scale`), all 34 of

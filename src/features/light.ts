@@ -49,7 +49,7 @@ function usesLight(style: StyleSpecification, projection: ResolvedProjection, sk
  * below ~100 km, and buildings only appear at `BUILDINGS_APPEAR_ZOOM`. So below that zoom the light
  * takes the atmosphere's position and from it on the true one.
  *
- * A light that turns with the map (`rotateWithMap`, MapLibre's `anchor: 'map'`) steps its anchor at
+ * A light that turns with the map (no `fixedToScreen`, MapLibre's `anchor: 'map'`) steps its anchor at
  * the same zoom: with a map anchor the atmosphere fixes the sun over one point on Earth, which no
  * position can align with the light of hillshade. Fixed to the screen below that zoom, the atmosphere
  * glows from `direction` while the map points north, and turns away from it only as far as the map is
@@ -63,7 +63,7 @@ export function configure3DLighting(
 ) {
 	if (light && usesLight(style, projection, sky)) {
 		const position = lightPosition(light);
-		const anchor = light.rotateWithMap ? 'map' : 'viewport';
+		const anchor = light.fixedToScreen ? 'viewport' : 'map';
 		const globe = projection !== 'mercator';
 		style.light = {
 			anchor: globe && anchor === 'map' ? ['step', ['zoom'], 'viewport', BUILDINGS_APPEAR_ZOOM, 'map'] : anchor,

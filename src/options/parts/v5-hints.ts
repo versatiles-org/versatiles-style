@@ -123,16 +123,34 @@ export function preReleaseHint(label: string, path: string): string | undefined 
 
 /** Options v7 removed, by path in the options of every builder, with what to set instead. */
 const REMOVED_IN_V7: Readonly<Record<string, { use: string; note: string }>> = {
-	'features.hillshade.anchor': { use: 'light.rotateWithMap', note: "'map' is `true`" },
-	sun: { use: 'light', note: "the same values; `anchor: 'map'` is `rotateWithMap: true`" },
+	'features.hillshade.anchor': { use: 'light.fixedToScreen', note: "'viewport' is `true`" },
+	sun: { use: 'light', note: "the same values; `anchor: 'viewport'` is `fixedToScreen: true`" },
 };
 
 /**
  * What to set instead of an option v7 removed, at `path` in the options of `label` — or `undefined`.
- * `hillshade.anchor` became `light.rotateWithMap`, which turns hillshade and 3D buildings together, and
+ * `hillshade.anchor` became `light.fixedToScreen`, which fixes hillshade and 3D buildings together, and
  * `sun` became `light`.
  */
 export function v6Hint(label: string, path: string): { use: string; note: string } | undefined {
 	if (label !== 'osm' && label !== 'satellite' && label !== 'omt' && label !== 'protomaps') return undefined;
 	return Object.hasOwn(REMOVED_IN_V7, path) ? REMOVED_IN_V7[path] : undefined;
+}
+
+/** Options renamed after 7.0.0, by path in the options of every builder, with what to set instead. */
+const RENAMED_AFTER_V7_0: Readonly<Record<string, { use: string; note: string }>> = {
+	'light.rotateWithMap': {
+		use: 'light.fixedToScreen',
+		note: 'the opposite: `rotateWithMap: false` is `fixedToScreen: true`',
+	},
+};
+
+/**
+ * What to set instead of an option renamed after 7.0.0, at `path` in the options of `label` — or
+ * `undefined`. `light.rotateWithMap` became `light.fixedToScreen`, with the opposite meaning, when the
+ * default changed to a light that turns with the map.
+ */
+export function v7Hint(label: string, path: string): { use: string; note: string } | undefined {
+	if (label !== 'osm' && label !== 'satellite' && label !== 'omt' && label !== 'protomaps') return undefined;
+	return Object.hasOwn(RENAMED_AFTER_V7_0, path) ? RENAMED_AFTER_V7_0[path] : undefined;
 }

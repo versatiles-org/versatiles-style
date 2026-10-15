@@ -10,7 +10,7 @@ export type HillshadeOptions =
 			accentColor?: string;
 	  };
 
-/** Whether the shading turns with the map is `light.rotateWithMap`, shared with 3D buildings. */
+/** Whether the shading is fixed to the screen is `light.fixedToScreen`, shared with 3D buildings. */
 export type ResolvedHillshade =
 	| false
 	| {

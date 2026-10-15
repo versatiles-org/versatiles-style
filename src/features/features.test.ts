@@ -14,7 +14,7 @@ const MOCK_LIGHT: Exclude<ResolvedLight, false> = {
 	altitude: 35,
 	color: '#fff5e0',
 	intensity: 0.5,
-	rotateWithMap: true,
+	fixedToScreen: false,
 };
 
 function baseStyle(): StyleSpecification {
@@ -89,16 +89,16 @@ describe('addTerrain', () => {
 
 describe('addHillshade anchor', () => {
 	const options = { exaggeration: 0.5, shadowColor: '#000', highlightColor: '#fff', accentColor: '#888' };
-	const anchorOf = (rotateWithMap?: boolean) => {
+	const anchorOf = (fixedToScreen?: boolean) => {
 		const style = baseStyle();
-		const light = rotateWithMap === undefined ? false : { ...MOCK_LIGHT, rotateWithMap };
+		const light = fixedToScreen === undefined ? false : { ...MOCK_LIGHT, fixedToScreen };
 		addHillshade(style, options, light, ELEVATION_URL);
 		return style.layers.find((l) => l.id === 'hillshade')?.paint?.['hillshade-illumination-anchor' as never];
 	};
 
 	it('follows the light, so terrain and buildings are lit from the same side', () => {
-		expect(anchorOf(false)).toBe('viewport');
-		expect(anchorOf(true)).toBe('map');
+		expect(anchorOf(true)).toBe('viewport');
+		expect(anchorOf(false)).toBe('map');
 	});
 
 	it("is 'map' without a light", () => {
@@ -158,11 +158,11 @@ describe('addHillshade', () => {
 });
 
 describe('configure3DLighting', () => {
-	const sun = (direction: number, altitude: number, rotateWithMap = false) => ({
+	const sun = (direction: number, altitude: number, fixedToScreen = true) => ({
 		...MOCK_LIGHT,
 		direction,
 		altitude,
-		rotateWithMap,
+		fixedToScreen,
 	});
 	const positionOf = (style: StyleSpecification) => (style.light as { position: unknown }).position;
 	// A sky whose atmosphere shows on a globe, so these tests see the light whatever the buildings do.
@@ -206,7 +206,7 @@ describe('configure3DLighting', () => {
 
 	it('steps a light that turns with the map from the screen to the map where buildings appear, on a globe', () => {
 		const style = baseStyle();
-		configure3DLighting(style, sun(315, 45, true), 'globe', SKY);
+		configure3DLighting(style, sun(315, 45, false), 'globe', SKY);
 		expect(positionOf(style)).toStrictEqual([
 			'step',
 			['zoom'],
@@ -219,7 +219,7 @@ describe('configure3DLighting', () => {
 
 	it('writes a light that turns with the map plainly in Mercator', () => {
 		const style = extruded();
-		configure3DLighting(style, sun(315, 45, true), 'mercator', SKY);
+		configure3DLighting(style, sun(315, 45, false), 'mercator', SKY);
 		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
 		expect(style.light?.anchor).toBe('map');
 	});

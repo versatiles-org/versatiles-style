@@ -206,7 +206,7 @@ describe('resolveLight', () => {
 		expect(resolveLight(true, 'osm')).toStrictEqual({
 			direction: 315,
 			altitude: 45,
-			rotateWithMap: true,
+			fixedToScreen: false,
 			color: '#ffffff',
 			intensity: 0.5,
 		});

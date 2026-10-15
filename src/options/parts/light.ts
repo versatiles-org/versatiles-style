@@ -16,9 +16,10 @@ export type LightOptions =
 	| boolean
 	| {
 			/**
-			 * Where the light comes from, in degrees clockwise: 0 = north (or the top of the screen, with
-			 * `rotateWithMap: false`), 90 = east. Default `315`, the top left while the map points north — the cartographic convention, under which relief never reads inverted. Any angle is
-			 * accepted and wrapped: `-45` is `315`.
+			 * Where the light comes from, in degrees clockwise: 0 = north, 90 = east (with `fixedToScreen`:
+			 * 0 = top, 90 = right). Default `315`, the north-west — the top left while the map points north,
+			 * the cartographic convention, under which relief never reads inverted. Any angle is accepted and
+			 * wrapped: `-45` is `315`.
 			 */
 			direction?: number;
 			/**
@@ -28,13 +29,13 @@ export type LightOptions =
 			 */
 			altitude?: number;
 			/**
-			 * Whether the light turns with the map. Default `true`: `direction` is a compass bearing, 0 is
-			 * north, and the shading is not recomputed while the map rotates. `false` fixes the light to the
-			 * screen, so `direction` 0 is always the top of the screen, at the cost of slower rotation. The globe's
-			 * atmosphere (`sky.atmosphereBlend` > 0) cannot turn with the map; it glows from `direction`
-			 * on screen, which matches the terrain while the map points north.
+			 * Whether the light is fixed to the screen. Default `false`: the light turns with the map, so
+			 * rotating the map leaves the shading as it is. `true` keeps `direction` on screen however the map
+			 * is rotated, but MapLibre then relights the hillshade on every frame of a rotation, which is slow.
+			 * The globe's atmosphere (`sky.atmosphereBlend` > 0) is always fixed to the screen; it glows from
+			 * `direction` on screen, which matches the terrain while the map points north.
 			 */
-			rotateWithMap?: boolean;
+			fixedToScreen?: boolean;
 			/** The light's colour, on 3D buildings only. Default `#ffffff`. */
 			color?: string;
 			/** The light's intensity on 3D buildings, 0–1. Default `0.5`. */
@@ -48,7 +49,7 @@ export type ResolvedLight = false | Required<Exclude<LightOptions, boolean>>;
 export const LIGHT_DEFAULTS = {
 	direction: 315,
 	altitude: 45,
-	rotateWithMap: true,
+	fixedToScreen: false,
 	color: '#ffffff',
 	intensity: 0.5,
 } as const satisfies ResolvedLight;
@@ -61,7 +62,7 @@ export function resolveLight(light: LightOptions | undefined, base: string): Res
 	if (light === false) return false;
 	const options = light === undefined || light === true ? {} : light;
 	const path = `${base}.light`;
-	checkKeys(options, { direction: true, altitude: true, rotateWithMap: true, color: true, intensity: true }, path);
+	checkKeys(options, { direction: true, altitude: true, fixedToScreen: true, color: true, intensity: true }, path);
 	checkFinite(options, path);
 	checkColor(options.color, `${path}.color`);
 	checkRange(options.altitude, 0, 90, `${path}.altitude`);
@@ -70,7 +71,7 @@ export function resolveLight(light: LightOptions | undefined, base: string): Res
 		// Any angle, wrapped to 0–360: `-45` is `315`.
 		direction: (((options.direction ?? LIGHT_DEFAULTS.direction) % 360) + 360) % 360,
 		altitude: options.altitude ?? LIGHT_DEFAULTS.altitude,
-		rotateWithMap: options.rotateWithMap ?? LIGHT_DEFAULTS.rotateWithMap,
+		fixedToScreen: options.fixedToScreen ?? LIGHT_DEFAULTS.fixedToScreen,
 		color: options.color ?? LIGHT_DEFAULTS.color,
 		intensity: options.intensity ?? LIGHT_DEFAULTS.intensity,
 	};

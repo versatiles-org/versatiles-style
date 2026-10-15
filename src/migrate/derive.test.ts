@@ -483,7 +483,7 @@ describe('deriveOptions — foreign styles', () => {
 		expect(options.light).toEqual({
 			direction: 90,
 			altitude: 60,
-			rotateWithMap: false,
+			fixedToScreen: true,
 			color: '#ffeedd',
 			intensity: 0.4,
 		});
@@ -498,12 +498,12 @@ describe('deriveOptions — foreign styles', () => {
 
 	// The builder writes no `style.light` for a hillshade alone, so the hillshade is where the light shows.
 	it('reads the light out of a lit hillshade where the style has no light', () => {
-		const style = osm({ light: { direction: 100, altitude: 30, rotateWithMap: false }, features: { hillshade: true } });
+		const style = osm({ light: { direction: 100, altitude: 30, fixedToScreen: true }, features: { hillshade: true } });
 		expect(style.light).toBeUndefined();
 		expect(osmOptions(deriveOptions(style)).light).toStrictEqual({
 			direction: 100,
 			altitude: 30,
-			rotateWithMap: false,
+			fixedToScreen: true,
 		});
 	});
 
@@ -514,16 +514,16 @@ describe('deriveOptions — foreign styles', () => {
 	});
 
 	it('reads a light that turns with the map out of the stepped anchor written for a globe', () => {
-		const style = osm({ light: { rotateWithMap: true }, sky: { atmosphereBlend: 0.5 } });
+		const style = osm({ light: { fixedToScreen: false }, sky: { atmosphereBlend: 0.5 } });
 		expect(osmOptions(deriveOptions(style)).light).toBeUndefined();
-		const fixed = osm({ light: { rotateWithMap: false }, sky: { atmosphereBlend: 0.5 } });
-		expect(osmOptions(deriveOptions(fixed)).light).toStrictEqual({ rotateWithMap: false });
+		const fixed = osm({ light: { fixedToScreen: true }, sky: { atmosphereBlend: 0.5 } });
+		expect(osmOptions(deriveOptions(fixed)).light).toStrictEqual({ fixedToScreen: true });
 	});
 
 	// MapLibre's own default anchor is 'viewport', so a foreign light without one is fixed to the screen.
 	it('reads a light without an anchor as fixed to the screen', () => {
 		const style = omtStyle({ light: { position: [1.15, 315, 45] } });
-		expect(osmOptions(deriveOptions(style)).light).toMatchObject({ rotateWithMap: false });
+		expect(osmOptions(deriveOptions(style)).light).toMatchObject({ fixedToScreen: true });
 	});
 
 	// MapLibre's `light.position` is `[radial, azimuthal, polar]`. A shorter array passed the old
