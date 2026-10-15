@@ -9,9 +9,8 @@
 **VersaTiles Style** generates styles and sprites for MapLibre.
 
 > **Upgrading from v6?** v7 gives the map one light that shades terrain, 3D buildings and the globe's
-> atmosphere alike, and turns it on by default — so hillshade looks different, and needs MapLibre GL
-> JS 5.5 unless you pass `light: false`. `sun` is now `light`, and `hillshade.anchor` is
-> `light.rotateWithMap`. See **[Migration from v6](API_DESIGN.md#migration-from-v6)**.
+> atmosphere alike, and turns it on by default — so hillshade looks different. v7 requires MapLibre GL
+> JS 5.5. `sun` is now `light`, and `hillshade.anchor` is `light.rotateWithMap`. See **[Migration from v6](API_DESIGN.md#migration-from-v6)**.
 >
 > **Upgrading from v5?** v6 is a breaking release: the palette builders (`colorful`, `shadow`, …) are
 > replaced by `osm({ theme })`, options are grouped (`textScale` → `text.scale`), all 34 of
@@ -132,14 +131,11 @@ available in the browser?". The surface is smaller than the npm one on purpose: 
 validators are npm-only, because a page that builds a style and hands it to MapLibre never calls them
 and would otherwise download them. The shipped `versatiles-style.d.ts` carries the same list as types.
 
-> **Requires MapLibre GL JS 5.0 or newer.**
+> **Requires MapLibre GL JS 5.5 or newer.**
 > The generated styles set the [`globe` projection](https://maplibre.org/maplibre-style-spec/projection/)
-> and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/). Older versions ignore both and
-> render a flat Mercator map with no sky — everything else works, so this degrades rather than breaks.
->
-> `features.hillshade` needs **5.5.0 or newer**: lit by the default `light`, it writes
-> `hillshade-method` and `hillshade-illumination-altitude`, which older versions reject, so the style
-> fails to load. With `light: false` it works from 5.0.
+> and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/), which need 5.0, and
+> `features.hillshade` writes `hillshade-method` and `hillshade-illumination-altitude`, which need 5.5.
+> A version below 5.5 rejects a style with hillshade, so it fails to load.
 >
 > npm users have this checked automatically through an optional peer dependency. Loading MapLibre
 > from a `<script>` tag, as above, bypasses that check entirely — so verify the version yourself.

@@ -49,21 +49,22 @@ describe('published package', () => {
 	});
 });
 
-// Globe projection needs MapLibre GL JS 5.0. The range was briefly >= 6.0 for `line-layer-opacity`
+// The lit hillshade needs MapLibre GL JS 5.5 (`hillshade-method`, `hillshade-illumination-altitude`),
+// globe projection 5.0. The range was briefly >= 6.0 for `line-layer-opacity`
 // on the satellite overlay's boundaries, but that property is gone: MapLibre Native drops any layer
 // carrying it (maplibre-native#4298), so it cost Android and iOS their borders entirely. Nothing in
 // the emitted styles needs 6 any more. Declared optional: the package has no runtime dependency on
 // MapLibre and works fine for anyone generating style JSON server-side, so it must never be
 // auto-installed — only range-checked when the consumer already has it.
 describe('maplibre-gl peer range', () => {
-	it('is declared, optional, and requires >= 5', async () => {
+	it('is declared, optional, and requires >= 5.5', async () => {
 		const { readFileSync } = await import('node:fs');
 		const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
 			peerDependencies?: Record<string, string>;
 			peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 			dependencies?: Record<string, string>;
 		};
-		expect(pkg.peerDependencies?.['maplibre-gl']).toBe('>=5.0.0');
+		expect(pkg.peerDependencies?.['maplibre-gl']).toBe('>=5.5.0');
 		expect(pkg.peerDependenciesMeta?.['maplibre-gl']?.optional).toBe(true);
 		// A hard peer would drag ~800 KB of MapLibre into builds that never render a map.
 		expect(pkg.dependencies?.['maplibre-gl']).toBeUndefined();

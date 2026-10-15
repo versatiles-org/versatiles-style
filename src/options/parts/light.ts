@@ -9,7 +9,7 @@ import { checkColor } from './color-check.js';
  *
  * On by default: unset or `true` uses the defaults below, an object overrides individual values.
  * `false` writes no `light`, and hillshade and buildings fall back to MapLibre's own lights, which
- * disagree. With `features.hillshade`, a light needs MapLibre GL JS 5.5.0 or newer.
+ * disagree.
  */
 export type LightOptions =
 	| boolean
@@ -23,8 +23,7 @@ export type LightOptions =
 			/**
 			 * The light's height above the horizon, in degrees, 0–90. Default `45`. A low light deepens the
 			 * hillshade's shadows, a high one flattens the relief. With `features.hillshade`, `light` switches
-			 * the hillshade to MapLibre's `combined` method, the one that takes the altitude; that needs
-			 * MapLibre GL JS 5.5.0 or newer.
+			 * the hillshade to MapLibre's `combined` method, the one that takes the altitude.
 			 */
 			altitude?: number;
 			/**

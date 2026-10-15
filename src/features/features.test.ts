@@ -133,8 +133,8 @@ describe('addHillshade', () => {
 		expect(hillshadeIdx).toBeGreaterThan(waterIdx);
 	});
 
-	// MapLibre knows both properties only since 5.5.0 and rejects the style on older versions.
-	it('writes no paint property newer than MapLibre 5.0 without a light', () => {
+	// Without a light, the hillshade is MapLibre's own: 'standard', with the accent colour.
+	it("uses MapLibre's default method without a light", () => {
 		const style = baseStyle();
 		addHillshade(style, hillshadeOptions, false, ELEVATION_URL);
 		const paint = style.layers.find((l) => l.id === 'hillshade')?.paint ?? {};

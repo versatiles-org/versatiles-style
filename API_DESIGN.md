@@ -481,8 +481,8 @@ points north; as the map rotates, the terrain's light turns with it and the glow
 With `light`, the hillshade uses MapLibre's `combined` method instead of its default, `standard`:
 `standard` ignores the light's altitude, `combined` takes it — a low light deepens the shadows and a
 high one flattens the relief — and leaves flat ground clear. `combined` draws no accent colour, so
-`hillshade.accentColor` applies only with `light: false`. `combined` needs MapLibre GL JS 5.5.0, so
-`features.hillshade` does too unless `light` is `false`.
+`hillshade.accentColor` applies only with `light: false`. `combined` needs MapLibre GL JS 5.5.0, the
+version this package requires.
 
 In v6 this option was called `sun`, and was off by default — see [Migration from v6](#migration-from-v6).
 
@@ -1279,8 +1279,8 @@ Web Mercator exaggerates area away from the equator — Greenland reads as the s
 that distortion is worst at exactly the low zooms where the whole world is visible. `globe` is
 correct there, and MapLibre transitions back to Mercator as you zoom in.
 
-**Requires MapLibre GL JS 5.0+**, declared as an optional peer dependency so npm flags a mismatch
-without forcing an install. Renderers without projection support ignore the property and draw
+**Requires MapLibre GL JS 5.0+**; the package as a whole requires 5.5, declared as an optional peer
+dependency so npm flags a mismatch without forcing an install. Renderers without projection support ignore the property and draw
 Mercator, which is the pre-v6 behaviour: MapLibre GL JS 4.x, and the native/server renderers, which
 are Mercator-only. A style therefore renders as a globe in a current browser and flat server-side —
 worth knowing if you compare the two.
@@ -1606,9 +1606,9 @@ an error that names the replacement: `osm: unknown option "sun" was removed in v
   altitude and leaves flat ground clear; it no longer draws `hillshade.accentColor`. It is lit from the
   top left of the screen (v6: from the north-north-west, turning with the map), the same side as the
   buildings. `light: false` restores the v6 hillshade.
-- **Hillshade needs MapLibre GL JS 5.5.0.** `combined` and the light's altitude are newer than 5.0.0,
-  which rejects the style. Everything else still works from 5.0.0, and so does hillshade with
-  `light: false`.
+- **MapLibre GL JS 5.5.0 or newer is required** (v6: 5.0.0), and declared as the peer range. The lit
+  hillshade writes `hillshade-method` and `hillshade-illumination-altitude`, which older versions
+  reject. Styles without hillshade still load on 5.0, but that is no longer tested.
 - **Out-of-range numbers throw.** `light.altitude` outside 0–90, `light.intensity`,
   `hillshade.exaggeration` and the `sky` blends outside 0–1, and a negative `terrain.exaggeration` used
   to build a style that MapLibre rejected or rendered nonsense from; now they throw an error naming the
