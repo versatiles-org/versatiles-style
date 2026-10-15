@@ -294,7 +294,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **110.9 KB** raw, **34.8 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **111.8 KB** raw, **35.1 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 
