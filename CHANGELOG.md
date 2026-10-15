@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+See [Migration from v6](API_DESIGN.md#migration-from-v6).
+
 - turn light on by default ([f3d8c96](https://github.com/versatiles-org/versatiles-style/commit/f3d8c9641152922bc6a0e830d677040bb5f99465))
 - remove hillshade.anchor in favour of light.rotateWithMap ([ea19322](https://github.com/versatiles-org/versatiles-style/commit/ea19322d63822c3a52be8810f75a8898f57affd2))
 - remove the sun option in favour of light ([d23c75e](https://github.com/versatiles-org/versatiles-style/commit/d23c75ecaf4b00e00da22bcc884a79dad9f2ab3a))
@@ -16,14 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
-- **light:** add light option, deprecate sun and hillshade.anchor ([5afd6ed](https://github.com/versatiles-org/versatiles-style/commit/5afd6ed94d8a0b86c268e1c53fcda39f6aaae9a3))
+- **light:** add the light option: one light for hillshade, 3D buildings and the globe's atmosphere ([5afd6ed](https://github.com/versatiles-org/versatiles-style/commit/5afd6ed94d8a0b86c268e1c53fcda39f6aaae9a3))
 - **hillshade:** use the combined method with light, so its altitude takes effect ([57670d1](https://github.com/versatiles-org/versatiles-style/commit/57670d10f35b4a1ef18723b31adf651206f17d55))
 - **light:** write style.light only where buildings or the atmosphere read it ([10a5263](https://github.com/versatiles-org/versatiles-style/commit/10a526354d3956166312c34c4573e475d5c70177))
 
 ### Bug Fixes
 
-- **sun:** compensate MapLibre's atmosphere sun position on globe projections ([a3c5cef](https://github.com/versatiles-org/versatiles-style/commit/a3c5cef20e1ffbbebc0e8a0555fd530fa29baff3))
-- **hillshade:** follow sun.anchor unless hillshade.anchor is set ([14542d8](https://github.com/versatiles-org/versatiles-style/commit/14542d85db3ea9d87ad99ba0ee33351dcd27cc99))
+- **light:** compensate MapLibre's atmosphere sun position on globe projections ([a3c5cef](https://github.com/versatiles-org/versatiles-style/commit/a3c5cef20e1ffbbebc0e8a0555fd530fa29baff3))
 - **options:** reject out-of-range light, hillshade, terrain and sky values ([0e76ed8](https://github.com/versatiles-org/versatiles-style/commit/0e76ed81d75600918ee4e55d4d14ede331bc1e0b))
 - **light:** keep a map-rotating light fixed to the screen below building zoom on a globe ([b33f5f6](https://github.com/versatiles-org/versatiles-style/commit/b33f5f6febaed0ccc113ffb64619c712943af5d5))
 
