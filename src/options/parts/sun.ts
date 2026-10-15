@@ -1,24 +1,22 @@
 import { checkKeys, checkFinite } from './keys.js';
 import { checkColor } from './color-check.js';
+import type { LightOptions } from './light.js';
 
+/** @deprecated Use `light` (`LightOptions`); `sun` is read as `light` and will be removed in v7. */
 export type SunOptions =
 	| true
 	| {
-			/** The sun's azimuthal direction in degrees, measured clockwise from north. */
+			/** The sun's azimuthal direction in degrees. */
 			direction?: number;
-			/**
-			 * The sun's altitude in degrees above the horizon. Together with `features.hillshade` this
-			 * writes `hillshade-illumination-altitude`, which needs MapLibre GL JS 5.5.0 or newer.
-			 */
+			/** The sun's altitude in degrees above the horizon. */
 			altitude?: number;
-			/** The reference frame for the sun's position: 'map' anchors it to the map, 'viewport' to the screen. */
+			/** 'map' turns the light with the map — `light.rotateWithMap: true`; 'viewport' does not. */
 			anchor?: 'map' | 'viewport';
-			/** The light's color. Default `#ffffff`. */
 			color?: string;
-			/** The light's intensity, 0–1. Default `0.5`. */
 			intensity?: number;
 	  };
 
+/** @deprecated Resolved options carry `light` (`ResolvedLight`); this is no longer produced. */
 export type ResolvedSun =
 	| undefined
 	| {
@@ -29,18 +27,19 @@ export type ResolvedSun =
 			intensity: number;
 	  };
 
-/** `color` and `intensity` are MapLibre's own light defaults, so writing them changes nothing. */
-export function resolveSun(sun?: SunOptions, path = 'sun'): ResolvedSun {
-	if (sun === true) sun = {};
-	if (sun === undefined) return undefined;
+/**
+ * The deprecated `sun`, checked and translated to `light`. Only what the caller set is carried over,
+ * so an unset value takes `light`'s default rather than the one `sun` used to have.
+ */
+export function sunToLight(sun: SunOptions, path = 'sun'): LightOptions {
+	if (sun === true) return true;
 	checkKeys(sun, { direction: true, altitude: true, anchor: true, color: true, intensity: true }, path);
 	checkFinite(sun, path);
-	checkColor(sun?.color, `${path}.color`);
-	return {
-		direction: sun?.direction ?? 210,
-		altitude: sun?.altitude ?? 60,
-		anchor: sun?.anchor ?? 'viewport',
-		color: sun?.color ?? '#ffffff',
-		intensity: sun?.intensity ?? 0.5,
-	};
+	checkColor(sun.color, `${path}.color`);
+	const { anchor, ...rest } = sun;
+	const light: Exclude<LightOptions, boolean> = Object.fromEntries(
+		Object.entries(rest).filter(([, value]) => value !== undefined)
+	);
+	if (anchor !== undefined) light.rotateWithMap = anchor === 'map';
+	return light;
 }

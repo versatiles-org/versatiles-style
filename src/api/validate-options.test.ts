@@ -204,8 +204,8 @@ describe('non-finite numbers are rejected', () => {
 	const cases: [string, () => unknown][] = [
 		['osm.layers.buildings', () => osm({ layers: { buildings: NaN } })],
 		['osm.layers', () => osm({ layers: NaN })],
-		['osm.sun.altitude', () => osm({ sun: { altitude: NaN } })],
-		['osm.sun.direction', () => osm({ sun: { direction: Infinity } })],
+		['osm.light.altitude', () => osm({ light: { altitude: NaN } })],
+		['osm.light.direction', () => osm({ light: { direction: Infinity } })],
 		['osm.icon.scale', () => osm({ icon: { scale: NaN } })],
 		['osm.features.terrain.exaggeration', () => osm({ features: { terrain: { exaggeration: NaN } } })],
 		['osm.features.hillshade.exaggeration', () => osm({ features: { hillshade: { exaggeration: -Infinity } } })],
@@ -240,7 +240,7 @@ describe('non-finite numbers are rejected', () => {
 		expect(() => osm({ layers: { buildings: 0 } })).not.toThrow();
 		expect(() => osm({ layers: { buildings: 1 } })).not.toThrow();
 		expect(() => osm({ layers: { buildings: 0.5 } })).not.toThrow();
-		expect(() => osm({ sun: { altitude: 0, direction: 360 } })).not.toThrow();
+		expect(() => osm({ light: { altitude: 0, direction: 360 } })).not.toThrow();
 		expect(() =>
 			osm({
 				recolor: { brightness: 0.5, gamma: 2, contrast: 0, rotateHue: 180, saturate: -1 },
@@ -256,6 +256,7 @@ describe('non-finite numbers are rejected', () => {
 describe('unparseable colours are rejected', () => {
 	const cases: [string, () => unknown][] = [
 		['osm.colors.water', () => osm({ colors: { water: 'bananas' } })],
+		['osm.light.color', () => osm({ light: { color: 'not-a-colour' } })],
 		['osm.sun.color', () => osm({ sun: { color: 'not-a-colour' } })],
 		['osm.sky.fogColor', () => osm({ sky: { fogColor: 'nope' } })],
 		['osm.sky.horizonColor', () => osm({ sky: { horizonColor: 'nope' } })],
@@ -280,17 +281,21 @@ describe('unparseable colours are rejected', () => {
 	it('reports them as issues rather than throwing, one per bad colour', () => {
 		const result = osm.validateOptions({
 			colors: { water: 'bananas', land: 'pears' },
-			sun: { color: 'zzz' },
+			light: { color: 'zzz' },
 		});
 		expect(result.ok).toBe(false);
-		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.land', 'colors.water', 'sun.color']);
+		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual([
+			'colors.land',
+			'colors.water',
+			'light.color',
+		]);
 	});
 
 	it('still accepts every colour syntax the library parses', () => {
 		expect(() =>
 			osm({
 				colors: { water: '#abc', land: '#aabbccdd', glacier: 'rgb(1,2,3)', building: 'hsl(1,2%,3%)' },
-				sun: { color: 'oklch(0.7 0.1 45)' },
+				light: { color: 'oklch(0.7 0.1 45)' },
 				recolor: { tint: { color: 'rgba(1,2,3,0.5)', amount: 0.5 } },
 			})
 		).not.toThrow();
@@ -299,9 +304,9 @@ describe('unparseable colours are rejected', () => {
 	// A colour that cannot be parsed falls back to the palette's own, so the pass continues and reaches
 	// the rest of the tree instead of stopping at the first bad key.
 	it('does not stop the pass at the first bad colour', () => {
-		const result = osm.validateOptions({ colors: { water: 'bananas' }, sun: { altitude: NaN } });
+		const result = osm.validateOptions({ colors: { water: 'bananas' }, light: { altitude: NaN } });
 		expect(result.ok).toBe(false);
-		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.water', 'sun.altitude']);
+		expect(result.issues.map((issue) => issue.path).sort()).toStrictEqual(['colors.water', 'light.altitude']);
 	});
 });
 
@@ -326,7 +331,7 @@ describe('rejected values are described as the caller wrote them', () => {
 
 	// All three validators agree on the wording, so the same mistake reads the same way wherever it sits.
 	it('agrees with checkFinite, which covers the rest of the tree', () => {
-		expect(messageFor({ sun: { altitude: NaN } })).toBe('expected a finite number, got NaN');
+		expect(messageFor({ light: { altitude: NaN } })).toBe('expected a finite number, got NaN');
 		expect(messageFor({ recolor: { brightness: NaN } })).toBe('expected a finite number, got NaN');
 	});
 

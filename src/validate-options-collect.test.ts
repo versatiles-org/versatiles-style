@@ -59,10 +59,10 @@ describe('validateOptions: collecting the whole tree', () => {
 
 	it('reports several bad values at once', () => {
 		const result = osm.validateOptions({
-			sun: { altitude: NaN, direction: Infinity },
+			light: { altitude: NaN, direction: Infinity },
 			icon: { scale: 'big' },
 		} as never);
-		expect(paths(result)).toStrictEqual(['sun.altitude', 'sun.direction', 'icon.scale']);
+		expect(paths(result)).toStrictEqual(['light.altitude', 'light.direction', 'icon.scale']);
 	});
 
 	it('keeps collecting after a problem that forces a substitute value', () => {
@@ -97,12 +97,12 @@ describe('validateOptions: the issues', () => {
 		// the key check strips the leading label internally and the value checks do not, so this is the
 		// one place the two are reconciled — a UI marking a field must not have to handle both
 		const result = osm.validateOptions({
-			sun: { altitude: NaN },
+			light: { altitude: NaN },
 			colors: { wood: '#fff' },
 			theme: 'nope',
 		} as never);
 		for (const path of paths(result)) expect(path.startsWith('osm')).toBe(false);
-		expect(paths(result)).toContain('sun.altitude');
+		expect(paths(result)).toContain('light.altitude');
 	});
 
 	it('reports the satellite overlay and the root in one pass, both relative to satellite()', () => {

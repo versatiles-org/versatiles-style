@@ -147,16 +147,24 @@ describe('osm.minimizeOptions', () => {
 			});
 		});
 
-		it('writes terrain, hillshade and sun as `true` when they equal what `true` resolves to', () => {
-			expect(roundTrip({ features: { terrain: true, hillshade: true }, sun: true })).toEqual({
+		it('writes terrain, hillshade and light as `true` when they equal what `true` resolves to', () => {
+			expect(roundTrip({ features: { terrain: true, hillshade: true }, light: true })).toEqual({
 				features: { terrain: true, hillshade: true },
-				sun: true,
+				light: true,
 			});
-			expect(roundTrip({ features: { hillshade: { exaggeration: 0.3 } }, sun: { altitude: 30 } })).toEqual({
+			expect(roundTrip({ features: { hillshade: { exaggeration: 0.3 } }, light: { altitude: 30 } })).toEqual({
 				features: { hillshade: { exaggeration: 0.3 } },
-				sun: { altitude: 30 },
+				light: { altitude: 30 },
 			});
-			expect(roundTrip({ sun: { color: '#FFFFFF', intensity: 0.8 } })).toEqual({ sun: { intensity: 0.8 } });
+			expect(roundTrip({ light: { color: '#FFFFFF', intensity: 0.8 } })).toEqual({ light: { intensity: 0.8 } });
+		});
+
+		it('rewrites the deprecated sun as light', () => {
+			expect(osm.minimizeOptions({ sun: true })).toEqual({ light: true });
+			expect(osm.minimizeOptions({ sun: { anchor: 'map', altitude: 45, intensity: 0.8 } })).toEqual({
+				light: { rotateWithMap: true, intensity: 0.8 },
+			});
+			expect(satellite.minimizeOptions({ sun: { direction: 315 } })).toEqual({ light: true });
 		});
 
 		it('collapses resolved URLs back to `urls.base`', () => {
@@ -223,7 +231,7 @@ describe('osm.minimizeOptions', () => {
 		['dark theme', { theme: 'natural-dark' }],
 		['tint amount 0', { recolor: { tint: { color: '#00ff00', amount: 0 } } }],
 		['sky off', { sky: false }],
-		['sun intensity', { sun: { intensity: 0.8 }, features: { buildings: 'extruded' } }],
+		['light intensity', { light: { intensity: 0.8 }, features: { buildings: 'extruded' } }],
 		['text and icon scale', { text: { scale: 2, spacing: 1.5, pitchAlignment: 'viewport' }, icon: { spacing: 2 } }],
 		[
 			'label typography',
@@ -236,7 +244,7 @@ describe('osm.minimizeOptions', () => {
 			},
 		],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
-		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, sun: true }],
+		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, light: true }],
 		['base and one url', { urls: { base: 'https://tiles.example.org', elevation: '/dem/tiles.json' } }],
 		['tint and blend without amount', { recolor: { tint: { color: '#00ff00' }, blend: {} } }],
 		[
@@ -326,10 +334,12 @@ describe('satellite.minimizeOptions', () => {
 		).toEqual({ osmOverlay: { layers: { roads: false, transit: false, boundaries: false } } });
 		const allOff = satellite.resolveOptions({ osmOverlay: { layers: false } });
 		expect(satellite.minimizeOptions(allOff)).toEqual({ osmOverlay: { layers: false } });
-		expect(roundTrip({ urls: { base: 'https://tiles.example.org' }, features: { terrain: true }, sun: true })).toEqual({
+		expect(
+			roundTrip({ urls: { base: 'https://tiles.example.org' }, features: { terrain: true }, light: true })
+		).toEqual({
 			urls: { base: 'https://tiles.example.org' },
 			features: { terrain: true },
-			sun: true,
+			light: true,
 		});
 	});
 
@@ -361,7 +371,7 @@ describe('satellite.minimizeOptions', () => {
 		['sky off', { sky: false, osmOverlay: false }],
 		['overlay text and icon', { osmOverlay: { text: { scale: 1.5, haloBlur: 1 }, icon: { spacing: 2 } } }],
 		['overlay layers off', { osmOverlay: { layers: { roads: false, labels: { places: 0.5 } } } }],
-		['urls and toggles', { urls: { base: 'https://tiles.example.org' }, features: { hillshade: true }, sun: true }],
+		['urls and toggles', { urls: { base: 'https://tiles.example.org' }, features: { hillshade: true }, light: true }],
 		['overlay tint amount 0', { osmOverlay: { recolor: { tint: { color: '#00ff00', amount: 0 } } } }],
 		['overlay blend without amount', { osmOverlay: { recolor: { blend: { color: '#00ff00' } } } }],
 		['overlay fonts', { osmOverlay: { text: { font: 'a', places: { cities: { font: 'b' } } } } }],

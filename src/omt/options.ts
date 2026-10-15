@@ -8,7 +8,7 @@ import {
 	resolveRecolor,
 	resolveSky,
 	resolveSprite,
-	resolveSun,
+	resolveLight,
 	resolveTerrain,
 	resolveText,
 	resolveTheme,
@@ -23,10 +23,11 @@ import {
 	type ResolvedOsmOverlay,
 	type ResolvedProjection,
 	type ResolvedSky,
-	type ResolvedSun,
+	type ResolvedLight,
 	type ResolvedTerrain,
 	type SkyOptions,
 	type SpriteEntries,
+	type LightOptions,
 	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
@@ -125,6 +126,8 @@ export function resolveOmtFeatures(features?: OmtFeaturesOptions, path = 'featur
 export type OmtOptions = OsmOverlayOptions & {
 	urls?: OmtUrlsOptions;
 	features?: OmtFeaturesOptions;
+	light?: LightOptions;
+	/** @deprecated Use `light`; read as `light` until v7. */
 	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
@@ -133,7 +136,7 @@ export type OmtOptions = OsmOverlayOptions & {
 export type ResolvedOmt = ResolvedOsmOverlay & {
 	urls: ResolvedOmtUrls;
 	features: ResolvedOmtFeatures;
-	sun: ResolvedSun;
+	light: ResolvedLight;
 	sky: ResolvedSky;
 	projection: ResolvedProjection;
 };
@@ -151,6 +154,7 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 			recolor: true,
 			urls: true,
 			features: true,
+			light: true,
 			sun: true,
 			sky: true,
 			projection: true,
@@ -163,7 +167,7 @@ export function resolveOmt(options?: OmtOptions): ResolvedOmt {
 	return {
 		urls: resolveOmtUrls(options?.urls, 'omt.urls'),
 		features: resolveOmtFeatures(options?.features, 'omt.features'),
-		sun: resolveSun(options?.sun, 'omt.sun'),
+		light: resolveLight(options?.light, options?.sun, 'omt'),
 		sky: resolveSky(options?.sky, 'omt.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,

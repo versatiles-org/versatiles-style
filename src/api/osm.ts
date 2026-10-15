@@ -86,13 +86,13 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
 		addLandcover(style, LANDCOVER_LAYERS);
 	}
 
-	configure3DLighting(style, resolved.sun, resolved.projection);
+	configure3DLighting(style, resolved.light, resolved.projection);
 
 	// Sky (rendered by MapLibre when the map is pitched / in globe projection).
 	// The sky colour follows the palette's `water` unless set; the other sky values are resolved.

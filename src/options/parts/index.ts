@@ -22,6 +22,7 @@ export * from './icon.js';
 export * from './issues.js';
 export * from './keys.js';
 export * from './layer-groups.js';
+export * from './light.js';
 export * from './projection.js';
 export * from './recolor.js';
 export * from './resolve-url.js';

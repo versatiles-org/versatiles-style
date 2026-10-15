@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { GlMap } from './lib/gljs-render.js';
 import { configure3DLighting } from '../src/features/sun.js';
-import type { ResolvedSun } from '../src/options/index.js';
+import type { ResolvedLight } from '../src/options/index.js';
 
 /**
  * `configure3DLighting` corrects for how MapLibre GL JS draws the globe's atmosphere: mirrored
@@ -19,8 +19,8 @@ import type { ResolvedSun } from '../src/options/index.js';
 
 const SIZE = 512;
 
-function sun(direction: number, altitude = 45): NonNullable<ResolvedSun> {
-	return { direction, altitude, anchor: 'viewport', color: '#ffffff', intensity: 0.5 };
+function sun(direction: number, altitude = 45): Exclude<ResolvedLight, false> {
+	return { direction, altitude, rotateWithMap: false, color: '#ffffff', intensity: 0.5 };
 }
 
 function luminance(pixels: Uint8Array): Float64Array {
@@ -47,7 +47,7 @@ function angleBetween(a: number, b: number): number {
 	return Math.min(d, 360 - d);
 }
 
-function globe(atmosphereBlend: number, light?: NonNullable<ResolvedSun>): StyleSpecification {
+function globe(atmosphereBlend: number, light?: Exclude<ResolvedLight, false>): StyleSpecification {
 	const style = {
 		version: 8,
 		projection: { type: 'globe' },
@@ -60,7 +60,7 @@ function globe(atmosphereBlend: number, light?: NonNullable<ResolvedSun>): Style
 }
 
 /** A round tower: a 48-gon, wound clockwise as a building footprint is. */
-function tower(light: NonNullable<ResolvedSun>): StyleSpecification {
+function tower(light: Exclude<ResolvedLight, false>): StyleSpecification {
 	const ring = Array.from({ length: 49 }, (_, i) => {
 		const a = (-i / 48) * 2 * Math.PI;
 		return [0.0006 * Math.cos(a), 0.0006 * Math.sin(a)];

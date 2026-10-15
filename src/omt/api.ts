@@ -80,12 +80,12 @@ function omtFn(options?: OmtOptions): StyleSpecification {
 		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
 	}
 	// No `addLandcover`: the low-zoom landcover extension is a property of the VersaTiles Shortbread
 	// tileset, and `features.landcover` is therefore not an option this schema accepts.
 
-	configure3DLighting(style, resolved.sun, resolved.projection);
+	configure3DLighting(style, resolved.light, resolved.projection);
 
 	if (resolved.sky) {
 		applySky(style, { skyColor: resolved.colors.water, ...resolved.sky });

@@ -1,6 +1,6 @@
 import { Color } from '../color/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../options/index.js';
+import type { ResolvedLight } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 
 // Inserts a hillshade layer after the last fill/raster/background layer so it renders
@@ -15,9 +15,10 @@ function hillshadeInsertIndex(layers: StyleSpecification['layers']): number {
 	return index;
 }
 
-// Adds a raster-dem elevation source and a hillshade layer to the style. With a `sun`, the hillshade
-// takes its direction, altitude and — unless `options.anchor` is set — its anchor, so it is lit from
-// the same side as the fill-extrusion buildings, which `configure3DLighting` lights from `style.light`.
+// Adds a raster-dem elevation source and a hillshade layer to the style. With a `light`, the hillshade
+// takes its direction, altitude and — unless the deprecated `options.anchor` is set — whether it turns
+// with the map, so it is lit from the same side as the fill-extrusion buildings, which
+// `configure3DLighting` lights from `style.light`.
 export function addHillshade(
 	style: StyleSpecification,
 	options: {
@@ -27,7 +28,7 @@ export function addHillshade(
 		accentColor: string;
 		anchor?: 'map' | 'viewport';
 	},
-	sun: ResolvedSun,
+	light: ResolvedLight,
 	elevation: string | TileJSONSpecification
 ) {
 	style.sources ??= {};
@@ -42,13 +43,13 @@ export function addHillshade(
 			'hillshade-shadow-color': Color.parse(options.shadowColor).asString(),
 			'hillshade-highlight-color': Color.parse(options.highlightColor).asString(),
 			'hillshade-accent-color': Color.parse(options.accentColor).asString(),
-			'hillshade-illumination-anchor': options.anchor ?? sun?.anchor ?? 'map',
+			'hillshade-illumination-anchor': options.anchor ?? (light && !light.rotateWithMap ? 'viewport' : 'map'),
 			// No 'hillshade-method': 'standard' is the default, and MapLibre below 5.5.0 rejects the property.
-			// 'hillshade-illumination-altitude' is 5.5.0+ as well, so `sun` + hillshade needs that version.
-			...(sun
+			// 'hillshade-illumination-altitude' is 5.5.0+ as well, so `light` + hillshade needs that version.
+			...(light
 				? {
-						'hillshade-illumination-direction': sun.direction,
-						'hillshade-illumination-altitude': sun.altitude,
+						'hillshade-illumination-direction': light.direction,
+						'hillshade-illumination-altitude': light.altitude,
 					}
 				: {}),
 		},

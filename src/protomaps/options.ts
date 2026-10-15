@@ -8,7 +8,7 @@ import {
 	resolveRecolor,
 	resolveSky,
 	resolveSprite,
-	resolveSun,
+	resolveLight,
 	resolveTerrain,
 	resolveText,
 	resolveTheme,
@@ -23,10 +23,11 @@ import {
 	type ResolvedOsmOverlay,
 	type ResolvedProjection,
 	type ResolvedSky,
-	type ResolvedSun,
+	type ResolvedLight,
 	type ResolvedTerrain,
 	type SkyOptions,
 	type SpriteEntries,
+	type LightOptions,
 	type SunOptions,
 	type TerrainOptions,
 	type TileSource,
@@ -150,6 +151,8 @@ export function resolveProtomapsFeatures(
 export type ProtomapsOptions = OsmOverlayOptions & {
 	urls?: ProtomapsUrlsOptions;
 	features?: ProtomapsFeaturesOptions;
+	light?: LightOptions;
+	/** @deprecated Use `light`; read as `light` until v7. */
 	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
@@ -158,7 +161,7 @@ export type ProtomapsOptions = OsmOverlayOptions & {
 export type ResolvedProtomaps = ResolvedOsmOverlay & {
 	urls: ResolvedProtomapsUrls;
 	features: ResolvedProtomapsFeatures;
-	sun: ResolvedSun;
+	light: ResolvedLight;
 	sky: ResolvedSky;
 	projection: ResolvedProjection;
 };
@@ -176,6 +179,7 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 			recolor: true,
 			urls: true,
 			features: true,
+			light: true,
 			sun: true,
 			sky: true,
 			projection: true,
@@ -193,7 +197,7 @@ export function resolveProtomaps(options?: ProtomapsOptions): ResolvedProtomaps 
 	return {
 		urls: resolveProtomapsUrls(options?.urls, 'protomaps.urls'),
 		features: resolveProtomapsFeatures(options?.features, 'protomaps.features'),
-		sun: resolveSun(options?.sun, 'protomaps.sun'),
+		light: resolveLight(options?.light, options?.sun, 'protomaps'),
 		sky: resolveSky(options?.sky, 'protomaps.sky'),
 		projection: resolveProjection(options?.projection),
 		theme,

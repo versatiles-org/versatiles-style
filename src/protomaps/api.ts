@@ -98,12 +98,12 @@ function protomapsFn(options?: ProtomapsOptions): StyleSpecification {
 		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.hillshade !== false) {
-		addHillshade(style, resolved.features.hillshade, resolved.sun, resolved.urls.elevation);
+		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
 	}
 	// No `addLandcover`: Protomaps' coarse low-zoom band is its own `landcover` layer, emitted by the
 	// landcover module when `features.landcover` is on (see `layers/landcover.ts`).
 
-	configure3DLighting(style, resolved.sun, resolved.projection);
+	configure3DLighting(style, resolved.light, resolved.projection);
 
 	if (resolved.sky) {
 		applySky(style, { skyColor: resolved.colors.water, ...resolved.sky });

@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '../types/index.js';
-import type { ResolvedSun } from '../options/index.js';
+import type { ResolvedLight } from '../options/index.js';
 import { buildElevationSource } from './elevation-source.js';
 import { addTerrain } from './terrain.js';
 import { addHillshade } from './hillshade.js';
-import { configure3DLighting, globeSunPosition, sunPosition } from './sun.js';
+import { configure3DLighting, globeLightPosition, lightPosition } from './sun.js';
 import { BUILDINGS_APPEAR_ZOOM } from '../cartography/index.js';
 
 const ELEVATION_URL = 'https://tiles.example.com/dem/{z}/{x}/{y}.png';
 
-const MOCK_SUN: ResolvedSun = {
+const MOCK_LIGHT: Exclude<ResolvedLight, false> = {
 	direction: 220,
 	altitude: 35,
 	color: '#fff5e0',
 	intensity: 0.5,
-	anchor: 'map',
+	rotateWithMap: true,
 };
 
 function baseStyle(): StyleSpecification {
@@ -89,25 +89,25 @@ describe('addTerrain', () => {
 
 describe('addHillshade anchor', () => {
 	const options = { exaggeration: 0.5, shadowColor: '#000', highlightColor: '#fff', accentColor: '#888' };
-	const anchorOf = (hillshadeAnchor?: 'map' | 'viewport', sunAnchor?: 'map' | 'viewport') => {
+	const anchorOf = (hillshadeAnchor?: 'map' | 'viewport', rotateWithMap?: boolean) => {
 		const style = baseStyle();
-		const sun = sunAnchor ? { ...MOCK_SUN!, anchor: sunAnchor } : undefined;
-		addHillshade(style, { ...options, anchor: hillshadeAnchor }, sun, ELEVATION_URL);
+		const light = rotateWithMap === undefined ? false : { ...MOCK_LIGHT, rotateWithMap };
+		addHillshade(style, { ...options, anchor: hillshadeAnchor }, light, ELEVATION_URL);
 		return style.layers.find((l) => l.id === 'hillshade')?.paint?.['hillshade-illumination-anchor' as never];
 	};
 
-	it('follows the sun when unset, so terrain and buildings are lit from the same side', () => {
-		expect(anchorOf(undefined, 'viewport')).toBe('viewport');
-		expect(anchorOf(undefined, 'map')).toBe('map');
+	it('follows the light when unset, so terrain and buildings are lit from the same side', () => {
+		expect(anchorOf(undefined, false)).toBe('viewport');
+		expect(anchorOf(undefined, true)).toBe('map');
 	});
 
-	it("is 'map' when unset and there is no sun", () => {
+	it("is 'map' when unset and there is no light", () => {
 		expect(anchorOf(undefined, undefined)).toBe('map');
 	});
 
 	it('keeps an anchor the caller set', () => {
-		expect(anchorOf('map', 'viewport')).toBe('map');
-		expect(anchorOf('viewport', 'map')).toBe('viewport');
+		expect(anchorOf('map', false)).toBe('map');
+		expect(anchorOf('viewport', true)).toBe('viewport');
 	});
 });
 
@@ -122,7 +122,7 @@ describe('addHillshade', () => {
 
 	it('adds elevation source and hillshade layer', () => {
 		const style = baseStyle();
-		addHillshade(style, hillshadeOptions, MOCK_SUN, ELEVATION_URL);
+		addHillshade(style, hillshadeOptions, MOCK_LIGHT, ELEVATION_URL);
 		expect(style.sources).toHaveProperty('elevation');
 		const hillshadeLayer = style.layers.find((l) => l.id === 'hillshade');
 		expect(hillshadeLayer).toBeDefined();
@@ -131,7 +131,7 @@ describe('addHillshade', () => {
 
 	it('inserts hillshade layer after last fill/background/raster', () => {
 		const style = baseStyle();
-		addHillshade(style, hillshadeOptions, MOCK_SUN, ELEVATION_URL);
+		addHillshade(style, hillshadeOptions, MOCK_LIGHT, ELEVATION_URL);
 		const ids = style.layers.map((l) => l.id);
 		const hillshadeIdx = ids.indexOf('hillshade');
 		const waterIdx = ids.indexOf('water');
@@ -140,21 +140,21 @@ describe('addHillshade', () => {
 	});
 
 	// MapLibre knows both properties only since 5.5.0 and rejects the style on older versions.
-	it('writes no paint property newer than MapLibre 5.0 without a sun', () => {
+	it('writes no paint property newer than MapLibre 5.0 without a light', () => {
 		const style = baseStyle();
-		addHillshade(style, hillshadeOptions, undefined, ELEVATION_URL);
+		addHillshade(style, hillshadeOptions, false, ELEVATION_URL);
 		const paint = style.layers.find((l) => l.id === 'hillshade')?.paint ?? {};
 		expect(paint).not.toHaveProperty('hillshade-method');
 		expect(paint).not.toHaveProperty('hillshade-illumination-altitude');
 	});
 });
 
-describe('sun', () => {
-	const sun = (direction: number, altitude: number, anchor: 'map' | 'viewport' = 'viewport') => ({
-		...MOCK_SUN!,
+describe('configure3DLighting', () => {
+	const sun = (direction: number, altitude: number, rotateWithMap = false) => ({
+		...MOCK_LIGHT,
 		direction,
 		altitude,
-		anchor,
+		rotateWithMap,
 	});
 	const positionOf = (style: StyleSpecification) => (style.light as { position: unknown }).position;
 
@@ -179,25 +179,26 @@ describe('sun', () => {
 	});
 
 	it('mirrors the direction vertically and moves the sun in front of the globe', () => {
-		expect(globeSunPosition(sun(0, 45))).toStrictEqual([1.15, 180, 135]);
-		expect(globeSunPosition(sun(90, 0))).toStrictEqual([1.15, 90, 90]);
-		expect(globeSunPosition(sun(180, 90))).toStrictEqual([1.15, 0, 180]);
-		expect(globeSunPosition(sun(270, 30))).toStrictEqual([1.15, 270, 120]);
-		expect(globeSunPosition(sun(-45, 45))[1]).toBe(225);
-		expect(globeSunPosition(sun(540, 45))[1]).toBe(0);
-		expect(sunPosition(sun(270, 30))).toStrictEqual([1.15, 270, 60]);
+		expect(globeLightPosition(sun(0, 45))).toStrictEqual([1.15, 180, 135]);
+		expect(globeLightPosition(sun(90, 0))).toStrictEqual([1.15, 90, 90]);
+		expect(globeLightPosition(sun(180, 90))).toStrictEqual([1.15, 0, 180]);
+		expect(globeLightPosition(sun(270, 30))).toStrictEqual([1.15, 270, 120]);
+		expect(globeLightPosition(sun(-45, 45))[1]).toBe(225);
+		expect(globeLightPosition(sun(540, 45))[1]).toBe(0);
+		expect(lightPosition(sun(270, 30))).toStrictEqual([1.15, 270, 60]);
 	});
 
-	it('keeps the true position for a map-anchored light, which the atmosphere cannot follow', () => {
+	it('keeps the true position for a light that turns with the map, which the atmosphere cannot follow', () => {
 		const style = baseStyle();
-		configure3DLighting(style, sun(315, 45, 'map'), 'globe');
+		configure3DLighting(style, sun(315, 45, true), 'globe');
 		expect(positionOf(style)).toStrictEqual([1.15, 315, 45]);
+		expect(style.light?.anchor).toBe('map');
 	});
 
-	it('removes style.light without a sun', () => {
+	it('removes style.light without a light', () => {
 		const style = baseStyle();
 		style.light = { anchor: 'map' };
-		configure3DLighting(style, undefined, 'globe');
+		configure3DLighting(style, false, 'globe');
 		expect(style.light).toBeUndefined();
 	});
 });

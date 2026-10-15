@@ -9,7 +9,7 @@ import { Color } from '../color/index.js';
 import { PALETTES } from '../themes/index.js';
 
 // Exhaustive behavioural coverage of every satellite() option ("knob"): raster paint
-// adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/sun,
+// adjustments, the OSM overlay (and the OSM knobs it forwards), terrain/hillshade/light,
 // URL configuration, and the static helpers. Relies on the global `fetch` stub from
 // vitest.setup.ts.
 
@@ -240,7 +240,7 @@ describe('satellite() knob: osmOverlay', () => {
 	});
 });
 
-// ── features: terrain / hillshade / sun ──────────────────────────────────────────
+// ── features: terrain / hillshade / light ──────────────────────────────────────────
 
 describe('satellite() knob: features', () => {
 	it('terrain:true enables terrain with an elevation source', () => {
@@ -259,18 +259,18 @@ describe('satellite() knob: features', () => {
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('sun drives the hillshade illumination and style.light', () => {
-		const s = build({ features: { hillshade: true }, sun: { direction: 120, altitude: 20 } });
+	it('light drives the hillshade illumination and style.light', () => {
+		const s = build({ features: { hillshade: true }, light: { direction: 120, altitude: 20 } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(120);
 		expect(p['hillshade-illumination-altitude']).toBe(20);
 		expect(s.light?.position).toContainEqual(['literal', [1.15, 120, 70]]);
 	});
 
-	it('sun configures style.light even without hillshade', () => {
-		expect(build({ sun: { direction: 120 } }).light).toStrictEqual({
+	it('light configures style.light even without hillshade', () => {
+		expect(build({ light: { direction: 120 } }).light).toStrictEqual({
 			anchor: 'viewport',
-			position: ['step', ['zoom'], ['literal', [1.15, 60, 150]], 14, ['literal', [1.15, 120, 30]]],
+			position: ['step', ['zoom'], ['literal', [1.15, 60, 135]], 14, ['literal', [1.15, 120, 45]]],
 			color: 'rgb(255,255,255)',
 			intensity: 0.5,
 		});

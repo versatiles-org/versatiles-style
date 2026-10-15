@@ -480,15 +480,20 @@ describe('deriveOptions — foreign styles', () => {
 			[{ id: 'hills', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': 0.3 } }]
 		);
 		const options = osmOptions(deriveOptions(style));
-		// the polar angle 30° is an altitude of 60°, which is what `sun: true` resolves to, so it is not written
-		expect(options.sun).toEqual({ direction: 90, anchor: 'map', color: '#ffeedd', intensity: 0.4 });
+		expect(options.light).toEqual({
+			direction: 90,
+			altitude: 60,
+			rotateWithMap: true,
+			color: '#ffeedd',
+			intensity: 0.4,
+		});
 		expect(options.sky).toEqual({ skyColor: '#ff0000', atmosphereBlend: 0.5 });
 		expect(options.features).toMatchObject({ terrain: true, hillshade: { exaggeration: 0.3 } });
 	});
 
-	it('reads the true sun back out of the globe light this library writes', () => {
-		const options = osmOptions(deriveOptions(osm({ sun: { direction: 100, altitude: 30 } })));
-		expect(options.sun).toMatchObject({ direction: 100, altitude: 30 });
+	it('reads the true light back out of the globe light this library writes', () => {
+		const options = osmOptions(deriveOptions(osm({ light: { direction: 100, altitude: 30 } })));
+		expect(options.light).toStrictEqual({ direction: 100, altitude: 30 });
 	});
 
 	// MapLibre's `light.position` is `[radial, azimuthal, polar]`. A shorter array passed the old
@@ -497,9 +502,9 @@ describe('deriveOptions — foreign styles', () => {
 	it('reads nothing from a malformed light.position rather than deriving NaN', () => {
 		for (const position of [[1.15, 210], [1.15], [], [1.15, 210, 30, 7]]) {
 			const options = osmOptions(deriveOptions(omtStyle({ light: { anchor: 'map', position } as never })));
-			const sun = options.sun;
-			expect(JSON.stringify(sun) ?? '', JSON.stringify(position)).not.toContain('null');
-			expect(typeof sun === 'object' && 'altitude' in sun, JSON.stringify(position)).toBe(false);
+			const light = options.light;
+			expect(JSON.stringify(light) ?? '', JSON.stringify(position)).not.toContain('null');
+			expect(typeof light === 'object' && 'altitude' in light, JSON.stringify(position)).toBe(false);
 		}
 	});
 

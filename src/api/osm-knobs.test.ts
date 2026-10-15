@@ -301,7 +301,7 @@ describe('osm() knob: features.terrain', () => {
 	});
 });
 
-// ── features.hillshade (+ sun) ───────────────────────────────────────────────────
+// ── features.hillshade (+ light) ───────────────────────────────────────────────────
 
 describe('osm() knob: features.hillshade', () => {
 	it('hillshade:true adds a hillshade layer + elevation source', () => {
@@ -331,18 +331,18 @@ describe('osm() knob: features.hillshade', () => {
 	});
 });
 
-describe('osm() knob: sun', () => {
-	it('sun direction / altitude drive the hillshade illumination', () => {
-		const s = build({ features: { hillshade: true }, sun: { direction: 123, altitude: 27 } });
+describe('osm() knob: light', () => {
+	it('light direction / altitude drive the hillshade illumination', () => {
+		const s = build({ features: { hillshade: true }, light: { direction: 123, altitude: 27 } });
 		const p = paint(s, 'hillshade');
 		expect(p['hillshade-illumination-direction']).toBe(123);
 		expect(p['hillshade-illumination-altitude']).toBe(27);
 	});
 
-	it('sun configures style.light for hillshade (position, color, intensity)', () => {
+	it('light configures style.light for hillshade (position, color, intensity)', () => {
 		const s = build({
 			features: { hillshade: true },
-			sun: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
+			light: { direction: 100, altitude: 30, color: '#ff0000', intensity: 0.9 },
 		});
 		expect(s.light).toEqual({
 			anchor: 'viewport',
@@ -352,24 +352,62 @@ describe('osm() knob: sun', () => {
 		});
 	});
 
-	it('hillshade takes the sun anchor, so terrain and buildings are lit from the same side', () => {
-		const s = build({ features: { hillshade: true }, sun: { anchor: 'viewport' } });
-		expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe('viewport');
-		expect(s.light?.anchor).toBe('viewport');
+	it('turns terrain and buildings with the map together, or neither', () => {
+		for (const rotateWithMap of [false, true]) {
+			const s = build({ features: { hillshade: true }, light: { rotateWithMap } });
+			const anchor = rotateWithMap ? 'map' : 'viewport';
+			expect(paint(s, 'hillshade')['hillshade-illumination-anchor']).toBe(anchor);
+			expect(s.light?.anchor).toBe(anchor);
+		}
 	});
 
-	it('sun writes a plain light position in Mercator', () => {
-		const s = build({ projection: 'mercator', sun: { direction: 100, altitude: 30 } });
+	it('defaults to light from the top-left of the screen at 45°', () => {
+		const s = build({ features: { hillshade: true }, light: true });
+		const p = paint(s, 'hillshade');
+		expect([p['hillshade-illumination-direction'], p['hillshade-illumination-altitude']]).toStrictEqual([315, 45]);
+		expect(p['hillshade-illumination-anchor']).toBe('viewport');
+		expect(s.light?.position).toContainEqual(['literal', [1.15, 315, 45]]);
+	});
+
+	it('light writes a plain light position in Mercator', () => {
+		const s = build({ projection: 'mercator', light: { direction: 100, altitude: 30 } });
 		expect(s.light?.position).toStrictEqual([1.15, 100, 60]);
 	});
 
 	it('extruded buildings sync style.light even without hillshade', () => {
-		const s = build({ features: { buildings: 'extruded', hillshade: false }, sun: { direction: 200 } });
-		expect(s.light?.position).toContainEqual(['literal', [1.15, 200, 30]]);
+		const s = build({ features: { buildings: 'extruded', hillshade: false }, light: { direction: 200 } });
+		expect(s.light?.position).toContainEqual(['literal', [1.15, 200, 45]]);
 	});
 
 	it('no style.light without hillshade or extruded buildings', () => {
 		expect(build({ features: { hillshade: false } }).light).toBeUndefined();
+	});
+});
+
+describe('osm() knob: sun (deprecated alias of light)', () => {
+	it('builds the same style as the light it stands for', () => {
+		const pairs = [
+			[{ sun: true }, { light: true }],
+			[
+				{ sun: { direction: 100, altitude: 30, anchor: 'map', color: '#ff0000', intensity: 0.9 } },
+				{ light: { direction: 100, altitude: 30, rotateWithMap: true, color: '#ff0000', intensity: 0.9 } },
+			],
+			[{ sun: { anchor: 'viewport' } }, { light: true }],
+		] as const;
+		for (const [sun, light] of pairs) {
+			const options = { features: { hillshade: true, buildings: 'extruded' } } as const;
+			expect(build({ ...options, ...sun })).toStrictEqual(build({ ...options, ...light }));
+		}
+	});
+
+	it('cannot be combined with light', () => {
+		expect(() => build({ sun: true, light: true })).toThrow('"sun" is a deprecated alias of "light"');
+	});
+
+	it('resolves to light', () => {
+		const resolved = osm.resolveOptions({ sun: { direction: 10 } });
+		expect(resolved.light).toMatchObject({ direction: 10, altitude: 45 });
+		expect(resolved).not.toHaveProperty('sun');
 	});
 });
 

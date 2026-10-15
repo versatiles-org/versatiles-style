@@ -7,18 +7,19 @@ import {
 	resolveSatelliteRaster,
 	resolveSatelliteUrls,
 	resolveSky,
-	resolveSun,
+	resolveLight,
 	type ProjectionOptions,
 	type ResolvedProjection,
 	type ResolvedSatelliteFeatures,
 	type ResolvedSatelliteRaster,
 	type ResolvedSatelliteUrls,
 	type ResolvedSky,
-	type ResolvedSun,
+	type ResolvedLight,
 	type SatelliteFeaturesOptions,
 	type SatelliteRasterOptions,
 	type SatelliteUrlsOptions,
 	type SkyOptions,
+	type LightOptions,
 	type SunOptions,
 } from './parts/index.js';
 import {
@@ -61,6 +62,8 @@ export type SatelliteOptions = {
 	osmOverlay?: boolean | SatelliteOverlayOptions;
 	raster?: SatelliteRasterOptions;
 	features?: SatelliteFeaturesOptions;
+	light?: LightOptions;
+	/** @deprecated Use `light`; read as `light` until v7. */
 	sun?: SunOptions;
 	sky?: boolean | SkyOptions;
 	projection?: ProjectionOptions;
@@ -69,7 +72,7 @@ export type SatelliteOptions = {
 export type ResolvedSatellite = {
 	urls: ResolvedSatelliteUrls;
 	features: ResolvedSatelliteFeatures;
-	sun: ResolvedSun;
+	light: ResolvedLight;
 	sky: ResolvedSky;
 	projection: ResolvedProjection;
 	osmOverlay: false | ResolvedSatelliteOverlay;
@@ -79,7 +82,7 @@ export type ResolvedSatellite = {
 export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite {
 	checkKeys(
 		options,
-		{ urls: true, osmOverlay: true, raster: true, features: true, sun: true, sky: true, projection: true },
+		{ urls: true, osmOverlay: true, raster: true, features: true, light: true, sun: true, sky: true, projection: true },
 		'satellite'
 	);
 	// The overlay is on unless explicitly disabled: a bare `satellite()` gives a usable map rather
@@ -98,7 +101,7 @@ export function resolveSatellite(options?: SatelliteOptions): ResolvedSatellite 
 	return {
 		urls: resolveSatelliteUrls(options?.urls, 'satellite.urls'),
 		features: resolveSatelliteFeatures(options?.features, 'satellite.features'),
-		sun: resolveSun(options?.sun, 'satellite.sun'),
+		light: resolveLight(options?.light, options?.sun, 'satellite'),
 		sky: resolveSky(options?.sky, 'satellite.sky'),
 		projection: resolveProjection(options?.projection),
 		raster: resolveSatelliteRaster(options?.raster, 'satellite.raster'),

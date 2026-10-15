@@ -13,7 +13,7 @@ import {
 	type OsmOptions,
 	type PitchAlignment,
 	type SkyOptions,
-	type SunOptions,
+	type LightOptions,
 	type TextOptions,
 } from '../options/index.js';
 import type { HillshadeLayerSpecification } from '@maplibre/maplibre-gl-style-spec';
@@ -80,7 +80,7 @@ export function withExtrusionOpacity(
 type Common = {
 	content: { text?: TextOptions; icon?: IconOptions };
 	features: NonNullable<OsmOptions['features']>;
-	globals: Pick<OsmOptions, 'sun' | 'projection'>;
+	globals: Pick<OsmOptions, 'light' | 'projection'>;
 };
 
 export function deriveCommon(
@@ -140,7 +140,7 @@ export function deriveCommon(
 		);
 	}
 
-	if (style.light) globals.sun = deriveSun(style.light);
+	if (style.light) globals.light = deriveLight(style.light);
 
 	if (style.sprite) {
 		report.say(
@@ -737,8 +737,8 @@ function lastStop(value: unknown): unknown {
 	return Array.isArray(last) && last[0] === 'literal' ? last[1] : last;
 }
 
-function deriveSun(light: NonNullable<StyleSpecification['light']>): SunOptions {
-	const sun: Exclude<SunOptions, true> = {};
+function deriveLight(light: NonNullable<StyleSpecification['light']>): LightOptions {
+	const out: Exclude<LightOptions, boolean> = {};
 	const position = lastStop(light.position);
 	// `length === 3` as well as the type check: `every` is vacuously true for a shorter array, so a
 	// two-element `position` passed and `90 - position[2]` came out `NaN`. `minimizeOsmOptions` cannot
@@ -747,13 +747,14 @@ function deriveSun(light: NonNullable<StyleSpecification['light']>): SunOptions 
 	// MapLibre rejects. `guessOptions` promises options that build, so a malformed light is one this
 	// reads nothing from rather than one it mistranslates.
 	if (Array.isArray(position) && position.length === 3 && position.every((v) => typeof v === 'number')) {
-		sun.direction = position[1] as number;
-		sun.altitude = 90 - (position[2] as number);
+		out.direction = position[1] as number;
+		out.altitude = 90 - (position[2] as number);
 	}
-	if (light.anchor === 'map' || light.anchor === 'viewport') sun.anchor = light.anchor;
-	if (typeof light.color === 'string') sun.color = light.color;
-	if (typeof light.intensity === 'number') sun.intensity = light.intensity;
-	return sun;
+	// MapLibre's default anchor is 'viewport', which is `rotateWithMap: false`.
+	if (light.anchor === 'map') out.rotateWithMap = true;
+	if (typeof light.color === 'string') out.color = light.color;
+	if (typeof light.intensity === 'number') out.intensity = light.intensity;
+	return out;
 }
 
 const SKY_KEYS = {

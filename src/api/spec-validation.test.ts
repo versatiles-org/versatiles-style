@@ -18,7 +18,7 @@ import type { StyleSpecification } from '../types/index.js';
 //
 // Uses the global fetch stub from vitest.setup.ts (canned Shortbread TileJSON).
 
-// The one documented exception to the 5.0.0 minimum: `sun` together with `features.hillshade`
+// The one documented exception to the 5.0.0 minimum: `light` together with `features.hillshade`
 // writes this property, which needs MapLibre 5.5.0 (see README).
 const NEEDS_5_5 = /unknown property "hillshade-illumination-altitude"/;
 
@@ -84,11 +84,14 @@ const OSM_CASES: [string, OsmOptions | undefined][] = [
 		'recolor tint+blend',
 		{ recolor: { tint: { color: '#00ff00', amount: 0.5 }, blend: { color: '#0000ff', amount: 0.3 } } },
 	],
-	// layout + sun + sky
+	// layout + light + sky
 	['scale + spacing', { text: { scale: 1.5, spacing: 2 }, icon: { scale: 1.5, spacing: 2 } }],
 	['spacing below 1 + viewport pitch', { text: { spacing: 0.5, pitchAlignment: 'viewport' }, icon: { spacing: 0.5 } }],
-	['custom sun + sky', { sun: { direction: 120, altitude: 20 }, sky: { skyColor: '#010203', atmosphereBlend: 0.7 } }],
-	['sun + hillshade', { sun: true, features: { hillshade: true } }],
+	[
+		'custom light + sky',
+		{ light: { direction: 120, altitude: 20 }, sky: { skyColor: '#010203', atmosphereBlend: 0.7 } },
+	],
+	['light + hillshade', { light: true, features: { hillshade: true } }],
 ];
 
 describe('osm() styles are MapLibre-spec valid', () => {
@@ -98,8 +101,8 @@ describe('osm() styles are MapLibre-spec valid', () => {
 });
 
 describe('the only property newer than MapLibre 5.0.0 is the documented one', () => {
-	it('osm(sun + hillshade) fails the 5.0.0 spec on hillshade-illumination-altitude alone', () => {
-		const style = osm({ sun: true, features: { hillshade: true } });
+	it('osm(light + hillshade) fails the 5.0.0 spec on hillshade-illumination-altitude alone', () => {
+		const style = osm({ light: true, features: { hillshade: true } });
 		const errors = validateStyleMinOldest(style as Parameters<typeof validateStyleMinOldest>[0]);
 		expect(errors).toHaveLength(1);
 		expect(errors[0].message).toMatch(NEEDS_5_5);
