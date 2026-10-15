@@ -438,21 +438,21 @@ type RecolorOptions = {
 Used by both `osm()` and `satellite()`.
 
 `sky` is **on by default** and needs no terrain — MapLibre draws it whenever the map is pitched or in
-globe projection, which is the default. `light` is **off by default**: unset, no `light` is written and
+globe projection, which is the default. `light` is **on by default**; `light: false` writes none, and
 MapLibre uses its own. `hillshade` needs an elevation source, and its effect is only visible where
 there is terrain to shade.
 
 **One light for everything.** `light` is the single light of the map. It shades the terrain
 (`features.hillshade`), lights 3D buildings (`features.buildings: 'extruded'`) and, on a globe with a
 visible atmosphere (`sky.atmosphereBlend` > 0), decides which side of the atmosphere glows. Set once,
-all three are lit from the same side. Leave it unset and they fall back to MapLibre's own lights, which
+all three are lit from the same side. With `light: false` they fall back to MapLibre's own lights, which
 disagree: buildings lit from the south-south-west, terrain from the north-north-west.
 
 Terrain is shaded only by `features.hillshade`. MapLibre never lights the 3D surface of
 `features.terrain` itself, so terrain without hillshade looks the same whatever `light` says.
 
 ```ts
-// `light` accepts `true` (all defaults below), `false`, or an object. Unset or `false`, no `light` is written.
+// `light` accepts `true` (all defaults below, also when unset), `false` (no `light` is written), or an object.
 type LightOptions =
   | boolean
   | {
@@ -480,7 +480,8 @@ points north; as the map rotates, the terrain's light turns with it and the glow
 With `light`, the hillshade uses MapLibre's `combined` method instead of its default, `standard`:
 `standard` ignores the light's altitude, `combined` takes it — a low light deepens the shadows and a
 high one flattens the relief — and leaves flat ground clear. `combined` draws no accent colour, so
-`hillshade.accentColor` applies only without a `light`.
+`hillshade.accentColor` applies only with `light: false`. `combined` needs MapLibre GL JS 5.5.0, so
+`features.hillshade` does too unless `light` is `false`.
 
 `sun` is the **deprecated** name of `light`, read as `light` until v7: `anchor: 'map'` becomes
 `rotateWithMap: true`, and values it leaves unset take `light`'s defaults. Setting both is an error.
@@ -505,7 +506,7 @@ type HillshadeOptions =
       exaggeration?: number; // default: 0.1
       shadowColor?: string; // default: '#000000'
       highlightColor?: string; // default: '#ffffff'
-      accentColor?: string; // only without `light`, which switches to a method with no accent; default: '#000000'
+      accentColor?: string; // only with `light: false`; a light switches to a method with no accent; default: '#000000'
       anchor?: 'map' | 'viewport'; // deprecated, use `light.rotateWithMap`; default: follows `light`, or 'map' without one
     };
 ```
@@ -568,7 +569,7 @@ type OsmOptions = OsmOverlayOptions & {
     landcover?: boolean; // ESA WorldCover at z0–z10; default: false
     buildings?: 'flat' | 'extruded'; // default: 'flat'; extrusion opacity comes from `layers.buildings`
   };
-  light?: LightOptions; // default: unset — no `light` is written
+  light?: LightOptions; // default: on (`true`); `false` writes no `light`
   sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
@@ -597,7 +598,7 @@ type SatelliteOptions = {
     terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
   };
-  light?: LightOptions; // default: unset — no `light` is written
+  light?: LightOptions; // default: on (`true`); `false` writes no `light`
   sun?: SunOptions; // deprecated alias of `light`
   sky?: boolean | SkyOptions; // default: true
   projection?: 'globe' | 'mercator' | 'vertical-perspective'; // default: 'globe'
@@ -1118,7 +1119,7 @@ street and river names stand up in a tilted map (`text.pitchAlignment`), the fon
 labels are set in (`font` per topic of `text`: a font the glyph server's font list also has as it is —
 `Open Sans Bold` → `open_sans_bold` — otherwise its weight on Noto Sans; topics no probe reads follow
 their group, then the style's family; without a font list, weights only), extruded
-buildings, terrain, hillshade, the style's `light` as `light`, `sky` where it differs from what `osm()` derives, and
+buildings, terrain, hillshade, the style's `light` as `light` (`false` when it has none), `sky` where it differs from what `osm()` derives, and
 the projection — `mercator` when the style names none. For a satellite style, its `raster-*` paint
 properties become `raster`, and its vector layers `osmOverlay`.
 

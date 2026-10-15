@@ -2,7 +2,7 @@
 
 exports[`generated style shape snapshots > osm colorful (dark) 1`] = `
 {
-  "hasLight": false,
+  "hasLight": true,
   "hasSky": true,
   "hasTerrain": false,
   "layers": [
@@ -273,7 +273,7 @@ exports[`generated style shape snapshots > osm colorful (dark) 1`] = `
 
 exports[`generated style shape snapshots > osm colorful (light) 1`] = `
 {
-  "hasLight": false,
+  "hasLight": true,
   "hasSky": true,
   "hasTerrain": false,
   "layers": [
@@ -544,7 +544,7 @@ exports[`generated style shape snapshots > osm colorful (light) 1`] = `
 
 exports[`generated style shape snapshots > osm colorful with terrain + hillshade + extruded buildings 1`] = `
 {
-  "hasLight": false,
+  "hasLight": true,
   "hasSky": true,
   "hasTerrain": true,
   "layers": [
@@ -816,7 +816,7 @@ exports[`generated style shape snapshots > osm colorful with terrain + hillshade
 
 exports[`generated style shape snapshots > satellite raster-only (no overlay) 1`] = `
 {
-  "hasLight": false,
+  "hasLight": true,
   "hasSky": true,
   "hasTerrain": false,
   "layers": [
@@ -835,7 +835,7 @@ exports[`generated style shape snapshots > satellite raster-only (no overlay) 1`
 
 exports[`generated style shape snapshots > satellite with toner overlay 1`] = `
 {
-  "hasLight": false,
+  "hasLight": true,
   "hasSky": true,
   "hasTerrain": false,
   "layers": [

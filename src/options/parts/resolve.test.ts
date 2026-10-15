@@ -194,8 +194,8 @@ describe('resolveColors', () => {
 });
 
 describe('resolveLight', () => {
-	it('is off by default', () => {
-		expect(resolveLight(undefined, undefined, 'osm')).toBe(false);
+	it('is on by default, and off only with `false`', () => {
+		expect(resolveLight(undefined, undefined, 'osm')).toStrictEqual(resolveLight(true, undefined, 'osm'));
 		expect(resolveLight(false, undefined, 'osm')).toBe(false);
 	});
 

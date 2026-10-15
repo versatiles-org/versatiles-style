@@ -132,9 +132,9 @@ and would otherwise download them. The shipped `versatiles-style.d.ts` carries t
 > and a root [`sky`](https://maplibre.org/maplibre-style-spec/sky/). Older versions ignore both and
 > render a flat Mercator map with no sky — everything else works, so this degrades rather than breaks.
 >
-> One combination needs **5.5.0 or newer**: `light` together with `features.hillshade` writes
+> `features.hillshade` needs **5.5.0 or newer**: lit by the default `light`, it writes
 > `hillshade-method` and `hillshade-illumination-altitude`, which older versions reject, so the style
-> fails to load.
+> fails to load. With `light: false` it works from 5.0.
 >
 > npm users have this checked automatically through an optional peer dependency. Loading MapLibre
 > from a `<script>` tag, as above, bypasses that check entirely — so verify the version yourself.

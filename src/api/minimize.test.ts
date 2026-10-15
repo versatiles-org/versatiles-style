@@ -147,10 +147,9 @@ describe('osm.minimizeOptions', () => {
 			});
 		});
 
-		it('writes terrain, hillshade and light as `true` when they equal what `true` resolves to', () => {
+		it('writes terrain and hillshade as `true` when they equal what `true` resolves to', () => {
 			expect(roundTrip({ features: { terrain: true, hillshade: true }, light: true })).toEqual({
 				features: { terrain: true, hillshade: true },
-				light: true,
 			});
 			expect(roundTrip({ features: { hillshade: { exaggeration: 0.3 } }, light: { altitude: 30 } })).toEqual({
 				features: { hillshade: { exaggeration: 0.3 } },
@@ -159,12 +158,19 @@ describe('osm.minimizeOptions', () => {
 			expect(roundTrip({ light: { color: '#FFFFFF', intensity: 0.8 } })).toEqual({ light: { intensity: 0.8 } });
 		});
 
+		// `light` is on by default: the default light disappears, and switching it off is kept.
+		it('drops the default light and keeps `light: false`', () => {
+			expect(roundTrip({ light: true })).toEqual({});
+			expect(roundTrip({ light: false })).toEqual({ light: false });
+			expect(osm.minimizeOptions({ light: false })).toEqual({ light: false });
+		});
+
 		it('rewrites the deprecated sun as light', () => {
-			expect(osm.minimizeOptions({ sun: true })).toEqual({ light: true });
+			expect(osm.minimizeOptions({ sun: true })).toEqual({});
 			expect(osm.minimizeOptions({ sun: { anchor: 'map', altitude: 45, intensity: 0.8 } })).toEqual({
 				light: { rotateWithMap: true, intensity: 0.8 },
 			});
-			expect(satellite.minimizeOptions({ sun: { direction: 315 } })).toEqual({ light: true });
+			expect(satellite.minimizeOptions({ sun: { direction: 315 } })).toEqual({});
 		});
 
 		it('collapses resolved URLs back to `urls.base`', () => {
@@ -339,7 +345,6 @@ describe('satellite.minimizeOptions', () => {
 		).toEqual({
 			urls: { base: 'https://tiles.example.org' },
 			features: { terrain: true },
-			light: true,
 		});
 	});
 

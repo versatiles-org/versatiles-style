@@ -140,7 +140,8 @@ export function deriveCommon(
 		);
 	}
 
-	if (style.light) globals.light = deriveLight(style.light);
+	// `light` is on by default, so a style without one is rebuilt only with `light: false`.
+	globals.light = style.light ? deriveLight(style.light) : false;
 
 	if (style.sprite) {
 		report.say(

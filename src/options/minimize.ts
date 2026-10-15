@@ -10,7 +10,6 @@ import {
 	resolveOsmUrls,
 	resolveRecolor,
 	resolveSatelliteUrls,
-	resolveLight,
 	sunToLight,
 	resolveTerrain,
 	resolveText,
@@ -68,13 +67,12 @@ function sameValue(a: unknown, b: unknown): boolean {
  * equal to it is written as `true`, and only what differs from it is kept otherwise.
  *
  * The annotation below marks the IIFE side-effect-free, so a bundle that never uses the minimizer
- * drops these three resolver calls: they are module-level work, and a bundler must otherwise assume
+ * drops these two resolver calls: they are module-level work, and a bundler must otherwise assume
  * running them matters. Do not quote that annotation in prose — Rollup scans every comment for the
  * token, cannot attach one it finds mid-sentence to a call, and warns while stripping the comment.
  */
 const ENABLED = /*#__PURE__*/ (() => ({
 	features: { terrain: resolveTerrain(true), hillshade: resolveHillshade(true) },
-	light: resolveLight(true, undefined, 'light'),
 }))();
 
 /**

@@ -319,16 +319,15 @@ describe('osm() knob: features.hillshade', () => {
 	});
 
 	it('hillshade custom colors change the emitted paint colors', () => {
+		const colors = { shadowColor: '#123456', highlightColor: '#654321', accentColor: '#abcdef' };
 		const def = paint(build({ features: { hillshade: true } }), 'hillshade');
-		const custom = paint(
-			build({
-				features: { hillshade: { shadowColor: '#123456', highlightColor: '#654321', accentColor: '#abcdef' } },
-			}),
-			'hillshade'
-		);
+		const custom = paint(build({ features: { hillshade: colors } }), 'hillshade');
 		expect(custom['hillshade-shadow-color']).not.toBe(def['hillshade-shadow-color']);
 		expect(custom['hillshade-highlight-color']).not.toBe(def['hillshade-highlight-color']);
-		expect(custom['hillshade-accent-color']).not.toBe(def['hillshade-accent-color']);
+		// The accent colour is drawn only by the method used without a light.
+		expect(custom).not.toHaveProperty('hillshade-accent-color');
+		const unlit = (hillshade: object) => paint(build({ features: { hillshade }, light: false }), 'hillshade');
+		expect(unlit(colors)['hillshade-accent-color']).not.toBe(unlit({})['hillshade-accent-color']);
 	});
 });
 
@@ -388,8 +387,9 @@ describe('osm() knob: light', () => {
 		expect(s.light?.position).toContainEqual(['literal', [1.15, 200, 45]]);
 	});
 
-	it('no style.light without hillshade or extruded buildings', () => {
-		expect(build({ features: { hillshade: false } }).light).toBeUndefined();
+	it('writes style.light by default, and none with `light: false`', () => {
+		expect(build({}).light).toMatchObject({ anchor: 'viewport', intensity: 0.5 });
+		expect(build({ light: false }).light).toBeUndefined();
 	});
 });
 

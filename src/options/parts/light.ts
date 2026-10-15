@@ -9,8 +9,9 @@ import { sunToLight, type SunOptions } from './sun.js';
  * (`sky.atmosphereBlend`). Set once, all three are lit from the same side. `features.terrain` alone
  * is not shaded: MapLibre never lights the 3D terrain surface, so only the hillshade shows the light.
  *
- * `true` uses the defaults below, an object overrides individual values. Unset or `false`, no `light`
- * is written and hillshade and buildings fall back to MapLibre's own lights, which disagree.
+ * On by default: unset or `true` uses the defaults below, an object overrides individual values.
+ * `false` writes no `light`, and hillshade and buildings fall back to MapLibre's own lights, which
+ * disagree. With `features.hillshade`, a light needs MapLibre GL JS 5.5.0 or newer.
  */
 export type LightOptions =
 	| boolean
@@ -69,8 +70,8 @@ export function resolveLight(
 		}
 		light = sunToLight(sun, `${base}.sun`);
 	}
-	if (light === undefined || light === false) return false;
-	const options = light === true ? {} : light;
+	if (light === false) return false;
+	const options = light === undefined || light === true ? {} : light;
 	// A value checked here came from `sun` when that is set, so the error names the key the caller wrote.
 	const path = sun !== undefined ? `${base}.sun` : `${base}.light`;
 	checkKeys(options, { direction: true, altitude: true, rotateWithMap: true, color: true, intensity: true }, path);
