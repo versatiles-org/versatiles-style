@@ -250,7 +250,7 @@ describe('osm.minimizeOptions', () => {
 			},
 		],
 		['icons alias', { layers: { icons: false, pois: true, transit: { rail: 0.5 } } }],
-		['toggles on', { features: { terrain: true, hillshade: { anchor: 'viewport' } }, light: true }],
+		['toggles on', { features: { terrain: true, hillshade: { exaggeration: 0.3 } }, light: { rotateWithMap: true } }],
 		['base and one url', { urls: { base: 'https://tiles.example.org', elevation: '/dem/tiles.json' } }],
 		['tint and blend without amount', { recolor: { tint: { color: '#00ff00' }, blend: {} } }],
 		[

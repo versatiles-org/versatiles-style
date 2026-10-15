@@ -89,25 +89,20 @@ describe('addTerrain', () => {
 
 describe('addHillshade anchor', () => {
 	const options = { exaggeration: 0.5, shadowColor: '#000', highlightColor: '#fff', accentColor: '#888' };
-	const anchorOf = (hillshadeAnchor?: 'map' | 'viewport', rotateWithMap?: boolean) => {
+	const anchorOf = (rotateWithMap?: boolean) => {
 		const style = baseStyle();
 		const light = rotateWithMap === undefined ? false : { ...MOCK_LIGHT, rotateWithMap };
-		addHillshade(style, { ...options, anchor: hillshadeAnchor }, light, ELEVATION_URL);
+		addHillshade(style, options, light, ELEVATION_URL);
 		return style.layers.find((l) => l.id === 'hillshade')?.paint?.['hillshade-illumination-anchor' as never];
 	};
 
-	it('follows the light when unset, so terrain and buildings are lit from the same side', () => {
-		expect(anchorOf(undefined, false)).toBe('viewport');
-		expect(anchorOf(undefined, true)).toBe('map');
+	it('follows the light, so terrain and buildings are lit from the same side', () => {
+		expect(anchorOf(false)).toBe('viewport');
+		expect(anchorOf(true)).toBe('map');
 	});
 
-	it("is 'map' when unset and there is no light", () => {
-		expect(anchorOf(undefined, undefined)).toBe('map');
-	});
-
-	it('keeps an anchor the caller set', () => {
-		expect(anchorOf('map', false)).toBe('map');
-		expect(anchorOf('viewport', true)).toBe('viewport');
+	it("is 'map' without a light", () => {
+		expect(anchorOf(undefined)).toBe('map');
 	});
 });
 
@@ -117,7 +112,6 @@ describe('addHillshade', () => {
 		shadowColor: '#000',
 		highlightColor: '#fff',
 		accentColor: '#888',
-		anchor: 'map' as const,
 	};
 
 	it('adds elevation source and hillshade layer', () => {

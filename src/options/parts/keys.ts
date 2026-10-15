@@ -1,4 +1,4 @@
-import { preReleaseHint, v5Hint } from './v5-hints.js';
+import { preReleaseHint, v5Hint, v6Hint } from './v5-hints.js';
 import { reportIssue, reportIssues, type OptionIssue } from './issues.js';
 
 /** Exactly the keys of the object part of `T`, each mapped to `true`. */
@@ -34,6 +34,14 @@ export function checkKeys<T>(value: T, known: NoInfer<KnownKeys<T>>, path: strin
 		if (hint !== undefined) sawV5 = true;
 		if (hint === null) return { path: at, message: `"${at}" was removed in v6` };
 		if (hint !== undefined) return { path: at, message: `"${at}" — in v6 this is "${hint}"`, suggestion: hint };
+		const removed = v6Hint(label, at);
+		if (removed !== undefined) {
+			return {
+				path: at,
+				message: `"${at}" was removed in v7 — use "${removed.use}" (${removed.note})`,
+				suggestion: removed.use,
+			};
+		}
 		const renamed = preReleaseHint(label, at);
 		if (renamed !== undefined) return { path: at, message: `"${at}" — this is now "${renamed}"`, suggestion: renamed };
 		return { path: at, message: `"${at}" — known keys here: ${Object.keys(known).join(', ')}` };

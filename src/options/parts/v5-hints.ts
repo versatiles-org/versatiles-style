@@ -120,3 +120,17 @@ export function preReleaseHint(label: string, path: string): string | undefined 
 	if (at.startsWith('text.') && at.endsWith('.default')) return `${prefix}${at.slice(0, -'default'.length)}font`;
 	return undefined;
 }
+
+/** Options v7 removed, by path in the options of every builder, with what to set instead. */
+const REMOVED_IN_V7: Readonly<Record<string, { use: string; note: string }>> = {
+	'features.hillshade.anchor': { use: 'light.rotateWithMap', note: "'map' is `true`" },
+};
+
+/**
+ * What to set instead of an option v7 removed, at `path` in the options of `label` — or `undefined`.
+ * `hillshade.anchor` became `light.rotateWithMap`, which turns hillshade and 3D buildings together.
+ */
+export function v6Hint(label: string, path: string): { use: string; note: string } | undefined {
+	if (label !== 'osm' && label !== 'satellite' && label !== 'omt' && label !== 'protomaps') return undefined;
+	return Object.hasOwn(REMOVED_IN_V7, path) ? REMOVED_IN_V7[path] : undefined;
+}

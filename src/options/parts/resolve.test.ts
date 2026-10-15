@@ -114,8 +114,8 @@ describe('resolveOsm', () => {
 	});
 
 	it('resolves hillshade object with partial overrides', () => {
-		const r = resolveOsm({ features: { hillshade: { anchor: 'viewport', exaggeration: 0.5 } } });
-		expect(r.features.hillshade).toMatchObject({ anchor: 'viewport', exaggeration: 0.5 });
+		const r = resolveOsm({ features: { hillshade: { exaggeration: 0.5 } } });
+		expect(r.features.hillshade).toMatchObject({ exaggeration: 0.5, shadowColor: '#000000' });
 	});
 
 	it('resolves buildings extruded', () => {

@@ -507,7 +507,6 @@ type HillshadeOptions =
       shadowColor?: string; // default: '#000000'
       highlightColor?: string; // default: '#ffffff'
       accentColor?: string; // only with `light: false`; a light switches to a method with no accent; default: '#000000'
-      anchor?: 'map' | 'viewport'; // deprecated, use `light.rotateWithMap`; default: follows `light`, or 'map' without one
     };
 ```
 

@@ -8,18 +8,9 @@ export type HillshadeOptions =
 			highlightColor?: string;
 			/** Only with `light: false`: lit, the hillshade uses a method that draws no accent colour. */
 			accentColor?: string;
-			/**
-			 * @deprecated Set `light.rotateWithMap` instead, which turns terrain and 3D buildings together;
-			 * removed in v7. Unset, the shading follows `light`; without a `light`, it is 'map'.
-			 */
-			anchor?: 'map' | 'viewport';
 	  };
 
-/**
- * `anchor` stays unset unless the caller set it, like `sky.skyColor`: an unset anchor follows
- * `light.rotateWithMap` when the style is built (`addHillshade`). Resolving it to 'map' here would pin it, and
- * hillshade would turn with the map while buildings, lit by a light fixed to the screen, did not.
- */
+/** Whether the shading turns with the map is `light.rotateWithMap`, shared with 3D buildings. */
 export type ResolvedHillshade =
 	| false
 	| {
@@ -27,15 +18,10 @@ export type ResolvedHillshade =
 			shadowColor: string;
 			highlightColor: string;
 			accentColor: string;
-			anchor?: 'map' | 'viewport';
 	  };
 
 export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade'): ResolvedHillshade {
-	checkKeys(
-		hillshade,
-		{ exaggeration: true, shadowColor: true, highlightColor: true, accentColor: true, anchor: true },
-		path
-	);
+	checkKeys(hillshade, { exaggeration: true, shadowColor: true, highlightColor: true, accentColor: true }, path);
 	checkFinite(hillshade, path);
 	if (typeof hillshade === 'object') checkRange(hillshade.exaggeration, 0, 1, `${path}.exaggeration`);
 	checkColors(hillshade, ['shadowColor', 'highlightColor', 'accentColor'], path);
@@ -46,6 +32,5 @@ export function resolveHillshade(hillshade?: HillshadeOptions, path = 'hillshade
 		shadowColor: h.shadowColor ?? '#000000',
 		highlightColor: h.highlightColor ?? '#ffffff',
 		accentColor: h.accentColor ?? '#000000',
-		...(h.anchor !== undefined ? { anchor: h.anchor } : {}),
 	};
 }

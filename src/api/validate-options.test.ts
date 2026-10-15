@@ -29,7 +29,6 @@ describe('unknown option keys are rejected', () => {
 						shadowColor: '#000',
 						highlightColor: '#fff',
 						accentColor: '#000',
-						anchor: 'viewport',
 					},
 					buildings: 'extruded',
 				},

@@ -311,11 +311,18 @@ describe('osm() knob: features.hillshade', () => {
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
-	it('hillshade exaggeration / anchor flow into the layer paint', () => {
-		const s = build({ features: { hillshade: { exaggeration: 0.42, anchor: 'viewport' } } });
-		const p = paint(s, 'hillshade');
-		expect(p['hillshade-exaggeration']).toBe(0.42);
-		expect(p['hillshade-illumination-anchor']).toBe('viewport');
+	it('hillshade exaggeration flows into the layer paint', () => {
+		const s = build({ features: { hillshade: { exaggeration: 0.42 } } });
+		expect(paint(s, 'hillshade')['hillshade-exaggeration']).toBe(0.42);
+	});
+
+	it('rejects the removed hillshade.anchor, naming light.rotateWithMap', () => {
+		expect(() => build({ features: { hillshade: { anchor: 'map' } as never } })).toThrow(
+			`"features.hillshade.anchor" was removed in v7 — use "light.rotateWithMap" ('map' is \`true\`)`
+		);
+		expect(osm.validateOptions({ features: { hillshade: { anchor: 'map' } as never } }).issues).toMatchObject([
+			{ path: 'features.hillshade.anchor', suggestion: 'light.rotateWithMap' },
+		]);
 	});
 
 	it('hillshade custom colors change the emitted paint colors', () => {

@@ -51,6 +51,7 @@ const stubV5Hints = {
 			'export function v5ColorKeys() { return {}; }',
 			'export function v5Hint() { return undefined; }',
 			'export function preReleaseHint() { return undefined; }',
+			'export function v6Hint() { return undefined; }',
 			'',
 		].join('\n');
 	},
