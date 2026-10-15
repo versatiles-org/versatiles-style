@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.1] - 2026-10-15
+
+### Bug Fixes
+
+- turn the light with the map by default ([1eae91a](https://github.com/versatiles-org/versatiles-style/commit/1eae91a06bd94734d43a9183be6bc42a8b3f2720))
+
+### Code Refactoring
+
+- **light:** replace rotateWithMap with fixedToScreen, turning with the map by default ([76b90c4](https://github.com/versatiles-org/versatiles-style/commit/76b90c49d0f4ceb0ae4461a5a5543b4ceb2a44b5))
+
+### Documentation
+
+- **changelog:** tidy the 7.0.0 entry ([513f058](https://github.com/versatiles-org/versatiles-style/commit/513f058cf8c59ab82cb29dc0f1c18eca21489196))
+
+### Tests
+
+- **e2e:** warm up the native renderer before the timed colour tests ([398aedb](https://github.com/versatiles-org/versatiles-style/commit/398aedbdede2cf5ffd516695319f50d4b62973d4))
+
 ## [7.0.0] - 2026-10-15
 
 ### Breaking Changes
