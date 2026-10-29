@@ -3,9 +3,12 @@ import type { StyleSpecification } from '../types/index.js';
 // Low-zoom landcover (https://docs.versatiles.org/compendium/specification_shortbread_landcover.html).
 //
 // The landcover tileset writes ESA WorldCover data into the EXISTING `land` and `water_polygons`
-// source-layers, reusing existing `kind` values, only *below* the zoom where OSM introduces each
-// kind. So no extra source or layers are needed — the matching fill layers already render those
-// kinds. They are merely hidden at low zoom by their zoom-based fade-in.
+// source-layers, reusing existing `kind` values, for every kind up to z10. Merged with OSM, each kind
+// comes from one source per zoom: up to z10 the merge drops OSM's copies, except `water` from z4 and
+// `residential` from z10, where it keeps OSM's and drops the landcover's instead
+// (https://github.com/versatiles-org/landcover-vectors#merging-with-osm). So no extra source or
+// layers are needed — the matching fill layers already render those kinds. They are merely hidden at
+// low zoom by their zoom-based fade-in.
 //
 // `addLandcover` removes that fade-in on exactly the layers whose `kind` carries landcover data,
 // replacing the zoom ramp with its fully-faded-in (max) opacity. This keeps each layer's high-zoom
