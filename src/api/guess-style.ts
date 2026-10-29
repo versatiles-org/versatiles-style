@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVe
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
 import { DEFAULT_BASE } from '../options/index.js';
-import { loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
+import { inlinedFields, loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
 import { resolveUrl } from '../options/index.js';
 import { osm } from './osm.js';
 import { checkKeys } from '../options/index.js';
@@ -63,21 +63,15 @@ async function buildRasterStyle(
 	tj: TileJSONSpecification,
 	urls: GuessStyleOptions['urls']
 ): Promise<StyleSpecification> {
-	const base = urls?.base ?? DEFAULT_BASE;
-	const sourceName = isSatelliteHint(tj) ? 'satellite' : 'raster';
-	const sourceSpec: Record<string, unknown> = {
-		type: 'raster',
-		tiles: resolveTileJSONTiles(tj, base).tiles,
-		tileSize: (tj as TileJSONSpecification & { tile_size?: number }).tile_size ?? 256,
-	};
-	if (tj.minzoom !== undefined) sourceSpec['minzoom'] = tj.minzoom;
-	if (tj.maxzoom !== undefined) sourceSpec['maxzoom'] = tj.maxzoom;
-	if (tj.bounds) sourceSpec['bounds'] = tj.bounds;
-	if (tj.attribution) sourceSpec['attribution'] = tj.attribution;
-
 	if (isSatelliteHint(tj)) {
 		return satellite({ urls: { ...urls, satellite: source } });
 	}
+
+	const base = urls?.base ?? DEFAULT_BASE;
+	const sourceName = 'raster';
+	// The same fields `inlineSources` and `satellite()` inline, so a tileset comes out the same either
+	// way: `tileSize` only when the TileJSON states `tile_size`, and a normalised attribution.
+	const sourceSpec = { type: 'raster', ...inlinedFields(resolveTileJSONTiles(tj, base)) };
 
 	return {
 		version: 8,

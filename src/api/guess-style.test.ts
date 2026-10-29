@@ -193,6 +193,21 @@ describe('guessStyle() — raster tiles', () => {
 		expect(src.tiles[0]).toBe('https://raster.tiles/{z}/{x}/{y}');
 	});
 
+	// The same rule as `inlineSources` and `satellite()`: a tileset must not come out at a different
+	// scale depending on which path built its source.
+	it('declares tileSize only when the TileJSON states tile_size', async () => {
+		const tiles = ['https://raster.tiles/{z}/{x}/{y}'];
+		const without = await guessStyle({ tiles });
+		expect(without.sources['raster']).not.toHaveProperty('tileSize');
+		const with256 = await guessStyle({ tiles, tile_size: 256 });
+		expect(with256.sources['raster']).toMatchObject({ tileSize: 256 });
+	});
+
+	it('normalises the attribution, as inlining does', async () => {
+		const style = await guessStyle({ tiles: ['https://raster.tiles/{z}/{x}/{y}'], attribution: " <a href='x'>X</a> " });
+		expect(style.sources['raster']).toMatchObject({ attribution: '<a href="x">X</a>' });
+	});
+
 	it('uses satellite() for raster TileJSON with name = "satellite"', async () => {
 		const satTJ: TileJSONSpecification = {
 			tiles: ['https://sat.tiles/{z}/{x}/{y}'],
