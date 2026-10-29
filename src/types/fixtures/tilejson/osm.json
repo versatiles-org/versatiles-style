@@ -1,44 +1,33 @@
 {
-	"name": "VersaTiles OSM",
-	"description": "Vector tiles based on OSM in Shortbread scheme",
-	"attribution": "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap contributors</a>",
-	"bounds": [-180, -85.06, 180, 85.06],
-	"center": [0, 0, 7],
-	"license": "Open Database License 1.0",
+	"attribution": "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap contributors</a> · <a href=\"http://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a> <a href=\"https://esa-worldcover.org/en/data-access\">ESA WorldCover 2021</a>",
+	"bounds": [-180, -90, 180, 90],
+	"center": [-86.660156, 54.46991, 10],
+	"description": "A basic, lean, general-purpose vector tile schema for OpenStreetMap data. See https://shortbread-tiles.org/\nLandcover vector tiles based on ESA Worldcover 2021, © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
 	"maxzoom": 14,
 	"minzoom": 0,
-	"tile_format": "vnd.mapbox-vector-tile",
+	"name": "Versatiles Landcover",
+	"planetiler:buildtime": "2026-06-18T14:21:32.736Z",
+	"planetiler:githash": "8153614371949440cdd6a9dbb0f6bb79a7185d48",
+	"planetiler:osm:osmosisreplicationseq": "0",
+	"planetiler:osm:osmosisreplicationtime": "2026-06-07T23:59:58Z",
+	"planetiler:osm:osmosisreplicationurl": "",
+	"planetiler:version": "0.10.3-SNAPSHOT",
+	"tile_format": "application/vnd.mapbox-vector-tile",
 	"tile_schema": "shortbread@1.0",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
 	"tiles": ["/tiles/osm/{z}/{x}/{y}"],
-	"type": "baselayer",
+	"type": "overlay",
 	"vector_layers": [
 		{
-			"fields": {
-				"block": "String",
-				"housename": "String",
-				"housenumber": "String",
-				"unit": "String"
-			},
+			"fields": { "block": "String", "housename": "String", "housenumber": "String", "unit": "String" },
 			"id": "addresses",
 			"maxzoom": 14,
 			"minzoom": 14
 		},
+		{ "fields": { "kind": "String" }, "id": "aerialways", "maxzoom": 14, "minzoom": 12 },
 		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "aerialways",
-			"maxzoom": 14,
-			"minzoom": 12
-		},
-		{
-			"fields": {
-				"admin_level": "Number",
-				"disputed": "Boolean",
-				"maritime": "Boolean"
-			},
+			"fields": { "admin_level": "Number", "disputed": "Boolean", "maritime": "Boolean" },
 			"id": "boundaries",
 			"maxzoom": 14,
 			"minzoom": 0
@@ -85,32 +74,13 @@
 			"minzoom": 12
 		},
 		{
-			"fields": {
-				"dummy": "Number",
-				"height": "Number",
-				"hide_3d": "Boolean",
-				"min_height": "Number"
-			},
+			"fields": { "dummy": "Number", "height": "Number", "hide_3d": "Boolean", "min_height": "Number" },
 			"id": "buildings",
 			"maxzoom": 14,
 			"minzoom": 14
 		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "dam_lines",
-			"maxzoom": 14,
-			"minzoom": 12
-		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "dam_polygons",
-			"maxzoom": 14,
-			"minzoom": 12
-		},
+		{ "fields": { "kind": "String" }, "id": "dam_lines", "maxzoom": 14, "minzoom": 12 },
+		{ "fields": { "kind": "String" }, "id": "dam_polygons", "maxzoom": 14, "minzoom": 12 },
 		{
 			"fields": {
 				"kind": "String",
@@ -131,36 +101,10 @@
 			"maxzoom": 14,
 			"minzoom": 10
 		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "land",
-			"maxzoom": 14,
-			"minzoom": 7
-		},
-		{
-			"fields": {},
-			"id": "ocean",
-			"maxzoom": 14,
-			"minzoom": 0
-		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "pier_lines",
-			"maxzoom": 14,
-			"minzoom": 12
-		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "pier_polygons",
-			"maxzoom": 14,
-			"minzoom": 12
-		},
+		{ "description": "", "fields": { "kind": "String" }, "id": "land", "maxzoom": 14, "minzoom": 0 },
+		{ "fields": {}, "id": "ocean", "maxzoom": 14, "minzoom": 0 },
+		{ "fields": { "kind": "String" }, "id": "pier_lines", "maxzoom": 14, "minzoom": 12 },
+		{ "fields": { "kind": "String" }, "id": "pier_polygons", "maxzoom": 14, "minzoom": 12 },
 		{
 			"fields": {
 				"kind": "String",
@@ -245,14 +189,7 @@
 			"maxzoom": 14,
 			"minzoom": 11
 		},
-		{
-			"fields": {
-				"kind": "String"
-			},
-			"id": "sites",
-			"maxzoom": 14,
-			"minzoom": 14
-		},
+		{ "fields": { "kind": "String" }, "id": "sites", "maxzoom": 14, "minzoom": 14 },
 		{
 			"fields": {
 				"kind": "String",
@@ -351,11 +288,7 @@
 			"minzoom": 14
 		},
 		{
-			"fields": {
-				"bridge": "Boolean",
-				"kind": "String",
-				"tunnel": "Boolean"
-			},
+			"fields": { "bridge": "Boolean", "kind": "String", "tunnel": "Boolean" },
 			"id": "water_lines",
 			"maxzoom": 14,
 			"minzoom": 9
@@ -383,13 +316,11 @@
 			"minzoom": 12
 		},
 		{
-			"fields": {
-				"kind": "String",
-				"way_area": "Number"
-			},
+			"description": "",
+			"fields": { "kind": "String", "way_area": "Number" },
 			"id": "water_polygons",
 			"maxzoom": 14,
-			"minzoom": 4
+			"minzoom": 0
 		},
 		{
 			"fields": {
@@ -413,5 +344,5 @@
 			"minzoom": 4
 		}
 	],
-	"version": "2.0"
+	"version": "2"
 }

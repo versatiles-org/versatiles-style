@@ -1,20 +1,11 @@
 {
-	"name": "VersaTiles Bathymetry Vectors",
-	"description": "VersaTiles Bathymetry Vectors based on GEBCO Bathymetry Data",
-	"attribution": "<a href=\"https://www.gebco.net/\">GEBCO</a>",
-	"tile_format": "vnd.mapbox-vector-tile",
+	"bounds": [-180, -81.255032, 180, 85.051129],
+	"maxzoom": 10,
+	"minzoom": 0,
+	"tile_format": "application/vnd.mapbox-vector-tile",
 	"tile_schema": "other",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
 	"tiles": ["/tiles/bathymetry-vectors/{z}/{x}/{y}"],
-	"vector_layers": [
-		{
-			"id": "bathymetry",
-			"minzoom": 0,
-			"maxzoom": 10,
-			"fields": {
-				"mindepth": "Number"
-			}
-		}
-	]
+	"vector_layers": [{ "fields": { "mindepth": "Number" }, "id": "bathymetry", "maxzoom": 10, "minzoom": 0 }]
 }
