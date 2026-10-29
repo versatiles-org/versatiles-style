@@ -1,8 +1,9 @@
 import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { FetchLike, OsmUrlsOptions } from '../options/index.js';
-import { DEFAULT_BASE } from '../options/index.js';
-import { inlinedFields, loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
+import { DEFAULT_BASE, resolveHillshade, resolveLight, resolveTerrain } from '../options/index.js';
+import { demEncoding, inlinedFields, loadTileSource, resolveTileJSONTiles } from '../lib/index.js';
+import { addHillshade, addTerrain } from '../features/index.js';
 import { resolveUrl } from '../options/index.js';
 import { osm } from './osm.js';
 import { checkKeys } from '../options/index.js';
@@ -91,6 +92,24 @@ async function buildRasterStyle(
 	};
 }
 
+// Build a relief style for an elevation TileJSON: a hillshade on 3D terrain over a plain background.
+// Drawn as a plain raster instead, the encoded heights would show as colour noise. The hillshade is
+// stronger than the 0.1 `osm()` and `satellite()` use under their map content: here it is the only
+// content, and at 0.1 the relief looks washed out.
+function buildElevationStyle(tj: TileJSONSpecification, base: string): StyleSpecification {
+	const elevation = resolveTileJSONTiles(tj, base);
+	const style: StyleSpecification = {
+		version: 8,
+		sources: {},
+		layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#ccc' } }],
+	};
+	const hillshade = resolveHillshade({ exaggeration: 0.3 }) as Exclude<ReturnType<typeof resolveHillshade>, false>;
+	const terrain = resolveTerrain(true) as Exclude<ReturnType<typeof resolveTerrain>, false>;
+	addHillshade(style, hillshade, resolveLight(undefined, 'guessStyle'), elevation);
+	addTerrain(style, terrain, elevation);
+	return style;
+}
+
 function isSatelliteHint(tj: TileJSONSpecification): boolean {
 	const name = ((tj as { name?: string }).name ?? '').toLowerCase();
 	return SATELLITE_HINTS.has(name) || [...SATELLITE_HINTS].some((hint) => name.includes(hint));
@@ -109,6 +128,7 @@ function isSatelliteHint(tj: TileJSONSpecification): boolean {
  * - OpenMapTiles or Protomaps vector tiles, with that schema injected (`options.schemas`) → its style
  * - Vector tiles matching a caller's own injected schema → that schema's style
  * - Unknown vector tiles → inspector style (one color-coded fill+line+label per source-layer)
+ * - Elevation tiles (`tile_schema: dem/terrarium` or `dem/mapbox`) → hillshade on 3D terrain
  * - Raster tiles with satellite name hint → `satellite()` style
  * - Other raster tiles → minimal single-layer raster style
  *
@@ -166,6 +186,8 @@ export async function guessStyle(
 			// for a sprite to do here.
 			return inspectorStyle(tileJSON, { urls: { base: urls?.base, glyphsPattern: urls?.glyphsPattern } });
 		}
+		// An elevation tileset is recognised by the encoding its TileJSON states (`tile_schema: dem/…`).
+		if (demEncoding(tileJSON)) return buildElevationStyle(tileJSON, base);
 		return await buildRasterStyle(osmSource, tileJSON, urls);
 	} catch {
 		// A blank style is still a valid style: the map loads, and the caller sees an empty map

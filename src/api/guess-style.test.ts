@@ -174,6 +174,42 @@ const fetchRasterFn = vi.fn(() =>
 	)
 );
 
+// ── Elevation tiles ───────────────────────────────────────────────────────────
+
+// Drawn as a plain raster, the encoded heights showed as colour noise.
+describe('guessStyle() — elevation tiles', () => {
+	const tiles = ['https://dem.tiles/{z}/{x}/{y}'];
+
+	it('draws a hillshade on 3D terrain, each from its own source', async () => {
+		const style = await guessStyle({ tiles, tile_schema: 'dem/terrarium' });
+		expect(layerTypes(style)).toStrictEqual(['background', 'hillshade']);
+		expect(style.layers.find((l) => l.type === 'hillshade')).toMatchObject({ source: 'elevation' });
+		expect(style.terrain).toMatchObject({ source: 'elevation-terrain' });
+		for (const id of ['elevation', 'elevation-terrain']) {
+			expect(style.sources[id], id).toMatchObject({ type: 'raster-dem', tiles, encoding: 'terrarium' });
+		}
+	});
+
+	it('decodes Terrain-RGB tiles as mapbox', async () => {
+		const style = await guessStyle({ tiles, tile_schema: 'dem/mapbox' });
+		expect(style.sources['elevation']).toMatchObject({ encoding: 'mapbox' });
+		expect(style.sources['elevation-terrain']).toMatchObject({ encoding: 'mapbox' });
+	});
+
+	it('resolves relative tiles against the TileJSON URL', async () => {
+		const fetchFn = vi.fn(() =>
+			Promise.resolve(jsonResponse({ tiles: ['{z}/{x}/{y}'], tile_schema: 'dem/terrarium' }))
+		);
+		const style = await guessStyle('https://dem.tiles/elevation/tiles.json', { fetch: fetchFn });
+		expect(style.sources['elevation']).toMatchObject({ tiles: ['https://dem.tiles/elevation/{z}/{x}/{y}'] });
+	});
+
+	it('wins over a satellite name hint', async () => {
+		const style = await guessStyle({ tiles, tile_schema: 'dem/terrarium', name: 'Satellite elevation' } as never);
+		expect(layerTypes(style)).toStrictEqual(['background', 'hillshade']);
+	});
+});
+
 describe('guessStyle() — raster tiles', () => {
 	it('returns a valid style for raster tiles', async () => {
 		const style = await guessStyle('https://raster.tiles/tiles.json', { fetch: fetchRasterFn });
