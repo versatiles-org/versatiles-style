@@ -20,8 +20,10 @@ export interface TileJSONSpecificationRaster {
 	template?: string;
 	version?: string;
 	tile_schema?: string;
+	tile_format?: string;
 	tile_size?: number;
-	encoding?: 'terrarium' | 'mapbox' | 'custom';
+	/** Raster-dem encodings, or the vector tile encoding (`mvt`, MapLibre's default, or `mlt`). */
+	encoding?: 'terrarium' | 'mapbox' | 'custom' | 'mvt' | 'mlt';
 }
 
 /** Structure for TileJSON specification of vector type, specifying vector-specific properties. */

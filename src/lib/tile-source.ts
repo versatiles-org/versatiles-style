@@ -38,5 +38,26 @@ export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }
 		...(tj.attribution && { attribution: normalizeAttribution(tj.attribution) }),
 		// Only declare tileSize when the document states one (see the tile_size fix).
 		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
+		...encodingField(tj),
 	};
+}
+
+/**
+ * The vector tile encoding a TileJSON declares: `encoding` when it is `mvt` or `mlt`, otherwise `mlt`
+ * when `tile_format` is the MapLibre Tile media type. MapLibre decodes every vector source as MVT
+ * unless told otherwise, so an MLT source without this renders nothing.
+ *
+ * Raster-dem encodings are not returned: MapLibre cannot infer those either, but they also depend on
+ * `tile_schema`, so the raster-dem builders derive them themselves.
+ */
+export function vectorEncoding(tj: TileJSONSpecification): 'mvt' | 'mlt' | undefined {
+	if (tj.encoding === 'mvt' || tj.encoding === 'mlt') return tj.encoding;
+	// MapLibre has not registered a media type for MLT yet; older tools use `vnd.maplibre-vector-tile`.
+	if (tj.tile_format && /^(application\/)?vnd\.maplibre(-vector)?-tile$/i.test(tj.tile_format)) return 'mlt';
+	return undefined;
+}
+
+function encodingField(tj: TileJSONSpecification): { encoding?: 'mvt' | 'mlt' } {
+	const encoding = vectorEncoding(tj);
+	return encoding ? { encoding } : {};
 }

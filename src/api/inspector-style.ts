@@ -2,7 +2,7 @@ import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVe
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { OsmUrlsOptions } from '../options/index.js';
 import { DEFAULT_BASE, DEFAULT_FONT_REGULAR, resolveOsmUrls, checkKeys } from '../options/index.js';
-import { resolveTileJSONTiles } from '../lib/index.js';
+import { resolveTileJSONTiles, vectorEncoding } from '../lib/index.js';
 
 /** Options for {@link inspectorStyle}. The same `urls` shape as `osm()`, minus what this never reads. */
 export type InspectorStyleOptions = {
@@ -74,6 +74,8 @@ export function inspectorStyle(tileJSON: TileJSONSpecification, options?: Inspec
 	if (tileJSON.maxzoom !== undefined) sourceSpec['maxzoom'] = tileJSON.maxzoom;
 	if (tileJSON.bounds) sourceSpec['bounds'] = tileJSON.bounds;
 	if (tileJSON.attribution) sourceSpec['attribution'] = tileJSON.attribution;
+	const encoding = vectorEncoding(tileJSON);
+	if (encoding) sourceSpec['encoding'] = encoding;
 
 	const layers: StyleSpecification['layers'] = [
 		{

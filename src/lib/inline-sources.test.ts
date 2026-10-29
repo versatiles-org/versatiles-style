@@ -73,6 +73,13 @@ describe('inlineSources()', () => {
 		expect(without.sources['r'] as Record<string, unknown>).not.toHaveProperty('tileSize');
 	});
 
+	it('carries an MLT encoding onto a vector source', async () => {
+		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, tile_format: 'application/vnd.maplibre-tile' }))),
+		});
+		expect(out.sources['v'] as Record<string, unknown>).toMatchObject({ encoding: 'mlt' });
+	});
+
 	it('derives raster-dem encoding from tile_schema, which MapLibre cannot infer', async () => {
 		const mapbox = await inlineSources(styleWith({ e: { type: 'raster-dem', url: 'https://e/tiles.json' } }), {
 			fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://e/{z}/{x}/{y}'], tile_schema: 'dem/mapbox' }))),

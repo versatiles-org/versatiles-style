@@ -67,6 +67,11 @@ describe('inspectorStyle()', () => {
 		});
 	});
 
+	it('declares an MLT encoding on the source', () => {
+		const style = inspectorStyle({ ...vectorTJ, tile_format: 'application/vnd.maplibre-tile' } as never);
+		expect(style.sources.tiles).toMatchObject({ encoding: 'mlt' });
+	});
+
 	it('resolves relative tiles against urls.base and takes glyphs from urls.glyphsPattern', () => {
 		const style = inspectorStyle({ ...vectorTJ, tiles: ['/t/{z}/{x}/{y}.pbf'] } as never, {
 			urls: { base: 'https://tiles.example.org', glyphsPattern: 'https://f.example.org/{fontstack}/{range}.pbf' },
