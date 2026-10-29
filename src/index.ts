@@ -37,9 +37,10 @@
  * It is synchronous and performs no I/O: a `*.json` source URL becomes a source `url`
  * that MapLibre resolves when the map loads.
  *
- * Call {@link inlineSources} afterwards when the style has to stand on its own — a
- * published `style.json`, an offline deployment, or anywhere the first tile request
- * should not wait for a TileJSON round-trip.
+ * Pass the style through {@link inlineSources} before handing it to MapLibre. The VersaTiles
+ * TileJSONs list relative tile URLs, which MapLibre does not resolve, and describe MLT tiles,
+ * Terrain-RGB elevation and raster tile sizes in fields MapLibre does not read — see
+ * {@link inlineSources} for what goes wrong without it.
  *
  * ```ts
  * import { osm, inlineSources } from '@versatiles/style';
@@ -48,7 +49,7 @@
  *   urls: { base: 'https://tiles.example.org' },
  * });
  *
- * // optional: resolve every source reference into a self-contained style
+ * // resolve every source reference into a self-contained style
  * const standalone = await inlineSources(style);
  * ```
  *

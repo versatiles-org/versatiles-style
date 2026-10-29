@@ -13,10 +13,23 @@ import { demEncoding, inlinedFields } from './tile-source.js';
  * style building — it works on any style, including `guessStyle()` output and hand-written
  * documents.
  *
- * Use it when the style must stand on its own: published `style.json` artifacts, offline
- * or air-gapped deployments, and anywhere the first tile request should not wait for a
- * TileJSON round-trip. It is also the only place that can set the two properties MapLibre
- * cannot infer from a TileJSON — raster `tileSize` and raster-dem `encoding`.
+ * Call it on every style before handing it to MapLibre, unless the TileJSONs it references list
+ * absolute tile URLs and use none of the VersaTiles extensions below. MapLibre reads a referenced
+ * TileJSON itself, but only its standard fields (`tiles`, zooms, `bounds`, `attribution`, `scheme`)
+ * and the MapLibre keys `tileSize` and `encoding`, and a property the style sets wins over the
+ * document. Without this function:
+ *
+ * - **relative tile URLs**, which the VersaTiles tile server publishes, are not resolved, and every
+ *   tile request fails with `… is not a valid URL`;
+ * - **MLT tiles** — `tile_format: application/vnd.maplibre-tile` — are decoded as MVT, and the map
+ *   stays empty;
+ * - **Terrain-RGB elevation** — `tile_schema: dem/mapbox` — is decoded as Terrarium, the encoding the
+ *   style builders write, so terrain and hillshade show wrong heights;
+ * - **raster tile sizes** — `tile_size: 256` — are ignored, and the tiles are drawn at MapLibre's
+ *   default of 512 px.
+ *
+ * It also makes a style stand on its own: a published `style.json`, an offline or air-gapped
+ * deployment, or a map whose first tile request should not wait for a TileJSON round-trip.
  *
  * Every fetched document is checked before it is inlined: it must be a valid TileJSON, and it must
  * describe the kind of tiles the source claims — a `type: "vector"` source needs a TileJSON with

@@ -120,7 +120,16 @@ Integrate it into your HTML application:
 > attribution, bounds and maxzoom it carries are preserved. That last part matters: the attribution
 > is a licensing obligation.
 >
-> If your own tile server publishes absolute tile URLs, you can skip it and stay fully synchronous.
+> It also translates the [VersaTiles extensions](https://docs.versatiles.org/compendium/specification_extended_tilejson.html)
+> to TileJSON, which MapLibre does not read, into the source properties MapLibre does. Without it:
+>
+> - **MLT tiles** (`tile_format: application/vnd.maplibre-tile`) are decoded as MVT, and the map stays empty.
+> - **Terrain-RGB elevation** (`tile_schema: dem/mapbox`) is decoded as Terrarium, so terrain and hillshade
+>   show wrong heights.
+> - **Raster tiles** with `tile_size: 256` are drawn at MapLibre's default of 512 px, at the wrong scale.
+>
+> You can skip it and stay fully synchronous only if the TileJSON lists absolute tile URLs and uses none
+> of these extensions.
 
 Everything the bundle provides is listed under
 [`versatiles-style.js`](https://versatiles.org/versatiles-style/modules/versatiles-style.js.html) in the API documentation —

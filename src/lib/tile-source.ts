@@ -8,8 +8,9 @@ import { normalizeAttribution } from './utils.js';
  * Three input shapes, three outputs:
  *
  * - a **TileJSON URL** → `{ url }`. MapLibre fetches it at map load and fills in
- *   `tiles`, zooms, `bounds` and `attribution` itself. Nothing to inline, nothing to
- *   go stale. Run {@link inlineSources} afterwards if the style must be self-contained.
+ *   `tiles`, zooms, `bounds` and `attribution` itself, but neither resolves relative tile
+ *   URLs nor reads the VersaTiles extensions (`tile_format`, `tile_schema`, `tile_size`).
+ *   {@link inlineSources} does both, so the style should go through it before MapLibre.
  * - a **raw tile template** (contains `{z}`) → `{ tiles: [template] }`. There is no
  *   document to read, so nothing else can be stated.
  * - a **pre-fetched TileJSON** → every field inlined, no `url`.
