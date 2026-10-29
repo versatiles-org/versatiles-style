@@ -259,6 +259,13 @@ describe('satellite() knob: features', () => {
 		expect(s.sources).toHaveProperty('elevation');
 	});
 
+	it('hillshade and terrain read separate sources (#140)', () => {
+		const s = build({ features: { hillshade: true, terrain: true } });
+		expect(s.terrain?.source).toBe('elevation-terrain');
+		expect(layer(s, 'hillshade')).toMatchObject({ source: 'elevation' });
+		expect(s.sources['elevation-terrain']).toStrictEqual(s.sources['elevation']);
+	});
+
 	it('light drives the hillshade illumination, and no style.light without an atmosphere', () => {
 		const s = build({ features: { hillshade: true }, light: { direction: 120, altitude: 20 } });
 		const p = paint(s, 'hillshade');

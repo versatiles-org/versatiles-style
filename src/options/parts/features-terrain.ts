@@ -2,6 +2,8 @@ import { checkKeys, checkFinite, checkRange } from './keys.js';
 /**
  * 3D terrain: the map's surface raised by the elevation source. MapLibre does not light that surface,
  * so it shows no relief from above and `light` does not shade it; add `features.hillshade` for that.
+ * The terrain reads the source `elevation`, or `elevation-terrain` next to a hillshade: MapLibre loads
+ * a terrain source's tiles one zoom level coarser, which would blur a hillshade sharing it.
  */
 export type TerrainOptions = boolean | { exaggeration?: number };
 export type ResolvedTerrain = false | { exaggeration: number };

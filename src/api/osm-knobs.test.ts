@@ -573,6 +573,21 @@ describe('osm() knob: urls', () => {
 		expect(s.glyphs).toBe('https://g.example/{fontstack}/{range}.pbf');
 	});
 
+	// One source for both would be loaded one zoom coarser for the terrain, blurring the hillshade (#140).
+	it('hillshade and terrain read separate sources, and inlineSources embeds both', async () => {
+		const fetchFn = tileJSONFetch({ 'https://dem/': { tiles: ['https://dem/{z}/{x}/{y}'], maxzoom: 12 } });
+		const s = build({ features: { hillshade: true, terrain: true }, urls: { elevation: 'https://dem/tiles.json' } });
+		expect(s.terrain?.source).toBe('elevation-terrain');
+		expect(s.layers.find((l) => l.id === 'hillshade')).toMatchObject({ source: 'elevation' });
+		expect(s.sources['elevation-terrain']).toStrictEqual(s.sources['elevation']);
+
+		const inlined = await inlineSources(s, { fetch: fetchFn });
+		for (const id of ['elevation', 'elevation-terrain']) {
+			expect(inlined.sources[id], id).toMatchObject({ tiles: ['https://dem/{z}/{x}/{y}'], maxzoom: 12 });
+			expect(inlined.sources[id], id).not.toHaveProperty('url');
+		}
+	});
+
 	it('custom elevation URL is referenced, and inlineSources embeds it', async () => {
 		const fetchFn = tileJSONFetch({ 'https://dem/': { tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 } });
 		const s = build({

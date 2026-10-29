@@ -808,6 +808,7 @@ exports[`generated style shape snapshots > osm colorful with terrain + hillshade
   ],
   "sources": [
     "elevation",
+    "elevation-terrain",
     "versatiles-shortbread",
   ],
   "version": 8,

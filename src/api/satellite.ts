@@ -134,14 +134,12 @@ function satelliteFn(options?: SatelliteOptions): StyleSpecification {
 
 	style.layers = layers;
 
-	// Optional terrain
-	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
-	}
-
-	// Optional hillshade
+	// Optional hillshade, then terrain: the terrain takes a source of its own when there is a hillshade.
 	if (resolved.features.hillshade !== false) {
 		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
+	}
+	if (resolved.features.terrain !== false) {
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 
 	configure3DLighting(style, resolved.light, resolved.projection, resolved.sky);

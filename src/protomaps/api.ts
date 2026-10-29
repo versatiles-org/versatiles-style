@@ -94,11 +94,12 @@ function protomapsFn(options?: ProtomapsOptions): StyleSpecification {
 
 	applyIcon(style, resolved.icon);
 
-	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
-	}
+	// Hillshade before terrain: the terrain takes a source of its own when there is a hillshade.
 	if (resolved.features.hillshade !== false) {
 		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
+	}
+	if (resolved.features.terrain !== false) {
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	// No `addLandcover`: Protomaps' coarse low-zoom band is its own `landcover` layer, emitted by the
 	// landcover module when `features.landcover` is on (see `layers/landcover.ts`).

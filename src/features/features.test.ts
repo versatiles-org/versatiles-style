@@ -85,6 +85,22 @@ describe('addTerrain', () => {
 		expect(style.sources).toHaveProperty('elevation');
 		expect(style.terrain).toEqual({ source: 'elevation', exaggeration: 1.5 });
 	});
+
+	// MapLibre loads a terrain source one zoom coarser, so a hillshade sharing it loses half its
+	// resolution, and MapLibre warns (#140).
+	it('takes a source of its own next to a hillshade on `elevation`', () => {
+		const style = baseStyle();
+		addHillshade(
+			style,
+			{ exaggeration: 0.5, shadowColor: '#000', highlightColor: '#fff', accentColor: '#888' },
+			false,
+			ELEVATION_URL
+		);
+		addTerrain(style, { exaggeration: 1.5 }, ELEVATION_URL);
+		expect(style.terrain).toEqual({ source: 'elevation-terrain', exaggeration: 1.5 });
+		expect(style.layers.find((l) => l.id === 'hillshade')).toMatchObject({ source: 'elevation' });
+		expect(style.sources['elevation-terrain']).toStrictEqual(style.sources['elevation']);
+	});
 });
 
 describe('addHillshade anchor', () => {

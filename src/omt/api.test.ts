@@ -215,6 +215,12 @@ describe('elevation features', () => {
 		expect(Object.keys(style.sources)).toContain('elevation');
 	});
 
+	it('gives the terrain a source of its own next to a hillshade (#140)', () => {
+		const style = omt({ features: { hillshade: true, terrain: true } });
+		expect(style.terrain?.source).toBe('elevation-terrain');
+		expect(style.layers.find((l) => l.type === 'hillshade')).toMatchObject({ source: 'elevation' });
+	});
+
 	it('adds a hillshade layer', () => {
 		expect(omt({ features: { hillshade: true } }).layers.some((l) => l.type === 'hillshade')).toBe(true);
 	});

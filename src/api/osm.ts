@@ -82,11 +82,12 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 	applyIcon(style, resolved.icon);
 
 	// 6. Optional features
-	if (resolved.features.terrain !== false) {
-		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
-	}
+	// Hillshade before terrain: the terrain takes a source of its own when there is a hillshade.
 	if (resolved.features.hillshade !== false) {
 		addHillshade(style, resolved.features.hillshade, resolved.light, resolved.urls.elevation);
+	}
+	if (resolved.features.terrain !== false) {
+		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
 		addLandcover(style, LANDCOVER_LAYERS);
