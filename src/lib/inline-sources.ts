@@ -3,7 +3,7 @@ import type { FetchLike } from '../options/index.js';
 import { assertTileJSONSpecification } from '../types/index.js';
 import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import { loadTileSource } from './load-tile-source.js';
-import { inlinedFields } from './tile-source.js';
+import { demEncoding, inlinedFields } from './tile-source.js';
 
 /**
  * Resolve every `url`-referencing source in a style into an inlined, self-contained one.
@@ -47,10 +47,12 @@ export async function inlineSources(
 			const resolved: Record<string, unknown> = { ...source, ...inlinedFields(tj) };
 			delete resolved.url;
 
-			// `encoding` is a MapLibre source property, not a TileJSON field, so it can only be
-			// derived here. Leave an explicit caller-set encoding alone.
-			if (source.type === 'raster-dem' && source.encoding === undefined) {
-				resolved.encoding = tj.encoding === 'mapbox' || tj.tile_schema === 'dem/mapbox' ? 'mapbox' : 'terrarium';
+			// MapLibre does not read a raster-dem encoding from the TileJSON, so it is set here. What the
+			// document states wins: the style builders write `terrarium` on every elevation source, the
+			// VersaTiles default, and a source's encoding cannot tell that default from a caller's choice.
+			// The source's own encoding stands only where the document states none.
+			if (source.type === 'raster-dem') {
+				resolved.encoding = demEncoding(tj) ?? source.encoding ?? 'terrarium';
 			}
 
 			sources[id] = resolved;

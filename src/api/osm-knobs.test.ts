@@ -588,6 +588,20 @@ describe('osm() knob: urls', () => {
 		}
 	});
 
+	// Built without I/O, the source can only state the VersaTiles default; the TileJSON corrects it.
+	it('a Terrain-RGB elevation URL decodes as mapbox once inlined', async () => {
+		const fetchFn = tileJSONFetch({
+			'https://dem/': { tiles: ['https://dem/{z}/{x}/{y}'], tile_schema: 'dem/mapbox' },
+		});
+		const s = build({ features: { hillshade: true, terrain: true }, urls: { elevation: 'https://dem/tiles.json' } });
+		expect(s.sources['elevation']).toMatchObject({ encoding: 'terrarium' });
+
+		const inlined = await inlineSources(s, { fetch: fetchFn });
+		for (const id of ['elevation', 'elevation-terrain']) {
+			expect(inlined.sources[id], id).toMatchObject({ encoding: 'mapbox' });
+		}
+	});
+
 	it('custom elevation URL is referenced, and inlineSources embeds it', async () => {
 		const fetchFn = tileJSONFetch({ 'https://dem/': { tiles: ['https://dem/{z}/{x}/{y}'], minzoom: 0, maxzoom: 12 } });
 		const s = build({

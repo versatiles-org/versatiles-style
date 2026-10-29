@@ -1,5 +1,5 @@
 import type { TileJSONSpecification } from '../types/index.js';
-import { normalizeAttribution } from '../lib/index.js';
+import { demEncoding, normalizeAttribution } from '../lib/index.js';
 
 // Builds a MapLibre raster-dem source descriptor from either a tile URL pattern string
 // or a fully resolved TileJSONSpecification. Shared by addTerrain and addHillshade.
@@ -24,10 +24,7 @@ export function buildElevationSource(elevation: string | TileJSONSpecification):
 			: { type: 'raster-dem', url: elevation, encoding: 'terrarium' };
 	}
 
-	let encoding: 'terrarium' | 'mapbox' = 'terrarium';
-	if (elevation.encoding === 'mapbox' || elevation.tile_schema === 'dem/mapbox') {
-		encoding = 'mapbox';
-	}
+	const encoding = demEncoding(elevation) ?? 'terrarium';
 
 	return {
 		type: 'raster-dem',

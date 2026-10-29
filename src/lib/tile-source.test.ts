@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSourceDescriptor, inlinedFields, vectorEncoding } from './tile-source.js';
+import { buildSourceDescriptor, demEncoding, inlinedFields, vectorEncoding } from './tile-source.js';
 import type { TileJSONSpecification } from '../types/index.js';
 
 const tiles = ['https://t/{z}/{x}/{y}'];
@@ -44,5 +44,27 @@ describe('inlinedFields()', () => {
 	it('does not declare an encoding the TileJSON does not imply', () => {
 		expect(inlinedFields({ tiles, vector_layers: [] })).not.toHaveProperty('encoding');
 		expect(inlinedFields({ tiles, encoding: 'terrarium' })).not.toHaveProperty('encoding');
+	});
+});
+
+describe('demEncoding()', () => {
+	it('takes a terrarium or mapbox encoding from the TileJSON', () => {
+		expect(demEncoding({ tiles, encoding: 'mapbox' })).toBe('mapbox');
+		expect(demEncoding({ tiles, encoding: 'terrarium' })).toBe('terrarium');
+	});
+
+	it('derives it from tile_schema', () => {
+		expect(demEncoding({ tiles, tile_schema: 'dem/mapbox' })).toBe('mapbox');
+		expect(demEncoding({ tiles, tile_schema: 'dem/terrarium' })).toBe('terrarium');
+	});
+
+	it('prefers an explicit encoding over tile_schema', () => {
+		expect(demEncoding({ tiles, encoding: 'terrarium', tile_schema: 'dem/mapbox' })).toBe('terrarium');
+	});
+
+	it('states nothing when the TileJSON states nothing', () => {
+		expect(demEncoding({ tiles })).toBeUndefined();
+		expect(demEncoding({ tiles, encoding: 'mlt' })).toBeUndefined();
+		expect(demEncoding({ tiles, tile_schema: 'dem/versatiles' })).toBeUndefined();
 	});
 });

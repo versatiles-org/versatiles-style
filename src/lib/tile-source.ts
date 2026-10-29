@@ -47,8 +47,8 @@ export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }
  * when `tile_format` is the MapLibre Tile media type. MapLibre decodes every vector source as MVT
  * unless told otherwise, so an MLT source without this renders nothing.
  *
- * Raster-dem encodings are not returned: MapLibre cannot infer those either, but they also depend on
- * `tile_schema`, so the raster-dem builders derive them themselves.
+ * Raster-dem encodings are not returned here, but by {@link demEncoding}: MapLibre cannot infer those
+ * either, but a raster-dem source needs one even when its TileJSON states none.
  */
 export function vectorEncoding(tj: TileJSONSpecification): 'mvt' | 'mlt' | undefined {
 	if (tj.encoding === 'mvt' || tj.encoding === 'mlt') return tj.encoding;
@@ -60,4 +60,15 @@ export function vectorEncoding(tj: TileJSONSpecification): 'mvt' | 'mlt' | undef
 function encodingField(tj: TileJSONSpecification): { encoding?: 'mvt' | 'mlt' } {
 	const encoding = vectorEncoding(tj);
 	return encoding ? { encoding } : {};
+}
+
+/**
+ * The raster-dem encoding a TileJSON states: `encoding` when it is `terrarium` or `mapbox`, otherwise the
+ * one its `tile_schema` names (`dem/terrarium`, `dem/mapbox`). Undefined when it states none.
+ */
+export function demEncoding(tj: TileJSONSpecification): 'terrarium' | 'mapbox' | undefined {
+	if (tj.encoding === 'terrarium' || tj.encoding === 'mapbox') return tj.encoding;
+	if (tj.tile_schema === 'dem/terrarium') return 'terrarium';
+	if (tj.tile_schema === 'dem/mapbox') return 'mapbox';
+	return undefined;
 }

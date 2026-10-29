@@ -92,11 +92,28 @@ describe('inlineSources()', () => {
 		expect(terrarium.sources['e'] as Record<string, unknown>).toMatchObject({ encoding: 'terrarium' });
 	});
 
-	it('keeps an explicitly set encoding', async () => {
+	// The builders write `terrarium` on every elevation source, so a Terrain-RGB TileJSON passed as a
+	// URL would otherwise keep the wrong encoding and decode into wrong elevations.
+	it('lets the encoding the TileJSON states win over the source’s', async () => {
 		const out = await inlineSources(
 			styleWith({ e: { type: 'raster-dem', url: 'https://e/tiles.json', encoding: 'terrarium' } }),
 			{ fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://e/{z}/{x}/{y}'], tile_schema: 'dem/mapbox' }))) }
 		);
+		expect(out.sources['e'] as Record<string, unknown>).toMatchObject({ encoding: 'mapbox' });
+	});
+
+	it('keeps the source’s encoding when the TileJSON states none', async () => {
+		const out = await inlineSources(
+			styleWith({ e: { type: 'raster-dem', url: 'https://e/tiles.json', encoding: 'mapbox' } }),
+			{ fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://e/{z}/{x}/{y}'] }))) }
+		);
+		expect(out.sources['e'] as Record<string, unknown>).toMatchObject({ encoding: 'mapbox' });
+	});
+
+	it('falls back to terrarium when neither states an encoding', async () => {
+		const out = await inlineSources(styleWith({ e: { type: 'raster-dem', url: 'https://e/tiles.json' } }), {
+			fetch: vi.fn(() => Promise.resolve(json({ tiles: ['https://e/{z}/{x}/{y}'] }))),
+		});
 		expect(out.sources['e'] as Record<string, unknown>).toMatchObject({ encoding: 'terrarium' });
 	});
 });
