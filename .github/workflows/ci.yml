@@ -61,7 +61,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   package-smoke:
-    name: Published package on Node ${{ matrix.node }}
+    name: Test on Node ${{ matrix.node }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
