@@ -70,7 +70,7 @@ jobs:
         # real floor for anything running from this repo (the build scripts use
         # `import.meta.dirname`), but a consumer only ever runs `dist/`, so plain 20 is the honest
         # test of the published artifact.
-        node: ['20', '22', '24']
+        node: ['20', '22', '24', '26']
     steps:
       # No optipng here any more. `prepack` used to be the whole `build` — sprites, styles, the browser
       # bundle and the docs — of which the tarball ships none: `files` is `dist/*` plus three tracked
