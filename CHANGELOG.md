@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.1.0] - 2026-10-30
+
+### Features
+
+- **guess-style:** draw elevation tilesets as hillshade on 3D terrain ([d5735f8](https://github.com/versatiles-org/versatiles-style/commit/d5735f8b972ac06a9e22e000e56b6fd56ee060d9))
+
+### Bug Fixes
+
+- carry the vector tile encoding (mvt/mlt) from TileJSON into sources ([e06c73c](https://github.com/versatiles-org/versatiles-style/commit/e06c73cbd72496bff8acc7330685a90d10b28875))
+- give the terrain its own elevation source next to a hillshade ([d8946c6](https://github.com/versatiles-org/versatiles-style/commit/d8946c6da49407e3d86efbfcccac8119cb0f4298))
+- **inline:** let the encoding a raster-dem TileJSON states win over the default ([d004748](https://github.com/versatiles-org/versatiles-style/commit/d0047480db6cb83474ec849410a6e333c2883452))
+- **guess-style:** build raster sources with inlinedFields, declaring tileSize only when stated ([898bf97](https://github.com/versatiles-org/versatiles-style/commit/898bf97ee02328ed1755713458b050970f93125a))
+- **ci:** update job name for clarity in Node testing ([b5f1269](https://github.com/versatiles-org/versatiles-style/commit/b5f12691a8498e57785b96b95a42c73fee136e42))
+
+### Documentation
+
+- **landcover:** update comment and fixture to the z10 landcover-vectors container ([3a13eca](https://github.com/versatiles-org/versatiles-style/commit/3a13ecabe68a4753eec4a4726e18242fbea61d4b))
+- **inline:** explain what a style loses without inlineSources ([4ac9262](https://github.com/versatiles-org/versatiles-style/commit/4ac92623d62a583fbb58272157282ed8fb28944d))
+
+### Tests
+
+- refresh the TileJSON fixtures from tiles.versatiles.org and test each tileset's style ([138d125](https://github.com/versatiles-org/versatiles-style/commit/138d125af1869353c76ee9536c8f6c3ff9538757))
+
+### CI/CD
+
+- smoke-test the published package on Node 26 ([86d2960](https://github.com/versatiles-org/versatiles-style/commit/86d296097ff7e47d82819ca6543fd72992017330))
+
+### Chores
+
+- **deps:** bump markdown-it ([5d5de3c](https://github.com/versatiles-org/versatiles-style/commit/5d5de3c654e6b6abf55aa4c5d67de6d94c6088d2))
+- update dependencies in package.json ([a8fd7e1](https://github.com/versatiles-org/versatiles-style/commit/a8fd7e182b17b6fed2c18c8567ba23fa5668aaf9))
+
 ## [7.0.1] - 2026-10-15
 
 ### Bug Fixes
