@@ -87,6 +87,9 @@ Five separate questions, five tools — the names are close, the jobs are not.
 `npx playwright install chromium` — and the renderer's e2e test skips itself where it is missing, which
 includes CI.
 
+`zoom-compare` fails if the style alone changes more than half a percentage point across a boundary, beyond
+the control (`STYLE_ONLY_LIMIT`). It doesn't run in CI, so run it by hand after changing zoom ramps.
+
 ```sh
 npm run compare -- --save-baseline   # before
 npm run compare -- --baseline        # after — every altered property, listed

@@ -34,6 +34,18 @@ export function withSameTiles(style: StyleSpecification, zoom: number): StyleSpe
 	return { ...style, sources };
 }
 
+/**
+ * `style` without the layers drawn with a dash or a pattern. MapLibre redraws those at each integer zoom, and
+ * crossfades them over time while a user zooms, which a frame on either side of a boundary doesn't show.
+ */
+export function withoutPatterns(style: StyleSpecification): StyleSpecification {
+	const layers = style.layers.filter((layer) => {
+		const paint = (layer as unknown as Readable).paint ?? {};
+		return !paint['line-dasharray'] && !paint['line-pattern'] && !paint['fill-pattern'];
+	});
+	return { ...style, layers };
+}
+
 /** `style` with only its background and the fills `features.landcover` adds. */
 export function landcoverAlone(style: StyleSpecification): StyleSpecification {
 	const layers = style.layers.filter((layer) => layer.type === 'background' || layer.id.startsWith('landcover-'));

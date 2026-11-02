@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { renderReport, worstPerZoom, type BoundaryRow, type Pair, type ReportData } from './report.js';
+import {
+	largestStyleChange,
+	renderReport,
+	worstPerZoom,
+	type BoundaryRow,
+	type Pair,
+	type ReportData,
+} from './report.js';
 
 const pair = (share: number, controlShare = 0): Pair => ({ share, max: 10, controlShare, controlMax: 5 });
 
@@ -37,7 +44,29 @@ describe('worstPerZoom', () => {
 	});
 });
 
+describe('largestStyleChange', () => {
+	it('takes the largest change beyond the control, not the largest change', () => {
+		const largest = largestStyleChange([
+			{ place: 'noisy', zoom: 5, sets: { styleOnly: pair(0.05, 0.05) } },
+			{ place: 'jumps', zoom: 6, sets: { styleOnly: pair(0.03, 0.01) } },
+			{ place: 'other', zoom: 7, sets: { all: pair(0.5) } },
+		]);
+		expect(largest?.row.place).toBe('jumps');
+		expect(largest?.excess).toBeCloseTo(0.02, 10);
+	});
+
+	it('finds nothing where the set was not measured', () => {
+		expect(largestStyleChange(rows)).toBeUndefined();
+	});
+});
+
 describe('renderReport', () => {
+	it('states the largest style-only change when it was measured', () => {
+		const measured = [{ place: 'city', zoom: 5, sets: { styleOnly: pair(0.03, 0.01) } }];
+		expect(renderReport({ ...data, boundaries: measured })).toContain('2.00% at city, z5 (limit 0.50%)');
+		expect(renderReport(data)).not.toContain('Style only, largest');
+	});
+
 	it('shows the numbers', () => {
 		const html = renderReport(data);
 		expect(html).toContain('20.00%');

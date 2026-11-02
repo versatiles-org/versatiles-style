@@ -16,6 +16,8 @@
  * - **Without symbols** — takes labels and icons, and their placement, out of the picture.
  * - **Same tiles** — the sources end at `z − 1`, so both sides overzoom the same tiles, and what is left
  *   comes from the style alone.
+ * - **Style only** — the same tiles, without dashes and patterns as well, which MapLibre redraws at each integer
+ *   zoom and crossfades over time. What this set still shows, the style can change.
  * - **Layers with a hard bound** — each layer `hardBounds` lists, alone over the background, across that
  *   bound. The boundary sets cannot show a layer whose data starts exactly there in "same tiles".
  * - **The land cover alone** — with `--landcover`, its fills over the background, with OSM out of the way.
@@ -38,8 +40,17 @@ import { tileTemplate } from '../lib/native-render.js';
 import { cacheDir } from '../lib/paths.js';
 import { sourceMetadata, type TileSchema } from '../lib/tile-cache.js';
 import { CHANGED, diff } from '../overlay-compare/measure.js';
-import { hardBounds, isolateLayer, landcoverAlone, withoutSymbols, withSameTiles } from './measure.js';
-import { boundaryImage, renderReport, type BoundaryRow, type BoundRow, type Pair, type ReportData } from './report.js';
+import { hardBounds, isolateLayer, landcoverAlone, withoutPatterns, withoutSymbols, withSameTiles } from './measure.js';
+import {
+	boundaryImage,
+	largestStyleChange,
+	renderReport,
+	STYLE_ONLY_LIMIT,
+	type BoundaryRow,
+	type BoundRow,
+	type Pair,
+	type ReportData,
+} from './report.js';
 
 const SIZE = 512;
 const EPSILON = 0.001;
@@ -104,7 +115,7 @@ async function main(): Promise<void> {
 	// The land cover's fills have no zoom bounds, and it changes no other layer's.
 	const bounds = args.quick || args.landcover ? [] : hardBounds(light);
 
-	const sets = (args.quick ? 3 : 4) + (args.landcover ? 1 : 0);
+	const sets = (args.quick ? 4 : 5) + (args.landcover ? 1 : 0);
 	const total = places.length * ZOOMS.length * sets * 3 + bounds.length * places.length * 2;
 	const started = Date.now();
 	let rendered = 0;
@@ -152,6 +163,12 @@ async function main(): Promise<void> {
 				const all = await across(light, place, zoom, 'all');
 				const noSymbols = await across(withoutSymbols(light), place, zoom, 'no symbols');
 				const sameTiles = await across(withSameTiles(withoutSymbols(light), zoom), place, zoom, 'same tiles');
+				const styleOnly = await across(
+					withSameTiles(withoutPatterns(withoutSymbols(light)), zoom),
+					place,
+					zoom,
+					'style only'
+				);
 				const darkPair = args.quick ? undefined : (await across(dark, place, zoom, 'dark')).pair;
 				const alone = args.landcover ? await across(landcoverAlone(light), place, zoom, 'land cover') : undefined;
 				boundaries.push({
@@ -161,6 +178,7 @@ async function main(): Promise<void> {
 						all: all.pair,
 						noSymbols: noSymbols.pair,
 						sameTiles: sameTiles.pair,
+						styleOnly: styleOnly.pair,
 						...(alone && { landcoverAlone: alone.pair }),
 						...(darkPair && { dark: darkPair }),
 					},
@@ -213,6 +231,17 @@ async function main(): Promise<void> {
 		writeFileSync(resolve(out, 'index.html'), renderReport(data, baseline));
 		if (failures.length > 0) console.warn(`${failures.length} render failures — see results.json`);
 		console.log(resolve(out, 'index.html'));
+
+		const style = largestStyleChange(boundaries);
+		if (style) {
+			const where = `${style.row.place} z${style.row.zoom}`;
+			const points = (style.excess * 100).toFixed(2);
+			console.log(`style only: ${points} points beyond the control at most, at ${where}`);
+			if (style.excess > STYLE_ONLY_LIMIT) {
+				console.error(`above the limit of ${(STYLE_ONLY_LIMIT * 100).toFixed(2)} points`);
+				process.exitCode = 1;
+			}
+		}
 	} finally {
 		await map.close();
 	}

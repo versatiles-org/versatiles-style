@@ -13,13 +13,14 @@ export type Pair = {
 	controlMax: number;
 };
 
-export const SET_NAMES = ['all', 'noSymbols', 'sameTiles', 'landcoverAlone', 'dark'] as const;
+export const SET_NAMES = ['all', 'noSymbols', 'sameTiles', 'styleOnly', 'landcoverAlone', 'dark'] as const;
 export type SetName = (typeof SET_NAMES)[number];
 
 const SET_TITLES: Record<SetName, string> = {
 	all: 'all layers',
 	noSymbols: 'without symbols',
 	sameTiles: 'without symbols, same tiles on both sides',
+	styleOnly: 'without symbols, dashes and patterns, same tiles on both sides',
 	landcoverAlone: 'the land cover fills alone',
 	dark: 'all layers, dark theme',
 };
@@ -63,6 +64,23 @@ export const boundaryImage = (
 
 /** How much a boundary changes beyond its control. */
 export const excess = (pair: Pair) => pair.share - pair.controlShare;
+
+/**
+ * The most the style alone may change across a boundary, beyond its control: half a percentage point. The first
+ * full measurement was 0.12 points at most (issue #146). Labels, tile data and dashes aren't in this set, so
+ * this says nothing about them, and a layer whose data starts exactly at a boundary is the invariant's to catch.
+ */
+export const STYLE_ONLY_LIMIT = 0.005;
+
+/** The largest change of the style alone beyond its control, with where it is. */
+export function largestStyleChange(rows: readonly BoundaryRow[]): { row: BoundaryRow; excess: number } | undefined {
+	let largest: { row: BoundaryRow; excess: number } | undefined;
+	for (const row of rows) {
+		const pair = row.sets.styleOnly;
+		if (pair && (!largest || excess(pair) > largest.excess)) largest = { row, excess: excess(pair) };
+	}
+	return largest;
+}
 
 function setsPresent(rows: readonly BoundaryRow[]): SetName[] {
 	return SET_NAMES.filter((name) => rows.some((row) => row.sets[name] !== undefined));
@@ -155,6 +173,7 @@ ${figure('diff', 'changed pixels')}
 
 export function renderReport(data: ReportData, baseline?: readonly BoundaryRow[]): string {
 	const places = data.places.map((p) => `${esc(p.name)} (${p.center.join(', ')})`).join(', ');
+	const style = largestStyleChange(data.boundaries);
 	return `<!doctype html>
 <meta charset="utf-8">
 <title>Zoom boundaries</title>
@@ -176,6 +195,7 @@ Places: ${places}.</p>
 <p>Boundary: z − ${data.epsilon} against z. Control: z − ${2 * data.epsilon} against z − ${data.epsilon}. Shares count
 pixels with a channel changed by more than ${data.changedAbove}. Same tiles: every vector source ends at z − 1.</p>
 ${data.failures.length ? `<p class="fail">${data.failures.length} render failures — see results.json</p>` : ''}
+${style ? `<p>Style only, largest change beyond its control: ${pct(style.excess)} at ${esc(style.row.place)}, z${style.row.zoom} (limit ${pct(STYLE_ONLY_LIMIT)}).</p>` : ''}
 <h2>Per boundary, largest of all places</h2>
 ${summary(data.boundaries, baseline)}
 <h2>Layers with a hard zoom bound, each alone over the background</h2>

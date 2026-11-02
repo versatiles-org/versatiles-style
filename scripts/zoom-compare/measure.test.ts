@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hardBounds, isolateLayer, landcoverAlone, withoutSymbols, withSameTiles } from './measure.js';
+import { hardBounds, isolateLayer, landcoverAlone, withoutPatterns, withoutSymbols, withSameTiles } from './measure.js';
 import type { StyleSpecification } from '../../src/types/index.js';
 
 const ramp = (...stops: number[]) => ['interpolate', ['linear'], ['zoom'], ...stops];
@@ -15,6 +15,18 @@ describe('layer sets', () => {
 
 	it('withoutSymbols drops only the symbols', () => {
 		expect(ids(withoutSymbols(layers))).toStrictEqual(['background', 'fill']);
+	});
+
+	it('withoutPatterns drops the dashed and patterned layers', () => {
+		const patterned = style(
+			{ id: 'background', type: 'background' },
+			{ id: 'solid', type: 'line', source: 's', paint: { 'line-width': 1 } },
+			{ id: 'dashed', type: 'line', source: 's', paint: { 'line-dasharray': [2, 1] } },
+			{ id: 'image', type: 'line', source: 's', paint: { 'line-pattern': 'x' } },
+			{ id: 'hatched', type: 'fill', source: 's', paint: { 'fill-pattern': 'x' } },
+			{ id: 'label', type: 'symbol', source: 's' }
+		);
+		expect(ids(withoutPatterns(patterned))).toStrictEqual(['background', 'solid', 'label']);
 	});
 
 	it('landcoverAlone keeps the background and the land cover fills', () => {
