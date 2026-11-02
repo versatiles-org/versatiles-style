@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SHORTBREAD_DATA_FLOORS } from './data-floors.js';
 import { SHORTBREAD_SCHEMA } from './schema.js';
 import { osm } from '../api/index.js';
 import { auditSchema } from '../../scripts/lib/schema-audit.js';
@@ -46,6 +47,16 @@ describe('every field the style reads exists on its source-layer', () => {
 	// one is a translation gap rather than a broken filter — hence its own list.
 	it('every language field read is present in the tileset', () => {
 		expect(audit.missingLanguageFields).toEqual([]);
+	});
+});
+
+// The copy `osm()` uses, so that the field lists stay out of the CDN bundle (see `data-floors.ts`).
+describe('SHORTBREAD_DATA_FLOORS', () => {
+	it('states the same zoom as the record, for the same source-layers', () => {
+		const fromRecord = Object.fromEntries(
+			Object.entries(SHORTBREAD_SCHEMA).map(([id, layer]) => [id, { minzoom: layer.minzoom }])
+		);
+		expect(SHORTBREAD_DATA_FLOORS).toStrictEqual(fromRecord);
 	});
 });
 

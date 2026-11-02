@@ -13,7 +13,7 @@ import { boundaries } from './boundaries.js';
 import { markings } from './markings.js';
 import { transitStops } from './transitstops.js';
 import { featureLabels, placeLabels, addresses } from './labels.js';
-import { SHORTBREAD_SCHEMA } from '../schema.js';
+import { SHORTBREAD_DATA_FLOORS } from '../data-floors.js';
 
 // Slot anchor layers — stable IDs used as MapLibre `beforeId` targets.
 export const SLOT_BELOW_FILLS = 'slot-below-fills';
@@ -68,7 +68,7 @@ export function* shortbreadLayers(ctx: LayerContext): Generator<TaggedLayer> {
  * render order above.
  */
 export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
-	return buildLayers(ctx, SHORTBREAD_SCHEMA, shortbreadLayers(ctx));
+	return buildLayers(ctx, SHORTBREAD_DATA_FLOORS, shortbreadLayers(ctx));
 }
 
 export { LANDCOVER_KINDS } from './landcover.js';

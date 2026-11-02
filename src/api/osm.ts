@@ -7,7 +7,7 @@ import {
 	SLOT_IDS,
 	getTextGroupMap,
 	getLayerGroupMap,
-	SHORTBREAD_SCHEMA,
+	SHORTBREAD_DATA_FLOORS,
 	LANDCOVER_KINDS,
 } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
@@ -155,7 +155,7 @@ export const osm = Object.assign(osmFn, {
 	/** How `guessStyle` recognises a Shortbread tileset and builds a style for it. */
 	tileset: {
 		id: 'shortbread',
-		sourceLayers: Object.keys(SHORTBREAD_SCHEMA),
+		sourceLayers: Object.keys(SHORTBREAD_DATA_FLOORS),
 		// `osmFn`, not `osm`: referring to the exported const inside its own initialiser makes its type
 		// circular, which TypeScript resolves by widening the whole statics object to `any`.
 		// A tileset with the land cover merged in gets it drawn. Inlined, because the land cover's last zoom

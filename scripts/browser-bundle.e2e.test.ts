@@ -38,7 +38,7 @@ const MUST_BE_ABSENT = [
  * A ratchet, not a target: set a little above what the bundle weighs today, so an accidental import
  * that pulls a whole subtree fails here instead of shipping. Lower it when the bundle gets smaller.
  */
-const GZIP_CEILING = 36 * 1024;
+const GZIP_CEILING = 35.5 * 1024;
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const DIGITS = new Map([...CHARS].map((char, index) => [char, index]));
@@ -110,7 +110,7 @@ describe.skipIf(!existsSync(BUNDLE))('the built browser bundle', () => {
 		expect([...bytes.keys()].filter((file) => file.includes('node_modules'))).toStrictEqual([]);
 	});
 
-	it(`stays under ${(GZIP_CEILING / 1024).toFixed(0)} KB gzipped`, () => {
+	it(`stays under ${(GZIP_CEILING / 1024).toFixed(1)} KB gzipped`, () => {
 		expect(gzipSync(code, { level: 9 }).length).toBeLessThan(GZIP_CEILING);
 	});
 });

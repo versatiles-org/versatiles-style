@@ -1,4 +1,5 @@
 export { SHORTBREAD_SCHEMA } from './schema.js';
+export { SHORTBREAD_DATA_FLOORS } from './data-floors.js';
 export { buildContext } from './context.js';
 export type { LayerContext } from './context.js';
 export {
