@@ -570,11 +570,12 @@ describe('deriveOptions — foreign styles', () => {
 		});
 		expect(language(labels('{name}'))).toBeUndefined();
 
-		const unsupported = deriveOptions(labels('{name:ja}'));
-		expect(language(labels('{name:ja}'))).toBeUndefined();
+		// `tlh`, Klingon: not among the languages the tileset carries, and unlikely to join them.
+		const unsupported = deriveOptions(labels('{name:tlh}'));
+		expect(language(labels('{name:tlh}'))).toBeUndefined();
 		expect(byCode(unsupported.report.diagnostics, 'language.unavailable')[0]).toMatchObject({
 			optionPath: 'text.language',
-			data: { requested: 'ja' },
+			data: { requested: 'tlh' },
 		});
 	});
 

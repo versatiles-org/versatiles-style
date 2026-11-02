@@ -4,9 +4,9 @@ import type { DataFloors } from '../dsl/index.js';
  * The zoom each Shortbread source-layer begins at, which is all a style needs to know about the schema at
  * run time: it gates layers on it (`applyDataFloor`), and its keys are how `guessStyle` recognises the tiles.
  *
- * A copy of what `schema.ts` says, because `schema.ts` also lists every field, and everything `osm()` reaches
- * lands in the CDN bundle. Those fields are only for the tests and `src/migrate/`. `schema.test.ts` checks this
- * table against the record, so it cannot drift unnoticed.
+ * A copy of what `schema.ts` says, because `schema.ts` also lists every field, a thousand of them with 81
+ * languages, and everything `osm()` reaches lands in the CDN bundle. Those fields are only for the tests and
+ * `src/migrate/`. `schema.test.ts` checks this table against the record, so it cannot drift unnoticed.
  */
 export const SHORTBREAD_DATA_FLOORS: DataFloors = {
 	addresses: { minzoom: 14 },
@@ -18,7 +18,8 @@ export const SHORTBREAD_DATA_FLOORS: DataFloors = {
 	dam_lines: { minzoom: 12 },
 	dam_polygons: { minzoom: 12 },
 	ferries: { minzoom: 10 },
-	land: { minzoom: 0 },
+	land: { minzoom: 7 },
+	mountain_peaks: { minzoom: 10 },
 	ocean: { minzoom: 0 },
 	pier_lines: { minzoom: 12 },
 	pier_polygons: { minzoom: 12 },
@@ -33,6 +34,6 @@ export const SHORTBREAD_DATA_FLOORS: DataFloors = {
 	streets_polygons_labels: { minzoom: 14 },
 	water_lines: { minzoom: 9 },
 	water_lines_labels: { minzoom: 12 },
-	water_polygons: { minzoom: 0 },
+	water_polygons: { minzoom: 4 },
 	water_polygons_labels: { minzoom: 4 },
 };

@@ -53,6 +53,7 @@ export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<stri
 		dam_polygons: [],
 		ferries: [],
 		land: [],
+		mountain_peaks: [],
 		ocean: [],
 		pier_lines: [],
 		pier_polygons: [],

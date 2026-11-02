@@ -69,13 +69,14 @@ describe('no layer is drawn before its data exists', () => {
 describe('schema coverage', () => {
 	// Source-layers the style deliberately does not render. Each entry is a decision, not an
 	// oversight — adding a layer to the tiles should make this list fail until someone chooses.
-	// Empty, and worth keeping that way: every source-layer the tiles carry is rendered. An entry
-	// here is a deliberate decision not to draw something, not a backlog item.
+	// An entry here is a deliberate decision not to draw something, not a backlog item.
 	//
 	// Kind-level gaps are not expressible here and are recorded at their layer instead — e.g.
 	// `streets_polygons_labels` is rendered for `pedestrian` only, because the layer carries no
 	// `ref` and `service` polygons are not drawn at all.
-	const NOT_RENDERED: Record<string, string> = {};
+	const NOT_RENDERED: Record<string, string> = {
+		mountain_peaks: 'new in Shortbread 1.1; drawing peaks and passes is a cartographic decision of its own (#144)',
+	};
 
 	it('every source-layer is either rendered or explicitly listed as not rendered', () => {
 		const unaccounted = audit.unrendered.filter((id) => !(id in NOT_RENDERED));
