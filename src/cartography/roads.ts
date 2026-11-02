@@ -50,6 +50,8 @@ export type RoadVocabulary = {
 	readonly serviceBases: readonly string[];
 	/** Appearance zoom per street base: the zoom its data begins, which the fade-in follows. */
 	readonly appear: Readonly<Record<string, number>>;
+	/** The zoom the bridge areas begin, which their fade-in follows. Not for a schema without such areas. */
+	readonly bridgeAppear?: number;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -351,9 +353,11 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 	const bt = isLink ? t.slice(0, -5) : t;
 
 	if (isLink) {
-		if (bt === 'motorway') return { ...base, minzoom: 12, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
+		// Faded in by opacity, at the zoom the link itself appears (`streetAppear`), as the road on top does.
+		if (bt === 'motorway')
+			return { ...base, opacity: { 12: 0, 13: 0.5 }, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
 		if (bt === 'trunk' || bt === 'primary' || bt === 'secondary' || bt === 'arterial')
-			return { ...base, minzoom: 13, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
+			return { ...base, opacity: { 13: 0, 14: 0.5 }, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
 		// tertiary-link → minor deck
 		return { ...base, size: { 12: 3, 14: 4, 16: 8, 18: 36, 19: 90, 20: 179 }, opacity: { 12: 0, 13: 1 } };
 	}
@@ -389,7 +393,10 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 // drawn (no styling rule). Every non-null result carries a color, so the caller can
 // safely treat it as a colored style for the mandatory-color fill/line builders.
 function roadStyle(ctx: LayerContext, id: string, vocab: RoadVocabulary): b.StyleProps | null {
-	if (id === 'bridge') return { color: ctx.c.land.blend(0.02, ctx.fg), fillAntialias: true, opacity: 0.8 };
+	if (id === 'bridge') {
+		const from = vocab.bridgeAppear ?? 12;
+		return { color: ctx.c.land.blend(0.02, ctx.fg), fillAntialias: true, opacity: { [from]: 0, [from + 1]: 0.8 } };
+	}
 
 	let prefix: Prefix = '';
 	let s = id;
@@ -415,12 +422,13 @@ function roadStyle(ctx: LayerContext, id: string, vocab: RoadVocabulary): b.Styl
 	if (s.startsWith('aerialway')) {
 		// Aerialways (cable cars / lifts), OSM Bright style: a thin solid base line (:outline)
 		// with a wider dashed line on top (the fill) giving the cable-tick pattern.
-		// OSM Bright caps cable-cars round and joins them miter.
+		// OSM Bright caps cable-cars round and joins them miter. Neither width ramps from 0, so both fade in.
+		const opacity = { 13: 0, 14: 1 };
 		if (suffix === ':outline')
-			return { color: ctx.c.transitRail, minzoom: 13, size: { base: 1, stops: { 11: 1, 19: 2.5 } }, lineCap };
+			return { color: ctx.c.transitRail, opacity, size: { base: 1, stops: { 11: 1, 19: 2.5 } }, lineCap };
 		return {
 			color: ctx.c.transitRail,
-			minzoom: 13,
+			opacity,
 			size: { base: 1, stops: { 11: 3, 19: 5.5 } },
 			lineDasharray: [2, 3],
 			lineCap,

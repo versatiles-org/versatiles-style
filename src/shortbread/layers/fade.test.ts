@@ -1,6 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 import { osm } from '../../api/index.js';
+import { omt } from '../../omt/index.js';
+import { protomaps } from '../../protomaps/index.js';
+import { hardBounds } from '../../../scripts/zoom-compare/measure.js';
 
 // ── The zoom-behaviour rule ────────────────────────────────────────────────────────
 //
@@ -377,6 +380,80 @@ describe('minzoom matches where each layer starts appearing', () => {
 			.map((l) => l.id);
 		expect(tooDeep).toEqual([]);
 	});
+});
+
+// ── Nothing pops in or out at a zoom bound (issue #146) ───────────────────────────
+// A layer reaches a `minzoom` or `maxzoom` through a ramp from or to 0, or it appears all at once. What is
+// measured across those bounds is in `npm run zoom-compare`.
+describe('no line or fill starts or ends at a zoom bound while visible', () => {
+	const builders: [string, () => StyleSpecification][] = [
+		['osm', () => osm()],
+		['osm, extruded', () => osm({ features: { buildings: 'extruded' } })],
+		['omt', () => omt()],
+		['protomaps', () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } })],
+	];
+
+	it.each(builders)('%s', (_, build) => {
+		expect(hardBounds(build()).filter((bound) => bound.type !== 'symbol')).toEqual([]);
+	});
+});
+
+// Symbols are the exception, for now. `minzoom` is how these appear (see the note on it in `dsl/build.ts`), and
+// MapLibre fades symbols in over time as placement changes, which no static comparison sees. A ramp isn't
+// the obvious fix: whether a label at opacity 0 still blocks others in collision is unmeasured. Listed by id so
+// a new symbol has to be added here on purpose. Not a claim that these look right.
+const SYMBOLS_APPEARING_AT_ONCE = [
+	'label-address-housenumber',
+	'label-boundary-country-large',
+	'label-boundary-country-medium',
+	'label-boundary-country-small',
+	'label-boundary-state',
+	'label-motorway-exit',
+	'label-motorway-shield',
+	'label-place-capital',
+	'label-place-city',
+	'label-place-hamlet',
+	'label-place-neighbourhood',
+	'label-place-quarter',
+	'label-place-statecapital',
+	'label-place-suburb',
+	'label-place-town',
+	'label-place-village',
+	'label-street-livingstreet',
+	'label-street-pedestrian',
+	'label-street-pedestrian-zone',
+	'label-street-primary',
+	'label-street-residential',
+	'label-street-secondary',
+	'label-street-tertiary',
+	'label-street-track',
+	'label-street-trunk',
+	'label-street-unclassified',
+	'label-water-river',
+	'label-water-stream',
+	'symbol-transit-airfield',
+	'symbol-transit-airport',
+	'symbol-transit-bus',
+	'symbol-transit-station',
+	'symbol-transit-tram',
+];
+// The same labels stop at a `maxzoom` while visible: boundary labels make way for the smaller ones.
+const SYMBOLS_ENDING_AT_ONCE = [
+	'label-boundary-country-large',
+	'label-boundary-country-medium',
+	'label-boundary-country-small',
+	'label-boundary-state',
+];
+
+describe('the symbols with a hard zoom bound are the listed ones', () => {
+	const symbols = (bound: 'minzoom' | 'maxzoom') =>
+		hardBounds(style)
+			.filter((found) => found.type === 'symbol' && found.bound === bound)
+			.map((found) => found.id)
+			.sort();
+
+	it('at a minzoom', () => expect(symbols('minzoom')).toEqual(SYMBOLS_APPEARING_AT_ONCE));
+	it('at a maxzoom', () => expect(symbols('maxzoom')).toEqual(SYMBOLS_ENDING_AT_ONCE));
 });
 
 // ── Zoom-range sanity ─────────────────────────────────────────────────────────────

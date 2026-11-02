@@ -15,3 +15,17 @@ describe('omt() waterway zooms', () => {
 		expect(minzoom(omt(), 'water-stream')).toBe(minzoom(osm(), 'water-stream'));
 	});
 });
+
+// A fade over before the data arrives is no fade: the layer pops in where its data begins, which no check
+// on the style alone can see. These zooms were measured in tiles, and differ from Shortbread's.
+describe('omt() fades in where its tiles begin', () => {
+	it('canals, from z12', () => {
+		expect(minzoom(omt(), 'water-canal')).toBe(12);
+		expect(minzoom(osm(), 'water-canal')).toBe(9);
+	});
+
+	it('bridge areas, from z13', () => {
+		expect(minzoom(omt(), 'bridge')).toBe(13);
+		expect(minzoom(osm(), 'bridge')).toBe(12);
+	});
+});

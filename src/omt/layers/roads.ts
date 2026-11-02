@@ -212,6 +212,9 @@ function buildStructures(): MaplibreLayerDefinition[] {
 const VOCAB: RoadVocabulary = {
 	minorBases: ['minor'],
 	serviceBases: ['service', 'busway'],
+	// Measured: no `class: bridge` polygon below z13 around six places with large bridges (November 2026),
+	// where Shortbread's `bridges` start at z12. A fade over z12–13 would be over before they arrive.
+	bridgeAppear: 13,
 	appear: {
 		motorway: 5,
 		trunk: 6,

@@ -99,13 +99,9 @@ describe('the schema seam', () => {
 		// ocean fill is ungated here — if the Shortbread record were being consulted it would be z4.
 		const ocean = style.layers.find((l) => l.id === 'water-ocean') as { minzoom?: number };
 		expect(ocean.minzoom).toBeUndefined();
-		// `transportation` starts at z4, where Shortbread's `bridges` start at z12: the bridge deck, which
-		// has no zoom of its own, is floored at z4. (The river line used to show this at z3; it now starts
-		// at z9 on purpose, to match Shortbread — see `LINE_MINZOOM` in `layers/water.ts`. `water-pier`
-		// showed it until it gained a width ramp, which now derives a z12 gate of its own.)
-		const bridge = style.layers.find((l) => l.id === 'bridge') as { minzoom?: number };
-		expect(bridge.minzoom).toBe(4);
-		// The pier is the counterpart: a layer whose own transition outranks the floor beneath it.
+		// The floor itself is tested in `dsl/assemble.test.ts`: no layer here rests on one any more, as each
+		// fades in from a zoom of its own (issue #146). The pier is one: its own transition outranks the
+		// floor of `transportation`, z4, beneath it.
 		const pier = style.layers.find((l) => l.id === 'water-pier') as { minzoom?: number };
 		expect(pier.minzoom).toBe(12);
 	});

@@ -44,19 +44,19 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 // `LINEAR_STRUCTURE_WIDTH` there for why it ramps from 0 at z12 and why the stops are flat.
 const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 12: 0, 13: 1, 16: 4, 18: 18, 20: 90 };
 
-// Per-class data floors inside `waterway`. The record states the source-layer starts at z3, which is
-// true of rivers; the smaller classes are not tiled nearly that early, and `applyDataFloor` can only
-// gate at the source-layer minzoom, so without this they would be processed for ten zoom levels that
-// carry no such feature.
+// The zoom each `waterway` class fades in from: none of these widths ramps from 0, so without a fade a
+// line would pop in at full width (issue #146). It is also what gates a layer. The record states the
+// source-layer starts at z3, which is true of rivers; the smaller classes are not tiled nearly that
+// early, and `applyDataFloor` can only gate at the source-layer minzoom.
 //
-// Unlike the Shortbread table these numbers are NOT measured: the value sample confirms *which* classes
-// exist, not the zoom each one starts at, which needs a zoom sweep. Measuring them the way the
-// Shortbread comment describes is outstanding.
+// Measured in a zoom sweep around six places (November 2026), z4–14: rivers occur at every zoom, canals
+// from z12, and streams, ditches and drains from z13. A fade must not start before a class does, or it is
+// over when the class arrives, so `canal` starts at z12, where Shortbread's starts at z9.
 //
-// `river` starts at z9 and `stream` at z14 as in Shortbread, whose tiles carry neither earlier.
-// OpenMapTiles has rivers from z3 and streams from z13; drawing them there put river lines on a z4 map of
-// Europe and streams on a z13 Black Forest that the other schemas show without.
-const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 14, ditch: 14, drain: 14 };
+// `river` starts at z9 and `stream` at z14 as in Shortbread, whose tiles carry neither earlier. Drawing them
+// from where OpenMapTiles has them put river lines on a z4 map of Europe and streams on a z13 Black Forest
+// that the other schemas show without.
+const LINE_APPEAR: Record<string, number> = { river: 9, canal: 12, stream: 14, ditch: 14, drain: 14 };
 
 /** Shortbread's `tunnel`/`bridge` booleans, as OpenMapTiles' single `brunnel` enum. */
 const AT_GRADE: ExpressionSpecification = [
@@ -105,7 +105,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 			lineCap: 'round',
 			lineJoin: 'round',
 			size: LINE_SIZES[kind],
-			minzoom: LINE_MINZOOM[kind],
+			appear: LINE_APPEAR[kind],
 			group: 'water.rivers',
 		});
 	}

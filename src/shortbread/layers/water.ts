@@ -31,16 +31,15 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
  */
 const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 12: 0, 13: 1, 16: 4, 18: 18, 20: 90 };
 
-// Per-kind data floors inside `water_lines`. `applyDataFloor` can only gate at the SOURCE-LAYER
-// minzoom, which the tileset reports as 9 — true for rivers and canals, but streams and ditches are
-// not tiled until z14, so without this they would be processed for five zoom levels that carry no
-// such feature. None of these widths ramps from 0, so nothing else derives a gate for them.
+// The zoom each kind inside `water_lines` is tiled from, where it fades in: none of these widths ramps
+// from 0, so without a fade a line would pop in at full width (issue #146). It is also what gates a
+// layer: `applyDataFloor` only knows the SOURCE-LAYER minzoom, which the tileset reports as 9.
 //
 // Measured against the live tileset rather than taken from the prose spec, which says rivers and
 // canals are "not below 12" — the VersaTiles tiles in fact carry both from z9, so trusting the prose
 // here would have hidden them. Streams and ditches were absent below z14 in every region sampled
 // (Black Forest, Wales, Vermont, Bavaria, Dutch polder) and the spec agrees at "14+".
-const LINE_MINZOOM: Record<string, number> = { stream: 14, ditch: 14 };
+const LINE_APPEAR: Record<string, number> = { river: 9, canal: 9, stream: 14, ditch: 14 };
 
 export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	const { c, fg } = ctx;
@@ -58,7 +57,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 			lineCap: 'round',
 			lineJoin: 'round',
 			size: LINE_SIZES[kind],
-			minzoom: LINE_MINZOOM[kind],
+			appear: LINE_APPEAR[kind],
 			group: 'water.rivers',
 		});
 	}

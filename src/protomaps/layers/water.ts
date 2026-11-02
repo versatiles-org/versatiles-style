@@ -33,7 +33,7 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
  * and `stream` at z14 as in Shortbread, whose tiles have neither earlier; Protomaps carries river lines
  * from z6 and streams from z13.
  */
-const LINE_MINZOOM: Record<string, number> = { river: 9, canal: 9, stream: 14 };
+const LINE_APPEAR: Record<string, number> = { river: 9, canal: 9, stream: 14 };
 
 /**
  * A river area: `kind: water, kind_detail: river` in the tiles (197 in the cache), or `kind: river` for a
@@ -91,7 +91,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 			lineCap: 'round',
 			lineJoin: 'round',
 			size: LINE_SIZES[kind],
-			minzoom: LINE_MINZOOM[kind],
+			appear: LINE_APPEAR[kind],
 			group: 'water.rivers',
 		});
 	}

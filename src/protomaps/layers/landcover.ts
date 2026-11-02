@@ -199,6 +199,7 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'landuse',
 		filter: ['==', ['get', 'kind'], 'glacier'],
 		color: c.glacier,
+		appear: 2, // where `landuse` starts; it would pop in there otherwise (issue #146)
 		group: 'land.glacier',
 	});
 

@@ -234,6 +234,7 @@ const VOCAB: RoadVocabulary = {
 	// `minor` and `bus` are the classes the merged street layers are named after (`STREET_CLASSES`).
 	minorBases: ['minor', 'residential', 'unclassified', 'livingstreet'],
 	serviceBases: ['service', 'bus', 'busway', 'busguideway'],
+	bridgeAppear: 12,
 	appear: {
 		motorway: 5,
 		trunk: 6,
