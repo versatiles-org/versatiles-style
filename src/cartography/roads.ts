@@ -64,6 +64,11 @@ export type RoadVocabulary = {
 	readonly serviceRailWidth?: Readonly<Record<number, number>>;
 	/** The opacity of a service track's casing. A fade over the first zoom of its width if not stated. */
 	readonly serviceRailOpacity?: Readonly<Record<number, number>>;
+	/**
+	 * The zoom a kind of transport fades in from, for a schema whose tiles start it later than the usual z11 for
+	 * rail and subway, z13 for the tram family and z10 for ferries. A fade over before the data arrives is no fade.
+	 */
+	readonly transportAppear?: Readonly<Record<string, number>>;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -223,7 +228,7 @@ function bicycleStyle(ctx: LayerContext, base: string, vocab: RoadVocabulary): b
 		color: c.transitCycle,
 		// the overlay covers the street it marks, so it takes that street's own width
 		size: base === 'pedestrian' ? PEDESTRIAN_WIDTH.main : MINOR_WIDTH.main,
-		opacity: { 12: 0, 13: 1 },
+		opacity: b.fadeIn(streetAppear(base, false, vocab)),
 	};
 }
 
@@ -274,18 +279,18 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 		return isOutline
 			? null
 			: {
-					minzoom: 10,
 					// closest derivation of OSM Bright's ferry teal (#6c9fb6) from the single water color;
 					// blend toward `fg` (black in light mode / white in dark mode) rather than absolute darken
 					color: c.water.saturate(0.8).blend(0.3, fg),
 					size: 1.1,
-					opacity: { 10: 0, 11: 1 },
+					opacity: b.fadeIn(vocab.transportAppear?.ferry ?? 10),
 					lineDasharray: [2, 2],
 					lineJoin, // OSM Bright: ferry cap butt (default) / join round
 				};
 
 	const isService = t.endsWith('-service');
 	const rt = isService ? t.slice(0, -'-service'.length) : t;
+	const appear = vocab.transportAppear?.[rt];
 
 	let r: b.StyleProps | null;
 	if (rt === 'rail' || rt === 'lightrail') {
@@ -311,11 +316,11 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 		} else
 			r = isOutline
 				? // The casing is a hairline well before its width ramp starts moving, so its fade-in is what
-					// puts it on the map, at the zoom each schema's tiles allow (`railAppear`).
+					// puts it on the map, at the zoom each schema's tiles allow (`railAppear`, `transportAppear`).
 					{
 						color: c.transitRail,
 						size: { 8: 1, 13: 1, 15: 1, 20: 14 },
-						opacity: b.fadeIn(vocab.railAppear ?? 11),
+						opacity: b.fadeIn(appear ?? vocab.railAppear ?? 11),
 					}
 				: {
 						color: c.transitRail.blend(0.3, bg),
@@ -331,7 +336,7 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 			? {
 					color: c.transitSubway,
 					size: { 11: 0, 12: 1, 15: 3, 16: 3, 18: 6, 19: 8, 20: 10 },
-					opacity: b.fadeIn(11),
+					opacity: b.fadeIn(appear ?? 11),
 				}
 			: {
 					color: c.transitSubway.blend(0.3, bg),
@@ -342,10 +347,11 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 	} else {
 		// tram / narrowgauge / funicular / monorail
 		if (isService) return null;
-		// Both width curves grow from 0 (the casing at z15, the track at z13), and `make` fades them in there.
+		// Both width curves grow from 0 (the casing at z15, the track at z13 unless its tiles start it later), and
+		// `make` fades them in there.
 		r = isOutline
 			? { color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
-			: { size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
+			: { size: { [appear ?? 13]: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
 	}
 
 	return r;

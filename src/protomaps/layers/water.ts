@@ -80,6 +80,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'water',
 		filter: ['all', AREAS, IS_RIVER_AREA],
 		color: c.water,
+		appear: 6, // measured in tiles: no river area before it, unlike the lakes and the ocean
 		group: 'water.rivers',
 	});
 

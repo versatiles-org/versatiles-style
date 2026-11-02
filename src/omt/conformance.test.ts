@@ -103,7 +103,7 @@ describe('the schema seam', () => {
 		// fades in from a zoom of its own (issue #146). The pier is one: its own transition outranks the
 		// floor of `transportation`, z4, beneath it.
 		const pier = style.layers.find((l) => l.id === 'water-pier') as { minzoom?: number };
-		expect(pier.minzoom).toBe(12);
+		expect(pier.minzoom).toBe(13);
 	});
 
 	it('reads OpenMapTiles’ own name-field convention', () => {

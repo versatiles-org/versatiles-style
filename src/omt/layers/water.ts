@@ -40,9 +40,9 @@ const LINE_SIZES: Record<string, b.ExpStops> = {
 	drain: { base: 1.3, stops: { 13: 0.5, 20: 2 } },
 };
 
-// Pier/breakwater line width, carried over unchanged from the Shortbread module — see
-// `LINEAR_STRUCTURE_WIDTH` there for why it ramps from 0 at z12 and why the stops are flat.
-const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 12: 0, 13: 1, 16: 4, 18: 18, 20: 90 };
+// Pier/breakwater line width, from the Shortbread module — see `LINEAR_STRUCTURE_WIDTH` there for why it ramps
+// from 0 and why the stops are flat. From z13, not z12: measured in tiles, that's where piers begin here.
+const LINEAR_STRUCTURE_WIDTH: Record<number, number> = { 13: 0, 14: 1, 16: 4, 18: 18, 20: 90 };
 
 // The zoom each `waterway` class fades in from: none of these widths ramps from 0, so without a fade a
 // line would pop in at full width (issue #146). It is also what gates a layer. The record states the
@@ -92,6 +92,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'water',
 		filter: ['==', ['get', 'class'], 'river'],
 		color: c.water,
+		appear: 6, // measured in tiles: no river area before it, unlike the lakes and the ocean
 		group: 'water.rivers',
 	});
 
@@ -126,7 +127,7 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 		sourceLayer: 'transportation',
 		filter: ['all', ['==', ['geometry-type'], 'Polygon'], PIER],
 		color: c.land,
-		opacity: { 12: 0, 13: 1 },
+		opacity: { 13: 0, 14: 1 },
 		group: 'water.piers',
 	});
 	yield b.line('water-pier', {

@@ -217,12 +217,14 @@ const VOCAB: RoadVocabulary = {
 	bridgeAppear: 13,
 	// Rail stays at the default, z11. Measured the same way: `class: rail` starts at z8, but no feature has a
 	// `service` at z7–12, so an earlier start would only draw more track that can't be told apart.
+	// Subways and trams are measured too: none below z14 around eight places (November 2026).
+	transportAppear: { subway: 14, tram: 14 },
 	appear: {
 		motorway: 5,
 		trunk: 6,
 		primary: 8,
 		secondary: 9,
-		tertiary: 10,
+		tertiary: 11, // measured: Shortbread's start at z10, this schema's at z11
 		// `minor` stands for residential / unclassified / living_street, which appeared at 12, 12 and 13;
 		// the earliest of the three is the honest choice for the merged class.
 		minor: 12,

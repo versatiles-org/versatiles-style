@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { osm } from '../api/osm.js';
 import { omt } from './api.js';
+import { protomaps } from '../protomaps/api.js';
 
 const minzoom = (style: ReturnType<typeof osm>, id: string) => style.layers.find((l) => l.id === id)?.minzoom;
 
@@ -27,5 +28,34 @@ describe('omt() fades in where its tiles begin', () => {
 	it('bridge areas, from z13', () => {
 		expect(minzoom(omt(), 'bridge')).toBe(13);
 		expect(minzoom(osm(), 'bridge')).toBe(12);
+	});
+
+	it.each([
+		['water-area-river', 6],
+		['water-pier-area', 13],
+		['water-pier', 13],
+		['street-tertiary', 11],
+		['street-pedestrian-bicycle', 13],
+		['transport-subway:outline', 14],
+		['transport-tram', 14],
+	])('%s, from z%i', (id, zoom) => {
+		expect(minzoom(omt(), id)).toBe(zoom);
+	});
+});
+
+describe('protomaps() fades in where its tiles begin', () => {
+	const style = () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } });
+
+	it.each([
+		['water-area-river', 6],
+		['street-livingstreet', 14],
+		['street-busway', 14],
+		['transport-subway:outline', 14],
+		['transport-lightrail:outline', 14],
+		['transport-funicular', 14],
+		['transport-tram', 14],
+		['transport-ferry', 11],
+	])('%s, from z%i', (id, zoom) => {
+		expect(minzoom(style(), id)).toBe(zoom);
 	});
 });
