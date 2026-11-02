@@ -31,6 +31,7 @@
     - [What it reads](#what-it-reads)
     - [What it writes](#what-it-writes)
   - [Other exports](#other-exports)
+  - [Migration from v7](#migration-from-v7)
   - [Migration from v6](#migration-from-v6)
   - [Migration from v5](#migration-from-v5)
     - [Removed types](#removed-types)
@@ -1604,6 +1605,42 @@ The `assert…` functions throw an `Error` naming the offending field — `spec.
 "3.0.0", but got "2.2"` — which is what you want when validating input you expected to be valid.
 They were previously one function whose `spec is T` signature promised the first behaviour while
 delivering the second.
+
+---
+
+## Migration from v7
+
+v8 changes how land cover reaches the map. It used to be merged into OSM's `land` and `water_polygons`,
+and `features.landcover` only removed the fade-in of those fills. Now it is a tileset of its own, drawn
+under OSM. A style without `features.landcover` keeps its layers and sources.
+
+| v7                                                                        | v8                                                                                                                                                      |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `features.landcover` removes the fade-in of the stock fills               | It adds a source, `versatiles-landcover`, and 9 `landcover-*` fills below everything else. The stock fills keep their fade-in                           |
+| The land cover comes with `urls.osm`                                      | It comes from `urls.landcover`, by default `/tiles/landcover-vectors/tiles.json`, or from `urls.osm` if that has a `landcover` layer                    |
+| `osm.supportsLandcover(tileJSON)`: is `land` served below z7?             | Is this the land cover alone, or Shortbread with a `landcover` layer? The older merged tilesets, with no such layer, now answer `false`                 |
+| `guessSchema` calls a tileset with only a `landcover` layer `'protomaps'` | It calls that `'landcover'`, a new `SchemaName`, so code that handles every name needs a case for it. `guessStyle` still gives it the inspector style   |
+| `ResolvedOsmUrls` has `osm`, `elevation`, `glyphsPattern`, `sprite`       | It also has `landcover`, which `SatelliteUrlsOptions` and `ResolvedSatelliteUrls` don't: `satellite()` draws no land cover and rejects `urls.landcover` |
+| `guessStyle` ignores a `landcover` layer beside Shortbread's              | It draws the land cover, and inlines the source so that it can read the last zoom                                                                       |
+
+What to check when upgrading:
+
+- **A server of your own.** `features.landcover: true` now needs the land cover tileset there, or a
+  `urls.landcover` that points elsewhere. Without it, `inlineSources` rejects, because it can't fetch the
+  source. If you only have a tileset with the older merge, turn the feature off: its low-zoom land cover
+  no longer shows.
+- **Deciding whether to turn it on.** Ask `osm.supportsLandcover` about the land cover's TileJSON, not about
+  OSM's, unless your OSM tileset has the land cover merged in.
+- **`osm.layerGroups`.** It doesn't list the `landcover-*` fills, because most styles don't have them.
+  Rebuilding the style follows `layers`; changing a group's layers at runtime doesn't reach these.
+- **Reading a fill's opacity.** `land-forest`, `water-area` and the other covered fills no longer become a
+  constant with the feature on.
+
+Some layers also look a little different, with no option to change. These fade in over one zoom now, rather
+than appearing all at once (see [`npm run zoom-compare`](scripts/README.md)): `water-river`, `water-canal`,
+`water-stream`, `water-ditch`, `water-drain`, `aerialway`, `aerialway:outline`, `bridge`, the bridge decks of
+links, and `land-glacier` in `protomaps()`. In `omt()`, `water-canal` now starts at z12 and `bridge` at z13,
+where its tiles begin. Code that sets `line-opacity` or `fill-opacity` on these layers replaces the fade.
 
 ---
 
