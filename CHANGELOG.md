@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.0.0] - 2026-11-02
+
+### Breaking Changes
+
+- draw the land cover as a separate or merged source under OSM, closes #145 ([cbb7928](https://github.com/versatiles-org/versatiles-style/commit/cbb792831f277e76c6d179581bd6dc4ec8ba85ec))
+
+### Features
+
+- **scripts:** add zoom-compare to measure jumps at integer zooms (#146) ([2cacbeb](https://github.com/versatiles-org/versatiles-style/commit/2cacbeb2c358d91a7ba3d26c3b03d5541fa7aa50))
+- **scripts:** add a land cover mode to zoom-compare (#146) ([dc29890](https://github.com/versatiles-org/versatiles-style/commit/dc29890323f408f4b83db5e4edb57e95ff2f18ba))
+- **scripts:** render what reads the light in zoom-compare's globe mode (#146) ([fa37d8d](https://github.com/versatiles-org/versatiles-style/commit/fa37d8d698b9c4969d1eb2a4aecddf3b239a8abd))
+- **scripts:** add a style-only set and limit to zoom-compare, closes #146 ([8b3481a](https://github.com/versatiles-org/versatiles-style/commit/8b3481ab01d2c4b8de4097057aac7e5cdb7ff5a2))
+
+### Bug Fixes
+
+- **style:** fade in the lines and fills that popped in at a zoom bound (#146) ([2e238fc](https://github.com/versatiles-org/versatiles-style/commit/2e238fce2e3e582522c3633f723db51407355f1b))
+
+### Documentation
+
+- add initial documentation for versatiles-style ([ed8a693](https://github.com/versatiles-org/versatiles-style/commit/ed8a693c833d3fc2d00fadf1706d861e2dc9ae5d))
+- add the migration from v7 to API_DESIGN ([a1afffe](https://github.com/versatiles-org/versatiles-style/commit/a1afffe53af09b29fb998b206d90194725c9fbf3))
+
+### Chores
+
+- update dependencies to latest versions ([ec0a1c3](https://github.com/versatiles-org/versatiles-style/commit/ec0a1c3736408cdf2c8bb84c3c968888e4cf961c))
+
 ## [7.1.0] - 2026-10-30
 
 ### Features
