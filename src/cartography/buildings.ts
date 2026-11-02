@@ -1,3 +1,4 @@
+import type { FilterSpecification } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerContext } from '../dsl/index.js';
 import * as b from '../dsl/index.js';
 
@@ -14,6 +15,12 @@ export type BuildingVocabulary = {
 	/** Field holding a building's height, and the base height of an extrusion. */
 	readonly height: string;
 	readonly minHeight: string;
+	/**
+	 * Boolean field marking a `building:part`, for a schema that carries those beside whole buildings. A part
+	 * lies inside its building's outline, so it is only for extrusions: drawn flat, it would darken what's under
+	 * it wherever `layers.buildings` makes the fill translucent.
+	 */
+	readonly part?: string;
 };
 
 /**
@@ -31,14 +38,18 @@ export function* buildings(ctx: LayerContext, vocab: BuildingVocabulary): Genera
 	// Extruded mode draws `building-3d` on top instead (see buildings3d), so emit no flat footprints.
 	if (ctx.features.buildings === 'extruded') return;
 
+	const filter: FilterSpecification | undefined = vocab.part ? ['!=', ['get', vocab.part], true] : undefined;
+
 	yield b.fill('building:outline', {
 		sourceLayer: vocab.sourceLayer,
+		filter,
 		color: c.buildingBg,
 		appear: BUILDINGS_APPEAR_ZOOM, // fade in over z14→15 (matches OSM Bright `building-top`)
 		group: 'buildings',
 	});
 	yield b.fill('building', {
 		sourceLayer: vocab.sourceLayer,
+		filter,
 		color: c.building,
 		appear: BUILDINGS_APPEAR_ZOOM,
 		fillTranslate: [-2, -2],

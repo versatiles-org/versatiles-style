@@ -286,6 +286,32 @@ describe('buildings fade in at Shortbread z14', () => {
 	}
 });
 
+// A `building:part` lies inside its building: for extrusions only, or it doubles a translucent fill.
+describe('building parts', () => {
+	const NOT_A_PART = ['!=', ['get', 'part'], true];
+	const filterOf = (s: StyleSpecification, id: string) =>
+		(s.layers.find((l) => l.id === id) as { filter?: unknown })?.filter;
+
+	it.each(['building', 'building:outline'])('%s leaves them out', (id) => {
+		expect(filterOf(style, id)).toEqual(NOT_A_PART);
+	});
+
+	it('building-3d keeps them', () => {
+		expect(filterOf(osm({ features: { buildings: 'extruded' } }), 'building-3d')).toEqual([
+			'!=',
+			['get', 'hide_3d'],
+			true,
+		]);
+	});
+
+	it.each([
+		['omt', () => omt()],
+		['protomaps', () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } })],
+	] as [string, () => StyleSpecification][])('%s has no such field to filter on', (_, build) => {
+		expect(filterOf(build(), 'building')).toBeUndefined();
+	});
+});
+
 // Layer IDs, not raw kinds: university/college/school share the `siteEducation` colour and are
 // drawn by one layer, as are parking + bicycleparking (see SITES in layers/sites.ts).
 const SITE_KINDS = ['dangerarea', 'sportscentre', 'education', 'hospital', 'prison', 'parking', 'construction'];

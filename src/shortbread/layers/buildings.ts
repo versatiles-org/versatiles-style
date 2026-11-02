@@ -3,7 +3,7 @@ import type { TaggedLayer } from '../../dsl/index.js';
 import { buildings as build, buildings3d as build3d, type BuildingVocabulary } from '../../cartography/index.js';
 
 // Shortbread's building names. The cartography is shared — see `src/cartography/buildings.ts`.
-const VOCAB: BuildingVocabulary = { sourceLayer: 'buildings', height: 'height', minHeight: 'min_height' };
+const VOCAB: BuildingVocabulary = { sourceLayer: 'buildings', height: 'height', minHeight: 'min_height', part: 'part' };
 
 export function* buildings(ctx: LayerContext): Generator<TaggedLayer> {
 	yield* build(ctx, VOCAB);
