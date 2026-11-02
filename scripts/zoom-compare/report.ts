@@ -13,13 +13,14 @@ export type Pair = {
 	controlMax: number;
 };
 
-export const SET_NAMES = ['all', 'noSymbols', 'sameTiles', 'dark'] as const;
+export const SET_NAMES = ['all', 'noSymbols', 'sameTiles', 'landcoverAlone', 'dark'] as const;
 export type SetName = (typeof SET_NAMES)[number];
 
 const SET_TITLES: Record<SetName, string> = {
 	all: 'all layers',
 	noSymbols: 'without symbols',
 	sameTiles: 'without symbols, same tiles on both sides',
+	landcoverAlone: 'the land cover fills alone',
 	dark: 'all layers, dark theme',
 };
 
@@ -43,6 +44,7 @@ export type ReportData = {
 	epsilon: number;
 	changedAbove: number;
 	projection: string;
+	landcover: boolean;
 	themes: { light: string; dark?: string };
 	places: { name: string; center: [number, number] }[];
 	boundaries: BoundaryRow[];
@@ -53,8 +55,11 @@ export type ReportData = {
 const esc = (text: string) => text.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
 const pct = (x: number) => `${(x * 100).toFixed(2)}%`;
 
-export const boundaryImage = (place: string, zoom: number, variant: 'before' | 'after' | 'diff') =>
-	`${place}.z${zoom}.${variant}.png`;
+export const boundaryImage = (
+	place: string,
+	zoom: number,
+	variant: 'before' | 'after' | 'diff' | 'landcover-before' | 'landcover-after'
+) => `${place}.z${zoom}.${variant}.png`;
 
 /** How much a boundary changes beyond its control. */
 export const excess = (pair: Pair) => pair.share - pair.controlShare;
@@ -166,7 +171,7 @@ export function renderReport(data: ReportData, baseline?: readonly BoundaryRow[]
 </style>
 <h1>Zoom boundaries</h1>
 <p>MapLibre GL JS ${esc(data.version)} in headless Chromium (SwiftShader), ${data.width}×${data.height}, pixel ratio 1,
-symbol fade off, projection ${esc(data.projection)}, theme ${esc(data.themes.light)}${data.themes.dark ? `, dark theme ${esc(data.themes.dark)}` : ''}.
+symbol fade off, projection ${esc(data.projection)}, <code>features.landcover</code> ${data.landcover ? 'on' : 'off'}, theme ${esc(data.themes.light)}${data.themes.dark ? `, dark theme ${esc(data.themes.dark)}` : ''}.
 Places: ${places}.</p>
 <p>Boundary: z − ${data.epsilon} against z. Control: z − ${2 * data.epsilon} against z − ${data.epsilon}. Shares count
 pixels with a channel changed by more than ${data.changedAbove}. Same tiles: every vector source ends at z − 1.</p>

@@ -5,7 +5,7 @@ import { PMTilesSource } from './pmtiles.js';
 import { createLimiter, type Limiter } from './limit.js';
 
 /**
- * A disk cache of vector tiles for all three schemas, and of the glyphs their styles load.
+ * A disk cache of vector tiles for all three schemas and the land cover, and of the glyphs their styles load.
  *
  * ── Why ───────────────────────────────────────────────────────────────────────
  *
@@ -40,8 +40,8 @@ export const CACHE_DIR = process.env.VERSATILES_TILE_CACHE
 	? resolve(process.env.VERSATILES_TILE_CACHE)
 	: resolve(import.meta.dirname, '../../dev/.tiles');
 
-/** The schemas the cache serves. */
-export const TILE_SCHEMAS = ['shortbread', 'omt', 'protomaps'] as const;
+/** The tilesets the cache serves: the three schemas, and the land cover `osm()` draws under Shortbread. */
+export const TILE_SCHEMAS = ['shortbread', 'omt', 'protomaps', 'landcover'] as const;
 export type TileSchema = (typeof TILE_SCHEMAS)[number];
 
 /** Options every read accepts. */
@@ -112,6 +112,7 @@ async function latestProtomapsBuild(): Promise<string> {
 const SOURCES: Record<TileSchema, Upstream> = {
 	// Unlimited: the VersaTiles tile server has answered in ~100 ms throughout, with no timeouts seen.
 	shortbread: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/osm/tiles.json' },
+	landcover: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/landcover-vectors/tiles.json' },
 	omt: { kind: 'xyz', tileJSON: 'https://tiles.openfreemap.org/planet', concurrency: 4 },
 	protomaps: { kind: 'pmtiles', resolveUrl: latestProtomapsBuild, concurrency: 2 },
 };

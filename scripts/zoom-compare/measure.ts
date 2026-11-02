@@ -34,6 +34,12 @@ export function withSameTiles(style: StyleSpecification, zoom: number): StyleSpe
 	return { ...style, sources };
 }
 
+/** `style` with only its background and the fills `features.landcover` adds. */
+export function landcoverAlone(style: StyleSpecification): StyleSpecification {
+	const layers = style.layers.filter((layer) => layer.type === 'background' || layer.id.startsWith('landcover-'));
+	return { ...style, layers };
+}
+
 /** `style` with only its background and one layer, in its own colours. */
 export function isolateLayer(style: StyleSpecification, id: string): StyleSpecification {
 	return { ...style, layers: style.layers.filter((layer) => layer.type === 'background' || layer.id === id) };

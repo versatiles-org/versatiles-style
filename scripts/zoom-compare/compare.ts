@@ -6,6 +6,7 @@
  *   npm run zoom-compare -- --quick           # two places, no dark theme, no per-layer renders
  *   npm run zoom-compare -- --offline         # tiles and glyphs from the cache only
  *   npm run zoom-compare -- --globe           # globe projection instead of Mercator
+ *   npm run zoom-compare -- --landcover       # `features.landcover` on → .cache/zoom-compare/landcover/
  *   npm run zoom-compare -- --save-baseline   # keep this run; later runs show it next to theirs
  *
  * What is measured, so that a jump can be traced to what causes it:
@@ -17,7 +18,9 @@
  *   comes from the style alone.
  * - **Layers with a hard bound** — each layer `hardBounds` lists, alone over the background, across that
  *   bound. The boundary sets cannot show a layer whose data starts exactly there in "same tiles".
+ * - **The land cover alone** — with `--landcover`, its fills over the background, with OSM out of the way.
  *
+
  * Symbol fade is off in the renderer: the frames show where placement ends up, not the animation a user
  * sees on the way. Needs Chromium for Playwright (`npx playwright install chromium`), network access on
  * the first run, and `npm run build-sprites` for the icons.
@@ -31,9 +34,9 @@ import type { StyleSpecification, TileJSONSpecification } from '../../src/types/
 import { GlMap } from '../lib/gljs-render.js';
 import { tileTemplate } from '../lib/native-render.js';
 import { cacheDir } from '../lib/paths.js';
-import { sourceMetadata } from '../lib/tile-cache.js';
+import { sourceMetadata, type TileSchema } from '../lib/tile-cache.js';
 import { CHANGED, diff } from '../overlay-compare/measure.js';
-import { hardBounds, isolateLayer, withoutSymbols, withSameTiles } from './measure.js';
+import { hardBounds, isolateLayer, landcoverAlone, withoutSymbols, withSameTiles } from './measure.js';
 import { boundaryImage, renderReport, type BoundaryRow, type BoundRow, type Pair, type ReportData } from './report.js';
 
 const SIZE = 512;
@@ -53,42 +56,50 @@ const PLACES: Place[] = [
 
 function parseArgs(argv: string[]) {
 	const args = argv.filter((a) => a !== '--');
-	const known = new Set(['--quick', '--offline', '--globe', '--save-baseline']);
+	const known = new Set(['--quick', '--offline', '--globe', '--landcover', '--save-baseline']);
 	const unknown = args.filter((a) => !known.has(a));
 	if (unknown.length > 0) throw new Error(`unknown argument ${unknown.join(', ')}`);
 	return {
 		quick: args.includes('--quick'),
 		offline: args.includes('--offline'),
 		globe: args.includes('--globe'),
+		landcover: args.includes('--landcover'),
 		saveBaseline: args.includes('--save-baseline'),
 	};
 }
 
 async function main(): Promise<void> {
 	const args = parseArgs(process.argv.slice(2));
-	const out = args.globe ? cacheDir('zoom-compare', 'globe') : cacheDir('zoom-compare');
+	const out = cacheDir('zoom-compare', ...(args.globe ? ['globe'] : []), ...(args.landcover ? ['landcover'] : []));
 	const projection = args.globe ? 'globe' : 'mercator';
 	const places = args.quick ? PLACES.slice(0, 2) : PLACES;
 
-	const metadata = await sourceMetadata('shortbread', { offline: args.offline });
+	const tileSource = async (schema: TileSchema) => {
+		const metadata = await sourceMetadata(schema, { offline: args.offline });
+		return {
+			tilejson: '3.0.0',
+			tiles: [tileTemplate(schema)],
+			minzoom: metadata.minzoom,
+			maxzoom: metadata.maxzoom,
+			vector_layers: metadata.vectorLayers,
+		} as TileJSONSpecification;
+	};
 	const options: OsmOptions = {
 		projection,
 		sky: false,
+		...(args.landcover && { features: { landcover: true } }),
 		urls: {
-			osm: {
-				tilejson: '3.0.0',
-				tiles: [tileTemplate('shortbread')],
-				minzoom: metadata.minzoom,
-				maxzoom: metadata.maxzoom,
-				vector_layers: metadata.vectorLayers,
-			} as TileJSONSpecification,
+			osm: await tileSource('shortbread'),
+			...(args.landcover && { landcover: await tileSource('landcover') }),
 		},
 	};
 	const light = osm({ ...options, theme: LIGHT_THEME });
 	const dark = osm({ ...options, theme: DARK_THEME });
-	const bounds = args.quick ? [] : hardBounds(light);
+	// The land cover's fills have no zoom bounds, and it changes no other layer's.
+	const bounds = args.quick || args.landcover ? [] : hardBounds(light);
 
-	const total = places.length * ZOOMS.length * (args.quick ? 3 * 3 : 3 * 4) + bounds.length * places.length * 2;
+	const sets = (args.quick ? 3 : 4) + (args.landcover ? 1 : 0);
+	const total = places.length * ZOOMS.length * sets * 3 + bounds.length * places.length * 2;
 	const started = Date.now();
 	let rendered = 0;
 
@@ -136,6 +147,7 @@ async function main(): Promise<void> {
 				const noSymbols = await across(withoutSymbols(light), place, zoom, 'no symbols');
 				const sameTiles = await across(withSameTiles(withoutSymbols(light), zoom), place, zoom, 'same tiles');
 				const darkPair = args.quick ? undefined : (await across(dark, place, zoom, 'dark')).pair;
+				const alone = args.landcover ? await across(landcoverAlone(light), place, zoom, 'land cover') : undefined;
 				boundaries.push({
 					place: place.name,
 					zoom,
@@ -143,9 +155,14 @@ async function main(): Promise<void> {
 						all: all.pair,
 						noSymbols: noSymbols.pair,
 						sameTiles: sameTiles.pair,
+						...(alone && { landcoverAlone: alone.pair }),
 						...(darkPair && { dark: darkPair }),
 					},
 				});
+				if (alone) {
+					writeFileSync(resolve(out, boundaryImage(place.name, zoom, 'landcover-before')), await png(alone.before));
+					writeFileSync(resolve(out, boundaryImage(place.name, zoom, 'landcover-after')), await png(alone.after));
+				}
 				writeFileSync(resolve(out, boundaryImage(place.name, zoom, 'before')), await png(all.before));
 				writeFileSync(resolve(out, boundaryImage(place.name, zoom, 'after')), await png(all.after));
 				writeFileSync(resolve(out, boundaryImage(place.name, zoom, 'diff')), await png(all.heat));
@@ -173,6 +190,7 @@ async function main(): Promise<void> {
 			epsilon: EPSILON,
 			changedAbove: CHANGED,
 			projection,
+			landcover: args.landcover,
 			themes: { light: LIGHT_THEME, ...(!args.quick && { dark: DARK_THEME }) },
 			places,
 			boundaries,

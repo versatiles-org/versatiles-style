@@ -16,6 +16,7 @@ const data: ReportData = {
 	epsilon: 0.001,
 	changedAbove: 8,
 	projection: 'mercator',
+	landcover: false,
 	themes: { light: 'colorful' },
 	places: [{ name: 'city', center: [1, 2] }],
 	boundaries: rows,

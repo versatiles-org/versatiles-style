@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hardBounds, isolateLayer, withoutSymbols, withSameTiles } from './measure.js';
+import { hardBounds, isolateLayer, landcoverAlone, withoutSymbols, withSameTiles } from './measure.js';
 import type { StyleSpecification } from '../../src/types/index.js';
 
 const ramp = (...stops: number[]) => ['interpolate', ['linear'], ['zoom'], ...stops];
@@ -15,6 +15,15 @@ describe('layer sets', () => {
 
 	it('withoutSymbols drops only the symbols', () => {
 		expect(ids(withoutSymbols(layers))).toStrictEqual(['background', 'fill']);
+	});
+
+	it('landcoverAlone keeps the background and the land cover fills', () => {
+		const withLandcover = style(
+			{ id: 'background', type: 'background' },
+			{ id: 'landcover-land-forest', type: 'fill', source: 'l' },
+			{ id: 'land-forest', type: 'fill', source: 's' }
+		);
+		expect(ids(landcoverAlone(withLandcover))).toStrictEqual(['background', 'landcover-land-forest']);
 	});
 
 	it('isolateLayer keeps the background and the one layer', () => {
