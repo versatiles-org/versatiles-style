@@ -57,6 +57,11 @@ export type RoadVocabulary = {
 	 * track. z11 if not stated.
 	 */
 	readonly railAppear?: number;
+	/**
+	 * The width of a service track's casing, growing from 0 no earlier than the tiles have all of them and mark
+	 * them. From z14 if not stated.
+	 */
+	readonly serviceRailWidth?: Readonly<Record<number, number>>;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -285,11 +290,19 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 		// Old VersaTiles railway: a WIDE solid base line (:outline) with a slightly narrower, LIGHTER
 		// `[2, 2]`-dashed "tie" line (fill) on top. The darker base shows through the gaps, giving the
 		// alternating darker/lighter tie bands (rather than OSM Bright's thin cross-ticks).
-		if (isService)
+		if (isService) {
+			// Faded as well as grown: any width above 0, however small, draws at nearly full strength, because
+			// MapLibre antialiases a hairline over a fixed distance. By width alone, a yard pops in.
+			const width = vocab.serviceRailWidth ?? { 14: 0, 15: 1, 16: 1, 20: 14 };
 			r = isOutline
-				? { color: c.transitRail, size: { 14: 0, 15: 1, 16: 1, 20: 14 } }
-				: { color: c.transitRail.blend(0.3, bg), lineDasharray: [2, 2], size: { 15: 0, 16: 1, 20: 10 } };
-		else
+				? { color: c.transitRail, size: width, opacity: b.fadeIn(Math.min(...Object.keys(width).map(Number))) }
+				: {
+						color: c.transitRail.blend(0.3, bg),
+						lineDasharray: [2, 2],
+						size: { 15: 0, 16: 1, 20: 10 },
+						opacity: b.fadeIn(15),
+					};
+		} else
 			r = isOutline
 				? // The casing is a hairline well before its width ramp starts moving, so its fade-in is what
 					// puts it on the map, at the zoom each schema's tiles allow (`railAppear`).

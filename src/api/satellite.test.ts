@@ -264,7 +264,12 @@ describe('satellite()', () => {
 			// a dashed line draws two thirds of itself, and is given the rest back: 0.4 × 3/2
 			expect(factor('way-footway')).toBeCloseTo(0.6, 10);
 			expect(factor('boundary-country-disputed')).toBeCloseTo(0.6, 10);
-			expect(factor('transport-rail-service:outline')).toBeCloseTo(0.2, 10);
+		});
+
+		it('weights a service track, which fades in, at the end of its fade', () => {
+			const layer = satellite({ osmOverlay: {} }).layers.find((l) => l.id === 'transport-rail-service:outline');
+			const opacity = (layer as { paint?: Record<string, unknown> } | undefined)?.paint?.['line-opacity'];
+			expect(opacity).toStrictEqual(['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.2]);
 		});
 
 		it('weights an aerialway, which fades in, at the end of its fade', () => {

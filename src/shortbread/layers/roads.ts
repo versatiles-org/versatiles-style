@@ -243,6 +243,9 @@ const VOCAB: RoadVocabulary = {
 	// Main lines exist from z8, with no service tracks yet, but this starts where the attribute does. Below it, the
 	// map shows no rail, as in the other schemas.
 	railAppear: 10,
+	// The tiles have service tracks from z10. They start at z12 because below it a yard is a grey smear at most, and
+	// stay hairlines up to z14, or its parallel tracks close up into a solid mass.
+	serviceRailWidth: { 12: 0, 13: 0.2, 14: 0.4, 15: 1, 16: 1, 20: 14 },
 	appear: {
 		motorway: 5,
 		trunk: 6,

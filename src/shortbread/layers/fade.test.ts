@@ -179,6 +179,9 @@ const RAIL_FADES: { id: string; z: number }[] = [
 	{ id: 'transport-rail', z: 14 },
 	{ id: 'transport-subway:outline', z: 11 },
 	{ id: 'transport-subway', z: 14 },
+	// Width alone doesn't make these appear smoothly: a yard would pop in at the first width above 0.
+	{ id: 'transport-rail-service:outline', z: 12 },
+	{ id: 'transport-rail-service', z: 15 },
 ];
 
 describe('rail tracks fade in at the zoom their kind joins the map', () => {
@@ -210,6 +213,21 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 	] as [string, () => StyleSpecification][])('%s keeps rail at z11', (_, build) => {
 		expectFadeInAt(build(), 'transport-rail:outline', 11);
 	});
+
+	// Measured too: OpenMapTiles marks service tracks only from z14, Protomaps has most of them only from z13. A
+	// casing that had already grown by then would pop in, or show a yard in fragments.
+	it.each([
+		['omt', () => omt()],
+		['protomaps', () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } })],
+	] as [string, () => StyleSpecification][])('%s keeps service tracks at z14', (_, build) => {
+		const width = paintOf(build(), 'transport-rail-service:outline')?.['line-width'] as unknown[];
+		expect(width.slice(3, 7)).toEqual([14, 0, 15, 1]);
+	});
+
+	it('Shortbread grows them as hairlines from z12, so a yard does not close up', () => {
+		const width = paintOf(style, 'transport-rail-service:outline')?.['line-width'] as unknown[];
+		expect(width.slice(3, 11)).toEqual([12, 0, 13, 0.2, 14, 0.4, 15, 1]);
+	});
 });
 
 // The tram family and every service track appear by width growth instead: their curves already
@@ -220,8 +238,6 @@ const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
 	// layer (see `transport-minorrail` in layers/roads.ts).
 	{ id: 'transport-minorrail', z: 13 },
 	{ id: 'transport-minorrail:outline', z: 15 },
-	{ id: 'transport-rail-service:outline', z: 14 },
-	{ id: 'transport-rail-service', z: 15 },
 ];
 
 describe('tram-family and service tracks appear by growing from 0 width (no opacity fade)', () => {
