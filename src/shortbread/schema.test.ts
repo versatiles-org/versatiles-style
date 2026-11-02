@@ -22,8 +22,11 @@ import type { StyleSpecification } from '../types/index.js';
 //
 // See https://shortbread-tiles.org/schema/1.1/ for the prose specification.
 
-/** Built with every feature on, so no layer is missing from the audit. */
-const style: StyleSpecification = osm({ features: { buildings: 'extruded', landcover: true } });
+/**
+ * Built with every feature that reads these tiles on, so no layer is missing from the audit. Not
+ * `landcover`: it reads a tileset of its own, whose layer isn't in this schema.
+ */
+const style: StyleSpecification = osm({ features: { buildings: 'extruded' } });
 const audit = auditSchema(style, SHORTBREAD_SCHEMA);
 
 describe('every source-layer the style reads exists in the schema', () => {

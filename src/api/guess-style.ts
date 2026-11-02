@@ -174,7 +174,7 @@ export async function guessStyle(
 			// Shortbread always, the others when injected.
 			const guess = guessSchema(tileJSON);
 			const detected = guess.type === 'vector' && builders.find((b) => b.tileset.id === guess.schema);
-			if (detected) return detected.tileset.build(osmSource, urls);
+			if (detected) return detected.tileset.build(osmSource, urls, tileJSON);
 			// A caller's own schema, in the order given.
 			for (const builder of builders) {
 				if ((SCHEMA_NAMES as readonly string[]).includes(builder.tileset.id)) continue;

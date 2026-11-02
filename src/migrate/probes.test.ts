@@ -15,8 +15,11 @@ import { PROBES } from './probes.js';
 // own builders, which were written against real tiles: a probe feature the package's `omt()` does not
 // draw is a mistake in the table, not a difference of cartography.
 
-/** The schemas the package has a builder for. Mapbox tiles are recognised, not built (issue #137). */
-type BuiltSchema = Exclude<SchemaName, 'mapbox'>;
+/**
+ * The schemas the package has a builder for. Mapbox tiles (issue #137) and the land cover are recognised,
+ * not built.
+ */
+type BuiltSchema = Exclude<SchemaName, 'mapbox' | 'landcover'>;
 
 const BUILDERS: Record<BuiltSchema, { style: StyleSpecification; source: string }> = {
 	shortbread: { style: osm(), source: 'versatiles-shortbread' },
@@ -30,13 +33,17 @@ const RECORDS: Record<SchemaName, Readonly<Record<string, { fields: readonly str
 	protomaps: PROTOMAPS_SCHEMA,
 	// kept by hand, not vendored — see its header
 	mapbox: MAPBOX_LAYERS,
+	// no probe reads it: a foreign style built on the land cover alone says nothing about options
+	landcover: {},
 };
 
 const cases = PROBES.flatMap((probe) =>
 	(Object.keys(probe.features) as SchemaName[]).map((schema) => [probe.id, schema, probe] as const)
 );
 /** The cases a builder of the package can be asked about. */
-const built = cases.filter((c): c is readonly [string, BuiltSchema, (typeof PROBES)[number]] => c[1] !== 'mapbox');
+const built = cases.filter(
+	(c): c is readonly [string, BuiltSchema, (typeof PROBES)[number]] => c[1] !== 'mapbox' && c[1] !== 'landcover'
+);
 
 describe('probe features', () => {
 	it('probe ids are unique', () => {

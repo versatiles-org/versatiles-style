@@ -15,11 +15,10 @@ type LandDef = {
 	/** Shortbread schema zoom at which this kind appears; the fill fades in over appear→appear+1. */
 	appear: number;
 	/**
-	 * True when the low-zoom landcover extension supplies this kind *below* its Shortbread zoom,
-	 * so `features.landcover` must remove the fade and show the fill from z0.
-	 * See https://docs.versatiles.org/compendium/specification_shortbread_landcover.html
+	 * The kinds of the land cover tileset (landcover-vectors) this fill draws, so `features.landcover`
+	 * copies it for them. A subset of `kinds`, which are OSM's.
 	 */
-	landcover?: true;
+	landcover?: readonly string[];
 	group: string;
 };
 
@@ -55,7 +54,7 @@ const LAND: LandDef[] = [
 		kinds: ['garages', 'residential'],
 		color: (c) => c.areaResidential,
 		appear: 10,
-		landcover: true,
+		landcover: ['residential'],
 		group: 'land.urban',
 	},
 	{
@@ -66,7 +65,7 @@ const LAND: LandDef[] = [
 		kinds: ['farmland', 'farmyard', 'greenhouse_horticulture', 'orchard', 'plant_nursery', 'vineyard'],
 		color: (c) => c.natureAgriculture,
 		appear: 10,
-		landcover: true,
+		landcover: ['farmland'],
 		group: 'land.agriculture',
 	},
 	{ id: 'waste', kinds: ['landfill'], color: (c) => c.areaWaste, appear: 10, group: 'land.urban' },
@@ -105,16 +104,23 @@ const LAND: LandDef[] = [
 		kinds: ['bare_rock', 'scree', 'shingle'],
 		color: (c) => c.natureRock,
 		appear: 11,
-		landcover: true,
+		landcover: ['bare_rock'],
 		group: 'land.rock',
 	},
-	{ id: 'forest', kinds: ['forest'], color: (c) => c.natureWood, appear: 7, landcover: true, group: 'land.forest' },
+	{
+		id: 'forest',
+		kinds: ['forest'],
+		color: (c) => c.natureWood,
+		appear: 7,
+		landcover: ['forest'],
+		group: 'land.forest',
+	},
 	{
 		id: 'grass',
 		kinds: ['grass', 'grassland', 'meadow', 'wet_meadow'],
 		color: (c) => c.natureGrass,
 		appear: 11,
-		landcover: true,
+		landcover: ['grassland'],
 		group: 'land.vegetation',
 	},
 	{
@@ -122,7 +128,7 @@ const LAND: LandDef[] = [
 		kinds: ['heath', 'scrub'],
 		color: (c) => c.natureWood.blend(0.7, c.natureSand),
 		appear: 11,
-		landcover: true,
+		landcover: ['heath', 'scrub'],
 		group: 'land.vegetation',
 	},
 	{ id: 'sand', kinds: ['beach', 'sand'], color: (c) => c.natureSand, appear: 10, group: 'land.sand' },
@@ -131,7 +137,7 @@ const LAND: LandDef[] = [
 		kinds: ['bog', 'marsh', 'string_bog', 'swamp'],
 		color: (c) => c.natureWetland,
 		appear: 11,
-		landcover: true,
+		landcover: ['marsh', 'swamp'],
 		group: 'land.wetland',
 	},
 ];
@@ -164,20 +170,12 @@ export function* landcover(ctx: LayerContext): Generator<b.TaggedLayer> {
 }
 
 /**
- * Layer IDs whose kind the low-zoom landcover extension supplies below its Shortbread zoom.
- * Derived from the `LAND` table plus the two `water_polygons` kinds the extension covers, so it
- * cannot drift from the layer definitions the way a second hand-written list would.
+ * Per stock fill, the kinds of the land cover tileset it draws, which `features.landcover` copies it for.
+ * Derived from the `LAND` table plus the two kinds OSM has in `water_polygons`, so it cannot drift from
+ * the layer definitions the way a second hand-written list would.
  */
-export const LANDCOVER_LAYERS: ReadonlySet<string> = new Set([
-	...LAND.filter((def) => def.landcover).map((def) => 'land-' + def.id),
-	// water_polygons kinds: the extension supplies `glacier` and `water` at z0–3.
-	'land-glacier',
-	'water-area',
+export const LANDCOVER_KINDS: ReadonlyMap<string, readonly string[]> = new Map([
+	['land-glacier', ['glacier']],
+	...LAND.flatMap((def): [string, readonly string[]][] => (def.landcover ? [['land-' + def.id, def.landcover]] : [])),
+	['water-area', ['water']],
 ]);
-
-/**
- * The earliest zoom at which plain Shortbread carries any `land` kind, derived from the `LAND` table
- * rather than written down again. A tileset whose `land` layer starts below it is carrying the
- * low-zoom landcover extension — see `osm.supportsLandcover`.
- */
-export const LAND_APPEAR_MIN: number = Math.min(...LAND.map((def) => def.appear));

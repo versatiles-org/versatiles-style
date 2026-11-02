@@ -143,12 +143,8 @@ describe('getStyleVariants()', () => {
 	});
 
 	it('activates landcover when requested', () => {
-		const on = build({ landcover: true }, 'colorful/style');
-		const off = build(undefined, 'colorful/style');
-		const opacity = (s: StyleSpecification) =>
-			(s.layers.find((l) => l.id === 'land-forest')?.paint as Record<string, unknown> | undefined)?.['fill-opacity'];
-		// landcover removes the low-zoom fade (a zoom interpolate expression) and pins a constant.
-		expect(opacity(on)).not.toStrictEqual(opacity(off));
+		expect(layerIds(build({ landcover: true }, 'colorful/style'))).toContain('landcover-land-forest');
+		expect(layerIds(build(undefined, 'colorful/style'))).not.toContain('landcover-land-forest');
 	});
 
 	it('merges the features argument into *-terrain variants (keeps terrain, adds the feature)', () => {

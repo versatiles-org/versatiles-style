@@ -52,8 +52,6 @@ export function buildLayers(ctx: LayerContext, floors: DataFloors, tagged: Itera
  * tiles carried nothing — `water-river` was live from z0 although `water_lines` starts at z9.
  *
  * Only ever raises, never lowers: a layer deliberately gated later than its data keeps that.
- * `addLandcover` runs after this and clears the gate on the fills it reveals, which is what lets
- * the low-zoom landcover extension supply those kinds below their plain-Shortbread zoom (#124).
  */
 function applyDataFloor(layer: MaplibreLayer, floors: DataFloors): void {
 	const sourceLayer = (layer as { 'source-layer'?: string })['source-layer'];

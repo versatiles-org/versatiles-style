@@ -8,8 +8,7 @@ export {
 	SLOT_BELOW_STREETS,
 	SLOT_BELOW_SYMBOLS,
 	SLOT_BELOW_LABELS,
-	LANDCOVER_LAYERS,
-	LAND_APPEAR_MIN,
+	LANDCOVER_KINDS,
 } from './layers/index.js';
 export { SLOT_IDS } from './groups.js';
 export { getTextGroupMap, getLayerGroupMap, getOverlayLayerGroupMap } from './layer-groups-map.js';

@@ -27,13 +27,18 @@
  * composite source. There is no vendored record behind this one: Mapbox publishes its schema as a
  * documentation page, not as data, so the list is kept by hand. It is here to *recognise* such tiles,
  * which is all reading a Mapbox style needs; there is no builder for them (issue #137).
+ *
+ * ── Land cover ────────────────────────────────────────────────────────────────
+ *
+ * The tileset of landcover-vectors, one layer. Recognised, and drawn only under OSM by
+ * `features.landcover`: it isn't a map on its own, so it has no builder either.
  */
 
 /** The schemas `guessSchema` recognises. */
-export type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox';
+export type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox' | 'landcover';
 
 /** In the order `guessSchema` reports candidates. */
-export const SCHEMA_NAMES: readonly SchemaName[] = ['shortbread', 'openmaptiles', 'protomaps', 'mapbox'];
+export const SCHEMA_NAMES: readonly SchemaName[] = ['shortbread', 'openmaptiles', 'protomaps', 'mapbox', 'landcover'];
 
 /** Per schema: every source-layer id → the fields that set it apart, empty for an id no other schema uses. */
 export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<string, readonly string[]>>>> = {
@@ -116,5 +121,8 @@ export const SCHEMA_SIGNATURES: Readonly<Record<SchemaName, Readonly<Record<stri
 		// carries no fields at all, so nothing here can speak for it; the ids around it decide
 		water: [],
 		waterway: ['type'],
+	},
+	landcover: {
+		landcover: ['kind'],
 	},
 };

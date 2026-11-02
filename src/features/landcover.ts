@@ -1,27 +1,34 @@
 import type { StyleSpecification } from '../types/index.js';
+import { landcoverLayerOf, type TileSource } from '../options/index.js';
+import { buildSourceDescriptor, scaleValue } from '../lib/index.js';
 
-// Low-zoom landcover (https://docs.versatiles.org/compendium/specification_shortbread_landcover.html).
+// Land cover under OSM (https://github.com/versatiles-org/landcover-vectors#using-it-with-osm).
 //
-// The landcover tileset writes ESA WorldCover data into the EXISTING `land` and `water_polygons`
-// source-layers, reusing existing `kind` values, for every kind up to z10. Merged with OSM, each kind
-// comes from one source per zoom: up to z10 the merge drops OSM's copies, except `water` from z4 and
-// `residential` from z10, where it keeps OSM's and drops the landcover's instead
-// (https://github.com/versatiles-org/landcover-vectors#merging-with-osm). So no extra source or
-// layers are needed — the matching fill layers already render those kinds. They are merely hidden at
-// low zoom by their zoom-based fade-in.
+// The land cover is a layer of its own, `landcover`, with one attribute, `kind`, and is drawn below all
+// of OSM: OSM paints over it wherever it has data, and it shows wherever OSM has none. Each of its fills
+// is a copy of the finished style's fill for the same kinds, so theme, recolouring and hidden groups
+// carry over. The stock layers are not touched.
 //
-// `addLandcover` removes that fade-in on exactly the layers whose `kind` carries landcover data,
-// replacing the zoom ramp with its fully-faded-in (max) opacity. This keeps each layer's high-zoom
-// appearance identical while making it visible at low zoom.
-//
-// The set of affected layers is passed in by the caller, derived from the schema's own layer
-// definitions (`LANDCOVER_LAYERS` for Shortbread) rather than restated here — the three
-// hand-maintained copies of this knowledge are what produced the defects in issue #124. Taking it as
-// an argument is also what keeps this module schema-neutral: the ids are the schema's own dialect, so
-// a schema naming its fills differently passes its own set.
+// It comes either as a source of its own or merged into OSM's. The difference is what happens above its
+// last zoom. MapLibre overzooms a whole source, not a layer:
+//   - A source of its own ends with the land cover, so its tiles overzoom at every zoom above that.
+//   - In a merged source the tiles go on, without the land cover. MapLibre floors the zoom to pick a
+//     vector tile, so the data lasts until one zoom above the layer's last, and the fill has to be gone
+//     by then instead of disappearing at once. Only when the layer reaches the source's last zoom does
+//     it overzoom like a source of its own.
+
+const SOURCE_NAME = 'versatiles-landcover';
+const SOURCE_LAYER = 'landcover';
+/** The land cover's last zoom where no TileJSON says otherwise: landcover-vectors ends there. */
+const DEFAULT_MAXZOOM = 10;
+
+// Opaque up to z12, where the overzoomed outlines grow coarse, and 25 % from z14 on, so land OSM doesn't
+// map keeps a hint of colour.
+const overzoomedOpacity = () => ['interpolate', ['linear'], ['zoom'], 12, 1, 14, 0.25];
+const endingOpacity = (maxzoom: number) => ['interpolate', ['linear'], ['zoom'], maxzoom, 1, maxzoom + 1, 0];
 
 // The fully-faded-in opacity of a fill-opacity value that may be a constant number or a
-// ['interpolate', ['linear'], ['zoom'], z0, v0, …] zoom ramp.
+// ['interpolate', ['linear'], ['zoom'], z0, v0, …] zoom ramp. It carries a group's opacity from `layers`.
 function fadedInOpacity(value: unknown): number {
 	if (typeof value === 'number') return value;
 	if (Array.isArray(value) && value[0] === 'interpolate') {
@@ -34,14 +41,63 @@ function fadedInOpacity(value: unknown): number {
 	return 1; // no opacity set → fully opaque
 }
 
-export function addLandcover(style: StyleSpecification, landcoverLayers: ReadonlySet<string>) {
-	for (const layer of style.layers) {
-		if (!landcoverLayers.has(layer.id)) continue;
-		if (layer.type !== 'fill') continue;
-		const paint = ((layer as { paint?: Record<string, unknown> }).paint ??= {});
-		paint['fill-opacity'] = fadedInOpacity(paint['fill-opacity']);
-		// `appear` also sets a matching `minzoom`; it has to go, or the fill stays hidden below its
-		// OSM appearance zoom and the extension's low-zoom data never shows.
-		delete (layer as { minzoom?: number }).minzoom;
+// By content, not identity: options that went through `toCode` or JSON hold two equal objects.
+function sameSource(a: TileSource, b: TileSource): boolean {
+	return a === b || (typeof a === 'object' && typeof b === 'object' && JSON.stringify(a) === JSON.stringify(b));
+}
+
+export type LandcoverPlacement = {
+	/** Per stock fill layer id, the land cover's kinds it draws. The schema's own dialect. */
+	kinds: ReadonlyMap<string, readonly string[]>;
+	/** The layer to insert the land cover's fills before. */
+	beforeId: string;
+	/** Where the land cover comes from: another source than `osm`, or the same one if it is merged. */
+	source: TileSource;
+	/** The style's vector source, under its id in `style.sources`. */
+	osm: { id: string; source: TileSource };
+};
+
+export function addLandcover(style: StyleSpecification, placement: LandcoverPlacement): void {
+	const { kinds, beforeId, source, osm } = placement;
+	const merged = sameSource(source, osm.source);
+	const tileJSON = typeof source === 'object' ? source : undefined;
+	const layerMaxzoom = tileJSON && landcoverLayerOf(tileJSON)?.maxzoom;
+	const overzooms = !merged || (layerMaxzoom !== undefined && layerMaxzoom >= (tileJSON?.maxzoom ?? Infinity));
+	const maxzoom = layerMaxzoom ?? DEFAULT_MAXZOOM;
+
+	const fills = style.layers.flatMap((layer) => {
+		const layerKinds = kinds.get(layer.id);
+		if (layerKinds === undefined || layer.type !== 'fill') return [];
+		const { minzoom: _, ...rest } = layer;
+		const ramp = overzooms ? overzoomedOpacity() : endingOpacity(maxzoom);
+		return [
+			{
+				...rest,
+				id: `landcover-${layer.id}`,
+				source: merged ? osm.id : SOURCE_NAME,
+				'source-layer': SOURCE_LAYER,
+				filter: ['in', ['get', 'kind'], ['literal', [...layerKinds]]],
+				paint: { ...layer.paint, 'fill-opacity': scaleValue(ramp, fadedInOpacity(layer.paint?.['fill-opacity'])) },
+			} as typeof layer,
+		];
+	});
+	// every group hidden: nothing reads the source, so a server without it shouldn't be asked for it
+	if (fills.length === 0) return;
+
+	if (!merged) {
+		// A TileJSON behind a URL states its own `maxzoom`. Without one MapLibre would assume z22, and ask
+		// for tiles that don't exist instead of overzooming.
+		const stated = typeof source === 'string' && !source.includes('{z}');
+		const extra = stated ? {} : { maxzoom: layerMaxzoom ?? tileJSON?.maxzoom ?? DEFAULT_MAXZOOM };
+		style.sources[SOURCE_NAME] = buildSourceDescriptor(
+			'vector',
+			source,
+			extra
+		) as StyleSpecification['sources'][string];
 	}
+	style.layers.splice(
+		style.layers.findIndex((layer) => layer.id === beforeId),
+		0,
+		...fills
+	);
 }

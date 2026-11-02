@@ -9,7 +9,7 @@ import { osm } from '../../api/index.js';
 //
 //   • #124 — the Shortbread appearance zooms lived in three hand-maintained copies (`appear:`,
 //     `LAND_FILLS`, `LANDCOVER_DEFADE`); they drifted, and `land-sand`/`land-rock` ended up
-//     the wrong way round. Now one table with a `landcover` flag, everything derived from it.
+//     the wrong way round. Now one table, everything derived from it.
 //   • `minzoom` — written by hand next to a transition declared elsewhere, so the two drifted and a
 //     layer ended up gated a zoom level away from the fade it was meant to match: either hidden
 //     while its own ramp said it was drawing, or processed while it was still invisible. Now
@@ -32,8 +32,8 @@ import { osm } from '../../api/index.js';
 // zoom fails here. `target` is the element's own resolved opacity (1 for roads/buildings, but e.g.
 // 0.1 for forest, 0.3 for danger areas), read from the layer.
 //
-// The low-zoom landcover extension (features.landcover) is the exception: it supplies certain land
-// kinds from z0, so with it enabled those fills must be visible at EVERY zoom (constant, no fade).
+// `features.landcover` adds fills of its own under these, reading another layer, and changes none of
+// them (src/features/landcover.test.ts).
 
 let style: StyleSpecification; // default colorful
 let landcoverStyle: StyleSpecification; // colorful + features.landcover
@@ -246,8 +246,7 @@ describe('land fills fade in at their Shortbread land minzoom', () => {
 // ── water_polygons fills ──────────────────────────────────────────────────────────
 // Shortbread serves `water_polygons` from z4 (https://shortbread-tiles.org/schema/1.0/#layer-water_polygons).
 // `land-glacier` belongs here despite its `land-` id: it reads `water_polygons`, not `land`.
-// Painting these from z0 leaks the low-zoom landcover extension's data even with
-// `features.landcover` off — issue #124.
+// Painting these from z0 leaks what a tileset with the older, merged land cover carries — issue #124.
 const WATER_POLYGON_FILLS: { id: string; z: number }[] = [
 	{ id: 'water-area', z: 4 },
 	{ id: 'water-area-river', z: 4 },
@@ -275,16 +274,6 @@ describe('every land / water_polygons fill is covered by a table above', () => {
 			.filter((id) => !tabled.has(id));
 		expect(missing, `untabled fills — add them to LAND_FILLS or WATER_POLYGON_FILLS`).toEqual([]);
 	});
-
-	it('no fill escapes the landcover-mode lists', () => {
-		const listed = new Set([...LANDCOVER_COVERED, ...LANDCOVER_UNCOVERED.map((f) => f.id)]);
-		const missing = landcoverStyle.layers
-			.filter((l) => l.type === 'fill')
-			.filter((l) => ['land', 'water_polygons'].includes((l as { 'source-layer'?: string })['source-layer'] ?? ''))
-			.map((l) => l.id)
-			.filter((id) => !listed.has(id));
-		expect(missing, `unlisted fills — add them to LANDCOVER_COVERED or LANDCOVER_UNCOVERED`).toEqual([]);
-	});
 });
 
 // ── Buildings & sites (all at Shortbread z14) ─────────────────────────────────────
@@ -307,73 +296,6 @@ describe('sites fade in at Shortbread z14', () => {
 // ── Ferries (Shortbread z10) ──────────────────────────────────────────────────────
 describe('ferries fade in at Shortbread z10', () => {
 	it('transport-ferry over z10–11', () => expectFadeInAt(style, 'transport-ferry', 10));
-});
-
-// ── Low-zoom landcover extension (features.landcover) ──────────────────────────────
-// https://docs.versatiles.org/compendium/specification_shortbread_landcover.html
-// The extension fills these land kinds from z0, so with it enabled the layers must be VISIBLE AT
-// EVERY ZOOM — constant opacity, NOT a fade — at the same target they otherwise reach. Land kinds
-// the extension does not cover keep fading in at their normal Shortbread minzoom.
-// Which kinds the extension actually supplies, per the ESA WorldCover mapping in the spec.
-// `land-sand` is NOT covered — the spec has no ESA class for beach/sand — and `land-rock` IS,
-// via "Bare/sparse vegetation → bare_rock". Both were the wrong way round (issue #124, defect 3).
-const LANDCOVER_COVERED = [
-	'land-forest',
-	'land-grass',
-	'land-vegetation',
-	'land-agriculture',
-	'land-residential',
-	'land-rock',
-	'land-wetland',
-	// water_polygons kinds supplied at z0–3
-	'land-glacier',
-	'water-area',
-];
-const LANDCOVER_UNCOVERED: { id: string; z: number }[] = [
-	{ id: 'land-commercial', z: 10 },
-	{ id: 'land-industrial', z: 10 },
-	{ id: 'land-waste', z: 10 },
-	{ id: 'land-sand', z: 10 },
-	{ id: 'land-park', z: 11 },
-	{ id: 'land-garden', z: 11 },
-	{ id: 'land-leisure', z: 11 },
-	{ id: 'land-burial', z: 13 },
-	// water_polygons kinds the extension does not supply
-	{ id: 'water-area-river', z: 4 },
-	{ id: 'water-area-small', z: 4 },
-];
-
-// The fully-shown opacity of a fill layer: the constant, or the max of its fade.
-function targetOpacity(s: StyleSpecification, layerId: string): number {
-	const op = paintOf(s, layerId)?.['fill-opacity'];
-	if (op === undefined || op === null) return 1;
-	if (typeof op === 'number') return op;
-	if (Array.isArray(op)) return Math.max(...(op.slice(3) as number[]).filter((_, i) => i % 2 === 1));
-	return 1;
-}
-
-describe('with features.landcover, covered land kinds are visible at every zoom (no fade)', () => {
-	for (const id of LANDCOVER_COVERED) {
-		it(`${id} has constant opacity from z0`, () => {
-			// Sanity: without the extension this same layer fades in (proven by the default block above).
-			expect(opacityFade(style, id), `${id} should fade in by default`).not.toBeNull();
-
-			const layer = landcoverStyle.layers.find((l) => l.id === id);
-			expect(layer, `${id} must exist with landcover`).toBeDefined();
-			expect((layer as { minzoom?: number }).minzoom ?? 0, `${id} must render from z0`).toBeLessThanOrEqual(0);
-
-			const op = paintOf(landcoverStyle, id)?.['fill-opacity'] ?? 1;
-			expect(typeof op, `${id} must have a constant (non-fading) opacity with landcover`).toBe('number');
-			expect(op as number, `${id} must stay visible (opacity > 0)`).toBeGreaterThan(0);
-			expect(op as number, `${id} keeps its default target opacity`).toBeCloseTo(targetOpacity(style, id), 3);
-		});
-	}
-});
-
-describe('with features.landcover, uncovered land kinds still fade at their Shortbread minzoom', () => {
-	for (const { id, z } of LANDCOVER_UNCOVERED) {
-		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(landcoverStyle, id, z));
-	}
 });
 
 // ── Backstop: every remaining fade must still be a clean ramp ──────────────────────
@@ -454,13 +376,6 @@ describe('minzoom matches where each layer starts appearing', () => {
 			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) > SOURCE_MAXZOOM)
 			.map((l) => l.id);
 		expect(tooDeep).toEqual([]);
-	});
-
-	it('landcover clears the gate on the fills it reveals', () => {
-		for (const id of LANDCOVER_COVERED) {
-			const layer = landcoverStyle.layers.find((l) => l.id === id) as { minzoom?: number };
-			expect(layer.minzoom ?? 0, `${id} must render from z0 with landcover`).toBeLessThanOrEqual(0);
-		}
 	});
 });
 

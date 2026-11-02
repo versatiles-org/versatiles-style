@@ -25,6 +25,7 @@ describe('resolveOsmUrls', () => {
 	it('resolves all defaults against DEFAULT_BASE', () => {
 		expect(resolveOsmUrls()).toStrictEqual({
 			osm: 'https://tiles.versatiles.org/tiles/osm/tiles.json',
+			landcover: 'https://tiles.versatiles.org/tiles/landcover-vectors/tiles.json',
 			elevation: 'https://tiles.versatiles.org/tiles/elevation/tiles.json',
 			glyphsPattern: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
 			sprite: [{ id: 'base', url: 'https://tiles.versatiles.org/assets/sprites/base' }],

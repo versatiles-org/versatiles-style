@@ -69,6 +69,7 @@ type Features = Partial<Record<SchemaName, ProbeFeature | ProbeFeature[]>>;
  * would fail filters like `["==", "intermittent", 0]` that every real feature passes.
  */
 const DEFAULT_PROPS: Record<SchemaName, Record<string, ProbeFeature['props']>> = {
+	landcover: {},
 	shortbread: {},
 	openmaptiles: {
 		boundary: { disputed: 0, maritime: 0 },

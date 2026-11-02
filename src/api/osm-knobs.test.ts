@@ -515,16 +515,16 @@ describe('osm() knob: features.buildings', () => {
 // ── features.landcover ───────────────────────────────────────────────────────────
 
 describe('osm() knob: features.landcover', () => {
-	it('landcover removes the low-zoom fade on landcover-backed fills', () => {
+	it('landcover leaves the stock fills as they are', () => {
 		const off = paint(build(), 'land-forest')['fill-opacity'];
 		const on = paint(build({ features: { landcover: true } }), 'land-forest')['fill-opacity'];
-		// default is a zoom ramp; landcover pins the fully-faded-in constant.
-		expect(Array.isArray(off)).toBe(true);
-		expect(on).toBe(1);
+		expect(on).toEqual(off);
 	});
 
 	it('landcover is off by default', () => {
-		expect(Array.isArray(paint(build(), 'land-forest')['fill-opacity'])).toBe(true);
+		const style = build();
+		expect(style.layers.some((layer) => layer.id.startsWith('landcover-'))).toBe(false);
+		expect(Object.keys(style.sources)).toStrictEqual(['versatiles-shortbread']);
 	});
 });
 

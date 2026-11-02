@@ -7,8 +7,7 @@ import type { StyleSpecification, TileJSONSpecification } from '../types/index.j
 
 // What the library does with the TileJSONs tiles.versatiles.org actually serves. `tilejson.test.ts`
 // only checks that they validate; these check that each tileset gets the style it should. The fixtures
-// are copies of the live documents (landcover-vectors from its published container, which the server
-// does not serve on its own), so they go stale — but a stale one that changes behaviour fails here.
+// are copies of the live documents, so they go stale — but a stale one that changes behaviour fails here.
 
 const BASE = 'https://tiles.versatiles.org';
 
@@ -29,8 +28,8 @@ describe('VersaTiles tilesets', () => {
 			expect(style.sources['versatiles-shortbread']).toMatchObject({ tiles: [`${BASE}/tiles/osm/{z}/{x}/{y}`] });
 		});
 
-		it('carries the merged landcover, so it can back features.landcover', () => {
-			expect(osm.supportsLandcover(fixture('osm'))).toBe(true);
+		it('has no land cover layer, so it cannot back features.landcover on its own', () => {
+			expect(osm.supportsLandcover(fixture('osm'))).toBe(false);
 		});
 
 		it('lists its name languages', () => {
@@ -53,6 +52,26 @@ describe('VersaTiles tilesets', () => {
 	describe('landcover-vectors', () => {
 		it('can back features.landcover', () => {
 			expect(osm.supportsLandcover(fixture('landcover-vectors'))).toBe(true);
+		});
+
+		it('is recognised, and gets the inspector style on its own', async () => {
+			expect(guessSchema(fixture('landcover-vectors'))).toMatchObject({ type: 'vector', schema: 'landcover' });
+			const style = await guess('landcover-vectors');
+			expect(Object.keys(style.sources)).toStrictEqual(['tiles']);
+		});
+
+		it('is referenced by default and resolved to absolute tile URLs by inlineSources', async () => {
+			const url = `${BASE}/tiles/landcover-vectors/tiles.json`;
+			const osmUrl = `${BASE}/tiles/osm/tiles.json`;
+			const style = osm({ features: { landcover: true }, urls: { base: BASE } });
+			expect(style.sources['versatiles-landcover']).toStrictEqual({ type: 'vector', url });
+
+			const fetch = tileJSONFetch({ [url]: fixture('landcover-vectors'), [osmUrl]: fixture('osm') });
+			const inlined = await inlineSources(style, { fetch });
+			expect(inlined.sources['versatiles-landcover']).toMatchObject({
+				tiles: [`${BASE}/tiles/landcover-vectors/{z}/{x}/{y}`],
+				maxzoom: 10,
+			});
 		});
 	});
 

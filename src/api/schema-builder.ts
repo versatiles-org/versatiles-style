@@ -22,8 +22,15 @@ export type SchemaDescriptor = {
 	readonly id: string;
 	/** Source-layer ids this schema's tileset carries, for detection. */
 	readonly sourceLayers: readonly string[];
-	/** Build a style for a tileset already detected as this schema. */
-	build: (source: string | TileJSONSpecification, urls: SchemaUrls) => StyleSpecification;
+	/**
+	 * Build a style for a tileset already detected as this schema. `tileJSON` is the tileset's document,
+	 * which `source` may only point at.
+	 */
+	build: (
+		source: string | TileJSONSpecification,
+		urls: SchemaUrls,
+		tileJSON?: TileJSONSpecification
+	) => StyleSpecification;
 };
 
 /** The subset of the URL options a guessed style can carry over: everything but the tile source. */

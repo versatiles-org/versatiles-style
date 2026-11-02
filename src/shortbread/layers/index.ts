@@ -71,4 +71,4 @@ export function buildStyleLayers(ctx: LayerContext): MaplibreLayer[] {
 	return buildLayers(ctx, SHORTBREAD_SCHEMA, shortbreadLayers(ctx));
 }
 
-export { LANDCOVER_LAYERS, LAND_APPEAR_MIN } from './landcover.js';
+export { LANDCOVER_KINDS } from './landcover.js';

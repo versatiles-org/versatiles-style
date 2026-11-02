@@ -51,8 +51,11 @@ const verbose = args.includes('--verbose');
 const names = args.filter((a) => !a.startsWith('--'));
 const targets = names.length > 0 ? names : Object.keys(SCHEMAS);
 
-/** Built with every feature on, so no layer is missing from the audit. */
-const style = osm({ features: { buildings: 'extruded', landcover: true } });
+/**
+ * Built with every feature that reads this tileset on, so no layer is missing from the audit. Not
+ * `landcover`: it reads a tileset of its own, whose layer no audited schema has.
+ */
+const style = osm({ features: { buildings: 'extruded' } });
 const groups = getLayerGroupMap();
 const usage = schemaUsage(style);
 

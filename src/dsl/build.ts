@@ -66,8 +66,7 @@ type StructuralProps = {
 	 *
 	 *  Also sets `minzoom` to the same zoom unless one is given explicitly: the fade is already at
 	 *  opacity 0 below it, so this is output-identical and lets MapLibre skip the layer instead of
-	 *  drawing it invisibly. `addLandcover` clears the `minzoom` again on the fills it flattens,
-	 *  which is what lets the landcover feature reveal them at low zoom. */
+	 *  drawing it invisibly. */
 	appear?: number;
 	/** The mirror of `appear`: fade this layer out over `disappear-1`→`disappear` by ramping opacity
 	 *  target → 0, so it doesn't pop out. Combines with `appear` (the two ramps are merged into one
@@ -347,7 +346,7 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	// symbols the collision/placement pass) from the final real tile to a worse moment.
 	//
 	// Layers with no transition keep whatever `minzoom` they were given: for those, `minzoom` *is*
-	// the appearance mechanism. `addLandcover` clears the derived value on the fills it flattens.
+	// the appearance mechanism.
 	const appearsAt = appearZoom(style);
 	if (appearsAt !== undefined) style.minzoom = Math.min(appearsAt, SOURCE_MAXZOOM);
 

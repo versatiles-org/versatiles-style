@@ -44,11 +44,30 @@ describe('guessSchema() — complete tilesets', () => {
 
 	it('scores every schema, best first, and explains the winner', () => {
 		const guess = guessSchema(published(PROTOMAPS_SCHEMA)) as Extract<SchemaGuess, { type: 'vector' }>;
-		expect(guess.candidates.map((c) => c.schema)).toEqual(['protomaps', 'shortbread', 'openmaptiles', 'mapbox']);
-		const [protomaps, shortbread] = guess.candidates;
+		expect(guess.candidates.map((c) => c.schema)).toEqual([
+			'protomaps',
+			'landcover',
+			'shortbread',
+			'openmaptiles',
+			'mapbox',
+		]);
+		const [protomaps, , shortbread] = guess.candidates;
 		expect(protomaps).toMatchObject({ score: 1, missing: [], extra: [] });
 		// With fields, `boundaries`, `buildings` and `pois` are recognisably not Shortbread's.
 		expect(shortbread).toMatchObject({ score: 0, matched: [] });
+	});
+
+	it('tells the land cover on its own from Protomaps, which has a `landcover` with a `kind` too', () => {
+		const landcover = { tilejson: '3.0.0', tiles: ['https://x/{z}/{x}/{y}'] };
+		const layers = [{ id: 'landcover', fields: { kind: 'String' } }];
+		expect(guessSchema({ ...landcover, vector_layers: layers } as never)).toMatchObject({ schema: 'landcover' });
+		expect(guessSchema(published(PROTOMAPS_SCHEMA))).toMatchObject({ schema: 'protomaps' });
+	});
+
+	it('takes Shortbread with the land cover merged in for Shortbread', () => {
+		const merged = published(SHORTBREAD_SCHEMA) as unknown as { vector_layers: object[] };
+		merged.vector_layers.push({ id: 'landcover', fields: { kind: 'String' } });
+		expect(guessSchema(merged as never)).toMatchObject({ schema: 'shortbread' });
 	});
 });
 

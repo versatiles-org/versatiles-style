@@ -64,8 +64,8 @@ export function* water(ctx: LayerContext): Generator<b.TaggedLayer> {
 	}
 
 	// water polygons — Shortbread serves `water_polygons` from z4, so these fade in there rather
-	// than painting at full opacity from z0. Without the fade they leak the low-zoom landcover
-	// extension's data at z0–3 even when `features.landcover` is off (issue #124).
+	// than painting at full opacity from z0. Without the fade they would leak what a tileset with the
+	// older, merged land cover carries at z0–3 (issue #124).
 	yield b.fill('water-area', {
 		sourceLayer: 'water_polygons',
 		filter: ['==', ['get', 'kind'], 'water'],

@@ -565,6 +565,7 @@ type OsmOptions = OsmOverlayOptions & {
   urls?: {
     base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
     osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
+    landcover?: string | TileJSONSpecification; // defaults to "/tiles/landcover-vectors/tiles.json"
     elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
@@ -572,7 +573,7 @@ type OsmOptions = OsmOverlayOptions & {
   features?: {
     terrain?: boolean | { exaggeration?: number }; // exaggeration default: 1
     hillshade?: HillshadeOptions;
-    landcover?: boolean; // ESA WorldCover at z0–z10; default: false
+    landcover?: boolean; // the land cover of `urls.landcover`, under OSM; default: false
     buildings?: 'flat' | 'extruded'; // default: 'flat'; extrusion opacity comes from `layers.buildings`
   };
   light?: LightOptions; // default: on (`true`); `false` writes no `light`
@@ -647,9 +648,27 @@ unset unless you set it: `osm()` takes it from the palette's `colors.water` when
 resolved object can be fed straight back in as options — edit `colors.water` on top of it and the sky
 still follows. A UI shows `colors.water` for the sky colour while it is unset.
 
-`osm.supportsLandcover(tileJSON)` tells whether a tileset can back `features.landcover`: it is true
-when the `land` layer starts below the zoom where plain Shortbread's first land kind appears (z7), which
-means the tiles carry the low-zoom landcover extension. Missing metadata counts as `false`.
+`features.landcover` draws the [land cover](https://github.com/versatiles-org/landcover-vectors#using-it-with-osm)
+below everything else: `osm.slots.belowFills` gets a copy of each fill that has kinds in it, reading its
+`landcover` layer. OSM paints over it wherever it has data, and the stock layers don't change. It comes
+in one of two ways:
+
+- **A source of its own** (the default): `urls.landcover`. MapLibre overzooms it past its last zoom, so it
+  shows at every zoom: opaque up to z12, and fading to 25 % by z14. A `{z}` template is assumed to end at
+  z10, or at what its TileJSON's `landcover` layer states if it is an object.
+- **Merged into OSM's source**: pass `urls.osm` a TileJSON that has both a `land` and a `landcover` layer,
+  or the same URL as `urls.osm` and `urls.landcover`. Only one source is loaded, but MapLibre can't
+  overzoom one layer of it, so the land cover ends with its data: opaque up to its last zoom, gone one
+  zoom later, and land OSM doesn't map shows the background above that. The last zoom is the `maxzoom` of
+  the `landcover` layer in `vector_layers`, and z10 when only a URL is given, so pass the TileJSON if
+  yours ends elsewhere. A layer reaching the source's last zoom overzooms like a source of its own.
+
+`osm.supportsLandcover(tileJSON)` tells whether a tileset can back `features.landcover`: it is the land
+cover on its own (a single `landcover` layer with a `kind`), for `urls.landcover`, or Shortbread with it
+merged in, for `urls.osm`. Plain Shortbread and missing metadata count as `false`.
+
+`inlineSources` rejects when a source can't be fetched, so a server without the land cover needs
+`features.landcover: false`, or a `urls.landcover` that points elsewhere.
 
 `osm.validateOptions(options)` checks options **without throwing**, and reports every problem at once
 rather than the first. `resolveOptions` stays the call for a program that cannot proceed — it throws,
@@ -867,13 +886,13 @@ Each builder takes the **same option vocabulary** as `osm()` — `theme`, `color
 `minimizeOptions`, `toCode`, `validateOptions`, `tileset`). The option names describe concepts rather than layers, so they
 survive the change of tileset. What differs is only what the tiles themselves can express:
 
-|                      | `osm()`                | `omt()`               | `protomaps()`                   |
-| -------------------- | ---------------------- | --------------------- | ------------------------------- |
-| tile source option   | `urls.osm`             | `urls.omt`            | `urls.protomaps` — **required** |
-| default tileset      | tiles.versatiles.org   | tiles.openfreemap.org | none                            |
-| `features.landcover` | ✅ (tileset extension) | ✗ rejected            | ✅ (its own `landcover` layer)  |
-| `supportsLandcover`  | ✅                     | ✗                     | ✗                               |
-| max zoom             | 14                     | 14                    | 15                              |
+|                      | `osm()`               | `omt()`               | `protomaps()`                   |
+| -------------------- | --------------------- | --------------------- | ------------------------------- |
+| tile source option   | `urls.osm`            | `urls.omt`            | `urls.protomaps` — **required** |
+| default tileset      | tiles.versatiles.org  | tiles.openfreemap.org | none                            |
+| `features.landcover` | ✅ (`urls.landcover`) | ✗ rejected            | ✅ (its own `landcover` layer)  |
+| `supportsLandcover`  | ✅                    | ✗                     | ✗                               |
+| max zoom             | 14                    | 14                    | 15                              |
 
 A concept a schema cannot express is an **unknown option key that throws**, never an option that
 silently does nothing — `omt({ features: { landcover: true } })` is an error naming the key.
@@ -954,7 +973,7 @@ Shortbread, satellite and inspector styles alike.
 ```ts
 guessSchema(tileJSON: TileJSONSpecification): SchemaGuess
 
-type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox'
+type SchemaName = 'shortbread' | 'openmaptiles' | 'protomaps' | 'mapbox' | 'landcover'
 
 type SchemaGuess =
   | { type: 'vector'; schema: SchemaName | undefined; candidates: SchemaScore[] }
@@ -981,8 +1000,8 @@ share — `boundaries`, `buildings` and `pois` (Shortbread and Protomaps), `land
 Mapbox) — are decided by their `fields`: `class` against `kind`, `admin_level` against `kind_detail`,
 `render_height` against `extrude`. Where the fields tell nothing they count for every schema that uses
 them. A schema is recognised when at least half the tileset's source-layers are its, or at least eight
-are, and it scores strictly higher than every other schema; otherwise `schema` is `undefined`.
-`candidates` lists all four, best first.
+are, and it scores strictly higher than every other schema, or as high and the tileset has all of it;
+otherwise `schema` is `undefined`. `candidates` lists all five, best first.
 
 It knows the schemas without importing their styles, so it adds a small table to the root entry rather
 than two schemas. `guessStyle()` uses it, and builds OpenMapTiles or Protomaps only when that schema's
@@ -993,6 +1012,10 @@ styles load beside it (Terrain v2 and Bathymetry v2). The package has no functio
 tiles, so `guessStyle()` answers them with the inspector style, like any vector tiles it cannot style.
 What the recognition is for is reading: [`guessOptions`](#guessoptionsstyle-options-promiseoptionsguess)
 takes a style built on Mapbox tiles.
+
+**`'landcover'` is recognised, not built, either.** It is the landcover-vectors tileset on its own, which
+`osm()` draws under OSM with `features.landcover`. `guessStyle()` answers it with the inspector style.
+Shortbread with the land cover merged in is `'shortbread'`, and `guessStyle()` draws its land cover.
 
 ---
 
@@ -1265,14 +1288,14 @@ built it. URLs are environment, not style, so the reader supplies its own.
 Rebuilding a style and handing it to an existing map needs a full reload:
 
 ```ts
-map.setStyle(osm({ features: { landcover: true } }), { diff: false });
+map.setStyle(osm({ features: { buildings: 'extruded' } }), { diff: false });
 ```
 
 MapLibre's default diffing applies the new style to its model — `map.getStyle()` returns the right
 thing — but tiles already parsed keep the buckets they were built with. A layer that was outside its
 zoom range, or absent, when those tiles loaded stays invisible until something forces a re-parse.
-Toggling `features.landcover` is exactly that case: it removes the `minzoom` from each covered fill,
-and the loaded tiles carry no bucket for them, so the land cover appears only after a page reload.
+Toggling `features.buildings` is exactly that case: it adds layers, and the loaded tiles carry no bucket
+for them, so they appear only after a page reload.
 
 ---
 

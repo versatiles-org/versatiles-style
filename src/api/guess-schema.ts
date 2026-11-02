@@ -101,8 +101,9 @@ function scoreSchema(schema: SchemaName, layers: Layer[]): SchemaScore {
  * it. Synchronous and free of I/O; for a URL, download the document with `fetchTileJSON()` first.
  *
  * Knows Shortbread, OpenMapTiles, Protomaps and Mapbox Streets without importing any of their styles,
- * so it costs the root bundle a small table rather than two schemas. Mapbox tiles are recognised only:
- * the package has no builder for them. For the others, build the style from the matching subpath:
+ * so it costs the root bundle a small table rather than two schemas. Mapbox tiles and the land cover
+ * tileset are recognised only: the package has no builder for them. For the others, build the style from
+ * the matching subpath:
  *
  * ```ts
  * import { guessSchema, osm } from '@versatiles/style';
@@ -112,7 +113,8 @@ function scoreSchema(schema: SchemaName, layers: Layer[]): SchemaScore {
  * ```
  *
  * A schema is recognised when it qualifies (at least half the tileset's source-layers are its, or at
- * least eight are) and scores strictly higher than every other schema. Never throws.
+ * least eight are) and scores strictly higher than every other schema, or as high and the tileset has
+ * all of it. Never throws.
  */
 export function guessSchema(tileJSON: TileJSONSpecification): SchemaGuess {
 	if (tileJSON === null || typeof tileJSON !== 'object' || Array.isArray(tileJSON)) return { type: 'unknown' };
@@ -125,8 +127,15 @@ export function guessSchema(tileJSON: TileJSONSpecification): SchemaGuess {
 
 	const layers = readLayers(vectorLayers);
 	// `sort` is stable, so equal scores keep the order of SCHEMA_NAMES.
-	const candidates = SCHEMA_NAMES.map((schema) => scoreSchema(schema, layers)).sort((a, b) => b.score - a.score);
+	// An equal score goes to a schema the tileset has all of: the land cover's one layer is all of its own
+	// schema and a fragment of Protomaps.
+	const complete = (candidate: SchemaScore) => (candidate.missing.length === 0 ? 1 : 0);
+	const candidates = SCHEMA_NAMES.map((schema) => scoreSchema(schema, layers)).sort(
+		(a, b) => b.score - a.score || complete(b) - complete(a)
+	);
 	const [best, runnerUp] = candidates;
-	const recognised = qualifies(best.matched.length, layers.length) && best.score > runnerUp.score;
+	const recognised =
+		qualifies(best.matched.length, layers.length) &&
+		(best.score > runnerUp.score || complete(best) > complete(runnerUp));
 	return { type: 'vector', schema: recognised ? best.schema : undefined, candidates };
 }

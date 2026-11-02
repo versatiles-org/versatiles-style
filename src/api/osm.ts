@@ -1,6 +1,6 @@
-import type { StyleSpecification, TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
+import type { StyleSpecification, TileJSONSpecification } from '../types/index.js';
 import type { OsmOptions, ResolvedOsm } from '../options/index.js';
-import { colorOptionsKeys, resolveOsm } from '../options/index.js';
+import { colorOptionsKeys, isLandcoverTileset, isMergedLandcover, resolveOsm } from '../options/index.js';
 import {
 	buildContext,
 	buildStyleLayers,
@@ -8,8 +8,7 @@ import {
 	getTextGroupMap,
 	getLayerGroupMap,
 	SHORTBREAD_SCHEMA,
-	LANDCOVER_LAYERS,
-	LAND_APPEAR_MIN,
+	LANDCOVER_KINDS,
 } from '../shortbread/index.js';
 import { PALETTES, getPaletteColors } from '../themes/index.js';
 import { applyRecolor } from '../color/index.js';
@@ -55,11 +54,7 @@ function buildBase(resolved: ResolvedOsm): StyleSpecification {
 }
 
 function supportsLandcover(tileJSON: TileJSONSpecification): boolean {
-	const layers = (tileJSON as TileJSONSpecificationVector).vector_layers ?? [];
-	const land = layers.find((layer) => layer.id === 'land');
-	// Missing metadata counts as "no": a style with landcover fills and no data behind them is worse
-	// than the plain Shortbread fade-ins.
-	return land?.minzoom !== undefined && land.minzoom < LAND_APPEAR_MIN;
+	return isLandcoverTileset(tileJSON) || isMergedLandcover(tileJSON);
 }
 
 // ── Main osm() function ───────────────────────────────────────────────────────
@@ -90,7 +85,12 @@ function osmFn(options?: OsmOptions): StyleSpecification {
 		addTerrain(style, resolved.features.terrain, resolved.urls.elevation);
 	}
 	if (resolved.features.landcover) {
-		addLandcover(style, LANDCOVER_LAYERS);
+		addLandcover(style, {
+			kinds: LANDCOVER_KINDS,
+			beforeId: SLOT_IDS.belowFills,
+			source: resolved.urls.landcover,
+			osm: { id: SOURCE_NAME, source: resolved.urls.osm },
+		});
 	}
 
 	configure3DLighting(style, resolved.light, resolved.projection, resolved.sky);
@@ -144,8 +144,8 @@ export const osm = Object.assign(osmFn, {
 	languages: getLanguages,
 
 	/**
-	 * Whether a tileset can back `features.landcover`: its `land` layer starts below the zoom where
-	 * plain Shortbread's first land kind appears, so it carries the low-zoom landcover extension.
+	 * Whether a tileset can back `features.landcover`: it is the land cover on its own, for
+	 * `urls.landcover`, or Shortbread with the land cover merged in, for `urls.osm`.
 	 */
 	supportsLandcover,
 
@@ -158,7 +158,12 @@ export const osm = Object.assign(osmFn, {
 		sourceLayers: Object.keys(SHORTBREAD_SCHEMA),
 		// `osmFn`, not `osm`: referring to the exported const inside its own initialiser makes its type
 		// circular, which TypeScript resolves by widening the whole statics object to `any`.
-		build: (source, urls) => osmFn({ urls: { ...urls, osm: source } }),
+		// A tileset with the land cover merged in gets it drawn. Inlined, because the land cover's last zoom
+		// is in the document, which a style that only references it can't read.
+		build: (source, urls, tileJSON) =>
+			tileJSON && isMergedLandcover(tileJSON)
+				? osmFn({ features: { landcover: true }, urls: { ...urls, osm: tileJSON } })
+				: osmFn({ urls: { ...urls, osm: source } }),
 	} satisfies SchemaDescriptor,
 
 	/** Resolve raw OsmOptions to a fully validated ResolvedOsm. */

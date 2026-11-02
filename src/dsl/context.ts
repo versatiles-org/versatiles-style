@@ -21,7 +21,7 @@ export type LayerContext = {
 	text: ResolvedText;
 	/** The resolved feature flags a layer module may read. Deliberately narrower than any schema's
 	 *  `features` option: only these change which layers are emitted. `landcover` is read by Protomaps,
-	 *  whose coarse low-zoom band is its own layers; Shortbread applies it to the finished style instead
+	 *  whose coarse low-zoom band is its own layers; Shortbread copies fills of the finished style instead
 	 *  (`addLandcover`), and OpenMapTiles has no such data. */
 	features: { buildings: 'flat' | 'extruded'; landcover: boolean };
 	/** Fully-resolved per-group visibility/opacity. Each layer gates itself on its own group. */

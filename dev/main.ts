@@ -122,7 +122,7 @@ function buildInspectStyle(
 /** Which controls mean anything for the chosen base map. */
 function applyControlAvailability(base: Base): void {
 	const isSatellite = base === 'satellite';
-	// `features.landcover` exists for Shortbread (its low-zoom tileset extension) and Protomaps (its own
+	// `features.landcover` exists for Shortbread (the landcover-vectors tileset under OSM) and Protomaps (its own
 	// coarse `landcover` layer); OpenMapTiles has no such data and rejects the option outright.
 	landcoverToggle.disabled = base !== 'osm' && base !== 'protomaps';
 	buildingsToggle.disabled = isSatellite;

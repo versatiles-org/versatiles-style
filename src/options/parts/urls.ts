@@ -18,25 +18,59 @@ export type FetchLike = typeof fetch;
 export type OsmUrlsOptions = {
 	base?: string;
 	osm?: TileSource;
+	/**
+	 * The land cover `features.landcover` draws. The same source as `osm` means it is merged into OSM's
+	 * tiles. A TileJSON in `osm` that carries the land cover says so itself, and needs no `landcover`.
+	 */
+	landcover?: TileSource;
 	elevation?: TileSource;
 	glyphsPattern?: string;
 	sprite?: SpriteEntries;
 };
 
-export type SatelliteUrlsOptions = OsmUrlsOptions & {
+export type SatelliteUrlsOptions = Omit<OsmUrlsOptions, 'landcover'> & {
 	satellite?: TileSource;
 };
 
 export type ResolvedOsmUrls = {
 	osm: TileSource;
+	landcover: TileSource;
 	elevation: TileSource;
 	glyphsPattern: string;
 	sprite: SpriteEntries;
 };
 
-export type ResolvedSatelliteUrls = ResolvedOsmUrls & {
+export type ResolvedSatelliteUrls = Omit<ResolvedOsmUrls, 'landcover'> & {
 	satellite: TileSource;
 };
+
+type VectorLayerEntry = { id?: unknown; fields?: unknown; maxzoom?: number };
+
+function vectorLayersOf(tileJSON: TileJSONSpecification): VectorLayerEntry[] {
+	const layers = (tileJSON as { vector_layers?: unknown }).vector_layers;
+	return Array.isArray(layers) ? (layers as VectorLayerEntry[]) : [];
+}
+
+/**
+ * A tileset's land cover layer: `landcover`, with a `kind`. OpenMapTiles and Mapbox have a `landcover`
+ * with a `class`, which isn't this, and Protomaps one with a `kind`, which `isMergedLandcover` and
+ * `osm.supportsLandcover` tell apart by the layers around it.
+ */
+export function landcoverLayerOf(tileJSON: TileJSONSpecification): VectorLayerEntry | undefined {
+	return vectorLayersOf(tileJSON).find(
+		({ id, fields }) => id === 'landcover' && fields !== null && typeof fields === 'object' && 'kind' in fields
+	);
+}
+
+/** Whether a tileset is the land cover on its own: its only layer. */
+export function isLandcoverTileset(tileJSON: TileJSONSpecification): boolean {
+	return landcoverLayerOf(tileJSON) !== undefined && vectorLayersOf(tileJSON).length === 1;
+}
+
+/** Whether a tileset is Shortbread with the land cover merged in. Protomaps has no `land` layer. */
+export function isMergedLandcover(tileJSON: TileJSONSpecification): boolean {
+	return landcoverLayerOf(tileJSON) !== undefined && vectorLayersOf(tileJSON).some(({ id }) => id === 'land');
+}
 
 /** Host that serves the default `/tiles/...` and `/assets/...` paths. */
 const VERSATILES_HOST = 'https://tiles.versatiles.org';
@@ -85,10 +119,13 @@ export function resolveTileSource(base: string, value: TileSource | undefined, f
 }
 
 export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOsmUrls {
-	checkKeys(urls, { base: true, osm: true, elevation: true, glyphsPattern: true, sprite: true }, path);
+	checkKeys(urls, { base: true, osm: true, landcover: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
+	const osm = resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json');
+	const merged = urls?.landcover === undefined && typeof osm === 'object' && isMergedLandcover(osm);
 	return {
-		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
+		osm,
+		landcover: merged ? osm : resolveTileSource(base, urls?.landcover, '/tiles/landcover-vectors/tiles.json'),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
