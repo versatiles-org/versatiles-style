@@ -5,7 +5,7 @@
  *   npm run zoom-compare                      # → .cache/zoom-compare/index.html
  *   npm run zoom-compare -- --quick           # two places, no dark theme, no per-layer renders
  *   npm run zoom-compare -- --offline         # tiles and glyphs from the cache only
- *   npm run zoom-compare -- --globe           # globe projection instead of Mercator
+ *   npm run zoom-compare -- --globe           # globe, 3D buildings, visible atmosphere → .cache/zoom-compare/globe/
  *   npm run zoom-compare -- --landcover       # `features.landcover` on → .cache/zoom-compare/landcover/
  *   npm run zoom-compare -- --save-baseline   # keep this run; later runs show it next to theirs
  *
@@ -20,7 +20,9 @@
  *   bound. The boundary sets cannot show a layer whose data starts exactly there in "same tiles".
  * - **The land cover alone** — with `--landcover`, its fills over the background, with OSM out of the way.
  *
-
+ * `--globe` also turns on what reads `style.light`, because without 3D buildings or a visible atmosphere a
+ * style has no light, and so none of the step it takes at `BUILDINGS_APPEAR_ZOOM` on a globe.
+ *
  * Symbol fade is off in the renderer: the frames show where placement ends up, not the animation a user
  * sees on the way. Needs Chromium for Playwright (`npx playwright install chromium`), network access on
  * the first run, and `npm run build-sprites` for the icons.
@@ -72,6 +74,7 @@ async function main(): Promise<void> {
 	const args = parseArgs(process.argv.slice(2));
 	const out = cacheDir('zoom-compare', ...(args.globe ? ['globe'] : []), ...(args.landcover ? ['landcover'] : []));
 	const projection = args.globe ? 'globe' : 'mercator';
+	const projectionLabel = args.globe ? 'globe, with 3D buildings and a visible atmosphere' : 'mercator';
 	const places = args.quick ? PLACES.slice(0, 2) : PLACES;
 
 	const tileSource = async (schema: TileSchema) => {
@@ -86,8 +89,11 @@ async function main(): Promise<void> {
 	};
 	const options: OsmOptions = {
 		projection,
-		sky: false,
-		...(args.landcover && { features: { landcover: true } }),
+		sky: args.globe ? { atmosphereBlend: 1 } : false,
+		features: {
+			...(args.globe && { buildings: 'extruded' as const }),
+			...(args.landcover && { landcover: true }),
+		},
 		urls: {
 			osm: await tileSource('shortbread'),
 			...(args.landcover && { landcover: await tileSource('landcover') }),
@@ -189,7 +195,7 @@ async function main(): Promise<void> {
 			height: SIZE,
 			epsilon: EPSILON,
 			changedAbove: CHANGED,
-			projection,
+			projection: projectionLabel,
 			landcover: args.landcover,
 			themes: { light: LIGHT_THEME, ...(!args.quick && { dark: DARK_THEME }) },
 			places,
