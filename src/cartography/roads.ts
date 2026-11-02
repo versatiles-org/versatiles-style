@@ -52,6 +52,11 @@ export type RoadVocabulary = {
 	readonly appear: Readonly<Record<string, number>>;
 	/** The zoom the bridge areas begin, which their fade-in follows. Not for a schema without such areas. */
 	readonly bridgeAppear?: number;
+	/**
+	 * The zoom main-line rail fades in from, the first where the tiles have it and can tell it from a service
+	 * track. z11 if not stated.
+	 */
+	readonly railAppear?: number;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -255,7 +260,7 @@ function wayStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProp
 // Returns null for variants that should not be drawn at all (e.g. ferry casing, and service track on
 // subway and the tram family) so the caller skips them instead of emitting a bare layer. Rail and
 // lightrail DO draw their service tracks, in a lighter, narrower variant.
-function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.StyleProps | null {
+function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab: RoadVocabulary): b.StyleProps | null {
 	const { c, fg, bg } = ctx;
 
 	if (t === 'ferry')
@@ -287,19 +292,11 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean): b.Sty
 		else
 			r = isOutline
 				? // The casing is a hairline well before its width ramp starts moving, so its fade-in is what
-					// puts it on the map — and z11 is the earliest zoom at which putting it there is honest.
-					//
-					// Shortbread ships service tracks (yards, sidings, spurs, crossovers) from z10 but the
-					// `service` attribute that identifies them only from z11, so at z10 a marshalling yard is
-					// indistinguishable from a main line: at Maschen that is 270 km of track in one tile that
-					// this layer would have to draw at full mainline weight. Below z10 the data is clean —
-					// service tracks are simply absent — so z8/z9 would be safe, but appearing at z8, blooming
-					// into a solid mass at z10 and thinning again at z11 is worse than starting at z11. If the
-					// schema ever supplies `service` from z10, this can move back down.
+					// puts it on the map, at the zoom each schema's tiles allow (`railAppear`).
 					{
 						color: c.transitRail,
 						size: { 8: 1, 13: 1, 15: 1, 20: 14 },
-						opacity: b.fadeIn(11),
+						opacity: b.fadeIn(vocab.railAppear ?? 11),
 					}
 				: {
 						color: c.transitRail.blend(0.3, bg),
@@ -434,7 +431,8 @@ function roadStyle(ctx: LayerContext, id: string, vocab: RoadVocabulary): b.Styl
 			lineCap,
 		};
 	}
-	if (s.startsWith('transport-')) return transportStyle(ctx, s.slice('transport-'.length), suffix === ':outline');
+	if (s.startsWith('transport-'))
+		return transportStyle(ctx, s.slice('transport-'.length), suffix === ':outline', vocab);
 	if (s.startsWith('way-')) return wayStyle(ctx, s.slice('way-'.length), suffix === ':outline');
 	if (s.startsWith('street-')) {
 		const t = s.slice('street-'.length);

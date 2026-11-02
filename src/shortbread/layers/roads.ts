@@ -235,6 +235,14 @@ const VOCAB: RoadVocabulary = {
 	minorBases: ['minor', 'residential', 'unclassified', 'livingstreet'],
 	serviceBases: ['service', 'bus', 'busway', 'busguideway'],
 	bridgeAppear: 12,
+	// Service tracks (yards, sidings, spurs) arrive at z10, and the `early_attributes` experiment of
+	// planetiler-shortbread, which the VersaTiles tiles are built with, supplies `service` from z10 too. Tiles
+	// built without it get `service` from z11, so a marshalling yard looks like main line while it fades in over
+	// z10–11: at Maschen, 270 km of track in one tile. Accepted, because only those tiles are affected.
+	//
+	// Main lines exist from z8, with no service tracks yet, but this starts where the attribute does. Below it, the
+	// map shows no rail, as in the other schemas.
+	railAppear: 10,
 	appear: {
 		motorway: 5,
 		trunk: 6,

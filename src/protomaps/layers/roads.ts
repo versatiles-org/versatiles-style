@@ -166,6 +166,7 @@ function buildStructures(): MaplibreLayerDefinition[] {
 const VOCAB: RoadVocabulary = {
 	minorBases: ['residential', 'unclassified', 'livingstreet'],
 	serviceBases: ['service', 'busway'],
+	// Rail stays at the default, z11, measured as where this schema's `kind: rail` begins.
 	appear: {
 		motorway: 5,
 		trunk: 6,

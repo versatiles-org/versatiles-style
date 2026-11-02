@@ -171,11 +171,11 @@ describe('boundaries fade in at their appearance zoom', () => {
 // casing that is already 1 px wide at low zoom can only appear by opacity, while a line whose width
 // grows from 0 appears by that growth (the group below).
 //
-// No rail is drawn before z11. Shortbread ships service tracks from z10 but the `service` attribute
-// that identifies them only from z11, so z10 cannot tell a marshalling yard from a main line — see
-// `transportStyle`. z11 is therefore the first zoom at which any rail layer may appear.
+// No rail is drawn before z10. Service tracks enter the tiles there, and `service` with them (the
+// `early_attributes` experiment), so z10 is the first zoom where a yard can be told from a main line,
+// and the main line's casing joins the map there. Everything else joins later.
 const RAIL_FADES: { id: string; z: number }[] = [
-	{ id: 'transport-rail:outline', z: 11 },
+	{ id: 'transport-rail:outline', z: 10 },
 	{ id: 'transport-rail', z: 14 },
 	{ id: 'transport-subway:outline', z: 11 },
 	{ id: 'transport-subway', z: 14 },
@@ -186,12 +186,29 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 		it(`${id} over z${z}–${z + 1}`, () => expectFadeInAt(style, id, z));
 	}
 
-	it('no rail layer is drawn before z11, where `service` first distinguishes yards', () => {
+	it('no rail layer is drawn before z10, where `service` first distinguishes yards', () => {
 		const early = style.layers
 			.filter((l) => /^(tunnel-|bridge-)?transport-/.test(l.id) && !l.id.startsWith('transport-ferry'))
-			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) < 11)
+			.filter((l) => ((l as { minzoom?: number }).minzoom ?? 0) < 10)
 			.map((l) => `${l.id}: minzoom ${(l as { minzoom?: number }).minzoom ?? 0}`);
 		expect(early).toEqual([]);
+	});
+
+	it('only the main-line casing joins at z10', () => {
+		const atTen = style.layers
+			.filter((l) => /^(tunnel-|bridge-)?transport-/.test(l.id) && !l.id.startsWith('transport-ferry'))
+			.filter((l) => (l as { minzoom?: number }).minzoom === 10)
+			.map((l) => l.id)
+			.sort();
+		expect(atTen).toEqual(['bridge-transport-rail:outline', 'transport-rail:outline', 'tunnel-transport-rail:outline']);
+	});
+
+	// Measured in tiles: `class: rail` has no `service` at z7–12, and Protomaps' rail only starts at z11.
+	it.each([
+		['omt', () => omt()],
+		['protomaps', () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } })],
+	] as [string, () => StyleSpecification][])('%s keeps rail at z11', (_, build) => {
+		expectFadeInAt(build(), 'transport-rail:outline', 11);
 	});
 });
 

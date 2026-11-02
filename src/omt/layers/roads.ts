@@ -215,6 +215,8 @@ const VOCAB: RoadVocabulary = {
 	// Measured: no `class: bridge` polygon below z13 around six places with large bridges (November 2026),
 	// where Shortbread's `bridges` start at z12. A fade over z12–13 would be over before they arrive.
 	bridgeAppear: 13,
+	// Rail stays at the default, z11. Measured the same way: `class: rail` starts at z8, but no feature has a
+	// `service` at z7–12, so an earlier start would only draw more track that can't be told apart.
 	appear: {
 		motorway: 5,
 		trunk: 6,

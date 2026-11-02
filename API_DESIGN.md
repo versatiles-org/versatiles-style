@@ -671,6 +671,10 @@ merged in, for `urls.osm`. Plain Shortbread and missing metadata count as `false
 `inlineSources` rejects when a source can't be fetched, so a server without the land cover needs
 `features.landcover: false`, or a `urls.landcover` that points elsewhere.
 
+Main-line rail fades in over z10–11, because the VersaTiles tiles mark service tracks with `service` from z10.
+They are built with the `early_attributes` experiment of planetiler-shortbread. Shortbread tiles built without it
+have `service` from z11, so on those a marshalling yard looks like main line during that fade.
+
 `osm.validateOptions(options)` checks options **without throwing**, and reports every problem at once
 rather than the first. `resolveOptions` stays the call for a program that cannot proceed — it throws,
 with the same message it always did. This is for a tool handing back input someone else typed: a pasted
