@@ -66,6 +66,7 @@
     "smoke": "node scripts/ci/smoke.mjs",
     "schema-compare": "tsx scripts/schema-compare/compare.ts",
     "schema-values": "tsx scripts/schema-values.ts",
+    "zoom-compare": "tsx scripts/zoom-compare/compare.ts",
     "test": "vitest run --project unit",
     "test:e2e": "vitest run --project e2e",
     "test:all": "vitest run",
