@@ -126,17 +126,17 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 	}
 });
 
-// Path-class ways grow from 0 width at z13 and fade in over the same zoom: width alone pops in, because a line
-// draws at nearly full strength at any width above 0. They are a single dashed line: no casing layer is emitted.
-describe('path-class ways appear by growing from 0 width and fading in at z13', () => {
+// Path-class ways fade in over z13–14 at their full width. They are dashed, and a dashed line that grew from width 0
+// would draw nothing until z14 and pop in there (see `make`). A single line: no casing layer is emitted.
+describe('path-class ways appear by fading in at z13', () => {
 	for (const layerId of ['way-footway', 'way-steps', 'way-path', 'way-cycleway']) {
-		it(`${layerId} fades in and starts at 0 width at z13`, () => {
+		it(`${layerId} fades in at z13, with a width already`, () => {
 			expectFadeInAt(style, layerId, 13);
 			const width = paintOf(style, layerId)?.['line-width'];
 			expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
 			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
 			expect(stops[0], `${layerId} width ramp must start at z13`).toBe(13);
-			expect(stops[1], `${layerId} must start at 0 width`).toBe(0);
+			expect(stops[1], `${layerId} must have a width from the start`).toBeGreaterThan(0);
 		});
 
 		it(`${layerId} is dashed, with butt caps so the dash renders, and has no casing`, () => {
@@ -236,25 +236,42 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 	});
 });
 
-// The tram family grows from 0 width too, and fades in over the same zoom, as any line must.
-const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
-	// tram, narrowgauge, funicular and monorail share one style and are emitted as a single
-	// layer (see `transport-minorrail` in layers/roads.ts).
-	{ id: 'transport-minorrail', z: 13 },
-	{ id: 'transport-minorrail:outline', z: 15 },
-];
+// Tram, narrow gauge, funicular and monorail share one style and are emitted as a single layer (see
+// `transport-minorrail` in layers/roads.ts). The track grows from 0 width as it fades in, as any solid line may.
+describe('tram-family tracks fade in', () => {
+	it('the track at z13, growing from 0 width', () => {
+		expectFadeInAt(style, 'transport-minorrail', 13);
+		expect((paintOf(style, 'transport-minorrail')?.['line-width'] as unknown[]).slice(3, 5)).toEqual([13, 0]);
+	});
 
-describe('tram-family tracks appear by growing from 0 width and fading in', () => {
-	for (const { id, z } of RAIL_WIDTH_GROWN) {
-		it(`${id} grows from 0 width and fades in at z${z}`, () => {
-			expectFadeInAt(style, id, z);
-			const width = paintOf(style, id)?.['line-width'];
-			expect(Array.isArray(width), `${id} must have a zoom width ramp`).toBe(true);
-			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
-			expect(stops[0], `${id} width ramp must start at z${z}`).toBe(z);
-			expect(stops[1], `${id} must start at 0 width`).toBe(0);
+	it('the dashed casing at z15, with a width already', () => {
+		expectFadeInAt(style, 'transport-minorrail:outline', 15);
+		const width = paintOf(style, 'transport-minorrail:outline')?.['line-width'] as unknown[];
+		expect(width.slice(3, 5)).toEqual([15, 5]);
+	});
+});
+
+// MapLibre sizes dashes by the width at the whole zoom level, so a dashed line with width 0 at its first zoom draws
+// nothing throughout that zoom, whatever its opacity, and pops in at the next. On `way-footway`, 9.55 % of a view.
+// A line that starts at z0, or that only becomes visible once its width has left 0, can't show this.
+describe('no dashed line is visible at a first zoom where its width is 0', () => {
+	it.each([
+		['osm', () => osm()],
+		['osm, extruded', () => osm({ features: { buildings: 'extruded' } })],
+		['omt', () => omt()],
+		['protomaps', () => protomaps({ urls: { protomaps: 'https://example.org/tiles.json' } })],
+	] as [string, () => StyleSpecification][])('%s', (_, build) => {
+		const found = build().layers.flatMap((layer) => {
+			const paint = (layer as { paint?: Record<string, unknown> }).paint;
+			const width = paint?.['line-width'];
+			if (layer.type !== 'line' || !paint?.['line-dasharray'] || !Array.isArray(width)) return [];
+			const [from, value] = (width as unknown[]).slice(3, 5) as number[];
+			const opacity = paint['line-opacity'] as unknown[] | undefined;
+			const visibleFrom = Array.isArray(opacity) && opacity[4] === 0 ? (opacity[3] as number) : 0;
+			return from > 0 && value === 0 && from >= visibleFrom ? [layer.id] : [];
 		});
-	}
+		expect(found).toEqual([]);
+	});
 });
 
 // ── Land cover & landuse fills ────────────────────────────────────────────────────

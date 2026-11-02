@@ -289,6 +289,19 @@ function rampFromZero(value: unknown): number | undefined {
 	return (value as Record<number, number>)[zooms[0]] === 0 ? zooms[0] : undefined;
 }
 
+/** A ramp from 0 with its first stop raised to the value of the second. */
+function withoutZeroStart(size: Exclude<SizeValue, number>): Exclude<SizeValue, number> {
+	if ('stops' in size && typeof size.stops === 'object') return { ...size, stops: withFlatStart(size.stops) };
+	return withFlatStart(size as Record<number, number>);
+}
+
+function withFlatStart(stops: Readonly<Record<number, number>>): Record<number, number> {
+	const [first, second] = Object.keys(stops)
+		.map(Number)
+		.sort((a, b) => a - b);
+	return { ...stops, [first]: stops[second] };
+}
+
 /**
  * The zoom at which a layer first draws something, or undefined if it has no zoom transition.
  *
@@ -337,6 +350,15 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 	if (type === 'line' && (style.opacity == null || typeof style.opacity === 'number')) {
 		const growsFrom = rampFromZero(style.size);
 		if (growsFrom) style.opacity = fadeIn(growsFrom, style.opacity ?? 1);
+	}
+
+	// A dashed line can't grow from width 0 at all. MapLibre sizes dashes by the width at the whole zoom level, so it
+	// draws nothing for that entire zoom, however its opacity goes, and pops in at the next one. So it starts at the
+	// width of its next stop, and its opacity alone makes it appear. Measured on `way-footway`, 9.55 % of a view at
+	// z14 in one step (issue #146). Not a line that only becomes visible later, whose width has long left 0 by then.
+	const dashGrowsFrom = type === 'line' && style.lineDasharray != null ? rampFromZero(style.size) : undefined;
+	if (dashGrowsFrom && dashGrowsFrom >= (rampFromZero(style.opacity) ?? 0)) {
+		style.size = withoutZeroStart(style.size as Exclude<SizeValue, number>);
 	}
 
 	// ── minzoom is derived, never hand-written ────────────────────────────────────

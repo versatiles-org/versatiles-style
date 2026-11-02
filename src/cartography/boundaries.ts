@@ -98,10 +98,11 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 	const { COUNTRY, DISPUTED, STATE, MARITIME } = filters(vocab);
 
 	// Casing (halo) and line widths, per the old style. Country/disputed share the wide curves; state
-	// is narrower. All grow from 0 at their appear zoom.
+	// is narrower. All grow from 0 at their appear zoom, but for the state casing: its line is dashed, so it holds its
+	// width from there, which `make` explains, and the casing can't be narrower than the line.
 	const countryCasingSize = { 0: 0, 3: 2, 10: 8 };
 	const countryLineSize = { 0: 0, 3: 1, 10: 4 };
-	const stateCasingSize = { 7: 0, 8: 2, 10: 4 };
+	const stateCasingSize = { 7: 2, 8: 2, 10: 4 };
 	const stateLineSize = { 7: 0, 8: 1, 10: 2 };
 
 	// The casing is the light background colour at 0.75 opacity — a faint halo behind the line.
@@ -127,6 +128,7 @@ export function* boundaries(ctx: LayerContext, vocab: BoundaryVocabulary): Gener
 		...casing,
 		filter: STATE,
 		size: stateCasingSize,
+		appear: 7,
 		group: 'boundaries.state',
 	});
 

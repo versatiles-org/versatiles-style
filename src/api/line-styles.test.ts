@@ -141,7 +141,8 @@ describe.each(BUILDERS)('line widths in %s', (_name, build) => {
 	});
 
 	it('keeps a width ramp starting from nothing where it started, so the line appears at the same zoom', () => {
-		const half = build({ boundaries: { state: { width: 0.5 } } });
+		// solid here: a dashed line holds its width from the first zoom instead, see `make`
+		const half = build({ boundaries: { state: { width: 0.5, dashed: false } } });
 		expect(stops(widthOf(half, 'boundary-state'))[0]).toBe(0);
 		expect(layerOf(half, 'boundary-state')).toMatchObject({
 			minzoom: (layerOf(build(), 'boundary-state') as { minzoom?: number }).minzoom,
@@ -512,8 +513,8 @@ describe('line styles: the importer', () => {
 	// both 1px at z8 and differ from z10 on; read at z8 alone they would be the same line.
 	it('compares widths at several zooms, not only where the probe is read', () => {
 		const ours = (layerOf(osm(), 'boundary-state')?.paint?.['line-width'] as unknown[]).slice(3);
-		expect(ours).toStrictEqual([7, 0, 8, 1, 10, 2]);
-		const flat = patched('boundary-state', { 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0, 8, 1, 10, 1] });
+		expect(ours).toStrictEqual([7, 1, 8, 1, 10, 2]);
+		const flat = patched('boundary-state', { 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 1, 8, 1, 10, 1] });
 		expect(derived(flat).options?.layers).toStrictEqual({ boundaries: { state: { width: 0.5 } } });
 	});
 
