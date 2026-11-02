@@ -41,10 +41,9 @@ export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.roadStreet,
 		lineCap: 'butt',
 		lineJoin: 'round',
-		// No opacity ramp: the width curve already grows from 0 at z13, which is the appearance
-		// transition — same as `:outline` above. A ramp copied from the runway (11 → 12) used to sit
-		// here, but the runway widens from z11 and the taxiway only from z13, so it had finished
-		// before the derived `minzoom` let the layer draw at all.
+		// The width curve grows from 0 at z13, and `make` fades the line in there — same as `:outline` above.
+		// A ramp copied from the runway (11 → 12) used to sit here, but the runway widens from z11 and the
+		// taxiway only from z13, so it had finished before the derived `minzoom` let the layer draw at all.
 		size: { 13: 0, 14: 1, 15: 8, 16: 12, 18: 18, 20: 36 },
 		group: 'airport',
 	});

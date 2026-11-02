@@ -100,9 +100,8 @@ function expectFadeInAt(s: StyleSpecification, layerId: string, z0: number): voi
 
 // ── Roads ───────────────────────────────────────────────────────────────────────
 // Shortbread `streets` schema minzoom per kind. `outline` marks the road types drawn with a casing
-// (`:outline`). Path-class ways (footway/steps/path/cycleway) are the exception to the opacity-fade
-// rule: like the old VersaTiles style they appear by GROWING from 0 width at z13 (no opacity fade),
-// so they're verified separately below rather than here.
+// (`:outline`). Path-class ways (footway/steps/path/cycleway) also grow from 0 width as they fade in, so
+// they're verified separately below rather than here.
 const ROAD_TYPES: { id: string; z: number; outline: boolean }[] = [
 	{ id: 'street-motorway', z: 5, outline: true },
 	{ id: 'street-trunk', z: 6, outline: true },
@@ -127,12 +126,12 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 	}
 });
 
-// Path-class ways appear by width growth (0 at z13), not opacity — so they carry no opacity fade,
-// and their width starts at 0 at z13. They are a single dashed line: no casing layer is emitted.
-describe('path-class ways appear by growing from 0 width at z13 (no opacity fade)', () => {
+// Path-class ways grow from 0 width at z13 and fade in over the same zoom: width alone pops in, because a line
+// draws at nearly full strength at any width above 0. They are a single dashed line: no casing layer is emitted.
+describe('path-class ways appear by growing from 0 width and fading in at z13', () => {
 	for (const layerId of ['way-footway', 'way-steps', 'way-path', 'way-cycleway']) {
-		it(`${layerId} has no opacity fade and starts at 0 width at z13`, () => {
-			expect(opacityFade(style, layerId), `${layerId} must not opacity-fade`).toBeNull();
+		it(`${layerId} fades in and starts at 0 width at z13`, () => {
+			expectFadeInAt(style, layerId, 13);
 			const width = paintOf(style, layerId)?.['line-width'];
 			expect(Array.isArray(width), `${layerId} must have a zoom width ramp`).toBe(true);
 			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …
@@ -230,9 +229,7 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 	});
 });
 
-// The tram family and every service track appear by width growth instead: their curves already
-// start at 0, so that growth IS the transition, and an opacity fade on top would only dim them
-// through the zooms where they are the sole thing drawn.
+// The tram family grows from 0 width too, and fades in over the same zoom, as any line must.
 const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
 	// tram, narrowgauge, funicular and monorail share one style and are emitted as a single
 	// layer (see `transport-minorrail` in layers/roads.ts).
@@ -240,10 +237,10 @@ const RAIL_WIDTH_GROWN: { id: string; z: number }[] = [
 	{ id: 'transport-minorrail:outline', z: 15 },
 ];
 
-describe('tram-family and service tracks appear by growing from 0 width (no opacity fade)', () => {
+describe('tram-family tracks appear by growing from 0 width and fading in', () => {
 	for (const { id, z } of RAIL_WIDTH_GROWN) {
-		it(`${id} grows from 0 width at z${z}`, () => {
-			expect(opacityFade(style, id), `${id} must not opacity-fade`).toBeNull();
+		it(`${id} grows from 0 width and fades in at z${z}`, () => {
+			expectFadeInAt(style, id, z);
 			const width = paintOf(style, id)?.['line-width'];
 			expect(Array.isArray(width), `${id} must have a zoom width ramp`).toBe(true);
 			const stops = (width as unknown[]).slice(3) as number[]; // z0, w0, …

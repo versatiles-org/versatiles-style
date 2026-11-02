@@ -262,8 +262,13 @@ describe('satellite()', () => {
 			expect(factor('boundary-country')).toBeCloseTo(0.4, 10);
 			expect(factor('boundary-country-maritime')).toBeUndefined(); // a fade-in, checked below
 			// a dashed line draws two thirds of itself, and is given the rest back: 0.4 × 3/2
-			expect(factor('way-footway')).toBeCloseTo(0.6, 10);
 			expect(factor('boundary-country-disputed')).toBeCloseTo(0.6, 10);
+		});
+
+		it('weights a footway, which fades in, at the end of its fade, with its dash given back', () => {
+			const layer = satellite({ osmOverlay: {} }).layers.find((l) => l.id === 'way-footway');
+			const opacity = (layer as { paint?: Record<string, unknown> } | undefined)?.paint?.['line-opacity'];
+			expect(opacity).toStrictEqual(['interpolate', ['linear'], ['zoom'], 13, 0, 14, 0.6]);
 		});
 
 		it('weights a service track, which fades in, at the end of its fade', () => {

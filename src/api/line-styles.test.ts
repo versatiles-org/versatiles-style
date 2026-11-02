@@ -168,9 +168,11 @@ describe('line styles: the satellite overlay', () => {
 			osmOverlay: { layers: { boundaries: { disputed: { dashed: false } }, roads: { footway: { dashed: false } } } },
 		});
 		expect(opacity(solid, 'boundary-country-disputed')).toBe(0.4);
-		expect(opacity(solid, 'way-footway')).toBe(0.4);
+		// a footway fades in over z13–14, so its weight is where the fade ends
+		const fadedTo = (target: number) => ['interpolate', ['linear'], ['zoom'], 13, 0, 14, target];
+		expect(opacity(solid, 'way-footway')).toStrictEqual(fadedTo(0.4));
 		expect(opacity(satellite(), 'boundary-country-disputed')).toBe(0.6);
-		expect(opacity(satellite(), 'way-footway')).toBe(0.6);
+		expect(opacity(satellite(), 'way-footway')).toStrictEqual(fadedTo(0.6));
 		// by the share of the pattern that is dash, whatever the pattern: [1, 3] draws a quarter
 		const sparse = satellite({ osmOverlay: { layers: { boundaries: { disputed: { dashed: [1, 3] } } } } });
 		expect(opacity(sparse, 'boundary-country-disputed')).toBe(1);

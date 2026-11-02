@@ -82,11 +82,15 @@ describe('hardBounds', () => {
 	});
 
 	it('accepts a ramp from 0 at the minzoom', () => {
-		expect(bounds({ minzoom: 9, paint: { 'line-width': ramp(9, 0, 10, 1) } })).toStrictEqual([]);
+		expect(bounds({ minzoom: 9, paint: { 'line-opacity': ramp(9, 0, 10, 1) } })).toStrictEqual([]);
 	});
 
 	it('accepts a ramp from 0 after the minzoom, which draws nothing until then', () => {
-		expect(bounds({ minzoom: 14, paint: { 'line-width': ramp(15, 0, 16, 1) } })).toStrictEqual([]);
+		expect(bounds({ minzoom: 14, paint: { 'line-opacity': ramp(15, 0, 16, 1) } })).toStrictEqual([]);
+	});
+
+	it('does not take a line growing from width 0 for a smooth start: it pops in just above 0', () => {
+		expect(bounds({ minzoom: 9, paint: { 'line-width': ramp(9, 0, 10, 1) } })).toHaveLength(1);
 	});
 
 	it('finds a ramp from 0 before the minzoom, already past 0 by then', () => {

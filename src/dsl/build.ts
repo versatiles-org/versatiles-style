@@ -330,6 +330,15 @@ function make(type: MaplibreLayer['type'], id: string, opts: BuildOpts): TaggedL
 		};
 	}
 
+	// A line growing from width 0 also fades in over its first zoom. Width alone doesn't make it appear smoothly:
+	// any width above 0, however small, draws at nearly full strength, so the line would pop in just above the zoom
+	// its ramp starts. Measured with `npm run zoom-compare` (issue #146). A zoom-stops `opacity` is the layer's own, and
+	// a ramp from z0 has no lower zoom to appear from.
+	if (type === 'line' && (style.opacity == null || typeof style.opacity === 'number')) {
+		const growsFrom = rampFromZero(style.size);
+		if (growsFrom) style.opacity = fadeIn(growsFrom, style.opacity ?? 1);
+	}
+
 	// ── minzoom is derived, never hand-written ────────────────────────────────────
 	//
 	// `minzoom` carries no cartographic meaning of its own: what a layer looks like is decided by

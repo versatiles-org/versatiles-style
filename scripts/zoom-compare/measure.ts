@@ -57,10 +57,13 @@ export function isolateLayer(style: StyleSpecification, id: string): StyleSpecif
 	return { ...style, layers: style.layers.filter((layer) => layer.type === 'background' || layer.id === id) };
 }
 
-/** The paint and layout properties that make a layer of a type draw nothing at 0. */
+/**
+ * The paint and layout properties that make a layer of a type fade away towards 0. Not `line-width`: a line draws
+ * nothing at exactly 0, but at nearly full strength at any width above it, so it pops in all the same.
+ */
 const VANISHING: Record<string, readonly string[]> = {
 	fill: ['fill-opacity'],
-	line: ['line-opacity', 'line-width'],
+	line: ['line-opacity'],
 	symbol: ['text-opacity', 'icon-opacity', 'text-size', 'icon-size'],
 	'fill-extrusion': ['fill-extrusion-opacity', 'fill-extrusion-height'],
 	circle: ['circle-opacity', 'circle-radius'],

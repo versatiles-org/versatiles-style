@@ -82,8 +82,8 @@ export function* airport(ctx: LayerContext): Generator<b.TaggedLayer> {
 		color: c.roadStreet,
 		lineCap: 'butt',
 		lineJoin: 'round',
-		// No opacity ramp: the width curve already grows from 0 at z13, which is the appearance
-		// transition. See the Shortbread module for why a copied runway ramp was wrong here.
+		// The width curve grows from 0 at z13, and `make` fades the line in there. See the Shortbread module
+		// for why a copied runway ramp was wrong here.
 		size: { 13: 0, 14: 1, 15: 8, 16: 12, 18: 18, 20: 36 },
 		group: 'airport',
 	});

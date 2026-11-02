@@ -336,9 +336,7 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 	} else {
 		// tram / narrowgauge / funicular / monorail
 		if (isService) return null;
-		// No opacity ramp here: both width curves already grow from 0 (the casing at z15, the track at
-		// z13), which is the appearance transition — adding a fade on top would only dim the track
-		// through the zooms where it is the sole thing drawn.
+		// Both width curves grow from 0 (the casing at z15, the track at z13), and `make` fades them in there.
 		r = isOutline
 			? { color: c.transitRail, size: { 15: 0, 16: 5, 18: 7, 20: 20 }, lineDasharray: [0.1, 0.5] }
 			: { size: { 13: 0, 16: 1, 17: 2, 18: 3, 20: 5 }, color: c.transitRail };
