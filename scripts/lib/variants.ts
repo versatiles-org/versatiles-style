@@ -18,6 +18,14 @@ export interface StyleVariant {
 /** v5 style names, each built from its closest v6 theme (see `V5_STYLE_THEMES`). */
 const LEGACY_ALIASES = Object.entries(V5_STYLE_THEMES).map(([name, theme]) => ({ name, theme }));
 
+/**
+ * The features the published styles turn on, beyond what `osm()` does by default. Land cover, because OSM's
+ * tiles have nothing on most land at low zoom: without it, 80–99 % of a z5 view of the outback, the Sahel, the
+ * Ganges plain or northern Canada is plain background. It needs the land cover tileset, which the host these
+ * styles point at serves.
+ */
+export const PUBLISHED_FEATURES: OsmFeaturesOptions = { landcover: true };
+
 export function getStyleVariants(features?: OsmFeaturesOptions): StyleVariant[] {
 	const variants: StyleVariant[] = [];
 

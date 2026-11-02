@@ -1,6 +1,6 @@
 import { mkdirSync } from 'fs';
 import { resolve } from 'path';
-import { getStyleVariants } from './lib/variants.js';
+import { getStyleVariants, PUBLISHED_FEATURES } from './lib/variants.js';
 import { inlineSources } from '../src/lib/index.js';
 import { StyleSpecification, validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { writeTarball, type TarEntry } from './lib/tarball.js';
@@ -15,7 +15,7 @@ mkdirSync(dirDst, { recursive: true });
  */
 const MIN_BYTES = 200_000;
 
-const variants = getStyleVariants();
+const variants = getStyleVariants(PUBLISHED_FEATURES);
 const validationIssues: { name: string; errors: ReturnType<typeof validateStyleMin> }[] = [];
 const entries: TarEntry[] = [];
 const bar = makeProgressBar(variants.length);

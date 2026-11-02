@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getStyleVariants, type StyleVariant } from './variants.js';
+import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
+import { getStyleVariants, PUBLISHED_FEATURES, type StyleVariant } from './variants.js';
 import type { StyleSpecification } from '../../src/types/index.js';
 import type { OsmFeaturesOptions } from '../../src/options/index.js';
 
@@ -16,6 +17,38 @@ function layerIds(style: StyleSpecification): string[] {
 function build(features: OsmFeaturesOptions | undefined, name: string): StyleSpecification {
 	return byName(getStyleVariants(features), name).build();
 }
+
+// What `build-styles` publishes. The rest of this file, and the style-wide tests, build without these features.
+describe('getStyleVariants(PUBLISHED_FEATURES)', () => {
+	const published = getStyleVariants(PUBLISHED_FEATURES);
+	const landcoverFills = (style: StyleSpecification) => layerIds(style).filter((id) => id.startsWith('landcover-'));
+
+	it('publishes the same names', () => {
+		expect(published.map((v) => v.name)).toStrictEqual(getStyleVariants().map((v) => v.name));
+	});
+
+	it('draws the land cover in every vector style', () => {
+		const vector = published.filter((v) => !/^(satellite|terrain|empty)\//.test(v.name));
+		expect(vector.length).toBeGreaterThan(90);
+		for (const { name, build } of vector) {
+			const style = build();
+			expect(landcoverFills(style), name).toHaveLength(9);
+			expect(style.sources, name).toHaveProperty('versatiles-landcover');
+		}
+	});
+
+	it('adds nothing to the styles that draw no OSM fills', () => {
+		for (const { name, build } of published.filter((v) => /^(satellite|terrain|empty)\//.test(v.name))) {
+			const style = build();
+			expect(landcoverFills(style), name).toStrictEqual([]);
+			expect(style.sources, name).not.toHaveProperty('versatiles-landcover');
+		}
+	});
+
+	it('keeps every style valid', () => {
+		for (const { name, build } of published) expect(validateStyleMin(build()), name).toStrictEqual([]);
+	});
+});
 
 describe('getStyleVariants()', () => {
 	// A1: `satellite/style` shipped byte-identical to `satellite/nooverlay` because it was built
