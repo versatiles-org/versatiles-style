@@ -274,7 +274,9 @@ describe('satellite()', () => {
 		it('weights a service track, which fades in, at the end of its fade', () => {
 			const layer = satellite({ osmOverlay: {} }).layers.find((l) => l.id === 'transport-rail-service:outline');
 			const opacity = (layer as { paint?: Record<string, unknown> } | undefined)?.paint?.['line-opacity'];
-			expect(opacity).toStrictEqual(['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.2]);
+			const stops = (opacity as unknown[]).slice(3) as number[];
+			expect(stops.filter((_, i) => i % 2 === 0)).toStrictEqual([10, 11, 13]);
+			[0, 0.08, 0.2].forEach((value, i) => expect(stops[2 * i + 1]).toBeCloseTo(value, 10));
 		});
 
 		it('weights an aerialway, which fades in, at the end of its fade', () => {

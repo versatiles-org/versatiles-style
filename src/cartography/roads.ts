@@ -62,6 +62,8 @@ export type RoadVocabulary = {
 	 * them. From z14 if not stated.
 	 */
 	readonly serviceRailWidth?: Readonly<Record<number, number>>;
+	/** The opacity of a service track's casing. A fade over the first zoom of its width if not stated. */
+	readonly serviceRailOpacity?: Readonly<Record<number, number>>;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -295,7 +297,11 @@ function transportStyle(ctx: LayerContext, t: string, isOutline: boolean, vocab:
 			// MapLibre antialiases a hairline over a fixed distance. By width alone, a yard pops in.
 			const width = vocab.serviceRailWidth ?? { 14: 0, 15: 1, 16: 1, 20: 14 };
 			r = isOutline
-				? { color: c.transitRail, size: width, opacity: b.fadeIn(Math.min(...Object.keys(width).map(Number))) }
+				? {
+						color: c.transitRail,
+						size: width,
+						opacity: vocab.serviceRailOpacity ?? b.fadeIn(Math.min(...Object.keys(width).map(Number))),
+					}
 				: {
 						color: c.transitRail.blend(0.3, bg),
 						lineDasharray: [2, 2],

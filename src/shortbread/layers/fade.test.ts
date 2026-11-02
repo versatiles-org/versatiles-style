@@ -172,14 +172,13 @@ describe('boundaries fade in at their appearance zoom', () => {
 //
 // No rail is drawn before z10. Service tracks enter the tiles there, and `service` with them (the
 // `early_attributes` experiment), so z10 is the first zoom where a yard can be told from a main line,
-// and the main line's casing joins the map there. Everything else joins later.
+// and the casings of both join the map there. Everything else joins later.
 const RAIL_FADES: { id: string; z: number }[] = [
 	{ id: 'transport-rail:outline', z: 10 },
 	{ id: 'transport-rail', z: 14 },
 	{ id: 'transport-subway:outline', z: 11 },
 	{ id: 'transport-subway', z: 14 },
 	// Width alone doesn't make these appear smoothly: a yard would pop in at the first width above 0.
-	{ id: 'transport-rail-service:outline', z: 12 },
 	{ id: 'transport-rail-service', z: 15 },
 ];
 
@@ -196,13 +195,20 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 		expect(early).toEqual([]);
 	});
 
-	it('only the main-line casing joins at z10', () => {
+	it('only the casings of main lines and service tracks join at z10', () => {
 		const atTen = style.layers
 			.filter((l) => /^(tunnel-|bridge-)?transport-/.test(l.id) && !l.id.startsWith('transport-ferry'))
 			.filter((l) => (l as { minzoom?: number }).minzoom === 10)
 			.map((l) => l.id)
 			.sort();
-		expect(atTen).toEqual(['bridge-transport-rail:outline', 'transport-rail:outline', 'tunnel-transport-rail:outline']);
+		expect(atTen).toEqual([
+			'bridge-transport-rail-service:outline',
+			'bridge-transport-rail:outline',
+			'transport-rail-service:outline',
+			'transport-rail:outline',
+			'tunnel-transport-rail-service:outline',
+			'tunnel-transport-rail:outline',
+		]);
 	});
 
 	// Measured in tiles: `class: rail` has no `service` at z7–12, and Protomaps' rail only starts at z11.
@@ -223,9 +229,10 @@ describe('rail tracks fade in at the zoom their kind joins the map', () => {
 		expect(width.slice(3, 7)).toEqual([14, 0, 15, 1]);
 	});
 
-	it('Shortbread grows them as hairlines from z12, so a yard does not close up', () => {
-		const width = paintOf(style, 'transport-rail-service:outline')?.['line-width'] as unknown[];
-		expect(width.slice(3, 11)).toEqual([12, 0, 13, 0.2, 14, 0.4, 15, 1]);
+	it('Shortbread fades them in from z10, as faint hairlines, so a yard does not close up', () => {
+		const paint = paintOf(style, 'transport-rail-service:outline');
+		expect((paint?.['line-width'] as unknown[]).slice(3, 13)).toEqual([10, 0, 11, 0.1, 12, 0.15, 13, 0.2, 14, 0.4]);
+		expect((paint?.['line-opacity'] as unknown[]).slice(3)).toEqual([10, 0, 11, 0.4, 13, 1]);
 	});
 });
 
@@ -374,6 +381,9 @@ describe('every opacity fade-in ramps 0 → its target linearly over one zoom', 
 				// POI name labels fade in deliberately fast around z19 (a UI fade, not a Shortbread
 				// feature-appearance fade), so they're exempt from the one-zoom timing rule.
 				if (layer.id.startsWith('poi-') && prop === 'text-opacity') continue;
+				// Service tracks fade in over z10–11 but only part of the way, then on to z13, so that a yard
+				// doesn't close up into a solid mass. Tested with the other rail layers.
+				if (layer.id.endsWith('transport-rail-service:outline')) continue;
 				checked++;
 				const where = `${layer.id}.${prop}`;
 				if ((value[1] as unknown[])[0] !== 'linear') {
