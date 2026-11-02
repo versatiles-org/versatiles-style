@@ -51,8 +51,10 @@ export function tileCache(): Plugin {
 						const [, schema, z, x, y] = tileMatch;
 						const { tile, hit, ms } = await readTile(schema, Number(z), Number(x), Number(y));
 						res.setHeader('Content-Type', 'application/x-protobuf');
-						// The style author reloads constantly; let the browser skip the round trip too.
-						res.setHeader('Cache-Control', 'max-age=3600');
+						// The disk is the only cache, so that deleting `dev/.tiles/` is all it takes to get new tiles. A
+						// copy in the browser outlived that, and showed old tiles for an hour. Reading from disk takes
+						// about a millisecond, so there's nothing for it to save.
+						res.setHeader('Cache-Control', 'no-store');
 						// Visible in the browser's network panel, so a slow tile can be traced without the
 						// server log: which source answered, and whether it came off disk.
 						res.setHeader('X-Tile-Cache', hit ? 'hit' : 'miss');
