@@ -5,10 +5,10 @@
 
 /** A change across a zoom boundary, next to the same comparison just below it. */
 export type Pair = {
-	/** `z − ε` against `z`: share of pixels changed, and the largest channel difference. */
+	/** `z − ε` against `z + ε`: share of pixels changed, and the largest channel difference. */
 	share: number;
 	max: number;
-	/** `z − 2ε` against `z − ε`: the same, with no boundary in between. */
+	/** `z − 3ε` against `z − ε`: the same step, with no boundary in between. */
 	controlShare: number;
 	controlMax: number;
 };
@@ -66,9 +66,10 @@ export const boundaryImage = (
 export const excess = (pair: Pair) => pair.share - pair.controlShare;
 
 /**
- * The most the style alone may change across a boundary, beyond its control: half a percentage point. The first
- * full measurement was 0.12 points at most (issue #146). Labels, tile data and dashes aren't in this set, so
- * this says nothing about them, and a layer whose data starts exactly at a boundary is the invariant's to catch.
+ * The most the style alone may change across a boundary, beyond its control: half a percentage point. Lines that
+ * appear by width alone are what exceeds it, and without those the largest is 0.18 points (issue #146). Labels, tile
+ * data and dashes aren't in this set, so this says nothing about them, and a layer whose data starts exactly at a
+ * boundary is the invariant's to catch.
  */
 export const STYLE_ONLY_LIMIT = 0.005;
 
@@ -164,7 +165,7 @@ function images(rows: readonly BoundaryRow[], count: number): string {
 				`<figure><img src="${boundaryImage(row.place, row.zoom, variant)}" loading="lazy"><figcaption>${caption}</figcaption></figure>`;
 			return `<h3>${esc(row.place)}, z${row.zoom}: ${pct(pair.share)} (control ${pct(pair.controlShare)})</h3><div class="grid">
 ${figure('before', `z${row.zoom} − ε`)}
-${figure('after', `z${row.zoom}`)}
+${figure('after', `z${row.zoom} + ε`)}
 ${figure('diff', 'changed pixels')}
 </div>`;
 		})
@@ -192,7 +193,7 @@ export function renderReport(data: ReportData, baseline?: readonly BoundaryRow[]
 <p>MapLibre GL JS ${esc(data.version)} in headless Chromium (SwiftShader), ${data.width}×${data.height}, pixel ratio 1,
 symbol fade off, projection ${esc(data.projection)}, <code>features.landcover</code> ${data.landcover ? 'on' : 'off'}, theme ${esc(data.themes.light)}${data.themes.dark ? `, dark theme ${esc(data.themes.dark)}` : ''}.
 Places: ${places}.</p>
-<p>Boundary: z − ${data.epsilon} against z. Control: z − ${2 * data.epsilon} against z − ${data.epsilon}. Shares count
+<p>Boundary: z − ${data.epsilon} against z + ${data.epsilon}. Control: z − ${3 * data.epsilon} against z − ${data.epsilon}. Shares count
 pixels with a channel changed by more than ${data.changedAbove}. Same tiles: every vector source ends at z − 1.</p>
 ${data.failures.length ? `<p class="fail">${data.failures.length} render failures — see results.json</p>` : ''}
 ${style ? `<p>Style only, largest change beyond its control: ${pct(style.excess)} at ${esc(style.row.place)}, z${style.row.zoom} (limit ${pct(STYLE_ONLY_LIMIT)}).</p>` : ''}

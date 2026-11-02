@@ -11,8 +11,10 @@
  *
  * What is measured, so that a jump can be traced to what causes it:
  *
- * - **Control** — any two zooms differ a little, because edges move by a fraction of a pixel. So each
- *   boundary `z − ε` → `z` comes with `z − 2ε` → `z − ε`, the same step with no boundary in between.
+ * - **Across the boundary** — `z − ε` → `z + ε`, not → `z`: a line growing from width 0 at `z` draws nothing at
+ *   exactly `z`, and at nearly full strength just above it, so a comparison ending at `z` would miss that jump.
+ * - **Control** — any two zooms differ a little, because edges move by a fraction of a pixel. So each boundary
+ *   comes with `z − 3ε` → `z − ε`, the same step with no boundary in between.
  * - **Without symbols** — takes labels and icons, and their placement, out of the picture.
  * - **Same tiles** — the sources end at `z − 1`, so both sides overzoom the same tiles, and what is left
  *   comes from the style alone.
@@ -140,9 +142,9 @@ async function main(): Promise<void> {
 	/** One style across the boundary at `zoom`, with its control, and the frames to keep. */
 	const across = async (style: StyleSpecification, place: Place, zoom: number, label: string) => {
 		const name = `${place.name} z${zoom} ${label}`;
-		const below = await render(style, place.center, zoom - 2 * EPSILON, `${name} −2ε`);
+		const below = await render(style, place.center, zoom - 3 * EPSILON, `${name} −3ε`);
 		const before = await render(style, place.center, zoom - EPSILON, `${name} −ε`);
-		const after = await render(style, place.center, zoom, name);
+		const after = await render(style, place.center, zoom + EPSILON, `${name} +ε`);
 		const boundary = diff(before, after);
 		const control = diff(below, before);
 		const pair: Pair = {
@@ -200,7 +202,7 @@ async function main(): Promise<void> {
 			for (const place of places) {
 				const label = `${bound.id} ${place.name} ${bound.bound} z${bound.zoom}`;
 				const before = await render(style, place.center, bound.zoom - EPSILON, `${label} −ε`);
-				const after = await render(style, place.center, bound.zoom, label);
+				const after = await render(style, place.center, bound.zoom + EPSILON, `${label} +ε`);
 				const { share, max } = diff(before, after);
 				if (!row || share > row.share) row = { ...bound, place: place.name, share, max };
 			}
