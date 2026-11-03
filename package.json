@@ -110,8 +110,8 @@
     "@types/bin-pack": "^1.0.3",
     "@types/node": "^26.6.6",
     "@types/tar-stream": "^3.1.5",
-    "@versatiles/release-tool": "^2.20.0",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@versatiles/release-tool": "^2.21.0",
+    "@vitest/coverage-v8": "^5.1.0",
     "bin-pack": "^1.0.2",
     "eslint": "^10.14.0",
     "maplibre-gl": "^6.16.0",
@@ -129,7 +129,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "allowScripts": {
     "@maplibre/maplibre-gl-native": true,
