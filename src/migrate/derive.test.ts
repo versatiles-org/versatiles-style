@@ -72,6 +72,34 @@ describe('deriveOptions — round trips through the package builders', () => {
 		expect(osmOptions(deriveOptions(osm()))).toEqual({});
 	});
 
+	// The land cover source was taken for tiles of a schema that cannot be read yet: a style `osm()` built
+	// itself came back with a warning, and without the land cover (#149).
+	describe('land cover', () => {
+		const unread = (guess: OptionsGuess) => byCode(guess.report.diagnostics, 'layer.unread')[0]?.data.count;
+		const OSM_URL = 'https://example.org/osm.json';
+
+		it.each([
+			['from a source of its own', {}],
+			['merged into the osm source', { osm: OSM_URL, landcover: OSM_URL }],
+		] as const)('recovers features.landcover %s', (_, urls) => {
+			const style = osm({ features: { landcover: true }, urls });
+			expect(style.layers.some((l) => l.id.startsWith('landcover-'))).toBe(true);
+			const guess = deriveOptions(style);
+			expect(osmOptions(guess)).toEqual({ features: { landcover: true } });
+			expect(codes(guess.report)).not.toContain('source.schemaUnknown');
+			// its fills are read, not left over
+			expect(unread(guess)).toBe(unread(deriveOptions(osm({ urls }))));
+		});
+
+		it('leaves it out where every layer that draws it is hidden', () => {
+			const style = osm({ features: { landcover: true } });
+			for (const layer of style.layers) {
+				if (layer.id.startsWith('landcover-')) layer.layout = { ...layer.layout, visibility: 'none' };
+			}
+			expect(osmOptions(deriveOptions(style)).features).toBeUndefined();
+		});
+	});
+
 	it.each(['gray', 'toner', 'natural-dark', 'colorful-dark'] as const)('recognises the %s theme', (theme) => {
 		expect(osmOptions(deriveOptions(osm({ theme })))).toEqual({ theme });
 	});

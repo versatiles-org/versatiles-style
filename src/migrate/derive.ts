@@ -69,6 +69,7 @@ export function derive(
 ): OptionsGuess {
 	// ── 1. sources ──
 	const schemas = new Map<string, SchemaName>();
+	const landcoverSources = new Set<string>();
 	let vectorSources = 0;
 	for (const [id, source] of Object.entries(style.sources)) {
 		if (source.type !== 'vector' && source.type !== 'raster') continue;
@@ -77,7 +78,9 @@ export function derive(
 		report.sources.push({ id, type: source.type, guess });
 		if (guess.type === 'vector') {
 			vectorSources++;
-			if (guess.schema && READABLE.has(guess.schema)) schemas.set(id, guess.schema);
+			// no probe reads it, but it needs none: all it says is `features.landcover`
+			if (guess.schema === 'landcover') landcoverSources.add(id);
+			else if (guess.schema && READABLE.has(guess.schema)) schemas.set(id, guess.schema);
 			else {
 				// Recognised is not readable: a schema is read through the probes, and one no probe names a
 				// feature for would be read as a style that draws nothing at all — every group hidden.
@@ -157,6 +160,10 @@ export function derive(
 		const target = osmTarget();
 		const mode = modeOf(readings);
 		const fitted = fitContent(target, readings, schemas, report, mode);
+		// `satellite()` draws no land cover, so only an `osm` guess carries it over and counts its layers read
+		const landcover = landcoverLayers(style, schemas, landcoverSources);
+		landcover.forEach((id) => report.used.add(id));
+		if (landcover.length > 0) common.features.landcover = true;
 		const options: OsmOptions = {
 			theme: fitted.theme,
 			colors: fitted.colors,
@@ -202,6 +209,24 @@ function sourceTileJSON(
 		tiles: ['https://example.invalid/{z}/{x}/{y}'],
 		vector_layers: [...used].map((layer) => ({ id: layer, fields: {} })),
 	} as TileJSONSpecification;
+}
+
+/**
+ * The visible layers that draw land cover, as `features.landcover` does: from a source of land cover
+ * tiles, or from a `landcover` source-layer of a Shortbread source. Shortbread has no layer of that
+ * name, so there it can only be the land cover merged into OSM's tiles.
+ */
+function landcoverLayers(
+	style: StyleSpecification,
+	schemas: ReadonlyMap<string, SchemaName>,
+	landcoverSources: ReadonlySet<string>
+): string[] {
+	return style.layers.flatMap((layer) => {
+		if (!('source' in layer) || layer.layout?.visibility === 'none') return [];
+		const own = landcoverSources.has(layer.source);
+		const merged = schemas.get(layer.source) === 'shortbread' && layer['source-layer'] === 'landcover';
+		return own || merged ? [layer.id] : [];
+	});
 }
 
 /** A probe read at its own zoom, or the nearest zoom the style draws it at, within three levels. */
