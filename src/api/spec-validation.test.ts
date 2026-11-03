@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { validateStyleMin as validateStyleMinOldest } from 'maplibre-gl-style-spec-min';
 import { osm } from './osm.js';
@@ -125,21 +125,15 @@ describe('satellite() styles are MapLibre-spec valid', () => {
 // ── every published style variant ────────────────────────────────────────────────
 
 describe('every getStyleVariants() build is MapLibre-spec valid', () => {
-	let built: { name: string; style: StyleSpecification }[];
-
-	beforeAll(() => {
-		built = getStyleVariants().map((v) => ({ name: v.name, style: v.build() }));
-	});
+	const variants = getStyleVariants();
 
 	it('produces the expected number of variants', () => {
-		expect(built.length).toBeGreaterThan(0);
+		expect(variants.length).toBeGreaterThan(0);
 	});
 
-	it('has no spec errors in any variant', () => {
-		const offenders = built
-			.map(({ name, style }) => ({ name, errors: errorsFor(style) }))
-			.filter((x) => x.errors.length > 0)
-			.map((x) => `${x.name}: ${x.errors.join('; ')}`);
-		expect(offenders, `\n${offenders.join('\n')}\n`).toStrictEqual([]);
+	// One test per variant: validating all of them in one test took 5.6 s on a CI runner, past the 5 s timeout,
+	// where it takes 0.7 s locally.
+	it.each(variants.map((v) => [v.name, v] as const))('%s has no spec errors', (_name, variant) => {
+		expect(errorsFor(variant.build())).toStrictEqual([]);
 	});
 });
