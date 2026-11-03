@@ -40,7 +40,10 @@ function collectColors(style: StyleSpecification): { path: string; value: string
 			return;
 		}
 		if (Array.isArray(value)) {
-			value.forEach((item, index) => walk(item, `${path}[${index}]`, insideColor));
+			// An expression's first item is its operator, `interpolate` or `zoom`, not a colour.
+			value.forEach((item, index) => {
+				if (index > 0 || typeof item !== 'string') walk(item, `${path}[${index}]`, insideColor);
+			});
 			return;
 		}
 		if (value && typeof value === 'object') {
