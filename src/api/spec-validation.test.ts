@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { validateStyleMin } from '@maplibre/maplibre-gl-style-spec';
 import { validateStyleMin as validateStyleMinOldest } from 'maplibre-gl-style-spec-min';
@@ -26,6 +27,18 @@ function errorsFor(style: StyleSpecification): string[] {
 		.map((message) => `MapLibre 5.5.0: ${message}`);
 	return [...validateStyleMin(style).map((e) => e.message), ...oldest];
 }
+
+// The pin and the peer range are one decision kept in two places, and nothing else ties them: a new
+// floor needs the spec its MapLibre version depends on (`npm view maplibre-gl@<floor> dependencies`),
+// and a new pin needs the floor that ships it. Change both, this test, the comment above, and the one
+// in .github/dependabot.yml together.
+describe('the oldest spec matches the lowest supported MapLibre', () => {
+	it('pins the spec MapLibre 5.5.0 depends on', () => {
+		const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
+		expect(pkg.peerDependencies['maplibre-gl']).toBe('>=5.5.0');
+		expect(pkg.devDependencies['maplibre-gl-style-spec-min']).toBe('npm:@maplibre/maplibre-gl-style-spec@23.2.2');
+	});
+});
 
 // ── osm() option matrix ──────────────────────────────────────────────────────────
 
