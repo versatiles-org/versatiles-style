@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.1.1] - 2026-11-03
+
+### Bug Fixes
+
+- **migrate:** read the land cover source back as features.landcover, which guessOptions reported as unreadable (closes #149) ([023861e](https://github.com/versatiles-org/versatiles-style/commit/023861e197a94e20c4a6cc867a9202f55767f149))
+
+### Tests
+
+- **style:** check that the oldest validated style spec matches the maplibre-gl peer range ([b9cd1e5](https://github.com/versatiles-org/versatiles-style/commit/b9cd1e5c04c1f67f9a088f170c4e77f8ddfe9781))
+
+### Chores
+
+- **deps:** update dependencies for release-tool and vitest to latest versions ([d84ac51](https://github.com/versatiles-org/versatiles-style/commit/d84ac51bc7fab70046445bba79a8f173e35ed26c))
+
 ## [8.1.0] - 2026-11-03
 
 ### Features
