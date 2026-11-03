@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.1.0] - 2026-11-03
+
+### Features
+
+- **styles:** draw land cover in the prebuilt vector styles ([882750f](https://github.com/versatiles-org/versatiles-style/commit/882750ffbfff320b9caffbfbf862d6bcde892fdc))
+- **shortbread:** refresh the vendored schema to Shortbread 1.1 (#144) ([dbbbc30](https://github.com/versatiles-org/versatiles-style/commit/dbbbc30c76259d3d50c20615a36b1775caaf4bbd))
+- **shortbread:** draw main-line rail from z10, where service tracks can be told apart, closes #131 ([579a553](https://github.com/versatiles-org/versatiles-style/commit/579a5539396650da3d1b0267a6201d31fd024561))
+- **shortbread:** grow service tracks in from z12 and fade them in ([ece91c4](https://github.com/versatiles-org/versatiles-style/commit/ece91c43dee722ce24108e59e4682527f163dd00))
+- **scripts:** measure zoom-compare across each boundary, from z − ε to z + ε ([617d315](https://github.com/versatiles-org/versatiles-style/commit/617d31518f4252d02a7a75bdddbe88420a75e28e))
+- **shortbread:** fade in service tracks from z10, with the main lines ([0902724](https://github.com/versatiles-org/versatiles-style/commit/09027240936bd0b2dc0fa37720e3c6deefc6579f))
+
+### Bug Fixes
+
+- **shortbread:** keep building parts out of flat buildings, closes #144 ([9f175ec](https://github.com/versatiles-org/versatiles-style/commit/9f175ec5dd27bfdfd91858d96f6c2619176348c8))
+- **dev:** stop the browser caching tiles from the dev server ([a749984](https://github.com/versatiles-org/versatiles-style/commit/a74998411821b175e3cceef2ef9f55d9b4f1a23d))
+- **style:** fade in every line that grows from width 0, which popped in just above its start zoom ([f1ae13a](https://github.com/versatiles-org/versatiles-style/commit/f1ae13aadd4261eee544da5996344498f4d29d07))
+- **style:** give dashed lines a width from their first zoom, which drew nothing until the next ([3822405](https://github.com/versatiles-org/versatiles-style/commit/38224058d2d8d9f1ecce9cbb3b2d96a5cce3d44e))
+- **style:** start omt and protomaps layers where their tiles begin, which popped in when their fade ended first ([7a5e2b5](https://github.com/versatiles-org/versatiles-style/commit/7a5e2b5dc037c87e9936ad0b3b3bc2fc1c4db782))
+- **style:** start tunnels and bridges in the surface look where tiles begin to mark them, which jumped at that zoom ([40bfd5b](https://github.com/versatiles-org/versatiles-style/commit/40bfd5b24e5ef10e2a6a0bd6f3d7fdc38c9a8b21))
+
+### Code Refactoring
+
+- **shortbread:** keep the schema's field lists out of the CDN bundle ([5269f2c](https://github.com/versatiles-org/versatiles-style/commit/5269f2cdeb772b7f5d3a7c3ec45d0c43256a5f53))
+
+### Tests
+
+- restore the 36 KB ceiling of the CDN bundle, which 35.5 KB left no room under ([2f9d3a1](https://github.com/versatiles-org/versatiles-style/commit/2f9d3a190338953c956e9d907f236debe68c743c))
+- **style:** read an expression's operator in a colour property as an operator, not a colour ([c471011](https://github.com/versatiles-org/versatiles-style/commit/c4710116c6f7738617f9967b5c2298fbd53f5c54))
+- **style:** validate each style variant in its own test, which timed out together on CI ([9788d5a](https://github.com/versatiles-org/versatiles-style/commit/9788d5a6f63077b2e364b02e511de2f4ceb5b58c))
+
 ## [8.0.0] - 2026-11-02
 
 ### Breaking Changes
