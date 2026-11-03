@@ -235,6 +235,8 @@ const VOCAB: RoadVocabulary = {
 	minorBases: ['minor', 'residential', 'unclassified', 'livingstreet'],
 	serviceBases: ['service', 'bus', 'busway', 'busguideway'],
 	bridgeAppear: 12,
+	// Measured on tiles around six places (November 2026): no `tunnel` or `bridge` below z11.
+	structuresMarked: 11,
 	// Service tracks (yards, sidings, spurs) arrive at z10, and the `early_attributes` experiment of
 	// planetiler-shortbread, which the VersaTiles tiles are built with, supplies `service` from z10 too. Tiles
 	// built without it get `service` from z11, so a marshalling yard looks like main line while it fades in over

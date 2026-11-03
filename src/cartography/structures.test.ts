@@ -41,6 +41,80 @@ describe.each(STYLES)('%s tunnel and bridge layers', (_, style) => {
 	});
 });
 
+// ── Where tiles begin to mark tunnels and bridges ─────────────────────────────
+//
+// Below that zoom a tunnel is an ordinary feature, drawn by the surface layer; at it the feature moves to the
+// tunnel layer. No check on one layer's own zoom ramp can see that step: rail tunnels faded in opaque, and turned
+// translucent at z11 in one frame. So at that zoom, a structure's layer has to look just like the surface layer.
+describe.each([
+	['shortbread', osm(), 11],
+	['protomaps', protomaps({ urls: { protomaps: 'pmtiles://https://example.org/x.pmtiles' } }), 12],
+] as [string, StyleSpecification, number][])(
+	'%s tunnels and bridges where the tiles begin to mark them',
+	(_, style, marked) => {
+		const byId = new Map(style.layers.map((layer) => [layer.id, layer]));
+		const paint = (layer: LayerSpecification, key: string) =>
+			(layer as { paint?: Record<string, unknown> }).paint?.[key];
+		const stops = (value: unknown): [number, unknown][] =>
+			Array.isArray(value) && value[0] === 'interpolate'
+				? value.slice(3).flatMap((v, i, all) => (i % 2 ? [] : [[v as number, all[i + 1]] as [number, unknown]]))
+				: [[-Infinity, value]];
+		/** A value at a zoom, for colours only at a stop or where constant. */
+		const at = (value: unknown, zoom: number): unknown => {
+			const all = stops(value);
+			const exact = all.find(([z]) => z === zoom);
+			if (exact) return exact[1];
+			if (all.length === 1) return all[0][1];
+			const next = all.findIndex(([z]) => z > zoom);
+			if (next <= 0) return all[next === 0 ? 0 : all.length - 1][1];
+			const [[z0, v0], [z1, v1]] = [all[next - 1], all[next]];
+			return (v0 as number) + (((v1 as number) - (v0 as number)) * (zoom - z0)) / (z1 - z0);
+		};
+		const lines = style.layers.filter((layer) => layer.type === 'line' && /^(tunnel|bridge)-/.test(layer.id));
+
+		it('draw like the surface layer they take over from', () => {
+			const pairs = lines
+				.map((layer) => [layer, byId.get(layer.id.replace(/^(tunnel|bridge)-/, ''))] as const)
+				.filter((pair): pair is readonly [LayerSpecification, LayerSpecification] => pair[1] !== undefined)
+				.filter(([, surface]) => (surface.minzoom ?? 0) < marked);
+			expect(pairs.length).toBeGreaterThan(10);
+
+			const jumps = pairs.flatMap(([layer, surface]) =>
+				['line-color', 'line-opacity', 'line-width']
+					.filter(
+						(key) => JSON.stringify(at(paint(layer, key), marked)) !== JSON.stringify(at(paint(surface, key), marked))
+					)
+					.map(
+						(key) =>
+							`${layer.id} ${key}: ${String(at(paint(layer, key), marked))}, surface ${String(at(paint(surface, key), marked))}`
+					)
+			);
+			expect(jumps).toEqual([]);
+		});
+
+		it('a bridge deck, with no surface layer to take over from, fades in no earlier', () => {
+			const decks = lines.filter((layer) => layer.id.endsWith(':bridge'));
+			expect(decks.length).toBeGreaterThan(5);
+			const early = decks.filter((layer) => (layer.minzoom ?? 0) < marked).map((layer) => layer.id);
+			expect(early).toEqual([]);
+			const pops = decks
+				.filter((layer) => at(paint(layer, 'line-opacity'), layer.minzoom ?? 0) !== 0)
+				.map((layer) => layer.id);
+			expect(pops).toEqual([]);
+		});
+
+		it('still end up looking underground one zoom later', () => {
+			const rail = byId.get('tunnel-transport-rail:outline') as LayerSpecification;
+			expect(at(paint(rail, 'line-opacity'), marked)).toBe(1);
+			expect(at(paint(rail, 'line-opacity'), marked + 1)).toBe(0.5);
+			const road = stops(paint(byId.get('tunnel-street-motorway') as LayerSpecification, 'line-color'));
+			expect(road.map(([z]) => z)).toEqual([marked, marked + 1]);
+			expect(road[0][1]).toBe(paint(byId.get('street-motorway') as LayerSpecification, 'line-color'));
+			expect(road[1][1]).not.toBe(road[0][1]);
+		});
+	}
+);
+
 // ── Casing must never be narrower than the line it cases ──────────────────────
 //
 // Every cased road is two layers: `<id>:outline` draws the casing, `<id>` the fill on top of it. The

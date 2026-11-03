@@ -169,6 +169,8 @@ const VOCAB: RoadVocabulary = {
 	// Rail stays at the default, z11, measured as where this schema's `kind: rail` begins. The kinds here start later,
 	// measured around eight places (November 2026), and a fade over before they arrive would be no fade.
 	transportAppear: { subway: 14, lightrail: 14, tram: 14, funicular: 14, ferry: 11 },
+	// Measured on tiles around six places (November 2026): no `is_tunnel` or `is_bridge` below z12.
+	structuresMarked: 12,
 	appear: {
 		motorway: 5,
 		trunk: 6,

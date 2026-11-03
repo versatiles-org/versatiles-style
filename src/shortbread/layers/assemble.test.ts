@@ -187,8 +187,10 @@ describe('underground treatment', () => {
 				const sp = (surface.paint ?? {}) as Record<string, unknown>;
 				const colorKey = t.type === 'fill' ? 'fill-color' : 'line-color';
 				const opacityKey = t.type === 'fill' ? 'fill-opacity' : 'line-opacity';
+				// A tunnel starts in the surface's colour where tiles begin to mark it, so its own is the last stop.
+				const own = (color: unknown) => (Array.isArray(color) ? color[color.length - 1] : color) as string;
 				return (
-					deltaE(tp[colorKey] as string, sp[colorKey] as string) >= 6 ||
+					deltaE(own(tp[colorKey]), sp[colorKey] as string) >= 6 ||
 					(dashRenders(t) && !dashRenders(surface)) ||
 					JSON.stringify(tp[opacityKey]) !== JSON.stringify(sp[opacityKey])
 				);

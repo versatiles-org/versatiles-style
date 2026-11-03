@@ -22,7 +22,7 @@ export type TaggedLayer = { layer: MaplibreLayer; group?: string };
 // Style overrides authored as camelCase keys; each is mapped to its MapLibre paint/layout
 // property (per layer type) by the PROPERTY_DEFS table below.
 export type StyleProps = {
-	color?: ColorValue;
+	color?: ColorValue | Record<number, ColorValue>;
 	size?: SizeValue;
 	opacity?: number | Record<number, number>;
 	image?: unknown;
@@ -277,7 +277,7 @@ const SOURCE_MAXZOOM = 14;
  * returned undefined for every `ExpStops`, so a width written in that form ramped from 0 but derived
  * no `minzoom` — the layer drew from its data floor instead, invisibly, with nothing to show for it.
  */
-function rampFromZero(value: unknown): number | undefined {
+export function rampFromZero(value: unknown): number | undefined {
 	if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
 	const stops = (value as { stops?: unknown }).stops;
 	if (stops !== undefined) return rampFromZero(stops);
@@ -409,7 +409,7 @@ function capClosesDash(dash: unknown): boolean {
 
 // `color` is mandatory wherever a missing color would render solid black in MapLibre
 // (fill, line, fill-extrusion and background all default their color to black).
-export type ColoredBuildOpts = BuildOpts & { color: ColorValue };
+export type ColoredBuildOpts = BuildOpts & { color: NonNullable<StyleProps['color']> };
 
 // Data layers must name the vector `source-layer` they read from; without it the layer
 // silently renders nothing. (background and slot anchors carry no source and are exempt.)
@@ -420,7 +420,7 @@ export type ColoredDataBuildOpts = ColoredBuildOpts & { sourceLayer: string };
 
 /** StyleProps that are guaranteed to carry a color — the return shape for style
  *  helpers feeding the mandatory-color builders. */
-export type ColoredStyleProps = StyleProps & { color: ColorValue };
+export type ColoredStyleProps = StyleProps & { color: NonNullable<StyleProps['color']> };
 
 export const background = (id: string, opts: ColoredBuildOpts): TaggedLayer => make('background', id, opts);
 export const fill = (id: string, opts: ColoredDataBuildOpts): TaggedLayer => make('fill', id, opts);

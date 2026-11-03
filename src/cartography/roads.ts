@@ -69,6 +69,11 @@ export type RoadVocabulary = {
 	 * rail and subway, z13 for the tram family and z10 for ferries. A fade over before the data arrives is no fade.
 	 */
 	readonly transportAppear?: Readonly<Record<string, number>>;
+	/**
+	 * The zoom the tiles begin to mark tunnels and bridges. Below it they are ordinary features, drawn by the surface
+	 * layers, and at it they move to their own. Not for a schema whose tiles mark them from the start.
+	 */
+	readonly structuresMarked?: number;
 };
 
 // ── Inline style resolution ────────────────────────────────────────────────────
@@ -540,14 +545,65 @@ function scaleOpacity(opacity: b.StyleProps['opacity'], factor: number): b.Style
  * by half a line width at BOTH ends, so it closes any gap narrower than 1.0 line widths — that is
  * why the `[0.5, 0.25]` and `[1, 0.2]` tunnel dashes this style used to carry all rendered solid.
  */
-function underground(ctx: LayerContext, id: string, s: b.StyleProps): b.StyleProps {
-	const color = typeof s.color === 'object' ? s.color.blend(UNDERGROUND.fade, ctx.c.land) : s.color;
+function underground(ctx: LayerContext, id: string, s: b.StyleProps, marked: number | undefined): b.StyleProps {
+	// A road's colour is still a single one here: only this pass and `bridgeFromMark` turn it into a ramp.
+	const color = typeof s.color === 'object' ? (s.color as Color).blend(UNDERGROUND.fade, ctx.c.land) : s.color;
+	const takesOver = marked !== undefined && drawnBefore(s, marked);
+	const out = { ...s, color: takesOver ? changeFrom(s.color, color, marked) : color };
 
 	// Rail keeps the translucency it has always had; its casing and its ties dim together.
 	if (id.startsWith('tunnel-transport-'))
-		return { ...s, color, opacity: scaleOpacity(s.opacity, UNDERGROUND.translucency) };
+		out.opacity = takesOver
+			? dimFrom(s.opacity, UNDERGROUND.translucency, marked)
+			: scaleOpacity(s.opacity, UNDERGROUND.translucency);
 
-	return { ...s, color };
+	return out;
+}
+
+// ── The zoom the tiles begin to mark tunnels and bridges ───────────────────────
+
+/**
+ * Whether a layer's kind of road is on the map before the given zoom. A tunnel or bridge of that kind is then
+ * already on screen when the tiles begin to mark it, drawn by the surface layer, and its own layer takes over.
+ */
+function drawnBefore(s: b.StyleProps, zoom: number): boolean {
+	return Math.max(b.rampFromZero(s.opacity) ?? 0, b.rampFromZero(s.size) ?? 0) < zoom;
+}
+
+/** A colour that starts as the surface's where a layer takes over, and is its own one zoom later. */
+function changeFrom(surface: b.StyleProps['color'], own: b.StyleProps['color'], zoom: number): b.StyleProps['color'] {
+	if (!surface || String(surface) === String(own)) return own;
+	return { [zoom]: surface, [zoom + 1]: own } as Record<number, Color>;
+}
+
+/** An opacity — a constant or a zoom ramp — at one zoom. */
+function opacityAt(opacity: b.StyleProps['opacity'], zoom: number): number {
+	if (typeof opacity !== 'object') return opacity ?? 1;
+	const stops = Object.keys(opacity)
+		.map(Number)
+		.sort((p, q) => p - q);
+	const next = stops.findIndex((z) => z >= zoom);
+	if (next < 1) return opacity[stops[next < 0 ? stops.length - 1 : 0]];
+	const [z0, z1] = [stops[next - 1], stops[next]];
+	return opacity[z0] + ((opacity[z1] - opacity[z0]) * (zoom - z0)) / (z1 - z0);
+}
+
+/** An opacity that is the surface's where a layer takes over, and scaled by a factor one zoom later. */
+function dimFrom(opacity: b.StyleProps['opacity'], factor: number, zoom: number): b.StyleProps['opacity'] {
+	const zooms = [...Object.keys(typeof opacity === 'object' ? opacity : {}).map(Number), zoom, zoom + 1];
+	// Fades run between whole zooms, so no stop falls between `zoom` and `zoom + 1`.
+	return Object.fromEntries(zooms.map((z) => [z, opacityAt(opacity, z) * (z > zoom ? factor : 1)]));
+}
+
+/**
+ * Keep a tunnel or bridge layer from jumping where the tiles begin to mark it, as a fade only helps where the
+ * data arrives. A bridge's casing starts in the surface's colour, as `underground` does for a tunnel. A deck has no
+ * surface layer to take over from, so it fades in there, whichever zoom its road appears.
+ */
+function bridgeFromMark(s: b.StyleProps, surface: b.StyleProps | null, marked: number, id: string): b.StyleProps {
+	if (!drawnBefore(s, marked)) return s;
+	if (id.endsWith(':bridge')) return { ...s, opacity: { [marked]: 0, [marked + 1]: opacityAt(s.opacity, marked + 1) } };
+	return { ...s, color: changeFrom(surface?.color, s.color, marked) };
 }
 
 /**
@@ -573,7 +629,11 @@ export function* emitRoads(
 		if (d.type === 'line' && d.id.startsWith('bridge-')) (style as b.StyleProps).lineCap = 'butt';
 		// Depth is a property of the structure, not of the road class, so it is applied here in one
 		// pass rather than branching inside every style function.
-		const placed = d.id.startsWith('tunnel-') ? underground(ctx, d.id, style) : style;
+		const marked = vocab.structuresMarked;
+		let placed = style;
+		if (d.id.startsWith('tunnel-')) placed = underground(ctx, d.id, style, marked);
+		else if (d.id.startsWith('bridge-') && marked !== undefined)
+			placed = bridgeFromMark(style, roadStyle(ctx, d.id.slice('bridge-'.length), vocab), marked, d.id);
 		const make = d.type === 'fill' ? b.fill : b.line;
 		// roadStyle guarantees a color for every non-null result (see its contract).
 		yield make(d.id, {
