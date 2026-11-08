@@ -2,7 +2,7 @@
  * The Shortbread schema as the VersaTiles OSM tileset actually implements it. Prose specification:
  * https://shortbread-tiles.org/schema/1.1/
  *
- * Generated from https://tiles.versatiles.org/tiles/osm/tiles.json v1.1
+ * Generated from https://tiles.versatiles.org/tiles/osm-vector/tiles.json v1.1
  * by `npm run vendor-schema`. Do not edit by hand; re-run the script instead, and use
  * `npm run vendor-schema -- <name> --check` to find out whether this file has gone stale.
  */

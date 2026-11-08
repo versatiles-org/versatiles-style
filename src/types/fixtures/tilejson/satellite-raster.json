@@ -9,7 +9,7 @@
 	"tile_schema": "rgba",
 	"tile_type": "raster",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/satellite/{z}/{x}/{y}"],
+	"tiles": ["/tiles/satellite-raster/{z}/{x}/{y}"],
 	"type": "baselayer",
 	"version": "3.0"
 }

@@ -61,7 +61,7 @@ npm run vendor-schema -- shortbread --check   # also omt, protomaps; --write upd
 - **The CDN bundle has a gzip ceiling** (`GZIP_CEILING` in `scripts/browser-bundle.e2e.test.ts`). Lower it when the bundle shrinks, and don't raise it to get past an accidental import.
 - **Styles are validated against two specs**: the installed one, and `maplibre-gl-style-spec-min`, pinned to what MapLibre 5.5.0 ships. That alias holds the `maplibre-gl >=5.5.0` peer range true, so it's excluded from `npm run upgrade`. Change it only together with the peer range.
 - **Style snapshots cover shape only** (layer ids and types, source keys). A paint change passes them, so use `npm run compare -- --baseline` to see it.
-- **Unit tests are offline.** `vitest.setup.ts` stubs global `fetch` with canned TileJSON, keyed on the URL containing `/osm/`.
+- **Unit tests are offline.** `vitest.setup.ts` stubs global `fetch` with canned TileJSON, keyed on the URL containing `/osm-vector/` or `/landcover-vector/`.
 
 ## Non-obvious design decisions
 

@@ -38,7 +38,7 @@ import { renderReport, viewImage, type LayerTable, type ViewRow, type ZoomRow } 
 
 const WIDTH = 512;
 const HEIGHT = 512;
-const SATELLITE_TILES = 'https://tiles.versatiles.org/tiles/satellite/{z}/{x}/{y}';
+const SATELLITE_TILES = 'https://tiles.versatiles.org/tiles/satellite-raster/{z}/{x}/{y}';
 
 type Place = { name: string; center: [number, number] };
 

@@ -30,7 +30,7 @@
  *
  * ── Land cover ────────────────────────────────────────────────────────────────
  *
- * The tileset of landcover-vectors, one layer. Recognised, and drawn only under OSM by
+ * The landcover-vector tileset, one layer. Recognised, and drawn only under OSM by
  * `features.landcover`: it isn't a map on its own, so it has no builder either.
  */
 

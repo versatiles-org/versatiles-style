@@ -21,7 +21,7 @@ const SPRITE_DIR = new URL('../release/sprites', import.meta.url).pathname;
  * Reading them locally also means the previews show the icons of the version being documented.
  *
  * Resolved against {@link DEFAULT_BASE}, because a TileJSON may declare its tiles root-relative — the
- * published one does, as `/tiles/osm/{z}/{x}/{y}` — and those arrive here unresolved. Without a
+ * published one does, as `/tiles/osm-vector/{z}/{x}/{y}` — and those arrive here unresolved. Without a
  * `request` callback the engine resolves them itself, so this only became necessary once we supplied
  * one.
  */

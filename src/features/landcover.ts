@@ -19,7 +19,7 @@ import { buildSourceDescriptor, scaleValue } from '../lib/index.js';
 
 const SOURCE_NAME = 'versatiles-landcover';
 const SOURCE_LAYER = 'landcover';
-/** The land cover's last zoom where no TileJSON says otherwise: landcover-vectors ends there. */
+/** The land cover's last zoom where no TileJSON says otherwise: landcover-vector ends there. */
 const DEFAULT_MAXZOOM = 10;
 
 // Opaque up to z12, where the overzoomed outlines grow coarse, and 25 % from z14 on, so land OSM doesn't

@@ -32,6 +32,6 @@ describe('resolveUrl', () => {
 	it('throws a useful error for the srcdoc "null" origin', () => {
 		// In a srcdoc/sandboxed iframe, a data: document or a file:// page, location.origin is the
 		// *string* "null" — the exact case that used to reach `new URL(path, "null")`.
-		expect(() => resolveUrl('null', '/tiles/osm/tiles.json')).toThrow(/urls\.base/);
+		expect(() => resolveUrl('null', '/tiles/osm-vector/tiles.json')).toThrow(/urls\.base/);
 	});
 });

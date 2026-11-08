@@ -7,5 +7,5 @@
 	"tile_schema": "dem/terrarium",
 	"tile_type": "raster",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/elevation/{z}/{x}/{y}"]
+	"tiles": ["/tiles/elevation-raster/{z}/{x}/{y}"]
 }

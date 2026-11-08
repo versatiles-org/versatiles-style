@@ -119,7 +119,7 @@ describe('features.landcover', () => {
 			const style = build({ urls: { base: 'https://example.com' } });
 			expect(style.sources['versatiles-landcover']).toStrictEqual({
 				type: 'vector',
-				url: 'https://example.com/tiles/landcover-vectors/tiles.json',
+				url: 'https://example.com/tiles/landcover-vector/tiles.json',
 			});
 		});
 

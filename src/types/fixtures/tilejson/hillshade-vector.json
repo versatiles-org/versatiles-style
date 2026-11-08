@@ -11,7 +11,7 @@
 	"tile_schema": "other",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/hillshade-vectors/{z}/{x}/{y}"],
+	"tiles": ["/tiles/hillshade-vector/{z}/{x}/{y}"],
 	"type": "vector",
 	"vector_layers": [{ "fields": { "shade": "String" }, "id": "hillshade-vectors", "maxzoom": 12, "minzoom": 0 }],
 	"version": "0.0.1"

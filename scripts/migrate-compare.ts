@@ -38,7 +38,7 @@ const DEFAULT_STYLES = [
 /** Tile sources the cache holds, by the TileJSON URL a style names them with. */
 const CACHED_SOURCES: Record<string, TileSchema> = {
 	'https://tiles.openfreemap.org/planet': 'omt',
-	'https://tiles.versatiles.org/tiles/osm/tiles.json': 'shortbread',
+	'https://tiles.versatiles.org/tiles/osm-vector/tiles.json': 'shortbread',
 };
 
 const VIEWS: { name: string; center: [number, number]; zoom: number }[] = [

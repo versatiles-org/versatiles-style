@@ -31,6 +31,7 @@
     - [What it reads](#what-it-reads)
     - [What it writes](#what-it-writes)
   - [Other exports](#other-exports)
+  - [Migration from v8](#migration-from-v8)
   - [Migration from v7](#migration-from-v7)
   - [Migration from v6](#migration-from-v6)
   - [Migration from v5](#migration-from-v5)
@@ -565,9 +566,9 @@ type OsmOverlayOptions = {
 type OsmOptions = OsmOverlayOptions & {
   urls?: {
     base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
-    osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
-    landcover?: string | TileJSONSpecification; // defaults to "/tiles/landcover-vectors/tiles.json"
-    elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
+    osm?: string | TileJSONSpecification; // defaults to "/tiles/osm-vector/tiles.json"
+    landcover?: string | TileJSONSpecification; // defaults to "/tiles/landcover-vector/tiles.json"
+    elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation-raster/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
@@ -585,9 +586,9 @@ type OsmOptions = OsmOverlayOptions & {
 type SatelliteOptions = {
   urls?: {
     base?: string; // default: the page origin, or 'https://tiles.versatiles.org' if unusable
-    satellite?: string | TileJSONSpecification; // defaults to "/tiles/satellite/tiles.json"
-    osm?: string | TileJSONSpecification; // defaults to "/tiles/osm/tiles.json"
-    elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation/tiles.json"
+    satellite?: string | TileJSONSpecification; // defaults to "/tiles/satellite-raster/tiles.json"
+    osm?: string | TileJSONSpecification; // defaults to "/tiles/osm-vector/tiles.json"
+    elevation?: string | TileJSONSpecification; // defaults to "/tiles/elevation-raster/tiles.json"
     glyphsPattern?: string; // defaults to "/assets/glyphs/{fontstack}/{range}.pbf"
     sprite?: string | Array<{ id: string; url: string }>; // defaults to [{ id: "base", url: "/assets/sprites/base" }]
   };
@@ -1018,7 +1019,7 @@ tiles, so `guessStyle()` answers them with the inspector style, like any vector 
 What the recognition is for is reading: [`guessOptions`](#guessoptionsstyle-options-promiseoptionsguess)
 takes a style built on Mapbox tiles.
 
-**`'landcover'` is recognised, not built, either.** It is the landcover-vectors tileset on its own, which
+**`'landcover'` is recognised, not built, either.** It is the landcover-vector tileset on its own, which
 `osm()` draws under OSM with `features.landcover`. `guessStyle()` answers it with the inspector style.
 Shortbread with the land cover merged in is `'shortbread'`, and `guessStyle()` draws its land cover.
 
@@ -1609,6 +1610,33 @@ The `assert…` functions throw an `Error` naming the offending field — `spec.
 "3.0.0", but got "2.2"` — which is what you want when validating input you expected to be valid.
 They were previously one function whose `spec is T` signature promised the first behaviour while
 delivering the second.
+
+---
+
+## Migration from v8
+
+v9 points the default tile URLs at the renamed VersaTiles tilesets, whose names end with their format. The
+option keys stay the same, and so does everything else.
+
+| `urls.*`    | v8 default                            | v9 default                           |
+| ----------- | ------------------------------------- | ------------------------------------ |
+| `osm`       | `/tiles/osm/tiles.json`               | `/tiles/osm-vector/tiles.json`       |
+| `landcover` | `/tiles/landcover-vectors/tiles.json` | `/tiles/landcover-vector/tiles.json` |
+| `elevation` | `/tiles/elevation/tiles.json`         | `/tiles/elevation-raster/tiles.json` |
+| `satellite` | `/tiles/satellite/tiles.json`         | `/tiles/satellite-raster/tiles.json` |
+
+What to check when upgrading:
+
+- **Tiles from tiles.versatiles.org.** Nothing to do. The server answers to both names.
+- **A server of your own that serves the old names.** Rename the tilesets, or set the old paths
+  explicitly, for every default you rely on:
+
+  ```ts
+  osm({ urls: { base, osm: '/tiles/osm/tiles.json', elevation: '/tiles/elevation/tiles.json' } });
+  ```
+
+  Without that, `inlineSources` rejects because it can't fetch the TileJSON, and a style handed to MapLibre
+  without inlining draws nothing.
 
 ---
 

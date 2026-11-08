@@ -15,7 +15,7 @@
 	"tile_schema": "shortbread@1.1",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/osm/{z}/{x}/{y}"],
+	"tiles": ["/tiles/osm-vector/{z}/{x}/{y}"],
 	"type": "baselayer",
 	"vector_layers": [
 		{

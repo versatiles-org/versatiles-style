@@ -20,95 +20,97 @@ const guess = (name: string) => guessStyle(fixture(name), { urls: { base: BASE }
 const layerTypes = (style: StyleSpecification) => [...new Set(style.layers.map((l) => l.type))].sort();
 
 describe('VersaTiles tilesets', () => {
-	describe('osm', () => {
+	describe('osm-vector', () => {
 		it('is recognised as Shortbread and gets the osm() style', async () => {
-			expect(guessSchema(fixture('osm'))).toMatchObject({ type: 'vector', schema: 'shortbread' });
-			const style = await guess('osm');
+			expect(guessSchema(fixture('osm-vector'))).toMatchObject({ type: 'vector', schema: 'shortbread' });
+			const style = await guess('osm-vector');
 			expect(Object.keys(style.sources)).toStrictEqual(['versatiles-shortbread']);
-			expect(style.sources['versatiles-shortbread']).toMatchObject({ tiles: [`${BASE}/tiles/osm/{z}/{x}/{y}`] });
+			expect(style.sources['versatiles-shortbread']).toMatchObject({ tiles: [`${BASE}/tiles/osm-vector/{z}/{x}/{y}`] });
 		});
 
 		it('has no land cover layer, so it cannot back features.landcover on its own', () => {
-			expect(osm.supportsLandcover(fixture('osm'))).toBe(false);
+			expect(osm.supportsLandcover(fixture('osm-vector'))).toBe(false);
 		});
 
 		it('lists its name languages', () => {
-			expect(osm.languages(fixture('osm'))).toEqual(expect.arrayContaining(['de', 'en']));
+			expect(osm.languages(fixture('osm-vector'))).toEqual(expect.arrayContaining(['de', 'en']));
 		});
 
 		// The README's reason `inlineSources` is required: the server lists root-relative tile URLs.
 		it('is referenced by osm() and resolved to absolute tile URLs by inlineSources', async () => {
-			const url = `${BASE}/tiles/osm/tiles.json`;
+			const url = `${BASE}/tiles/osm-vector/tiles.json`;
 			const style = osm({ urls: { osm: url } });
 			expect(style.sources['versatiles-shortbread']).toMatchObject({ url });
 
-			const inlined = await inlineSources(style, { fetch: tileJSONFetch({ [url]: fixture('osm') }) });
+			const inlined = await inlineSources(style, { fetch: tileJSONFetch({ [url]: fixture('osm-vector') }) });
 			const source = inlined.sources['versatiles-shortbread'];
-			expect(source).toMatchObject({ tiles: [`${BASE}/tiles/osm/{z}/{x}/{y}`] });
+			expect(source).toMatchObject({ tiles: [`${BASE}/tiles/osm-vector/{z}/{x}/{y}`] });
 			expect(source).not.toHaveProperty('url');
 		});
 	});
 
-	describe('landcover-vectors', () => {
+	describe('landcover-vector', () => {
 		it('can back features.landcover', () => {
-			expect(osm.supportsLandcover(fixture('landcover-vectors'))).toBe(true);
+			expect(osm.supportsLandcover(fixture('landcover-vector'))).toBe(true);
 		});
 
 		it('is recognised, and gets the inspector style on its own', async () => {
-			expect(guessSchema(fixture('landcover-vectors'))).toMatchObject({ type: 'vector', schema: 'landcover' });
-			const style = await guess('landcover-vectors');
+			expect(guessSchema(fixture('landcover-vector'))).toMatchObject({ type: 'vector', schema: 'landcover' });
+			const style = await guess('landcover-vector');
 			expect(Object.keys(style.sources)).toStrictEqual(['tiles']);
 		});
 
 		it('is referenced by default and resolved to absolute tile URLs by inlineSources', async () => {
-			const url = `${BASE}/tiles/landcover-vectors/tiles.json`;
-			const osmUrl = `${BASE}/tiles/osm/tiles.json`;
+			const url = `${BASE}/tiles/landcover-vector/tiles.json`;
+			const osmUrl = `${BASE}/tiles/osm-vector/tiles.json`;
 			const style = osm({ features: { landcover: true }, urls: { base: BASE } });
 			expect(style.sources['versatiles-landcover']).toStrictEqual({ type: 'vector', url });
 
-			const fetch = tileJSONFetch({ [url]: fixture('landcover-vectors'), [osmUrl]: fixture('osm') });
+			const fetch = tileJSONFetch({ [url]: fixture('landcover-vector'), [osmUrl]: fixture('osm-vector') });
 			const inlined = await inlineSources(style, { fetch });
 			expect(inlined.sources['versatiles-landcover']).toMatchObject({
-				tiles: [`${BASE}/tiles/landcover-vectors/{z}/{x}/{y}`],
+				tiles: [`${BASE}/tiles/landcover-vector/{z}/{x}/{y}`],
 				maxzoom: 10,
 			});
 		});
 	});
 
-	describe('elevation', () => {
+	describe('elevation-raster', () => {
 		it('gets a hillshade on 3D terrain, decoded as Terrarium', async () => {
-			const style = await guess('elevation');
+			const style = await guess('elevation-raster');
 			expect(layerTypes(style)).toStrictEqual(['background', 'hillshade']);
 			expect(style.terrain).toMatchObject({ source: 'elevation-terrain' });
 			for (const id of ['elevation', 'elevation-terrain']) {
 				expect(style.sources[id], id).toMatchObject({
 					type: 'raster-dem',
 					encoding: 'terrarium',
-					tiles: [`${BASE}/tiles/elevation/{z}/{x}/{y}`],
+					tiles: [`${BASE}/tiles/elevation-raster/{z}/{x}/{y}`],
 				});
 			}
 		});
 
 		it('is decoded as Terrarium once inlined into a terrain style', async () => {
-			const url = `${BASE}/tiles/elevation/tiles.json`;
+			const url = `${BASE}/tiles/elevation-raster/tiles.json`;
 			const style = osm({ features: { terrain: true }, urls: { elevation: url } });
-			const inlined = await inlineSources(style, { fetch: tileJSONFetch({ [url]: fixture('elevation') }) });
+			const inlined = await inlineSources(style, { fetch: tileJSONFetch({ [url]: fixture('elevation-raster') }) });
 			expect(inlined.sources['elevation']).toMatchObject({ encoding: 'terrarium' });
 		});
 	});
 
-	describe('satellite', () => {
+	describe('satellite-raster', () => {
 		it('gets the satellite() style', async () => {
-			const style = await guess('satellite');
+			const style = await guess('satellite-raster');
 			expect(style.sources['satellite']).toMatchObject({
 				type: 'raster',
-				tiles: [`${BASE}/tiles/satellite/{z}/{x}/{y}`],
+				tiles: [`${BASE}/tiles/satellite-raster/{z}/{x}/{y}`],
 			});
 		});
 
 		// The server quotes this attribution with single quotes, unlike the others.
 		it('has its attribution normalised to double quotes', () => {
-			const style = satellite({ urls: { satellite: { ...fixture('satellite'), tiles: ['https://s/{z}/{x}/{y}'] } } });
+			const style = satellite({
+				urls: { satellite: { ...fixture('satellite-raster'), tiles: ['https://s/{z}/{x}/{y}'] } },
+			});
 			expect(style.sources['satellite']).toMatchObject({
 				attribution: '<a href="https://versatiles.org/sources/">VersaTiles sources</a>',
 			});
@@ -116,7 +118,7 @@ describe('VersaTiles tilesets', () => {
 	});
 
 	// Neither has a schema this library styles, so both get the inspector style.
-	describe.each(['hillshade-vectors', 'bathymetry-vectors'])('%s', (name) => {
+	describe.each(['hillshade-vector', 'bathymetry-vector'])('%s', (name) => {
 		it('gets the inspector style', async () => {
 			expect(guessSchema(fixture(name))).toMatchObject({ type: 'vector', schema: undefined });
 			const style = await guess(name);

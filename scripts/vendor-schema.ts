@@ -58,7 +58,7 @@ type Source = {
 
 const SOURCES: Record<string, Source> = {
 	shortbread: {
-		url: 'https://tiles.versatiles.org/tiles/osm/tiles.json',
+		url: 'https://tiles.versatiles.org/tiles/osm-vector/tiles.json',
 		out: 'src/shortbread/schema.ts',
 		recordName: 'SHORTBREAD_SCHEMA',
 		typeName: 'ShortbreadLayer',

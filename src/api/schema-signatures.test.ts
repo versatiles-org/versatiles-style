@@ -15,7 +15,7 @@ const RECORDS: Record<SchemaName, Readonly<Record<string, { fields: readonly str
 	openmaptiles: OMT_SCHEMA,
 	protomaps: PROTOMAPS_SCHEMA,
 	mapbox: MAPBOX_LAYERS,
-	// the tileset of landcover-vectors, whose one layer has no vendored record
+	// the landcover-vector tileset, whose one layer has no vendored record
 	landcover: { landcover: { fields: ['kind'] } },
 };
 

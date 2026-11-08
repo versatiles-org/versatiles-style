@@ -77,7 +77,7 @@ export function resolveOmtUrls(urls?: OmtUrlsOptions, path = 'urls'): ResolvedOm
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
 		omt: resolveTileSource(base, urls?.omt, DEFAULT_OMT_TILES),
-		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
+		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation-raster/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
 	};

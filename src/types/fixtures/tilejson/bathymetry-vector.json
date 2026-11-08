@@ -6,6 +6,6 @@
 	"tile_schema": "other",
 	"tile_type": "vector",
 	"tilejson": "3.0.0",
-	"tiles": ["/tiles/bathymetry-vectors/{z}/{x}/{y}"],
+	"tiles": ["/tiles/bathymetry-vector/{z}/{x}/{y}"],
 	"vector_layers": [{ "fields": { "mindepth": "Number" }, "id": "bathymetry", "maxzoom": 10, "minzoom": 0 }]
 }

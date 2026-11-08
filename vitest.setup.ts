@@ -17,13 +17,13 @@ const CANNED_TILEJSON = {
 // `inlineSources` now rejects a vector source whose TileJSON lists no `vector_layers`, so one
 // canned document can no longer stand in for every URL: served to the OSM source, a raster-shaped
 // TileJSON is exactly the mismatch that check exists to catch. Vector-ness is keyed off the URL,
-// which is how the real endpoints differ — `/tiles/osm/` and `/tiles/landcover-vectors/` are the vector
-// tilesets, elevation and satellite are raster.
+// which is how the real endpoints differ — `/tiles/osm-vector/` and `/tiles/landcover-vector/` are the
+// vector tilesets, elevation and satellite are raster.
 function cannedTileJSON(url: string): Record<string, unknown> {
-	if (url.includes('/osm/')) {
+	if (url.includes('/osm-vector/')) {
 		return { ...CANNED_TILEJSON, vector_layers: [{ id: 'water_polygons', fields: {} }] };
 	}
-	if (url.includes('/landcover-vectors/')) {
+	if (url.includes('/landcover-vector/')) {
 		return { ...CANNED_TILEJSON, maxzoom: 10, vector_layers: [{ id: 'landcover', fields: { kind: 'String' } }] };
 	}
 	return CANNED_TILEJSON;

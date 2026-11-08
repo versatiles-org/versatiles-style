@@ -111,8 +111,8 @@ async function latestProtomapsBuild(): Promise<string> {
 
 const SOURCES: Record<TileSchema, Upstream> = {
 	// Unlimited: the VersaTiles tile server has answered in ~100 ms throughout, with no timeouts seen.
-	shortbread: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/osm/tiles.json' },
-	landcover: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/landcover-vectors/tiles.json' },
+	shortbread: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/osm-vector/tiles.json' },
+	landcover: { kind: 'xyz', tileJSON: 'https://tiles.versatiles.org/tiles/landcover-vector/tiles.json' },
 	omt: { kind: 'xyz', tileJSON: 'https://tiles.openfreemap.org/planet', concurrency: 4 },
 	protomaps: { kind: 'pmtiles', resolveUrl: latestProtomapsBuild, concurrency: 2 },
 };

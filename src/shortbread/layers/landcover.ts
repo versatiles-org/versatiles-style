@@ -15,7 +15,7 @@ type LandDef = {
 	/** Shortbread schema zoom at which this kind appears; the fill fades in over appear→appear+1. */
 	appear: number;
 	/**
-	 * The kinds of the land cover tileset (landcover-vectors) this fill draws, so `features.landcover`
+	 * The kinds of the land cover tileset (landcover-vector) this fill draws, so `features.landcover`
 	 * copies it for them. A subset of `kinds`, which are OSM's.
 	 */
 	landcover?: readonly string[];

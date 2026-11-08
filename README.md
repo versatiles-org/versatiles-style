@@ -113,9 +113,9 @@ Integrate it into your HTML application:
 > **`inlineSources` is required, not optional.** `osm()` and `satellite()` are synchronous and do no
 > I/O: they leave each source as a `{ type, url }` reference to a TileJSON and let MapLibre fetch it.
 > That works only if the TileJSON lists absolute tile URLs — and the VersaTiles ones list **relative**
-> templates (`/tiles/osm/{z}/{x}/{y}`), which MapLibre does not resolve. Handing such a style straight
+> templates (`/tiles/osm-vector/{z}/{x}/{y}`), which MapLibre does not resolve. Handing such a style straight
 > to `new maplibregl.Map()` fails with
-> `Request constructor: /tiles/osm/2/2/2 is not a valid URL` and no tiles appear.
+> `Request constructor: /tiles/osm-vector/2/2/2 is not a valid URL` and no tiles appear.
 >
 > `inlineSources` fetches the TileJSON and folds it in, so the tile URLs come out absolute and the
 > attribution, bounds and maxzoom it carries are preserved. That last part matters: the attribution

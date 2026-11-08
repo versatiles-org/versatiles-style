@@ -121,12 +121,12 @@ export function resolveTileSource(base: string, value: TileSource | undefined, f
 export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOsmUrls {
 	checkKeys(urls, { base: true, osm: true, landcover: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
-	const osm = resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json');
+	const osm = resolveTileSource(base, urls?.osm, '/tiles/osm-vector/tiles.json');
 	const merged = urls?.landcover === undefined && typeof osm === 'object' && isMergedLandcover(osm);
 	return {
 		osm,
-		landcover: merged ? osm : resolveTileSource(base, urls?.landcover, '/tiles/landcover-vectors/tiles.json'),
-		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
+		landcover: merged ? osm : resolveTileSource(base, urls?.landcover, '/tiles/landcover-vector/tiles.json'),
+		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation-raster/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
 	};
@@ -136,9 +136,9 @@ export function resolveSatelliteUrls(urls?: SatelliteUrlsOptions, path = 'urls')
 	checkKeys(urls, { base: true, satellite: true, osm: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
-		satellite: resolveTileSource(base, urls?.satellite, '/tiles/satellite/tiles.json'),
-		osm: resolveTileSource(base, urls?.osm, '/tiles/osm/tiles.json'),
-		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation/tiles.json'),
+		satellite: resolveTileSource(base, urls?.satellite, '/tiles/satellite-raster/tiles.json'),
+		osm: resolveTileSource(base, urls?.osm, '/tiles/osm-vector/tiles.json'),
+		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation-raster/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),
 	};

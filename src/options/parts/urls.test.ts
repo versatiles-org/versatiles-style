@@ -24,9 +24,9 @@ describe('resolveBase', () => {
 describe('resolveOsmUrls', () => {
 	it('resolves all defaults against DEFAULT_BASE', () => {
 		expect(resolveOsmUrls()).toStrictEqual({
-			osm: 'https://tiles.versatiles.org/tiles/osm/tiles.json',
-			landcover: 'https://tiles.versatiles.org/tiles/landcover-vectors/tiles.json',
-			elevation: 'https://tiles.versatiles.org/tiles/elevation/tiles.json',
+			osm: 'https://tiles.versatiles.org/tiles/osm-vector/tiles.json',
+			landcover: 'https://tiles.versatiles.org/tiles/landcover-vector/tiles.json',
+			elevation: 'https://tiles.versatiles.org/tiles/elevation-raster/tiles.json',
 			glyphsPattern: 'https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf',
 			sprite: [{ id: 'base', url: 'https://tiles.versatiles.org/assets/sprites/base' }],
 		});
@@ -34,8 +34,8 @@ describe('resolveOsmUrls', () => {
 
 	it('applies a custom base to every relative default', () => {
 		const r = resolveOsmUrls({ base: 'https://x.io' });
-		expect(r.osm).toBe('https://x.io/tiles/osm/tiles.json');
-		expect(r.elevation).toBe('https://x.io/tiles/elevation/tiles.json');
+		expect(r.osm).toBe('https://x.io/tiles/osm-vector/tiles.json');
+		expect(r.elevation).toBe('https://x.io/tiles/elevation-raster/tiles.json');
 		expect(r.glyphsPattern).toBe('https://x.io/assets/glyphs/{fontstack}/{range}.pbf');
 		expect((r.sprite as { url: string }[])[0].url).toBe('https://x.io/assets/sprites/base');
 	});
@@ -44,7 +44,7 @@ describe('resolveOsmUrls', () => {
 		const r = resolveOsmUrls({ base: 'https://x.io', osm: 'https://other/tiles.json' });
 		expect(r.osm).toBe('https://other/tiles.json');
 		// siblings still derive from base
-		expect(r.elevation).toBe('https://x.io/tiles/elevation/tiles.json');
+		expect(r.elevation).toBe('https://x.io/tiles/elevation-raster/tiles.json');
 	});
 
 	it('accepts a sprite string (used verbatim) and a custom glyphsPattern', () => {
@@ -57,14 +57,14 @@ describe('resolveOsmUrls', () => {
 describe('resolveSatelliteUrls', () => {
 	it('adds a satellite URL on top of the OSM URL set', () => {
 		const r = resolveSatelliteUrls();
-		expect(r.satellite).toBe('https://tiles.versatiles.org/tiles/satellite/tiles.json');
-		expect(r.osm).toBe('https://tiles.versatiles.org/tiles/osm/tiles.json');
+		expect(r.satellite).toBe('https://tiles.versatiles.org/tiles/satellite-raster/tiles.json');
+		expect(r.osm).toBe('https://tiles.versatiles.org/tiles/osm-vector/tiles.json');
 		expect(Object.keys(r).sort()).toStrictEqual(['elevation', 'glyphsPattern', 'osm', 'satellite', 'sprite']);
 	});
 
 	it('resolves the satellite URL against a custom base', () => {
 		expect(resolveSatelliteUrls({ base: 'https://cdn.example' }).satellite).toBe(
-			'https://cdn.example/tiles/satellite/tiles.json'
+			'https://cdn.example/tiles/satellite-raster/tiles.json'
 		);
 	});
 
@@ -121,7 +121,7 @@ describe('DEFAULT_BASE (issue #127)', () => {
 		try {
 			const fresh = await import('./urls.js');
 			expect(fresh.DEFAULT_BASE).toBe('https://maps.example.com');
-			expect(fresh.resolveOsmUrls().osm).toBe('https://maps.example.com/tiles/osm/tiles.json');
+			expect(fresh.resolveOsmUrls().osm).toBe('https://maps.example.com/tiles/osm-vector/tiles.json');
 		} finally {
 			vi.unstubAllGlobals();
 			vi.resetModules();

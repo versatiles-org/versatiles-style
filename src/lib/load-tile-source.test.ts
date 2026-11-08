@@ -22,7 +22,7 @@ export function tileJSONFetch(overrides: Record<string, unknown> = {}): FetchLik
 		const override = Object.entries(overrides).find(([match]) => url.includes(match));
 		if (override) return Promise.resolve(jsonResponse(override[1]));
 		const tiles = [`${url.replace(/\/[^/]*$/, '')}/{z}/{x}/{y}`];
-		const body = url.includes('/osm/') ? { tiles, vector_layers: [{ id: 'water_polygons' }] } : { tiles };
+		const body = url.includes('/osm-vector/') ? { tiles, vector_layers: [{ id: 'water_polygons' }] } : { tiles };
 		return Promise.resolve(jsonResponse(body));
 	});
 }
@@ -30,8 +30,8 @@ export function tileJSONFetch(overrides: Record<string, unknown> = {}): FetchLik
 describe('resolveTileJSONTiles()', () => {
 	it('resolves relative tile paths against the base, preserving placeholders', () => {
 		const tj = { tiles: ['{z}/{x}/{y}'] } as TileJSONSpecification;
-		const out = resolveTileJSONTiles(tj, 'https://cdn.example/tiles/osm/tiles.json');
-		expect(out.tiles[0]).toBe('https://cdn.example/tiles/osm/{z}/{x}/{y}');
+		const out = resolveTileJSONTiles(tj, 'https://cdn.example/tiles/osm-vector/tiles.json');
+		expect(out.tiles[0]).toBe('https://cdn.example/tiles/osm-vector/{z}/{x}/{y}');
 	});
 
 	it('leaves absolute tile URLs unchanged', () => {
@@ -61,11 +61,11 @@ describe('loadTileSource()', () => {
 	it('fetches a `.json` URL and resolves relative tiles against the document URL', async () => {
 		const fetchFn = vi.fn(() => Promise.resolve(jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 12 })));
 		const out = (await loadTileSource(
-			'https://cdn.example/tiles/osm/tiles.json',
+			'https://cdn.example/tiles/osm-vector/tiles.json',
 			fetchFn as unknown as typeof fetch
 		)) as TileJSONSpecification;
-		expect(fetchFn).toHaveBeenCalledWith('https://cdn.example/tiles/osm/tiles.json');
-		expect(out.tiles[0]).toBe('https://cdn.example/tiles/osm/{z}/{x}/{y}');
+		expect(fetchFn).toHaveBeenCalledWith('https://cdn.example/tiles/osm-vector/tiles.json');
+		expect(out.tiles[0]).toBe('https://cdn.example/tiles/osm-vector/{z}/{x}/{y}');
 		expect(out.maxzoom).toBe(12);
 	});
 
@@ -136,12 +136,12 @@ describe('cachingFetch()', () => {
 	it('is used as the default and caches across loadTileSource calls', async () => {
 		fetchSpy.mockImplementation(() => Promise.resolve(jsonResponse({ tiles: ['{z}/{x}/{y}'], maxzoom: 9 })));
 
-		const url = 'https://cdn.example/tiles/osm/tiles.json';
+		const url = 'https://cdn.example/tiles/osm-vector/tiles.json';
 		const a = await loadTileSource(url);
 		const b = await loadTileSource(url);
 
 		expect(fetchSpy).toHaveBeenCalledTimes(1);
-		expect(a.tiles[0]).toBe('https://cdn.example/tiles/osm/{z}/{x}/{y}');
+		expect(a.tiles[0]).toBe('https://cdn.example/tiles/osm-vector/{z}/{x}/{y}');
 		expect(b).toStrictEqual(a);
 	});
 });

@@ -328,7 +328,7 @@ describe('guessStyle() — TileJSON object', () => {
 	const shortbread = (): TileJSONSpecification =>
 		({
 			tilejson: '3.0.0',
-			tiles: ['/tiles/osm/{z}/{x}/{y}'],
+			tiles: ['/tiles/osm-vector/{z}/{x}/{y}'],
 			minzoom: 0,
 			maxzoom: 14,
 			attribution: '© OpenStreetMap contributors',
@@ -345,7 +345,7 @@ describe('guessStyle() — TileJSON object', () => {
 		expect(style.layers.length).toBeGreaterThan(100);
 		const vector = sourcesOf(style).find((s) => s.type === 'vector');
 		expect(vector?.url).toBeUndefined();
-		expect(vector?.tiles).toStrictEqual([`${BASE}/tiles/osm/{z}/{x}/{y}`]);
+		expect(vector?.tiles).toStrictEqual([`${BASE}/tiles/osm-vector/{z}/{x}/{y}`]);
 	});
 
 	it('does not modify the object it is given', async () => {
@@ -419,7 +419,7 @@ describe('guessStyle() — urls', () => {
 	it('passes glyphs and sprites through to the Shortbread style', async () => {
 		const tj = {
 			tilejson: '3.0.0',
-			tiles: ['/tiles/osm/{z}/{x}/{y}'],
+			tiles: ['/tiles/osm-vector/{z}/{x}/{y}'],
 			vector_layers: ['streets', 'water_polygons', 'place_labels'].map((id) => ({ id, fields: {} })),
 		};
 		const style = await guessStyle(tj as TileJSONSpecification, { urls });
