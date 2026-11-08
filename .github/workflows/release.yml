@@ -17,7 +17,11 @@ permissions:
 jobs:
   release:
     name: Build and release
-    runs-on: ubuntu-latest
+    # Pinned, not `ubuntu-latest`: the prebuilt `@maplibre/maplibre-gl-native` 6.4.1 binary links
+    # against ICU 74, which Ubuntu 26.04 does not ship. v9.0.0 failed `Test (e2e)` on
+    # `libicuuc.so.74: cannot open shared object file` the week `ubuntu-latest` moved to 26.04.
+    # Move this forward once a maplibre-gl-native release builds against a newer ICU.
+    runs-on: ubuntu-24.04
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
