@@ -187,8 +187,14 @@ jobs:
           esac
           npm publish --provenance --access public --tag "$TAG"
 
+  # Waits for the release job, so the site never documents a version that failed to release: v9.0.0
+  # deployed its docs while `Build and release` failed, and the site described a version that had
+  # neither release assets nor an npm package.
   docs:
     name: Build Documentation
+
+    needs: release
+
     runs-on: macos-latest
 
     steps:
