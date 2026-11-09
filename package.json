@@ -1,6 +1,6 @@
 {
   "name": "@versatiles/style",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Generate StyleJSON for MapLibre",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -83,8 +83,14 @@
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
   "license": "MIT",
   "funding": [
-    { "type": "github", "url": "https://github.com/sponsors/versatiles-org" },
-    { "type": "opencollective", "url": "https://opencollective.com/versatiles" }
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/versatiles-org"
+    },
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/versatiles"
+    }
   ],
   "type": "module",
   "files": [

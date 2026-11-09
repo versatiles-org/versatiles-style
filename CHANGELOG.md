@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.1.0] - 2026-11-09
+
+### Features
+
+- **style:** draw road tunnels translucent with a hollow casing, so the land shows through (closes #150) ([f20c429](https://github.com/versatiles-org/versatiles-style/commit/f20c4290047678755d0d0ebd0d2140296ea0c0fa))
+
+### Bug Fixes
+
+- keep tile URLs with a custom scheme such as pmtiles:// unresolved, close #152 ([67fff18](https://github.com/versatiles-org/versatiles-style/commit/67fff185ee3704ed3dc9ef7d75730c1115a0c227))
+
+### Documentation
+
+- add sponsors section to README ([a520e01](https://github.com/versatiles-org/versatiles-style/commit/a520e01d36f751edf4771fbb7103551aaa9fc09f))
+- add GitHub sponsorship information to funding section in package.json ([4bd5bfb](https://github.com/versatiles-org/versatiles-style/commit/4bd5bfbaf07c6de750ed463687dfdfa84e75fc3f))
+
+### CI/CD
+
+- **release:** build and deploy docs only after the release job succeeds ([723c1f5](https://github.com/versatiles-org/versatiles-style/commit/723c1f58e9a736f0b7edc8ed319a842dc5acf3c0))
+
+### Chores
+
+- update dependencies to latest versions ([2a0bc40](https://github.com/versatiles-org/versatiles-style/commit/2a0bc401b63760735d85b1b8d5d7e54692d7af2f))
+
 ## [9.0.0] - 2026-11-08
 
 ### Breaking Changes
