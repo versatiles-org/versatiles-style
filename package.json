@@ -82,6 +82,10 @@
   "homepage": "https://versatiles.org/versatiles-style/",
   "author": "yetzt <versatiles@yetzt.me>, Michael Kreil <versatiles@michael-kreil.de>",
   "license": "MIT",
+  "funding": [
+    { "type": "github", "url": "https://github.com/sponsors/versatiles-org" },
+    { "type": "opencollective", "url": "https://opencollective.com/versatiles" }
+  ],
   "type": "module",
   "files": [
     "dist/*",
