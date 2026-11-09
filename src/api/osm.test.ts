@@ -59,6 +59,12 @@ describe('osm()', () => {
 		expect(src).not.toHaveProperty('tiles');
 	});
 
+	it('keeps a pmtiles:// osm URL intact (issue #152)', () => {
+		const url = 'pmtiles://https://example.org/basemap.pmtiles';
+		const style = osm({ urls: { osm: url } });
+		expect((style.sources['versatiles-shortbread'] as { url: string }).url).toBe(url);
+	});
+
 	it('inlines a pre-fetched TileJSON instead of referencing it', () => {
 		const style = osm({
 			urls: { osm: { tilejson: '3.0.0', tiles: ['https://custom.tiles/{z}/{x}/{y}'], maxzoom: 14 } as never },

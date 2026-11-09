@@ -77,26 +77,13 @@ export type ResolvedProtomapsUrls = {
  */
 export const PROTOMAPS_PLACEHOLDER = 'pmtiles://https://build.protomaps.com/<YYYYMMDD>.pmtiles';
 
-/**
- * A `pmtiles://` URL must not be resolved against a base.
- *
- * The convention nests a real URL inside the scheme — `pmtiles://https://host/x.pmtiles` — and `new URL()`
- * normalises the path of what it thinks is a `pmtiles:` URL, collapsing the inner `https://` to `https//`
- * and silently producing an address that cannot be fetched. It is absolute by construction anyway, so
- * the right handling is to leave it alone.
- */
-function resolveArchive(base: string, value: TileSource | undefined): TileSource {
-	// The placeholder is not an address either, and resolving it would stop `protomaps()` recognising it.
-	if (value === undefined) return PROTOMAPS_PLACEHOLDER;
-	if (typeof value === 'string' && value.startsWith('pmtiles://')) return value;
-	return resolveTileSource(base, value, PROTOMAPS_PLACEHOLDER);
-}
-
 export function resolveProtomapsUrls(urls?: ProtomapsUrlsOptions, path = 'urls'): ResolvedProtomapsUrls {
 	checkKeys(urls, { base: true, protomaps: true, elevation: true, glyphsPattern: true, sprite: true }, path);
 	const base = urls?.base ?? DEFAULT_BASE;
 	return {
-		protomaps: resolveArchive(base, urls?.protomaps),
+		// `resolveTileSource` leaves `pmtiles://` URLs as written, the placeholder included, which
+		// `protomaps()` must still recognise.
+		protomaps: resolveTileSource(base, urls?.protomaps, PROTOMAPS_PLACEHOLDER),
 		elevation: resolveTileSource(base, urls?.elevation, '/tiles/elevation-raster/tiles.json'),
 		glyphsPattern: resolveUrl(base, urls?.glyphsPattern ?? '/assets/glyphs/{fontstack}/{range}.pbf'),
 		sprite: resolveSprite(base, urls?.sprite ?? [{ id: 'base', url: '/assets/sprites/base' }]),

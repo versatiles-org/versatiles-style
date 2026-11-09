@@ -32,6 +32,11 @@ describe('omt()', () => {
 		const style = omt({ urls: { omt: 'https://example.org/omt.json' } });
 		expect(JSON.stringify(style.sources.openmaptiles)).toContain('example.org');
 	});
+
+	it('keeps a pmtiles:// tileset URL intact (issue #152)', () => {
+		const url = 'pmtiles://https://example.org/omt.pmtiles';
+		expect((omt({ urls: { omt: url } }).sources.openmaptiles as { url: string }).url).toBe(url);
+	});
 });
 
 describe('validation is per schema', () => {

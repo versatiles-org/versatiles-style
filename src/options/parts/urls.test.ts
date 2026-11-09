@@ -73,6 +73,38 @@ describe('resolveSatelliteUrls', () => {
 	});
 });
 
+describe('tile sources with a custom scheme (issue #152)', () => {
+	const ARCHIVE = 'pmtiles://https://host/x.pmtiles';
+
+	it('leaves pmtiles:// URLs as written for every OSM tile source', () => {
+		const r = resolveOsmUrls({ base: 'https://x.io', osm: ARCHIVE, landcover: ARCHIVE, elevation: ARCHIVE });
+		expect(r.osm).toBe(ARCHIVE);
+		expect(r.landcover).toBe(ARCHIVE);
+		expect(r.elevation).toBe(ARCHIVE);
+	});
+
+	it('leaves pmtiles:// URLs as written for every satellite tile source', () => {
+		const r = resolveSatelliteUrls({ satellite: ARCHIVE, osm: ARCHIVE, elevation: ARCHIVE });
+		expect(r.satellite).toBe(ARCHIVE);
+		expect(r.osm).toBe(ARCHIVE);
+		expect(r.elevation).toBe(ARCHIVE);
+	});
+
+	it('does not resolve a relative pmtiles path against base', () => {
+		expect(resolveOsmUrls({ base: 'https://x.io', osm: 'pmtiles:///x.pmtiles' }).osm).toBe('pmtiles:///x.pmtiles');
+	});
+
+	it('leaves other custom schemes as written', () => {
+		expect(resolveOsmUrls({ osm: 'mytiles://https://host/x' }).osm).toBe('mytiles://https://host/x');
+	});
+
+	it('still resolves relative and absolute http(s) URLs against base', () => {
+		const r = resolveOsmUrls({ base: 'https://x.io', osm: '/a/tiles.json', elevation: 'HTTPS://other/b.json' });
+		expect(r.osm).toBe('https://x.io/a/tiles.json');
+		expect(r.elevation).toBe('https://other/b.json');
+	});
+});
+
 describe('convertSatelliteUrlsToOsmUrls', () => {
 	it('returns undefined for undefined input', () => {
 		expect(convertSatelliteUrlsToOsmUrls(undefined)).toBeUndefined();

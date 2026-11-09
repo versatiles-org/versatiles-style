@@ -103,19 +103,29 @@ export function resolveBase(base?: string): string {
 }
 
 /**
- * Resolve a tile source against `base`. A pre-fetched TileJSON is used as-is; only
- * strings are made absolute. This is what keeps style building free of I/O.
+ * Whether a URL has a scheme other than `http(s)`, such as `pmtiles://`, which belongs to a protocol
+ * registered with `maplibregl.addProtocol()`. `inlineSources` draws the same line.
  */
+function hasCustomScheme(url: string): boolean {
+	const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1].toLowerCase();
+	return scheme !== undefined && scheme !== 'http' && scheme !== 'https';
+}
+
 /**
  * Resolve a tile source: a pre-fetched TileJSON object passes through, a URL (or the fallback) is made
- * absolute against `base`.
+ * absolute against `base`. Style building stays free of I/O.
+ *
+ * A URL with a custom scheme is left as written. It is absolute already, and `new URL()` would mangle
+ * the usual `pmtiles://https://host/x.pmtiles`: for a non-special scheme it reads `https:` as a host
+ * with an empty port and drops the colon, giving `pmtiles://https//host/x.pmtiles` (issue #152).
  *
  * Exported because each schema resolves its own URLs in its own directory — see the note on
  * `src/options/index.ts` about why per-schema option code does not live here.
  */
 export function resolveTileSource(base: string, value: TileSource | undefined, fallback: string): TileSource {
 	if (typeof value === 'object') return value;
-	return resolveUrl(base, value ?? fallback);
+	const url = value ?? fallback;
+	return hasCustomScheme(url) ? url : resolveUrl(base, url);
 }
 
 export function resolveOsmUrls(urls?: OsmUrlsOptions, path = 'urls'): ResolvedOsmUrls {
