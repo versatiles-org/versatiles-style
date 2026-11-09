@@ -313,6 +313,12 @@ Sized by the bundle's own source map: **113 KB** raw, **36 KB** gzipped, across 
 
 [![Dependency graph](assets/dependency-graph.svg)](assets/dependency-graph.svg?raw=true)
 
+## Sponsors
+
+VersaTiles is free and open source, and its sponsors fund its servers and development. If you or your organisation rely on it, please support it through [GitHub Sponsors](https://github.com/sponsors/versatiles-org) or [Open Collective](https://opencollective.com/versatiles).
+
+[![VersaTiles sponsors](https://versatiles.org/sponsors/sponsors.png)](https://versatiles.org/sponsors/)
+
 ## Licenses
 
 - **Source Code:** [MIT](./LICENSE.md)
