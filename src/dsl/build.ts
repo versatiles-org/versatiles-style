@@ -38,6 +38,7 @@ export type StyleProps = {
 	lineCap?: string;
 	lineJoin?: string;
 	lineDasharray?: number[];
+	lineGapWidth?: SizeValue;
 	textHaloColor?: ColorValue;
 	textAnchor?: string;
 	textOffset?: [number, number];
@@ -134,6 +135,7 @@ const PROPERTY_DEFS: PropDef[] = [
 	{ parent: 'paint', types: 'line', key: 'line-blur', valueType: 'plain' },
 	{ parent: 'paint', types: 'line', key: 'line-color', short: 'color', valueType: 'color' },
 	{ parent: 'paint', types: 'line', key: 'line-dasharray', valueType: 'plain' },
+	{ parent: 'paint', types: 'line', key: 'line-gap-width', valueType: 'plain' },
 	{ parent: 'paint', types: 'line', key: 'line-opacity', short: 'opacity', valueType: 'plain' },
 	{ parent: 'paint', types: 'line', key: 'line-pattern', short: 'image', valueType: 'plain' },
 	{ parent: 'paint', types: 'line', key: 'line-width', short: 'size', valueType: 'plain' },

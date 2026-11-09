@@ -143,25 +143,10 @@ describe('underground treatment', () => {
 		return cap !== 'round' || dash[1] > 1;
 	}
 
-	// Roads whose surface colour is already at (or within a hair of) `bg`, so fading toward `bg`
-	// cannot move them — see the KNOWN GAP note on `UNDERGROUND.fade`. They render underground
-	// exactly as they do on the surface. Listed exactly rather than skipped: if the treatment stops
-	// reaching another road this list grows and the test fails, and if one of these gains a cue the
-	// list shrinks and the test fails too, so the gap has to stay a deliberate decision.
-	// Class layers appear once under their class ID (see the class tables in roads.ts): the two
-	// bus kinds as `tunnel-street-bus`, and livingstreet/residential/unclassified bicycle overlays
-	// as `tunnel-street-minor-bicycle`.
-	// `tunnel-street-track-bicycle` and `tunnel-street-service-bicycle` used to sit here too. They were
-	// not roads the treatment failed to reach but width-less 1px hairlines that had no opacity to fade
-	// in the first place; `bicycleStyle` now returns null for those bases, so they are not emitted at all.
-	// `tunnel-way-cycleway` used to sit here as well: its fill was the near-white cycle colour. Paths
-	// are now drawn in that colour darkened (`WAY_CONTRAST`), which leaves the fade room to show.
-	const NO_COLOUR_HEADROOM = [
-		'tunnel-street-service',
-		'tunnel-street-bus',
-		'tunnel-street-pedestrian-bicycle',
-		'tunnel-street-minor-bicycle',
-	];
+	// Roads whose colour was already within a hair of the land used to be listed here, because the colour
+	// fade could not move them: service, bus and the bicycle overlays. Since issue #150 every road tunnel is
+	// translucent as well, which reaches them, so no road is left without a cue.
+	const NO_COLOUR_HEADROOM: string[] = [];
 
 	it('every tunnel road differs visibly from the same road on the surface', () => {
 		const layers = layersFor('local') as unknown as Record<string, unknown>[];

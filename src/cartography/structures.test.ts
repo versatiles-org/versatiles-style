@@ -71,6 +71,13 @@ describe.each([
 			return (v0 as number) + (((v1 as number) - (v0 as number)) * (zoom - z0)) / (z1 - z0);
 		};
 		const lines = style.layers.filter((layer) => layer.type === 'line' && /^(tunnel|bridge)-/.test(layer.id));
+		/** What a line layer draws at a zoom. A hollow casing's width is both edges and the gap between them. */
+		const drawn = (layer: LayerSpecification, key: string, zoom: number): unknown => {
+			const gap = paint(layer, 'line-gap-width');
+			if (key !== 'line-width' || gap === undefined) return at(paint(layer, key), zoom);
+			const outer = 2 * (at(paint(layer, key), zoom) as number) + (at(gap, zoom) as number);
+			return Math.round(outer * 1e9) / 1e9;
+		};
 
 		it('draw like the surface layer they take over from', () => {
 			const pairs = lines
@@ -81,12 +88,10 @@ describe.each([
 
 			const jumps = pairs.flatMap(([layer, surface]) =>
 				['line-color', 'line-opacity', 'line-width']
-					.filter(
-						(key) => JSON.stringify(at(paint(layer, key), marked)) !== JSON.stringify(at(paint(surface, key), marked))
-					)
+					.filter((key) => JSON.stringify(drawn(layer, key, marked)) !== JSON.stringify(drawn(surface, key, marked)))
 					.map(
 						(key) =>
-							`${layer.id} ${key}: ${String(at(paint(layer, key), marked))}, surface ${String(at(paint(surface, key), marked))}`
+							`${layer.id} ${key}: ${String(drawn(layer, key, marked))}, surface ${String(drawn(surface, key, marked))}`
 					)
 			);
 			expect(jumps).toEqual([]);
@@ -111,6 +116,27 @@ describe.each([
 			expect(road.map(([z]) => z)).toEqual([marked, marked + 1]);
 			expect(road[0][1]).toBe(paint(byId.get('street-motorway') as LayerSpecification, 'line-color'));
 			expect(road[1][1]).not.toBe(road[0][1]);
+			// A road tunnel turns translucent too (issue #150), all but its casing.
+			const fill = byId.get('tunnel-street-motorway') as LayerSpecification;
+			expect(at(paint(fill, 'line-opacity'), marked)).toBe(1);
+			expect(at(paint(fill, 'line-opacity'), marked + 1)).toBe(0.4);
+			const casing = byId.get('tunnel-street-motorway:outline') as LayerSpecification;
+			expect(at(paint(casing, 'line-opacity'), marked + 1)).toBe(1);
+		});
+
+		it('draw a road tunnel casing hollow, beside its fill, at least 1 px a side', () => {
+			const casings = lines.filter((layer) => /^tunnel-(street|way)-.*:outline$/.test(layer.id));
+			expect(casings.length).toBeGreaterThan(10);
+			const wrong = casings.flatMap((casing) => {
+				const fill = byId.get(casing.id.slice(0, -':outline'.length)) as LayerSpecification;
+				const problems: string[] = [];
+				if (JSON.stringify(paint(casing, 'line-gap-width')) !== JSON.stringify(paint(fill, 'line-width')))
+					problems.push(`${casing.id}: gap is not the fill's width`);
+				const thin = stops(paint(casing, 'line-width')).filter(([z, w]) => z > marked && (w as number) < 1);
+				if (thin.length) problems.push(`${casing.id}: ${JSON.stringify(thin)}`);
+				return problems;
+			});
+			expect(wrong).toEqual([]);
 		});
 	}
 );
@@ -155,15 +181,22 @@ describe('road casing is never narrower than its fill', () => {
 				const fill = byId.get(layer.id.slice(0, -':outline'.length));
 				if (!fill) continue;
 
-				const casingStops = stopsOf((layer as { paint?: Record<string, unknown> }).paint?.['line-width']);
+				const casingPaint = (layer as { paint?: Record<string, unknown> }).paint;
+				const casingStops = stopsOf(casingPaint?.['line-width']);
 				const fillStops = stopsOf((fill as { paint?: Record<string, unknown> }).paint?.['line-width']);
 				if (!casingStops || !fillStops) continue;
+				// A hollow casing (a road tunnel's) draws two edges around a gap, so it is that much wider.
+				const gapAt = new Map(stopsOf(casingPaint?.['line-gap-width']) ?? []);
+				const hollow = casingPaint?.['line-gap-width'] !== undefined;
 
 				// Compare only the zooms both curves declare; a stop one side lacks is interpolated and
 				// says nothing about the author's intent.
 				const fillAt = new Map(fillStops);
-				for (const [zoom, casing] of casingStops) {
+				for (const [zoom, edge] of casingStops) {
 					const value = fillAt.get(zoom);
+					const gap = gapAt.get(zoom);
+					if (hollow && gap === undefined) continue;
+					const casing = hollow ? 2 * edge + (gap ?? 0) : edge;
 					if (value !== undefined && casing < value) {
 						inverted.push(`${layer.id} @z${zoom}: casing ${casing} < fill ${value}`);
 					}

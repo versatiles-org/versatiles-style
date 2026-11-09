@@ -519,12 +519,16 @@ const UNDERGROUND = {
 	// came out darker than the ground, as black bars along every tunnel — and on a tinted land (a mid
 	// blue, say) it pushed every tunnel far away from the map's own colours. Fading toward the land is
 	// what "sinks into the ground" means, in any theme.
-	//
-	// KNOWN GAP: a road whose colour is already close to the land has nowhere to fade to — the white
-	// minor roads of a light theme move by a hair — and reads the same underground as on the surface.
-	// Only a cue that is not a colour can mark those; a dashed casing does it, and is what the test
-	// records as missing. See the exception list there before assuming a road was simply forgotten.
 	fade: 0.45,
+	// The opacity of everything in a road or path tunnel except its casing. A fixed colour can only match
+	// one land, and over a park, a forest or water an opaque tunnel stood out as a pale stripe (issue #150);
+	// translucent, it shows whatever lies above it. Tuned at the Großer Tiergarten: at 0.3 a tunnel all but
+	// vanished in colorful-dark, at 0.5 its centre was still half the road's colour.
+	fill: 0.4,
+	// The least width of a road tunnel's casing on each side, in px, from the zoom the tiles mark tunnels. The
+	// casing is drawn hollow (see `hollowCasing`) and opaque, and is the cue that keeps a tunnel readable once
+	// its fill is translucent. The width tables leave as little as 0.5 px a side, which barely shows.
+	edge: 1,
 	// Rail is the exception (see `underground`): it keeps the translucency the old style gave it.
 	translucency: 0.5,
 } as const;
@@ -539,25 +543,75 @@ function scaleOpacity(opacity: b.StyleProps['opacity'], factor: number): b.Style
 /**
  * Apply the underground treatment to one already-styled tunnel layer.
  *
- * Nothing here is per road class: every tunnel layer fades, and rail additionally dims.
+ * Nothing here is per road class: every tunnel layer fades toward the land. Rail dims as a whole. A road
+ * casing is drawn hollow and opaque, given its `fill`, and everything else turns translucent.
  *
  * If a dash is ever added back here, it must set `line-cap: 'butt'`. A round cap extends every dash
  * by half a line width at BOTH ends, so it closes any gap narrower than 1.0 line widths — that is
- * why the `[0.5, 0.25]` and `[1, 0.2]` tunnel dashes this style used to carry all rendered solid.
+ * why the `[0.5, 0.25]` and `[1, 0.2]` tunnel dashes this style used to carry all rendered solid. A dashed
+ * hollow casing was tried for issue #150: at 1 px it read fainter than a solid one, and like the footways.
  */
-function underground(ctx: LayerContext, id: string, s: b.StyleProps, marked: number | undefined): b.StyleProps {
+function underground(
+	ctx: LayerContext,
+	id: string,
+	s: b.StyleProps,
+	marked: number | undefined,
+	fill: b.StyleProps | null
+): b.StyleProps {
 	// A road's colour is still a single one here: only this pass and `bridgeFromMark` turn it into a ramp.
 	const color = typeof s.color === 'object' ? (s.color as Color).blend(UNDERGROUND.fade, ctx.c.land) : s.color;
 	const takesOver = marked !== undefined && drawnBefore(s, marked);
 	const out = { ...s, color: takesOver ? changeFrom(s.color, color, marked) : color };
 
 	// Rail keeps the translucency it has always had; its casing and its ties dim together.
-	if (id.startsWith('tunnel-transport-'))
-		out.opacity = takesOver
-			? dimFrom(s.opacity, UNDERGROUND.translucency, marked)
-			: scaleOpacity(s.opacity, UNDERGROUND.translucency);
-
+	const rail = id.startsWith('tunnel-transport-');
+	if (fill && !rail) return { ...out, ...hollowCasing(s, fill, marked) };
+	const factor = rail ? UNDERGROUND.translucency : UNDERGROUND.fill;
+	out.opacity = takesOver ? dimFrom(s.opacity, factor, marked) : scaleOpacity(s.opacity, factor);
 	return out;
+}
+
+/**
+ * A road casing that draws only its edges, beside the fill rather than under it.
+ *
+ * A full-width casing under a translucent fill shows through it: the centre of the road would mix the casing
+ * in, and let only a quarter of the land through where the edges let half. With `line-gap-width` set to the
+ * fill's width the two don't overlap, so the casing can stay opaque while the fill is translucent.
+ *
+ * Each edge is half the difference between the casing's width and the fill's, so up to the zoom the tiles mark
+ * tunnels the road is exactly as wide as on the surface, and from one zoom later at least `UNDERGROUND.edge`.
+ */
+function hollowCasing(casing: b.StyleProps, fill: b.StyleProps, marked: number | undefined): b.StyleProps {
+	const outer = linearStops(casing.size);
+	const inner = linearStops(fill.size);
+	// Below a width's first stop it holds flat, so only one that grows from 0 must not gain stops there.
+	const from = Math.min(...outer.keys());
+	const floor = outer.get(from) === 0 ? from : -Infinity;
+	const zooms = [...new Set([...outer.keys(), ...inner.keys(), ...(marked === undefined ? [] : [marked, marked + 1])])]
+		.filter((z) => z >= floor)
+		.sort((p, q) => p - q);
+	const size = Object.fromEntries(
+		zooms.map((z) => {
+			const [o, i] = [stopsAt(outer, z), stopsAt(inner, z)];
+			const edge = Math.max(0, (o - i) / 2);
+			// A width that grows from 0 keeps doing so: `b.line` fades the layer in over that zoom.
+			const least = o === 0 || (marked !== undefined && z <= marked) ? 0 : UNDERGROUND.edge;
+			return [z, Math.max(edge, least)];
+		})
+	);
+	return { size, lineGapWidth: fill.size };
+}
+
+/** A width as linear zoom stops. Every road width is, so anything else is a mistake to report. */
+function linearStops(size: b.SizeValue | undefined): Map<number, number> {
+	if (typeof size === 'number') return new Map([[0, size]]);
+	if (size === undefined || 'stops' in size) throw new Error(`hollowCasing: unsupported width ${JSON.stringify(size)}`);
+	return new Map(Object.entries(size).map(([z, v]) => [Number(z), v]));
+}
+
+/** Linear zoom stops at one zoom, held flat beyond the first and last. */
+function stopsAt(stops: Map<number, number>, zoom: number): number {
+	return opacityAt(Object.fromEntries(stops), zoom);
 }
 
 // ── The zoom the tiles begin to mark tunnels and bridges ───────────────────────
@@ -631,8 +685,11 @@ export function* emitRoads(
 		// pass rather than branching inside every style function.
 		const marked = vocab.structuresMarked;
 		let placed = style;
-		if (d.id.startsWith('tunnel-')) placed = underground(ctx, d.id, style, marked);
-		else if (d.id.startsWith('bridge-') && marked !== undefined)
+		if (d.id.startsWith('tunnel-')) {
+			// A casing needs its fill's width to draw beside it.
+			const fill = d.id.endsWith(':outline') ? roadStyle(ctx, d.id.slice(0, -':outline'.length), vocab) : null;
+			placed = underground(ctx, d.id, style, marked, fill);
+		} else if (d.id.startsWith('bridge-') && marked !== undefined)
 			placed = bridgeFromMark(style, roadStyle(ctx, d.id.slice('bridge-'.length), vocab), marked, d.id);
 		const make = d.type === 'fill' ? b.fill : b.line;
 		// roadStyle guarantees a color for every non-null result (see its contract).
