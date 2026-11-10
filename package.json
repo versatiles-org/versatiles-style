@@ -120,7 +120,7 @@
     "@types/bin-pack": "^1.0.3",
     "@types/node": "^26.6.6",
     "@types/tar-stream": "^3.1.5",
-    "@versatiles/release-tool": "^2.21.0",
+    "@versatiles/release-tool": "^2.22.0",
     "@vitest/coverage-v8": "^5.1.0",
     "bin-pack": "^1.0.2",
     "eslint": "^10.14.0",
