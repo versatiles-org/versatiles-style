@@ -9,6 +9,7 @@
 		"src/migrate/index.ts"
 	],
 	"out": "docs",
+	"hostedBaseUrl": "https://versatiles.org/versatiles-style/",
 	"intentionallyNotExported": ["ColorValue", "GroupName", "Groups"],
 	"highlightLanguages": [
 		"bash",
