@@ -189,61 +189,16 @@ jobs:
 
   # Waits for the release job, so the site never documents a version that failed to release: v9.0.0
   # deployed its docs while `Build and release` failed, and the site described a version that had
-  # neither release assets nor an npm package.
-  docs:
-    name: Build Documentation
+  # neither release assets nor an npm package. The jobs live in pages.yml, so the site can also be
+  # redeployed by hand without a release.
+  pages:
+    name: Documentation
 
     needs: release
 
-    runs-on: macos-latest
-
-    steps:
-      - name: Install optipng
-        run: brew install optipng
-
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      # The build writes the API pages into `docs/` (typedoc, as part of `npm run doc`).
-      - name: Build
-        run: npm run build
-
-      # The screenshots and the sprite overview, which only this site shows. Kept out of `npm run build`
-      # on purpose: the screenshots render from live tiles, and the release job above runs the build
-      # after npm has been published — when they were part of it, v6.2.0 reached npm and then failed
-      # here, before its assets were uploaded.
-      - name: Generate screenshots and sprite overview
-        run: npm run doc-site
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: 'docs'
-
-  deploy:
-    name: Deploy Documentation
-
-    needs: docs
+    uses: ./.github/workflows/pages.yml
 
     permissions:
+      contents: read
       pages: write
       id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
