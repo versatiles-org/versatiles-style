@@ -24,9 +24,10 @@ function stringToHue(s: string): number {
  * A colour-coded style that draws every source-layer of a vector tileset, whatever it contains.
  *
  * Each source-layer gets three layers — a translucent fill, a line, and a `name` label — in one hue
- * derived from its name, over a neutral background. Nothing is filtered and nothing is hidden, so
- * geometry shows up whichever type it turns out to be. This is what you want when the tiles are
- * unfamiliar, or when you are checking what a tileset actually carries rather than how it should look.
+ * derived from its name, over a neutral background. Only the fill is filtered, to polygons, since
+ * MapLibre would fill a line as if it were closed; nothing is hidden, so geometry shows up whichever
+ * type it turns out to be. This is what you want when the tiles are unfamiliar, or when you are
+ * checking what a tileset actually carries rather than how it should look.
  *
  * It is the style {@link guessStyle} falls back to for vector tiles whose schema it cannot build, and
  * exporting it means you can ask for it deliberately — including for a tileset that *is* recognised,
@@ -95,6 +96,8 @@ export function inspectorStyle(tileJSON: TileJSONSpecification, options?: Inspec
 			type: 'fill',
 			source: sourceName,
 			'source-layer': vl.id,
+			// MapLibre would close a line into a ring and fill it: wedges that change from tile to tile.
+			filter: ['==', ['geometry-type'], 'Polygon'],
 			paint: { 'fill-color': fillColor, 'fill-opacity': 0.4 },
 		} as StyleSpecification['layers'][number]);
 

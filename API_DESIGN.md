@@ -1041,8 +1041,8 @@ inspectorStyle(
 
 A colour-coded style that draws **every source-layer** of a vector tileset, whatever it contains: a
 translucent fill, a line and a `name` label per layer, each in one hue derived from the layer's name,
-over a neutral background. Nothing is filtered and nothing is hidden, so geometry shows up whichever
-type it turns out to be.
+over a neutral background. Only the fill is filtered, to polygons, since MapLibre would fill a line as
+if it were closed; nothing is hidden, so geometry shows up whichever type it turns out to be.
 
 This is what you want when the tiles are unfamiliar, or when you are checking what a tileset actually
 carries rather than how it is meant to look.

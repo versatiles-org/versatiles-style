@@ -235,7 +235,7 @@ import { guessSchema } from '@versatiles/style';
 const guess = guessSchema(tileJSON); // { type: 'vector', schema: 'openmaptiles', candidates: [...] }
 ```
 
-- `inspectorStyle(tileJSON)` - a colour-coded style drawing **every** source-layer of a vector tileset — a translucent fill, a line and a `name` label per layer, nothing filtered. For unfamiliar tiles, or for checking what a tileset actually carries rather than how it should look. Synchronous, no I/O. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.inspectorStyle.html)
+- `inspectorStyle(tileJSON)` - a colour-coded style drawing **every** source-layer of a vector tileset — a translucent fill for polygons, a line and a `name` label per layer, nothing else filtered. For unfamiliar tiles, or for checking what a tileset actually carries rather than how it should look. Synchronous, no I/O. [Documentation](https://versatiles.org/versatiles-style/functions/_versatiles_style.inspectorStyle.html)
 
 ```javascript
 import { inspectorStyle } from '@versatiles/style';
@@ -305,7 +305,7 @@ A local server will be available at <http://localhost:8080>. Use it to select a 
 
 [![Bundle composition](assets/bundle-treemap.svg)](assets/bundle-treemap.svg?raw=true)
 
-Sized by the bundle's own source map: **113.9 KB** raw, **36.2 KB** gzipped, across 86 modules.
+Sized by the bundle's own source map: **113.9 KB** raw, **36.3 KB** gzipped, across 86 modules.
 
 ### Dependency Graph
 

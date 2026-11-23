@@ -24,9 +24,15 @@ describe('inspectorStyle()', () => {
 		]);
 	});
 
-	it('filters nothing, so geometry shows up whichever type it turns out to be', () => {
+	it('fills only polygons and filters nothing else, so geometry shows up whichever type it turns out to be', () => {
 		for (const layer of inspectorStyle(vectorTJ as never).layers) {
-			expect((layer as { filter?: unknown }).filter, layer.id).toBeUndefined();
+			const filter = (layer as { filter?: unknown }).filter;
+			if (layer.type === 'fill') {
+				// MapLibre would close a line into a ring and fill it.
+				expect(filter, layer.id).toEqual(['==', ['geometry-type'], 'Polygon']);
+			} else {
+				expect(filter, layer.id).toBeUndefined();
+			}
 		}
 	});
 
