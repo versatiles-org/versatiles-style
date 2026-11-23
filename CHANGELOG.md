@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.1.1] - 2026-11-23
+
+### Bug Fixes
+
+- update hostedBaseUrl in typedoc configuration ([ac98f47](https://github.com/versatiles-org/versatiles-style/commit/ac98f47c191ac0cc82954690caf77f3797ac15f8))
+- **inspector:** fill only polygons, not lines closed into wedges (closes #154) ([b498569](https://github.com/versatiles-org/versatiles-style/commit/b498569133c94f811d7c5f000088b03b1ad46542))
+- keep vector_layers in the vector sources built from a TileJSON (closes #153) ([b03de55](https://github.com/versatiles-org/versatiles-style/commit/b03de55683b04b7acd22dc810e7240279afbf2e2))
+
+### CI/CD
+
+- move the docs deploy into pages.yml so it can run without a release ([4dce029](https://github.com/versatiles-org/versatiles-style/commit/4dce0297ff9f3060a09e6265671edbc8715198a8))
+
+### Chores
+
+- update @versatiles/release-tool to version 2.22.0 ([9ce76cf](https://github.com/versatiles-org/versatiles-style/commit/9ce76cf474b6315ff141b7dd307b7f1d1c8a8052))
+- update @versatiles/release-tool to version 2.23.0 ([b56d563](https://github.com/versatiles-org/versatiles-style/commit/b56d5635220af1b7a55a4d3431e88fe396526bd1))
+- update dependencies to latest versions ([88ad9c4](https://github.com/versatiles-org/versatiles-style/commit/88ad9c4609835ae50260eaf6ff4875f79d596a01))
+
 ## [9.1.0] - 2026-11-09
 
 ### Features
