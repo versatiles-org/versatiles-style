@@ -1471,8 +1471,15 @@ inlineSources(
 ```
 
 Resolves every `url`-referencing source in a style into a self-contained one: fetches the
-TileJSON, inlines `tiles`, `minzoom`, `maxzoom`, `bounds` and `attribution`, and removes the
-`url`. Returns a new style; the input is not mutated. Sources without a `url` are left alone.
+TileJSON, inlines `tiles`, `minzoom`, `maxzoom`, `bounds`, `attribution` and, for vector tiles,
+`vector_layers`, and removes the `url`. Returns a new style; the input is not mutated. Sources
+without a `url` are left alone.
+
+`vector_layers` is kept whole, `fields` included, as the TileJSON lists it. Without a `url`, it is
+the only record of the layers the tiles hold, rather than the ones the style draws: MapLibre reads it
+into the source's `vectorLayerIds`, and tools that inspect or edit a style list the layers from it.
+The `osm()`, `satellite()` and `inspectorStyle()` sources built from a TileJSON object carry it too.
+It adds the size of that list to the style, about 21 KB for the VersaTiles OSM tiles.
 
 So is a `url` with a scheme other than `http(s)`. A `pmtiles://…` source is not a TileJSON
 reference: MapLibre reads the archive through a registered protocol, so it stays as it is while

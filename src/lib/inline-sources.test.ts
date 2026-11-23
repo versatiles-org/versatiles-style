@@ -73,6 +73,17 @@ describe('inlineSources()', () => {
 		expect(without.sources['r'] as Record<string, unknown>).not.toHaveProperty('tileSize');
 	});
 
+	it('keeps the vector_layers of a vector source whole', async () => {
+		const vector_layers = [
+			{ id: 'water', fields: { kind: 'String' } },
+			{ id: 'mountain_peaks', fields: { name: 'String' }, minzoom: 10 },
+		];
+		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
+			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, vector_layers }))),
+		});
+		expect((out.sources['v'] as Record<string, unknown>).vector_layers).toStrictEqual(vector_layers);
+	});
+
 	it('carries an MLT encoding onto a vector source', async () => {
 		const out = await inlineSources(styleWith({ v: { type: 'vector', url: 'https://t/tiles.json' } }), {
 			fetch: vi.fn(() => Promise.resolve(json({ ...vectorTJ, tile_format: 'application/vnd.maplibre-tile' }))),

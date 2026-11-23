@@ -135,6 +135,34 @@ describe('satellite() styles are MapLibre-spec valid', () => {
 	});
 });
 
+// ── sources built from TileJSON objects ──────────────────────────────────────────
+
+// A source built from a TileJSON object carries its `vector_layers` (#153), a key the spec has no
+// property for. Both specs must accept it as one of a source's "other keys".
+describe('styles with sources built from TileJSON objects are MapLibre-spec valid', () => {
+	const osmTJ = {
+		tiles: ['https://t/osm/{z}/{x}/{y}'],
+		vector_layers: [{ id: 'water_polygons', fields: { kind: 'String' }, minzoom: 4, maxzoom: 14 }],
+	};
+	const landcoverTJ = {
+		tiles: ['https://t/landcover/{z}/{x}/{y}'],
+		maxzoom: 10,
+		vector_layers: [{ id: 'landcover', fields: { kind: 'String' } }],
+	};
+
+	it('osm() with the land cover', () => {
+		const style = osm({ urls: { osm: osmTJ, landcover: landcoverTJ }, features: { landcover: true } });
+		expect(Object.values(style.sources).filter((source) => 'vector_layers' in source)).toHaveLength(2);
+		expect(errorsFor(style)).toStrictEqual([]);
+	});
+
+	it('satellite() with the OSM overlay', () => {
+		const style = satellite({ urls: { osm: osmTJ } });
+		expect(style.sources['versatiles-shortbread']).toMatchObject({ vector_layers: osmTJ.vector_layers });
+		expect(errorsFor(style)).toStrictEqual([]);
+	});
+});
+
 // ── every published style variant ────────────────────────────────────────────────
 
 describe('every getStyleVariants() build is MapLibre-spec valid', () => {

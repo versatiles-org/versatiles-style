@@ -29,7 +29,14 @@ export function buildSourceDescriptor(
 	return { type, ...inlinedFields(source), ...extra };
 }
 
-/** The subset of a TileJSON that belongs in a MapLibre source descriptor. */
+/**
+ * The subset of a TileJSON that belongs in a MapLibre source descriptor.
+ *
+ * `vector_layers` is kept whole, as the TileJSON lists them: a source without a `url` has no other
+ * record of the layers its tiles hold, only of those its style draws. MapLibre reads them into the
+ * source's `vectorLayerIds`, `map.getStyle()` returns them, and tools that inspect or edit a style
+ * list the layers from them (issue #153). Whole entries, `fields` included, keep it valid TileJSON.
+ */
 export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }): Record<string, unknown> {
 	return {
 		...(tj.tiles && { tiles: tj.tiles }),
@@ -40,6 +47,7 @@ export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }
 		// Only declare tileSize when the document states one (see the tile_size fix).
 		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
 		...encodingField(tj),
+		...('vector_layers' in tj && Array.isArray(tj.vector_layers) && { vector_layers: tj.vector_layers }),
 	};
 }
 

@@ -73,6 +73,10 @@ describe('inspectorStyle()', () => {
 		});
 	});
 
+	it('keeps the tileset’s vector_layers on the source', () => {
+		expect(inspectorStyle(vectorTJ as never).sources.tiles).toMatchObject({ vector_layers: vectorTJ.vector_layers });
+	});
+
 	it('declares an MLT encoding on the source', () => {
 		const style = inspectorStyle({ ...vectorTJ, tile_format: 'application/vnd.maplibre-tile' } as never);
 		expect(style.sources.tiles).toMatchObject({ encoding: 'mlt' });

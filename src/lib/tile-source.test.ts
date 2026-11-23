@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildSourceDescriptor, demEncoding, inlinedFields, vectorEncoding } from './tile-source.js';
-import type { TileJSONSpecification } from '../types/index.js';
+import type { TileJSONSpecification, TileJSONSpecificationVector } from '../types/index.js';
 
 const tiles = ['https://t/{z}/{x}/{y}'];
 
@@ -44,6 +44,24 @@ describe('inlinedFields()', () => {
 	it('does not declare an encoding the TileJSON does not imply', () => {
 		expect(inlinedFields({ tiles, vector_layers: [] })).not.toHaveProperty('encoding');
 		expect(inlinedFields({ tiles, encoding: 'terrarium' })).not.toHaveProperty('encoding');
+	});
+
+	it('keeps vector_layers whole, so the source lists every layer of its tiles', () => {
+		const vector_layers: TileJSONSpecificationVector['vector_layers'] = [
+			{ id: 'water', fields: { kind: 'String' }, description: 'Water bodies', minzoom: 0, maxzoom: 14 },
+			{ id: 'mountain_peaks', fields: { name: 'String', ele: 'Number' } },
+		];
+		expect(inlinedFields({ tiles, vector_layers })).toMatchObject({ vector_layers });
+		expect(buildSourceDescriptor('vector', { tiles, vector_layers })).toStrictEqual({
+			type: 'vector',
+			tiles,
+			vector_layers,
+		});
+	});
+
+	it('states no vector_layers for a raster TileJSON', () => {
+		expect(inlinedFields({ tiles })).not.toHaveProperty('vector_layers');
+		expect(buildSourceDescriptor('raster', { tiles })).not.toHaveProperty('vector_layers');
 	});
 });
 

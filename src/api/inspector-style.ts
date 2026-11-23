@@ -77,6 +77,8 @@ export function inspectorStyle(tileJSON: TileJSONSpecification, options?: Inspec
 	if (tileJSON.attribution) sourceSpec['attribution'] = tileJSON.attribution;
 	const encoding = vectorEncoding(tileJSON);
 	if (encoding) sourceSpec['encoding'] = encoding;
+	// Kept whole, as `inlinedFields` keeps them for the other builders.
+	sourceSpec['vector_layers'] = tileJSON.vector_layers;
 
 	const layers: StyleSpecification['layers'] = [
 		{
