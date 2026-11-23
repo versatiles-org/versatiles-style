@@ -35,7 +35,11 @@ jobs:
       # where the GL stack is part of the OS and there is no X server in the picture. This is the only
       # job that runs the native renderer on Linux.
       - name: Install system dependencies
-        run: sudo apt-get install -y optipng libopengl0 libegl1 libgles2 xvfb
+        # `apt-get update` first: the runner image's package lists go stale, and installing from them
+        # fails once Ubuntu replaces a listed version (v9.1.1: libegl-mesa0, 404 Not Found).
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y optipng libopengl0 libegl1 libgles2 xvfb
 
       - name: Checkout
         uses: actions/checkout@v7
