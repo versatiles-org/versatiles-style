@@ -59,6 +59,11 @@ describe('inlinedFields()', () => {
 		});
 	});
 
+	it('leaves out an empty vector_layers, which names no layers', () => {
+		expect(inlinedFields({ tiles, vector_layers: [] })).not.toHaveProperty('vector_layers');
+		expect(buildSourceDescriptor('vector', { tiles, vector_layers: [] })).toStrictEqual({ type: 'vector', tiles });
+	});
+
 	it('states no vector_layers for a raster TileJSON', () => {
 		expect(inlinedFields({ tiles })).not.toHaveProperty('vector_layers');
 		expect(buildSourceDescriptor('raster', { tiles })).not.toHaveProperty('vector_layers');

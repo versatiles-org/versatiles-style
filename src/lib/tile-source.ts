@@ -36,6 +36,10 @@ export function buildSourceDescriptor(
  * record of the layers its tiles hold, only of those its style draws. MapLibre reads them into the
  * source's `vectorLayerIds`, `map.getStyle()` returns them, and tools that inspect or edit a style
  * list the layers from them (issue #153). Whole entries, `fields` included, keep it valid TileJSON.
+ *
+ * An empty list is left out. It says nothing about the tiles: it only marks a TileJSON as vector
+ * whose layers aren't known, which is how apps declare an inline OSM source. MapLibre would read it
+ * as "no layers" and report every style layer of that source as missing.
  */
 export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }): Record<string, unknown> {
 	return {
@@ -47,7 +51,9 @@ export function inlinedFields(tj: TileJSONSpecification & { tile_size?: number }
 		// Only declare tileSize when the document states one (see the tile_size fix).
 		...(tj.tile_size !== undefined && { tileSize: tj.tile_size }),
 		...encodingField(tj),
-		...('vector_layers' in tj && Array.isArray(tj.vector_layers) && { vector_layers: tj.vector_layers }),
+		...('vector_layers' in tj &&
+			Array.isArray(tj.vector_layers) &&
+			tj.vector_layers.length > 0 && { vector_layers: tj.vector_layers }),
 	};
 }
 

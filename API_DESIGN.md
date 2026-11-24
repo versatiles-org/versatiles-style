@@ -1479,7 +1479,9 @@ without a `url` are left alone.
 the only record of the layers the tiles hold, rather than the ones the style draws: MapLibre reads it
 into the source's `vectorLayerIds`, and tools that inspect or edit a style list the layers from it.
 The `osm()`, `satellite()` and `inspectorStyle()` sources built from a TileJSON object carry it too.
-It adds the size of that list to the style, about 21 KB for the VersaTiles OSM tiles.
+It adds the size of that list to the style, about 21 KB for the VersaTiles OSM tiles. An empty
+`vector_layers` is left out: it names no layers, and MapLibre would report every style layer of the
+source as missing.
 
 So is a `url` with a scheme other than `http(s)`. A `pmtiles://…` source is not a TileJSON
 reference: MapLibre reads the archive through a registered protocol, so it stays as it is while
