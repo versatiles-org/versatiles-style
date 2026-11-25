@@ -101,53 +101,75 @@ const PEDESTRIAN_WIDTH = {
 const YELLOW = new Set(['motorway', 'trunk', 'primary', 'secondary', 'arterial']);
 const isServiceLike = (base: string, vocab: RoadVocabulary): boolean => vocab.serviceBases.includes(base);
 
+/** The road class a ramp belongs to. Shortbread's merged primary and secondary ramp follows the thinner one. */
+const linkParent = (base: string): string => (base === 'arterial' ? 'secondary' : base);
+
 function streetAppear(base: string, isLink: boolean, vocab: RoadVocabulary): number {
-	// The `link` flag is only populated from z11; OSM Bright renders motorway ramps from z12, the rest z13.
-	if (isLink) return base === 'motorway' ? 12 : 13;
+	// A ramp fades in with its road. Starting it later cut every interchange apart at the zooms between
+	// (#155). Where tiles carry ramps without the link flag, the plain road layer draws them, so an early
+	// start adds nothing there. The merged primary and secondary ramp starts with the earlier of the two.
+	if (isLink && base === 'arterial') return Math.min(vocab.appear.primary ?? 12, vocab.appear.secondary ?? 12);
 	return vocab.appear[base] ?? 12;
+}
+
+// A ramp up to z14 is its road's line narrowed to this share, with the road's casing. At those zooms a
+// road is a thin line, and a ramp much thinner than it read as a gap in the interchange (#155).
+const LINK_SHARE = 0.75;
+// From z16 a ramp keeps a curve of its own: a lane or two beside a whole carriageway.
+const LINK_WIDTH = {
+	outline: { 16: 7, 18: 14, 20: 40 },
+	main: { 16: 5, 18: 12, 20: 38 },
+};
+
+function linkWidth(base: string, isOutline: boolean, vocab: RoadVocabulary): b.SizeValue {
+	const parent = linkParent(base);
+	const fill = linearStops(classWidth(parent, false, vocab));
+	const casing = linearStops(classWidth(parent, true, vocab));
+	const zooms = [...new Set([...fill.keys(), ...casing.keys()])].filter((z) => z <= 14).sort((p, q) => p - q);
+	const round = (v: number): number => Math.round(v * 100) / 100;
+	const low = zooms.map((z) => {
+		const main = stopsAt(fill, z) * LINK_SHARE;
+		return [z, round(isOutline ? main + stopsAt(casing, z) - stopsAt(fill, z) : main)];
+	});
+	return { ...Object.fromEntries(low), ...(isOutline ? LINK_WIDTH.outline : LINK_WIDTH.main) };
 }
 
 // Line width by base street type — the old VersaTiles curves. These are identical across surface,
 // tunnel and bridge (the old style never varied fill/casing width by prefix; only the bridge deck,
 // handled in `bridgeDeckStyle`, differs), so `prefix` is not consulted here.
 function streetWidth(base: string, isLink: boolean, isOutline: boolean, vocab: RoadVocabulary): { size: b.SizeValue } {
+	// tertiary-link follows the minor curve, as its road does; every other ramp narrows its road.
+	if (isLink && base !== 'tertiary') return { size: linkWidth(base, isOutline, vocab) };
+	return { size: classWidth(base, isOutline, vocab) };
+}
+
+function classWidth(base: string, isOutline: boolean, vocab: RoadVocabulary): b.SizeValue {
 	// Service-like bases share one curve; which names those are is the schema's business.
 	if (isServiceLike(base, vocab))
-		return isOutline
-			? { size: { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 } }
-			: { size: { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 } };
-	if (isLink) {
-		// tertiary-link follows the minor curve; every other link shares a common (thinner) curve.
-		if (base === 'tertiary') return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main };
-		return isOutline
-			? { size: { 12: 2, 14: 3, 16: 7, 18: 14, 20: 40 } }
-			: { size: { 12: 1, 14: 2, 16: 5, 18: 12, 20: 38 } };
-	}
+		return isOutline ? { 14: 1, 16: 3, 18: 12, 19: 32, 20: 48 } : { 14: 1, 16: 2, 18: 10, 19: 28, 20: 40 };
 	switch (base) {
 		case 'motorway':
 			return isOutline
-				? { size: { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 } }
-				: { size: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 } };
+				? { 5: 0, 6: 2, 10: 5, 14: 5, 16: 14, 18: 38, 19: 84, 20: 168 }
+				: { 5: 0, 6: 1, 10: 4, 14: 4, 16: 12, 18: 36, 19: 80, 20: 160 };
 		case 'trunk':
 			return isOutline
-				? { size: { 6: 0, 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
-				: { size: { 6: 0, 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
+				? { 6: 0, 7: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 }
+				: { 6: 0, 7: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 };
 		case 'primary':
 			return isOutline
-				? { size: { 8: 0, 9: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 } }
-				: { size: { 8: 0, 9: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 } };
+				? { 8: 0, 9: 2, 10: 4, 14: 6, 16: 12, 18: 36, 19: 74, 20: 144 }
+				: { 8: 0, 9: 1, 10: 3, 14: 5, 16: 10, 18: 34, 19: 70, 20: 140 };
 		case 'secondary':
 			return isOutline
-				? { size: { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 } }
-				: { size: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 } };
+				? { 11: 2, 14: 5, 16: 8, 18: 30, 19: 68, 20: 138 }
+				: { 11: 1, 14: 4, 16: 6, 18: 28, 19: 64, 20: 130 };
 		case 'track':
-			return isOutline
-				? { size: { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 } }
-				: { size: { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 } };
+			return isOutline ? { 14: 2, 16: 4, 18: 18, 19: 48, 20: 96 } : { 14: 1, 16: 3, 18: 16, 19: 44, 20: 88 };
 		case 'pedestrian':
-			return { size: isOutline ? PEDESTRIAN_WIDTH.outline : PEDESTRIAN_WIDTH.main };
+			return isOutline ? PEDESTRIAN_WIDTH.outline : PEDESTRIAN_WIDTH.main;
 		default: // tertiary / residential / unclassified / livingstreet — the minor curve
-			return { size: isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main };
+			return isOutline ? MINOR_WIDTH.outline : MINOR_WIDTH.main;
 	}
 }
 
@@ -379,10 +401,17 @@ function bridgeDeckStyle(ctx: LayerContext, s: string, vocab: RoadVocabulary): b
 
 	if (isLink) {
 		// Faded in by opacity, at the zoom the link itself appears (`streetAppear`), as the road on top does.
-		if (bt === 'motorway')
-			return { ...base, opacity: { 12: 0, 13: 0.5 }, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
-		if (bt === 'trunk' || bt === 'primary' || bt === 'secondary' || bt === 'arterial')
-			return { ...base, opacity: { 13: 0, 14: 0.5 }, size: { 12: 3, 14: 4, 16: 10, 18: 20, 20: 56 } };
+		// Up to z14 the deck is the ramp's casing plus 2px, as under the motorway; from z16 a curve of its own.
+		if (bt === 'motorway' || bt === 'trunk' || bt === 'primary' || bt === 'secondary' || bt === 'arterial') {
+			const appear = streetAppear(bt, true, vocab);
+			const casing = linearStops(linkWidth(bt, true, vocab));
+			const low = [...casing].filter(([z]) => z <= 14).map(([z, v]) => [z, v > 0 ? v + 2 : 0]);
+			return {
+				...base,
+				opacity: { [appear]: 0, [appear + 1]: 0.5 },
+				size: { ...Object.fromEntries(low), 16: 10, 18: 20, 20: 56 },
+			};
+		}
 		// tertiary-link → minor deck
 		return { ...base, size: { 12: 3, 14: 4, 16: 8, 18: 36, 19: 90, 20: 179 }, opacity: { 12: 0, 13: 1 } };
 	}

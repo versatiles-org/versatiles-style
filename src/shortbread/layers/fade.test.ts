@@ -126,6 +126,32 @@ describe('roads fade in at their Shortbread streets minzoom', () => {
 	}
 });
 
+// #155: ramps that start later than their road, or are drawn much thinner than it, cut every interchange apart.
+// Each ramp layer, the road it belongs to, and the zoom both fade in. `arterial` draws primary and secondary
+// ramps, so it starts with primary and keeps to the thinner secondary's width.
+const LINK_TYPES: { id: string; road: string; z: number }[] = [
+	{ id: 'street-motorway-link', road: 'street-motorway', z: 5 },
+	{ id: 'street-trunk-link', road: 'street-trunk', z: 6 },
+	{ id: 'street-arterial-link', road: 'street-secondary', z: 8 },
+];
+
+describe('ramps fade in with their road and are not much thinner than it (#155)', () => {
+	const widthAt = (layerId: string, zoom: number): number => {
+		const width = paintOf(style, layerId)?.['line-width'] as unknown[];
+		return evalLinearStops(width.slice(3) as number[], zoom);
+	};
+	for (const { id, road, z } of LINK_TYPES) {
+		for (const layerId of [id, `${id}:outline`]) {
+			it(`${layerId} over z${z}–${z + 1}`, () => expectFadeInAt(style, layerId, z));
+		}
+		it(`${id} is at least ¾ of ${road}'s width at z10–14`, () => {
+			for (const zoom of [10, 11, 12, 13, 14]) {
+				expect(widthAt(id, zoom), `z${zoom}`).toBeGreaterThanOrEqual(widthAt(road, zoom) * 0.75 - 1e-6);
+			}
+		});
+	}
+});
+
 // Path-class ways fade in over z13–14 at their full width. They are dashed, and a dashed line that grew from width 0
 // would draw nothing until z14 and pop in there (see `make`). A single line: no casing layer is emitted.
 describe('path-class ways appear by fading in at z13', () => {
